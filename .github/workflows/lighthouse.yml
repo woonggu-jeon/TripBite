@@ -1,0 +1,55 @@
+name: Lighthouse CI
+
+# 렌더링 성능 회귀 감지 — PR과 main push마다 측정.
+#
+# 측정 방식:
+#   - CI 안에서 production 빌드 + npm start
+#   - 백엔드 미연결이므로 인증 진입점인 /login 만 측정 (middleware가 그 외 페이지를 /login으로 리다이렉트)
+#   - mobile preset + perf preset
+#
+# baseline 확보 단계:
+#   - 모든 assertion warn 으로 시작 (PR 차단 안 함)
+#   - 1~2주 데이터 쌓이면 error 로 강화 (lighthouserc.json 수정)
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8080
+
+      - name: Start server
+        run: npm start &
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8080
+
+      - name: Wait for server ready
+        run: npx --yes wait-on http://localhost:3000/login --timeout 60000
+
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v11
+        with:
+          urls: |
+            http://localhost:3000/login
+          configPath: ./lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true

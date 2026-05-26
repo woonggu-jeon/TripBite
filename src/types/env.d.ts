@@ -11,13 +11,16 @@
  * 누락된 변수 사용은 string | undefined 로 추론되어 컴파일 단계에서 잡힘.
  */
 declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace NodeJS {
     interface ProcessEnv {
       // === Public (브라우저 노출 OK) ===
       NEXT_PUBLIC_API_URL: string;
       NEXT_PUBLIC_VAPID_PUBLIC_KEY?: string;
       NEXT_PUBLIC_SENTRY_DSN?: string;
+      /** dev에서 MSW 활성화 — 'true' 일 때만 worker.start() */
+      NEXT_PUBLIC_USE_MSW?: 'true' | 'false';
+      /** 빌드 시점에 주입 — $VERCEL_GIT_COMMIT_SHA */
+      NEXT_PUBLIC_APP_VERSION?: string;
 
       // === Server-only (절대 NEXT_PUBLIC_ 붙이지 말 것) ===
       VAPID_PRIVATE_KEY?: string;

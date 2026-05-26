@@ -1,4 +1,5 @@
 import type { AxiosInstance } from 'axios';
+import { track } from '@/features/analytics';
 
 /**
  * API 응답 시간 측정 interceptor
@@ -55,25 +56,36 @@ export function attachTimingInterceptor(client: AxiosInstance): void {
   );
 }
 
-function report(url: string, status: number, duration: number, isError = false) {
+function report(
+  url: string,
+  status: number,
+  duration: number,
+  isError = false,
+) {
   const slow = duration > SLOW_THRESHOLD_MS;
+  // query string은 PII 가능성 있어 제거 — pathname만 전송
+  const pathname = extractPath(url);
+  const duration_ms = Math.round(duration);
 
   if (process.env.NODE_ENV === 'development') {
     if (slow || isError) {
-      // eslint-disable-next-line no-console
       console.warn(
-        `[api${slow ? ':slow' : ''}${isError ? ':error' : ''}] ${status} ${url} ${duration.toFixed(0)}ms`,
+        `[api${slow ? ':slow' : ''}${isError ? ':error' : ''}] ${status} ${pathname} ${duration_ms}ms`,
       );
     }
     return;
   }
 
-  // 운영 전송 예시 (도입 시 활성화):
-  //
-  // import { track } from '@/features/analytics';
-  // if (slow) {
-  //   track('api.slow' as never, { url, status, duration } as never);
-  // }
-  //
-  // 또는 Sentry breadcrumb / metrics 로 전송.
+  // 운영: 정상 응답은 노이즈라 보내지 않음. slow/error만 분석 채널로.
+  if (slow) track('api.slow', { pathname, status, duration_ms });
+  if (isError) track('api.error', { pathname, status, duration_ms });
+}
+
+function extractPath(rawUrl: string): string {
+  try {
+    // axios url은 상대일 수 있어 dummy origin으로 파싱
+    return new URL(rawUrl, 'http://x').pathname;
+  } catch {
+    return rawUrl.split('?')[0] ?? rawUrl;
+  }
 }

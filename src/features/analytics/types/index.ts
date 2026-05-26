@@ -10,7 +10,11 @@ export type TrackEventMap = {
   'onboarding.location_skipped': void;
   'onboarding.completed': { nickname_length: number };
   'tournament.started': { theme: string; category: string; count: number };
-  'tournament.completed': { winnerId: string; category: string; duration_ms: number };
+  'tournament.completed': {
+    winnerId: string;
+    category: string;
+    duration_ms: number;
+  };
   'tournament.saved': { winnerId: string };
   'letter.sent': { length: number };
   'letter.liked': { letterId: string };
@@ -22,6 +26,8 @@ export type TrackEventMap = {
   'page.viewed': { pathname: string };
   'app.installed': void;
   'app.updated': { fromVersion: string; toVersion: string };
+  'api.slow': { pathname: string; status: number; duration_ms: number };
+  'api.error': { pathname: string; status: number; duration_ms: number };
 };
 
 export type TrackEventName = keyof TrackEventMap;
@@ -30,7 +36,10 @@ export type AnalyticsProvider = {
   name: string;
   init?: () => void | Promise<void>;
   pageView?: (pathname: string) => void;
-  track: <K extends TrackEventName>(event: K, payload?: TrackEventMap[K]) => void;
+  track: <K extends TrackEventName>(
+    event: K,
+    payload?: TrackEventMap[K],
+  ) => void;
   identify?: (userId: string) => void;
   reset?: () => void;
 };
