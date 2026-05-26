@@ -156,6 +156,30 @@ const nextConfig = {
       },
     ];
   },
+
+  /**
+   * MSW same-origin proxy
+   *
+   * Service worker는 same-origin scope만 가로채므로 cross-origin 백엔드
+   * (NEXT_PUBLIC_API_URL=http://localhost:8080 등) 호출은 MSW가 못 잡음.
+   *
+   * dev MSW 모드(NEXT_PUBLIC_USE_MSW=true)에서만 /api/backend/* 를
+   * 실 백엔드로 proxy → axios baseURL을 /api/backend 로 두면 same-origin이 되어
+   * MSW가 가로챔. 매칭 안 되는 path는 onUnhandledRequest='bypass'로 destination 도달.
+   *
+   * MSW 미사용 시 rewrites 빈 배열 — production에선 axios가 직접 cross-origin 호출.
+   */
+  async rewrites() {
+    if (process.env.NEXT_PUBLIC_USE_MSW !== 'true') return [];
+    const target = process.env.NEXT_PUBLIC_API_URL;
+    if (!target) return [];
+    return [
+      {
+        source: '/api/backend/:path*',
+        destination: `${target}/:path*`,
+      },
+    ];
+  },
 };
 
 /**

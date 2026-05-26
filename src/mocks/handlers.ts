@@ -23,7 +23,16 @@ import { letterSeeds } from './seeds/letters';
 import { tournamentHistorySeeds } from './seeds/tournament';
 import { notificationSeeds } from './seeds/notifications';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '';
+/**
+ * URL 매칭 base.
+ * MSW 모드에서 axios baseURL이 '/api/backend'로 바뀌므로 (services/api/client.ts)
+ * handler URL도 same-origin path prefix를 사용해야 매칭됨.
+ * MSW 미사용 시(예: 테스트 외 production)는 NEXT_PUBLIC_API_URL 그대로.
+ */
+const apiUrl =
+  process.env.NEXT_PUBLIC_USE_MSW === 'true'
+    ? '/api/backend'
+    : (process.env.NEXT_PUBLIC_API_URL ?? '');
 
 export const mockSeeds = {
   regions: regionContentSeeds,
