@@ -7,7 +7,9 @@ export const userApi = {
     return res.data;
   },
 
-  updateProfile: async (data: Partial<Pick<User, 'name'>>): Promise<User> => {
+  updateProfile: async (
+    data: Partial<Pick<User, 'nickname'>>,
+  ): Promise<User> => {
     const res = await api.patch<User>('/users/me', data);
     return res.data;
   },

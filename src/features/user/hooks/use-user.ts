@@ -21,7 +21,7 @@ export function useUpdateProfile() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: Partial<Pick<User, 'name'>>) =>
+    mutationFn: (data: Partial<Pick<User, 'nickname'>>) =>
       userApi.updateProfile(data),
     onSuccess: (updated) => {
       queryClient.setQueryData(userKeys.profile(), updated);
