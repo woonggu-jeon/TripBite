@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches:
-      - develop
+      # - dev   # TODO: main 생성 후 활성화 (그 전까지 dev = production이라 push 트리거 보류)
       - main
 
 jobs:
