@@ -7,11 +7,11 @@ export type LetterAuthor = {
 
 export type Letter = {
   id: string;
-  body: string;            // 1~5자
+  body: string; // 1~5자
   author: LetterAuthor;
-  arrivedAt: string;       // ISO — 수신자 입장의 도착 시각
-  createdAt: string;       // ISO — 보낸 시각
-  isMine: boolean;         // 내가 보낸 편지 여부
+  arrivedAt: string; // ISO — 수신자 입장의 도착 시각
+  createdAt: string; // ISO — 보낸 시각
+  isMine: boolean; // 내가 보낸 편지 여부
   liked: boolean;
   saved: boolean;
   /** 좋아요 받은 수 (보낸 사람 입장에서 의미) */
@@ -20,4 +20,14 @@ export type Letter = {
 
 export type SendLetterRequest = {
   body: string; // 1~5자
+  /**
+   * 보낸 위치 — useResolveLocation 결과를 그대로 전달.
+   * 미동의/실패 시 omit. 백엔드가 IP 기반 추론 또는 익명 처리.
+   */
+  location?: {
+    label: string;
+    regionCode?: string;
+    latitude?: number;
+    longitude?: number;
+  };
 };

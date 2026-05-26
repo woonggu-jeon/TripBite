@@ -276,6 +276,10 @@
   },
   "location": {
     "current": "Current location",
+    "resolving": "Getting your location...",
+    "retry": "Try again",
+    "back": "Back",
+    "change": "Change",
     "permission": {
       "title": "Location permission needed",
       "description": "Allow location access to attach where your letter was sent from.",

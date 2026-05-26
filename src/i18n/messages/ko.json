@@ -276,6 +276,10 @@
   },
   "location": {
     "current": "현재 위치",
+    "resolving": "위치를 가져오는 중...",
+    "retry": "다시 시도",
+    "back": "이전",
+    "change": "변경",
     "permission": {
       "title": "위치 권한이 필요해요",
       "description": "편지에 보낸 위치를 표시하려면 위치 접근을 허용해주세요.",
