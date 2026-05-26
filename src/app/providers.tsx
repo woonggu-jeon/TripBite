@@ -7,10 +7,15 @@ import {
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useState } from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { AuthBootstrap } from '@/features/auth/components/AuthBootstrap';
 import { Toaster } from '@/components/feedback/Toaster';
 import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
-import { PwaUpdateBanner, OfflineBanner, InstallPromptBanner } from '@/features/pwa';
+import {
+  PwaUpdateBanner,
+  OfflineBanner,
+  InstallPromptBanner,
+} from '@/features/pwa';
 import { usePageView } from '@/features/analytics/hooks/use-page-view';
 import { WebVitalsTracker } from '@/features/analytics/web-vitals';
 
@@ -55,6 +60,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <AuthBootstrap />
       <PageViewTracker />
       <WebVitalsTracker />
+      <SpeedInsights />
       {children}
 
       {/* 글로벌 피드백 UI */}

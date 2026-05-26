@@ -25,7 +25,8 @@ const withPWA = require('next-pwa')({
       },
     },
     {
-      urlPattern: /^https:\/\/tong\.visitkorea\.or\.kr\/.+\.(?:jpe?g|png|webp|avif)$/i,
+      urlPattern:
+        /^https:\/\/tong\.visitkorea\.or\.kr\/.+\.(?:jpe?g|png|webp|avif)$/i,
       handler: 'CacheFirst',
       options: {
         cacheName: 'tour-api-images',
@@ -77,7 +78,7 @@ const csp = [
   "img-src 'self' data: blob: https://tong.visitkorea.or.kr",
   // jsdelivr — Pretendard 폰트 woff2 파일들
   "font-src 'self' data: https://cdn.jsdelivr.net",
-  `connect-src 'self' ${apiUrl} https://*.sentry.io`.trim(),
+  `connect-src 'self' ${apiUrl} https://*.sentry.io https://vitals.vercel-insights.com`.trim(),
   "worker-src 'self'",
   "manifest-src 'self'",
   "frame-ancestors 'none'",
@@ -99,7 +100,10 @@ const csp = [
  * - Content-Security-Policy-Report-Only: XSS 완화 (모니터링 단계)
  */
 const SECURITY_HEADERS = [
-  { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+  {
+    key: 'Strict-Transport-Security',
+    value: 'max-age=63072000; includeSubDomains; preload',
+  },
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'X-Frame-Options', value: 'DENY' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
@@ -136,7 +140,11 @@ const nextConfig = {
   },
   compress: true,
   experimental: {
-    optimizePackageImports: ['lucide-react', 'recharts', 'embla-carousel-react'],
+    optimizePackageImports: [
+      'lucide-react',
+      'recharts',
+      'embla-carousel-react',
+    ],
   },
 
   async headers() {
