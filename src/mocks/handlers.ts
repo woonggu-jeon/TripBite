@@ -33,18 +33,76 @@ export const mockSeeds = {
   apiUrl,
 };
 
+const mockUser = {
+  id: '1',
+  nickname: '테스터',
+  email: 't@e.com',
+  isOnboarded: true,
+  homeRegion: 'cheongju',
+} as const;
+
+const mockResolvedLocation = {
+  latitude: 36.6424,
+  longitude: 127.489,
+  label: '충북 청주시',
+  regionCode: 'cheongju',
+};
+
+const mockWeather = {
+  temperature: 18,
+  feelsLike: 17,
+  condition: 'clear' as const,
+  summary: '맑음, 외출하기 좋아요',
+  humidity: 55,
+  locationLabel: '충북 청주시',
+};
+
 export const handlers = [
-  // /me
-  http.get(`${apiUrl}/me`, () =>
-    HttpResponse.json({
-      id: '1',
-      nickname: '테스터',
-      email: 't@e.com',
+  // ===== Auth =====
+  http.post(`${apiUrl}/auth/login`, () => HttpResponse.json({ success: true })),
+  http.post(
+    `${apiUrl}/auth/logout`,
+    () => new HttpResponse(null, { status: 204 }),
+  ),
+  http.post(
+    `${apiUrl}/auth/refresh`,
+    () => new HttpResponse(null, { status: 204 }),
+  ),
+  http.get(`${apiUrl}/me`, () => HttpResponse.json(mockUser)),
+
+  // ===== Onboarding =====
+  http.post(`${apiUrl}/me/complete-onboarding`, async ({ request }) => {
+    const body = (await request.json()) as { nickname?: string };
+    return HttpResponse.json({
+      ...mockUser,
+      nickname: body.nickname ?? mockUser.nickname,
       isOnboarded: true,
-    }),
+    });
+  }),
+
+  // ===== Location =====
+  // 좌표 → 라벨 (reverse geocode)
+  http.post(`${apiUrl}/location/reverse`, async ({ request }) => {
+    const coords = (await request.json()) as {
+      latitude: number;
+      longitude: number;
+    };
+    return HttpResponse.json({
+      ...coords,
+      label: mockResolvedLocation.label,
+      regionCode: mockResolvedLocation.regionCode,
+    });
+  }),
+  // IP 기반 대략적 위치
+  http.get(`${apiUrl}/location/ip`, () =>
+    HttpResponse.json(mockResolvedLocation),
   ),
 
-  // 편지함 페이지네이션 — received
+  // ===== Weather =====
+  http.get(`${apiUrl}/weather/current`, () => HttpResponse.json(mockWeather)),
+
+  // ===== Letters =====
+  http.post(`${apiUrl}/letters`, () => new HttpResponse(null, { status: 201 })),
   http.get(`${apiUrl}/letters/received`, ({ request }) => {
     const url = new URL(request.url);
     const cursor = Number(url.searchParams.get('cursor') ?? 0);
@@ -54,8 +112,28 @@ export const handlers = [
       cursor + limit < letterSeeds.length ? cursor + limit : null;
     return HttpResponse.json({ items: slice, nextCursor });
   }),
+  http.get(`${apiUrl}/letters/sent`, () =>
+    HttpResponse.json({ items: letterSeeds.slice(0, 5), nextCursor: null }),
+  ),
+  http.get(`${apiUrl}/letters/liked`, () =>
+    HttpResponse.json({
+      items: letterSeeds.filter((l) => l.liked),
+      nextCursor: null,
+    }),
+  ),
+  http.get(`${apiUrl}/letters/saved`, () =>
+    HttpResponse.json({
+      items: letterSeeds.filter((l) => l.saved),
+      nextCursor: null,
+    }),
+  ),
+  http.get(`${apiUrl}/letters/:id`, ({ params }) => {
+    const seed = letterSeeds.find((l) => l.id === params.id);
+    if (!seed) return new HttpResponse(null, { status: 404 });
+    return HttpResponse.json(seed);
+  }),
 
-  // 시군 콘텐츠
+  // ===== Region =====
   http.get(`${apiUrl}/regions/:code/contents`, ({ params, request }) => {
     const url = new URL(request.url);
     const type = url.searchParams.get('type');
@@ -65,12 +143,12 @@ export const handlers = [
     return HttpResponse.json({ items, nextCursor: null });
   }),
 
-  // 토너먼트 기록
+  // ===== Tournament =====
   http.get(`${apiUrl}/mypage/tournament-history`, () =>
     HttpResponse.json({ items: tournamentHistorySeeds, nextCursor: null }),
   ),
 
-  // 알림 inbox
+  // ===== Notifications =====
   http.get(`${apiUrl}/notifications`, () =>
     HttpResponse.json({
       items: notificationSeeds,
