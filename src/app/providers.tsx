@@ -12,6 +12,7 @@ import { Toaster } from '@/components/feedback/Toaster';
 import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
 import { PwaUpdateBanner, OfflineBanner, InstallPromptBanner } from '@/features/pwa';
 import { usePageView } from '@/features/analytics/hooks/use-page-view';
+import { WebVitalsTracker } from '@/features/analytics/web-vitals';
 
 const queryClientOptions: DefaultOptions = {
   queries: {
@@ -53,6 +54,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <AuthBootstrap />
       <PageViewTracker />
+      <WebVitalsTracker />
       {children}
 
       {/* 글로벌 피드백 UI */}

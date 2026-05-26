@@ -1,5 +1,6 @@
 import axios, { type AxiosInstance } from 'axios';
 import { attachAuthInterceptor } from '@/services/interceptors/auth';
+import { attachTimingInterceptor } from '@/services/interceptors/timing';
 
 /**
  * 아키텍처 문서 10번
@@ -16,4 +17,7 @@ export const api: AxiosInstance = axios.create({
 });
 
 // Interceptor 부착
+//   - timing: 응답 시간 측정 (느린 API 감지) — 먼저 부착
+//   - auth:   401 → refresh → 재시도
+attachTimingInterceptor(api);
 attachAuthInterceptor(api);

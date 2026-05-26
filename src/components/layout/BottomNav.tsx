@@ -3,31 +3,23 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Home, TrendingUp, Trophy, Mail, User } from 'lucide-react';
+import { Icon, type IconName } from '@/components/Icon';
 import { BOTTOM_NAV_ROUTES } from '@/constants/routes';
+import { haptic } from '@/lib/haptic';
 import styles from './BottomNav.module.scss';
-
-const ICONS = {
-  home: Home,
-  'trending-up': TrendingUp,
-  trophy: Trophy,
-  mail: Mail,
-  user: User,
-} as const;
 
 /**
  * 하단 네비게이션 (5 탭)
  *
- * 사이트맵: 가운데 토너먼트가 emphasized (raised circle).
+ * 변경 사항:
+ *   - 아이콘을 lucide-react 에서 SVG sprite (<Icon />) 로 교체
+ *     · 다른 페이지에 lucide 아이콘 import 가 없는 페이지는 lucide 전체를 다운로드 안 함
+ *     · 첫 진입 시 /icons.svg 한 번 다운로드 (SW 캐시 후 영구)
+ *   - 탭 클릭 시 미세 햅틱 (모바일)
  *
  * 활성 기준:
  *   - 홈("/")은 정확히 일치
  *   - 나머지는 prefix 매칭 (예: /tournament/play 도 토너먼트 탭 활성)
- *
- * 성능:
- *   - 단순 Link + usePathname (recoil/zustand 미사용)
- *   - 페이지 전환 시 BottomNav 자체는 (main) layout이라 재마운트 X
- *   - 아이콘은 lucide-react 의 named import → tree-shake 보장
  */
 export function BottomNav() {
   const pathname = usePathname();
@@ -39,7 +31,6 @@ export function BottomNav() {
   return (
     <nav className={styles.nav} aria-label={t('home')}>
       {BOTTOM_NAV_ROUTES.map((route) => {
-        const Icon = ICONS[route.icon];
         const active = isActive(route.path);
         const emphasized = 'emphasized' in route && route.emphasized;
 
@@ -47,6 +38,7 @@ export function BottomNav() {
           <Link
             key={route.path}
             href={route.path}
+            onClick={() => haptic.tap()}
             className={[
               styles.item,
               active ? styles.active : '',
@@ -57,7 +49,11 @@ export function BottomNav() {
             aria-current={active ? 'page' : undefined}
           >
             <span className={emphasized ? styles.emphasizedCircle : ''}>
-              <Icon size={emphasized ? 26 : 22} />
+              <Icon
+                name={route.icon as IconName}
+                size={emphasized ? 26 : 22}
+                aria-label={t(route.labelKey)}
+              />
             </span>
             <span className={styles.label}>{t(route.labelKey)}</span>
           </Link>

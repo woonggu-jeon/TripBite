@@ -1,27 +1,23 @@
 'use client';
 
 import { useEffect } from 'react';
-import { CheckCircle2, XCircle, Info, AlertTriangle, X } from 'lucide-react';
+import { Icon, type IconName } from '@/components/Icon';
 import { useUIStore, type Toast } from '@/stores/ui-store';
 import styles from './Toaster.module.scss';
 
 /**
  * <Toaster />
  *
- * ui-store 의 toasts 큐를 렌더.
- * Providers 안에 한 번 마운트.
+ * 변경: lucide-react → SVG sprite (<Icon />)
+ * 토스트는 어느 페이지에서든 표시되므로 메인 번들이 아닌 sprite 사용이 핵심.
  *
  * 위치: 하단 네비 위 (BottomNav 가려지지 않도록 offset).
- * 데스크톱에선 우상단으로 옮기는 것도 검토 가능.
- *
- * 추후 sonner 도입 시: 이 컴포넌트 + lib/toast.ts 를 sonner adapter 로 교체.
- * 호출부는 그대로.
  */
-const ICONS = {
-  success: CheckCircle2,
-  error: XCircle,
-  info: Info,
-  warning: AlertTriangle,
+const ICONS: Record<Toast['type'], IconName> = {
+  success: 'check-circle',
+  error: 'x-circle',
+  info: 'info',
+  warning: 'alert-triangle',
 };
 
 export function Toaster() {
@@ -38,7 +34,6 @@ export function Toaster() {
 
 function ToastItem({ toast }: { toast: Toast }) {
   const dismiss = useUIStore((s) => s.dismissToast);
-  const Icon = ICONS[toast.type];
 
   useEffect(() => {
     if (!toast.duration) return;
@@ -48,7 +43,7 @@ function ToastItem({ toast }: { toast: Toast }) {
 
   return (
     <div className={`${styles.toast} ${styles[toast.type]}`}>
-      <Icon size={18} />
+      <Icon name={ICONS[toast.type]} size="sm" />
       <span className={styles.message}>{toast.message}</span>
       <button
         type="button"
@@ -56,7 +51,7 @@ function ToastItem({ toast }: { toast: Toast }) {
         className={styles.close}
         onClick={() => dismiss(toast.id)}
       >
-        <X size={16} />
+        <Icon name="x" size="sm" />
       </button>
     </div>
   );

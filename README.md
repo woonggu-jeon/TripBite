@@ -260,6 +260,98 @@ const { items, fetchNext, hasNext, isFetchingNext } = useInfiniteList({
 
 ---
 
+## Vercel 배포 가이드
+
+### 환경 변수 설정 (Project → Settings → Environment Variables)
+
+| 변수 | 값 | 비고 |
+|------|------|------|
+| `NEXT_PUBLIC_API_URL` | `https://api.your-domain.com` | 필수 — CSP `connect-src` 에 자동 포함 |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | VAPID 공개키 | Web Push 사용 시만 |
+| `NEXT_PUBLIC_APP_VERSION` | `$VERCEL_GIT_COMMIT_SHA` | 시스템 변수 참조 가능. `/api/health`, `/settings` 하단에 노출 |
+| `NEXT_PUBLIC_SENTRY_DSN` | Sentry DSN | Sentry 도입 시만 |
+| `SENTRY_AUTH_TOKEN` | (Secret) | 빌드 시 source map 업로드용 |
+
+### 빌드 설정
+
+기본값 그대로 OK:
+- Framework Preset: **Next.js** (자동 감지)
+- Build Command: `npm run build`
+- Install Command: `npm install`
+- Output Directory: `.next` (자동)
+- Node Version: **22.x** (Settings → General → Node.js Version)
+
+### 알려진 트러블슈팅
+
+#### 1) `husky: command not found` 빌드 실패
+
+**증상**:
+```
+sh: line 1: husky: command not found
+npm error code 127
+Error: Command "npm install" exited with 127
+```
+
+**원인**: `prepare` lifecycle 이 husky 실행 시도 → 일부 환경에서 실패.
+
+**해결** (이미 적용됨):
+- `package.json` 의 `"prepare": "husky || true"` — 실패해도 install 계속
+- `husky` 가 `devDependencies` 에 등록됨
+
+#### 2) `Image with src "..." has invalid hostname`
+
+`next.config.js` 의 `images.remotePatterns` 에 도메인이 등록되어 있어야 함:
+
+```js
+images: {
+  remotePatterns: [
+    { protocol: 'https', hostname: 'tong.visitkorea.or.kr' },
+    // 새 도메인 추가 시 여기에
+  ],
+}
+```
+
+#### 3) `Module not found: Can't resolve '@/...'`
+
+`tsconfig.json` 의 `paths` 가 빌드 환경에서 안 잡힐 때.
+
+```json
+"paths": {
+  "@/*": ["./src/*"]
+}
+```
+
+및 `next.config.js` 에 별도 webpack alias 불필요 (Next.js 가 자동 처리).
+
+#### 4) CSP 위반 콘솔 경고가 너무 많음
+
+현재 `Content-Security-Policy-Report-Only` 모드라 차단은 안 함. 운영 안정화 후 `Content-Security-Policy` 로 전환:
+
+```js
+// next.config.js
+{ key: 'Content-Security-Policy', value: csp }   // Report-Only 제거
+```
+
+#### 5) 첫 진입 시 Pretendard 깜빡임 (FOUT)
+
+`font-display: swap` 동작 — 시스템 폰트로 즉시 표시 후 Pretendard 로 교체. 정상 동작이지만 거슬리면:
+- self-host 마이그레이션 후 `next/font/local` 의 `display: 'optional'` 사용 (1회 fetch 후 미준비면 fallback 유지)
+
+### Preview 배포 활용
+
+PR 마다 자동 preview URL 생성 → Lighthouse / 디자인 리뷰 / 모바일 실기기 테스트 권장.
+
+```
+PR #123 → https://your-app-git-feature-branch.vercel.app
+```
+
+#### 6) 환경 변수 누락으로 인한 런타임 에러
+
+`NEXT_PUBLIC_API_URL` 미설정 시 `axios baseURL` 이 undefined → 모든 API 호출 실패.
+배포 직후 `/api/health` 가 200 OK 반환하는지, 홈 페이지가 빈 상태로 안 뜨는지 확인.
+
+---
+
 ## 사전 체크리스트
 
 - [ ] GitHub repo + Vercel 연결
@@ -1071,7 +1163,434 @@ common.tryAgain
 consent.{all,age14,terms,privacy,location,marketing}
 pwa.update.{message,apply}
 pwa.offline.{title,message}
-pwa.install.{title,description,install,later}
+pwa.install.{title,description,install,later,iosGuide}
 onboarding.nickname.errors.{tooShort,tooLong,invalidChars,invisibleChar,controlChar}
 letter.compose.errors.invalidChar
 ```
+
+---
+
+## 환경별 호환성 매트릭스
+
+| 영역 | Desktop Web | Android Web/PWA | iOS Safari | iOS PWA |
+|------|:---:|:---:|:---:|:---:|
+| 기본 라우팅/UI | ✅ | ✅ | ✅ | ✅ |
+| Service Worker / 캐시 | ✅ | ✅ | ✅ | ✅ |
+| Web Push | ✅ | ✅ | ⚠️ 16.4+ | ⚠️ 16.4+ standalone |
+| `beforeinstallprompt` | ✅ | ✅ | ❌ | ❌ |
+| `navigator.vibrate` | ⚠️ 일부 | ✅ | ❌ | ❌ |
+| Geolocation | ✅ | ✅ | ✅ | ✅ |
+| 권한 재요청 (거부 후) | ✅ 설정→ | ✅ 설정→ | ❌ OS 설정만 | ❌ OS 설정만 |
+| 100dvh | ✅ | ✅ | ✅ 16+ | ✅ 16+ |
+| Background → 복귀 시 상태 | ✅ | ⚠️ 일부 폐기 | ⚠️ 폐기 흔함 | 🚨 빠르게 폐기 |
+
+### 플랫폼 quirks 대응 (코드에 적용됨)
+
+- **iOS PWA 상태 휘발성** → 토너먼트 store가 `zustand persist` + `sessionStorage` 자동 백업 (탭 종료 시만 휘발)
+- **iOS `beforeinstallprompt` 미지원** → `InstallPromptBanner` 가 iOS Safari 감지 시 "공유 → 홈 화면에 추가" 안내 텍스트로 분기 (`lib/platform.ts`)
+- **iOS `vibrate` 미지원** → `lib/haptic` 가 silent no-op
+- **iOS 주소창 변동** → `globals.scss` 의 `min-height: 100dvh` + 페이지별 `100dvh` 사용
+- **`prefers-reduced-motion`** → 햅틱, shimmer, banner slide, dialog animate 모두 자동 off
+
+### 운영 전 검증 체크리스트
+
+- [ ] **iOS Safari 17+ 실기기** 테스트 (시뮬레이터 X)
+- [ ] **iOS PWA 설치 후 백그라운드 ↔ 복귀** 시나리오:
+  - [ ] 토너먼트 1:1 매치 도중 다른 앱 → 복귀 시 진행도 유지
+  - [ ] 편지 작성 중 다른 앱 → 복귀 (form 보존은 별도 작업 필요)
+  - [ ] 무한스크롤 위치 복원
+- [ ] **iOS PWA 푸시 알림** 실 발송 (16.4+ standalone)
+- [ ] **느린 3G** Chrome DevTools 시뮬레이션 — 첫 페인트 3초 이내
+- [ ] **Lighthouse Mobile** Performance 90+ 확보
+- [ ] `securityheaders.com` A+ 확인
+- [ ] **WebPageTest** 실측 (모바일 4G)
+
+---
+
+## 아이콘 — SVG Sprite 시스템
+
+### 왜 sprite인가
+
+| 방식 | 누적 비용 (15 아이콘) | 추가 비용 |
+|------|---------------------|----------|
+| `lucide-react` named import | ~15KB (각 모듈 오버헤드) | 새 아이콘마다 |
+| **SVG sprite (`<use href>`)** | **~5KB (sprite + 컴포넌트 1개)** | **0KB** |
+
+페이지마다 5~10개씩 누적되면 차이가 커집니다. PWA 환경에선 sprite가 SW로 캐시되어 첫 진입만 비용.
+
+### 사용
+
+```tsx
+import { Icon } from '@/components/Icon';
+
+<Icon name="home" size="md" />
+<Icon name="trophy" size={26} aria-label={t('nav.tournament')} />
+```
+
+`IconName` 타입에 등록된 이름만 자동완성 + typo 컴파일 에러.
+
+### Sprite 빌드
+
+자주 쓰는 아이콘 19종은 `public/icons.svg` 에 하드코딩되어 바로 동작합니다. 운영용으로는 정확한 lucide 패스를 자동 추출하는 빌드 스크립트 사용:
+
+```bash
+npm i -D lucide-static
+npm run build:icons   # scripts/build-icons.mjs → public/icons.svg 생성
+```
+
+새 아이콘 추가 절차:
+1. `scripts/build-icons.mjs` 의 `ICONS` 배열에 추가
+2. `src/components/Icon/Icon.tsx` 의 `IconName` 에 추가
+3. `npm run build:icons` 실행
+
+### 마이그레이션 현황
+
+| 컴포넌트 | 상태 |
+|---------|------|
+| `BottomNav` | ✅ Icon |
+| `AppHeader` | ✅ Icon |
+| `Toaster` | ✅ Icon |
+| `SubHeader` (chevron-left) | 🟡 점진 마이그레이션 |
+| `SegmentError`, `EmptyState` 외 | 🟡 호출부에서 `<Icon />` 으로 점진 교체 |
+
+자주 보이는 영역 (네비/헤더/토스트) 먼저 sprite화 → 메인 번들에서 lucide-react 의 해당 아이콘들 제거됨.
+
+### Lucide-react 와 공존
+
+드물게 쓰는 아이콘은 `lucide-react` 그대로 사용해도 OK. `optimizePackageImports: ['lucide-react']` 가 자동으로 사용 부분만 import.
+
+---
+
+## 이미지 — 네트워크 패킷 최소화
+
+### 적용된 최적화
+
+| 영역 | 설정 |
+|------|------|
+| 포맷 우선순위 | AVIF → WebP → 원본 |
+| Quality 기본값 | 75 (시각 차이 거의 없음, 30% 절감) |
+| Device sizes | 360 / 640 / 750 / 828 / 1080 / 1200 / 1920 |
+| 외부 이미지 캐시 | TourAPI 30일 CacheFirst, 기타 7일 SWR |
+| Resource hints | `preconnect` + `dns-prefetch` to TourAPI (`layout.tsx`) |
+| Blur placeholder | 1px 회색 fallback (호출부에서 `blurDataURL` 지정 권장) |
+| `priority` | LCP 후보 (시군 hero, 토너먼트 우승지 메인) 에만 |
+
+### 호출 패턴
+
+```tsx
+// LCP — priority + fill
+<OptimizedImage src={hero} alt={title} priority fill sizes="100vw" />
+
+// 카드 썸네일 — 고정 크기
+<OptimizedImage src={thumb} alt={title} width={120} height={120} sizes="120px" />
+
+// 리스트 — 반응형
+<OptimizedImage
+  src={url} alt={title} fill
+  sizes="(max-width: 600px) 100vw, 50vw"
+/>
+```
+
+### TourAPI 이미지 — 백엔드 협의 필요
+
+TourAPI 원본은 보통 1MB+ JPG. 그대로 next/image 변환만 의존하면:
+- next/image 첫 요청 시 변환 작업 비용 발생 (cold start)
+- 단일 size 만 변환되어 캐싱
+
+권장 백엔드/CDN 가이드:
+
+| 변환 | 크기 | 용도 |
+|------|------|------|
+| `thumb` | 240×240 WebP, ~10KB | 카드 썸네일 |
+| `card` | 480×360 WebP, ~30KB | 리스트 카드 |
+| `hero` | 1080×720 AVIF, ~80KB | 시군/우승지 상단 |
+
+백엔드 응답:
+```json
+{
+  "imageUrl": "https://cdn.example.com/tour-api/abc123",
+  "imageVariants": {
+    "thumb": "https://cdn.example.com/tour-api/abc123?w=240&fm=webp",
+    "card": "https://cdn.example.com/tour-api/abc123?w=480&fm=webp",
+    "hero": "https://cdn.example.com/tour-api/abc123?w=1080&fm=avif"
+  }
+}
+```
+
+CDN 권장: Cloudflare Images / imgix / Cloudinary / Vercel Image Optimization. 캐시 hit 시 응답 50ms 내.
+
+### 실측 가이드
+
+#### 1) Web Vitals 자동 측정 (적용 완료)
+
+`WebVitalsTracker` 가 Providers 안에 마운트되어 모든 페이지에서 자동 측정:
+- FCP / LCP / INP / CLS / TTFB
+- 개발 환경: 콘솔에 `[vitals] LCP: 1842 (good)` 형식 출력
+- 운영: `useReportWebVitals` 콜백 안에서 `navigator.sendBeacon('/api/metrics', ...)` 또는 Sentry/Vercel Analytics 로 전송
+
+#### 2) API 응답 시간 자동 측정 (적용 완료)
+
+`services/interceptors/timing.ts` 가 axios 인스턴스에 부착되어 모든 백엔드 호출의 응답 시간 측정:
+- 1초 초과 시 개발 콘솔에 `[api:slow] 200 /letters/received 1240ms` 경고
+- 운영: 동일 interceptor 안에서 analytics 도구로 전송 가능
+- TourAPI 프록시 / 편지함 / 토너먼트 후보 등 모든 호출 자동 적용
+
+#### 3) Bundle Analyzer (즉시 실행 가능)
+
+```bash
+# 1회: 의존성 설치 (devDep)
+npm i -D @next/bundle-analyzer
+
+# 빌드 + 시각화
+ANALYZE=true npm run build
+# → .next/analyze/client.html / server.html 자동 열림
+```
+
+확인 항목:
+- recharts 가 main 청크 아닌 별도 chunk 인지
+- embla-carousel 도 동일
+- lucide-react 가 사용된 아이콘만 포함되는지 (sprite 마이그레이션 검증)
+- 페이지별 청크 크기
+
+#### 4) Lighthouse CI (운영 직전 권장)
+
+```bash
+# 1회 측정
+npx lighthouse https://your-app.vercel.app \
+  --form-factor=mobile \
+  --throttling-method=simulate \
+  --view
+
+# CI 통합 (GitHub Actions)
+# .github/workflows/lighthouse.yml 추가:
+#   - uses: treosh/lighthouse-ci-action@v11
+#     with:
+#       urls: |
+#         https://your-app.vercel.app/
+#         https://your-app.vercel.app/ranking
+#         https://your-app.vercel.app/letter
+#       configPath: ./lighthouserc.json
+```
+
+`lighthouserc.json` 예시:
+```json
+{
+  "ci": {
+    "collect": {
+      "settings": { "preset": "perf", "emulatedFormFactor": "mobile" }
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": ["error", { "minScore": 0.9 }],
+        "categories:accessibility": ["error", { "minScore": 0.95 }],
+        "categories:best-practices": ["warn", { "minScore": 0.9 }]
+      }
+    }
+  }
+}
+```
+
+#### 5) WebPageTest (실측)
+
+```
+https://www.webpagetest.org/
+  Test Location: 도쿄/서울 (한국 사용자 시뮬레이션)
+  Browser:       Chrome on Pixel 7
+  Connection:    4G LTE
+  Number of Tests: 9 (median 신뢰성)
+```
+
+확인 지표: Speed Index, LCP, Time to Interactive, Filmstrip.
+
+#### 6) Chrome DevTools 느린 3G 시뮬레이션
+
+```
+DevTools → Network 탭 → No throttling 드롭다운
+  → Slow 3G (~400Kbps, 400ms RTT)
+또는
+  → CPU throttling: 4x slowdown
+```
+
+체크리스트:
+- [ ] 첫 화면 3초 이내 인터랙티브
+- [ ] 토너먼트 매치업 카드 전환 60fps 유지
+- [ ] InfiniteList 끝 닿기 전 다음 페이지 prefetch (rootMargin 200px)
+- [ ] 이미지 lazy loading 동작 확인
+
+#### 7) 임계값 표 (모바일 기준)
+
+| 지표 | 목표 | 우수 | 현재 코드의 보호 장치 |
+|------|------|------|-----|
+| FCP | <1.8s | <1.0s | Server Component, preconnect |
+| LCP | <2.5s | <1.8s | `priority` LCP 이미지, AVIF, dynamic-subset 폰트 |
+| INP | <200ms | <100ms | dynamic import (recharts/embla), virtual DOM 최소화 |
+| CLS | <0.1 | <0.05 | 위젯 fixed height, blur placeholder, font-display:swap |
+| TTFB | <800ms | <200ms | Edge runtime (/api/health), Vercel edge cache |
+| TBT | <300ms | <200ms | 동적 import, optimizePackageImports |
+
+#### 8) Bundle size budget (권장)
+
+| 청크 | 권장 한도 | 비고 |
+|------|---------|------|
+| First Load JS (홈) | <200KB gzip | Server Component 위주라 가볍게 유지 |
+| Recharts 청크 | <120KB gzip | 차트 페이지 진입 시만 로드 |
+| Embla 청크 | <15KB gzip | 캐러셀 사용 페이지만 |
+| Lucide-react (sprite 마이그 후) | <5KB gzip | 자주 안 쓰는 아이콘만 |
+| icons.svg | <10KB | 1년 immutable cache |
+
+`ANALYZE=true npm run build` 결과와 위 표를 비교하여 회귀 감지.
+
+### Third-party JS 영향 (도입 전 예측)
+
+지금은 third-party JS가 없습니다. 도입 시 영향:
+
+| 라이브러리 | 크기 (gzip) | 영향도 | 권장 도입 방식 |
+|-----------|------------|------|---------------|
+| **Vercel Analytics** | ~1KB | 무시 | 자동 통합, useReportWebVitals 연계 |
+| **Sentry @sentry/nextjs** | ~30KB | 중간 | route-level dynamic import, `enabled: prod` |
+| **Google Analytics 4** | ~50KB (gtag) | 큼 | `<Script strategy="afterInteractive">` |
+| **Mixpanel / Amplitude** | ~25KB | 중간 | 동일 — afterInteractive |
+| **Tag Manager (GTM)** | ~30KB + 컨테이너 | 큼 | `lazyOnload` 또는 worker 모드 (Partytown) |
+
+3개 이상 third-party JS 도입 시 **Partytown** (Web Worker 로 격리) 검토.
+
+---
+
+## 한글 폰트 — Pretendard (적용됨)
+
+### 현재 적용 방식: jsdelivr CDN + dynamic-subset
+
+`layout.tsx` 의 `<head>` 에서 Pretendard CSS 로드:
+
+```html
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin="anonymous" />
+<link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+```
+
+### 왜 jsdelivr dynamic-subset 인가
+
+| 항목 | jsdelivr dynamic-subset | self-host 단일 파일 |
+|------|------------------------|---------------------|
+| 첫 페인트 영향 | preconnect 로 critical path 영향 미미 | 같은 origin 0ms |
+| **다운로드 크기** | **사용 글리프만** (~80KB) ⭐ | 전체 한글+영문 (~120KB) |
+| 페이지별 최적화 | 자동 (unicode-range) | X |
+| 안정성 | jsdelivr CDN 글로벌 | 우리 도메인만큼 |
+| CSP | `cdn.jsdelivr.net` 허용 | self 만 |
+| SW 캐시 | runtime cache (1년 immutable) | next/static (1년) |
+
+dynamic-subset 의 핵심:
+- CSS 가 `@font-face { unicode-range: U+AC00-D7AF; ... }` 처럼 여러 woff2 파일로 분할 정의
+- 브라우저가 페이지에 실제 사용된 글리프 범위에 해당하는 woff2 만 다운로드
+- 영문 페이지 → 영문 chunk (~20KB), 한국어 페이지 → 한글 chunk (~80KB)
+
+### 안전망 (폰트 로딩 실패해도 OK)
+
+`globals.scss` 의 `--font-sans` 가 시스템 폰트 폴백 보유:
+```
+'Pretendard Variable', Pretendard,
+-apple-system, BlinkMacSystemFont,
+'Apple SD Gothic Neo',    /* iOS 기본 한글 */
+'Noto Sans KR',           /* Android 기본 한글 */
+'Segoe UI', Roboto, ...
+```
+
+jsdelivr 장애 시에도 시스템 폰트로 즉시 렌더 (FOIT 없음).
+
+### Self-host 마이그레이션 (운영 안정화 후 선택)
+
+jsdelivr 의존 제거하고 같은 origin 으로 옮기려면:
+
+```bash
+npm i pretendard
+```
+
+`layout.tsx`:
+```tsx
+import localFont from 'next/font/local';
+
+const pretendard = localFont({
+  src: '../../node_modules/pretendard/dist/web/variable/woff2/PretendardVariable.woff2',
+  display: 'swap',
+  preload: true,
+  variable: '--font-pretendard',
+  weight: '45 920',
+});
+
+// <html lang={locale} className={pretendard.variable}>
+```
+
+이후 layout.tsx 의 jsdelivr `<link>` 2줄 제거 + `next.config.js` CSP/runtime cache 에서 jsdelivr 도메인 제거.
+
+⚠️ 인트라넷/사내망 환경처럼 외부 CDN 차단된 곳에 배포한다면 self-host 필수.
+
+---
+
+## 이미지 저장 의사결정
+
+> "CDN을 사용할만한 저장소를 가지고 있지 않다"는 상황에서:
+> **현재 구조 (public/ + TourAPI 외부) 가 최적해입니다.**
+
+### 의사결정 트리
+
+```
+이미지가 ...
+├─ 우리 디자인/에셋 (변하지 않음) → public/
+│   · Vercel 배포 시 자동으로 edge CDN 캐시 (전 세계)
+│   · Brotli/HTTP3 자동 적용
+│   · _next/static/* 와 함께 1년 immutable
+│
+├─ 외부 API (TourAPI) → 그대로 next/image
+│   · Vercel Image Optimization 이 AVIF/WebP 자동 변환
+│   · 첫 요청만 변환 비용, 이후 edge 캐시 hit
+│   · PWA runtime cache 가 30일 추가 보호
+│   · 별도 CDN/저장소 불필요
+│
+└─ 사용자 업로드 → 사이트맵에 없음, 추후 결정
+    · 도입 시점에 Vercel Blob / Cloudinary / S3 비교
+```
+
+### "그럼 CDN 따로 안 써도 진짜 빠른가?" — Yes
+
+```
+사용자
+  ↓ (HTTP/3, Brotli, edge cache)
+Vercel Edge Network         ← 별도 결제 X (Hobby 플랜 포함)
+  ├─ public/* (정적)         → 자동 immutable cache
+  ├─ next/image (변환)       → 변환된 결과 edge cache
+  └─ /api/*                  → 서버리스 (edge runtime 선택 가능)
+       ↓
+       백엔드 → TourAPI 원본 (백엔드가 캐시하면 더 빠름)
+```
+
+**Vercel 배포 자체가 이미 글로벌 CDN.** Hobby 플랜에서:
+- Image Optimization: 5,000회/월
+- Bandwidth: 100GB/월
+- 작은~중간 규모 PWA 에 충분
+
+### 저장소가 필요해지는 시점
+
+1. **사용자 업로드 도입** (예: 프로필 사진, 토너먼트 결과 공유 이미지)
+2. **빌드 시점 대량 변환** (시즌별 일러스트 100종 등)
+3. **Vercel 무료 한도 초과** (월간 활성 사용자 10만+ 부근)
+
+그 시점에 다음 옵션 비교:
+
+| 옵션 | 무료 한도 | 적합 |
+|------|----------|------|
+| **Vercel Blob** | 1GB / 100K reads (Hobby) | 가장 간편, Next.js 통합 |
+| **Cloudinary** | 25GB 저장, 25GB bandwidth | 변환 기능 강력 |
+| **AWS S3** + CloudFront | 첫 12개월 5GB | 제어 최대, 학습 곡선 |
+| **Cloudflare R2** | 10GB 저장, egress 무료 | 제일 저렴 |
+
+지금 결정할 필요 없음 — **필요해질 때 비교**.
+
+### 현재 프로젝트 이미지 처리 현황
+
+| 항목 | 처리 |
+|------|------|
+| PWA 아이콘 (`public/icons/icon-*.png`) | placeholder, 실제 이미지로 교체 필요 |
+| SVG sprite (`public/icons.svg`) | 1년 immutable cache |
+| TourAPI 이미지 | next/image + 30일 SW cache |
+| 토너먼트 시즌 일러스트 | 디자인 후 `public/illustrations/` 추천 |
+| 사용자 업로드 | 사이트맵에 없음 — 도입 시 결정 |

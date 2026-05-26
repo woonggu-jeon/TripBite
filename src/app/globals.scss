@@ -70,10 +70,16 @@
   --header-h: 56px;
   --bottom-nav-h: 64px;
 
-  /* Typography font stack */
+  /* Typography font stack
+     - Pretendard Variable: jsdelivr CDN 으로 로드 (layout.tsx head)
+     - 폴백: 시스템 폰트 — 폰트 로딩 실패 시 자동 사용 (FOIT 방지)
+     - Apple SD Gothic Neo: iOS 기본 한글 폰트
+     - Noto Sans KR: Android 기본 한글 폰트 (있는 경우) */
   --font-sans:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Pretendard', Roboto,
-    'Helvetica Neue', Arial, sans-serif;
+    'Pretendard Variable', Pretendard,
+    -apple-system, BlinkMacSystemFont,
+    'Apple SD Gothic Neo', 'Noto Sans KR',
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 /* Breakpoints — SCSS module 에서 미디어 쿼리 작성 시 참고 (mixin 사용 권장) */
@@ -98,7 +104,12 @@
 *::before,
 *::after { box-sizing: border-box; }
 * { margin: 0; padding: 0; }
-html, body { height: 100%; }
+html, body {
+  height: 100%;
+  /* iOS Safari 주소창 변동 대응 — 100vh 는 주소창 닫힌 기준이라 실제보다 큼.
+     100dvh 는 현재 뷰포트 기준으로 동적 계산. 미지원 브라우저는 height:100% fallback. */
+  min-height: 100dvh;
+}
 
 body {
   font-family: var(--font-sans);

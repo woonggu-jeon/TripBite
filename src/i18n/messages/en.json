@@ -31,7 +31,8 @@
       "title": "Add to home screen",
       "description": "Launch as an app",
       "install": "Add",
-      "later": "Later"
+      "later": "Later",
+      "iosGuide": "Tap Share → Add to Home Screen to use as an app"
     }
   },
   "nav": {

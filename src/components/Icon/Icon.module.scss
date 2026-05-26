@@ -1,0 +1,11 @@
+.icon {
+  display: inline-block;
+  vertical-align: middle;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* GPU 합성 힌트 — 메뉴 활성 색상 변경 시 부드러움 */
+  will-change: auto;
+}

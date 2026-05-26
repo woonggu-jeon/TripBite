@@ -6,6 +6,25 @@ const withPWA = require('next-pwa')({
   disable: process.env.NODE_ENV === 'development',
   runtimeCaching: [
     {
+      // jsdelivr Pretendard 폰트 — CacheFirst 1년
+      // 첫 진입 시 한 번 다운로드, 이후 모든 페이지 즉시 표시
+      urlPattern: /^https:\/\/cdn\.jsdelivr\.net\/.+\.(?:woff2?|css)$/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'pretendard-fonts',
+        expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 },
+        cacheableResponse: { statuses: [0, 200] }, // opaque 응답도 캐시
+      },
+    },
+    {
+      urlPattern: /\/icons\.svg$/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'icon-sprite',
+        expiration: { maxEntries: 1, maxAgeSeconds: 60 * 60 * 24 * 365 },
+      },
+    },
+    {
       urlPattern: /^https:\/\/tong\.visitkorea\.or\.kr\/.+\.(?:jpe?g|png|webp|avif)$/i,
       handler: 'CacheFirst',
       options: {
@@ -53,9 +72,11 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '';
 const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
-  "style-src 'self' 'unsafe-inline'",
+  // jsdelivr — Pretendard 폰트 CSS
+  "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
   "img-src 'self' data: blob: https://tong.visitkorea.or.kr",
-  "font-src 'self' data:",
+  // jsdelivr — Pretendard 폰트 woff2 파일들
+  "font-src 'self' data: https://cdn.jsdelivr.net",
   `connect-src 'self' ${apiUrl} https://*.sentry.io`.trim(),
   "worker-src 'self'",
   "manifest-src 'self'",
@@ -129,4 +150,27 @@ const nextConfig = {
   },
 };
 
-module.exports = withNextIntl(withPWA(nextConfig));
+/**
+ * Bundle Analyzer — ANALYZE=true 시점에만 활성화
+ *
+ * 사용:
+ *   ANALYZE=true npm run build
+ *   → .next/analyze/*.html 자동 열림 — 청크별 크기/구성 확인
+ *
+ * 미설치 상태에서 ANALYZE 미지정이면 no-op (require 안 함).
+ * 설치: npm i -D @next/bundle-analyzer
+ */
+let withBundleAnalyzer = (config) => config;
+if (process.env.ANALYZE === 'true') {
+  try {
+    withBundleAnalyzer = require('@next/bundle-analyzer')({ enabled: true });
+  } catch {
+    // eslint-disable-next-line no-console
+    console.warn(
+      '[next.config] ANALYZE=true 인데 @next/bundle-analyzer 가 설치 안 됨.\n' +
+        '  npm i -D @next/bundle-analyzer 후 다시 시도하세요.',
+    );
+  }
+}
+
+module.exports = withNextIntl(withBundleAnalyzer(withPWA(nextConfig)));
