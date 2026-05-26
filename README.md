@@ -1,1 +1,1077 @@
-# TripBite
+# Next.js 15 + PWA + JWT Cookie Auth — Travel App
+
+> 충청북도 여행지 토너먼트 + 다섯글자 편지 PWA
+>
+> Next.js 15 App Router · Cookie 기반 JWT · TourAPI 연동 · 다국어 · 위치/날씨 · 무한스크롤 · 차트 · 캐러셀
+
+---
+
+## 빠른 시작
+
+```bash
+npm install
+cp .env.example .env.local
+npm run dev
+```
+
+```bash
+npm run build && npm start   # 프로덕션 (PWA 활성)
+```
+
+---
+
+## 스크립트
+
+| 명령 | 설명 |
+|------|------|
+| `npm run dev` | 개발 서버 |
+| `npm run build` | 프로덕션 빌드 |
+| `npm start` | 프로덕션 서버 |
+| `npm run lint` | ESLint |
+| `npm run type-check` | `tsc --noEmit` |
+| `npm run format` | Prettier 일괄 포맷 |
+| `npm run generate:api` | OpenAPI → `src/generated/api` 코드 생성 |
+
+---
+
+## 사이트맵 (v2)
+
+```
+[비인증]
+  /login
+
+[인증, 온보딩 미완료]
+  /onboarding              3-step (컨셉 / 위치 / 닉네임)
+
+[인증 + 온보딩 완료]
+  /                        홈 (대시보드)
+  /ranking                 여행지 랭킹
+  /region                  충북 11개 시군 지도
+  /region/[code]           시군 상세 (관광지/축제/체험 탭)
+  /tournament              토너먼트 설정
+  /tournament/play           ↳ 일러스트 → 지도 → 1:1 매치
+  /tournament/result         ↳ 우승지 + 행운의 색 + 사다리타기
+  /letter                  편지 메인 (받은/보낸)
+  /letter/compose            ↳ 5글자 작성
+  /letter/[id]               ↳ 원고지 상세
+  /quiz                    여행 유형 테스트
+  /mypage                  마이페이지 (도장깨기 포함)
+  /settings                설정 (4섹션)
+```
+
+**하단 네비 5탭**: 홈 / 랭킹 / **🏆 토너먼트 (가운데 강조)** / 편지 / 마이페이지
+
+---
+
+## App Router 구조
+
+```
+src/app/
+ ├─ layout.tsx                     Root (Providers + NextIntlClientProvider)
+ ├─ error.tsx / not-found.tsx / loading.tsx
+ ├─ (auth)/                        헤더/네비 없음
+ │   ├─ login/page.tsx
+ │   └─ onboarding/page.tsx
+ └─ (main)/                        하단 네비 5탭 공통 그룹
+     ├─ layout.tsx                 AppHeader + BottomNav
+     ├─ page.tsx                   홈
+     ├─ ranking/
+     ├─ region/  +  [code]/
+     ├─ tournament/  +  play/  +  result/
+     ├─ letter/     +  compose/  +  [id]/
+     ├─ quiz/
+     ├─ mypage/
+     └─ settings/
+```
+
+---
+
+## Feature 모듈
+
+```
+src/features/
+ ├─ auth/              로그인 / 로그아웃 / /me / AuthBootstrap
+ ├─ onboarding/        3-step 온보딩
+ ├─ user/              사용자 프로필
+ ├─ tournament/        토너먼트 (Zustand 멀티스텝 store)
+ ├─ letter/            다섯글자 편지 (5글자 zod 검증)
+ ├─ ranking/           랭킹 + 여행 유형 테스트
+ ├─ quiz/              여행 유형 테스트 (별도 페이지)
+ ├─ region/            충북 11개 시군 (TourAPI 프록시)
+ ├─ weather/           위치 기반 날씨
+ ├─ location/          Geolocation + Permissions API + IP fallback
+ ├─ mypage/            마이페이지 + 도장깨기
+ ├─ notification/      Web Push + 인앱 알림함
+ ├─ settings/          알림/계정/정책/액션 4섹션
+ ├─ i18n/              LanguageSwitcher
+ ├─ chart/             Recharts wrapper (dynamic import)
+ ├─ carousel/          Embla wrapper (dynamic import)
+ └─ list/              InfiniteList (IntersectionObserver)
+```
+
+---
+
+## 렌더링 성능 전략 ⚡
+
+이 프로젝트는 **첫 페인트 빠름** 을 1순위로 둡니다.
+
+### 1. Server Component 기본
+
+모든 `page.tsx` 는 `async` Server Component. `getTranslations`, 백엔드 호출은 서버에서.
+인터랙션 부분만 `_components/*Client.tsx` 로 분리.
+
+### 2. 동적 import (무거운 모듈)
+
+`src/lib/dynamic.ts` 의 `clientOnly()` 헬퍼로 일관 적용.
+
+| 모듈 | 크기 | 분리 위치 |
+|------|------|-----------|
+| recharts | ~100KB | `features/chart/components/*Impl.tsx` |
+| embla-carousel | ~10KB | `features/carousel/components/CarouselImpl.tsx` |
+
+차트/캐러셀이 없는 페이지는 코드를 다운로드하지 않음.
+
+### 3. Layout 재마운트 방지
+
+`(main)/layout.tsx` 의 헤더/네비는 sticky/fixed. 페이지 전환 시 콘텐츠만 transition.
+
+### 4. 캐시 정책 (`src/lib/cache.ts`)
+
+리소스별 staleTime / gcTime 표준화. 모든 hook 에서 `...CACHE.normal` 식으로 import.
+
+| 프로파일 | staleTime | 용도 |
+|----------|-----------|------|
+| static | 1d | 충북 시군 메타, quiz 질문 |
+| slow | 30m | TourAPI 콘텐츠, 시군 summary |
+| normal | 5m | 랭킹, 인기 차트 |
+| user | 2m | 마이페이지, /me |
+| realtime | 30s + 폴링 | 편지 도착, 알림 |
+| session | ∞ | 토너먼트 후보 (한 세션 동안 고정) |
+| weather | 15m | 날씨 |
+
+### 5. PWA Runtime Caching (`next.config.js`)
+
+| 패턴 | 전략 | 보관 |
+|------|------|------|
+| TourAPI 이미지 | CacheFirst | 30일 |
+| 기타 이미지 | StaleWhileRevalidate | 7일 |
+| `_next/static/*` | CacheFirst | 1년 |
+
+오프라인 환경에서도 이미 본 콘텐츠는 즉시 표시.
+
+### 6. 이미지
+
+- `<OptimizedImage />` (`src/components/image/`): blur placeholder + lazy + AVIF/WebP
+- `next.config.js`: TourAPI 도메인 허용, deviceSizes/imageSizes 최소화
+- LCP 이미지(시군 상세 hero)에만 `priority`
+- `sizes` 정확히 지정 → 해상도 최적화
+
+### 7. 아이콘
+
+- `lucide-react` named import (tree-shake)
+- `next.config.js` 의 `optimizePackageImports: ['lucide-react', ...]` 로 자동 최적화
+- 브랜드 아이콘은 SVG sprite 또는 단일 SVG 컴포넌트로
+
+### 8. 무한스크롤
+
+`@/features/list` — `useInfiniteList` + `<InfiniteList>` (IntersectionObserver 기반)
+
+```tsx
+const { items, fetchNext, hasNext, isFetchingNext } = useInfiniteList({
+  queryKey: ['letters', 'received'],
+  queryFn: ({ pageParam }) => letterApi.listReceivedPage({ cursor: pageParam }),
+  cache: 'realtime',
+});
+
+<InfiniteList
+  items={items}
+  hasNext={hasNext}
+  isFetchingNext={isFetchingNext}
+  onReachEnd={fetchNext}
+  keyExtractor={(letter) => letter.id}
+  renderItem={(letter) => <LetterCard letter={letter} />}
+/>
+```
+
+- **virtualization 없음** (1,000개 미만 리스트엔 충분)
+- `rootMargin: 200px` 으로 끝 도달 전 prefetch → 끊김 없는 스크롤
+- 다음 페이지 fetching 중 Skeleton 자동 표시
+
+### 9. Skeleton + Suspense
+
+`src/components/feedback/Skeleton.tsx` — 순수 CSS shimmer, `prefers-reduced-motion` 존중.
+동적 import의 loading fallback, InfiniteList의 페이지 로딩, 위젯 placeholder에 일관 사용.
+
+### 10. 위젯 단위 fetching
+
+홈/마이페이지의 각 위젯은 자체 `useQuery` → waterfall 회피.
+위젯별 fixed height로 CLS 0.
+
+---
+
+## 다국어 (i18n)
+
+쿠키 기반 (`NEXT_LOCALE`). URL 변경 없이 실시간 전환.
+자세한 사용법은 `/settings` 페이지의 언어 토글 또는 `src/features/i18n/components/LanguageSwitcher.tsx` 참고.
+
+새 언어 추가:
+1. `src/i18n/config.ts` 의 `locales` 에 코드 추가
+2. `src/i18n/messages/{code}.json` 작성 (ko.json 구조 미러)
+3. `localeLabels` 에 표시명 추가
+
+---
+
+## 인증
+
+- HttpOnly Cookie (access/refresh). 프론트는 토큰 직접 관리 X.
+- `services/api/client.ts` — `withCredentials: true` axios
+- `services/interceptors/auth.ts` — 401 → `/auth/refresh` 자동, 동시 401 단일 promise 공유
+- `middleware.ts` — 쿠키 존재 여부만 체크
+- `AuthBootstrap` — `GET /me` → store hydrate + `isOnboarded === false` 면 `/onboarding` 으로
+
+---
+
+## 위치 권한
+
+`@/features/location`:
+- Permissions API 로 prompt 없이 권한 상태 추적
+- `getCurrentPosition` 은 사용자 명시적 동작 직후에만 (iOS 정책)
+- 거부 시 `/location/ip` (IP geolocation) 자동 fallback
+- 좌표 → 주소 변환은 백엔드 `/location/reverse` (Kakao/Naver Maps 프록시)
+
+---
+
+## 백엔드 엔드포인트 체크리스트
+
+| 영역 | 엔드포인트 |
+|------|-----------|
+| Auth | `POST /auth/login` `POST /auth/logout` `POST /auth/refresh` `GET /me` `POST /me/complete-onboarding` |
+| User | `PATCH /mypage/profile` |
+| Letter | `POST /letters` `GET /letters/{received,sent,liked,saved}` `GET /letters/:id` `POST /letters/:id/like` `POST /letters/:id/save` `DELETE /letters/:id` |
+| Tournament | `GET /destinations/random` `POST /tournaments` `GET/POST/DELETE /mypage/tournaments` `GET /mypage/tournament-history` |
+| Region (TourAPI 프록시) | `GET /regions/:code/summary` `GET /regions/:code/contents?type=` `GET /regions/ongoing-festivals` |
+| Ranking | `GET /rankings?type=weekly-winners|recommended|hidden-gems|by-region` |
+| Quiz | `GET /quiz/questions` `POST /quiz/submit` `GET /quiz/me` |
+| MyPage | `GET /mypage` `GET /mypage/stamps` |
+| Location | `POST /location/reverse` `GET /location/ip` |
+| Weather | `GET /weather/current` |
+| Notification | `GET /notifications` `POST /notifications/:id/read` `POST /notifications/read-all` `POST /notifications/subscribe` `POST /notifications/unsubscribe` |
+| Settings | `GET /settings` `PATCH /settings/notifications` |
+
+---
+
+## 사전 체크리스트
+
+- [ ] GitHub repo + Vercel 연결
+- [ ] CORS: `Access-Control-Allow-Credentials: true` + 정확한 origin
+- [ ] Set-Cookie: `HttpOnly; Secure; SameSite=Lax` (cross-origin이면 `SameSite=None; Secure`)
+- [ ] TourAPI 키 (백엔드)
+- [ ] Kakao/Naver Maps 키 (reverseGeocode, 백엔드)
+- [ ] 기상청 또는 OpenWeatherMap 키 (백엔드)
+- [ ] (선택) VAPID 키 페어
+- [ ] `public/icons/` 아이콘 교체 (현재는 플레이스홀더)
+
+---
+
+## 🔒 보안 (Security)
+
+### 적용된 보호 (코드에 반영됨)
+
+| 영역 | 내용 |
+|------|------|
+| 토큰 저장 | **HttpOnly Cookie** — XSS로 탈취 불가능. `localStorage`/`sessionStorage` 금지 |
+| API 키 분리 | TourAPI/Maps/Weather 모두 백엔드 프록시 — 클라이언트에 키 노출 X |
+| VAPID 분리 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` (public) / `VAPID_PRIVATE_KEY` (server-only) |
+| 입력 검증 | Zod 스키마 (로그인/편지/닉네임) + grapheme 단위 길이 + zero-width/HTML 특수문자 차단 |
+| XSS 자동 escape | React JSX 기본 동작. `dangerouslySetInnerHTML` 사용 금지 |
+| 401 race | axios interceptor 가 단일 refresh promise 공유 |
+| 외부 이미지 | `next.config.js` `remotePatterns` 화이트리스트 |
+| 보안 헤더 | HSTS / X-Content-Type-Options / X-Frame-Options / Referrer-Policy / Permissions-Policy |
+| CSP | Report-Only 모드로 시작 — 운영 안정화 후 enforce |
+| 로그아웃 cache 정리 | `clearAllCaches()` 로 SW 캐시 비움 (다음 사용자 격리) |
+| Env 타입 안전 | `src/types/env.d.ts` — `NEXT_PUBLIC_*` 만 자동완성 |
+| CI 의존성 점검 | `npm audit --audit-level=high` + Dependabot |
+
+### 보안 헤더 (`next.config.js` `headers()`)
+
+모든 응답에 적용:
+
+```
+Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+X-Content-Type-Options:    nosniff
+X-Frame-Options:           DENY
+Referrer-Policy:           strict-origin-when-cross-origin
+Permissions-Policy:        geolocation=(self), notifications=(self),
+                           camera=(), microphone=(), payment=(), interest-cohort=()
+```
+
+권한 정책은 **사용하는 것만 self**, 나머지는 모두 **빈 괄호로 명시적 거부**.
+
+### Content Security Policy (CSP)
+
+현재는 `Content-Security-Policy-Report-Only` — 위반을 차단하지 않고 보고만 받음.
+
+```
+default-src 'self';
+script-src 'self' 'unsafe-inline';
+style-src 'self' 'unsafe-inline';
+img-src 'self' data: blob: https://tong.visitkorea.or.kr;
+font-src 'self' data:;
+connect-src 'self' <NEXT_PUBLIC_API_URL> https://*.sentry.io;
+worker-src 'self';
+manifest-src 'self';
+frame-ancestors 'none';
+base-uri 'self';
+form-action 'self';
+upgrade-insecure-requests;
+```
+
+#### 단계별 강화 로드맵
+
+1. **현재**: Report-Only — 운영 환경에서 위반 보고 모니터링
+2. **1주 후**: 보고가 안정되면 `Content-Security-Policy` 로 전환 (enforce)
+3. **추후**: middleware 에서 nonce 발급 → `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'` → inline-script 의존 제거 가능 시 `'unsafe-inline'` 삭제
+
+#### nonce 패턴 예시 (운영 안정화 후)
+```ts
+// middleware.ts 안에서
+const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
+const csp = `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'; ...`;
+response.headers.set('Content-Security-Policy', csp);
+response.headers.set('x-nonce', nonce);
+
+// Server Component 에서
+import { headers } from 'next/headers';
+const nonce = (await headers()).get('x-nonce') ?? '';
+<Script nonce={nonce} ... />
+```
+
+### CSRF 방어 (백엔드 협의 필요)
+
+HttpOnly Cookie 는 XSS는 막지만 **CSRF에는 자동으로 방어되지 않음**. 3-Layer 방어 권장:
+
+**Layer 1 — SameSite 쿠키 (백엔드)**
+```
+Set-Cookie: access_token=...; HttpOnly; Secure; SameSite=Lax
+```
+대부분의 CSRF 케이스 자동 차단. cross-origin 인증이 필요한 경우만 `SameSite=None`.
+
+**Layer 2 — Origin/Referer 검증 (백엔드 미들웨어)**
+모든 state-changing 요청 (POST/PUT/DELETE/PATCH) 에서 `Origin` 헤더 화이트리스트 검증.
+
+**Layer 3 — CSRF Double-Submit Token (민감 작업만)**
+회원 탈퇴, 비밀번호 변경, 차단 해제 등 고위험 작업에 적용:
+```
+1) 백엔드: GET /csrf-token → 응답 body + 별도 쿠키에 토큰 set
+2) 프론트: 요청 시 X-CSRF-Token 헤더에 그대로 첨부
+3) 백엔드: 헤더 === 쿠키 일치 검증
+```
+axios interceptor 에 자동 첨부 패턴 적용 가능.
+
+### Rate Limiting (백엔드)
+
+프론트는 막을 수 없음. 백엔드에서 반드시 구현:
+
+| 엔드포인트 | 권장 limit |
+|-----------|-----------|
+| `POST /auth/login` | 분당 5회 / IP |
+| `POST /auth/refresh` | 분당 30회 / 토큰 |
+| `POST /letters` | 시간당 20회 / 사용자 |
+| `POST /letters/:id/like` | 분당 60회 / 사용자 |
+| `POST /tournaments` | 시간당 50회 / 사용자 |
+| `POST /location/reverse` | 분당 30회 / 사용자 (TourAPI 호출 비용) |
+| `POST /quiz/submit` | 분당 5회 / 사용자 |
+
+권장 구현: **@upstash/ratelimit + Vercel Edge Middleware** 또는 백엔드 측 Redis 기반.
+
+### 입력 검증 패턴
+
+#### 닉네임 (`features/onboarding/schemas/nickname.ts`)
+- 길이 1~10자 (grapheme 단위)
+- 허용 문자: `[가-힣a-zA-Z0-9_]` 만
+- zero-width / 제어문자 / HTML 특수문자 차단
+- homograph 공격 (위장 닉네임) 차단
+
+#### 편지 본문 (`features/letter/schemas/letter.ts`)
+- 1~5자 (grapheme 단위)
+- 공백만 입력 금지
+- zero-width / 제어문자 / HTML 특수문자 차단
+
+#### 백엔드 측 책임
+- 비속어 사전 매칭 후 reject
+- 중복 닉네임 정책
+- 출력 시 escape (이중 안전망)
+
+### 환경 변수 안전
+
+```bash
+# .env.example
+# === Public (NEXT_PUBLIC_*) — 브라우저 번들에 그대로 포함됨 ===
+NEXT_PUBLIC_API_URL=
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=
+NEXT_PUBLIC_SENTRY_DSN=
+
+# === Server-only — 절대 NEXT_PUBLIC_ 붙이지 말 것 ===
+VAPID_PRIVATE_KEY=
+SENTRY_AUTH_TOKEN=
+```
+
+타입 안전: `src/types/env.d.ts` 가 `process.env.*` 자동완성 + 누락 변수 컴파일 에러로 잡힘.
+
+⚠️ **절대 하지 말 것**:
+- API 키, 비밀번호, 토큰을 `NEXT_PUBLIC_*` 에 넣기
+- `localStorage` 에 access_token 저장
+- `.env.local` 을 git 에 커밋
+- 백엔드 secret을 클라이언트 fetch 호출에 포함
+
+### Sentry 데이터 스크러빙 (도입 시)
+
+Sentry는 무심코 PII가 새는 가장 흔한 경로. `sentry.client.config.ts`:
+
+```ts
+Sentry.init({
+  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  tracesSampleRate: 0.1,
+  sendDefaultPii: false,
+  beforeSend(event) {
+    // URL 쿼리에서 토큰류 파라미터 제거
+    if (event.request?.url) {
+      event.request.url = event.request.url.replace(
+        /([?&])(token|code|access_token|refresh_token)=[^&]*/gi,
+        '$1$2=***',
+      );
+    }
+    // body에 비밀번호/토큰 포함되면 제거
+    if (event.request?.data && typeof event.request.data === 'object') {
+      const data = event.request.data as Record<string, unknown>;
+      ['password', 'token', 'refresh_token', 'access_token'].forEach((k) => {
+        if (k in data) data[k] = '***';
+      });
+    }
+    return event;
+  },
+  initialScope: { user: undefined }, // 사용자 식별이 꼭 필요할 때만 ID 설정
+});
+```
+
+### Service Worker / PWA 보안
+
+| 항목 | 정책 |
+|------|------|
+| API 응답 캐시 | **금지** — 사용자별 데이터 누설 위험. `runtimeCaching` 에 API 패턴 없음 ✓ |
+| 이미지 캐시 | TourAPI 30일, 기타 7일 (응답에 인증 정보 없음) |
+| 정적 자원 | `_next/static/*` 1년 immutable |
+| 로그아웃 시 | `clearAllCaches()` 호출 — 다음 사용자 격리 ✓ |
+| 권한 요청 | `getCurrentPosition` 은 사용자 액션 직후만 (iOS 정책) ✓ |
+| `LocationPermissionPrompt` | 브라우저 prompt 전 사전 안내 → 거부율 감소 |
+
+### XSS 방어 체크리스트
+
+- [x] React JSX 자동 escape 활용
+- [x] `dangerouslySetInnerHTML` 사용 안 함 (코드베이스 grep 정기 점검)
+- [x] 닉네임/편지에 HTML 특수문자/zero-width 차단
+- [x] CSP 적용 (Report-Only → enforce 예정)
+- [x] 외부 이미지 도메인 화이트리스트
+- [ ] 마크다운 렌더링 추가 시 → **DOMPurify** 필수
+
+### 컨텐츠 안전 (백엔드 책임)
+
+- **비속어 필터** — 닉네임/편지/유형 테스트 답변에 적용
+- **차단 사용자 ACL** — `/settings` 의 차단 목록과 연동 (편지 수신 거부)
+- **신고 기능** — 편지 상세에 "신고" 추가 검토 (사이트맵 v3 후보)
+- **부적절 컨텐츠 자동 검출** — Google Perspective API 등 (선택)
+
+### 의존성 & 공급망 보안
+
+`.github/workflows/ci.yml`:
+- `npm ci` — lockfile 정합성 검증
+- `npm audit --audit-level=high` — high 이상 취약점 발견 시 빌드 실패
+- `actions/dependency-review-action@v4` — PR 단위 취약점 차단 + 라이선스 화이트리스트
+
+`.github/dependabot.yml`:
+- 매주 월요일 자동 PR
+- patch 업데이트 묶음, minor 묶음
+- 보안 알림은 즉시 별도 PR
+
+```bash
+# 로컬에서 점검
+npm audit
+npx license-checker --production \
+  --onlyAllow "MIT;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;0BSD;CC0-1.0"
+
+# 시크릿 누출 검사 (도입 시)
+npx gitleaks detect
+```
+
+GitHub Secret Scanning (무료) 활성화 권장 — repo settings에서 토글.
+
+### 컴플라이언스 (한국 법령)
+
+대상 법령: **개인정보보호법(PIPA)**, **위치정보의 보호 및 이용 등에 관한 법률**, **정보통신망법**
+
+#### 회원가입 시 동의 항목 (`features/onboarding/components/ConsentBlock.tsx`)
+- [필수] 만 14세 이상 확인
+- [필수] 이용약관 동의 → `/policy/terms`
+- [필수] 개인정보처리방침 동의 → `/policy/privacy`
+- [선택] 위치정보 수집·이용 동의 (위치정보법 별도 동의)
+- [선택] 마케팅 정보 수신 동의 (정보통신망법)
+
+**원칙**: 필수/선택 명확히 분리, "전체 동의" 가 필수만 강제하지 않음.
+
+#### 정적 페이지 (자리잡이만 만들어 둠 — 법무 검토 후 본문 교체)
+- `/policy/terms` — 이용약관
+- `/policy/privacy` — 개인정보처리방침 (수집 항목/목적/보유 기간/제3자 제공/처리 위탁/이용자 권리)
+- `/policy/licenses` — 오픈소스 라이선스
+
+#### 약관 버전 관리
+- 백엔드 user 레코드에 `termsVersion`, `privacyVersion` 저장
+- 약관 업데이트 시 버전 증가 → `AuthBootstrap` 에서 비교 → 변경된 사용자에게 재동의 UI 노출
+
+#### 회원 탈퇴 정책 (백엔드 협의)
+- soft delete (30일 유예) 권장
+- 보낸 편지 처리: 익명 처리 후 보존? 함께 삭제? — 정책 결정 필요
+- 즉시 삭제 + 관련 법령 보존 의무 데이터만 별도 보관
+
+#### 데이터 이전성 (선택)
+- 본인 정보 export 기능 — GDPR 시 필수, PIPA 시 권장
+- `GET /me/export` → JSON 다운로드
+
+### 운영 전 체크리스트
+
+- [ ] 보안 헤더 운영 환경에서 동작 확인 (`securityheaders.com` A+ 목표)
+- [ ] CSP Report-Only 위반 1주 모니터링 → enforce 전환
+- [ ] 백엔드 CSRF Layer 1 (`SameSite=Lax`) 적용
+- [ ] 백엔드 CSRF Layer 2 (Origin 검증) 적용
+- [ ] 백엔드 Rate limit 위 표대로 적용
+- [ ] Sentry 도입 시 `beforeSend` 스크러빙 적용
+- [ ] 약관/개인정보처리방침 본문 법무 검토
+- [ ] `ConsentBlock` 을 회원가입 흐름에 통합
+- [ ] Dependabot 활성화 + GitHub Secret Scanning 활성화
+- [ ] `npm audit` PR 단계에서 통과 확인
+- [ ] 위치정보 처리방침에 "쿼리 파라미터로만 사용, 저장하지 않음" 명시
+
+### 정기 점검 (출시 후)
+
+- 월 1회: `npm audit` + Dependabot PR merge
+- 분기 1회: CSP 위반 보고서 리뷰
+- 연 1회: 약관/처리방침 갱신 검토 + 의존성 메이저 업데이트 검토
+
+---
+
+## 추가 권장 라이브러리 (로드맵)
+
+현재 `package.json` 에는 들어있지 않지만, 운영 품질과 테스트 자동화를 위해 단계적으로 추가하면 좋은 라이브러리 목록입니다. **런타임 추가는 60KB 미만** (gzip 합산, 대부분 동적 로드 가능), **테스트 도구는 0KB** (devDependencies).
+
+### 🔴 즉시 추가 — 런타임
+
+| 라이브러리 | 크기 | 용도 |
+|------------|------|------|
+| **sonner** | ~5KB | Toast UI. `ui-store.ts` 의 toast 상태에 실제 렌더 연결. 저장/전송 피드백. |
+| **motion** | ~18KB | 토너먼트 카드 전환, 사다리타기 경로, 도장깨기 모션, 페이지 transition. `motion/react` 진입으로 tree-shake. |
+| **canvas-confetti** | ~5KB | 우승 결과 컨페티. PWA 게임감 ↑. |
+
+```bash
+npm i sonner motion canvas-confetti
+npm i -D @types/canvas-confetti
+```
+
+설치 후:
+- `app/layout.tsx` 의 `<Providers>` 안에 `<Toaster richColors position="top-center" />` 추가
+- `ui-store.ts` 의 `showToast` 가 `sonner` 의 `toast()` 를 호출하도록 어댑터화
+
+### 🔴 즉시 추가 — 개발/운영
+
+| 라이브러리 | 종류 | 용도 |
+|------------|------|------|
+| **msw** | dev | API mocking — 백엔드 미준비 상태 개발 + 테스트에서 동일 핸들러 재사용 |
+| **@sentry/nextjs** | runtime ~30KB | 운영 환경 에러 추적. App Router/RSC 모두 캐치. |
+| **@next/bundle-analyzer** | dev | "가볍게" 목표 검증. recharts/embla 분리 여부 확인. |
+
+```bash
+npm i -D msw @next/bundle-analyzer
+npm i @sentry/nextjs
+npx msw init public/ --save        # service worker 등록
+npx @sentry/wizard@latest -i nextjs # Sentry 자동 설정
+```
+
+#### MSW 구조 (테스트와 공유)
+```
+src/mocks/
+ ├─ handlers.ts        REST 핸들러 (TourAPI/auth/letter 등 mock)
+ ├─ server.ts          for vitest (setupServer)
+ └─ browser.ts         for dev (setupWorker)
+```
+
+`next.config.js` 에는 `withBundleAnalyzer({ enabled: process.env.ANALYZE === 'true' })` 를 추가하고 `ANALYZE=true npm run build` 로 시각화 리포트 생성.
+
+---
+
+### 🟡 자동 테스트 스택 (전부 devDependencies, 런타임 영향 0)
+
+#### Unit + Component 테스트
+
+| 라이브러리 | 용도 |
+|------------|------|
+| **vitest** | jest 대비 2~3배 빠름. Vite 기반이라 TS/ESM 설정 0. |
+| **@vitejs/plugin-react** | vitest의 React JSX 지원 |
+| **@testing-library/react** | 컴포넌트 테스트 표준 |
+| **@testing-library/user-event** | 실사용자처럼 클릭/타이핑 |
+| **@testing-library/jest-dom** | `toBeInTheDocument()` 등 매처 |
+| **happy-dom** | jsdom보다 빠른 DOM 환경 (Vitest 공식 권장) |
+| **@vitest/coverage-v8** | V8 native coverage |
+
+```bash
+npm i -D vitest @vitejs/plugin-react @testing-library/react \
+  @testing-library/user-event @testing-library/jest-dom \
+  happy-dom @vitest/coverage-v8
+```
+
+`vitest.config.ts` (프로젝트 루트):
+```ts
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+import { resolve } from 'node:path';
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    environment: 'happy-dom',
+    globals: true,
+    setupFiles: ['./vitest.setup.ts'],
+    exclude: ['e2e/**', 'node_modules/**'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html'],
+      exclude: ['src/generated/**', 'src/i18n/messages/**', '**/*.module.scss'],
+    },
+  },
+  resolve: {
+    alias: { '@': resolve(__dirname, './src') },
+  },
+});
+```
+
+`vitest.setup.ts`:
+```ts
+import '@testing-library/jest-dom/vitest';
+import { afterAll, afterEach, beforeAll } from 'vitest';
+import { server } from './src/mocks/server';
+
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+```
+
+`scripts` 추가:
+```json
+{
+  "scripts": {
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui"
+  }
+}
+```
+
+#### E2E 테스트
+
+| 라이브러리 | 용도 |
+|------------|------|
+| **@playwright/test** | 멀티브라우저 E2E. iOS/Android 뷰포트 프리셋. 비디오/trace 자동. |
+
+```bash
+npm i -D @playwright/test
+npx playwright install --with-deps
+```
+
+`playwright.config.ts`:
+```ts
+import { defineConfig, devices } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './e2e',
+  fullyParallel: true,
+  retries: process.env.CI ? 2 : 0,
+  reporter: process.env.CI ? 'github' : 'html',
+  use: {
+    baseURL: 'http://localhost:3000',
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+  },
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'mobile-chrome', use: { ...devices['Pixel 7'] } },
+    { name: 'mobile-safari', use: { ...devices['iPhone 14'] } },
+  ],
+  webServer: {
+    command: 'npm run build && npm start',
+    url: 'http://localhost:3000',
+    reuseExistingServer: !process.env.CI,
+    timeout: 120_000,
+  },
+});
+```
+
+E2E 핵심 시나리오 (`e2e/` 하위):
+- `auth.spec.ts` — 로그인 → 온보딩 3step → 홈
+- `tournament.spec.ts` — 테마 선택 → 매치업 → 우승 → 저장
+- `letter.spec.ts` — 5글자 작성 → 보내기 → 받은 편지 좋아요
+- `i18n.spec.ts` — 언어 전환 시 라벨 즉시 갱신
+- `pwa.spec.ts` — 오프라인 캐시 동작
+
+`scripts`:
+```json
+{
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
+  }
+}
+```
+
+#### 테스트 시 통합 포인트
+
+기존 스택과의 통합 패턴:
+
+**next-intl** — 메시지 주입 래퍼:
+```tsx
+// test-utils.tsx
+import { NextIntlClientProvider } from 'next-intl';
+import messages from '@/i18n/messages/ko.json';
+
+export function renderWithIntl(ui: React.ReactElement, locale = 'ko') {
+  return render(
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      {ui}
+    </NextIntlClientProvider>
+  );
+}
+```
+
+**TanStack Query** — 테스트마다 새 QueryClient (`retry: false`):
+```tsx
+function createTestQueryClient() {
+  return new QueryClient({
+    defaultOptions: { queries: { retry: false, gcTime: 0 } },
+  });
+}
+```
+
+**Zustand** — 각 테스트 전 store reset:
+```ts
+beforeEach(() => {
+  useAuthStore.setState({ isAuthenticated: false, user: undefined });
+});
+```
+
+**MSW** — vitest의 setup과 Playwright의 globalSetup에서 **동일 핸들러 공유**:
+```ts
+// src/mocks/handlers.ts
+import { http, HttpResponse } from 'msw';
+export const handlers = [
+  http.get('*/me', () => HttpResponse.json({ id: '1', nickname: '테스터', isOnboarded: true })),
+  // ...
+];
+```
+
+#### CI 통합
+
+`.github/workflows/ci.yml` 에 추가:
+```yaml
+      - run: npm run test:run
+      - run: npm run test:coverage
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 7
+
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+```
+
+---
+
+### 🟢 빠르게 가치 있음
+
+| 라이브러리 | 용도 |
+|------------|------|
+| **plaiceholder + sharp** | build-time blur placeholder 생성. TourAPI hero 이미지 LCP 개선. 런타임 0KB. |
+| **@use-gesture/react** (~10KB) | 편지 카드 스와이프 삭제, 도장맵 핀치 줌. Embla 보완. |
+
+```bash
+npm i -D plaiceholder sharp
+npm i @use-gesture/react
+```
+
+---
+
+### ⚪ 상황 발생 시 추가 (지금은 X)
+
+| 라이브러리 | 트리거 |
+|------------|--------|
+| **@tanstack/react-virtual** | 편지함 1,000개 이상 누적 시 |
+| **xstate** | 토너먼트 패자부활/동률 등 복잡한 상태 머신 필요 시 |
+| **next-themes** | 사용자 토글 다크모드 |
+| **storybook** | 컴포넌트 카탈로그 필요 시 (PWA에선 보통 사치) |
+
+---
+
+### ⛔ Next.js 내장으로 충분 — 추가 안 함
+
+- **공유 카드 이미지** → `next/og` (`ImageResponse`). html2canvas 불필요.
+- **상대 시간 / 숫자 포맷** → next-intl 의 `useFormatter()`. date-fns/dayjs 불필요.
+- **약관 페이지** → Server Component JSX. react-markdown 불필요.
+- **햅틱/사운드** → `navigator.vibrate()`, Web Audio API 직접.
+
+---
+
+### 🎨 토너먼트 흩날림 효과 — 라이브러리 추가 X
+
+벚꽃/물방울/단풍/눈꽃 파티클은 **커스텀 Canvas (~50줄)** 로 직접 구현 권장:
+- 의존성 0KB
+- 60fps 보장 (GPU 가속)
+- 4계절별 모양/색/낙하속도 파라미터화
+
+위치: `features/tournament/components/FallingParticles.tsx`
+
+tsparticles(50KB+) 는 토너먼트 페이지 진입을 무겁게 함. motion + DOM 노드 N개는 reflow 비용. → **Canvas 가 최적해**.
+
+---
+
+### 단계별 도입 권장 순서
+
+1. **Phase 1 (개발 시작 시)** — msw + @next/bundle-analyzer + 테스트 스택 (vitest + playwright)
+2. **Phase 2 (UI 본격 구현)** — sonner + motion + canvas-confetti
+3. **Phase 3 (베타 직전)** — @sentry/nextjs + plaiceholder
+4. **Phase 4 (필요 시)** — @use-gesture/react, react-virtual 등
+
+---
+
+## 향후 도입 보류
+
+복잡도는 필요할 때만 추가:
+Turborepo / Micro Frontend / Redux / GraphQL / Kubernetes / @tanstack/react-virtual
+
+---
+
+## 아키텍처 확장 (UX / 운영 / 협업)
+
+사이트맵 v2 위에 얹은 횡단 관심사 모음. 모든 영역이 "작은 코드, 큰 효과" 원칙.
+
+### 디자인 토큰 (`src/app/globals.scss`)
+
+| 카테고리 | 토큰 |
+|---------|------|
+| Color | `--color-bg / fg / muted / border / primary / primary-fg / danger / success / warning` |
+| Spacing | `--space-1` ~ `--space-12` (4px 그리드) |
+| Radius | `--radius-sm / md / lg / xl / full` |
+| Typography | `--text-xs ~ 3xl` |
+| Icon size | `--icon-sm / md / lg / xl` (의미별 사이즈 통일) |
+| Z-index | `--z-base / elevated / header / bottom-nav / dropdown / banner / modal / toast` |
+| Elevation | `--shadow-sm / md / lg` |
+| Layout | `--content-max / header-h / bottom-nav-h` |
+
+다크모드는 `prefers-color-scheme` 자동 — 사용자 토글은 향후 `next-themes` 도입 시.
+
+### Cross-cutting hooks (`src/hooks/`)
+
+| 훅 | 용도 |
+|----|------|
+| `use-keyboard` | Esc 닫기, cmd+k 등 단축키. input 안에선 무시 (modifier 없을 때) |
+| `use-focus-trap` | 모달 안에 포커스 가두기 + 닫힐 때 이전 포커스 복원 |
+| `use-unsaved-changes-warning` | 편지/온보딩 작성 중 페이지 떠나기 전 `beforeunload` 경고 |
+| `use-form-error` | axios 에러 → RHF `setError` 자동 매핑 (필드 + 루트) |
+| `use-scroll-restoration` | 무한스크롤 위치 보존/복원 (뒤로가기 시) |
+| `use-intersection` | IntersectionObserver 추상화 (rootMargin 200px) |
+| `use-confirm` | Promise 기반 확인 다이얼로그 (큐 + ui-store) |
+
+### Cross-cutting utilities (`src/lib/`)
+
+| 모듈 | 용도 |
+|------|------|
+| `haptic` | `navigator.vibrate` 추상화. tap/success/warning/longPress. reduced-motion 자동 off |
+| `version` | `APP_VERSION` 노출 (settings 하단, /api/health 응답, Sentry release) |
+| `toast` | `toast.success/error/info/warning` — ui-store push 어댑터 |
+| `sw-cache` | `clearAllCaches()` — 로그아웃 시 사용자 격리 |
+| `cache` | TanStack Query 캐시 프로파일 7종 |
+| `dynamic` | `clientOnly()` / `ssrLazy()` 동적 import 헬퍼 |
+
+### 표준 피드백 컴포넌트 (`src/components/feedback/`)
+
+| 컴포넌트 | 사용처 |
+|---------|--------|
+| `Skeleton` | 로딩 자리잡이 (CSS shimmer, reduced-motion 존중) |
+| `EmptyState` | 편지함 / 토너먼트 기록 / 시군 탭 / 알림 — 4~5군데 일관 사용 |
+| `Toaster` | ui-store 의 toast 큐 렌더. BottomNav 위에 위치 |
+| `ConfirmDialog` | 회원 탈퇴 / 편지 삭제 / 우승지 삭제 / 차단 해제 |
+| `SegmentError` | 세그먼트별 `error.tsx` 의 공통 UI — `export { SegmentError as default }` |
+
+### 세그먼트별 error boundary
+
+```
+src/app/(main)/
+ ├─ tournament/error.tsx
+ ├─ letter/error.tsx
+ ├─ quiz/error.tsx
+ ├─ ranking/error.tsx
+ ├─ region/error.tsx
+ ├─ mypage/error.tsx
+ └─ settings/error.tsx
+```
+
+각 파일은 한 줄: `export { SegmentError as default } from '@/components/feedback/SegmentError';`
+
+에러 발생 시 **헤더/네비/홈은 살아있고 해당 세그먼트만 reset** → 사용자 부분 복구.
+
+### Analytics 추상화 (`src/features/analytics/`)
+
+```tsx
+import { track } from '@/features/analytics';
+
+track('tournament.completed', { winnerId, category, duration_ms: 12_345 });
+track('letter.sent', { length: 5 });
+```
+
+- `types/index.ts` 의 `TrackEventMap` 가 이벤트 사전. 새 이벤트 추가 시 여기 등록 → typo 컴파일 에러로 잡힘
+- 기본 provider: dev=console, prod=noop
+- 실제 도구 (Vercel Analytics / GA / Mixpanel) 도입 시 `providers/vercel.ts` 추가 → 호출부 변경 X
+- `usePageView` 가 라우트 변경 시 자동으로 `page.viewed` 전송 (Providers 안에 마운트됨)
+- PII (email/nickname/좌표) payload 금지
+
+### PWA 운영 (`src/features/pwa/`)
+
+| 컴포넌트 | 동작 |
+|---------|------|
+| `PwaUpdateBanner` | 새 SW 감지 → "새 버전이 있어요" → 클릭 시 skipWaiting + reload |
+| `OfflineBanner` | 온라인/오프라인 토글. SW 캐시된 콘텐츠는 그대로 표시 |
+| `InstallPromptBanner` | `beforeinstallprompt` 캡처 → 적절한 시점에 노출. dismiss는 sessionStorage 기억 |
+
+모두 `Providers` 안에 마운트되어 어디서든 동작.
+
+### 운영 라우트
+
+- **`GET /api/health`** — `{ ok, version, timestamp }`. Edge runtime. Vercel uptime / 외부 monitor / 버그 리포트 시 버전 확인
+- **`/offline`** — SW fallback 페이지. 캐시 안 된 페이지에 오프라인 진입 시
+- **`/dev/components`** — 컴포넌트 카탈로그. dev 환경에서만 접근 (운영에선 `notFound()`)
+
+### 버전 노출
+
+```bash
+# 빌드 시점에 주입
+NEXT_PUBLIC_APP_VERSION=$(git rev-parse --short HEAD) npm run build
+
+# Vercel
+NEXT_PUBLIC_APP_VERSION=$VERCEL_GIT_COMMIT_SHA
+```
+
+- `/settings` 페이지 하단에 표시
+- `/api/health` 응답에 포함
+- Sentry release 태그로 활용 (도입 시)
+
+### Mocks (`src/mocks/`)
+
+```
+mocks/
+ ├─ handlers.ts        REST 핸들러 (msw 도입 후 활성화 — 예시 주석 포함)
+ ├─ server.ts          vitest용 setupServer 자리
+ ├─ browser.ts         dev용 setupWorker 자리
+ └─ seeds/
+     ├─ regions.ts        11시군 × 5 = 55개
+     ├─ letters.ts        받은 편지 30개 (페이지네이션 테스트)
+     ├─ tournament.ts     기록 15개
+     └─ notifications.ts  7개 (안 읽음 3 + 읽음 4)
+```
+
+msw 설치 후 `handlers.ts` 의 예시 주석을 활성화하면 동일 핸들러를 dev / vitest / playwright 가 공유.
+
+### 협업 자동화 (`.husky/`, `.github/`)
+
+| 파일 | 목적 |
+|------|------|
+| `.husky/pre-commit` | `lint-staged` 실행 — 변경 파일만 lint + format |
+| `.husky/commit-msg` | `commitlint` — Conventional Commits 강제 |
+| `.lintstagedrc.json` | `*.{ts,tsx}` → ESLint+Prettier, `*.{md,scss,json}` → Prettier |
+| `commitlint.config.js` | type enum: feat/fix/refactor/perf/style/docs/test/chore/ci/build |
+| `.github/PULL_REQUEST_TEMPLATE.md` | 변경 요약 / 영역 / 테스트 / 스크린샷 / 영향 범위 |
+| `.github/ISSUE_TEMPLATE/bug_report.md` | 재현 단계 / 환경 / 버전 |
+| `.github/ISSUE_TEMPLATE/feature_request.md` | 문제 / 해결책 / 대안 |
+| `.github/CODEOWNERS` | 보안/인증 영역 자동 리뷰어 지정 |
+
+설치 후 한 번:
+```bash
+npm install            # postinstall에서 husky 자동 초기화
+git add .husky/        # hook 파일 권한 보존
+```
+
+### 패턴 가이드
+
+#### Optimistic update (좋아요/저장)
+```tsx
+useMutation({
+  onMutate: async (id) => {
+    await qc.cancelQueries({ queryKey });
+    const prev = qc.getQueryData(queryKey);
+    qc.setQueryData(queryKey, optimistic);  // 즉시 반영
+    return { prev };
+  },
+  onError: (_e, _v, ctx) => qc.setQueryData(queryKey, ctx?.prev),  // 롤백
+  onSettled: () => qc.invalidateQueries({ queryKey }),
+});
+```
+
+#### 회원 탈퇴 / 편지 삭제 패턴
+```tsx
+const confirm = useConfirm();
+
+async function onWithdraw() {
+  const ok = await confirm({
+    title: '정말 탈퇴할까요?',
+    description: '저장한 우승지와 보낸 편지가 모두 삭제돼요.',
+    confirmLabel: '탈퇴',
+    destructive: true,
+  });
+  if (!ok) return;
+  withdraw.mutate(undefined, {
+    onSuccess: () => toast.success('탈퇴되었어요'),
+  });
+}
+```
+
+#### 무한스크롤 + 스크롤 복원
+```tsx
+function LetterboxReceived() {
+  useScrollRestoration();
+  const { items, fetchNext, hasNext, isFetchingNext } = useInfiniteList({
+    queryKey: ['letters', 'received'],
+    queryFn: ({ pageParam }) => letterApi.listReceivedPage({ cursor: pageParam }),
+    cache: 'realtime',
+  });
+  return (
+    <InfiniteList items={items} hasNext={hasNext} isFetchingNext={isFetchingNext}
+      onReachEnd={fetchNext} keyExtractor={(l) => l.id}
+      renderItem={(l) => <LetterCard letter={l} />}
+      emptyState={<EmptyState icon={<Mail />} title={...} />}
+    />
+  );
+}
+```
+
+### 새로 추가된 i18n 키
+
+```
+common.tryAgain
+consent.{all,age14,terms,privacy,location,marketing}
+pwa.update.{message,apply}
+pwa.offline.{title,message}
+pwa.install.{title,description,install,later}
+onboarding.nickname.errors.{tooShort,tooLong,invalidChars,invisibleChar,controlChar}
+letter.compose.errors.invalidChar
+```

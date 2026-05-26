@@ -1,0 +1,140 @@
+/* ============================
+ * globals.scss
+ * 디자인 토큰 (color / space / radius / z / typography / elevation / breakpoint)
+ * 최소화 원칙 유지 — reset + 토큰 + 약간의 typography.
+ * 컴포넌트별 스타일은 SCSS Modules 사용.
+ * ============================ */
+
+:root {
+  /* Color tokens */
+  --color-bg: #ffffff;
+  --color-fg: #0a0a0a;
+  --color-muted: #6b7280;
+  --color-border: #e5e7eb;
+  --color-primary: #0a0a0a;
+  --color-primary-fg: #ffffff;
+  --color-danger: #dc2626;
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+
+  /* Spacing scale (4px grid) */
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8 */
+  --space-3: 0.75rem;   /* 12 */
+  --space-4: 1rem;      /* 16 */
+  --space-5: 1.25rem;   /* 20 */
+  --space-6: 1.5rem;    /* 24 */
+  --space-8: 2rem;      /* 32 */
+  --space-10: 2.5rem;   /* 40 */
+  --space-12: 3rem;     /* 48 */
+
+  /* Radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+
+  /* Typography scale */
+  --text-xs: 0.75rem;     /* 12px */
+  --text-sm: 0.875rem;    /* 14 */
+  --text-base: 1rem;      /* 16 */
+  --text-lg: 1.125rem;    /* 18 */
+  --text-xl: 1.25rem;     /* 20 */
+  --text-2xl: 1.5rem;     /* 24 */
+  --text-3xl: 1.875rem;   /* 30 */
+
+  /* Icon size tokens — 호환성 유지를 위해 의미별로 분리 */
+  --icon-sm: 16px;        /* 인라인 텍스트 옆 */
+  --icon-md: 20px;        /* 버튼 */
+  --icon-lg: 24px;        /* 헤더 / 네비 */
+  --icon-xl: 32px;        /* 일러스트성 */
+
+  /* Z-index 레이어 — 충돌 방지를 위해 명시 */
+  --z-base: 0;
+  --z-elevated: 10;
+  --z-header: 50;          /* AppHeader sticky */
+  --z-bottom-nav: 50;      /* BottomNav fixed */
+  --z-dropdown: 60;        /* NotificationDropdown */
+  --z-banner: 70;          /* PwaUpdateBanner / Offline / Install */
+  --z-modal: 80;           /* ConfirmDialog */
+  --z-toast: 90;           /* Toaster — 모달 위에 떠야 함 */
+
+  /* Elevation / shadow */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 32px rgba(0, 0, 0, 0.10);
+
+  /* Layout */
+  --content-max: 720px;
+  --header-h: 56px;
+  --bottom-nav-h: 64px;
+
+  /* Typography font stack */
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Pretendard', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Breakpoints — SCSS module 에서 미디어 쿼리 작성 시 참고 (mixin 사용 권장) */
+/* xs: 360, sm: 600, md: 768, lg: 1024 */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #0a0a0a;
+    --color-fg: #fafafa;
+    --color-muted: #9ca3af;
+    --color-border: #1f2937;
+    --color-primary: #fafafa;
+    --color-primary-fg: #0a0a0a;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 10px 32px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* Reset */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+html, body { height: 100%; }
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  color: var(--color-fg);
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+button, input, textarea, select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Safe area for PWA */
+@supports (padding: env(safe-area-inset-top)) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}

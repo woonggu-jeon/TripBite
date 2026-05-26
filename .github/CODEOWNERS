@@ -1,0 +1,15 @@
+# 파일 영역별 기본 리뷰어
+# 형식: <pattern> @user1 @user2 @team
+
+# 전체 기본
+* @your-team
+
+# 보안 관련 변경은 별도 승인
+/middleware.ts        @your-security-team
+/next.config.js       @your-security-team
+/src/types/env.d.ts   @your-security-team
+/.github/             @your-security-team
+
+# 인증 코어
+/src/features/auth/   @your-auth-owner
+/src/services/        @your-auth-owner

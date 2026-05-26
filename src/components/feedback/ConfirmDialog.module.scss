@@ -1,0 +1,82 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  background: rgba(0, 0, 0, 0.45);
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  animation: fade-in 0.15s ease-out;
+}
+
+.dialog {
+  width: 100%;
+  max-width: 360px;
+  background: var(--color-bg);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  animation: pop-in 0.18s ease-out;
+}
+
+.title {
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.description {
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+  line-height: 1.5;
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.cancel,
+.confirm {
+  flex: 1;
+  padding: var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+}
+
+.cancel {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-fg);
+
+  &:hover { background: var(--color-border); }
+}
+
+.confirm {
+  background: var(--color-primary);
+  color: var(--color-primary-fg);
+  border: 0;
+}
+
+.destructive {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop, .dialog { animation: none; }
+}

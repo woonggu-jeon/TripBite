@@ -1,0 +1,32 @@
+.wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 420px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.progress {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  padding-bottom: var(--space-6);
+}
+
+.dot {
+  width: 24px;
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--color-border);
+}
+
+.dotActive {
+  background: var(--color-fg);
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}

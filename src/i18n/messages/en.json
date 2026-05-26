@@ -1,0 +1,301 @@
+{
+  "common": {
+    "back": "Back",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "confirm": "OK",
+    "close": "Close",
+    "loading": "Loading...",
+    "submit": "Submit",
+    "submitting": "Processing...",
+    "tryAgain": "Try again",
+    "share": "Share",
+    "next": "Next",
+    "previous": "Previous",
+    "skip": "Skip",
+    "start": "Start",
+    "complete": "Done"
+  },
+  "pwa": {
+    "update": {
+      "message": "A new version is available",
+      "apply": "Reload"
+    },
+    "offline": {
+      "title": "Offline",
+      "message": "Please check your internet connection"
+    },
+    "install": {
+      "title": "Add to home screen",
+      "description": "Launch as an app",
+      "install": "Add",
+      "later": "Later"
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "ranking": "Ranking",
+    "tournament": "Bracket",
+    "letter": "Letters",
+    "mypage": "Me"
+  },
+  "header": {
+    "logo": "Travel",
+    "notification": "Notifications",
+    "settings": "Settings"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "submitting": "Signing in...",
+      "emailRequired": "Please enter your email.",
+      "emailInvalid": "Please enter a valid email.",
+      "passwordMin": "Password must be at least 8 characters.",
+      "passwordMax": "Password is too long.",
+      "failed": "Sign-in failed.",
+      "unknown": "Something went wrong."
+    },
+    "logout": "Sign out"
+  },
+  "onboarding": {
+    "title": "Welcome",
+    "concept": {
+      "title": "Discover Chungbuk anew",
+      "description": "Pick a destination via bracket, share your heart in five letters."
+    },
+    "location": {
+      "title": "Where are you?",
+      "description": "We'll show nearby recommendations and tag where your letters come from."
+    },
+    "nickname": {
+      "title": "What should we call you?",
+      "placeholder": "Nickname (1-10 chars)",
+      "submit": "Start",
+      "errors": {
+        "tooShort": "Please enter a nickname.",
+        "tooLong": "Nickname must be 10 characters or fewer.",
+        "invalidChars": "Only letters, numbers, and underscores are allowed.",
+        "invisibleChar": "Invisible characters are not allowed.",
+        "controlChar": "Disallowed characters detected."
+      }
+    }
+  },
+  "home": {
+    "title": "Home",
+    "widgets": {
+      "weatherRecommendation": "Today's pick",
+      "ongoingFestivals": "Festivals happening now",
+      "latestLetter": "New letter",
+      "myWinners": "My winners",
+      "quick": {
+        "tournament": "Bracket",
+        "letter": "Write letter",
+        "quiz": "Type test"
+      }
+    }
+  },
+  "region": {
+    "title": "Explore Chungbuk",
+    "names": {
+      "cheongju": "Cheongju",
+      "chungju": "Chungju",
+      "jecheon": "Jecheon",
+      "boeun": "Boeun",
+      "okcheon": "Okcheon",
+      "yeongdong": "Yeongdong",
+      "jincheon": "Jincheon",
+      "goesan": "Goesan",
+      "eumseong": "Eumseong",
+      "danyang": "Danyang",
+      "jeungpyeong": "Jeungpyeong"
+    },
+    "tabs": {
+      "attraction": "Attractions",
+      "festival": "Festivals",
+      "experience": "Experiences",
+      "startTournamentHere": "Start a bracket here"
+    }
+  },
+  "ranking": {
+    "title": "Destination ranking",
+    "sections": {
+      "weeklyWinners": "Top {limit} most-won this week",
+      "recommended": "Recommended top {limit}",
+      "hiddenGems": "Hidden gems top {limit}",
+      "byRegionChart": "Popularity by region",
+      "travelTypeTest": "Travel type test"
+    }
+  },
+  "tournament": {
+    "title": "Bracket",
+    "resultTitle": "Bracket result",
+    "inProgressTitle": "Bracket in progress",
+    "setup": {
+      "themeSection": "1. Pick a theme",
+      "categorySection": "2. Category",
+      "countSection": "3. Size",
+      "start": "Start"
+    },
+    "season": {
+      "spring": "Spring",
+      "summer": "Summer",
+      "autumn": "Autumn",
+      "winter": "Winter"
+    },
+    "specialDay": {
+      "birthday": "Birthday",
+      "anniversary": "Anniversary"
+    },
+    "category": {
+      "festival": "Festival",
+      "attraction": "Attraction",
+      "experience": "Experience"
+    },
+    "result": {
+      "luckyColor": "Lucky color",
+      "meetChance": "Chance of a fated encounter",
+      "saveToMypage": "Save to My Page",
+      "retry": "Try again",
+      "savedToast": "Saved"
+    }
+  },
+  "letter": {
+    "title": "Five-letter letter",
+    "indexCta": {
+      "title": "Send a letter",
+      "subtitle": "Just five letters, reaching someone"
+    },
+    "received": "Received",
+    "sent": "Sent",
+    "liked": "Liked",
+    "saved": "Saved",
+    "compose": {
+      "title": "Write a letter",
+      "label": "Body ({count}/5)",
+      "placeholder": "Up to 5 characters",
+      "submit": "Send",
+      "submitting": "Sending...",
+      "errors": {
+        "empty": "Please enter content.",
+        "maxLength": "Up to 5 characters allowed.",
+        "invalidChar": "Disallowed characters detected."
+      }
+    },
+    "detail": {
+      "like": "Like",
+      "save": "Save"
+    },
+    "author": {
+      "anonymous": "Anonymous traveler"
+    }
+  },
+  "quiz": {
+    "title": "Travel type test",
+    "intro": "Discover your travel style in 5 questions",
+    "start": "Start",
+    "result": {
+      "yourType": "Your travel type",
+      "recommendations": "Perfect for you",
+      "share": "Create share card",
+      "retake": "Retake"
+    }
+  },
+  "mypage": {
+    "title": "My Page",
+    "sections": {
+      "profile": "Profile",
+      "stampMap": "Chungbuk stamps",
+      "savedTournaments": "Saved winners",
+      "tournamentHistory": "Bracket history",
+      "letterbox": "Letterbox",
+      "goToSettings": "Go to settings"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "notifications": {
+      "section": "Notifications",
+      "push": "Push notifications",
+      "pushHint": "Receive alerts on your device",
+      "inApp": "In-app notifications",
+      "inAppHint": "Use the in-app inbox",
+      "letterReceived": "Letter arrived",
+      "letterLiked": "Like on my letter"
+    },
+    "account": {
+      "section": "Account",
+      "changeNickname": "Change nickname",
+      "locationPermission": "Location permission",
+      "locationGranted": "Allowed",
+      "locationDenied": "Denied — change in device settings",
+      "locationPrompt": "Not requested yet",
+      "locationUnsupported": "Not supported",
+      "blockedUsers": "Manage blocked users"
+    },
+    "policy": {
+      "section": "Policy",
+      "terms": "Terms of service",
+      "privacy": "Privacy policy",
+      "licenses": "Open-source licenses"
+    },
+    "actions": {
+      "logout": "Sign out",
+      "loggingOut": "Signing out...",
+      "withdraw": "Delete account",
+      "contact": "Contact us"
+    }
+  },
+  "notification": {
+    "title": "Notifications",
+    "empty": "No notifications yet",
+    "markAllRead": "Mark all read"
+  },
+  "errors": {
+    "generic": "Something went wrong",
+    "tryAgainLater": "Please try again later.",
+    "notFound": {
+      "title": "404",
+      "message": "The page you requested could not be found.",
+      "goHome": "Go home"
+    }
+  },
+  "consent": {
+    "all": "Agree to all",
+    "age14": "I am 14 years old or older",
+    "terms": "I agree to the Terms of Service",
+    "privacy": "I agree to the Privacy Policy",
+    "location": "I agree to location data collection",
+    "marketing": "I agree to receive marketing communications"
+  },
+  "location": {
+    "current": "Current location",
+    "permission": {
+      "title": "Location permission needed",
+      "description": "Allow location access to attach where your letter was sent from.",
+      "request": "Allow",
+      "skip": "Skip",
+      "denied": "Location permission denied",
+      "openSettings": "You can change this in your device settings"
+    },
+    "errors": {
+      "unavailable": "Couldn't get your location",
+      "timeout": "Location request timed out",
+      "unsupported": "This device doesn't support location services"
+    }
+  },
+  "chart": {
+    "loading": "Loading chart...",
+    "empty": "No data to display"
+  },
+  "carousel": {
+    "prev": "Previous",
+    "next": "Next",
+    "slide": "Slide {n}/{total}"
+  }
+}

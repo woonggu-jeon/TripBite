@@ -1,0 +1,31 @@
+# Dependabot — 의존성 자동 업데이트 PR
+#
+# - 매주 월요일 npm 의존성 점검
+# - patch 업데이트는 묶어서 PR (소음 감소)
+# - GitHub Actions workflow 도 점검 (보안 패치)
+
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      patches:
+        update-types:
+          - patch
+      minor:
+        update-types:
+          - minor
+    # 보안 알림은 group 적용 안 받고 즉시 별도 PR
+    labels:
+      - dependencies
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    labels:
+      - github-actions

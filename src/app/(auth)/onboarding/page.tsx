@@ -1,0 +1,42 @@
+import { getTranslations } from 'next-intl/server';
+import type { Metadata } from 'next';
+import { OnboardingFlow } from './_components/OnboardingFlow';
+
+/**
+ * 온보딩 페이지 (/onboarding)
+ *
+ * 진입 조건:
+ *   - 인증된 사용자 + 아직 onboarding 미완료
+ *   - middleware 가 아닌 AuthBootstrap에서 검사 후 router.replace 처리 권장
+ *
+ * 3 step 단일 페이지 (URL 그대로, 내부 step 상태):
+ *   1) 컨셉 소개 — 앱이 뭘 하는지 3-4줄 + 일러스트
+ *   2) 위치 권한 요청 — LocationPermissionPrompt 사용
+ *      허용 → resolve 후 위치 저장
+ *      건너뛰기 → 다음 단계 (편지 작성 시 다시 권한 요청)
+ *   3) 닉네임 입력 — 1~10자, useUpdateNickname
+ *      완료 → PATCH /mypage/profile + POST /me/complete-onboarding
+ *      → router.replace('/')
+ *
+ * 헤더/네비 없음 ((auth) 그룹).
+ * 뒤로가기 / 진행도 indicator는 OnboardingFlow 내부에서 처리.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('onboarding');
+  return { title: t('title') };
+}
+
+export default function OnboardingPage() {
+  return (
+    <main
+      style={{
+        minHeight: '100dvh',
+        display: 'flex',
+        flexDirection: 'column',
+        padding: '2rem 1rem',
+      }}
+    >
+      <OnboardingFlow />
+    </main>
+  );
+}

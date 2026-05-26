@@ -1,0 +1,301 @@
+{
+  "common": {
+    "back": "뒤로",
+    "save": "저장",
+    "cancel": "취소",
+    "delete": "삭제",
+    "edit": "수정",
+    "confirm": "확인",
+    "close": "닫기",
+    "loading": "불러오는 중...",
+    "submit": "제출",
+    "submitting": "처리 중...",
+    "tryAgain": "다시 시도",
+    "share": "공유",
+    "next": "다음",
+    "previous": "이전",
+    "skip": "건너뛰기",
+    "start": "시작하기",
+    "complete": "완료"
+  },
+  "pwa": {
+    "update": {
+      "message": "새 버전이 있어요",
+      "apply": "새로고침"
+    },
+    "offline": {
+      "title": "오프라인",
+      "message": "인터넷 연결을 확인해주세요"
+    },
+    "install": {
+      "title": "홈 화면에 추가",
+      "description": "앱처럼 빠르게 실행해요",
+      "install": "추가하기",
+      "later": "나중에"
+    }
+  },
+  "nav": {
+    "home": "홈",
+    "ranking": "랭킹",
+    "tournament": "토너먼트",
+    "letter": "편지",
+    "mypage": "마이"
+  },
+  "header": {
+    "logo": "Travel",
+    "notification": "알림",
+    "settings": "설정"
+  },
+  "auth": {
+    "login": {
+      "title": "로그인",
+      "email": "이메일",
+      "password": "비밀번호",
+      "submit": "로그인",
+      "submitting": "로그인 중...",
+      "emailRequired": "이메일을 입력해주세요.",
+      "emailInvalid": "올바른 이메일 형식이 아닙니다.",
+      "passwordMin": "비밀번호는 8자 이상이어야 합니다.",
+      "passwordMax": "비밀번호가 너무 깁니다.",
+      "failed": "로그인에 실패했습니다.",
+      "unknown": "알 수 없는 오류가 발생했습니다."
+    },
+    "logout": "로그아웃"
+  },
+  "onboarding": {
+    "title": "환영해요",
+    "concept": {
+      "title": "충북을 새롭게 발견해요",
+      "description": "토너먼트로 여행지를 고르고, 다섯 글자로 마음을 전하세요."
+    },
+    "location": {
+      "title": "위치를 알려주세요",
+      "description": "근처 추천 여행지와 편지에 보낸 위치를 표시할 수 있어요."
+    },
+    "nickname": {
+      "title": "어떻게 불러드릴까요?",
+      "placeholder": "닉네임 (1~10자)",
+      "submit": "시작하기",
+      "errors": {
+        "tooShort": "닉네임을 입력해주세요.",
+        "tooLong": "닉네임은 최대 10자까지 입력할 수 있어요.",
+        "invalidChars": "한글, 영문, 숫자, 언더스코어만 사용할 수 있어요.",
+        "invisibleChar": "보이지 않는 문자는 사용할 수 없어요.",
+        "controlChar": "허용되지 않는 문자가 포함되어 있어요."
+      }
+    }
+  },
+  "home": {
+    "title": "홈",
+    "widgets": {
+      "weatherRecommendation": "오늘의 추천",
+      "ongoingFestivals": "지금 열리는 축제",
+      "latestLetter": "새로 도착한 편지",
+      "myWinners": "내 우승지",
+      "quick": {
+        "tournament": "토너먼트",
+        "letter": "편지 쓰기",
+        "quiz": "유형 테스트"
+      }
+    }
+  },
+  "region": {
+    "title": "충북 둘러보기",
+    "names": {
+      "cheongju": "청주시",
+      "chungju": "충주시",
+      "jecheon": "제천시",
+      "boeun": "보은군",
+      "okcheon": "옥천군",
+      "yeongdong": "영동군",
+      "jincheon": "진천군",
+      "goesan": "괴산군",
+      "eumseong": "음성군",
+      "danyang": "단양군",
+      "jeungpyeong": "증평군"
+    },
+    "tabs": {
+      "attraction": "관광지",
+      "festival": "축제",
+      "experience": "체험",
+      "startTournamentHere": "이 시군으로 토너먼트 시작"
+    }
+  },
+  "ranking": {
+    "title": "여행지 랭킹",
+    "sections": {
+      "weeklyWinners": "이번주 가장 많이 우승한 여행지 TOP {limit}",
+      "recommended": "추천 여행지 TOP {limit}",
+      "hiddenGems": "숨은 명소 TOP {limit}",
+      "byRegionChart": "시군별 인기",
+      "travelTypeTest": "여행 유형 테스트"
+    }
+  },
+  "tournament": {
+    "title": "토너먼트",
+    "resultTitle": "토너먼트 결과",
+    "inProgressTitle": "토너먼트 진행 중",
+    "setup": {
+      "themeSection": "1. 테마 선택",
+      "categorySection": "2. 카테고리",
+      "countSection": "3. 갯수",
+      "start": "시작하기"
+    },
+    "season": {
+      "spring": "봄",
+      "summer": "여름",
+      "autumn": "가을",
+      "winter": "겨울"
+    },
+    "specialDay": {
+      "birthday": "생일",
+      "anniversary": "기념일"
+    },
+    "category": {
+      "festival": "축제",
+      "attraction": "관광지",
+      "experience": "체험관광"
+    },
+    "result": {
+      "luckyColor": "행운의 색",
+      "meetChance": "여행에서 인연을 만날 확률",
+      "saveToMypage": "마이페이지에 저장",
+      "retry": "다시 하기",
+      "savedToast": "저장되었어요"
+    }
+  },
+  "letter": {
+    "title": "다섯글자 편지",
+    "indexCta": {
+      "title": "편지 보내러 가기",
+      "subtitle": "단 다섯 글자, 누군가에게 닿습니다"
+    },
+    "received": "도착한 편지",
+    "sent": "내가 보낸 편지",
+    "liked": "좋아요한 편지",
+    "saved": "저장한 편지",
+    "compose": {
+      "title": "편지 쓰기",
+      "label": "내용 ({count}/5)",
+      "placeholder": "다섯 글자 이내",
+      "submit": "보내기",
+      "submitting": "보내는 중...",
+      "errors": {
+        "empty": "내용을 입력해주세요.",
+        "maxLength": "최대 5글자까지 입력할 수 있어요.",
+        "invalidChar": "허용되지 않는 문자가 포함되어 있어요."
+      }
+    },
+    "detail": {
+      "like": "좋아요",
+      "save": "저장"
+    },
+    "author": {
+      "anonymous": "익명의 여행자"
+    }
+  },
+  "quiz": {
+    "title": "여행 유형 테스트",
+    "intro": "5개 질문으로 알아보는 나의 여행 스타일",
+    "start": "시작하기",
+    "result": {
+      "yourType": "당신의 여행 유형",
+      "recommendations": "이런 곳이 어울려요",
+      "share": "공유 카드 만들기",
+      "retake": "다시 테스트하기"
+    }
+  },
+  "mypage": {
+    "title": "마이페이지",
+    "sections": {
+      "profile": "프로필",
+      "stampMap": "충북 도장깨기",
+      "savedTournaments": "저장한 우승 여행지",
+      "tournamentHistory": "토너먼트 기록",
+      "letterbox": "편지함",
+      "goToSettings": "설정으로 이동"
+    }
+  },
+  "settings": {
+    "title": "설정",
+    "language": "언어",
+    "notifications": {
+      "section": "알림",
+      "push": "푸시 알림",
+      "pushHint": "기기에 알림을 받습니다",
+      "inApp": "인앱 알림",
+      "inAppHint": "앱 내 알림함을 사용합니다",
+      "letterReceived": "편지 도착",
+      "letterLiked": "내 편지에 좋아요"
+    },
+    "account": {
+      "section": "계정",
+      "changeNickname": "닉네임 변경",
+      "locationPermission": "위치 권한",
+      "locationGranted": "허용됨",
+      "locationDenied": "거부됨 — 기기 설정에서 변경",
+      "locationPrompt": "아직 요청하지 않음",
+      "locationUnsupported": "지원되지 않음",
+      "blockedUsers": "차단한 사용자 관리"
+    },
+    "policy": {
+      "section": "약관 및 정책",
+      "terms": "이용약관",
+      "privacy": "개인정보처리방침",
+      "licenses": "오픈소스 라이선스"
+    },
+    "actions": {
+      "logout": "로그아웃",
+      "loggingOut": "로그아웃 중...",
+      "withdraw": "회원 탈퇴",
+      "contact": "문의하기"
+    }
+  },
+  "notification": {
+    "title": "알림",
+    "empty": "새로운 알림이 없어요",
+    "markAllRead": "모두 읽음"
+  },
+  "errors": {
+    "generic": "문제가 발생했습니다",
+    "tryAgainLater": "잠시 후 다시 시도해주세요.",
+    "notFound": {
+      "title": "404",
+      "message": "요청하신 페이지를 찾을 수 없습니다.",
+      "goHome": "홈으로"
+    }
+  },
+  "consent": {
+    "all": "전체 동의",
+    "age14": "만 14세 이상입니다",
+    "terms": "이용약관에 동의",
+    "privacy": "개인정보처리방침에 동의",
+    "location": "위치정보 수집·이용에 동의",
+    "marketing": "마케팅 정보 수신에 동의"
+  },
+  "location": {
+    "current": "현재 위치",
+    "permission": {
+      "title": "위치 권한이 필요해요",
+      "description": "편지에 보낸 위치를 표시하려면 위치 접근을 허용해주세요.",
+      "request": "허용하기",
+      "skip": "건너뛰기",
+      "denied": "위치 권한이 거부되었어요",
+      "openSettings": "기기 설정에서 권한을 변경할 수 있어요"
+    },
+    "errors": {
+      "unavailable": "위치를 가져올 수 없어요",
+      "timeout": "위치를 가져오는 데 시간이 너무 오래 걸려요",
+      "unsupported": "이 기기에서는 위치 서비스를 지원하지 않아요"
+    }
+  },
+  "chart": {
+    "loading": "차트를 불러오는 중...",
+    "empty": "표시할 데이터가 없어요"
+  },
+  "carousel": {
+    "prev": "이전",
+    "next": "다음",
+    "slide": "슬라이드 {n}/{total}"
+  }
+}

@@ -1,0 +1,14 @@
+.shell {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+.content {
+  // 하단 네비 가려짐 방지 + 좌우 여백
+  padding: var(--space-4);
+  padding-bottom: calc(var(--space-8) + 64px); // BottomNav 높이 + safe area
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+}

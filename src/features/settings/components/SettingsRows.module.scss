@@ -1,0 +1,50 @@
+.list {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-border);
+  }
+}
+
+.rowLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.rowHint {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  margin-top: 2px;
+}
+
+.button {
+  display: block;
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  font-size: 0.875rem;
+  font-weight: 500;
+
+  &:hover {
+    background: var(--color-border);
+  }
+}
+
+.danger {
+  color: var(--color-danger);
+}
