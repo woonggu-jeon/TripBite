@@ -18,7 +18,7 @@ type Tab = 'attraction' | 'festival' | 'experience';
  *
  * 각 List 컴포넌트는 useInfiniteList + InfiniteList 조합 사용.
  */
-export function RegionDetailTabs({ code }: { code: RegionCode }) {
+export function RegionDetailTabs({ code: _code }: { code: RegionCode }) {
   const t = useTranslations('region.tabs');
   const router = useRouter();
   const [tab, setTab] = useState<Tab>('attraction');

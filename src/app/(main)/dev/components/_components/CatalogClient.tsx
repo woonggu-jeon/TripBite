@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Mail, Heart } from 'lucide-react';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Skeleton } from '@/components/feedback/Skeleton';
@@ -20,7 +21,7 @@ export function CatalogClient() {
           title="아직 받은 편지가 없어요"
           description="편지가 도착하면 여기에 표시돼요"
           action={
-            <a
+            <Link
               href="/letter/compose"
               style={{
                 padding: '0.5rem 1rem',
@@ -32,7 +33,7 @@ export function CatalogClient() {
               }}
             >
               편지 쓰러 가기
-            </a>
+            </Link>
           }
         />
       </Block>
@@ -73,10 +74,22 @@ export function CatalogClient() {
   );
 }
 
-function Block({ title, children }: { title: string; children: React.ReactNode }) {
+function Block({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <section>
-      <h2 style={{ fontSize: 'var(--text-base)', fontWeight: 700, marginBottom: '0.5rem' }}>
+      <h2
+        style={{
+          fontSize: 'var(--text-base)',
+          fontWeight: 700,
+          marginBottom: '0.5rem',
+        }}
+      >
         {title}
       </h2>
       <div
@@ -92,7 +105,13 @@ function Block({ title, children }: { title: string; children: React.ReactNode }
   );
 }
 
-function Btn({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) {
+function Btn({
+  children,
+  onClick,
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+}) {
   return (
     <button
       type="button"

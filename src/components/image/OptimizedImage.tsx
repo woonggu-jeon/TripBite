@@ -38,6 +38,7 @@ type Props = Omit<ImageProps, 'placeholder' | 'blurDataURL'> & {
 };
 
 export function OptimizedImage({
+  alt,
   blurDataURL,
   noPlaceholder,
   loading,
@@ -47,15 +48,16 @@ export function OptimizedImage({
 }: Props) {
   const placeholderProps = noPlaceholder
     ? {}
-    : ({
+    : {
         placeholder: 'blur' as const,
         blurDataURL: blurDataURL ?? FALLBACK_BLUR,
-      });
+      };
 
   return (
     <Image
       {...props}
       {...placeholderProps}
+      alt={alt}
       quality={quality}
       loading={priority ? undefined : (loading ?? 'lazy')}
       priority={priority}
