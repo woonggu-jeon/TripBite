@@ -144,6 +144,7 @@ const nextConfig = {
       'lucide-react',
       'recharts',
       'embla-carousel-react',
+      'next-intl',
     ],
   },
 
