@@ -224,11 +224,12 @@ const { items, fetchNext, hasNext, isFetchingNext } = useInfiniteList({
 
 ## 인증
 
-- HttpOnly Cookie (access/refresh). 프론트는 토큰 직접 관리 X.
+- **일반 이메일/비밀번호 로그인만** — 소셜 OAuth(kakao/google/naver) 없음. `next-auth`/`@auth/core`/소셜 SDK 불필요.
+- HttpOnly Cookie (access/refresh). 프론트는 토큰 직접 관리 X (`jwt-decode` 등 클라이언트 토큰 라이브러리 불필요).
 - `services/api/client.ts` — `withCredentials: true` axios
 - `services/interceptors/auth.ts` — 401 → `/auth/refresh` 자동, 동시 401 단일 promise 공유
-- `middleware.ts` — 쿠키 존재 여부만 체크
-- `AuthBootstrap` — `GET /me` → store hydrate + `isOnboarded === false` 면 `/onboarding` 으로
+- `middleware.ts` — 쿠키 존재 여부만 체크 (`/login`만 PUBLIC_ONLY, 그 외 미인증 시 `/login` 리다이렉트)
+- `AuthBootstrap` — `GET /me` → store hydrate. `isOnboarded === false` 면 `/onboarding` 으로, 완료 사용자가 `/onboarding` 진입 시 `/` 로 redirect
 
 ---
 
@@ -236,10 +237,16 @@ const { items, fetchNext, hasNext, isFetchingNext } = useInfiniteList({
 
 `@/features/location`:
 
-- Permissions API 로 prompt 없이 권한 상태 추적
-- `getCurrentPosition` 은 사용자 명시적 동작 직후에만 (iOS 정책)
-- 거부 시 `/location/ip` (IP geolocation) 자동 fallback
+- Permissions API 로 prompt 없이 권한 상태 추적 (`usePermissionState`)
+- `getCurrentPosition` 은 사용자 명시적 동작 직후에만 (iOS 정책) — `useGeolocation.request()`, mount 자동 호출 X
+- 거부 시 `/location/ip` (IP geolocation) 자동 fallback — `useResolveLocation` 이 GPS→IP 체인 처리
 - 좌표 → 주소 변환은 백엔드 `/location/reverse` (Kakao/Naver Maps 프록시)
+- resolve 결과는 `stores/location-store.ts` 에 저장 → 온보딩 step2 / 편지 작성 간 공유 (재요청 방지)
+
+**통합 지점**:
+
+- 온보딩 step2 (`LocationStep`): `granted` 자동 resolve / `prompt`·`unsupported` 사전 안내(`LocationPermissionPrompt`) / `denied` 안내+건너뛰기 분기. 결과로 `onboarding.location_allowed`/`skipped` analytics 호출
+- 편지 작성 (`LetterComposeForm`): store에 좌표 있으면 표시+변경, 없으면 prompt. 제출 시 `SendLetterRequest.location` 에 포함 (없으면 omit → 백엔드 IP 추론)
 
 ---
 
@@ -739,6 +746,40 @@ GitHub Secret Scanning (무료) 활성화 권장 — repo settings에서 토글.
 ## 추가 권장 라이브러리 (로드맵)
 
 현재 `package.json` 에는 들어있지 않지만, 운영 품질과 테스트 자동화를 위해 단계적으로 추가하면 좋은 라이브러리 목록입니다. **런타임 추가는 60KB 미만** (gzip 합산, 대부분 동적 로드 가능), **테스트 도구는 0KB** (devDependencies).
+
+### 도입 현황 (구현 반영)
+
+아래 로드맵 중 **도입 완료**된 항목:
+
+| 라이브러리               | 상태    | 통합 위치                                                  |
+| ------------------------ | ------- | ---------------------------------------------------------- |
+| `@next/bundle-analyzer`  | ✅ 도입 | `next.config.js` — `ANALYZE=true npm run build`            |
+| `@vercel/speed-insights` | ✅ 도입 | `providers.tsx` `<SpeedInsights />` + CSP connect-src 등록 |
+| `plaiceholder` + `sharp` | ✅ 도입 | `src/lib/blur.ts` — 외부 이미지 LQIP 서버 헬퍼             |
+| `lucide-static`          | ✅ 도입 | `npm run build:icons` → `public/icons.svg` (19 icons)      |
+| `msw`                    | ✅ 도입 | `src/mocks/*` 활성화 + same-origin proxy (위 MSW 섹션)     |
+
+**미도입 — 아키텍처 우선순위 순**:
+
+- 🔴 `vitest` + `@testing-library/{react,user-event,jest-dom}` + `happy-dom` + `@vitest/coverage-v8` — 유닛/컴포넌트 테스트 (`src/mocks/server.ts`만 준비됨, 설정 0%)
+- 🔴 `sonner` — toast 렌더러 (`ui-store` 큐에 어댑터 연결 필요, 현재 피드백 미표시)
+- 🟡 `@playwright/test` — E2E (MSW 핸들러 공유)
+- 🟡 `@sentry/nextjs` — 에러 추적 (`NEXT_PUBLIC_APP_VERSION` release 태깅)
+- 🟡 `@vercel/analytics` — page view/이벤트 (speed-insights와 별개, `analytics` 추상화의 provider로 연결)
+
+**일반 로그인만 → 추가 안 함**:
+
+- `next-auth` / `@auth/core` / kakao·google·naver SDK — 소셜 OAuth 없음
+- `jwt-decode` 등 클라이언트 토큰 라이브러리 — HttpOnly Cookie라 프론트가 토큰 비취급
+- 추가 상태관리(redux 등) — zustand로 충분
+
+**이번 구현으로 추가된 아키텍처 모듈** (라이브러리 외):
+
+- `src/stores/location-store.ts` — resolve된 위치를 세션 동안 공유 (재요청 방지)
+- `src/lib/blur.ts` — 외부 이미지 LQIP(base64) 생성, React `cache()` + fetch 7일 revalidate
+- `services/interceptors/timing.ts` 운영 송신 — slow/error API를 `analytics` 의 `api.slow`/`api.error` 이벤트로 (pathname만, query 제거)
+- `.github/workflows/lighthouse.yml` + `lighthouserc.json` — PR/main 성능 회귀 CI (baseline 단계 warn)
+- `package.json` `overrides` — `serialize-javascript`/`postcss` 보안 패치 (transitive)
 
 ### 🔴 즉시 추가 — 런타임
 
