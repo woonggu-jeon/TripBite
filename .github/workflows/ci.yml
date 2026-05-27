@@ -7,9 +7,20 @@ on:
       - dev
       - main
 
+# 같은 ref에 새 push 시 진행 중인 run 취소 (CI 분 절약)
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# 최소 권한 — 기본 토큰 권한 축소 (dependency-review는 PR 메타 읽기 필요)
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -27,8 +38,8 @@ jobs:
       - name: Type Check
         run: npm run type-check
 
-      - name: Unit tests
-        run: npm run test:run
+      - name: Unit tests + coverage (threshold 게이트)
+        run: npm run test:coverage
 
       - name: Build
         run: npm run build

@@ -1,0 +1,41 @@
+name: CodeQL
+
+# 보안 정적 분석 (GitHub CodeQL) — JS/TS 코드의 보안 취약점/안티패턴 탐지.
+# audit(의존성)과 보완 관계 — 이건 우리 소스 코드를 본다.
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+  schedule:
+    # 매주 월요일 — 새로 공개된 룰로 기존 코드 재검사
+    - cron: '0 3 * * 1'
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  security-events: write # 결과를 Security 탭에 업로드
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+          queries: security-and-quality
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@v3

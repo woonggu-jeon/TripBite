@@ -1133,9 +1133,12 @@ Turborepo / Micro Frontend / Redux / GraphQL / Kubernetes / @tanstack/react-virt
 
 ### 테스트 / CI
 
-- [ ] CI를 `test:run` → `test:coverage`로 전환 (coverage threshold를 PR에서 강제)
-- [ ] Playwright E2E를 CI 별도 job으로 (`npx playwright install` 캐시 + 실제 시나리오: 온보딩/편지/위치)
+- [x] CI를 `test:run` → `test:coverage`로 전환 (coverage threshold를 PR에서 강제)
+- [x] Playwright E2E를 CI 별도 workflow(`e2e.yml`)로 — chromium + 브라우저 캐시 + MSW 모드
+- [ ] E2E 실제 시나리오 확장 (현재 smoke만 → 온보딩/편지/위치)
 - [ ] 위젯 구현 시 coverage `include` 확장 (현재 핵심 로직만 측정)
+
+> CI 워크플로우: `ci.yml`(lint/type-check/coverage/build/size/audit) · `e2e.yml`(Playwright) · `lighthouse.yml`(성능) · `codeql.yml`(보안 정적분석). 전부 `concurrency`(중복 run 취소) + 최소 `permissions` 적용.
 
 ### 보안
 
