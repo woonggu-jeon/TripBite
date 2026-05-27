@@ -206,3 +206,19 @@ if (process.env.ANALYZE === 'true') {
 }
 
 module.exports = withNextIntl(withBundleAnalyzer(withPWA(nextConfig)));
+
+/**
+ * Sentry 소스맵 업로드 (릴리스 추적) — 운영 도입 시 활성화
+ *
+ * 현재는 instrumentation.ts / instrumentation-client.ts 의 런타임 init만으로
+ * 에러 캡처가 동작 (DSN 가드). 소스맵 업로드는 빌드에 SENTRY_AUTH_TOKEN 필요.
+ *
+ * 활성화:
+ *   const { withSentryConfig } = require('@sentry/nextjs');
+ *   module.exports = withSentryConfig(module.exports, {
+ *     org: 'your-org',
+ *     project: 'tripbite',
+ *     silent: !process.env.CI,
+ *     // authToken: process.env.SENTRY_AUTH_TOKEN (CI secret)
+ *   });
+ */

@@ -8,6 +8,7 @@ import {
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useEffect, useState } from 'react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/next';
 import { AuthBootstrap } from '@/features/auth/components/AuthBootstrap';
 import { Toaster } from '@/components/feedback/Toaster';
 import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
@@ -88,6 +89,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <PageViewTracker />
       <WebVitalsTracker />
       <SpeedInsights />
+      <Analytics />
+      {/* page view 자동 추적. custom event는 features/analytics의 vercelProvider */}
       {children}
 
       {/* 글로벌 피드백 UI */}
