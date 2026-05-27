@@ -27,10 +27,17 @@ jobs:
       - name: Type Check
         run: npm run type-check
 
+      - name: Unit tests
+        run: npm run test:run
+
       - name: Build
         run: npm run build
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'http://localhost:8080' }}
+
+      # === 번들 사이즈 회귀 가드 ===
+      - name: Bundle size limit
+        run: npm run size
 
       # === 보안 점검 ===
       - name: Dependency audit (high severity)
