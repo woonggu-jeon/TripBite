@@ -14,7 +14,9 @@ import { useEffect, useRef, useState } from 'react';
  *   - 옵저버는 unmount 시 자동 disconnect
  *   - rootMargin 으로 뷰포트 도달 전에 미리 트리거 가능 (스크롤 끊김 방지)
  */
-export function useIntersection<T extends Element>(options?: IntersectionObserverInit) {
+export function useIntersection<T extends Element>(
+  options?: IntersectionObserverInit,
+) {
   const ref = useRef<T | null>(null);
   const [isIntersecting, setIsIntersecting] = useState(false);
 
@@ -28,7 +30,9 @@ export function useIntersection<T extends Element>(options?: IntersectionObserve
     }
 
     const observer = new IntersectionObserver(
-      ([entry]) => setIsIntersecting(entry.isIntersecting),
+      ([entry]) => {
+        if (entry) setIsIntersecting(entry.isIntersecting);
+      },
       {
         rootMargin: '200px',
         threshold: 0,

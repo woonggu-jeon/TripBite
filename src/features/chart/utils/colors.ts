@@ -19,5 +19,6 @@ export const CHART_PALETTE = [
 ] as const;
 
 export function getSeriesColor(index: number): string {
-  return CHART_PALETTE[index % CHART_PALETTE.length];
+  // 모듈러라 항상 유효 범위지만, noUncheckedIndexedAccess 대비 fallback
+  return CHART_PALETTE[index % CHART_PALETTE.length] ?? CHART_PALETTE[0];
 }

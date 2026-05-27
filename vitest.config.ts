@@ -22,6 +22,8 @@ export default defineConfig({
   test: {
     environment: 'happy-dom',
     globals: true,
+    // forks 풀 — 테스트 파일 간 모듈/전역 상태 격리 (MSW server, zustand store 등)
+    pool: 'forks',
     setupFiles: ['./vitest.setup.ts'],
     exclude: ['e2e/**', 'node_modules/**', '.next/**'],
     css: false, // *.module.scss import는 빈 객체로 처리 (스타일은 테스트 대상 아님)

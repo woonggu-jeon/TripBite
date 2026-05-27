@@ -18,7 +18,15 @@ const eslintConfig = [
     rules: {
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'warn',
-      'react-hooks/exhaustive-deps': 'warn',
+      // 렌더링 직결 — 잘못된 의존성 배열은 stale closure/무한루프 유발
+      'react-hooks/exhaustive-deps': 'error',
+      'react-hooks/rules-of-hooks': 'error',
+      // 안전/일관성
+      eqeqeq: ['error', 'smart'],
+      'no-var': 'error',
+      'prefer-const': 'error',
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'object-shorthand': 'warn',
     },
   },
 ];

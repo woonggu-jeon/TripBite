@@ -14,7 +14,7 @@ describe('loginSchema', () => {
       password: '12345678',
     });
     expect(r.success).toBe(false);
-    if (!r.success) expect(r.error.issues[0].message).toBe('emailInvalid');
+    if (!r.success) expect(r.error.issues[0]?.message).toBe('emailInvalid');
   });
 
   it('빈 이메일 거부', () => {
@@ -25,7 +25,7 @@ describe('loginSchema', () => {
   it('8자 미만 비밀번호 거부 (passwordMin)', () => {
     const r = loginSchema.safeParse({ email: 'a@b.com', password: '123' });
     expect(r.success).toBe(false);
-    if (!r.success) expect(r.error.issues[0].message).toBe('passwordMin');
+    if (!r.success) expect(r.error.issues[0]?.message).toBe('passwordMin');
   });
 
   it('72자 초과 비밀번호 거부', () => {
