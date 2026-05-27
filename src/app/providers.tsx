@@ -87,10 +87,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <AuthBootstrap />
       <PageViewTracker />
-      <WebVitalsTracker />
+      {/* dev 디버그용 콘솔 로깅만. 운영 Web Vitals 수집은 SpeedInsights 담당(중복 방지) */}
+      {process.env.NODE_ENV === 'development' && <WebVitalsTracker />}
       <SpeedInsights />
-      <Analytics />
       {/* page view 자동 추적. custom event는 features/analytics의 vercelProvider */}
+      <Analytics />
       {children}
 
       {/* 글로벌 피드백 UI */}

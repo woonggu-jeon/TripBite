@@ -67,6 +67,8 @@ function withCsp(res: NextResponse, csp: string): NextResponse {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|icons|manifest.json|sw.js|workbox-.*).*)',
+    // /api 제외: health·csp-report는 공개(미인증 redirect 방지), 그 외 API는 별도 백엔드.
+    // Server Action(페이지 route로의 POST)은 /api가 아니므로 CSRF 체크 유지됨.
+    '/((?!api|_next/static|_next/image|favicon.ico|icons|manifest.json|sw.js|workbox-.*).*)',
   ],
 };

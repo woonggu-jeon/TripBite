@@ -3,7 +3,11 @@
 import { useReportWebVitals } from 'next/web-vitals';
 
 /**
- * Web Vitals 자동 측정
+ * Web Vitals — dev 디버그 전용 (콘솔 로깅)
+ *
+ * ⚠️ 운영 수집은 @vercel/speed-insights(<SpeedInsights />)가 담당.
+ * 중복 방지를 위해 providers.tsx에서 dev 환경에만 마운트됨.
+ * 자체 백엔드 수집(/api/metrics)이 필요해지면 아래 sendBeacon 주석 활성화.
  *
  * Next.js 의 useReportWebVitals 는 별도 의존성 없이 동작
  * (next 가 내부적으로 web-vitals 모듈 포함).
@@ -45,7 +49,6 @@ export function WebVitalsTracker() {
           : 'poor';
 
     if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
       console.log(
         `[vitals] ${metric.name}: ${metric.value.toFixed(metric.name === 'CLS' ? 3 : 0)} (${rating})`,
       );

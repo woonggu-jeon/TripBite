@@ -36,6 +36,20 @@ export default defineConfig({
         '**/*.d.ts',
         'src/mocks/**',
       ],
+      // 테스트가 작성된 핵심 로직만 측정 대상 — 위젯 stub은 분모 제외(구현 시 확장).
+      include: [
+        'src/features/**/schemas/**',
+        'src/lib/csp.ts',
+        'src/lib/sentry-scrub.ts',
+        'src/stores/location-store.ts',
+        'src/features/location/components/LocationPermissionPrompt.tsx',
+      ],
+      thresholds: {
+        statements: 80,
+        branches: 75,
+        functions: 80,
+        lines: 80,
+      },
     },
   },
   resolve: {

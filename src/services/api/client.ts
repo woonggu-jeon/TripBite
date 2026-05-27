@@ -1,6 +1,10 @@
 import axios, { type AxiosInstance } from 'axios';
 import { attachAuthInterceptor } from '@/services/interceptors/auth';
 import { attachTimingInterceptor } from '@/services/interceptors/timing';
+import { assertRequiredEnv } from '@/lib/env';
+
+// 클라이언트 부팅 시 필수 env 검증 (미설정 시 콘솔 경고)
+assertRequiredEnv();
 
 /**
  * 아키텍처 문서 10번

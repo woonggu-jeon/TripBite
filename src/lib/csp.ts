@@ -34,6 +34,8 @@ export function buildCsp(nonce: string): string {
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",
+    // 위반 보고 수집 → enforce 전환 전 모니터링 (src/app/api/csp-report)
+    'report-uri /api/csp-report',
     isDev ? '' : 'upgrade-insecure-requests',
   ]
     .filter(Boolean)
