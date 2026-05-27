@@ -1,0 +1,41 @@
+/**
+ * Content Security Policy 빌더
+ *
+ * middleware에서 요청마다 nonce를 받아 CSP 문자열 생성.
+ * (정적 헤더로는 요청별 nonce 불가 → next.config.js가 아닌 middleware에서 발급)
+ *
+ * 단계:
+ *   1. 현재: Content-Security-Policy-Report-Only — 위반 보고만, 차단 X
+ *   2. enforce 전환: middleware에서 헤더 이름을 'Content-Security-Policy'로
+ *      + style-src의 'unsafe-inline' 제거 (nonce/hash로 대체)
+ *
+ * script-src 전략:
+ *   'nonce-{nonce}' 'strict-dynamic' — nonce 있는 script가 로드한 것만 신뢰.
+ *   Next.js가 x-nonce 헤더를 감지해 하이드레이션 inline script에 nonce 자동 부여.
+ *   'strict-dynamic'이 있으면 'unsafe-inline'은 모던 브라우저에서 무시됨(전환 대비).
+ *   dev는 React 리프레시 등으로 'unsafe-eval' 필요.
+ */
+export function buildCsp(nonce: string): string {
+  const isDev = process.env.NODE_ENV === 'development';
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '';
+
+  return [
+    "default-src 'self'",
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ''}`,
+    // jsdelivr — Pretendard 폰트 CSS (style은 nonce 미적용, unsafe-inline 유지)
+    "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
+    "img-src 'self' data: blob: https://tong.visitkorea.or.kr",
+    "font-src 'self' data: https://cdn.jsdelivr.net",
+    // connect-src: 백엔드 + Vercel Speed Insights.
+    // *.sentry.io 제거 — client Sentry 미사용(server/edge runtime만 전송, CSP 무관).
+    `connect-src 'self' ${apiUrl} https://vitals.vercel-insights.com`.trim(),
+    "worker-src 'self'",
+    "manifest-src 'self'",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    isDev ? '' : 'upgrade-insecure-requests',
+  ]
+    .filter(Boolean)
+    .join('; ');
+}

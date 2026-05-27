@@ -478,15 +478,15 @@ Permissions-Policy:        geolocation=(self), notifications=(self),
 
 ### Content Security Policy (CSP)
 
-현재는 `Content-Security-Policy-Report-Only` — 위반을 차단하지 않고 보고만 받음.
+**적용됨** — `middleware.ts` + `src/lib/csp.ts`에서 **요청별 nonce 발급** + `Content-Security-Policy-Report-Only`. (정적 헤더로는 nonce 불가 → next.config.js가 아닌 middleware가 CSP 소유)
 
 ```
 default-src 'self';
-script-src 'self' 'unsafe-inline';
-style-src 'self' 'unsafe-inline';
+script-src 'self' 'nonce-{요청별}' 'strict-dynamic';   # dev는 'unsafe-eval' 추가
+style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
 img-src 'self' data: blob: https://tong.visitkorea.or.kr;
-font-src 'self' data:;
-connect-src 'self' <NEXT_PUBLIC_API_URL> https://*.sentry.io;
+font-src 'self' data: https://cdn.jsdelivr.net;
+connect-src 'self' <NEXT_PUBLIC_API_URL> https://vitals.vercel-insights.com;
 worker-src 'self';
 manifest-src 'self';
 frame-ancestors 'none';
@@ -495,25 +495,24 @@ form-action 'self';
 upgrade-insecure-requests;
 ```
 
+- `script-src`는 이미 **nonce + strict-dynamic** (enforce 전환 시 `'unsafe-inline'` 자연 무시). Next.js가 `x-nonce`/request CSP를 읽어 하이드레이션 inline script에 nonce 자동 부여.
+- `connect-src`에서 **`*.sentry.io` 제거** — client Sentry 미사용(server/edge runtime만 전송, CSP 무관). 공격면 최소화.
+- `style-src`만 `'unsafe-inline'` 잔존 (Next/recharts inline style). enforce 시 style nonce/hash로 대체 검토.
+
 #### 단계별 강화 로드맵
 
-1. **현재**: Report-Only — 운영 환경에서 위반 보고 모니터링
-2. **1주 후**: 보고가 안정되면 `Content-Security-Policy` 로 전환 (enforce)
-3. **추후**: middleware 에서 nonce 발급 → `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'` → inline-script 의존 제거 가능 시 `'unsafe-inline'` 삭제
+1. ~~nonce 인프라 구축~~ ✅ — middleware nonce 발급 완료 (Report-Only)
+2. **현재**: Report-Only로 운영 위반 보고 모니터링
+3. **다음**: 보고 안정되면 헤더 이름을 `Content-Security-Policy`로 (enforce). script는 nonce라 바로 가능
+4. **추후**: `style-src 'unsafe-inline'` 제거 (style nonce/hash)
 
-#### nonce 패턴 예시 (운영 안정화 후)
+#### Server Component에서 nonce 수동 사용 (필요 시)
 
 ```ts
-// middleware.ts 안에서
-const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
-const csp = `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'; ...`;
-response.headers.set('Content-Security-Policy', csp);
-response.headers.set('x-nonce', nonce);
-
-// Server Component 에서
 import { headers } from 'next/headers';
 const nonce = (await headers()).get('x-nonce') ?? '';
 <Script nonce={nonce} ... />
+// 단, Next 번들 script는 자동 적용되므로 수동 사용은 외부 inline script에만 필요
 ```
 
 ### CSRF 방어 (백엔드 협의 필요)
@@ -528,8 +527,9 @@ Set-Cookie: access_token=...; HttpOnly; Secure; SameSite=Lax
 
 대부분의 CSRF 케이스 자동 차단. cross-origin 인증이 필요한 경우만 `SameSite=None`.
 
-**Layer 2 — Origin/Referer 검증 (백엔드 미들웨어)**
-모든 state-changing 요청 (POST/PUT/DELETE/PATCH) 에서 `Origin` 헤더 화이트리스트 검증.
+**Layer 2 — Origin/Referer 검증** ✅ **프론트 1차 적용됨**
+`middleware.ts`가 state-changing 요청(POST/PUT/PATCH/DELETE)의 `Origin`이 our origin과 다르면 403.
+단 백엔드 직접 호출(axios)은 middleware 미경유 → **백엔드 측 Origin 검증이 본 방어선** (프론트는 Server Action/Next route 1차 방어만).
 
 **Layer 3 — CSRF Double-Submit Token (민감 작업만)**
 회원 탈퇴, 비밀번호 변경, 차단 해제 등 고위험 작업에 적용:
@@ -751,21 +751,26 @@ GitHub Secret Scanning (무료) 활성화 권장 — repo settings에서 토글.
 
 아래 로드맵 중 **도입 완료**된 항목:
 
-| 라이브러리               | 상태    | 통합 위치                                                  |
-| ------------------------ | ------- | ---------------------------------------------------------- |
-| `@next/bundle-analyzer`  | ✅ 도입 | `next.config.js` — `ANALYZE=true npm run build`            |
-| `@vercel/speed-insights` | ✅ 도입 | `providers.tsx` `<SpeedInsights />` + CSP connect-src 등록 |
-| `plaiceholder` + `sharp` | ✅ 도입 | `src/lib/blur.ts` — 외부 이미지 LQIP 서버 헬퍼             |
-| `lucide-static`          | ✅ 도입 | `npm run build:icons` → `public/icons.svg` (19 icons)      |
-| `msw`                    | ✅ 도입 | `src/mocks/*` 활성화 + same-origin proxy (위 MSW 섹션)     |
+| 라이브러리               | 상태    | 통합 위치                                                         |
+| ------------------------ | ------- | ----------------------------------------------------------------- |
+| `@next/bundle-analyzer`  | ✅ 도입 | `next.config.js` — `ANALYZE=true npm run build`                   |
+| `@vercel/speed-insights` | ✅ 도입 | `providers.tsx` `<SpeedInsights />` + CSP connect-src 등록        |
+| `plaiceholder` + `sharp` | ✅ 도입 | `src/lib/blur.ts` — 외부 이미지 LQIP 서버 헬퍼                    |
+| `lucide-static`          | ✅ 도입 | `npm run build:icons` → `public/icons.svg` (19 icons)             |
+| `msw`                    | ✅ 도입 | `src/mocks/*` 활성화 + same-origin proxy (위 MSW 섹션)            |
+| `vitest` 스택            | ✅ 도입 | `vitest.config.ts`/`setup.ts` + MSW server, 샘플 테스트           |
+| `@playwright/test`       | ✅ 도입 | `playwright.config.ts` (모바일 프리셋) + `e2e/smoke.spec.ts`      |
+| `@vercel/analytics`      | ✅ 도입 | `providers.tsx` `<Analytics />` + `analytics/providers/vercel.ts` |
+| `@sentry/nextjs`         | 🟡 부분 | **server/edge만** (client는 First Load +82KB라 제외) — 아래 참고  |
 
-**미도입 — 아키텍처 우선순위 순**:
+> **vitest 스택 버전 핀**: `@vitejs/plugin-react@4` + `vite@6` (vitest@3 호환). plugin-react@6(vite@8)은 트리 충돌.
+> **coverage**: html reporter는 Windows EINVAL → `text`+`json-summary`.
+> **`.npmrc legacy-peer-deps`**: `@vercel/analytics`의 svelte optional-peer(vite@6) 충돌 우회.
 
-- 🔴 `vitest` + `@testing-library/{react,user-event,jest-dom}` + `happy-dom` + `@vitest/coverage-v8` — 유닛/컴포넌트 테스트 (`src/mocks/server.ts`만 준비됨, 설정 0%)
-- 🔴 `sonner` — toast 렌더러 (`ui-store` 큐에 어댑터 연결 필요, 현재 피드백 미표시)
-- 🟡 `@playwright/test` — E2E (MSW 핸들러 공유)
-- 🟡 `@sentry/nextjs` — 에러 추적 (`NEXT_PUBLIC_APP_VERSION` release 태깅)
-- 🟡 `@vercel/analytics` — page view/이벤트 (speed-insights와 별개, `analytics` 추상화의 provider로 연결)
+**미도입 / 의도적 제외**:
+
+- ❌ `sonner` — **불필요**. `components/feedback/Toaster.tsx`가 이미 `ui-store` 큐를 렌더하는 어댑터(CSS shimmer + Icon sprite). 도입 시 중복.
+- 🟡 `@sentry/nextjs` **client** — `instrumentation-client.ts`를 두면 모든 페이지 First Load JS에 ~80KB 추가(측정). 렌더링 속도 최우선 원칙상 server/edge만. client 에러 추적 필요 시 lazy-load 패턴으로 별도 도입.
 
 **일반 로그인만 → 추가 안 함**:
 
@@ -777,9 +782,12 @@ GitHub Secret Scanning (무료) 활성화 권장 — repo settings에서 토글.
 
 - `src/stores/location-store.ts` — resolve된 위치를 세션 동안 공유 (재요청 방지)
 - `src/lib/blur.ts` — 외부 이미지 LQIP(base64) 생성, React `cache()` + fetch 7일 revalidate
+- `src/lib/sentry-scrub.ts` — Sentry beforeSend PII 마스킹 (토큰/비밀번호 제거)
 - `services/interceptors/timing.ts` 운영 송신 — slow/error API를 `analytics` 의 `api.slow`/`api.error` 이벤트로 (pathname만, query 제거)
+- `instrumentation.ts` / `sentry.server.config.ts` / `sentry.edge.config.ts` — Sentry server/edge init (DSN 가드 no-op)
 - `.github/workflows/lighthouse.yml` + `lighthouserc.json` — PR/main 성능 회귀 CI (baseline 단계 warn)
 - `package.json` `overrides` — `serialize-javascript`/`postcss` 보안 패치 (transitive)
+- 테스트: `npm test` / `test:run` / `test:coverage` / `test:e2e` (브라우저 1회: `npx playwright install --with-deps chromium`)
 
 ### 🔴 즉시 추가 — 런타임
 

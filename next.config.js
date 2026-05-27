@@ -54,50 +54,17 @@ const withPWA = require('next-pwa')({
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
-const isDev = process.env.NODE_ENV === 'development';
-const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '';
-
 /**
- * Content Security Policy
- *
- * 시작은 Report-Only — 위반 보고만 받고 차단 X.
- * 운영 안정화 후 'Content-Security-Policy' 헤더로 전환.
- *
- * 'unsafe-inline' 가 남는 이유:
- *   - Next.js 가 inline style/script 일부 사용 (이미지 placeholder, CSS-in-JS 등)
- *   - Recharts 가 inline style 사용
- *   → 향후 middleware nonce 패턴으로 발전시킬 수 있음 (README 참고)
- *
- * connect-src 에 백엔드 URL과 Sentry 도메인 명시 (사용 시 추가).
- */
-const csp = [
-  "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
-  // jsdelivr — Pretendard 폰트 CSS
-  "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
-  "img-src 'self' data: blob: https://tong.visitkorea.or.kr",
-  // jsdelivr — Pretendard 폰트 woff2 파일들
-  "font-src 'self' data: https://cdn.jsdelivr.net",
-  `connect-src 'self' ${apiUrl} https://*.sentry.io https://vitals.vercel-insights.com`.trim(),
-  "worker-src 'self'",
-  "manifest-src 'self'",
-  "frame-ancestors 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-  isDev ? '' : 'upgrade-insecure-requests',
-]
-  .filter(Boolean)
-  .join('; ');
-
-/**
- * 보안 헤더
+ * 보안 헤더 (정적 — 모든 응답)
  *
  * - Strict-Transport-Security: HTTPS 강제 (preload 등록 가능)
  * - X-Content-Type-Options: MIME sniffing 차단
  * - X-Frame-Options: 클릭재킹 방어 (iframe 임베드 차단)
  * - Referrer-Policy: 외부로 referrer 최소화
  * - Permissions-Policy: 사용 안 하는 권한 명시적 거부
- * - Content-Security-Policy-Report-Only: XSS 완화 (모니터링 단계)
+ *
+ * CSP는 요청별 nonce가 필요해 정적 헤더로 둘 수 없음 →
+ * middleware.ts + src/lib/csp.ts 에서 발급 (Content-Security-Policy-Report-Only).
  */
 const SECURITY_HEADERS = [
   {
@@ -121,7 +88,6 @@ const SECURITY_HEADERS = [
       'interest-cohort=()',
     ].join(', '),
   },
-  { key: 'Content-Security-Policy-Report-Only', value: csp },
 ];
 
 /** @type {import('next').NextConfig} */
