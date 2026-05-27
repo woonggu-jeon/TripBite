@@ -207,6 +207,23 @@ const { items, fetchNext, hasNext, isFetchingNext } = useInfiniteList({
 홈/마이페이지의 각 위젯은 자체 `useQuery` → waterfall 회피.
 위젯별 fixed height로 CLS 0.
 
+### 11. Client Router Cache (staleTimes)
+
+`next.config.js` `experimental.staleTimes: { dynamic: 30, static: 180 }`.
+탭 전환/뒤로가기 시 캐시된 RSC payload 재사용 → 즉각 복귀. PWA에서 체감 큼.
+
+### 12. Link prefetch 정책 ⚠️ 위젯 구현 시 적용
+
+App Router `<Link>`는 기본적으로 **viewport 진입 시 자동 prefetch**. 핵심 네비(BottomNav 5탭, 빠른시작 3버튼)는 그대로 두되, **다수가 한 화면에 깔리는 리스트성 링크**는 prefetch를 제한:
+
+| 대상                                                   | 정책                                                                           |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| BottomNav / AppHeader / 빠른시작                       | `prefetch` 기본(auto) — 핵심 동선                                              |
+| 시군 11개 카드(`RegionList`), 랭킹 리스트, 편지함 목록 | `prefetch={false}` 또는 hover 시점 prefetch — viewport 일괄 prefetch 폭주 방지 |
+| 상세 진입(편지/우승지 카드)                            | 기본 auto (단건 진입 의도 명확)                                                |
+
+> 현재 리스트 컴포넌트는 stub이라 미적용. 구현 시 위 표대로 `prefetch={false}`를 카드 `<Link>`에 부여.
+
 ---
 
 ## 다국어 (i18n)
