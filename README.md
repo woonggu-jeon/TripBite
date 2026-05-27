@@ -22,15 +22,22 @@ npm run build && npm start   # 프로덕션 (PWA 활성)
 
 ## 스크립트
 
-| 명령                   | 설명                                    |
-| ---------------------- | --------------------------------------- |
-| `npm run dev`          | 개발 서버                               |
-| `npm run build`        | 프로덕션 빌드                           |
-| `npm start`            | 프로덕션 서버                           |
-| `npm run lint`         | ESLint                                  |
-| `npm run type-check`   | `tsc --noEmit`                          |
-| `npm run format`       | Prettier 일괄 포맷                      |
-| `npm run generate:api` | OpenAPI → `src/generated/api` 코드 생성 |
+| 명령                    | 설명                                                    |
+| ----------------------- | ------------------------------------------------------- |
+| `npm run dev`           | 개발 서버                                               |
+| `npm run build`         | 프로덕션 빌드                                           |
+| `npm start`             | 프로덕션 서버                                           |
+| `npm run lint`          | ESLint (next + security 룰)                             |
+| `npm run type-check`    | `tsc --noEmit` (strict + verbatim/noUnchecked)          |
+| `npm run format`        | Prettier 일괄 포맷                                      |
+| `npm test`              | Vitest watch                                            |
+| `npm run test:run`      | Vitest 1회 (CI)                                         |
+| `npm run test:coverage` | 커버리지 + threshold 게이트                             |
+| `npm run test:e2e`      | Playwright E2E (브라우저 1회: `npx playwright install`) |
+| `npm run size`          | size-limit 번들 가드                                    |
+| `npm run analyze`       | `ANALYZE=true` 번들 분석 리포트                         |
+| `npm run build:icons`   | lucide → `public/icons.svg` sprite 생성                 |
+| `npm run generate:api`  | OpenAPI → `src/generated/api` 코드 생성                 |
 
 ---
 
@@ -767,7 +774,7 @@ GitHub Secret Scanning (무료) 활성화 권장 — repo settings에서 토글.
 
 ## 추가 권장 라이브러리 (로드맵)
 
-현재 `package.json` 에는 들어있지 않지만, 운영 품질과 테스트 자동화를 위해 단계적으로 추가하면 좋은 라이브러리 목록입니다. **런타임 추가는 60KB 미만** (gzip 합산, 대부분 동적 로드 가능), **테스트 도구는 0KB** (devDependencies).
+운영 품질과 테스트 자동화를 위한 라이브러리 목록입니다. **상당수는 이미 도입됨 — 바로 아래 "도입 현황" 표 참고.** 나머지는 단계적으로 추가. **런타임 추가는 60KB 미만** (gzip 합산, 대부분 동적 로드 가능), **테스트 도구는 0KB** (devDependencies).
 
 ### 도입 현황 (구현 반영)
 
@@ -1192,26 +1199,35 @@ Turborepo / Micro Frontend / Redux / GraphQL / Kubernetes / @tanstack/react-virt
 
 ### Cross-cutting hooks (`src/hooks/`)
 
-| 훅                            | 용도                                                            |
-| ----------------------------- | --------------------------------------------------------------- |
-| `use-keyboard`                | Esc 닫기, cmd+k 등 단축키. input 안에선 무시 (modifier 없을 때) |
-| `use-focus-trap`              | 모달 안에 포커스 가두기 + 닫힐 때 이전 포커스 복원              |
-| `use-unsaved-changes-warning` | 편지/온보딩 작성 중 페이지 떠나기 전 `beforeunload` 경고        |
-| `use-form-error`              | axios 에러 → RHF `setError` 자동 매핑 (필드 + 루트)             |
-| `use-scroll-restoration`      | 무한스크롤 위치 보존/복원 (뒤로가기 시)                         |
-| `use-intersection`            | IntersectionObserver 추상화 (rootMargin 200px)                  |
-| `use-confirm`                 | Promise 기반 확인 다이얼로그 (큐 + ui-store)                    |
+| 훅                            | 용도                                                              |
+| ----------------------------- | ----------------------------------------------------------------- |
+| `use-keyboard`                | Esc 닫기, cmd+k 등 단축키. input 안에선 무시 (modifier 없을 때)   |
+| `use-focus-trap`              | 모달 안에 포커스 가두기 + 닫힐 때 이전 포커스 복원                |
+| `use-unsaved-changes-warning` | 편지/온보딩 작성 중 페이지 떠나기 전 `beforeunload` 경고          |
+| `use-form-error`              | axios 에러 → RHF `setError` 자동 매핑 (필드 + 루트)               |
+| `use-scroll-restoration`      | 무한스크롤 위치 보존/복원 (뒤로가기 시)                           |
+| `use-intersection`            | IntersectionObserver 추상화 (rootMargin 200px)                    |
+| `use-confirm`                 | Promise 기반 확인 다이얼로그 (큐 + ui-store)                      |
+| `use-format`                  | next-intl 래핑 — `relativeTime`/`dateTime`/`date`/`compactNumber` |
 
 ### Cross-cutting utilities (`src/lib/`)
 
-| 모듈       | 용도                                                                               |
-| ---------- | ---------------------------------------------------------------------------------- |
-| `haptic`   | `navigator.vibrate` 추상화. tap/success/warning/longPress. reduced-motion 자동 off |
-| `version`  | `APP_VERSION` 노출 (settings 하단, /api/health 응답, Sentry release)               |
-| `toast`    | `toast.success/error/info/warning` — ui-store push 어댑터                          |
-| `sw-cache` | `clearAllCaches()` — 로그아웃 시 사용자 격리                                       |
-| `cache`    | TanStack Query 캐시 프로파일 7종                                                   |
-| `dynamic`  | `clientOnly()` / `ssrLazy()` 동적 import 헬퍼                                      |
+| 모듈           | 용도                                                                                               |
+| -------------- | -------------------------------------------------------------------------------------------------- |
+| `haptic`       | `navigator.vibrate` 추상화. tap/success/warning/longPress. reduced-motion 자동 off                 |
+| `version`      | `APP_VERSION` 노출 (settings 하단, /api/health 응답, Sentry release)                               |
+| `toast`        | `toast.success/error/info/warning` — ui-store push 어댑터                                          |
+| `sw-cache`     | `clearAllCaches()` — 로그아웃 시 사용자 격리                                                       |
+| `cache`        | TanStack Query 캐시 프로파일 7종                                                                   |
+| `dynamic`      | `clientOnly()` / `ssrLazy()` 동적 import 헬퍼                                                      |
+| `validation`   | 보안 검사(HTML/zero-width/control) + `graphemeLength` + `textGuards` (letter/nickname schema 공유) |
+| `blur`         | 외부 이미지 LQIP(base64) 서버 생성 — `getBlurDataURL()` (plaiceholder)                             |
+| `csp`          | 요청별 nonce CSP 빌더 (middleware에서 사용)                                                        |
+| `env`          | 필수 `NEXT_PUBLIC_*` 런타임 가드                                                                   |
+| `sentry-scrub` | Sentry beforeSend PII 마스킹                                                                       |
+| `clipboard`    | `copyToClipboard()` (clipboard API + execCommand fallback)                                         |
+| `async`        | `sleep` / `debounce(.cancel)` / `throttle`                                                         |
+| `utils`        | `cn()` — clsx + tailwind-merge                                                                     |
 
 ### 표준 피드백 컴포넌트 (`src/components/feedback/`)
 
@@ -1289,9 +1305,9 @@ NEXT_PUBLIC_APP_VERSION=$VERCEL_GIT_COMMIT_SHA
 
 ```
 mocks/
- ├─ handlers.ts        REST 핸들러 (msw 도입 후 활성화 — 예시 주석 포함)
- ├─ server.ts          vitest용 setupServer 자리
- ├─ browser.ts         dev용 setupWorker 자리
+ ├─ handlers.ts        REST 핸들러 (auth/me/onboarding/location/weather/letters/region/...)
+ ├─ server.ts          vitest용 setupServer (vitest.setup.ts에서 사용)
+ ├─ browser.ts         dev용 setupWorker (NEXT_PUBLIC_USE_MSW=true 시 worker.start)
  └─ seeds/
      ├─ regions.ts        11시군 × 5 = 55개
      ├─ letters.ts        받은 편지 30개 (페이지네이션 테스트)
@@ -1299,26 +1315,37 @@ mocks/
      └─ notifications.ts  7개 (안 읽음 3 + 읽음 4)
 ```
 
-msw 설치 후 `handlers.ts` 의 예시 주석을 활성화하면 동일 핸들러를 dev / vitest / playwright 가 공유.
+**활성화됨** — 동일 `handlers.ts`를 dev(service worker) / vitest(node) / Playwright가 공유.
+`/me`는 mutable `onboardedState`로 온보딩 흐름 재현. dev 사용법은 위 "백엔드 미준비 시 검증 — MSW" 섹션 참고.
 
 ### 협업 자동화 (`.husky/`, `.github/`)
 
-| 파일                                        | 목적                                                             |
-| ------------------------------------------- | ---------------------------------------------------------------- |
-| `.husky/pre-commit`                         | `lint-staged` 실행 — 변경 파일만 lint + format                   |
-| `.husky/commit-msg`                         | `commitlint` — Conventional Commits 강제                         |
-| `.lintstagedrc.json`                        | `*.{ts,tsx}` → ESLint+Prettier, `*.{md,scss,json}` → Prettier    |
-| `commitlint.config.js`                      | type enum: feat/fix/refactor/perf/style/docs/test/chore/ci/build |
-| `.github/PULL_REQUEST_TEMPLATE.md`          | 변경 요약 / 영역 / 테스트 / 스크린샷 / 영향 범위                 |
-| `.github/ISSUE_TEMPLATE/bug_report.md`      | 재현 단계 / 환경 / 버전                                          |
-| `.github/ISSUE_TEMPLATE/feature_request.md` | 문제 / 해결책 / 대안                                             |
-| `.github/CODEOWNERS`                        | 보안/인증 영역 자동 리뷰어 지정                                  |
+| 파일                               | 목적                                                             |
+| ---------------------------------- | ---------------------------------------------------------------- |
+| `.husky/pre-commit`                | `lint-staged` 실행 — 변경 파일만 lint + format                   |
+| `.husky/commit-msg`                | `commitlint` — Conventional Commits 강제                         |
+| `.lintstagedrc.json`               | `*.{ts,tsx}` → ESLint+Prettier, `*.{md,scss,json}` → Prettier    |
+| `commitlint.config.js`             | type enum: feat/fix/refactor/perf/style/docs/test/chore/ci/build |
+| `.github/PULL_REQUEST_TEMPLATE.md` | 변경 요약 / 영역 / 테스트 / 스크린샷 / 영향 범위                 |
+| `.github/ISSUE_TEMPLATE/*`         | bug_report / feature_request                                     |
+| `.github/dependabot.yml`           | npm + github-actions 주간 업데이트                               |
+
+#### GitHub Actions 워크플로우 (`.github/workflows/`)
+
+| 워크플로우       | 트리거             | 내용                                                                     |
+| ---------------- | ------------------ | ------------------------------------------------------------------------ |
+| `ci.yml`         | PR / dev·main push | lint → type-check → coverage(게이트) → build → size → audit → dep-review |
+| `e2e.yml`        | PR / main push     | Playwright(chromium) + 브라우저 캐시 + MSW 모드 + 리포트                 |
+| `lighthouse.yml` | PR / main push     | `/login` 모바일 성능 측정 (baseline warn)                                |
+| `gitleaks.yml`   | PR / push          | 시크릿/토큰 커밋 스캔 (CodeQL 대체 — private repo + GHAS 없음)           |
+
+전 워크플로우에 `concurrency`(중복 run 취소) + 최소 `permissions`.
+CODEOWNERS는 1인 운영 단계라 제거됨.
 
 설치 후 한 번:
 
 ```bash
-npm install            # postinstall에서 husky 자동 초기화
-git add .husky/        # hook 파일 권한 보존
+npm install            # prepare에서 husky 자동 초기화
 ```
 
 ### 패턴 가이드
