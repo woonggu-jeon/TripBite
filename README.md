@@ -149,15 +149,20 @@ src/features/
 | session  | ∞          | 토너먼트 후보 (한 세션 동안 고정) |
 | weather  | 15m        | 날씨                              |
 
-### 5. PWA Runtime Caching (`next.config.js`)
+### 5. PWA Runtime Caching (`src/app/sw.ts` — serwist)
 
-| 패턴             | 전략                 | 보관 |
-| ---------------- | -------------------- | ---- |
-| TourAPI 이미지   | CacheFirst           | 30일 |
-| 기타 이미지      | StaleWhileRevalidate | 7일  |
-| `_next/static/*` | CacheFirst           | 1년  |
+next-pwa(유지보수 중단, workbox6) → **serwist** 마이그레이션. SW 소스는 `src/app/sw.ts`, `next.config.js`는 `withSerwist`로 래핑.
 
-오프라인 환경에서도 이미 본 콘텐츠는 즉시 표시.
+| 패턴                  | 전략                 | 보관 |
+| --------------------- | -------------------- | ---- |
+| jsdelivr 폰트         | CacheFirst           | 1년  |
+| `/icons.svg`          | CacheFirst           | 1년  |
+| TourAPI 이미지        | CacheFirst           | 30일 |
+| 기타 이미지           | StaleWhileRevalidate | 7일  |
+| Next 내부(RSC/static) | `defaultCache` 위임  | —    |
+
+- API 응답은 캐시 안 함(사용자별 데이터 누설 방지). 오프라인에서도 본 콘텐츠 즉시 표시.
+- `skipWaiting:false` — 새 SW는 대기, `PwaUpdateBanner`가 `SKIP_WAITING` 메시지 → `sw.ts` 리스너 → reload (`use-service-worker-update.ts` 연동).
 
 ### 6. 이미지
 

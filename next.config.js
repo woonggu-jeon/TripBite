@@ -1,55 +1,14 @@
 const createNextIntlPlugin = require('next-intl/plugin');
-const withPWA = require('next-pwa')({
-  dest: 'public',
-  register: true,
-  skipWaiting: true,
+
+/**
+ * Serwist PWA (next-pwa 대체 — 유지보수 중단/workbox6 → serwist workbox 최신)
+ * SW 소스: src/app/sw.ts (runtimeCaching은 거기서 정의). dev에선 비활성.
+ */
+const withSerwist = require('@serwist/next').default({
+  swSrc: 'src/app/sw.ts',
+  swDest: 'public/sw.js',
   disable: process.env.NODE_ENV === 'development',
-  runtimeCaching: [
-    {
-      // jsdelivr Pretendard 폰트 — CacheFirst 1년
-      // 첫 진입 시 한 번 다운로드, 이후 모든 페이지 즉시 표시
-      urlPattern: /^https:\/\/cdn\.jsdelivr\.net\/.+\.(?:woff2?|css)$/i,
-      handler: 'CacheFirst',
-      options: {
-        cacheName: 'pretendard-fonts',
-        expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 },
-        cacheableResponse: { statuses: [0, 200] }, // opaque 응답도 캐시
-      },
-    },
-    {
-      urlPattern: /\/icons\.svg$/i,
-      handler: 'CacheFirst',
-      options: {
-        cacheName: 'icon-sprite',
-        expiration: { maxEntries: 1, maxAgeSeconds: 60 * 60 * 24 * 365 },
-      },
-    },
-    {
-      urlPattern:
-        /^https:\/\/tong\.visitkorea\.or\.kr\/.+\.(?:jpe?g|png|webp|avif)$/i,
-      handler: 'CacheFirst',
-      options: {
-        cacheName: 'tour-api-images',
-        expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 30 },
-      },
-    },
-    {
-      urlPattern: /\.(?:jpe?g|png|webp|avif|svg|gif)$/i,
-      handler: 'StaleWhileRevalidate',
-      options: {
-        cacheName: 'static-images',
-        expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 7 },
-      },
-    },
-    {
-      urlPattern: /\/_next\/static\/.+/,
-      handler: 'CacheFirst',
-      options: {
-        cacheName: 'next-static',
-        expiration: { maxEntries: 64, maxAgeSeconds: 60 * 60 * 24 * 365 },
-      },
-    },
-  ],
+  reloadOnOnline: true,
 });
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
@@ -175,7 +134,7 @@ if (process.env.ANALYZE === 'true') {
   }
 }
 
-module.exports = withNextIntl(withBundleAnalyzer(withPWA(nextConfig)));
+module.exports = withSerwist(withNextIntl(withBundleAnalyzer(nextConfig)));
 
 /**
  * Sentry 소스맵 업로드 (릴리스 추적) — 운영 도입 시 활성화
