@@ -46,9 +46,16 @@ const mockUser = {
   id: '1',
   nickname: '테스터',
   email: 't@e.com',
-  isOnboarded: true,
   homeRegion: 'cheongju',
 } as const;
+
+/**
+ * 온보딩 완료 상태 — 신규 가입 흐름 재현용 mutable 상태.
+ *   - 초기 false → /me가 isOnboarded:false → AuthBootstrap이 /onboarding 유지
+ *   - complete-onboarding 호출 시 true → 이후 /me가 true → 홈 진입
+ * dev 서버(서비스워커) 재시작 시 false로 리셋.
+ */
+let onboardedState = false;
 
 const mockResolvedLocation = {
   latitude: 36.6424,
@@ -77,11 +84,14 @@ export const handlers = [
     `${apiUrl}/auth/refresh`,
     () => new HttpResponse(null, { status: 204 }),
   ),
-  http.get(`${apiUrl}/me`, () => HttpResponse.json(mockUser)),
+  http.get(`${apiUrl}/me`, () =>
+    HttpResponse.json({ ...mockUser, isOnboarded: onboardedState }),
+  ),
 
   // ===== Onboarding =====
   http.post(`${apiUrl}/me/complete-onboarding`, async ({ request }) => {
     const body = (await request.json()) as { nickname?: string };
+    onboardedState = true;
     return HttpResponse.json({
       ...mockUser,
       nickname: body.nickname ?? mockUser.nickname,
