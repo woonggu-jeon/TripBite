@@ -39,7 +39,7 @@ jobs:
 
       - name: Dependency Review (PR only)
         if: github.event_name == 'pull_request'
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@v5
         with:
           fail-on-severity: high
           # 라이선스 화이트리스트 — 카피레프트는 별도 검토 필요
