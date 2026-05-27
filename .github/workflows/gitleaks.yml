@@ -1,0 +1,29 @@
+name: gitleaks
+
+# 시크릿/토큰이 커밋에 섞여 들어갔는지 스캔 (CodeQL 대체 — private repo + GHAS 없음).
+# gitleaks-action은 개인(personal) 계정 repo에서 라이선스 없이 무료.
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: gitleaks-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 전체 히스토리 스캔 (과거 커밋의 시크릿도 탐지)
+
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
