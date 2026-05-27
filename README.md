@@ -41,6 +41,32 @@ npm run build && npm start   # 프로덕션 (PWA 활성)
 
 ---
 
+## 현재 구현 상태 (v0.1)
+
+> ⚠️ 이 README의 기능 서술 상당수는 **목표 설계**입니다. 라우팅·인프라·설정·인증은 갖춰졌고, 페이지별 UI 위젯은 단계적으로 구현 중. 아래가 **실제 동작 범위**입니다.
+
+### ✅ 완전 동작
+
+- **인증**: `/login` → `/onboarding` (3-step: 컨셉 / 위치 권한 / 닉네임)
+- **편지 작성**: `/letter/compose` (위치 자동 채우기 + 5글자 zod 검증 + 전송)
+- **설정**: `/settings` (알림 / 계정 / 정책 / 로그아웃)
+
+### 🟡 부분 동작 (라우팅·레이아웃 ○ / 내부 위젯 stub)
+
+- `/` 홈 — 빠른 시작 3버튼만 동작, 위젯 5종(날씨추천/축제/최신편지/우승지/...) stub
+- `/region` — 시군 11개 그리드·라우팅 동작, 상세(`/region/[code]`) 탭 stub
+- `/ranking` · `/tournament` + `/play` + `/result` · `/letter`(목록) · `/letter/[id]` · `/quiz` · `/mypage` — 레이아웃만, 내부 컴포넌트 stub
+
+### 🔧 준비됨 (호출 대기 — 렌더링만 추가하면 동작)
+
+- **인프라**: api client + interceptor(auth 401-refresh / timing), feature별 데이터 hooks, Zustand stores, 캐시 프로파일 7종
+- **공용 컴포넌트**: `InfiniteList`(무한스크롤), 차트·캐러셀 동적 래퍼, `OptimizedImage`, `ConfirmDialog`, 피드백/PWA 배너
+- **검증/유틸**: Zod(login/letter/nickname) + `lib/validation` · `use-format` · `clipboard`/`async`
+
+> **stub** = `return null`인 프레젠테이션 컴포넌트 약 53개. 데이터 훅·라우팅·설계는 준비돼 있어 **렌더링 코드만 채우면 동작**. 위젯 구현 시 RSC+Suspense / `getBlurDataURL` / `prefetch={false}` 등을 함께 적용 (후속 로드맵 참고).
+
+---
+
 ## 사이트맵 (v2)
 
 ```
@@ -97,24 +123,26 @@ src/app/
 
 ```
 src/features/
- ├─ auth/              로그인 / 로그아웃 / /me / AuthBootstrap
- ├─ onboarding/        3-step 온보딩
- ├─ user/              사용자 프로필
- ├─ tournament/        토너먼트 (Zustand 멀티스텝 store)
- ├─ letter/            다섯글자 편지 (5글자 zod 검증)
- ├─ ranking/           랭킹 + 여행 유형 테스트
- ├─ quiz/              여행 유형 테스트 (별도 페이지)
- ├─ region/            충북 11개 시군 (TourAPI 프록시)
- ├─ weather/           위치 기반 날씨
- ├─ location/          Geolocation + Permissions API + IP fallback
- ├─ mypage/            마이페이지 + 도장깨기
- ├─ notification/      Web Push + 인앱 알림함
- ├─ settings/          알림/계정/정책/액션 4섹션
- ├─ i18n/              LanguageSwitcher
- ├─ chart/             Recharts wrapper (dynamic import)
- ├─ carousel/          Embla wrapper (dynamic import)
- └─ list/              InfiniteList (IntersectionObserver)
+ ├─ auth/              로그인 / 로그아웃 / /me / AuthBootstrap   [✅ 동작]
+ ├─ onboarding/        3-step 온보딩                            [✅ 동작]
+ ├─ location/          Geolocation + Permissions API + IP fallback [✅ 동작]
+ ├─ user/              사용자 프로필                            [🔧 hook 준비]
+ ├─ letter/            다섯글자 편지 (작성 ✅ / 목록·상세 컴포넌트 ⏳ stub)
+ ├─ tournament/        토너먼트 store ✅ / UI 컴포넌트 ⏳ stub (9개)
+ ├─ ranking/           hook ✅ / 리스트·차트 컴포넌트 ⏳ stub (11개)
+ ├─ quiz/              hook ✅ / intro·질문·결과 ⏳ stub (4개)
+ ├─ region/            시군 그리드 ✅ / hero·탭·도장맵 ⏳ stub
+ ├─ weather/           hook ✅ / WeatherWidget ⏳ stub
+ ├─ mypage/            hook ✅ / 프로필·도장·우승지·편지함 ⏳ stub (8개)
+ ├─ notification/      Web Push + 인앱 알림함 (hook ✅ / 일부 UI ⏳)
+ ├─ settings/          알림/계정/정책 섹션                      [✅ 동작]
+ ├─ i18n/              LanguageSwitcher                         [✅ 동작]
+ ├─ chart/             Recharts wrapper (dynamic import)        [🔧 래퍼 준비]
+ ├─ carousel/          Embla wrapper (dynamic import)           [🔧 래퍼 준비]
+ └─ list/              InfiniteList (IntersectionObserver)      [🔧 준비, 사용처 stub]
 ```
+
+> ✅ 동작 · 🔧 인프라 준비(호출 대기) · ⏳ stub(`return null`, 렌더링 미구현). 상단 "현재 구현 상태" 참고.
 
 ---
 
@@ -216,8 +244,9 @@ const { items, fetchNext, hasNext, isFetchingNext } = useInfiniteList({
 
 ### 10. 위젯 단위 fetching
 
-홈/마이페이지의 각 위젯은 자체 `useQuery` → waterfall 회피.
-위젯별 fixed height로 CLS 0.
+홈/마이페이지의 각 위젯은 자체 `useQuery` → waterfall 회피. 위젯별 fixed height로 CLS 0.
+
+> ⏳ **설계 패턴** — 현재 홈/마이페이지 위젯은 stub(placeholder)이라 미적용. 데이터 hook은 준비됨, 위젯 구현 시 이 패턴으로 연결.
 
 ### 11. Client Router Cache (staleTimes)
 
@@ -1112,7 +1141,7 @@ npm i @use-gesture/react
 - 60fps 보장 (GPU 가속)
 - 4계절별 모양/색/낙하속도 파라미터화
 
-위치: `features/tournament/components/FallingParticles.tsx`
+권장 위치: `features/tournament/components/FallingParticles.tsx` (⏳ 미구현 — 토너먼트 UI 구현 시 추가)
 
 tsparticles(50KB+) 는 토너먼트 페이지 진입을 무겁게 함. motion + DOM 노드 N개는 reflow 비용. → **Canvas 가 최적해**.
 
