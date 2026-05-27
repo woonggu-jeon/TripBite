@@ -1127,6 +1127,47 @@ Turborepo / Micro Frontend / Redux / GraphQL / Kubernetes / @tanstack/react-virt
 
 ---
 
+## 후속 작업 로드맵 (Backlog)
+
+현재까지 인프라(렌더링/보안/테스트/PWA)는 갖춰졌고, 아래는 남은 후속 항목.
+
+### 테스트 / CI
+
+- [ ] CI를 `test:run` → `test:coverage`로 전환 (coverage threshold를 PR에서 강제)
+- [ ] Playwright E2E를 CI 별도 job으로 (`npx playwright install` 캐시 + 실제 시나리오: 온보딩/편지/위치)
+- [ ] 위젯 구현 시 coverage `include` 확장 (현재 핵심 로직만 측정)
+
+### 보안
+
+- [ ] CSP **enforce 전환** — `/api/csp-report` 위반 보고 1~2주 모니터링 후 `Content-Security-Policy-Report-Only` → `Content-Security-Policy`
+- [ ] `style-src 'unsafe-inline'` 제거 (style nonce/hash)
+- [ ] SRI(Subresource Integrity) — jsdelivr 폰트 CSS `<link>`에 integrity
+- [ ] gitleaks + GitHub Secret Scanning 활성화
+- [ ] 백엔드: CSRF Layer 1·2(SameSite/Origin) + Rate Limit (프론트 1차 방어만 적용됨)
+
+### 렌더링 / PWA
+
+- [ ] **위젯 stub 구현** (48개) — 구현 시점에 일괄 적용:
+  - RSC + `<Suspense>` 패턴 (또는 `useSuspenseQuery`) — 현재 위젯이 `'use client'`라 streaming 미작동
+  - React Compiler (`babel-plugin-react-compiler`) — 리렌더 잦은 영역(토너먼트 store)
+  - `getBlurDataURL()` LCP 이미지 적용 (시군 hero / 우승지)
+  - 리스트성 `<Link prefetch={false}>` (시군 11개 카드 등)
+- [ ] serwist SW **런타임 검증** (production 실기기: 오프라인/업데이트배너/푸시/설치)
+- [ ] Pretendard fallback 메트릭 capsize 정밀 측정 (현재 근사값)
+- [ ] Lighthouse CI assertion warn → error (baseline 후)
+
+### 기능 연동
+
+- [ ] 백엔드 실 API 연동 (`NEXT_PUBLIC_USE_MSW=false`) — Location/Letter/Auth 등
+- [ ] `@sentry/nextjs` client 도입 검토 (lazy-load로 First Load 영향 최소화)
+
+### 공통 모듈 (아래 "공통 유틸리티" 참고)
+
+- [ ] 보안 정규식 + `graphemeLength` 중복 제거 (`lib/validation.ts`)
+- [ ] 날짜/숫자 포맷 (next-intl `useFormatter` 래핑) — 편지함/알림함 구현 시
+
+---
+
 ## 아키텍처 확장 (UX / 운영 / 협업)
 
 사이트맵 v2 위에 얹은 횡단 관심사 모음. 모든 영역이 "작은 코드, 큰 효과" 원칙.
