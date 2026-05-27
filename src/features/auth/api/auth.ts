@@ -1,5 +1,11 @@
 import { api } from '@/services/api/client';
-import type { LoginRequest, LoginResponse } from '@/features/auth/types';
+import type {
+  LoginRequest,
+  LoginResponse,
+  SignupRequest,
+  ForgotPasswordRequest,
+  ResetPasswordRequest,
+} from '@/features/auth/types';
 import type { User } from '@/features/user/types';
 
 /**
@@ -13,6 +19,20 @@ export const authApi = {
   login: async (data: LoginRequest) => {
     const res = await api.post<LoginResponse>('/auth/login', data);
     return res.data;
+  },
+
+  signup: async (data: SignupRequest) => {
+    await api.post('/auth/signup', data);
+  },
+
+  // 재설정 링크 메일 발송 (백엔드가 토큰 URL 메일 전송)
+  forgotPassword: async (data: ForgotPasswordRequest) => {
+    await api.post('/auth/forgot-password', data);
+  },
+
+  // 메일 링크의 토큰 + 새 비밀번호
+  resetPassword: async (data: ResetPasswordRequest) => {
+    await api.post('/auth/reset-password', data);
   },
 
   logout: async () => {

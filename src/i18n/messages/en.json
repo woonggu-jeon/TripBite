@@ -50,16 +50,67 @@
   "auth": {
     "login": {
       "title": "Sign in",
-      "email": "Email",
+      "username": "Username",
       "password": "Password",
       "submit": "Sign in",
       "submitting": "Signing in...",
-      "emailRequired": "Please enter your email.",
-      "emailInvalid": "Please enter a valid email.",
-      "passwordMin": "Password must be at least 8 characters.",
-      "passwordMax": "Password is too long.",
+      "usernameRequired": "Please enter your username.",
+      "passwordRequired": "Please enter your password.",
       "failed": "Sign-in failed.",
-      "unknown": "Something went wrong."
+      "unknown": "Something went wrong.",
+      "toSignup": "Sign up",
+      "toForgot": "Forgot password?"
+    },
+    "signup": {
+      "title": "Create account",
+      "name": "Name",
+      "namePlaceholder": "Full name",
+      "username": "Username",
+      "usernamePlaceholder": "letters/digits/_ 4-20",
+      "password": "Password",
+      "passwordPlaceholder": "10+ characters",
+      "birthDate": "Date of birth",
+      "birthDatePlaceholder": "",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "phone": "Phone",
+      "phonePlaceholder": "010-1234-5678",
+      "submit": "Sign up",
+      "submitting": "Creating...",
+      "failed": "Sign-up failed.",
+      "toLogin": "Already have an account? Sign in",
+      "errors": {
+        "nameRequired": "Please enter your name.",
+        "nameTooLong": "Name is too long.",
+        "nameInvalid": "Contains disallowed characters.",
+        "usernameInvalid": "Username must be 4-20 letters/digits/underscore.",
+        "passwordMin": "Password must be at least 10 characters.",
+        "passwordMax": "Password is too long.",
+        "passwordInvalid": "Contains disallowed characters.",
+        "birthDateInvalid": "Please select your date of birth.",
+        "emailInvalid": "Please enter a valid email.",
+        "phoneInvalid": "Please enter a valid phone number."
+      }
+    },
+    "forgotPassword": {
+      "title": "Forgot password",
+      "description": "We'll email you a reset link.",
+      "email": "Email",
+      "submit": "Send reset link",
+      "submitting": "Sending...",
+      "sentTitle": "Check your email",
+      "sentDescription": "If an account exists, a reset link has been sent.",
+      "toLogin": "Back to sign in"
+    },
+    "resetPassword": {
+      "title": "Set new password",
+      "password": "New password",
+      "submit": "Change password",
+      "submitting": "Changing...",
+      "failed": "Could not reset. The link may have expired.",
+      "invalidTitle": "Invalid link",
+      "invalidDescription": "This reset link is expired or invalid.",
+      "retry": "Request again"
     },
     "logout": "Sign out"
   },

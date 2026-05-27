@@ -50,16 +50,67 @@
   "auth": {
     "login": {
       "title": "로그인",
-      "email": "이메일",
+      "username": "아이디",
       "password": "비밀번호",
       "submit": "로그인",
       "submitting": "로그인 중...",
-      "emailRequired": "이메일을 입력해주세요.",
-      "emailInvalid": "올바른 이메일 형식이 아닙니다.",
-      "passwordMin": "비밀번호는 8자 이상이어야 합니다.",
-      "passwordMax": "비밀번호가 너무 깁니다.",
+      "usernameRequired": "아이디를 입력해주세요.",
+      "passwordRequired": "비밀번호를 입력해주세요.",
       "failed": "로그인에 실패했습니다.",
-      "unknown": "알 수 없는 오류가 발생했습니다."
+      "unknown": "알 수 없는 오류가 발생했습니다.",
+      "toSignup": "회원가입",
+      "toForgot": "비밀번호 찾기"
+    },
+    "signup": {
+      "title": "회원가입",
+      "name": "이름",
+      "namePlaceholder": "실명",
+      "username": "아이디",
+      "usernamePlaceholder": "영문/숫자/_ 4~20자",
+      "password": "비밀번호",
+      "passwordPlaceholder": "10자 이상",
+      "birthDate": "생년월일",
+      "birthDatePlaceholder": "",
+      "email": "이메일",
+      "emailPlaceholder": "you@example.com",
+      "phone": "휴대폰 번호",
+      "phonePlaceholder": "010-1234-5678",
+      "submit": "가입하기",
+      "submitting": "가입 중...",
+      "failed": "회원가입에 실패했습니다.",
+      "toLogin": "이미 계정이 있으신가요? 로그인",
+      "errors": {
+        "nameRequired": "이름을 입력해주세요.",
+        "nameTooLong": "이름이 너무 깁니다.",
+        "nameInvalid": "허용되지 않는 문자가 포함되어 있어요.",
+        "usernameInvalid": "아이디는 영문/숫자/_ 4~20자여야 해요.",
+        "passwordMin": "비밀번호는 10자 이상이어야 해요.",
+        "passwordMax": "비밀번호가 너무 깁니다.",
+        "passwordInvalid": "허용되지 않는 문자가 포함되어 있어요.",
+        "birthDateInvalid": "생년월일을 선택해주세요.",
+        "emailInvalid": "올바른 이메일 형식이 아니에요.",
+        "phoneInvalid": "올바른 휴대폰 번호 형식이 아니에요."
+      }
+    },
+    "forgotPassword": {
+      "title": "비밀번호 찾기",
+      "description": "가입한 이메일로 재설정 링크를 보내드려요.",
+      "email": "이메일",
+      "submit": "재설정 링크 받기",
+      "submitting": "전송 중...",
+      "sentTitle": "메일을 확인해주세요",
+      "sentDescription": "입력하신 이메일로 비밀번호 재설정 링크를 보냈어요. (가입된 계정인 경우)",
+      "toLogin": "로그인으로 돌아가기"
+    },
+    "resetPassword": {
+      "title": "새 비밀번호 설정",
+      "password": "새 비밀번호",
+      "submit": "비밀번호 변경",
+      "submitting": "변경 중...",
+      "failed": "비밀번호 변경에 실패했어요. 링크가 만료되었을 수 있어요.",
+      "invalidTitle": "유효하지 않은 링크",
+      "invalidDescription": "재설정 링크가 만료되었거나 잘못되었어요.",
+      "retry": "다시 요청하기"
     },
     "logout": "로그아웃"
   },

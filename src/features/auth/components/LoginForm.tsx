@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSearchParams } from 'next/navigation';
@@ -39,7 +40,7 @@ export function LoginForm() {
     setError,
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: '', password: '' },
+    defaultValues: { username: '', password: '' },
   });
 
   const { mutateAsync: login } = useLogin();
@@ -50,7 +51,7 @@ export function LoginForm() {
       void redirect;
     } catch (err) {
       const message = isAxiosError(err)
-        ? (err.response?.data as { message?: string })?.message ?? t('failed')
+        ? ((err.response?.data as { message?: string })?.message ?? t('failed'))
         : t('unknown');
       setError('root', { message });
     }
@@ -61,22 +62,21 @@ export function LoginForm() {
       <h1 className={styles.title}>{t('title')}</h1>
 
       <div className={styles.field}>
-        <label htmlFor="email" className={styles.label}>
-          {t('email')}
+        <label htmlFor="username" className={styles.label}>
+          {t('username')}
         </label>
         <input
-          id="email"
-          type="email"
-          autoComplete="email"
-          inputMode="email"
+          id="username"
+          type="text"
+          autoComplete="username"
           className={styles.input}
-          aria-invalid={!!errors.email}
-          {...register('email')}
+          aria-invalid={!!errors.username}
+          {...register('username')}
         />
         {/* Zod 메시지는 i18n 키 — t(key) 로 변환 */}
-        {errors.email && (
+        {errors.username && (
           <p className={styles.error}>
-            {t(errors.email.message as Parameters<typeof t>[0])}
+            {t(errors.username.message as Parameters<typeof t>[0])}
           </p>
         )}
       </div>
@@ -109,6 +109,22 @@ export function LoginForm() {
       <button type="submit" disabled={isSubmitting} className={styles.submit}>
         {isSubmitting ? t('submitting') : t('submit')}
       </button>
+
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginTop: '1rem',
+          fontSize: '0.875rem',
+        }}
+      >
+        <Link href="/signup" style={{ color: 'var(--color-primary)' }}>
+          {t('toSignup')}
+        </Link>
+        <Link href="/forgot-password" style={{ color: 'var(--color-muted)' }}>
+          {t('toForgot')}
+        </Link>
+      </div>
     </form>
   );
 }

@@ -77,6 +77,18 @@ export const handlers = [
   // ===== Auth =====
   http.post(`${apiUrl}/auth/login`, () => HttpResponse.json({ success: true })),
   http.post(
+    `${apiUrl}/auth/signup`,
+    () => new HttpResponse(null, { status: 201 }),
+  ),
+  http.post(
+    `${apiUrl}/auth/forgot-password`,
+    () => new HttpResponse(null, { status: 204 }),
+  ),
+  http.post(
+    `${apiUrl}/auth/reset-password`,
+    () => new HttpResponse(null, { status: 204 }),
+  ),
+  http.post(
     `${apiUrl}/auth/logout`,
     () => new HttpResponse(null, { status: 204 }),
   ),

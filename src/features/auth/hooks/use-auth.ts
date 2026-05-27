@@ -9,7 +9,12 @@ import {
 import { useRouter } from 'next/navigation';
 import { authApi } from '@/features/auth/api/auth';
 import { useAuthStore } from '@/stores/auth-store';
-import type { LoginRequest } from '@/features/auth/types';
+import type {
+  LoginRequest,
+  SignupRequest,
+  ForgotPasswordRequest,
+  ResetPasswordRequest,
+} from '@/features/auth/types';
 import type { User } from '@/features/user/types';
 import { isAxiosError } from '@/services/interceptors/auth';
 import { clearAllCaches } from '@/lib/sw-cache';
@@ -58,6 +63,33 @@ export function useLogin() {
       setAuth(user);
       // 로그인 성공 → 홈 (하단 네비 첫 항목)
       router.replace('/');
+    },
+  });
+}
+
+export function useSignup() {
+  const router = useRouter();
+  return useMutation({
+    mutationFn: (data: SignupRequest) => authApi.signup(data),
+    onSuccess: () => {
+      // 가입 완료 → 로그인 페이지로 (자동 로그인 안 함)
+      router.replace('/login?signup=success');
+    },
+  });
+}
+
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: (data: ForgotPasswordRequest) => authApi.forgotPassword(data),
+  });
+}
+
+export function useResetPassword() {
+  const router = useRouter();
+  return useMutation({
+    mutationFn: (data: ResetPasswordRequest) => authApi.resetPassword(data),
+    onSuccess: () => {
+      router.replace('/login?reset=success');
     },
   });
 }

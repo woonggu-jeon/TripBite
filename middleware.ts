@@ -16,7 +16,12 @@ import { buildCsp } from '@/lib/csp';
  *   onboarding 완료 분기는 AuthBootstrap에서 (user.isOnboarded 필요)
  */
 
-const PUBLIC_ONLY_PATHS = ['/login'];
+const PUBLIC_ONLY_PATHS = [
+  '/login',
+  '/signup',
+  '/forgot-password',
+  '/reset-password',
+];
 const ACCESS_TOKEN_COOKIE = 'access_token';
 const STATE_CHANGING = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 

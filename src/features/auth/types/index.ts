@@ -1,19 +1,34 @@
 /**
- * Auth 관련 요청/응답 타입
+ * Auth 요청/응답 타입
  *
- * 실제로는 openapi-typescript-codegen 으로 자동 생성된
- * @/generated/api 의 타입을 re-export 하는 것을 권장.
- *
- * 여기서는 백엔드 스키마가 아직 없을 때를 위한 fallback 타입.
+ * 실제로는 openapi-typescript-codegen 의 @/generated/api 타입 re-export 권장.
+ * 여기서는 백엔드 스키마 확정 전 fallback 타입.
  */
 
 export type LoginRequest = {
-  email: string;
+  username: string;
   password: string;
 };
 
 export type LoginResponse = {
-  // 토큰은 서버가 Set-Cookie로 내려주므로 body는 비어있거나
-  // 최소한의 정보만 포함될 수 있음
+  // 토큰은 Set-Cookie로 발급되므로 body는 최소 정보만
   success: boolean;
+};
+
+export type SignupRequest = {
+  name: string;
+  username: string;
+  password: string;
+  birthDate: string; // YYYY-MM-DD
+  email: string;
+  phone: string;
+};
+
+export type ForgotPasswordRequest = {
+  email: string;
+};
+
+export type ResetPasswordRequest = {
+  token: string;
+  password: string;
 };
