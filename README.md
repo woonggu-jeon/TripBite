@@ -22,14 +22,14 @@ npm run build && npm start   # 프로덕션 (PWA 활성)
 
 ## 스크립트
 
-| 명령 | 설명 |
-|------|------|
-| `npm run dev` | 개발 서버 |
-| `npm run build` | 프로덕션 빌드 |
-| `npm start` | 프로덕션 서버 |
-| `npm run lint` | ESLint |
-| `npm run type-check` | `tsc --noEmit` |
-| `npm run format` | Prettier 일괄 포맷 |
+| 명령                   | 설명                                    |
+| ---------------------- | --------------------------------------- |
+| `npm run dev`          | 개발 서버                               |
+| `npm run build`        | 프로덕션 빌드                           |
+| `npm start`            | 프로덕션 서버                           |
+| `npm run lint`         | ESLint                                  |
+| `npm run type-check`   | `tsc --noEmit`                          |
+| `npm run format`       | Prettier 일괄 포맷                      |
 | `npm run generate:api` | OpenAPI → `src/generated/api` 코드 생성 |
 
 ---
@@ -124,10 +124,10 @@ src/features/
 
 `src/lib/dynamic.ts` 의 `clientOnly()` 헬퍼로 일관 적용.
 
-| 모듈 | 크기 | 분리 위치 |
-|------|------|-----------|
-| recharts | ~100KB | `features/chart/components/*Impl.tsx` |
-| embla-carousel | ~10KB | `features/carousel/components/CarouselImpl.tsx` |
+| 모듈           | 크기   | 분리 위치                                       |
+| -------------- | ------ | ----------------------------------------------- |
+| recharts       | ~100KB | `features/chart/components/*Impl.tsx`           |
+| embla-carousel | ~10KB  | `features/carousel/components/CarouselImpl.tsx` |
 
 차트/캐러셀이 없는 페이지는 코드를 다운로드하지 않음.
 
@@ -139,23 +139,23 @@ src/features/
 
 리소스별 staleTime / gcTime 표준화. 모든 hook 에서 `...CACHE.normal` 식으로 import.
 
-| 프로파일 | staleTime | 용도 |
-|----------|-----------|------|
-| static | 1d | 충북 시군 메타, quiz 질문 |
-| slow | 30m | TourAPI 콘텐츠, 시군 summary |
-| normal | 5m | 랭킹, 인기 차트 |
-| user | 2m | 마이페이지, /me |
-| realtime | 30s + 폴링 | 편지 도착, 알림 |
-| session | ∞ | 토너먼트 후보 (한 세션 동안 고정) |
-| weather | 15m | 날씨 |
+| 프로파일 | staleTime  | 용도                              |
+| -------- | ---------- | --------------------------------- |
+| static   | 1d         | 충북 시군 메타, quiz 질문         |
+| slow     | 30m        | TourAPI 콘텐츠, 시군 summary      |
+| normal   | 5m         | 랭킹, 인기 차트                   |
+| user     | 2m         | 마이페이지, /me                   |
+| realtime | 30s + 폴링 | 편지 도착, 알림                   |
+| session  | ∞          | 토너먼트 후보 (한 세션 동안 고정) |
+| weather  | 15m        | 날씨                              |
 
 ### 5. PWA Runtime Caching (`next.config.js`)
 
-| 패턴 | 전략 | 보관 |
-|------|------|------|
-| TourAPI 이미지 | CacheFirst | 30일 |
-| 기타 이미지 | StaleWhileRevalidate | 7일 |
-| `_next/static/*` | CacheFirst | 1년 |
+| 패턴             | 전략                 | 보관 |
+| ---------------- | -------------------- | ---- |
+| TourAPI 이미지   | CacheFirst           | 30일 |
+| 기타 이미지      | StaleWhileRevalidate | 7일  |
+| `_next/static/*` | CacheFirst           | 1년  |
 
 오프라인 환경에서도 이미 본 콘텐츠는 즉시 표시.
 
@@ -190,7 +190,7 @@ const { items, fetchNext, hasNext, isFetchingNext } = useInfiniteList({
   onReachEnd={fetchNext}
   keyExtractor={(letter) => letter.id}
   renderItem={(letter) => <LetterCard letter={letter} />}
-/>
+/>;
 ```
 
 - **virtualization 없음** (1,000개 미만 리스트엔 충분)
@@ -215,6 +215,7 @@ const { items, fetchNext, hasNext, isFetchingNext } = useInfiniteList({
 자세한 사용법은 `/settings` 페이지의 언어 토글 또는 `src/features/i18n/components/LanguageSwitcher.tsx` 참고.
 
 새 언어 추가:
+
 1. `src/i18n/config.ts` 의 `locales` 에 코드 추가
 2. `src/i18n/messages/{code}.json` 작성 (ko.json 구조 미러)
 3. `localeLabels` 에 표시명 추가
@@ -234,6 +235,7 @@ const { items, fetchNext, hasNext, isFetchingNext } = useInfiniteList({
 ## 위치 권한
 
 `@/features/location`:
+
 - Permissions API 로 prompt 없이 권한 상태 추적
 - `getCurrentPosition` 은 사용자 명시적 동작 직후에만 (iOS 정책)
 - 거부 시 `/location/ip` (IP geolocation) 자동 fallback
@@ -243,20 +245,84 @@ const { items, fetchNext, hasNext, isFetchingNext } = useInfiniteList({
 
 ## 백엔드 엔드포인트 체크리스트
 
-| 영역 | 엔드포인트 |
-|------|-----------|
-| Auth | `POST /auth/login` `POST /auth/logout` `POST /auth/refresh` `GET /me` `POST /me/complete-onboarding` |
-| User | `PATCH /mypage/profile` |
-| Letter | `POST /letters` `GET /letters/{received,sent,liked,saved}` `GET /letters/:id` `POST /letters/:id/like` `POST /letters/:id/save` `DELETE /letters/:id` |
-| Tournament | `GET /destinations/random` `POST /tournaments` `GET/POST/DELETE /mypage/tournaments` `GET /mypage/tournament-history` |
-| Region (TourAPI 프록시) | `GET /regions/:code/summary` `GET /regions/:code/contents?type=` `GET /regions/ongoing-festivals` |
-| Ranking | `GET /rankings?type=weekly-winners|recommended|hidden-gems|by-region` |
-| Quiz | `GET /quiz/questions` `POST /quiz/submit` `GET /quiz/me` |
-| MyPage | `GET /mypage` `GET /mypage/stamps` |
-| Location | `POST /location/reverse` `GET /location/ip` |
-| Weather | `GET /weather/current` |
-| Notification | `GET /notifications` `POST /notifications/:id/read` `POST /notifications/read-all` `POST /notifications/subscribe` `POST /notifications/unsubscribe` |
-| Settings | `GET /settings` `PATCH /settings/notifications` |
+| 영역                    | 엔드포인트                                                                                                                                            |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ----------- | ---------- |
+| Auth                    | `POST /auth/login` `POST /auth/logout` `POST /auth/refresh` `GET /me` `POST /me/complete-onboarding`                                                  |
+| User                    | `PATCH /mypage/profile`                                                                                                                               |
+| Letter                  | `POST /letters` `GET /letters/{received,sent,liked,saved}` `GET /letters/:id` `POST /letters/:id/like` `POST /letters/:id/save` `DELETE /letters/:id` |
+| Tournament              | `GET /destinations/random` `POST /tournaments` `GET/POST/DELETE /mypage/tournaments` `GET /mypage/tournament-history`                                 |
+| Region (TourAPI 프록시) | `GET /regions/:code/summary` `GET /regions/:code/contents?type=` `GET /regions/ongoing-festivals`                                                     |
+| Ranking                 | `GET /rankings?type=weekly-winners                                                                                                                    | recommended | hidden-gems | by-region` |
+| Quiz                    | `GET /quiz/questions` `POST /quiz/submit` `GET /quiz/me`                                                                                              |
+| MyPage                  | `GET /mypage` `GET /mypage/stamps`                                                                                                                    |
+| Location                | `POST /location/reverse` `GET /location/ip`                                                                                                           |
+| Weather                 | `GET /weather/current`                                                                                                                                |
+| Notification            | `GET /notifications` `POST /notifications/:id/read` `POST /notifications/read-all` `POST /notifications/subscribe` `POST /notifications/unsubscribe`  |
+| Settings                | `GET /settings` `PATCH /settings/notifications`                                                                                                       |
+
+---
+
+## 백엔드 미준비 시 검증 — MSW
+
+`NEXT_PUBLIC_USE_MSW=true` 토글로 dev에서 백엔드 없이 핵심 흐름을 mock 응답으로 검증.
+
+### 사용법
+
+```bash
+# .env.local
+NEXT_PUBLIC_API_URL=http://localhost:8080    # 실 백엔드 (rewrites destination)
+NEXT_PUBLIC_USE_MSW=true                     # MSW 활성화
+```
+
+```bash
+npm run dev
+```
+
+### 동작 원리
+
+Service worker는 same-origin scope만 가로챔 → cross-origin 백엔드 호출은 MSW가 못 잡음. MSW 모드에서만 다음이 활성화:
+
+- `next.config.js` rewrites: `/api/backend/:path*` → `NEXT_PUBLIC_API_URL/:path*` proxy
+- `services/api/client.ts`: axios `baseURL = '/api/backend'` (same-origin)
+- `src/mocks/handlers.ts`: 같은 path prefix로 URL 매칭
+
+MSW가 잡지 못한 path는 `onUnhandledRequest: 'bypass'`로 destination(실 백엔드)에 도달.
+
+### 현재 mock된 엔드포인트
+
+| 영역          | 엔드포인트                                                       |
+| ------------- | ---------------------------------------------------------------- |
+| Auth          | POST `/auth/{login,logout,refresh}`, GET `/me`                   |
+| Onboarding    | POST `/me/complete-onboarding`                                   |
+| Location      | POST `/location/reverse`, GET `/location/ip`                     |
+| Weather       | GET `/weather/current`                                           |
+| Letters       | POST `/letters`, GET `/letters/{received,sent,liked,saved,/:id}` |
+| Region        | GET `/regions/:code/contents`                                    |
+| Tournament    | GET `/mypage/tournament-history`                                 |
+| Notifications | GET `/notifications`                                             |
+
+핸들러 추가는 `src/mocks/handlers.ts`. seed 데이터는 `src/mocks/seeds/`.
+
+### 검증 시나리오
+
+| 페이지             | 확인                                                             |
+| ------------------ | ---------------------------------------------------------------- |
+| `/onboarding`      | 3 step 전체 (concept → location 분기 → nickname → mock complete) |
+| `/letter/compose`  | 위치 자동 채우기 + 5글자 보내기 → mock 201                       |
+| `/letter`          | mock 받은 편지 30개 페이지네이션                                 |
+| `/region/cheongju` | mock 관광지/축제/체험 탭                                         |
+
+DevTools Network에서 `mockServiceWorker.js` "intercepted" 로그 확인.
+
+### 위치 권한 시나리오 5종
+
+| 케이스                | 결과                                                          |
+| --------------------- | ------------------------------------------------------------- |
+| 'granted' (이전 허용) | mount 즉시 자동 resolve → mock reverse → 다음 step            |
+| 'prompt' + OS 허용    | mock reverse → 다음 step                                      |
+| 'prompt' + OS 거부    | useResolveLocation이 mock `/location/ip` fallback → 다음 step |
+| 'denied'              | 안내 + 건너뛰기만, `track('onboarding.location_skipped')`     |
+| GPS + IP 모두 실패    | `track('onboarding.location_skipped')` + 다음 step            |
 
 ---
 
@@ -264,17 +330,18 @@ const { items, fetchNext, hasNext, isFetchingNext } = useInfiniteList({
 
 ### 환경 변수 설정 (Project → Settings → Environment Variables)
 
-| 변수 | 값 | 비고 |
-|------|------|------|
-| `NEXT_PUBLIC_API_URL` | `https://api.your-domain.com` | 필수 — CSP `connect-src` 에 자동 포함 |
-| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | VAPID 공개키 | Web Push 사용 시만 |
-| `NEXT_PUBLIC_APP_VERSION` | `$VERCEL_GIT_COMMIT_SHA` | 시스템 변수 참조 가능. `/api/health`, `/settings` 하단에 노출 |
-| `NEXT_PUBLIC_SENTRY_DSN` | Sentry DSN | Sentry 도입 시만 |
-| `SENTRY_AUTH_TOKEN` | (Secret) | 빌드 시 source map 업로드용 |
+| 변수                           | 값                            | 비고                                                          |
+| ------------------------------ | ----------------------------- | ------------------------------------------------------------- |
+| `NEXT_PUBLIC_API_URL`          | `https://api.your-domain.com` | 필수 — CSP `connect-src` 에 자동 포함                         |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | VAPID 공개키                  | Web Push 사용 시만                                            |
+| `NEXT_PUBLIC_APP_VERSION`      | `$VERCEL_GIT_COMMIT_SHA`      | 시스템 변수 참조 가능. `/api/health`, `/settings` 하단에 노출 |
+| `NEXT_PUBLIC_SENTRY_DSN`       | Sentry DSN                    | Sentry 도입 시만                                              |
+| `SENTRY_AUTH_TOKEN`            | (Secret)                      | 빌드 시 source map 업로드용                                   |
 
 ### 빌드 설정
 
 기본값 그대로 OK:
+
 - Framework Preset: **Next.js** (자동 감지)
 - Build Command: `npm run build`
 - Install Command: `npm install`
@@ -286,6 +353,7 @@ const { items, fetchNext, hasNext, isFetchingNext } = useInfiniteList({
 #### 1) `husky: command not found` 빌드 실패
 
 **증상**:
+
 ```
 sh: line 1: husky: command not found
 npm error code 127
@@ -295,6 +363,7 @@ Error: Command "npm install" exited with 127
 **원인**: `prepare` lifecycle 이 husky 실행 시도 → 일부 환경에서 실패.
 
 **해결** (이미 적용됨):
+
 - `package.json` 의 `"prepare": "husky || true"` — 실패해도 install 계속
 - `husky` 가 `devDependencies` 에 등록됨
 
@@ -335,6 +404,7 @@ images: {
 #### 5) 첫 진입 시 Pretendard 깜빡임 (FOUT)
 
 `font-display: swap` 동작 — 시스템 폰트로 즉시 표시 후 Pretendard 로 교체. 정상 동작이지만 거슬리면:
+
 - self-host 마이그레이션 후 `next/font/local` 의 `display: 'optional'` 사용 (1회 fetch 후 미준비면 fallback 유지)
 
 ### Preview 배포 활용
@@ -369,20 +439,20 @@ PR #123 → https://your-app-git-feature-branch.vercel.app
 
 ### 적용된 보호 (코드에 반영됨)
 
-| 영역 | 내용 |
-|------|------|
-| 토큰 저장 | **HttpOnly Cookie** — XSS로 탈취 불가능. `localStorage`/`sessionStorage` 금지 |
-| API 키 분리 | TourAPI/Maps/Weather 모두 백엔드 프록시 — 클라이언트에 키 노출 X |
-| VAPID 분리 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` (public) / `VAPID_PRIVATE_KEY` (server-only) |
-| 입력 검증 | Zod 스키마 (로그인/편지/닉네임) + grapheme 단위 길이 + zero-width/HTML 특수문자 차단 |
-| XSS 자동 escape | React JSX 기본 동작. `dangerouslySetInnerHTML` 사용 금지 |
-| 401 race | axios interceptor 가 단일 refresh promise 공유 |
-| 외부 이미지 | `next.config.js` `remotePatterns` 화이트리스트 |
-| 보안 헤더 | HSTS / X-Content-Type-Options / X-Frame-Options / Referrer-Policy / Permissions-Policy |
-| CSP | Report-Only 모드로 시작 — 운영 안정화 후 enforce |
-| 로그아웃 cache 정리 | `clearAllCaches()` 로 SW 캐시 비움 (다음 사용자 격리) |
-| Env 타입 안전 | `src/types/env.d.ts` — `NEXT_PUBLIC_*` 만 자동완성 |
-| CI 의존성 점검 | `npm audit --audit-level=high` + Dependabot |
+| 영역                | 내용                                                                                   |
+| ------------------- | -------------------------------------------------------------------------------------- |
+| 토큰 저장           | **HttpOnly Cookie** — XSS로 탈취 불가능. `localStorage`/`sessionStorage` 금지          |
+| API 키 분리         | TourAPI/Maps/Weather 모두 백엔드 프록시 — 클라이언트에 키 노출 X                       |
+| VAPID 분리          | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` (public) / `VAPID_PRIVATE_KEY` (server-only)            |
+| 입력 검증           | Zod 스키마 (로그인/편지/닉네임) + grapheme 단위 길이 + zero-width/HTML 특수문자 차단   |
+| XSS 자동 escape     | React JSX 기본 동작. `dangerouslySetInnerHTML` 사용 금지                               |
+| 401 race            | axios interceptor 가 단일 refresh promise 공유                                         |
+| 외부 이미지         | `next.config.js` `remotePatterns` 화이트리스트                                         |
+| 보안 헤더           | HSTS / X-Content-Type-Options / X-Frame-Options / Referrer-Policy / Permissions-Policy |
+| CSP                 | Report-Only 모드로 시작 — 운영 안정화 후 enforce                                       |
+| 로그아웃 cache 정리 | `clearAllCaches()` 로 SW 캐시 비움 (다음 사용자 격리)                                  |
+| Env 타입 안전       | `src/types/env.d.ts` — `NEXT_PUBLIC_*` 만 자동완성                                     |
+| CI 의존성 점검      | `npm audit --audit-level=high` + Dependabot                                            |
 
 ### 보안 헤더 (`next.config.js` `headers()`)
 
@@ -425,6 +495,7 @@ upgrade-insecure-requests;
 3. **추후**: middleware 에서 nonce 발급 → `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'` → inline-script 의존 제거 가능 시 `'unsafe-inline'` 삭제
 
 #### nonce 패턴 예시 (운영 안정화 후)
+
 ```ts
 // middleware.ts 안에서
 const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
@@ -443,9 +514,11 @@ const nonce = (await headers()).get('x-nonce') ?? '';
 HttpOnly Cookie 는 XSS는 막지만 **CSRF에는 자동으로 방어되지 않음**. 3-Layer 방어 권장:
 
 **Layer 1 — SameSite 쿠키 (백엔드)**
+
 ```
 Set-Cookie: access_token=...; HttpOnly; Secure; SameSite=Lax
 ```
+
 대부분의 CSRF 케이스 자동 차단. cross-origin 인증이 필요한 경우만 `SameSite=None`.
 
 **Layer 2 — Origin/Referer 검증 (백엔드 미들웨어)**
@@ -453,43 +526,48 @@ Set-Cookie: access_token=...; HttpOnly; Secure; SameSite=Lax
 
 **Layer 3 — CSRF Double-Submit Token (민감 작업만)**
 회원 탈퇴, 비밀번호 변경, 차단 해제 등 고위험 작업에 적용:
+
 ```
 1) 백엔드: GET /csrf-token → 응답 body + 별도 쿠키에 토큰 set
 2) 프론트: 요청 시 X-CSRF-Token 헤더에 그대로 첨부
 3) 백엔드: 헤더 === 쿠키 일치 검증
 ```
+
 axios interceptor 에 자동 첨부 패턴 적용 가능.
 
 ### Rate Limiting (백엔드)
 
 프론트는 막을 수 없음. 백엔드에서 반드시 구현:
 
-| 엔드포인트 | 권장 limit |
-|-----------|-----------|
-| `POST /auth/login` | 분당 5회 / IP |
-| `POST /auth/refresh` | 분당 30회 / 토큰 |
-| `POST /letters` | 시간당 20회 / 사용자 |
-| `POST /letters/:id/like` | 분당 60회 / 사용자 |
-| `POST /tournaments` | 시간당 50회 / 사용자 |
+| 엔드포인트               | 권장 limit                             |
+| ------------------------ | -------------------------------------- |
+| `POST /auth/login`       | 분당 5회 / IP                          |
+| `POST /auth/refresh`     | 분당 30회 / 토큰                       |
+| `POST /letters`          | 시간당 20회 / 사용자                   |
+| `POST /letters/:id/like` | 분당 60회 / 사용자                     |
+| `POST /tournaments`      | 시간당 50회 / 사용자                   |
 | `POST /location/reverse` | 분당 30회 / 사용자 (TourAPI 호출 비용) |
-| `POST /quiz/submit` | 분당 5회 / 사용자 |
+| `POST /quiz/submit`      | 분당 5회 / 사용자                      |
 
 권장 구현: **@upstash/ratelimit + Vercel Edge Middleware** 또는 백엔드 측 Redis 기반.
 
 ### 입력 검증 패턴
 
 #### 닉네임 (`features/onboarding/schemas/nickname.ts`)
+
 - 길이 1~10자 (grapheme 단위)
 - 허용 문자: `[가-힣a-zA-Z0-9_]` 만
 - zero-width / 제어문자 / HTML 특수문자 차단
 - homograph 공격 (위장 닉네임) 차단
 
 #### 편지 본문 (`features/letter/schemas/letter.ts`)
+
 - 1~5자 (grapheme 단위)
 - 공백만 입력 금지
 - zero-width / 제어문자 / HTML 특수문자 차단
 
 #### 백엔드 측 책임
+
 - 비속어 사전 매칭 후 reject
 - 중복 닉네임 정책
 - 출력 시 escape (이중 안전망)
@@ -511,6 +589,7 @@ SENTRY_AUTH_TOKEN=
 타입 안전: `src/types/env.d.ts` 가 `process.env.*` 자동완성 + 누락 변수 컴파일 에러로 잡힘.
 
 ⚠️ **절대 하지 말 것**:
+
 - API 키, 비밀번호, 토큰을 `NEXT_PUBLIC_*` 에 넣기
 - `localStorage` 에 access_token 저장
 - `.env.local` 을 git 에 커밋
@@ -548,14 +627,14 @@ Sentry.init({
 
 ### Service Worker / PWA 보안
 
-| 항목 | 정책 |
-|------|------|
-| API 응답 캐시 | **금지** — 사용자별 데이터 누설 위험. `runtimeCaching` 에 API 패턴 없음 ✓ |
-| 이미지 캐시 | TourAPI 30일, 기타 7일 (응답에 인증 정보 없음) |
-| 정적 자원 | `_next/static/*` 1년 immutable |
-| 로그아웃 시 | `clearAllCaches()` 호출 — 다음 사용자 격리 ✓ |
-| 권한 요청 | `getCurrentPosition` 은 사용자 액션 직후만 (iOS 정책) ✓ |
-| `LocationPermissionPrompt` | 브라우저 prompt 전 사전 안내 → 거부율 감소 |
+| 항목                       | 정책                                                                      |
+| -------------------------- | ------------------------------------------------------------------------- |
+| API 응답 캐시              | **금지** — 사용자별 데이터 누설 위험. `runtimeCaching` 에 API 패턴 없음 ✓ |
+| 이미지 캐시                | TourAPI 30일, 기타 7일 (응답에 인증 정보 없음)                            |
+| 정적 자원                  | `_next/static/*` 1년 immutable                                            |
+| 로그아웃 시                | `clearAllCaches()` 호출 — 다음 사용자 격리 ✓                              |
+| 권한 요청                  | `getCurrentPosition` 은 사용자 액션 직후만 (iOS 정책) ✓                   |
+| `LocationPermissionPrompt` | 브라우저 prompt 전 사전 안내 → 거부율 감소                                |
 
 ### XSS 방어 체크리스트
 
@@ -576,11 +655,13 @@ Sentry.init({
 ### 의존성 & 공급망 보안
 
 `.github/workflows/ci.yml`:
+
 - `npm ci` — lockfile 정합성 검증
 - `npm audit --audit-level=high` — high 이상 취약점 발견 시 빌드 실패
 - `actions/dependency-review-action@v4` — PR 단위 취약점 차단 + 라이선스 화이트리스트
 
 `.github/dependabot.yml`:
+
 - 매주 월요일 자동 PR
 - patch 업데이트 묶음, minor 묶음
 - 보안 알림은 즉시 별도 PR
@@ -602,6 +683,7 @@ GitHub Secret Scanning (무료) 활성화 권장 — repo settings에서 토글.
 대상 법령: **개인정보보호법(PIPA)**, **위치정보의 보호 및 이용 등에 관한 법률**, **정보통신망법**
 
 #### 회원가입 시 동의 항목 (`features/onboarding/components/ConsentBlock.tsx`)
+
 - [필수] 만 14세 이상 확인
 - [필수] 이용약관 동의 → `/policy/terms`
 - [필수] 개인정보처리방침 동의 → `/policy/privacy`
@@ -611,20 +693,24 @@ GitHub Secret Scanning (무료) 활성화 권장 — repo settings에서 토글.
 **원칙**: 필수/선택 명확히 분리, "전체 동의" 가 필수만 강제하지 않음.
 
 #### 정적 페이지 (자리잡이만 만들어 둠 — 법무 검토 후 본문 교체)
+
 - `/policy/terms` — 이용약관
 - `/policy/privacy` — 개인정보처리방침 (수집 항목/목적/보유 기간/제3자 제공/처리 위탁/이용자 권리)
 - `/policy/licenses` — 오픈소스 라이선스
 
 #### 약관 버전 관리
+
 - 백엔드 user 레코드에 `termsVersion`, `privacyVersion` 저장
 - 약관 업데이트 시 버전 증가 → `AuthBootstrap` 에서 비교 → 변경된 사용자에게 재동의 UI 노출
 
 #### 회원 탈퇴 정책 (백엔드 협의)
+
 - soft delete (30일 유예) 권장
 - 보낸 편지 처리: 익명 처리 후 보존? 함께 삭제? — 정책 결정 필요
 - 즉시 삭제 + 관련 법령 보존 의무 데이터만 별도 보관
 
 #### 데이터 이전성 (선택)
+
 - 본인 정보 export 기능 — GDPR 시 필수, PIPA 시 권장
 - `GET /me/export` → JSON 다운로드
 
@@ -656,11 +742,11 @@ GitHub Secret Scanning (무료) 활성화 권장 — repo settings에서 토글.
 
 ### 🔴 즉시 추가 — 런타임
 
-| 라이브러리 | 크기 | 용도 |
-|------------|------|------|
-| **sonner** | ~5KB | Toast UI. `ui-store.ts` 의 toast 상태에 실제 렌더 연결. 저장/전송 피드백. |
-| **motion** | ~18KB | 토너먼트 카드 전환, 사다리타기 경로, 도장깨기 모션, 페이지 transition. `motion/react` 진입으로 tree-shake. |
-| **canvas-confetti** | ~5KB | 우승 결과 컨페티. PWA 게임감 ↑. |
+| 라이브러리          | 크기  | 용도                                                                                                       |
+| ------------------- | ----- | ---------------------------------------------------------------------------------------------------------- |
+| **sonner**          | ~5KB  | Toast UI. `ui-store.ts` 의 toast 상태에 실제 렌더 연결. 저장/전송 피드백.                                  |
+| **motion**          | ~18KB | 토너먼트 카드 전환, 사다리타기 경로, 도장깨기 모션, 페이지 transition. `motion/react` 진입으로 tree-shake. |
+| **canvas-confetti** | ~5KB  | 우승 결과 컨페티. PWA 게임감 ↑.                                                                            |
 
 ```bash
 npm i sonner motion canvas-confetti
@@ -668,16 +754,17 @@ npm i -D @types/canvas-confetti
 ```
 
 설치 후:
+
 - `app/layout.tsx` 의 `<Providers>` 안에 `<Toaster richColors position="top-center" />` 추가
 - `ui-store.ts` 의 `showToast` 가 `sonner` 의 `toast()` 를 호출하도록 어댑터화
 
 ### 🔴 즉시 추가 — 개발/운영
 
-| 라이브러리 | 종류 | 용도 |
-|------------|------|------|
-| **msw** | dev | API mocking — 백엔드 미준비 상태 개발 + 테스트에서 동일 핸들러 재사용 |
-| **@sentry/nextjs** | runtime ~30KB | 운영 환경 에러 추적. App Router/RSC 모두 캐치. |
-| **@next/bundle-analyzer** | dev | "가볍게" 목표 검증. recharts/embla 분리 여부 확인. |
+| 라이브러리                | 종류          | 용도                                                                  |
+| ------------------------- | ------------- | --------------------------------------------------------------------- |
+| **msw**                   | dev           | API mocking — 백엔드 미준비 상태 개발 + 테스트에서 동일 핸들러 재사용 |
+| **@sentry/nextjs**        | runtime ~30KB | 운영 환경 에러 추적. App Router/RSC 모두 캐치.                        |
+| **@next/bundle-analyzer** | dev           | "가볍게" 목표 검증. recharts/embla 분리 여부 확인.                    |
 
 ```bash
 npm i -D msw @next/bundle-analyzer
@@ -687,6 +774,7 @@ npx @sentry/wizard@latest -i nextjs # Sentry 자동 설정
 ```
 
 #### MSW 구조 (테스트와 공유)
+
 ```
 src/mocks/
  ├─ handlers.ts        REST 핸들러 (TourAPI/auth/letter 등 mock)
@@ -702,15 +790,15 @@ src/mocks/
 
 #### Unit + Component 테스트
 
-| 라이브러리 | 용도 |
-|------------|------|
-| **vitest** | jest 대비 2~3배 빠름. Vite 기반이라 TS/ESM 설정 0. |
-| **@vitejs/plugin-react** | vitest의 React JSX 지원 |
-| **@testing-library/react** | 컴포넌트 테스트 표준 |
-| **@testing-library/user-event** | 실사용자처럼 클릭/타이핑 |
-| **@testing-library/jest-dom** | `toBeInTheDocument()` 등 매처 |
-| **happy-dom** | jsdom보다 빠른 DOM 환경 (Vitest 공식 권장) |
-| **@vitest/coverage-v8** | V8 native coverage |
+| 라이브러리                      | 용도                                               |
+| ------------------------------- | -------------------------------------------------- |
+| **vitest**                      | jest 대비 2~3배 빠름. Vite 기반이라 TS/ESM 설정 0. |
+| **@vitejs/plugin-react**        | vitest의 React JSX 지원                            |
+| **@testing-library/react**      | 컴포넌트 테스트 표준                               |
+| **@testing-library/user-event** | 실사용자처럼 클릭/타이핑                           |
+| **@testing-library/jest-dom**   | `toBeInTheDocument()` 등 매처                      |
+| **happy-dom**                   | jsdom보다 빠른 DOM 환경 (Vitest 공식 권장)         |
+| **@vitest/coverage-v8**         | V8 native coverage                                 |
 
 ```bash
 npm i -D vitest @vitejs/plugin-react @testing-library/react \
@@ -719,6 +807,7 @@ npm i -D vitest @vitejs/plugin-react @testing-library/react \
 ```
 
 `vitest.config.ts` (프로젝트 루트):
+
 ```ts
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
@@ -744,6 +833,7 @@ export default defineConfig({
 ```
 
 `vitest.setup.ts`:
+
 ```ts
 import '@testing-library/jest-dom/vitest';
 import { afterAll, afterEach, beforeAll } from 'vitest';
@@ -755,6 +845,7 @@ afterAll(() => server.close());
 ```
 
 `scripts` 추가:
+
 ```json
 {
   "scripts": {
@@ -768,8 +859,8 @@ afterAll(() => server.close());
 
 #### E2E 테스트
 
-| 라이브러리 | 용도 |
-|------------|------|
+| 라이브러리           | 용도                                                            |
+| -------------------- | --------------------------------------------------------------- |
 | **@playwright/test** | 멀티브라우저 E2E. iOS/Android 뷰포트 프리셋. 비디오/trace 자동. |
 
 ```bash
@@ -778,6 +869,7 @@ npx playwright install --with-deps
 ```
 
 `playwright.config.ts`:
+
 ```ts
 import { defineConfig, devices } from '@playwright/test';
 
@@ -806,6 +898,7 @@ export default defineConfig({
 ```
 
 E2E 핵심 시나리오 (`e2e/` 하위):
+
 - `auth.spec.ts` — 로그인 → 온보딩 3step → 홈
 - `tournament.spec.ts` — 테마 선택 → 매치업 → 우승 → 저장
 - `letter.spec.ts` — 5글자 작성 → 보내기 → 받은 편지 좋아요
@@ -813,6 +906,7 @@ E2E 핵심 시나리오 (`e2e/` 하위):
 - `pwa.spec.ts` — 오프라인 캐시 동작
 
 `scripts`:
+
 ```json
 {
   "scripts": {
@@ -827,6 +921,7 @@ E2E 핵심 시나리오 (`e2e/` 하위):
 기존 스택과의 통합 패턴:
 
 **next-intl** — 메시지 주입 래퍼:
+
 ```tsx
 // test-utils.tsx
 import { NextIntlClientProvider } from 'next-intl';
@@ -836,12 +931,13 @@ export function renderWithIntl(ui: React.ReactElement, locale = 'ko') {
   return render(
     <NextIntlClientProvider locale={locale} messages={messages}>
       {ui}
-    </NextIntlClientProvider>
+    </NextIntlClientProvider>,
   );
 }
 ```
 
 **TanStack Query** — 테스트마다 새 QueryClient (`retry: false`):
+
 ```tsx
 function createTestQueryClient() {
   return new QueryClient({
@@ -851,6 +947,7 @@ function createTestQueryClient() {
 ```
 
 **Zustand** — 각 테스트 전 store reset:
+
 ```ts
 beforeEach(() => {
   useAuthStore.setState({ isAuthenticated: false, user: undefined });
@@ -858,11 +955,14 @@ beforeEach(() => {
 ```
 
 **MSW** — vitest의 setup과 Playwright의 globalSetup에서 **동일 핸들러 공유**:
+
 ```ts
 // src/mocks/handlers.ts
 import { http, HttpResponse } from 'msw';
 export const handlers = [
-  http.get('*/me', () => HttpResponse.json({ id: '1', nickname: '테스터', isOnboarded: true })),
+  http.get('*/me', () =>
+    HttpResponse.json({ id: '1', nickname: '테스터', isOnboarded: true }),
+  ),
   // ...
 ];
 ```
@@ -870,33 +970,34 @@ export const handlers = [
 #### CI 통합
 
 `.github/workflows/ci.yml` 에 추가:
-```yaml
-      - run: npm run test:run
-      - run: npm run test:coverage
-      - uses: actions/upload-artifact@v4
-        with:
-          name: coverage
-          path: coverage/
-          retention-days: 7
 
-      - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 7
+```yaml
+- run: npm run test:run
+- run: npm run test:coverage
+- uses: actions/upload-artifact@v4
+  with:
+    name: coverage
+    path: coverage/
+    retention-days: 7
+
+- run: npx playwright install --with-deps chromium
+- run: npm run test:e2e
+- uses: actions/upload-artifact@v4
+  if: always()
+  with:
+    name: playwright-report
+    path: playwright-report/
+    retention-days: 7
 ```
 
 ---
 
 ### 🟢 빠르게 가치 있음
 
-| 라이브러리 | 용도 |
-|------------|------|
-| **plaiceholder + sharp** | build-time blur placeholder 생성. TourAPI hero 이미지 LCP 개선. 런타임 0KB. |
-| **@use-gesture/react** (~10KB) | 편지 카드 스와이프 삭제, 도장맵 핀치 줌. Embla 보완. |
+| 라이브러리                     | 용도                                                                        |
+| ------------------------------ | --------------------------------------------------------------------------- |
+| **plaiceholder + sharp**       | build-time blur placeholder 생성. TourAPI hero 이미지 LCP 개선. 런타임 0KB. |
+| **@use-gesture/react** (~10KB) | 편지 카드 스와이프 삭제, 도장맵 핀치 줌. Embla 보완.                        |
 
 ```bash
 npm i -D plaiceholder sharp
@@ -907,12 +1008,12 @@ npm i @use-gesture/react
 
 ### ⚪ 상황 발생 시 추가 (지금은 X)
 
-| 라이브러리 | 트리거 |
-|------------|--------|
-| **@tanstack/react-virtual** | 편지함 1,000개 이상 누적 시 |
-| **xstate** | 토너먼트 패자부활/동률 등 복잡한 상태 머신 필요 시 |
-| **next-themes** | 사용자 토글 다크모드 |
-| **storybook** | 컴포넌트 카탈로그 필요 시 (PWA에선 보통 사치) |
+| 라이브러리                  | 트리거                                             |
+| --------------------------- | -------------------------------------------------- |
+| **@tanstack/react-virtual** | 편지함 1,000개 이상 누적 시                        |
+| **xstate**                  | 토너먼트 패자부활/동률 등 복잡한 상태 머신 필요 시 |
+| **next-themes**             | 사용자 토글 다크모드                               |
+| **storybook**               | 컴포넌트 카탈로그 필요 시 (PWA에선 보통 사치)      |
 
 ---
 
@@ -928,6 +1029,7 @@ npm i @use-gesture/react
 ### 🎨 토너먼트 흩날림 효과 — 라이브러리 추가 X
 
 벚꽃/물방울/단풍/눈꽃 파티클은 **커스텀 Canvas (~50줄)** 로 직접 구현 권장:
+
 - 의존성 0KB
 - 60fps 보장 (GPU 가속)
 - 4계절별 모양/색/낙하속도 파라미터화
@@ -960,51 +1062,51 @@ Turborepo / Micro Frontend / Redux / GraphQL / Kubernetes / @tanstack/react-virt
 
 ### 디자인 토큰 (`src/app/globals.scss`)
 
-| 카테고리 | 토큰 |
-|---------|------|
-| Color | `--color-bg / fg / muted / border / primary / primary-fg / danger / success / warning` |
-| Spacing | `--space-1` ~ `--space-12` (4px 그리드) |
-| Radius | `--radius-sm / md / lg / xl / full` |
-| Typography | `--text-xs ~ 3xl` |
-| Icon size | `--icon-sm / md / lg / xl` (의미별 사이즈 통일) |
-| Z-index | `--z-base / elevated / header / bottom-nav / dropdown / banner / modal / toast` |
-| Elevation | `--shadow-sm / md / lg` |
-| Layout | `--content-max / header-h / bottom-nav-h` |
+| 카테고리   | 토큰                                                                                   |
+| ---------- | -------------------------------------------------------------------------------------- |
+| Color      | `--color-bg / fg / muted / border / primary / primary-fg / danger / success / warning` |
+| Spacing    | `--space-1` ~ `--space-12` (4px 그리드)                                                |
+| Radius     | `--radius-sm / md / lg / xl / full`                                                    |
+| Typography | `--text-xs ~ 3xl`                                                                      |
+| Icon size  | `--icon-sm / md / lg / xl` (의미별 사이즈 통일)                                        |
+| Z-index    | `--z-base / elevated / header / bottom-nav / dropdown / banner / modal / toast`        |
+| Elevation  | `--shadow-sm / md / lg`                                                                |
+| Layout     | `--content-max / header-h / bottom-nav-h`                                              |
 
 다크모드는 `prefers-color-scheme` 자동 — 사용자 토글은 향후 `next-themes` 도입 시.
 
 ### Cross-cutting hooks (`src/hooks/`)
 
-| 훅 | 용도 |
-|----|------|
-| `use-keyboard` | Esc 닫기, cmd+k 등 단축키. input 안에선 무시 (modifier 없을 때) |
-| `use-focus-trap` | 모달 안에 포커스 가두기 + 닫힐 때 이전 포커스 복원 |
-| `use-unsaved-changes-warning` | 편지/온보딩 작성 중 페이지 떠나기 전 `beforeunload` 경고 |
-| `use-form-error` | axios 에러 → RHF `setError` 자동 매핑 (필드 + 루트) |
-| `use-scroll-restoration` | 무한스크롤 위치 보존/복원 (뒤로가기 시) |
-| `use-intersection` | IntersectionObserver 추상화 (rootMargin 200px) |
-| `use-confirm` | Promise 기반 확인 다이얼로그 (큐 + ui-store) |
+| 훅                            | 용도                                                            |
+| ----------------------------- | --------------------------------------------------------------- |
+| `use-keyboard`                | Esc 닫기, cmd+k 등 단축키. input 안에선 무시 (modifier 없을 때) |
+| `use-focus-trap`              | 모달 안에 포커스 가두기 + 닫힐 때 이전 포커스 복원              |
+| `use-unsaved-changes-warning` | 편지/온보딩 작성 중 페이지 떠나기 전 `beforeunload` 경고        |
+| `use-form-error`              | axios 에러 → RHF `setError` 자동 매핑 (필드 + 루트)             |
+| `use-scroll-restoration`      | 무한스크롤 위치 보존/복원 (뒤로가기 시)                         |
+| `use-intersection`            | IntersectionObserver 추상화 (rootMargin 200px)                  |
+| `use-confirm`                 | Promise 기반 확인 다이얼로그 (큐 + ui-store)                    |
 
 ### Cross-cutting utilities (`src/lib/`)
 
-| 모듈 | 용도 |
-|------|------|
-| `haptic` | `navigator.vibrate` 추상화. tap/success/warning/longPress. reduced-motion 자동 off |
-| `version` | `APP_VERSION` 노출 (settings 하단, /api/health 응답, Sentry release) |
-| `toast` | `toast.success/error/info/warning` — ui-store push 어댑터 |
-| `sw-cache` | `clearAllCaches()` — 로그아웃 시 사용자 격리 |
-| `cache` | TanStack Query 캐시 프로파일 7종 |
-| `dynamic` | `clientOnly()` / `ssrLazy()` 동적 import 헬퍼 |
+| 모듈       | 용도                                                                               |
+| ---------- | ---------------------------------------------------------------------------------- |
+| `haptic`   | `navigator.vibrate` 추상화. tap/success/warning/longPress. reduced-motion 자동 off |
+| `version`  | `APP_VERSION` 노출 (settings 하단, /api/health 응답, Sentry release)               |
+| `toast`    | `toast.success/error/info/warning` — ui-store push 어댑터                          |
+| `sw-cache` | `clearAllCaches()` — 로그아웃 시 사용자 격리                                       |
+| `cache`    | TanStack Query 캐시 프로파일 7종                                                   |
+| `dynamic`  | `clientOnly()` / `ssrLazy()` 동적 import 헬퍼                                      |
 
 ### 표준 피드백 컴포넌트 (`src/components/feedback/`)
 
-| 컴포넌트 | 사용처 |
-|---------|--------|
-| `Skeleton` | 로딩 자리잡이 (CSS shimmer, reduced-motion 존중) |
-| `EmptyState` | 편지함 / 토너먼트 기록 / 시군 탭 / 알림 — 4~5군데 일관 사용 |
-| `Toaster` | ui-store 의 toast 큐 렌더. BottomNav 위에 위치 |
-| `ConfirmDialog` | 회원 탈퇴 / 편지 삭제 / 우승지 삭제 / 차단 해제 |
-| `SegmentError` | 세그먼트별 `error.tsx` 의 공통 UI — `export { SegmentError as default }` |
+| 컴포넌트        | 사용처                                                                   |
+| --------------- | ------------------------------------------------------------------------ |
+| `Skeleton`      | 로딩 자리잡이 (CSS shimmer, reduced-motion 존중)                         |
+| `EmptyState`    | 편지함 / 토너먼트 기록 / 시군 탭 / 알림 — 4~5군데 일관 사용              |
+| `Toaster`       | ui-store 의 toast 큐 렌더. BottomNav 위에 위치                           |
+| `ConfirmDialog` | 회원 탈퇴 / 편지 삭제 / 우승지 삭제 / 차단 해제                          |
+| `SegmentError`  | 세그먼트별 `error.tsx` 의 공통 UI — `export { SegmentError as default }` |
 
 ### 세그먼트별 error boundary
 
@@ -1040,10 +1142,10 @@ track('letter.sent', { length: 5 });
 
 ### PWA 운영 (`src/features/pwa/`)
 
-| 컴포넌트 | 동작 |
-|---------|------|
-| `PwaUpdateBanner` | 새 SW 감지 → "새 버전이 있어요" → 클릭 시 skipWaiting + reload |
-| `OfflineBanner` | 온라인/오프라인 토글. SW 캐시된 콘텐츠는 그대로 표시 |
+| 컴포넌트              | 동작                                                                           |
+| --------------------- | ------------------------------------------------------------------------------ |
+| `PwaUpdateBanner`     | 새 SW 감지 → "새 버전이 있어요" → 클릭 시 skipWaiting + reload                 |
+| `OfflineBanner`       | 온라인/오프라인 토글. SW 캐시된 콘텐츠는 그대로 표시                           |
 | `InstallPromptBanner` | `beforeinstallprompt` 캡처 → 적절한 시점에 노출. dismiss는 sessionStorage 기억 |
 
 모두 `Providers` 안에 마운트되어 어디서든 동작.
@@ -1086,18 +1188,19 @@ msw 설치 후 `handlers.ts` 의 예시 주석을 활성화하면 동일 핸들�
 
 ### 협업 자동화 (`.husky/`, `.github/`)
 
-| 파일 | 목적 |
-|------|------|
-| `.husky/pre-commit` | `lint-staged` 실행 — 변경 파일만 lint + format |
-| `.husky/commit-msg` | `commitlint` — Conventional Commits 강제 |
-| `.lintstagedrc.json` | `*.{ts,tsx}` → ESLint+Prettier, `*.{md,scss,json}` → Prettier |
-| `commitlint.config.js` | type enum: feat/fix/refactor/perf/style/docs/test/chore/ci/build |
-| `.github/PULL_REQUEST_TEMPLATE.md` | 변경 요약 / 영역 / 테스트 / 스크린샷 / 영향 범위 |
-| `.github/ISSUE_TEMPLATE/bug_report.md` | 재현 단계 / 환경 / 버전 |
-| `.github/ISSUE_TEMPLATE/feature_request.md` | 문제 / 해결책 / 대안 |
-| `.github/CODEOWNERS` | 보안/인증 영역 자동 리뷰어 지정 |
+| 파일                                        | 목적                                                             |
+| ------------------------------------------- | ---------------------------------------------------------------- |
+| `.husky/pre-commit`                         | `lint-staged` 실행 — 변경 파일만 lint + format                   |
+| `.husky/commit-msg`                         | `commitlint` — Conventional Commits 강제                         |
+| `.lintstagedrc.json`                        | `*.{ts,tsx}` → ESLint+Prettier, `*.{md,scss,json}` → Prettier    |
+| `commitlint.config.js`                      | type enum: feat/fix/refactor/perf/style/docs/test/chore/ci/build |
+| `.github/PULL_REQUEST_TEMPLATE.md`          | 변경 요약 / 영역 / 테스트 / 스크린샷 / 영향 범위                 |
+| `.github/ISSUE_TEMPLATE/bug_report.md`      | 재현 단계 / 환경 / 버전                                          |
+| `.github/ISSUE_TEMPLATE/feature_request.md` | 문제 / 해결책 / 대안                                             |
+| `.github/CODEOWNERS`                        | 보안/인증 영역 자동 리뷰어 지정                                  |
 
 설치 후 한 번:
+
 ```bash
 npm install            # postinstall에서 husky 자동 초기화
 git add .husky/        # hook 파일 권한 보존
@@ -1106,20 +1209,22 @@ git add .husky/        # hook 파일 권한 보존
 ### 패턴 가이드
 
 #### Optimistic update (좋아요/저장)
+
 ```tsx
 useMutation({
   onMutate: async (id) => {
     await qc.cancelQueries({ queryKey });
     const prev = qc.getQueryData(queryKey);
-    qc.setQueryData(queryKey, optimistic);  // 즉시 반영
+    qc.setQueryData(queryKey, optimistic); // 즉시 반영
     return { prev };
   },
-  onError: (_e, _v, ctx) => qc.setQueryData(queryKey, ctx?.prev),  // 롤백
+  onError: (_e, _v, ctx) => qc.setQueryData(queryKey, ctx?.prev), // 롤백
   onSettled: () => qc.invalidateQueries({ queryKey }),
 });
 ```
 
 #### 회원 탈퇴 / 편지 삭제 패턴
+
 ```tsx
 const confirm = useConfirm();
 
@@ -1138,6 +1243,7 @@ async function onWithdraw() {
 ```
 
 #### 무한스크롤 + 스크롤 복원
+
 ```tsx
 function LetterboxReceived() {
   useScrollRestoration();
@@ -1172,17 +1278,17 @@ letter.compose.errors.invalidChar
 
 ## 환경별 호환성 매트릭스
 
-| 영역 | Desktop Web | Android Web/PWA | iOS Safari | iOS PWA |
-|------|:---:|:---:|:---:|:---:|
-| 기본 라우팅/UI | ✅ | ✅ | ✅ | ✅ |
-| Service Worker / 캐시 | ✅ | ✅ | ✅ | ✅ |
-| Web Push | ✅ | ✅ | ⚠️ 16.4+ | ⚠️ 16.4+ standalone |
-| `beforeinstallprompt` | ✅ | ✅ | ❌ | ❌ |
-| `navigator.vibrate` | ⚠️ 일부 | ✅ | ❌ | ❌ |
-| Geolocation | ✅ | ✅ | ✅ | ✅ |
-| 권한 재요청 (거부 후) | ✅ 설정→ | ✅ 설정→ | ❌ OS 설정만 | ❌ OS 설정만 |
-| 100dvh | ✅ | ✅ | ✅ 16+ | ✅ 16+ |
-| Background → 복귀 시 상태 | ✅ | ⚠️ 일부 폐기 | ⚠️ 폐기 흔함 | 🚨 빠르게 폐기 |
+| 영역                      | Desktop Web | Android Web/PWA |  iOS Safari  |       iOS PWA       |
+| ------------------------- | :---------: | :-------------: | :----------: | :-----------------: |
+| 기본 라우팅/UI            |     ✅      |       ✅        |      ✅      |         ✅          |
+| Service Worker / 캐시     |     ✅      |       ✅        |      ✅      |         ✅          |
+| Web Push                  |     ✅      |       ✅        |   ⚠️ 16.4+   | ⚠️ 16.4+ standalone |
+| `beforeinstallprompt`     |     ✅      |       ✅        |      ❌      |         ❌          |
+| `navigator.vibrate`       |   ⚠️ 일부   |       ✅        |      ❌      |         ❌          |
+| Geolocation               |     ✅      |       ✅        |      ✅      |         ✅          |
+| 권한 재요청 (거부 후)     |  ✅ 설정→   |    ✅ 설정→     | ❌ OS 설정만 |    ❌ OS 설정만     |
+| 100dvh                    |     ✅      |       ✅        |    ✅ 16+    |       ✅ 16+        |
+| Background → 복귀 시 상태 |     ✅      |  ⚠️ 일부 폐기   | ⚠️ 폐기 흔함 |   🚨 빠르게 폐기    |
 
 ### 플랫폼 quirks 대응 (코드에 적용됨)
 
@@ -1211,10 +1317,10 @@ letter.compose.errors.invalidChar
 
 ### 왜 sprite인가
 
-| 방식 | 누적 비용 (15 아이콘) | 추가 비용 |
-|------|---------------------|----------|
-| `lucide-react` named import | ~15KB (각 모듈 오버헤드) | 새 아이콘마다 |
-| **SVG sprite (`<use href>`)** | **~5KB (sprite + 컴포넌트 1개)** | **0KB** |
+| 방식                          | 누적 비용 (15 아이콘)            | 추가 비용     |
+| ----------------------------- | -------------------------------- | ------------- |
+| `lucide-react` named import   | ~15KB (각 모듈 오버헤드)         | 새 아이콘마다 |
+| **SVG sprite (`<use href>`)** | **~5KB (sprite + 컴포넌트 1개)** | **0KB**       |
 
 페이지마다 5~10개씩 누적되면 차이가 커집니다. PWA 환경에선 sprite가 SW로 캐시되어 첫 진입만 비용.
 
@@ -1239,18 +1345,19 @@ npm run build:icons   # scripts/build-icons.mjs → public/icons.svg 생성
 ```
 
 새 아이콘 추가 절차:
+
 1. `scripts/build-icons.mjs` 의 `ICONS` 배열에 추가
 2. `src/components/Icon/Icon.tsx` 의 `IconName` 에 추가
 3. `npm run build:icons` 실행
 
 ### 마이그레이션 현황
 
-| 컴포넌트 | 상태 |
-|---------|------|
-| `BottomNav` | ✅ Icon |
-| `AppHeader` | ✅ Icon |
-| `Toaster` | ✅ Icon |
-| `SubHeader` (chevron-left) | 🟡 점진 마이그레이션 |
+| 컴포넌트                        | 상태                                    |
+| ------------------------------- | --------------------------------------- |
+| `BottomNav`                     | ✅ Icon                                 |
+| `AppHeader`                     | ✅ Icon                                 |
+| `Toaster`                       | ✅ Icon                                 |
+| `SubHeader` (chevron-left)      | 🟡 점진 마이그레이션                    |
 | `SegmentError`, `EmptyState` 외 | 🟡 호출부에서 `<Icon />` 으로 점진 교체 |
 
 자주 보이는 영역 (네비/헤더/토스트) 먼저 sprite화 → 메인 번들에서 lucide-react 의 해당 아이콘들 제거됨.
@@ -1265,15 +1372,15 @@ npm run build:icons   # scripts/build-icons.mjs → public/icons.svg 생성
 
 ### 적용된 최적화
 
-| 영역 | 설정 |
-|------|------|
-| 포맷 우선순위 | AVIF → WebP → 원본 |
-| Quality 기본값 | 75 (시각 차이 거의 없음, 30% 절감) |
-| Device sizes | 360 / 640 / 750 / 828 / 1080 / 1200 / 1920 |
-| 외부 이미지 캐시 | TourAPI 30일 CacheFirst, 기타 7일 SWR |
-| Resource hints | `preconnect` + `dns-prefetch` to TourAPI (`layout.tsx`) |
-| Blur placeholder | 1px 회색 fallback (호출부에서 `blurDataURL` 지정 권장) |
-| `priority` | LCP 후보 (시군 hero, 토너먼트 우승지 메인) 에만 |
+| 영역             | 설정                                                    |
+| ---------------- | ------------------------------------------------------- |
+| 포맷 우선순위    | AVIF → WebP → 원본                                      |
+| Quality 기본값   | 75 (시각 차이 거의 없음, 30% 절감)                      |
+| Device sizes     | 360 / 640 / 750 / 828 / 1080 / 1200 / 1920              |
+| 외부 이미지 캐시 | TourAPI 30일 CacheFirst, 기타 7일 SWR                   |
+| Resource hints   | `preconnect` + `dns-prefetch` to TourAPI (`layout.tsx`) |
+| Blur placeholder | 1px 회색 fallback (호출부에서 `blurDataURL` 지정 권장)  |
+| `priority`       | LCP 후보 (시군 hero, 토너먼트 우승지 메인) 에만         |
 
 ### 호출 패턴
 
@@ -1294,18 +1401,20 @@ npm run build:icons   # scripts/build-icons.mjs → public/icons.svg 생성
 ### TourAPI 이미지 — 백엔드 협의 필요
 
 TourAPI 원본은 보통 1MB+ JPG. 그대로 next/image 변환만 의존하면:
+
 - next/image 첫 요청 시 변환 작업 비용 발생 (cold start)
 - 단일 size 만 변환되어 캐싱
 
 권장 백엔드/CDN 가이드:
 
-| 변환 | 크기 | 용도 |
-|------|------|------|
-| `thumb` | 240×240 WebP, ~10KB | 카드 썸네일 |
-| `card` | 480×360 WebP, ~30KB | 리스트 카드 |
-| `hero` | 1080×720 AVIF, ~80KB | 시군/우승지 상단 |
+| 변환    | 크기                 | 용도             |
+| ------- | -------------------- | ---------------- |
+| `thumb` | 240×240 WebP, ~10KB  | 카드 썸네일      |
+| `card`  | 480×360 WebP, ~30KB  | 리스트 카드      |
+| `hero`  | 1080×720 AVIF, ~80KB | 시군/우승지 상단 |
 
 백엔드 응답:
+
 ```json
 {
   "imageUrl": "https://cdn.example.com/tour-api/abc123",
@@ -1324,6 +1433,7 @@ CDN 권장: Cloudflare Images / imgix / Cloudinary / Vercel Image Optimization. 
 #### 1) Web Vitals 자동 측정 (적용 완료)
 
 `WebVitalsTracker` 가 Providers 안에 마운트되어 모든 페이지에서 자동 측정:
+
 - FCP / LCP / INP / CLS / TTFB
 - 개발 환경: 콘솔에 `[vitals] LCP: 1842 (good)` 형식 출력
 - 운영: `useReportWebVitals` 콜백 안에서 `navigator.sendBeacon('/api/metrics', ...)` 또는 Sentry/Vercel Analytics 로 전송
@@ -1331,6 +1441,7 @@ CDN 권장: Cloudflare Images / imgix / Cloudinary / Vercel Image Optimization. 
 #### 2) API 응답 시간 자동 측정 (적용 완료)
 
 `services/interceptors/timing.ts` 가 axios 인스턴스에 부착되어 모든 백엔드 호출의 응답 시간 측정:
+
 - 1초 초과 시 개발 콘솔에 `[api:slow] 200 /letters/received 1240ms` 경고
 - 운영: 동일 interceptor 안에서 analytics 도구로 전송 가능
 - TourAPI 프록시 / 편지함 / 토너먼트 후보 등 모든 호출 자동 적용
@@ -1347,6 +1458,7 @@ ANALYZE=true npm run build
 ```
 
 확인 항목:
+
 - recharts 가 main 청크 아닌 별도 chunk 인지
 - embla-carousel 도 동일
 - lucide-react 가 사용된 아이콘만 포함되는지 (sprite 마이그레이션 검증)
@@ -1373,6 +1485,7 @@ npx lighthouse https://your-app.vercel.app \
 ```
 
 `lighthouserc.json` 예시:
+
 ```json
 {
   "ci": {
@@ -1412,6 +1525,7 @@ DevTools → Network 탭 → No throttling 드롭다운
 ```
 
 체크리스트:
+
 - [ ] 첫 화면 3초 이내 인터랙티브
 - [ ] 토너먼트 매치업 카드 전환 60fps 유지
 - [ ] InfiniteList 끝 닿기 전 다음 페이지 prefetch (rootMargin 200px)
@@ -1419,24 +1533,24 @@ DevTools → Network 탭 → No throttling 드롭다운
 
 #### 7) 임계값 표 (모바일 기준)
 
-| 지표 | 목표 | 우수 | 현재 코드의 보호 장치 |
-|------|------|------|-----|
-| FCP | <1.8s | <1.0s | Server Component, preconnect |
-| LCP | <2.5s | <1.8s | `priority` LCP 이미지, AVIF, dynamic-subset 폰트 |
-| INP | <200ms | <100ms | dynamic import (recharts/embla), virtual DOM 최소화 |
-| CLS | <0.1 | <0.05 | 위젯 fixed height, blur placeholder, font-display:swap |
-| TTFB | <800ms | <200ms | Edge runtime (/api/health), Vercel edge cache |
-| TBT | <300ms | <200ms | 동적 import, optimizePackageImports |
+| 지표 | 목표   | 우수   | 현재 코드의 보호 장치                                  |
+| ---- | ------ | ------ | ------------------------------------------------------ |
+| FCP  | <1.8s  | <1.0s  | Server Component, preconnect                           |
+| LCP  | <2.5s  | <1.8s  | `priority` LCP 이미지, AVIF, dynamic-subset 폰트       |
+| INP  | <200ms | <100ms | dynamic import (recharts/embla), virtual DOM 최소화    |
+| CLS  | <0.1   | <0.05  | 위젯 fixed height, blur placeholder, font-display:swap |
+| TTFB | <800ms | <200ms | Edge runtime (/api/health), Vercel edge cache          |
+| TBT  | <300ms | <200ms | 동적 import, optimizePackageImports                    |
 
 #### 8) Bundle size budget (권장)
 
-| 청크 | 권장 한도 | 비고 |
-|------|---------|------|
-| First Load JS (홈) | <200KB gzip | Server Component 위주라 가볍게 유지 |
-| Recharts 청크 | <120KB gzip | 차트 페이지 진입 시만 로드 |
-| Embla 청크 | <15KB gzip | 캐러셀 사용 페이지만 |
-| Lucide-react (sprite 마이그 후) | <5KB gzip | 자주 안 쓰는 아이콘만 |
-| icons.svg | <10KB | 1년 immutable cache |
+| 청크                            | 권장 한도   | 비고                                |
+| ------------------------------- | ----------- | ----------------------------------- |
+| First Load JS (홈)              | <200KB gzip | Server Component 위주라 가볍게 유지 |
+| Recharts 청크                   | <120KB gzip | 차트 페이지 진입 시만 로드          |
+| Embla 청크                      | <15KB gzip  | 캐러셀 사용 페이지만                |
+| Lucide-react (sprite 마이그 후) | <5KB gzip   | 자주 안 쓰는 아이콘만               |
+| icons.svg                       | <10KB       | 1년 immutable cache                 |
 
 `ANALYZE=true npm run build` 결과와 위 표를 비교하여 회귀 감지.
 
@@ -1444,13 +1558,13 @@ DevTools → Network 탭 → No throttling 드롭다운
 
 지금은 third-party JS가 없습니다. 도입 시 영향:
 
-| 라이브러리 | 크기 (gzip) | 영향도 | 권장 도입 방식 |
-|-----------|------------|------|---------------|
-| **Vercel Analytics** | ~1KB | 무시 | 자동 통합, useReportWebVitals 연계 |
-| **Sentry @sentry/nextjs** | ~30KB | 중간 | route-level dynamic import, `enabled: prod` |
-| **Google Analytics 4** | ~50KB (gtag) | 큼 | `<Script strategy="afterInteractive">` |
-| **Mixpanel / Amplitude** | ~25KB | 중간 | 동일 — afterInteractive |
-| **Tag Manager (GTM)** | ~30KB + 컨테이너 | 큼 | `lazyOnload` 또는 worker 모드 (Partytown) |
+| 라이브러리                | 크기 (gzip)      | 영향도 | 권장 도입 방식                              |
+| ------------------------- | ---------------- | ------ | ------------------------------------------- |
+| **Vercel Analytics**      | ~1KB             | 무시   | 자동 통합, useReportWebVitals 연계          |
+| **Sentry @sentry/nextjs** | ~30KB            | 중간   | route-level dynamic import, `enabled: prod` |
+| **Google Analytics 4**    | ~50KB (gtag)     | 큼     | `<Script strategy="afterInteractive">`      |
+| **Mixpanel / Amplitude**  | ~25KB            | 중간   | 동일 — afterInteractive                     |
+| **Tag Manager (GTM)**     | ~30KB + 컨테이너 | 큼     | `lazyOnload` 또는 worker 모드 (Partytown)   |
 
 3개 이상 third-party JS 도입 시 **Partytown** (Web Worker 로 격리) 검토.
 
@@ -1463,23 +1577,30 @@ DevTools → Network 탭 → No throttling 드롭다운
 `layout.tsx` 의 `<head>` 에서 Pretendard CSS 로드:
 
 ```html
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin="anonymous" />
-<link rel="stylesheet"
-  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<link
+  rel="preconnect"
+  href="https://cdn.jsdelivr.net"
+  crossorigin="anonymous"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+/>
 ```
 
 ### 왜 jsdelivr dynamic-subset 인가
 
-| 항목 | jsdelivr dynamic-subset | self-host 단일 파일 |
-|------|------------------------|---------------------|
-| 첫 페인트 영향 | preconnect 로 critical path 영향 미미 | 같은 origin 0ms |
-| **다운로드 크기** | **사용 글리프만** (~80KB) ⭐ | 전체 한글+영문 (~120KB) |
-| 페이지별 최적화 | 자동 (unicode-range) | X |
-| 안정성 | jsdelivr CDN 글로벌 | 우리 도메인만큼 |
-| CSP | `cdn.jsdelivr.net` 허용 | self 만 |
-| SW 캐시 | runtime cache (1년 immutable) | next/static (1년) |
+| 항목              | jsdelivr dynamic-subset               | self-host 단일 파일     |
+| ----------------- | ------------------------------------- | ----------------------- |
+| 첫 페인트 영향    | preconnect 로 critical path 영향 미미 | 같은 origin 0ms         |
+| **다운로드 크기** | **사용 글리프만** (~80KB) ⭐          | 전체 한글+영문 (~120KB) |
+| 페이지별 최적화   | 자동 (unicode-range)                  | X                       |
+| 안정성            | jsdelivr CDN 글로벌                   | 우리 도메인만큼         |
+| CSP               | `cdn.jsdelivr.net` 허용               | self 만                 |
+| SW 캐시           | runtime cache (1년 immutable)         | next/static (1년)       |
 
 dynamic-subset 의 핵심:
+
 - CSS 가 `@font-face { unicode-range: U+AC00-D7AF; ... }` 처럼 여러 woff2 파일로 분할 정의
 - 브라우저가 페이지에 실제 사용된 글리프 범위에 해당하는 woff2 만 다운로드
 - 영문 페이지 → 영문 chunk (~20KB), 한국어 페이지 → 한글 chunk (~80KB)
@@ -1487,6 +1608,7 @@ dynamic-subset 의 핵심:
 ### 안전망 (폰트 로딩 실패해도 OK)
 
 `globals.scss` 의 `--font-sans` 가 시스템 폰트 폴백 보유:
+
 ```
 'Pretendard Variable', Pretendard,
 -apple-system, BlinkMacSystemFont,
@@ -1506,6 +1628,7 @@ npm i pretendard
 ```
 
 `layout.tsx`:
+
 ```tsx
 import localFont from 'next/font/local';
 
@@ -1564,6 +1687,7 @@ Vercel Edge Network         ← 별도 결제 X (Hobby 플랜 포함)
 ```
 
 **Vercel 배포 자체가 이미 글로벌 CDN.** Hobby 플랜에서:
+
 - Image Optimization: 5,000회/월
 - Bandwidth: 100GB/월
 - 작은~중간 규모 PWA 에 충분
@@ -1576,21 +1700,21 @@ Vercel Edge Network         ← 별도 결제 X (Hobby 플랜 포함)
 
 그 시점에 다음 옵션 비교:
 
-| 옵션 | 무료 한도 | 적합 |
-|------|----------|------|
-| **Vercel Blob** | 1GB / 100K reads (Hobby) | 가장 간편, Next.js 통합 |
-| **Cloudinary** | 25GB 저장, 25GB bandwidth | 변환 기능 강력 |
-| **AWS S3** + CloudFront | 첫 12개월 5GB | 제어 최대, 학습 곡선 |
-| **Cloudflare R2** | 10GB 저장, egress 무료 | 제일 저렴 |
+| 옵션                    | 무료 한도                 | 적합                    |
+| ----------------------- | ------------------------- | ----------------------- |
+| **Vercel Blob**         | 1GB / 100K reads (Hobby)  | 가장 간편, Next.js 통합 |
+| **Cloudinary**          | 25GB 저장, 25GB bandwidth | 변환 기능 강력          |
+| **AWS S3** + CloudFront | 첫 12개월 5GB             | 제어 최대, 학습 곡선    |
+| **Cloudflare R2**       | 10GB 저장, egress 무료    | 제일 저렴               |
 
 지금 결정할 필요 없음 — **필요해질 때 비교**.
 
 ### 현재 프로젝트 이미지 처리 현황
 
-| 항목 | 처리 |
-|------|------|
-| PWA 아이콘 (`public/icons/icon-*.png`) | placeholder, 실제 이미지로 교체 필요 |
-| SVG sprite (`public/icons.svg`) | 1년 immutable cache |
-| TourAPI 이미지 | next/image + 30일 SW cache |
-| 토너먼트 시즌 일러스트 | 디자인 후 `public/illustrations/` 추천 |
-| 사용자 업로드 | 사이트맵에 없음 — 도입 시 결정 |
+| 항목                                   | 처리                                   |
+| -------------------------------------- | -------------------------------------- |
+| PWA 아이콘 (`public/icons/icon-*.png`) | placeholder, 실제 이미지로 교체 필요   |
+| SVG sprite (`public/icons.svg`)        | 1년 immutable cache                    |
+| TourAPI 이미지                         | next/image + 30일 SW cache             |
+| 토너먼트 시즌 일러스트                 | 디자인 후 `public/illustrations/` 추천 |
+| 사용자 업로드                          | 사이트맵에 없음 — 도입 시 결정         |

@@ -7,6 +7,7 @@ import { ConceptStep } from '@/features/onboarding/components/ConceptStep';
 import { LocationStep } from '@/features/onboarding/components/LocationStep';
 import { NicknameStep } from '@/features/onboarding/components/NicknameStep';
 import { useCompleteOnboarding } from '@/features/onboarding/hooks/use-onboarding';
+import { useLocationStore } from '@/stores/location-store';
 import styles from './OnboardingFlow.module.scss';
 
 /**
@@ -25,12 +26,17 @@ export function OnboardingFlow() {
   const router = useRouter();
   const [step, setStep] = useState<Step>(1);
   const { mutateAsync: complete } = useCompleteOnboarding();
+  const resolvedLocation = useLocationStore((s) => s.resolved);
 
   const goNext = () => setStep((s) => (s < 3 ? ((s + 1) as Step) : s));
   const goPrev = () => setStep((s) => (s > 1 ? ((s - 1) as Step) : s));
 
   async function finishOnboarding(nickname: string) {
-    await complete({ nickname });
+    // location step에서 resolve된 위치가 있으면 regionCode 함께 전달
+    await complete({
+      nickname,
+      regionCode: resolvedLocation?.regionCode,
+    });
     router.replace('/');
   }
 
@@ -49,12 +55,18 @@ export function OnboardingFlow() {
 
       <div className={styles.body}>
         {step === 1 && <ConceptStep onNext={goNext} />}
-        {step === 2 && <LocationStep onNext={goNext} onSkip={goNext} onPrev={goPrev} />}
-        {step === 3 && <NicknameStep onSubmit={finishOnboarding} onPrev={goPrev} />}
+        {step === 2 && (
+          <LocationStep onNext={goNext} onSkip={goNext} onPrev={goPrev} />
+        )}
+        {step === 3 && (
+          <NicknameStep onSubmit={finishOnboarding} onPrev={goPrev} />
+        )}
       </div>
 
       {/* TODO: t('skip') / t('next') 등 공통 라벨은 features/onboarding/components 내부에서 사용 */}
-      <p style={{ fontSize: 0, position: 'absolute', opacity: 0 }}>{t('title')}</p>
+      <p style={{ fontSize: 0, position: 'absolute', opacity: 0 }}>
+        {t('title')}
+      </p>
     </div>
   );
 }

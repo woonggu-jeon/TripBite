@@ -65,6 +65,8 @@
   },
   "onboarding": {
     "title": "환영해요",
+    "next": "다음",
+    "back": "이전",
     "concept": {
       "title": "충북을 새롭게 발견해요",
       "description": "토너먼트로 여행지를 고르고, 다섯 글자로 마음을 전하세요."

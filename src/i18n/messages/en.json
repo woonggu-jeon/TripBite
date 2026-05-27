@@ -65,6 +65,8 @@
   },
   "onboarding": {
     "title": "Welcome",
+    "next": "Next",
+    "back": "Back",
     "concept": {
       "title": "Discover Chungbuk anew",
       "description": "Pick a destination via bracket, share your heart in five letters."
