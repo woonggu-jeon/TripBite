@@ -64,7 +64,13 @@ export function ConsentBlock({
     setPrivacy(value);
     setLocation(value);
     setMarketing(value);
-    emit({ age14: value, terms: value, privacy: value, location: value, marketing: value });
+    emit({
+      age14: value,
+      terms: value,
+      privacy: value,
+      location: value,
+      marketing: value,
+    });
   }
 
   return (
@@ -156,7 +162,10 @@ function Row({
         {label}
       </span>
       {href && (
-        <Link href={href} className={styles.viewLink}>
+        <Link
+          href={href as React.ComponentProps<typeof Link>['href']}
+          className={styles.viewLink}
+        >
           보기
         </Link>
       )}

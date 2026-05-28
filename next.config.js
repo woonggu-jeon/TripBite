@@ -68,6 +68,8 @@ const nextConfig = {
     // Client Router Cache TTL — 재방문/뒤로가기 시 캐시된 RSC payload 재사용.
     // dynamic 30s / static 180s. 탭 전환 잦은 PWA에서 즉각 복귀 체감.
     staleTimes: { dynamic: 30, static: 180 },
+    // <Link href>/router.push() 경로를 컴파일 시점에 검증 (오타로 깨진 링크 차단)
+    typedRoutes: true,
     optimizePackageImports: [
       'lucide-react',
       'recharts',

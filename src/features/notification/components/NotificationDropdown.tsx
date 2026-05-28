@@ -64,7 +64,12 @@ export function NotificationDropdown({ onClose }: { onClose: () => void }) {
   const items = data?.items ?? [];
 
   return (
-    <div className={styles.dropdown} ref={ref} role="dialog" aria-label={t('title')}>
+    <div
+      className={styles.dropdown}
+      ref={ref}
+      role="dialog"
+      aria-label={t('title')}
+    >
       <div className={styles.header}>
         <span className={styles.title}>{t('title')}</span>
         {items.some((n) => !n.read) && (
@@ -98,13 +103,7 @@ export function NotificationDropdown({ onClose }: { onClose: () => void }) {
   );
 }
 
-function Item({
-  n,
-  onSelect,
-}: {
-  n: AppNotification;
-  onSelect: () => void;
-}) {
+function Item({ n, onSelect }: { n: AppNotification; onSelect: () => void }) {
   const Icon = TYPE_ICON[n.type];
   const body = (
     <div className={`${styles.item} ${!n.read ? styles.unread : ''}`}>
@@ -118,7 +117,12 @@ function Item({
 
   if (n.link) {
     return (
-      <Link href={n.link} onClick={onSelect} className={styles.link}>
+      // n.link는 백엔드에서 오는 임의 경로 — typedRoutes 정적 분석 외라 cast
+      <Link
+        href={n.link as React.ComponentProps<typeof Link>['href']}
+        onClick={onSelect}
+        className={styles.link}
+      >
         {body}
       </Link>
     );

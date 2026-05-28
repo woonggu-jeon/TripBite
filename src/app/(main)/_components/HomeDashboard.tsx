@@ -47,14 +47,30 @@ export function HomeDashboard() {
                 showDots fallbackHeight={180}
                 ariaLabel={t('ongoingFestivals')}
               /> */}
-        <Placeholder height={180} title={t('ongoingFestivals')} note="Carousel" />
+        <Placeholder
+          height={180}
+          title={t('ongoingFestivals')}
+          note="Carousel"
+        />
       </section>
 
       {/* 3) 빠른 시작 3버튼 */}
       <section data-widget="quick-actions" className={styles.quickActions}>
-        <QuickActionLink href={ROUTES.TOURNAMENT} icon={<Trophy size={20} />} label={t('quick.tournament')} />
-        <QuickActionLink href={ROUTES.LETTER_COMPOSE} icon={<Mail size={20} />} label={t('quick.letter')} />
-        <QuickActionLink href={ROUTES.QUIZ} icon={<Sparkles size={20} />} label={t('quick.quiz')} />
+        <QuickActionLink
+          href={ROUTES.TOURNAMENT}
+          icon={<Trophy size={20} />}
+          label={t('quick.tournament')}
+        />
+        <QuickActionLink
+          href={ROUTES.LETTER_COMPOSE}
+          icon={<Mail size={20} />}
+          label={t('quick.letter')}
+        />
+        <QuickActionLink
+          href={ROUTES.QUIZ}
+          icon={<Sparkles size={20} />}
+          label={t('quick.quiz')}
+        />
       </section>
 
       {/* 4) 새로 도착한 편지 미리보기 */}
@@ -87,7 +103,8 @@ function QuickActionLink({
   icon,
   label,
 }: {
-  href: string;
+  // typedRoutes 호환 — ROUTES.* 리터럴 또는 next/link Route 타입
+  href: React.ComponentProps<typeof Link>['href'];
   icon: React.ReactNode;
   label: string;
 }) {
