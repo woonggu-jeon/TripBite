@@ -68,16 +68,30 @@ interface Placed {
 }
 
 function placeAll(destinations: Destination[]): Placed[] {
+  // 같은 시군 다중 항목은 라벨 주변에 deterministic spiral 로 배치 (random jitter X).
+  // 매번 같은 자리에 그려져 사용자가 "위치가 안 맞다"고 느끼지 않도록.
+  const perRegion = new Map<RegionCode, number>();
   return destinations.map((d, i) => {
-    const base = POINTS[d.region as RegionCode] ?? { x: 50, y: 50 };
-    // 같은 시군 여러 항목이 겹치지 않도록 흩뿌림 + 라벨 텍스트 아래로 살짝 편향
-    const jx = (Math.random() - 0.5) * 6;
-    const jy = (Math.random() - 0.5) * 6 + 3.5;
+    const region = d.region as RegionCode;
+    const base = POINTS[region] ?? { x: 50, y: 50 };
+    const idx = perRegion.get(region) ?? 0;
+    perRegion.set(region, idx + 1);
+
+    // 첫 항목은 라벨 위치. 두 번째부터 golden angle spiral.
+    let dx = 0;
+    let dy = 0;
+    if (idx > 0) {
+      const angle = ((idx - 1) * 137.5 * Math.PI) / 180;
+      const radius = 3.5 + (idx - 1) * 0.4;
+      dx = radius * Math.cos(angle);
+      dy = radius * Math.sin(angle);
+    }
+
     return {
       id: d.id,
       name: d.name,
-      x: Math.max(4, Math.min(96, base.x + jx)),
-      y: Math.max(4, Math.min(96, base.y + jy)),
+      x: Math.max(2, Math.min(98, base.x + dx)),
+      y: Math.max(2, Math.min(98, base.y + dy)),
       delay: i * 0.05,
     };
   });
