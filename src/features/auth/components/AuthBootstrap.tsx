@@ -30,14 +30,15 @@ export function AuthBootstrap() {
     if (isSuccess && data) {
       setAuth(data);
 
-      // onboarding 분기
-      const isOnboarded = (data as { isOnboarded?: boolean }).isOnboarded ?? true;
-
-      if (!isOnboarded && pathname !== '/onboarding') {
-        router.replace('/onboarding');
-      } else if (isOnboarded && pathname === '/onboarding') {
-        router.replace('/');
-      }
+      // ⚠️ onboarding redirect 임시 비활성 — 백엔드 API 붙기 전 모든 페이지 확인용.
+      //    백엔드 연동 후 아래 블록 주석 해제.
+      //
+      // const isOnboarded = (data as { isOnboarded?: boolean }).isOnboarded ?? true;
+      // if (!isOnboarded && pathname !== '/onboarding') {
+      //   router.replace('/onboarding');
+      // } else if (isOnboarded && pathname === '/onboarding') {
+      //   router.replace('/');
+      // }
     } else if (isError) {
       clearAuth();
     }

@@ -47,19 +47,21 @@ export function middleware(request: NextRequest) {
   requestHeaders.set('x-nonce', nonce);
   requestHeaders.set('content-security-policy-report-only', csp);
 
-  const { pathname } = request.nextUrl;
-  const hasAccessToken = request.cookies.has(ACCESS_TOKEN_COOKIE);
-  const isPublicOnly = PUBLIC_ONLY_PATHS.some((p) => pathname.startsWith(p));
-
-  // ── 인증 redirect (CSP 헤더 동반) ──
-  if (isPublicOnly && hasAccessToken) {
-    return withCsp(NextResponse.redirect(new URL('/', request.url)), csp);
-  }
-  if (!isPublicOnly && !hasAccessToken) {
-    const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('redirect', pathname);
-    return withCsp(NextResponse.redirect(loginUrl), csp);
-  }
+  // ⚠️ 인증 redirect 임시 비활성 — 백엔드 API 붙기 전 모든 페이지 확인용.
+  //    백엔드 연동 후 아래 블록 주석 해제 (PUBLIC_ONLY_PATHS / ACCESS_TOKEN_COOKIE 상수도 살아있음).
+  //
+  // const { pathname } = request.nextUrl;
+  // const hasAccessToken = request.cookies.has(ACCESS_TOKEN_COOKIE);
+  // const isPublicOnly = PUBLIC_ONLY_PATHS.some((p) => pathname.startsWith(p));
+  //
+  // if (isPublicOnly && hasAccessToken) {
+  //   return withCsp(NextResponse.redirect(new URL('/', request.url)), csp);
+  // }
+  // if (!isPublicOnly && !hasAccessToken) {
+  //   const loginUrl = new URL('/login', request.url);
+  //   loginUrl.searchParams.set('redirect', pathname);
+  //   return withCsp(NextResponse.redirect(loginUrl), csp);
+  // }
 
   const response = NextResponse.next({ request: { headers: requestHeaders } });
   response.headers.set('Content-Security-Policy-Report-Only', csp);
