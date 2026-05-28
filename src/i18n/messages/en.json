@@ -285,7 +285,12 @@
       "error": "Couldn't load destinations",
       "retry": "Try again",
       "introHint": "The Chungbuk map will appear shortly",
-      "autoSummary": "{destinations} destinations → {matchups} matchups",
+      "next": "Next",
+      "mapSummary": "{destinations} destinations selected",
+      "tournamentSize": {
+        "title": "Bracket size",
+        "hint": "Matchups out of the destinations (max {max})"
+      },
       "startBracket": "Start bracket",
       "noConfig": "No tournament settings yet",
       "goSetup": "Go to setup",

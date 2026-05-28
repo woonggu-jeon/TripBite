@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import type {
   Destination,
   TournamentConfig,
+  TournamentCount,
 } from '@/features/tournament/types';
 
 /**
@@ -30,6 +31,11 @@ type TournamentState = {
 
 type TournamentActions = {
   setConfig: (config: TournamentConfig) => void;
+  /**
+   * Play 페이지의 tournamentSize phase 에서 호출.
+   * config.tournamentSize 만 갱신해 백엔드 호출 파라미터로 전달되도록.
+   */
+  setTournamentSize: (size: TournamentCount) => void;
   setWinner: (winner: Destination) => void;
   reset: () => void;
 };
@@ -41,6 +47,12 @@ export const useTournamentStore = create<TournamentState & TournamentActions>()(
       winner: null,
 
       setConfig: (config) => set({ config }),
+      setTournamentSize: (size) =>
+        set((state) =>
+          state.config
+            ? { config: { ...state.config, tournamentSize: size } }
+            : { config: state.config },
+        ),
       setWinner: (winner) => set({ winner }),
       reset: () => set({ config: null, winner: null }),
     }),
@@ -49,7 +61,11 @@ export const useTournamentStore = create<TournamentState & TournamentActions>()(
       storage: createJSONStorage(() =>
         typeof window === 'undefined'
           ? // SSR no-op
-            { getItem: () => null, setItem: () => undefined, removeItem: () => undefined }
+            {
+              getItem: () => null,
+              setItem: () => undefined,
+              removeItem: () => undefined,
+            }
           : sessionStorage,
       ),
       // server 데이터 일부 필드만 저장하려면 partialize 사용

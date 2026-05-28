@@ -26,6 +26,9 @@ export const tournamentApi = {
         categories: config.categories.join(','),
         region: config.region,
         count: config.count,
+        // 매치업 사이즈 — Play 의 tournamentSize phase 에서 결정되면 함께 전달.
+        // 백엔드가 destinations 결정 시 활용 가능 (현재 mock 은 무시).
+        tournamentSize: config.tournamentSize,
         pool: poolSize,
       },
     });

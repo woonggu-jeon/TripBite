@@ -27,10 +27,14 @@ export type TournamentConfig = {
   theme: TournamentTheme;
   categories: DestinationCategory[]; // 최소 1개
   region?: string; // 충북 시군 (예: "청주시") — 단일 시군 한정 시
-  /** 여행지 갯수 (N) — 지도에 떨어질 꽃잎(시군) 수. 백엔드 호출 파라미터. */
+  /** 여행지 갯수 (N) — 지도에 떨어질 꽃잎(시군) 수. Setup 에서 결정. */
   count: TournamentCount;
-  /** 토너먼트 매치업 사이즈 (M ≤ N) — N 중 random M 개로 토너먼트 진행. */
-  tournamentSize: TournamentCount;
+  /**
+   * 토너먼트 매치업 사이즈 (M ≤ N). Play 페이지의 tournamentSize phase 에서 결정.
+   * 결정되면 store.setTournamentSize 로 갱신되며 백엔드 API 호출 파라미터로 함께 전달.
+   * 초기(Setup 직후) 단계에선 undefined.
+   */
+  tournamentSize?: TournamentCount;
 };
 
 export type Destination = {

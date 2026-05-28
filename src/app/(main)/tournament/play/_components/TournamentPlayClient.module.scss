@@ -104,6 +104,27 @@
   }
 }
 
+.sizePhase {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.sizeTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-fg);
+  line-height: 1.3;
+}
+
+.sizeHint {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  margin-top: -0.5rem;
+}
+
 .bracket {
   position: relative;
   z-index: 2;

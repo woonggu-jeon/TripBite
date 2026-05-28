@@ -6,32 +6,41 @@ import { useTranslations } from 'next-intl';
 import { CenterIllustration } from '@/features/tournament/components/CenterIllustration';
 import { FallingPetals } from '@/features/tournament/components/FallingPetals';
 import { ChungbukMap } from '@/features/tournament/components/ChungbukMap';
+import { CountSelector } from '@/features/tournament/components/CountSelector';
 import { Bracket } from '@/features/tournament/components/Bracket';
-import type { Destination } from '@/features/tournament/types';
+import type { Destination, TournamentCount } from '@/features/tournament/types';
 import { useTournamentStore } from '@/features/tournament/store/tournament-store';
 import { useTournamentCandidates } from '@/features/tournament/hooks/use-tournament';
 import styles from './TournamentPlayClient.module.scss';
 
-type Phase = 'intro' | 'map' | 'bracket';
+type Phase = 'intro' | 'map' | 'tournamentSize' | 'bracket';
 
 const INTRO_MS = 2500;
 
 /**
  * 토너먼트 진행 클라이언트
  *
- *   1) intro  : 중앙 일러스트 + 계절 파티클 (자동 2.5초 → map)
- *   2) map    : 충북 지도 + N 개 시군 자동 꽃잎 (사용자 선택 X). "토너먼트 시작" 클릭 → bracket
- *   3) bracket: N 중 random M(=config.tournamentSize) 개로 1:1 매치업
+ *   1) intro          : 중앙 일러스트 + 계절 파티클 (자동 2.5초 → map)
+ *   2) map            : 충북 지도 + N 개 시군 자동 꽃잎 → "다음" 클릭 → tournamentSize
+ *   3) tournamentSize : 토너먼트 수 M 선택 (M ≤ N) → store.setTournamentSize → bracket
+ *   4) bracket        : N 중 앞에서 M 개로 1:1 매치업 (pool 이 이미 셔플돼있음)
  *
  * 설정 없이 직접 진입 시 자동 redirect 대신 안내 + 설정 화면 진입 버튼.
+ *
+ * 사용자 요구:
+ *   - 토너먼트 데이터(여행유형 + 여행지 + 토너먼트 수)는 API 호출 파라미터로 전달
+ *   - tournamentSize 는 Play 의 별도 phase 에서 결정 (Setup 에서는 결정 X)
+ *   - 지도 꽃잎은 자동(선택 X 필수)
  */
 export function TournamentPlayClient() {
   const router = useRouter();
   const t = useTranslations('tournament.play');
   const config = useTournamentStore((s) => s.config);
+  const setTournamentSize = useTournamentStore((s) => s.setTournamentSize);
   const setWinner = useTournamentStore((s) => s.setWinner);
 
   const [phase, setPhase] = useState<Phase>('intro');
+  const [pendingSize, setPendingSize] = useState<TournamentCount | null>(null);
 
   const {
     data: pool,
@@ -48,10 +57,8 @@ export function TournamentPlayClient() {
   }, [config, phase]);
 
   // 시군별 dedup → 여행지 갯수(N) 만큼 노출.
-  // (백엔드 연동 후엔 handler 가 N개 시군의 destinations 만 반환할 예정)
   // hook 은 항상 같은 순서로 호출되어야 하므로 early return 앞에 배치.
   const N = config?.count ?? 0;
-  const M = config?.tournamentSize ?? 0;
   const dedupedPool = useMemo<Destination[] | null>(() => {
     if (!pool) return null;
     const seen = new Set<string>();
@@ -65,10 +72,11 @@ export function TournamentPlayClient() {
     return dedup;
   }, [pool, N]);
 
-  // bracket 진입 시 사용할 destinations — dedupedPool 중 앞에서 M개 (pool 이 이미 셔플됨).
+  // bracket 진입 시 dedupedPool 앞 M 개 사용 (pool 이 이미 셔플됨)
+  const matchupSize = config?.tournamentSize ?? pendingSize ?? 0;
   const matchupDestinations = useMemo<Destination[]>(
-    () => dedupedPool?.slice(0, M) ?? [],
-    [dedupedPool, M],
+    () => dedupedPool?.slice(0, matchupSize) ?? [],
+    [dedupedPool, matchupSize],
   );
 
   if (!config) {
@@ -88,7 +96,13 @@ export function TournamentPlayClient() {
 
   const theme = config.theme;
 
-  const handleProceed = () => {
+  const handleMapNext = () => {
+    setPhase('tournamentSize');
+  };
+
+  const handleStartBracket = () => {
+    if (!pendingSize) return;
+    setTournamentSize(pendingSize); // store.config.tournamentSize 갱신 (API 호출용)
     setPhase('bracket');
   };
 
@@ -96,6 +110,8 @@ export function TournamentPlayClient() {
     setWinner(winner);
     router.replace('/tournament/result');
   };
+
+  const canStartBracket = pendingSize !== null && pendingSize <= config.count;
 
   return (
     <div className={styles.wrap}>
@@ -140,22 +156,45 @@ export function TournamentPlayClient() {
           )}
           {dedupedPool && (
             <>
-              {/* 사용자 선택 X (필수 자동) — selected/onToggle prop 전달 안 함 */}
+              {/* 자동 표시 — 사용자 선택 X (selected/onToggle 미전달) */}
               <ChungbukMap destinations={dedupedPool} theme={theme} />
               <div className={styles.mapFooter}>
                 <p className={styles.counter}>
-                  {t('autoSummary', { destinations: N, matchups: M })}
+                  {t('mapSummary', { destinations: N })}
                 </p>
                 <button
                   type="button"
                   className={styles.cta}
-                  onClick={handleProceed}
+                  onClick={handleMapNext}
                 >
-                  {t('startBracket')}
+                  {t('next')}
                 </button>
               </div>
             </>
           )}
+        </div>
+      )}
+
+      {phase === 'tournamentSize' && (
+        <div className={styles.sizePhase}>
+          <h2 className={styles.sizeTitle}>{t('tournamentSize.title')}</h2>
+          <p className={styles.sizeHint}>
+            {t('tournamentSize.hint', { max: N })}
+          </p>
+          <CountSelector
+            value={pendingSize}
+            onChange={setPendingSize}
+            max={config.count}
+            ariaLabelKey="steps.tournamentSize.title"
+          />
+          <button
+            type="button"
+            className={styles.cta}
+            disabled={!canStartBracket}
+            onClick={handleStartBracket}
+          >
+            {t('startBracket')}
+          </button>
         </div>
       )}
 

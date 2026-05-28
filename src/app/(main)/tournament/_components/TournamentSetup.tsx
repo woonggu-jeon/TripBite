@@ -23,23 +23,28 @@ import { haptic } from '@/lib/haptic';
 import styles from './TournamentSetup.module.scss';
 
 /**
- * 토너먼트 설정 — 스텝별 진행 (5 steps)
+ * 토너먼트 설정 — 스텝별 진행 (4 steps)
  *
  *   1) 테마 종류    : 계절 / 특별한 날
  *   2) 항목         : (계절) 봄·여름·가을·겨울 / (특별한 날) 생일·결혼기념일
  *   3) 여행 유형    : 지역·축제·관광지·체험관광 (다중) — 세로 4 카드
  *   4) 여행지 갯수  : 2 / 4 / 6 / 8  (N)
- *   5) 토너먼트 개수 : 2 / 4 / 6 / 8  (M ≤ N) — N 이상은 disable
  *
- * 단일 선택 스텝(1·2·4·5)은 선택 즉시 next.
+ * 단일 선택 스텝(1·2·4)은 선택 즉시 next.
  * 다중 선택 스텝(3)은 "다음" 버튼.
- * 마지막 스텝(5)은 선택 후 "시작하기".
+ * 마지막 스텝(4)은 선택 후 "시작하기" — /tournament/play 로 이동.
+ *
+ * 토너먼트 개수(M ≤ N)는 Play 페이지의 별도 phase 에서 결정.
  *
  * 뒤로: step > 1 → step--, step === 1 → router.back()
+ *
+ * 진행 표시(progress bar/text)는 사용자 요청으로 일단 비노출 — 주석 처리.
  */
 
-type Step = 1 | 2 | 3 | 4 | 5;
-const TOTAL_STEPS = 5;
+type Step = 1 | 2 | 3 | 4;
+// progress UI 비노출 — 추후 복원 시 사용. 주석 해제하면 lint warning 사라짐.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const TOTAL_STEPS = 4;
 
 export function TournamentSetup() {
   const router = useRouter();
@@ -52,9 +57,6 @@ export function TournamentSetup() {
   const [specialDay, setSpecialDay] = useState<SpecialDay | null>(null);
   const [categories, setCategories] = useState<DestinationCategory[]>([]);
   const [count, setCount] = useState<TournamentCount | null>(null);
-  const [tournamentSize, setTournamentSize] = useState<TournamentCount | null>(
-    null,
-  );
 
   const handleKind = (k: ThemeKind) => {
     setThemeKind(k);
@@ -76,15 +78,6 @@ export function TournamentSetup() {
 
   const handleCount = (c: TournamentCount) => {
     setCount(c);
-    // count 변경 시 tournamentSize 가 새 count 보다 크면 reset
-    if (tournamentSize !== null && tournamentSize > c) {
-      setTournamentSize(null);
-    }
-    setStep(5);
-  };
-
-  const handleTournamentSize = (m: TournamentCount) => {
-    setTournamentSize(m);
   };
 
   const goBack = () => {
@@ -106,24 +99,16 @@ export function TournamentSetup() {
   };
 
   const canStart =
-    step === 5 &&
+    step === 4 &&
     count !== null &&
-    tournamentSize !== null &&
-    tournamentSize <= count &&
     resolveTheme() !== null &&
     categories.length > 0;
 
   const handleStart = () => {
     const theme = resolveTheme();
-    if (
-      !theme ||
-      count === null ||
-      tournamentSize === null ||
-      categories.length === 0
-    )
-      return;
+    if (!theme || count === null || categories.length === 0) return;
     haptic.success();
-    setConfig({ theme, categories, count, tournamentSize });
+    setConfig({ theme, categories, count });
     router.push('/tournament/play');
   };
 
@@ -143,12 +128,7 @@ export function TournamentSetup() {
         title: t('steps.category.title'),
         hint: t('steps.category.hint'),
       };
-    if (step === 4)
-      return { title: t('steps.count.title'), hint: t('steps.count.hint') };
-    return {
-      title: t('steps.tournamentSize.title'),
-      hint: t('steps.tournamentSize.hint'),
-    };
+    return { title: t('steps.count.title'), hint: t('steps.count.hint') };
   })();
 
   return (
@@ -162,12 +142,15 @@ export function TournamentSetup() {
         >
           ←
         </button>
+        {/* 진행 표시 — 일단 비노출. 추후 복원 시 주석 해제.
         <span className={styles.progress}>
           {t('progress', { current: step, total: TOTAL_STEPS })}
         </span>
+        */}
         <span aria-hidden className={styles.headSpacer} />
       </header>
 
+      {/* 진행 바 — 일단 비노출. 추후 복원 시 주석 해제.
       <div
         className={styles.progressBar}
         role="progressbar"
@@ -180,6 +163,7 @@ export function TournamentSetup() {
           style={{ width: `${(step / TOTAL_STEPS) * 100}%` }}
         />
       </div>
+      */}
 
       <div className={styles.section}>
         <h2 className={styles.title}>{heading.title}</h2>
@@ -198,14 +182,6 @@ export function TournamentSetup() {
           <CategoryFilter values={categories} onChange={setCategories} />
         )}
         {step === 4 && <CountSelector value={count} onChange={handleCount} />}
-        {step === 5 && (
-          <CountSelector
-            value={tournamentSize}
-            onChange={handleTournamentSize}
-            max={count ?? undefined}
-            ariaLabelKey="steps.tournamentSize.title"
-          />
-        )}
       </div>
 
       {step === 3 && (
@@ -219,7 +195,7 @@ export function TournamentSetup() {
         </button>
       )}
 
-      {step === 5 && (
+      {step === 4 && (
         <button
           type="button"
           className={styles.start}
@@ -230,7 +206,7 @@ export function TournamentSetup() {
         </button>
       )}
 
-      {(step === 1 || step === 2 || step === 4) && (
+      {(step === 1 || step === 2) && (
         <p className={styles.autoHint}>{t('selectToContinue')}</p>
       )}
     </div>

@@ -189,7 +189,8 @@ export const handlers = [
     HttpResponse.json({ items: tournamentHistorySeeds, nextCursor: null }),
   ),
   // 조건에 맞는 후보 여행지 풀 반환 — 셔플 후 잘라서 반환
-  //   - count: 토너먼트 사이즈 (사용자가 그 중 정확히 count개 선택)
+  //   - count: 여행지 갯수 (N)
+  //   - tournamentSize: 매치업 사이즈 (M ≤ N) — 현재 mock 은 무시, 백엔드 연동 후 활용
   //   - pool : 클라이언트에 노출할 풀 사이즈 (없으면 count와 같음)
   http.get(`${apiUrl}/destinations/random`, ({ request }) => {
     const url = new URL(request.url);
@@ -199,6 +200,8 @@ export const handlers = [
       32,
       Math.max(2, Number(url.searchParams.get('count') ?? 8)),
     );
+    // tournamentSize 는 수신만 (mock 동작에 영향 X)
+    void url.searchParams.get('tournamentSize');
     const poolParam = url.searchParams.get('pool');
     const desired = poolParam !== null ? Number(poolParam) : count;
     const categories = categoriesParam

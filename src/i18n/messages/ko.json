@@ -285,7 +285,12 @@
       "error": "여행지를 불러오지 못했어요",
       "retry": "다시 시도",
       "introHint": "잠시 후 충북 지도가 펼쳐져요",
-      "autoSummary": "여행지 {destinations}곳 → 토너먼트 {matchups}개 매치업",
+      "next": "다음",
+      "mapSummary": "여행지 {destinations}곳이 선정됐어요",
+      "tournamentSize": {
+        "title": "토너먼트 수",
+        "hint": "여행지 중 매치업으로 진행할 수 (최대 {max})"
+      },
       "startBracket": "토너먼트 시작",
       "noConfig": "토너먼트 설정이 없어요",
       "goSetup": "설정 화면으로",
