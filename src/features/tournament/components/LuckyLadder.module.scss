@@ -5,39 +5,6 @@
   width: 100%;
 }
 
-.toggle {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  justify-content: center;
-
-  button {
-    padding: 0.4rem 0.75rem;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-full);
-    background: transparent;
-    color: var(--color-fg);
-    font-size: 0.8125rem;
-    cursor: pointer;
-    transition: background 0.15s;
-
-    &:hover {
-      background: var(--color-border);
-    }
-
-    &.active {
-      background: var(--color-primary);
-      color: var(--color-primary-fg);
-      border-color: var(--color-primary);
-    }
-  }
-
-  .reset {
-    margin-left: 0.25rem;
-    font-size: 0.75rem;
-  }
-}
-
 .svg {
   width: 100%;
   max-width: 360px;
@@ -53,7 +20,6 @@
     filter: drop-shadow(0 0 4px var(--color-primary));
   }
 
-  /* prefers-reduced-motion: 호버 효과 약화 */
   &:hover circle {
     filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.15));
   }
@@ -74,54 +40,5 @@
 @media (prefers-reduced-motion: reduce) {
   .path {
     animation-duration: 0.01s;
-  }
-}
-
-.resultRow {
-  min-height: 1.5rem;
-  font-size: 0.9375rem;
-}
-
-.resultText {
-  color: var(--color-fg);
-
-  strong {
-    color: var(--color-primary);
-    font-size: 1.1rem;
-  }
-}
-
-.restart {
-  margin-top: 0.25rem;
-  padding: 0.625rem 1.25rem;
-  background: var(--color-primary);
-  color: var(--color-primary-fg);
-  border: none;
-  border-radius: var(--radius-md);
-  font-size: 0.9375rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition:
-    opacity 0.15s ease,
-    transform 0.1s ease;
-
-  &:hover {
-    opacity: 0.92;
-  }
-  &:active {
-    transform: scale(0.97);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .restart {
-    transition: none;
-    &:active {
-      transform: none;
-    }
   }
 }

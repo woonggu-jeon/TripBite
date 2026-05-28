@@ -40,17 +40,29 @@ function generateRungs(cols: number, rows: number): Rung[] {
   return rungs;
 }
 
+const MIN_PERCENT = 7;
+
 function generatePercents(count: number, mode: LuckyLadderMode): number[] {
   if (mode === 'independent') {
-    return Array.from({ length: count }, () => Math.floor(Math.random() * 101));
+    // 최소 7% 보장 — 너무 낮은 결과 방지
+    return Array.from(
+      { length: count },
+      () => MIN_PERCENT + Math.floor(Math.random() * (101 - MIN_PERCENT)),
+    );
+  }
+  // sum100: 최소 7 보장 후 나머지 (100 - 7*count) 를 random 분배
+  const remainder = 100 - MIN_PERCENT * count;
+  if (remainder < 0) {
+    // count 가 너무 많아 최소 보장 불가 — 균등 분배 fallback
+    return Array.from({ length: count }, () => Math.floor(100 / count));
   }
   const raws = Array.from({ length: count }, () => Math.random());
   const sum = raws.reduce((a, b) => a + b, 0);
-  const percents = raws.map((r) => Math.round((r / sum) * 100));
-  // 반올림 보정 — 합 100 맞춤
-  const diff = 100 - percents.reduce((a, b) => a + b, 0);
-  percents[0] = (percents[0] ?? 0) + diff;
-  return percents;
+  const portions = raws.map((r) => Math.round((r / sum) * remainder));
+  // 반올림 보정
+  const diff = remainder - portions.reduce((a, b) => a + b, 0);
+  portions[0] = (portions[0] ?? 0) + diff;
+  return portions.map((p) => MIN_PERCENT + p);
 }
 
 function tracePath(
@@ -91,29 +103,24 @@ export function LuckyLadder({
   rows = 8,
   initialMode = 'independent',
 }: LuckyLadderProps) {
-  const [mode, setMode] = useState<LuckyLadderMode>(initialMode);
+  // 모드는 prop 으로만 받고 내부 변경 UI 없음 (로직은 두 모드 모두 유지).
+  // 새 사다리/% 가 필요하면 외부에서 컴포넌트 key 를 바꿔 unmount/remount.
+  const mode = initialMode;
   const [selected, setSelected] = useState<number | null>(null);
-  const [seed, setSeed] = useState(0);
   const [revealed, setRevealed] = useState(false);
 
-  const { rungs, percents } = useMemo(() => {
-    void seed; // seed 변경 시 재생성
-    return {
+  const { rungs, percents } = useMemo(
+    () => ({
       rungs: generateRungs(count, rows),
       percents: generatePercents(count, mode),
-    };
-  }, [count, rows, mode, seed]);
+    }),
+    [count, rows, mode],
+  );
 
   const handlePick = useCallback((col: number) => {
     haptic.tap();
     setSelected(col);
     setRevealed(false);
-  }, []);
-
-  const reset = useCallback(() => {
-    setSelected(null);
-    setRevealed(false);
-    setSeed((s) => s + 1);
   }, []);
 
   // 선택 후 경로 애니메이션이 끝나면 % 공개
@@ -130,7 +137,7 @@ export function LuckyLadder({
       reduced ? 50 : REVEAL_MS,
     );
     return () => window.clearTimeout(id);
-  }, [selected, seed, mode]);
+  }, [selected, mode]);
 
   const W = 320;
   const H = 380;
@@ -146,44 +153,9 @@ export function LuckyLadder({
     selected !== null && path.length > 0
       ? (path[path.length - 1]?.col ?? selected)
       : null;
-  const resultPercent =
-    revealed && endCol !== null ? (percents[endCol] ?? 0) : null;
 
   return (
     <div className={styles.wrap}>
-      <div className={styles.toggle} role="group" aria-label="모드 선택">
-        <button
-          type="button"
-          className={mode === 'independent' ? styles.active : ''}
-          aria-pressed={mode === 'independent'}
-          onClick={() => {
-            setMode('independent');
-            setSelected(null);
-          }}
-        >
-          독립 랜덤
-        </button>
-        <button
-          type="button"
-          className={mode === 'sum100' ? styles.active : ''}
-          aria-pressed={mode === 'sum100'}
-          onClick={() => {
-            setMode('sum100');
-            setSelected(null);
-          }}
-        >
-          100% 분배
-        </button>
-        <button
-          type="button"
-          className={styles.reset}
-          onClick={reset}
-          aria-label="새 사다리"
-        >
-          🔄 새로
-        </button>
-      </div>
-
       <svg
         viewBox={`0 0 ${W} ${H}`}
         className={styles.svg}
@@ -259,9 +231,10 @@ export function LuckyLadder({
           </g>
         ))}
 
-        {/* 끝점 % — 도착 라인 강조는 endCol 기준. 공개 전엔 '?' 로 가림. */}
+        {/* 끝점 — 도착 라인의 % 만 revealed 시 공개. 나머지는 항상 '?'. */}
         {percents.map((p, i) => {
           const isEnd = endCol === i;
+          const showPercent = revealed && isEnd;
           const dimmed = selected !== null && !isEnd;
           return (
             <g key={`e${i}`}>
@@ -272,11 +245,9 @@ export function LuckyLadder({
                 height={26}
                 rx={13}
                 fill={
-                  revealed && isEnd
-                    ? 'var(--color-primary)'
-                    : 'var(--color-muted)'
+                  showPercent ? 'var(--color-primary)' : 'var(--color-muted)'
                 }
-                opacity={dimmed && !revealed ? 0.5 : 1}
+                opacity={dimmed ? 0.55 : 1}
               />
               <text
                 x={colX(i)}
@@ -286,7 +257,7 @@ export function LuckyLadder({
                 fontWeight={700}
                 fill="var(--color-primary-fg)"
               >
-                {revealed ? `${p}%` : '?'}
+                {showPercent ? `${p}%` : '?'}
               </text>
             </g>
           );
@@ -295,7 +266,7 @@ export function LuckyLadder({
         {/* 선택 경로 — stroke-dashoffset 애니메이션 */}
         {selected !== null && (
           <polyline
-            key={`path-${selected}-${seed}-${mode}`}
+            key={`path-${selected}-${mode}`}
             points={path.map((p) => `${colX(p.col)},${rowY(p.row)}`).join(' ')}
             fill="none"
             stroke="var(--color-primary)"
@@ -306,20 +277,6 @@ export function LuckyLadder({
           />
         )}
       </svg>
-
-      <div className={styles.resultRow} role="status" aria-live="polite">
-        {resultPercent !== null && selected !== null ? (
-          <span className={styles.resultText}>
-            {selected + 1}번 → <strong>{resultPercent}%</strong>
-          </span>
-        ) : null}
-      </div>
-
-      {revealed && (
-        <button type="button" className={styles.restart} onClick={reset}>
-          다시하기
-        </button>
-      )}
     </div>
   );
 }
