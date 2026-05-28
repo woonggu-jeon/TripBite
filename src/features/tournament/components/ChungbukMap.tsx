@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import type { RegionCode } from '@/constants/regions';
 import { haptic } from '@/lib/haptic';
 import type { Destination, TournamentTheme } from '@/features/tournament/types';
@@ -9,8 +10,9 @@ import styles from './ChungbukMap.module.scss';
 /**
  * 충북 지도 + 풀(여행지) 표시 + 다중 선택.
  *
- * 외곽은 충북 모양에 가까운 polygon path 로 그림 (정확한 행정경계는 아님).
- * 시군 좌표는 viewBox 0~100 정규화. 각 여행지는 자기 시군 좌표 근처로 jitter 후 배치.
+ * 배경: public/images/chungbuk-map.png (시군 외곽 + 라벨 포함된 light 톤 일러스트).
+ * 시군 좌표(POINTS)는 해당 이미지의 라벨 위치 기준으로 정규화 (0~100).
+ * 각 여행지는 자기 시군 좌표 근처로 jitter 후 배치.
  *
  * 모드:
  *   - selected/onToggle/maxSelect 가 주어지면 다중 선택 가능 (button).
@@ -18,22 +20,18 @@ import styles from './ChungbukMap.module.scss';
  */
 
 const POINTS: Record<RegionCode, { x: number; y: number }> = {
-  cheongju: { x: 24, y: 56 },
-  chungju: { x: 54, y: 24 },
-  jecheon: { x: 73, y: 18 },
-  boeun: { x: 37, y: 68 },
-  okcheon: { x: 22, y: 80 },
-  yeongdong: { x: 39, y: 90 },
-  jincheon: { x: 14, y: 32 },
-  goesan: { x: 47, y: 44 },
-  eumseong: { x: 33, y: 24 },
-  danyang: { x: 86, y: 28 },
-  jeungpyeong: { x: 26, y: 40 },
+  cheongju: { x: 17, y: 51 },
+  chungju: { x: 47, y: 19 },
+  jecheon: { x: 60, y: 11 },
+  boeun: { x: 38, y: 58 },
+  okcheon: { x: 28, y: 71 },
+  yeongdong: { x: 41, y: 84 },
+  jincheon: { x: 17, y: 32 },
+  goesan: { x: 45, y: 41 },
+  eumseong: { x: 28, y: 25 },
+  danyang: { x: 79, y: 20 },
+  jeungpyeong: { x: 30, y: 38 },
 };
-
-// 충북 도경계 근사 polygon (정규화 0~100)
-const CHUNGBUK_PATH =
-  'M 12 35 L 22 22 L 38 14 L 55 11 L 70 10 L 80 14 L 90 20 L 95 30 L 93 42 L 80 54 L 72 65 L 58 78 L 48 92 L 35 96 L 22 90 L 14 76 L 10 60 L 10 46 Z';
 
 const SEASON_GLYPH = {
   spring: '🌸',
@@ -64,9 +62,9 @@ interface Placed {
 function placeAll(destinations: Destination[]): Placed[] {
   return destinations.map((d, i) => {
     const base = POINTS[d.region as RegionCode] ?? { x: 50, y: 50 };
-    // 같은 시군 여러 항목이 겹치지 않도록 약간 흩뿌림
-    const jx = (Math.random() - 0.5) * 10;
-    const jy = (Math.random() - 0.5) * 10;
+    // 같은 시군 여러 항목이 겹치지 않도록 약간 흩뿌림 — 라벨과 겹치지 않게 살짝 아래로 편향
+    const jx = (Math.random() - 0.5) * 8;
+    const jy = (Math.random() - 0.5) * 8 + 4;
     return {
       id: d.id,
       name: d.name,
@@ -113,24 +111,14 @@ export function ChungbukMap({
 
   return (
     <div className={styles.wrap}>
-      <svg
-        viewBox="0 0 100 100"
-        className={styles.svg}
-        role="img"
-        aria-label="충청북도 지도"
-        preserveAspectRatio="none"
-      >
-        <path d={CHUNGBUK_PATH} className={styles.outline} />
-        {Object.values(POINTS).map((p, i) => (
-          <circle
-            key={i}
-            cx={p.x}
-            cy={p.y}
-            r={1.2}
-            className={styles.regionDot}
-          />
-        ))}
-      </svg>
+      <Image
+        src="/images/chungbuk-map.png"
+        alt="충청북도 지도"
+        fill
+        priority
+        sizes="(max-width: 480px) 100vw, 420px"
+        className={styles.bg}
+      />
 
       <div className={styles.overlay}>
         {placed.map((p) => {
