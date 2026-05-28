@@ -19,24 +19,26 @@ import styles from './ChungbukMap.module.scss';
  *   - 미전달이면 단순 표시.
  */
 
-// 좌표는 chungbuk-map.png 라벨 위치 기준 정규화 (0~100).
-// 라벨이 시군 영역 중앙에 가깝게 배치되어 있어 drop 배치 기준점으로 사용.
-// TODO(map-mapping): 현재 값은 육안 추정 — dev 서버에서 클릭 좌표 확인 후
-//   라벨/시군 영역과 정확히 정렬되도록 미세조정 필요. 추가로 시군별 polygon
-//   분해 시 drop 이 자기 시군 영역 밖으로 튀는 케이스도 막을 수 있음.
-//   (README "후속 작업 로드맵 > 토너먼트" 항목)
+// 좌표는 chungbuk-final-map.svg 의 <text class="label"> 좌표(800×903 viewBox)를
+// 0~100 비율로 정규화. SVG 라벨이 시군 영역 중앙에 배치돼 있어 drop 기준점으로 정확.
+const SVG_W = 800;
+const SVG_H = 903;
+const norm = (x: number, y: number) => ({
+  x: (x / SVG_W) * 100,
+  y: (y / SVG_H) * 100,
+});
 const POINTS: Record<RegionCode, { x: number; y: number }> = {
-  cheongju: { x: 17, y: 52 },
-  chungju: { x: 51, y: 19 },
-  jecheon: { x: 62, y: 11 },
-  boeun: { x: 41, y: 60 },
-  okcheon: { x: 30, y: 72 },
-  yeongdong: { x: 44, y: 87 },
-  jincheon: { x: 21, y: 31 },
-  goesan: { x: 46, y: 41 },
-  eumseong: { x: 35, y: 26 },
-  danyang: { x: 81, y: 21 },
-  jeungpyeong: { x: 32, y: 39 },
+  danyang: norm(675, 185),
+  jecheon: norm(500, 165),
+  chungju: norm(355, 185),
+  eumseong: norm(205, 190),
+  jincheon: norm(95, 280),
+  jeungpyeong: norm(190, 345),
+  goesan: norm(335, 350),
+  cheongju: norm(115, 445),
+  boeun: norm(255, 555),
+  okcheon: norm(195, 690),
+  yeongdong: norm(325, 790),
 };
 
 const SEASON_GLYPH = {
@@ -68,14 +70,14 @@ interface Placed {
 function placeAll(destinations: Destination[]): Placed[] {
   return destinations.map((d, i) => {
     const base = POINTS[d.region as RegionCode] ?? { x: 50, y: 50 };
-    // 같은 시군 여러 항목이 겹치지 않도록 약간 흩뿌림 — 라벨과 겹치지 않게 살짝 아래로 편향
-    const jx = (Math.random() - 0.5) * 8;
-    const jy = (Math.random() - 0.5) * 8 + 4;
+    // 같은 시군 여러 항목이 겹치지 않도록 흩뿌림 + 라벨 텍스트 아래로 살짝 편향
+    const jx = (Math.random() - 0.5) * 6;
+    const jy = (Math.random() - 0.5) * 6 + 3.5;
     return {
       id: d.id,
       name: d.name,
-      x: Math.max(6, Math.min(94, base.x + jx)),
-      y: Math.max(6, Math.min(94, base.y + jy)),
+      x: Math.max(4, Math.min(96, base.x + jx)),
+      y: Math.max(4, Math.min(96, base.y + jy)),
       delay: i * 0.05,
     };
   });
@@ -118,10 +120,11 @@ export function ChungbukMap({
   return (
     <div className={styles.wrap}>
       <Image
-        src="/images/chungbuk-map.png"
+        src="/images/chungbuk-final-map.svg"
         alt="충청북도 지도"
         fill
         priority
+        unoptimized
         sizes="(max-width: 480px) 100vw, 420px"
         className={styles.bg}
       />
