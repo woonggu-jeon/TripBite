@@ -251,10 +251,6 @@
         "count": {
           "title": "Destination count",
           "hint": "Pick how many petals fall on the map"
-        },
-        "tournamentSize": {
-          "title": "Bracket size",
-          "hint": "How many matchups (≤ destination count)"
         }
       },
       "count": {
@@ -289,7 +285,13 @@
       "mapSummary": "{destinations} destinations selected",
       "tournamentSize": {
         "title": "Bracket size",
-        "hint": "Matchups out of the destinations (max {max})"
+        "hint": "A bracket of this size will be generated",
+        "count": {
+          "4": "Round of 4",
+          "8": "Round of 8",
+          "16": "Round of 16",
+          "32": "Round of 32"
+        }
       },
       "startBracket": "Start bracket",
       "noConfig": "No tournament settings yet",

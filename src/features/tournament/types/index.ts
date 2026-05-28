@@ -18,10 +18,22 @@ export type DestinationCategory =
   | 'experience'; // 체험관광
 
 /**
- * 갯수 옵션 — 여행지 갯수(N) / 토너먼트 매치업 사이즈(M) 둘 다 같은 옵션 풀에서 선택.
- * 제약: M ≤ N (매치업 사이즈는 여행지 갯수 이하)
+ * 갯수 옵션 — 여행지 갯수(N) 와 토너먼트 매치업 사이즈(M) 는 다른 옵션 셋.
+ *   - 여행지 갯수 (Setup count): 2 | 4 | 6 | 8 (지도 꽃잎 수)
+ *   - 토너먼트 사이즈 (Play tournamentSize): 4 | 8 | 16 | 32 (매치업 트리)
+ *
+ * 둘은 독립 — 매치업 destinations 은 풀에서 random M 개 pick (시군 dedup 없이).
+ * 사용자가 4강 선택하면 4명 토너먼트, 32강 선택하면 32명 토너먼트가 생성.
  */
-export type TournamentCount = 2 | 4 | 6 | 8;
+export type TournamentCount = 2 | 4 | 6 | 8 | 16 | 32;
+
+export const DESTINATION_COUNT_OPTIONS: readonly TournamentCount[] = [
+  2, 4, 6, 8,
+] as const;
+
+export const TOURNAMENT_SIZE_OPTIONS: readonly TournamentCount[] = [
+  4, 8, 16, 32,
+] as const;
 
 export type TournamentConfig = {
   theme: TournamentTheme;

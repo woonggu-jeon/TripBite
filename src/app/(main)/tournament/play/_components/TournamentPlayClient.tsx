@@ -72,11 +72,12 @@ export function TournamentPlayClient() {
     return dedup;
   }, [pool, N]);
 
-  // bracket 진입 시 dedupedPool 앞 M 개 사용 (pool 이 이미 셔플됨)
+  // bracket 진입 시 pool 앞 M 개 사용 (pool 이 이미 셔플됨, dedup X — 시군 중복 허용)
+  // 사용자가 32강 선택 시 32 destinations 필요 — dedupedPool(시군 dedup) 은 11개 한계라 X.
   const matchupSize = config?.tournamentSize ?? pendingSize ?? 0;
   const matchupDestinations = useMemo<Destination[]>(
-    () => dedupedPool?.slice(0, matchupSize) ?? [],
-    [dedupedPool, matchupSize],
+    () => pool?.slice(0, matchupSize) ?? [],
+    [pool, matchupSize],
   );
 
   if (!config) {
@@ -111,7 +112,8 @@ export function TournamentPlayClient() {
     router.replace('/tournament/result');
   };
 
-  const canStartBracket = pendingSize !== null && pendingSize <= config.count;
+  // 여행지 수(N)와 토너먼트 수(M)는 독립. 매치업 destinations 은 풀에서 random M개.
+  const canStartBracket = pendingSize !== null;
 
   return (
     <div className={styles.wrap}>
@@ -178,14 +180,11 @@ export function TournamentPlayClient() {
       {phase === 'tournamentSize' && (
         <div className={styles.sizePhase}>
           <h2 className={styles.sizeTitle}>{t('tournamentSize.title')}</h2>
-          <p className={styles.sizeHint}>
-            {t('tournamentSize.hint', { max: N })}
-          </p>
+          <p className={styles.sizeHint}>{t('tournamentSize.hint')}</p>
           <CountSelector
             value={pendingSize}
             onChange={setPendingSize}
-            max={config.count}
-            ariaLabelKey="steps.tournamentSize.title"
+            mode="tournament"
           />
           <button
             type="button"

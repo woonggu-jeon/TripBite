@@ -181,7 +181,13 @@ export function TournamentSetup() {
         {step === 3 && (
           <CategoryFilter values={categories} onChange={setCategories} />
         )}
-        {step === 4 && <CountSelector value={count} onChange={handleCount} />}
+        {step === 4 && (
+          <CountSelector
+            value={count}
+            onChange={handleCount}
+            mode="destination"
+          />
+        )}
       </div>
 
       {step === 3 && (

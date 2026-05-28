@@ -2,34 +2,75 @@
 
 import { useTranslations } from 'next-intl';
 import { haptic } from '@/lib/haptic';
-import type { TournamentCount } from '@/features/tournament/types';
+import {
+  DESTINATION_COUNT_OPTIONS,
+  TOURNAMENT_SIZE_OPTIONS,
+  type TournamentCount,
+} from '@/features/tournament/types';
 import styles from './CountSelector.module.scss';
 
-const COUNTS: TournamentCount[] = [2, 4, 6, 8];
+/**
+ * 2×2 그리드 갯수 선택. 단일 선택.
+ *
+ *   mode='destination' — 여행지 갯수 (2/4/6/8), 라벨 "N개"
+ *   mode='tournament'  — 토너먼트 사이즈 (4/8/16/32), 라벨 "N강"
+ */
 
 export interface CountSelectorProps {
   value: TournamentCount | null;
   onChange: (value: TournamentCount) => void;
-  /** 이 값보다 큰 옵션은 disable (예: 토너먼트 사이즈 ≤ 여행지 갯수 강제) */
-  max?: TournamentCount;
-  /** 라벨 텍스트(2개/4개/6개/8개) 노출 여부 */
+  mode: 'destination' | 'tournament';
   showLabel?: boolean;
-  /** aria-label 키 (steps.count.title | steps.tournamentSize.title) */
-  ariaLabelKey?: 'steps.count.title' | 'steps.tournamentSize.title';
 }
 
-/**
- * 2×2 그리드 갯수 선택. 단일 선택.
- * 여행지 갯수 step / 토너먼트 개수 step 두 곳에서 재사용.
- */
 export function CountSelector({
   value,
   onChange,
-  max,
+  mode,
   showLabel = true,
-  ariaLabelKey = 'steps.count.title',
 }: CountSelectorProps) {
-  const t = useTranslations('tournament.setup');
+  const tDestination = useTranslations('tournament.setup.count');
+  const tTournament = useTranslations('tournament.play.tournamentSize.count');
+  const tAria = useTranslations('tournament');
+
+  const options =
+    mode === 'destination'
+      ? DESTINATION_COUNT_OPTIONS
+      : TOURNAMENT_SIZE_OPTIONS;
+
+  const ariaLabel =
+    mode === 'destination'
+      ? tAria('setup.steps.count.title')
+      : tAria('play.tournamentSize.title');
+
+  const labelOf = (c: TournamentCount): string => {
+    if (mode === 'destination') {
+      switch (c) {
+        case 2:
+          return tDestination('2');
+        case 4:
+          return tDestination('4');
+        case 6:
+          return tDestination('6');
+        case 8:
+          return tDestination('8');
+        default:
+          return '';
+      }
+    }
+    switch (c) {
+      case 4:
+        return tTournament('4');
+      case 8:
+        return tTournament('8');
+      case 16:
+        return tTournament('16');
+      case 32:
+        return tTournament('32');
+      default:
+        return '';
+    }
+  };
 
   const pick = (c: TournamentCount) => {
     haptic.tap();
@@ -37,9 +78,8 @@ export function CountSelector({
   };
 
   return (
-    <div className={styles.grid} role="radiogroup" aria-label={t(ariaLabelKey)}>
-      {COUNTS.map((c) => {
-        const disabled = max !== undefined && c > max;
+    <div className={styles.grid} role="radiogroup" aria-label={ariaLabel}>
+      {options.map((c) => {
         const active = value === c;
         return (
           <button
@@ -47,18 +87,11 @@ export function CountSelector({
             type="button"
             role="radio"
             aria-checked={active}
-            aria-disabled={disabled}
-            disabled={disabled}
             className={`${styles.card} ${active ? styles.active : ''}`}
-            onClick={() => {
-              if (disabled) return;
-              pick(c);
-            }}
+            onClick={() => pick(c)}
           >
             <span className={styles.num}>{c}</span>
-            {showLabel && (
-              <span className={styles.label}>{t(`count.${c}`)}</span>
-            )}
+            {showLabel && <span className={styles.label}>{labelOf(c)}</span>}
           </button>
         );
       })}
