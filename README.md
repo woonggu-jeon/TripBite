@@ -22,22 +22,23 @@ npm run build && npm start   # 프로덕션 (PWA 활성)
 
 ## 스크립트
 
-| 명령                    | 설명                                                    |
-| ----------------------- | ------------------------------------------------------- |
-| `npm run dev`           | 개발 서버                                               |
-| `npm run build`         | 프로덕션 빌드                                           |
-| `npm start`             | 프로덕션 서버                                           |
-| `npm run lint`          | ESLint (next + security 룰)                             |
-| `npm run type-check`    | `tsc --noEmit` (strict + verbatim/noUnchecked)          |
-| `npm run format`        | Prettier 일괄 포맷                                      |
-| `npm test`              | Vitest watch                                            |
-| `npm run test:run`      | Vitest 1회 (CI)                                         |
-| `npm run test:coverage` | 커버리지 + threshold 게이트                             |
-| `npm run test:e2e`      | Playwright E2E (브라우저 1회: `npx playwright install`) |
-| `npm run size`          | size-limit 번들 가드                                    |
-| `npm run analyze`       | `ANALYZE=true` 번들 분석 리포트                         |
-| `npm run build:icons`   | lucide → `public/icons.svg` sprite 생성                 |
-| `npm run generate:api`  | OpenAPI → `src/generated/api` 코드 생성                 |
+| 명령                    | 설명                                                                                                     |
+| ----------------------- | -------------------------------------------------------------------------------------------------------- |
+| `npm run dev`           | 개발 서버                                                                                                |
+| `npm run build`         | 프로덕션 빌드                                                                                            |
+| `npm start`             | 프로덕션 서버                                                                                            |
+| `npm run lint`          | ESLint (next + security 룰)                                                                              |
+| `npm run type-check`    | `tsc --noEmit` (strict + verbatim/noUnchecked)                                                           |
+| `npm run format`        | Prettier 일괄 포맷                                                                                       |
+| `npm test`              | Vitest watch                                                                                             |
+| `npm run test:run`      | Vitest 1회 (CI)                                                                                          |
+| `npm run test:coverage` | 커버리지 + threshold 게이트                                                                              |
+| `npm run test:e2e`      | Playwright E2E (브라우저 1회: `npx playwright install`)                                                  |
+| `npm run size`          | size-limit 번들 가드                                                                                     |
+| `npm run analyze`       | `ANALYZE=true` 번들 분석 리포트                                                                          |
+| `npm run build:icons`   | lucide → `public/icons.svg` sprite 생성                                                                  |
+| `npm run fetch:openapi` | `OPENAPI_URL` → `./openapi.json` 다운로드 (백엔드 준비 시)                                               |
+| `npm run generate:api`  | `openapi.json` → `src/generated/api` **타입** 생성 (`@hey-api/openapi-ts`, 설정: `openapi-ts.config.ts`) |
 
 ---
 
@@ -346,6 +347,33 @@ App Router `<Link>`는 기본적으로 **viewport 진입 시 자동 prefetch**. 
 | Weather                 | `GET /weather/current`                                                                                                                                                                                                            |
 | Notification            | `GET /notifications` `POST /notifications/:id/read` `POST /notifications/read-all` `POST /notifications/subscribe` `POST /notifications/unsubscribe`                                                                              |
 | Settings                | `GET /settings` `PATCH /settings/notifications`                                                                                                                                                                                   |
+
+---
+
+## OpenAPI 타입 생성 (백엔드 연동 시)
+
+도구: **`@hey-api/openapi-ts`** (설정: `openapi-ts.config.ts`). **타입만** 생성 — 서비스 클래스/클라이언트는 X. 호출은 기존 manual API(`features/*/api/*.ts`) + `services/api/client.ts` axios 인스턴스 유지(interceptor/MSW proxy/CSP 보존).
+
+### 절차
+
+```bash
+# 1) 백엔드 URL 환경변수 (.env.local 또는 export)
+OPENAPI_URL=http://localhost:8080/v3/api-docs
+
+# 2) 스펙 다운로드 → openapi.json
+npm run fetch:openapi
+
+# 3) 타입 생성 → src/generated/api/
+npm run generate:api
+
+# 4) feature 타입에서 generated re-export로 점진 교체
+#    예: features/auth/types/index.ts
+#        export type { LoginRequest, SignupRequest } from '@/generated/api';
+```
+
+> **현재 상태**: 백엔드 OpenAPI 스펙 대기 중이라 `openapi.json` 미생성 → `npm run generate:api` 미실행. 도구·설정·스크립트만 준비됨. 백엔드 붙으면 위 1~3만으로 타입 자동 동기화.
+
+`src/generated/`는 `.gitignore` 안 함 (CI에서 매번 생성하지 않아도 되도록 커밋 정책).
 
 ---
 
