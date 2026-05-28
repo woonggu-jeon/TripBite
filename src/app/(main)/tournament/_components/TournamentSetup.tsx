@@ -1,69 +1,91 @@
 'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { ThemeSelector } from '@/features/tournament/components/ThemeSelector';
+import { CategoryFilter } from '@/features/tournament/components/CategoryFilter';
+import { CountSelector } from '@/features/tournament/components/CountSelector';
+import { useTournamentStore } from '@/features/tournament/store/tournament-store';
+import type {
+  DestinationCategory,
+  TournamentCount,
+  TournamentTheme,
+} from '@/features/tournament/types';
+import { haptic } from '@/lib/haptic';
+import styles from './TournamentSetup.module.scss';
+
 /**
- * 토너먼트 설정 화면
+ * 토너먼트 설정 화면 (Phase 1)
  *
- * 실 컴포넌트는 features/tournament/components 에 분리:
- *   - <ThemeSelector />        — 계절 / 특별한 날
- *   - <CategoryFilter />       — 축제 / 관광지 / 체험관광
- *   - <RegionFilter />         — 지역 (선택)
- *   - <CountSelector />        — 4/8/16/32
- *   - <StartTournamentButton/> — store.set(...) + router.push('/tournament/play')
+ * 흐름: theme → categories(다중) → count → 시작
+ *   → store.setConfig(...) + router.push('/tournament/play')
+ *
+ * Phase 2에서 region 필터 + 충북 지도 + 계절 파티클 추가 예정.
  */
 export function TournamentSetup() {
+  const router = useRouter();
+  const t = useTranslations('tournament.setup');
+  const setConfig = useTournamentStore((s) => s.setConfig);
+
+  const [theme, setTheme] = useState<TournamentTheme | null>(null);
+  const [categories, setCategories] = useState<DestinationCategory[]>([]);
+  const [count, setCount] = useState<TournamentCount | null>(null);
+
+  const ready = theme !== null && categories.length > 0 && count !== null;
+
+  const handleStart = () => {
+    if (!ready || theme === null || count === null) return;
+    haptic.success();
+    setConfig({ theme, categories, count });
+    router.push('/tournament/play');
+  };
+
   return (
-    <div style={{ display: 'grid', gap: '1.5rem' }}>
-      <Section title="1. 테마 선택">
-        {/* TODO: <ThemeSelector /> — 봄/여름/가을/겨울 + 생일/기념일 */}
-        <Box height={120} />
+    <div className={styles.wrap}>
+      <Section title={t('themeSection')} hint={t('themeHint')}>
+        <ThemeSelector value={theme} onChange={setTheme} />
       </Section>
 
-      <Section title="2. 카테고리">
-        {/* TODO: <CategoryFilter /> — 축제/관광지/체험관광 (다중) */}
-        <Box height={60} />
+      <Section title={t('categorySection')} hint={t('categoryHint')}>
+        <CategoryFilter values={categories} onChange={setCategories} />
       </Section>
 
-      <Section title="3. 갯수">
-        {/* TODO: <CountSelector /> — 4/8/16/32 */}
-        <Box height={60} />
+      <Section title={t('countSection')} hint={t('countHint')}>
+        <CountSelector value={count} onChange={setCount} />
       </Section>
 
-      {/* TODO: <StartTournamentButton /> */}
-      <button
-        style={{
-          padding: '1rem',
-          background: 'var(--color-primary)',
-          color: 'var(--color-primary-fg)',
-          borderRadius: 'var(--radius-md)',
-          fontWeight: 600,
-        }}
-        disabled
-      >
-        시작하기
-      </button>
+      <div className={styles.cta}>
+        <button
+          type="button"
+          className={styles.start}
+          onClick={handleStart}
+          disabled={!ready}
+        >
+          {t('start')}
+        </button>
+        {!ready && <p className={styles.startHint}>{t('startHint')}</p>}
+      </div>
     </div>
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  hint,
+  children,
+}: {
+  title: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
   return (
-    <section>
-      <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.75rem' }}>
-        {title}
-      </h2>
+    <section className={styles.section}>
+      <header className={styles.head}>
+        <h2 className={styles.title}>{title}</h2>
+        {hint && <p className={styles.hint}>{hint}</p>}
+      </header>
       {children}
     </section>
-  );
-}
-
-function Box({ height }: { height: number }) {
-  return (
-    <div
-      style={{
-        height,
-        border: '1px dashed var(--color-border)',
-        borderRadius: 'var(--radius-lg)',
-      }}
-    />
   );
 }

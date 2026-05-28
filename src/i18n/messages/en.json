@@ -222,9 +222,19 @@
     "inProgressTitle": "Bracket in progress",
     "setup": {
       "themeSection": "1. Pick a theme",
+      "themeHint": "Choose a theme to base your bracket on",
       "categorySection": "2. Category",
+      "categoryHint": "Select one or more types you're interested in",
       "countSection": "3. Size",
-      "start": "Start"
+      "countHint": "How many destinations should compete?",
+      "start": "Start",
+      "startHint": "Select all options above to start",
+      "count": {
+        "4": "Round of 4",
+        "8": "Round of 8",
+        "16": "Round of 16",
+        "32": "Round of 32"
+      }
     },
     "season": {
       "spring": "Spring",

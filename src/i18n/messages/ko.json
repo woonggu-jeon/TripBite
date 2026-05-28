@@ -222,9 +222,19 @@
     "inProgressTitle": "토너먼트 진행 중",
     "setup": {
       "themeSection": "1. 테마 선택",
+      "themeHint": "여행지를 추천받을 테마를 골라주세요",
       "categorySection": "2. 카테고리",
-      "countSection": "3. 갯수",
-      "start": "시작하기"
+      "categoryHint": "관심 있는 유형을 한 개 이상 선택",
+      "countSection": "3. 여행지 수",
+      "countHint": "몇 강 토너먼트로 진행할까요?",
+      "start": "시작하기",
+      "startHint": "위 항목을 모두 선택하면 시작할 수 있어요",
+      "count": {
+        "4": "4강",
+        "8": "8강",
+        "16": "16강",
+        "32": "32강"
+      }
     },
     "season": {
       "spring": "봄",

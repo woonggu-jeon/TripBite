@@ -1,11 +1,47 @@
 'use client';
 
-/**
- * <CountSelector />
- *
- * TODO: 토너먼트 기능 구현 시 작성.
- * features/tournament 의 components 폴더에 위치하는 프레젠테이션 컴포넌트.
- */
-export function CountSelector() {
-  return null;
+import { useTranslations } from 'next-intl';
+import { haptic } from '@/lib/haptic';
+import type { TournamentCount } from '@/features/tournament/types';
+import styles from './CountSelector.module.scss';
+
+const COUNTS: TournamentCount[] = [4, 8, 16, 32];
+
+export interface CountSelectorProps {
+  value: TournamentCount | null;
+  onChange: (value: TournamentCount) => void;
+}
+
+export function CountSelector({ value, onChange }: CountSelectorProps) {
+  const t = useTranslations('tournament.setup');
+
+  const pick = (c: TournamentCount) => {
+    haptic.tap();
+    onChange(c);
+  };
+
+  return (
+    <div
+      className={styles.row}
+      role="radiogroup"
+      aria-label={t('countSection')}
+    >
+      {COUNTS.map((c) => {
+        const active = value === c;
+        return (
+          <button
+            key={c}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            className={`${styles.card} ${active ? styles.active : ''}`}
+            onClick={() => pick(c)}
+          >
+            <span className={styles.num}>{c}</span>
+            <span className={styles.label}>{t(`count.${c}`)}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
 }

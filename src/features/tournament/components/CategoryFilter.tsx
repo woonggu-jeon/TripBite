@@ -1,11 +1,52 @@
 'use client';
 
-/**
- * <CategoryFilter />
- *
- * TODO: 토너먼트 기능 구현 시 작성.
- * features/tournament 의 components 폴더에 위치하는 프레젠테이션 컴포넌트.
- */
-export function CategoryFilter() {
-  return null;
+import { useTranslations } from 'next-intl';
+import { haptic } from '@/lib/haptic';
+import type { DestinationCategory } from '@/features/tournament/types';
+import styles from './CategoryFilter.module.scss';
+
+const CATEGORIES: { value: DestinationCategory; emoji: string }[] = [
+  { value: 'festival', emoji: '🎪' },
+  { value: 'attraction', emoji: '📍' },
+  { value: 'experience', emoji: '🎨' },
+];
+
+export interface CategoryFilterProps {
+  values: DestinationCategory[];
+  onChange: (values: DestinationCategory[]) => void;
+}
+
+export function CategoryFilter({ values, onChange }: CategoryFilterProps) {
+  const t = useTranslations('tournament');
+
+  const toggle = (c: DestinationCategory) => {
+    haptic.tap();
+    onChange(
+      values.includes(c) ? values.filter((v) => v !== c) : [...values, c],
+    );
+  };
+
+  return (
+    <div
+      className={styles.row}
+      role="group"
+      aria-label={t('setup.categorySection')}
+    >
+      {CATEGORIES.map((c) => {
+        const active = values.includes(c.value);
+        return (
+          <button
+            key={c.value}
+            type="button"
+            aria-pressed={active}
+            className={`${styles.chip} ${active ? styles.active : ''}`}
+            onClick={() => toggle(c.value)}
+          >
+            <span aria-hidden>{c.emoji}</span>
+            <span>{t(`category.${c.value}`)}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
 }
