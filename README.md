@@ -174,15 +174,15 @@ src/features/
 
 리소스별 staleTime / gcTime 표준화. 모든 hook 에서 `...CACHE.normal` 식으로 import.
 
-| 프로파일 | staleTime  | 용도                              |
-| -------- | ---------- | --------------------------------- |
-| static   | 1d         | 충북 시군 메타, quiz 질문         |
-| slow     | 30m        | TourAPI 콘텐츠, 시군 summary      |
-| normal   | 5m         | 랭킹, 인기 차트                   |
-| user     | 2m         | 마이페이지, /me                   |
-| realtime | 30s + 폴링 | 편지 도착, 알림                   |
-| session  | ∞          | 토너먼트 후보 (한 세션 동안 고정) |
-| weather  | 15m        | 날씨                              |
+| 프로파일 | staleTime  | 용도                                         | 적용 hook                                                               |
+| -------- | ---------- | -------------------------------------------- | ----------------------------------------------------------------------- |
+| static   | 1d         | 충북 시군 메타, quiz 질문                    | `useTravelTypeQuiz`                                                     |
+| slow     | 30m        | TourAPI 콘텐츠, 시군 summary, 단일 편지 상세 | `useRegion*`, `useLetter`                                               |
+| normal   | 5m         | 랭킹, 인기 차트                              | `useRanking`                                                            |
+| user     | 2m         | 본인 데이터                                  | `useMypage`, `useSentLetters`, `useSavedTournaments`, `useMyTravelType` |
+| realtime | 30s + 폴링 | 편지 도착, 알림 인박스                       | `useReceivedLetters`, `useNotificationInbox`                            |
+| session  | ∞ + 1h gc  | 토너먼트 후보 (한 세션 동안 고정)            | `useTournamentCandidates`                                               |
+| weather  | 15m        | 날씨                                         | `useCurrentWeather`                                                     |
 
 ### 5. PWA Runtime Caching (`src/app/sw.ts` — serwist)
 

@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notificationInboxApi } from '@/features/notification/api/inbox';
+import { CACHE } from '@/lib/cache';
 
 export const notificationKeys = {
   all: ['notification'] as const,
@@ -19,7 +20,7 @@ export function useNotificationInbox() {
   return useQuery({
     queryKey: notificationKeys.inbox(),
     queryFn: notificationInboxApi.get,
-    refetchInterval: 30_000,
+    ...CACHE.realtime, // 30s stale + 30s 폴링 (CACHE 일관)
     refetchOnWindowFocus: true,
     // 미로그인 사용자에선 ProvidersTree가 마운트되지만 401이 떨어지면
     // 자동 retry 후 미인증으로 간주 — useMe 와 같은 패턴으로 처리됨.

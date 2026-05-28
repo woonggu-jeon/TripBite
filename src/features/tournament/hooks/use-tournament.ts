@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { tournamentApi } from '@/features/tournament/api/tournament';
+import { CACHE } from '@/lib/cache';
 import type { TournamentConfig } from '@/features/tournament/types';
 
 export const tournamentKeys = {
@@ -18,10 +19,12 @@ export const tournamentKeys = {
  */
 export function useTournamentCandidates(config: TournamentConfig | null) {
   return useQuery({
-    queryKey: config ? tournamentKeys.candidates(config) : ['tournament', 'candidates', 'idle'],
+    queryKey: config
+      ? tournamentKeys.candidates(config)
+      : ['tournament', 'candidates', 'idle'],
     queryFn: () => tournamentApi.fetchCandidates(config!),
     enabled: !!config,
-    staleTime: Infinity, // 토너먼트 1회 동안 고정
+    ...CACHE.session, // 한 세션 동안 고정 (Infinity + 1h gc)
   });
 }
 
@@ -29,6 +32,7 @@ export function useSavedTournaments() {
   return useQuery({
     queryKey: tournamentKeys.saved(),
     queryFn: tournamentApi.listSaved,
+    ...CACHE.user, // 본인 저장 목록
   });
 }
 
