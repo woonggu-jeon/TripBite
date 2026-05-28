@@ -1,24 +1,20 @@
 import { defineConfig } from '@hey-api/openapi-ts';
 
 /**
- * OpenAPI codegen 설정 — 타입만 생성 (서비스 클래스/클라이언트 X)
+ * OpenAPI codegen 설정 — 타입 + SDK 함수 + axios 클라이언트
  *
- * 호출 전략:
- *   기존 manual API(features 디렉토리의 api 모듈)와 services/api/client.ts axios
- *   인스턴스(interceptor·MSW proxy·CSP 등)를 유지하면서, 타입만 generated에서 import.
- *   → codegen된 axios 클라이언트가 우리 interceptor를 우회하지 않게 안전.
+ * 호출 전략: **request override 패턴**
+ *   1) generated SDK가 자체 client 인스턴스를 받음 (@hey-api/client-axios)
+ *   2) src/services/api/openapi-client.ts 에서 그 client에
+ *      services/api/client.ts 의 우리 axios 인스턴스를 setConfig로 주입
+ *   3) 결과: SDK 호출 → 우리 axios → interceptor(401 refresh / timing) /
+ *      MSW proxy baseURL 분기 / CSP / withCredentials 모두 보존
  *
  * 사용 절차 (백엔드 준비 후):
- *   1) `openapi.json` 확보:
- *        curl $OPENAPI_URL -o openapi.json
- *      또는 백엔드 팀에서 파일로 받기.
- *   2) 생성:
- *        npm run generate:api
- *   3) 적용:
- *        features/<feature>/types/index.ts 의 fallback 타입을 generated에서 re-export.
- *        예) export type { LoginRequest } from '@/generated/api';
- *
- * 출력 디렉토리는 .gitignore 안 함 (커밋 정책 — CI에서 매번 생성하지 않아도 되도록).
+ *   1) curl $OPENAPI_URL -o openapi.json   (또는 npm run fetch:openapi)
+ *   2) npm run generate:api                 → src/generated/api/
+ *   3) src/services/api/openapi-client.ts 의 setConfig 활성화
+ *   4) features 의 manual api 를 generated SDK 호출로 점진 교체
  */
 export default defineConfig({
   input: './openapi.json',
@@ -28,7 +24,12 @@ export default defineConfig({
     lint: 'eslint',
   },
   plugins: [
-    // 타입만 생성 — services/sdk 비활성
     '@hey-api/typescript',
+    '@hey-api/sdk',
+    {
+      name: '@hey-api/client-axios',
+      // 우리 axios 인스턴스를 주입할 거라 baseUrl/runtime 등 기본값은 빈 상태로 둠
+      // (실제 설정은 src/services/api/openapi-client.ts 의 setConfig)
+    },
   ],
 });

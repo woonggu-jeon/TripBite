@@ -350,28 +350,41 @@ App Router `<Link>`는 기본적으로 **viewport 진입 시 자동 prefetch**. 
 
 ---
 
-## OpenAPI 타입 생성 (백엔드 연동 시)
+## OpenAPI 타입 + SDK 생성 (백엔드 연동 시)
 
-도구: **`@hey-api/openapi-ts`** (설정: `openapi-ts.config.ts`). **타입만** 생성 — 서비스 클래스/클라이언트는 X. 호출은 기존 manual API(`features/*/api/*.ts`) + `services/api/client.ts` axios 인스턴스 유지(interceptor/MSW proxy/CSP 보존).
+도구: **`@hey-api/openapi-ts`** + **`@hey-api/client-axios`** (설정: `openapi-ts.config.ts`).
+**타입 + SDK 함수 + axios 클라이언트** 생성. 호출은 **request override 패턴**으로 우리 axios 인스턴스를 SDK에 주입 → interceptor(401 refresh / timing) · MSW proxy · CSP · withCredentials 모두 보존.
 
 ### 절차
 
 ```bash
-# 1) 백엔드 URL 환경변수 (.env.local 또는 export)
+# 1) 백엔드 URL 환경변수
 OPENAPI_URL=http://localhost:8080/v3/api-docs
 
-# 2) 스펙 다운로드 → openapi.json
-npm run fetch:openapi
+# 2) 스펙 다운로드
+npm run fetch:openapi              # curl $OPENAPI_URL -o openapi.json
 
-# 3) 타입 생성 → src/generated/api/
-npm run generate:api
+# 3) 타입 + SDK 생성
+npm run generate:api               # → src/generated/api/
 
-# 4) feature 타입에서 generated re-export로 점진 교체
-#    예: features/auth/types/index.ts
-#        export type { LoginRequest, SignupRequest } from '@/generated/api';
+# 4) src/services/api/openapi-client.ts 의 주석 해제
+#    (generated/api/client.gen 에 우리 axios 인스턴스를 setConfig로 주입)
+
+# 5) Providers 또는 모듈 top-level에서 한 번 호출
+#    import { configureOpenApiClient } from '@/services/api/openapi-client';
+#    configureOpenApiClient();
+
+# 6) 호출 패턴 (점진 교체):
+#    import { postAuthLogin } from '@/generated/api';
+#    await postAuthLogin({ body: { username, password } });
+#    → 우리 axios 통과 → interceptor / MSW / cookie 자동 적용
 ```
 
-> **현재 상태**: 백엔드 OpenAPI 스펙 대기 중이라 `openapi.json` 미생성 → `npm run generate:api` 미실행. 도구·설정·스크립트만 준비됨. 백엔드 붙으면 위 1~3만으로 타입 자동 동기화.
+### 점진 마이그레이션
+
+기존 `features/*/api/*.ts`(authApi/letterApi 등) manual API는 그대로 동작 — 새 호출은 generated SDK를, 기존은 천천히 교체. 둘 다 같은 axios 인스턴스를 거쳐 일관됨.
+
+> **현재 상태**: 백엔드 OpenAPI 스펙 대기 중. 도구·설정·스크립트·클라이언트 통합 파일(`openapi-client.ts` placeholder)까지 준비. 백엔드 붙으면 위 2~5만으로 SDK 통합 완료.
 
 `src/generated/`는 `.gitignore` 안 함 (CI에서 매번 생성하지 않아도 되도록 커밋 정책).
 

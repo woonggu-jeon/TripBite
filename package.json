@@ -51,6 +51,7 @@
   "devDependencies": {
     "@commitlint/cli": "^21.0.1",
     "@commitlint/config-conventional": "^21.0.1",
+    "@hey-api/client-axios": "^0.9.1",
     "@hey-api/openapi-ts": "^0.97.3",
     "@next/bundle-analyzer": "^16.2.6",
     "@playwright/test": "^1.60.0",
