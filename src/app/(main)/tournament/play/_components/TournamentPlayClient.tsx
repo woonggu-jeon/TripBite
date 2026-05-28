@@ -20,8 +20,8 @@ const INTRO_MS = 2500;
  * 토너먼트 진행 클라이언트
  *
  *   1) intro  : 중앙 일러스트 + 계절 파티클 (자동 2.5초 → map)
- *   2) map    : 충북 지도 + 풀(여행지) 표시 → 사용자가 정확히 count 개 선택 → "다음"
- *   3) bracket: 1:1 매치업 (Phase 3에서 본격 구현 — 현재 placeholder)
+ *   2) map    : 충북 지도 + N 개 시군 자동 꽃잎 (사용자 선택 X). "토너먼트 시작" 클릭 → bracket
+ *   3) bracket: N 중 random M(=config.tournamentSize) 개로 1:1 매치업
  *
  * 설정 없이 직접 진입 시 자동 redirect 대신 안내 + 설정 화면 진입 버튼.
  */
@@ -32,7 +32,6 @@ export function TournamentPlayClient() {
   const setWinner = useTournamentStore((s) => s.setWinner);
 
   const [phase, setPhase] = useState<Phase>('intro');
-  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const {
     data: pool,
@@ -48,10 +47,11 @@ export function TournamentPlayClient() {
     return () => window.clearTimeout(id);
   }, [config, phase]);
 
-  // count = 시군 수 (4/8/10/11). pool 을 시군별 dedup 한 뒤 count 만큼 노출.
-  // (백엔드 연동 후엔 handler 가 random N개 시군의 destinations 만 반환할 예정)
-  // 주의: hook 은 항상 같은 순서로 호출되어야 하므로 early return 앞에 위치.
-  const MAX_SELECT = config?.count ?? 8;
+  // 시군별 dedup → 여행지 갯수(N) 만큼 노출.
+  // (백엔드 연동 후엔 handler 가 N개 시군의 destinations 만 반환할 예정)
+  // hook 은 항상 같은 순서로 호출되어야 하므로 early return 앞에 배치.
+  const N = config?.count ?? 0;
+  const M = config?.tournamentSize ?? 0;
   const dedupedPool = useMemo<Destination[] | null>(() => {
     if (!pool) return null;
     const seen = new Set<string>();
@@ -60,10 +60,16 @@ export function TournamentPlayClient() {
       if (seen.has(d.region)) continue;
       seen.add(d.region);
       dedup.push(d);
-      if (dedup.length >= MAX_SELECT) break;
+      if (dedup.length >= N) break;
     }
     return dedup;
-  }, [pool, MAX_SELECT]);
+  }, [pool, N]);
+
+  // bracket 진입 시 사용할 destinations — dedupedPool 중 앞에서 M개 (pool 이 이미 셔플됨).
+  const matchupDestinations = useMemo<Destination[]>(
+    () => dedupedPool?.slice(0, M) ?? [],
+    [dedupedPool, M],
+  );
 
   if (!config) {
     return (
@@ -81,27 +87,10 @@ export function TournamentPlayClient() {
   }
 
   const theme = config.theme;
-  const MIN_SELECT = 1;
-
-  const toggleSelect = (id: string) => {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else if (next.size < MAX_SELECT) next.add(id);
-      return next;
-    });
-  };
-
-  const canProceed = selected.size >= MIN_SELECT;
 
   const handleProceed = () => {
-    if (!canProceed) return;
     setPhase('bracket');
   };
-
-  const selectedDestinations: Destination[] = dedupedPool
-    ? dedupedPool.filter((d) => selected.has(d.id))
-    : [];
 
   const handleBracketComplete = (winner: Destination) => {
     setWinner(winner);
@@ -151,29 +140,15 @@ export function TournamentPlayClient() {
           )}
           {dedupedPool && (
             <>
-              <ChungbukMap
-                destinations={dedupedPool}
-                theme={theme}
-                selected={selected}
-                onToggle={toggleSelect}
-                maxSelect={MAX_SELECT}
-              />
+              {/* 사용자 선택 X (필수 자동) — selected/onToggle prop 전달 안 함 */}
+              <ChungbukMap destinations={dedupedPool} theme={theme} />
               <div className={styles.mapFooter}>
                 <p className={styles.counter}>
-                  {t('selectedCount', {
-                    current: selected.size,
-                    max: MAX_SELECT,
-                  })}
-                </p>
-                <p className={styles.mapHint}>
-                  {canProceed
-                    ? t('selectReady')
-                    : t('selectHint', { min: MIN_SELECT, max: MAX_SELECT })}
+                  {t('autoSummary', { destinations: N, matchups: M })}
                 </p>
                 <button
                   type="button"
                   className={styles.cta}
-                  disabled={!canProceed}
                   onClick={handleProceed}
                 >
                   {t('startBracket')}
@@ -187,7 +162,7 @@ export function TournamentPlayClient() {
       {phase === 'bracket' && (
         <div className={styles.bracket}>
           <Bracket
-            destinations={selectedDestinations}
+            destinations={matchupDestinations}
             onComplete={handleBracketComplete}
           />
         </div>

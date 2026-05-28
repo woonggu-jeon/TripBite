@@ -23,26 +23,23 @@ import { haptic } from '@/lib/haptic';
 import styles from './TournamentSetup.module.scss';
 
 /**
- * 토너먼트 설정 — 스텝별 진행
+ * 토너먼트 설정 — 스텝별 진행 (5 steps)
  *
- *   1) 테마 종류  : 계절 / 특별한 날
- *   2) 항목       : (계절 분기) 봄·여름·가을·겨울  /  (특별한 날 분기) 생일·결혼기념일
- *   3) 카테고리   : 축제·관광지·체험관광 (다중)
- *   4) 여행지 수  : 4·8·16·32
+ *   1) 테마 종류    : 계절 / 특별한 날
+ *   2) 항목         : (계절) 봄·여름·가을·겨울 / (특별한 날) 생일·결혼기념일
+ *   3) 여행 유형    : 지역·축제·관광지·체험관광 (다중) — 세로 4 카드
+ *   4) 여행지 갯수  : 2 / 4 / 6 / 8  (N)
+ *   5) 토너먼트 개수 : 2 / 4 / 6 / 8  (M ≤ N) — N 이상은 disable
  *
- * 단일 선택 스텝(1·2·4)은 선택 즉시 다음 스텝으로 자동 진행.
- * 다중 선택 스텝(3)은 "다음" 버튼으로 명시적 진행.
- * 마지막 스텝(4)은 선택 후 "시작하기" 버튼.
+ * 단일 선택 스텝(1·2·4·5)은 선택 즉시 next.
+ * 다중 선택 스텝(3)은 "다음" 버튼.
+ * 마지막 스텝(5)은 선택 후 "시작하기".
  *
- * 뒤로:
- *   - step > 1 이면 step--
- *   - step === 1 이면 router.back() (페이지 단위 뒤로)
- *
- * Phase 2(별도 PR)에서 충북 지도 + 계절 파티클을 step 5 또는 play 페이지 진입 시 표시.
+ * 뒤로: step > 1 → step--, step === 1 → router.back()
  */
 
-type Step = 1 | 2 | 3 | 4;
-const TOTAL_STEPS = 4;
+type Step = 1 | 2 | 3 | 4 | 5;
+const TOTAL_STEPS = 5;
 
 export function TournamentSetup() {
   const router = useRouter();
@@ -55,6 +52,9 @@ export function TournamentSetup() {
   const [specialDay, setSpecialDay] = useState<SpecialDay | null>(null);
   const [categories, setCategories] = useState<DestinationCategory[]>([]);
   const [count, setCount] = useState<TournamentCount | null>(null);
+  const [tournamentSize, setTournamentSize] = useState<TournamentCount | null>(
+    null,
+  );
 
   const handleKind = (k: ThemeKind) => {
     setThemeKind(k);
@@ -72,6 +72,19 @@ export function TournamentSetup() {
   const handleSpecialDay = (d: SpecialDay) => {
     setSpecialDay(d);
     setStep(3);
+  };
+
+  const handleCount = (c: TournamentCount) => {
+    setCount(c);
+    // count 변경 시 tournamentSize 가 새 count 보다 크면 reset
+    if (tournamentSize !== null && tournamentSize > c) {
+      setTournamentSize(null);
+    }
+    setStep(5);
+  };
+
+  const handleTournamentSize = (m: TournamentCount) => {
+    setTournamentSize(m);
   };
 
   const goBack = () => {
@@ -93,16 +106,24 @@ export function TournamentSetup() {
   };
 
   const canStart =
-    step === 4 &&
+    step === 5 &&
     count !== null &&
+    tournamentSize !== null &&
+    tournamentSize <= count &&
     resolveTheme() !== null &&
     categories.length > 0;
 
   const handleStart = () => {
     const theme = resolveTheme();
-    if (!theme || count === null || categories.length === 0) return;
+    if (
+      !theme ||
+      count === null ||
+      tournamentSize === null ||
+      categories.length === 0
+    )
+      return;
     haptic.success();
-    setConfig({ theme, categories, count });
+    setConfig({ theme, categories, count, tournamentSize });
     router.push('/tournament/play');
   };
 
@@ -122,7 +143,12 @@ export function TournamentSetup() {
         title: t('steps.category.title'),
         hint: t('steps.category.hint'),
       };
-    return { title: t('steps.count.title'), hint: t('steps.count.hint') };
+    if (step === 4)
+      return { title: t('steps.count.title'), hint: t('steps.count.hint') };
+    return {
+      title: t('steps.tournamentSize.title'),
+      hint: t('steps.tournamentSize.hint'),
+    };
   })();
 
   return (
@@ -171,7 +197,15 @@ export function TournamentSetup() {
         {step === 3 && (
           <CategoryFilter values={categories} onChange={setCategories} />
         )}
-        {step === 4 && <CountSelector value={count} onChange={setCount} />}
+        {step === 4 && <CountSelector value={count} onChange={handleCount} />}
+        {step === 5 && (
+          <CountSelector
+            value={tournamentSize}
+            onChange={handleTournamentSize}
+            max={count ?? undefined}
+            ariaLabelKey="steps.tournamentSize.title"
+          />
+        )}
       </div>
 
       {step === 3 && (
@@ -185,7 +219,7 @@ export function TournamentSetup() {
         </button>
       )}
 
-      {step === 4 && (
+      {step === 5 && (
         <button
           type="button"
           className={styles.start}
@@ -196,7 +230,7 @@ export function TournamentSetup() {
         </button>
       )}
 
-      {(step === 1 || step === 2) && (
+      {(step === 1 || step === 2 || step === 4) && (
         <p className={styles.autoHint}>{t('selectToContinue')}</p>
       )}
     </div>

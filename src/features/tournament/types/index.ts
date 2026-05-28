@@ -18,17 +18,19 @@ export type DestinationCategory =
   | 'experience'; // 체험관광
 
 /**
- * 토너먼트에 참가할 시군 수 (전체=11).
- * 백엔드 API 는 이 값을 받아 충북 11개 시군 중 N 개를 random 선택해 destinations 반환.
- * UI 상 라벨: 4/8/10 곳 또는 "전체".
+ * 갯수 옵션 — 여행지 갯수(N) / 토너먼트 매치업 사이즈(M) 둘 다 같은 옵션 풀에서 선택.
+ * 제약: M ≤ N (매치업 사이즈는 여행지 갯수 이하)
  */
-export type TournamentCount = 4 | 8 | 10 | 11;
+export type TournamentCount = 2 | 4 | 6 | 8;
 
 export type TournamentConfig = {
   theme: TournamentTheme;
   categories: DestinationCategory[]; // 최소 1개
   region?: string; // 충북 시군 (예: "청주시") — 단일 시군 한정 시
-  count: TournamentCount; // 시군 수 — 백엔드 호출 파라미터
+  /** 여행지 갯수 (N) — 지도에 떨어질 꽃잎(시군) 수. 백엔드 호출 파라미터. */
+  count: TournamentCount;
+  /** 토너먼트 매치업 사이즈 (M ≤ N) — N 중 random M 개로 토너먼트 진행. */
+  tournamentSize: TournamentCount;
 };
 
 export type Destination = {

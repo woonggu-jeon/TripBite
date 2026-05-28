@@ -249,15 +249,19 @@
           "hint": "You can pick more than one"
         },
         "count": {
-          "title": "Bracket size?",
-          "hint": "Choose how many destinations to play"
+          "title": "Destination count",
+          "hint": "Pick how many petals fall on the map"
+        },
+        "tournamentSize": {
+          "title": "Bracket size",
+          "hint": "How many matchups (≤ destination count)"
         }
       },
       "count": {
-        "4": "4 places",
-        "8": "8 places",
-        "10": "10 places",
-        "11": "All"
+        "2": "2",
+        "4": "4",
+        "6": "6",
+        "8": "8"
       }
     },
     "season": {
@@ -281,9 +285,7 @@
       "error": "Couldn't load destinations",
       "retry": "Try again",
       "introHint": "The Chungbuk map will appear shortly",
-      "selectHint": "Pick {min}–{max} destinations on the map",
-      "selectReady": "Ready! Let's start the bracket",
-      "selectedCount": "Selected {current} / max {max}",
+      "autoSummary": "{destinations} destinations → {matchups} matchups",
       "startBracket": "Start bracket",
       "noConfig": "No tournament settings yet",
       "goSetup": "Go to setup",

@@ -17,6 +17,9 @@ export interface CategoryFilterProps {
   onChange: (values: DestinationCategory[]) => void;
 }
 
+/**
+ * 여행 유형 4종 — 세로 1열 4행 카드. 다중 선택.
+ */
 export function CategoryFilter({ values, onChange }: CategoryFilterProps) {
   const t = useTranslations('tournament');
 
@@ -29,7 +32,7 @@ export function CategoryFilter({ values, onChange }: CategoryFilterProps) {
 
   return (
     <div
-      className={styles.row}
+      className={styles.list}
       role="group"
       aria-label={t('setup.steps.category.title')}
     >
@@ -40,11 +43,16 @@ export function CategoryFilter({ values, onChange }: CategoryFilterProps) {
             key={c.value}
             type="button"
             aria-pressed={active}
-            className={`${styles.chip} ${active ? styles.active : ''}`}
+            className={`${styles.row} ${active ? styles.active : ''}`}
             onClick={() => toggle(c.value)}
           >
-            <span aria-hidden>{c.emoji}</span>
-            <span>{t(`category.${c.value}`)}</span>
+            <span className={styles.emoji} aria-hidden>
+              {c.emoji}
+            </span>
+            <span className={styles.label}>{t(`category.${c.value}`)}</span>
+            <span className={styles.check} aria-hidden>
+              {active ? '✓' : ''}
+            </span>
           </button>
         );
       })}

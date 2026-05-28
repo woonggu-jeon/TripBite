@@ -48,7 +48,9 @@
 
 .matchup {
   display: grid;
+  grid-template-columns: 1fr auto 1fr;
   gap: 0.5rem;
+  align-items: stretch;
 }
 
 .vs {
@@ -58,7 +60,7 @@
   font-weight: 800;
   color: var(--color-primary);
   letter-spacing: 0.06em;
-  padding: 0.125rem 0.875rem;
+  padding: 0.25rem 0.625rem;
   border-radius: 999px;
   background: color-mix(in srgb, var(--color-primary) 10%, var(--color-bg));
 }
