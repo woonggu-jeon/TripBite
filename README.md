@@ -945,6 +945,7 @@ Turborepo / Micro Frontend / Redux / GraphQL / Kubernetes / @tanstack/react-virt
 ### 기능 연동
 
 - [ ] 백엔드 실 API 연동 (`NEXT_PUBLIC_USE_MSW=false`) — Location/Letter/Auth 등
+- [ ] **인증/온보딩 redirect 복원** (운영 배포 전 필수) — `middleware.ts`(인증 redirect 두 분기)와 `src/features/auth/components/AuthBootstrap.tsx`(onboarding redirect 분기)의 주석 해제. 백엔드 붙기 전 모든 페이지 확인용으로 임시 비활성된 상태
 - [ ] `@sentry/nextjs` client 도입 검토 (lazy-load로 First Load 영향 최소화)
 
 ### 공통 모듈 (아래 "공통 유틸리티" 참고)
