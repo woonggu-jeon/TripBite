@@ -30,7 +30,7 @@ export function CategoryFilter({ values, onChange }: CategoryFilterProps) {
     <div
       className={styles.row}
       role="group"
-      aria-label={t('setup.categorySection')}
+      aria-label={t('setup.steps.category.title')}
     >
       {CATEGORIES.map((c) => {
         const active = values.includes(c.value);

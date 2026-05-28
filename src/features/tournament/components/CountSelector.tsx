@@ -24,7 +24,7 @@ export function CountSelector({ value, onChange }: CountSelectorProps) {
     <div
       className={styles.row}
       role="radiogroup"
-      aria-label={t('countSection')}
+      aria-label={t('steps.count.title')}
     >
       {COUNTS.map((c) => {
         const active = value === c;
