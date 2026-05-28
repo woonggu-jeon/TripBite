@@ -6,6 +6,8 @@ import { useTranslations } from 'next-intl';
 import { CenterIllustration } from '@/features/tournament/components/CenterIllustration';
 import { FallingPetals } from '@/features/tournament/components/FallingPetals';
 import { ChungbukMap } from '@/features/tournament/components/ChungbukMap';
+import { Bracket } from '@/features/tournament/components/Bracket';
+import type { Destination } from '@/features/tournament/types';
 import { useTournamentStore } from '@/features/tournament/store/tournament-store';
 import { useTournamentCandidates } from '@/features/tournament/hooks/use-tournament';
 import styles from './TournamentPlayClient.module.scss';
@@ -83,11 +85,12 @@ export function TournamentPlayClient() {
     setPhase('bracket');
   };
 
-  const handleFinishPlaceholder = () => {
-    // Phase 3 본격 구현 전 임시: 선택된 첫 번째 항목을 winner로 두고 결과 진입
-    const firstSelectedId = selected.values().next().value;
-    const winner = pool?.find((d) => d.id === firstSelectedId);
-    if (winner) setWinner(winner);
+  const selectedDestinations: Destination[] = pool
+    ? pool.filter((d) => selected.has(d.id))
+    : [];
+
+  const handleBracketComplete = (winner: Destination) => {
+    setWinner(winner);
     router.replace('/tournament/result');
   };
 
@@ -166,16 +169,11 @@ export function TournamentPlayClient() {
       )}
 
       {phase === 'bracket' && (
-        <div className={styles.bracketPlaceholder}>
-          <p className={styles.placeholderTitle}>{t('bracketTodoTitle')}</p>
-          <p className={styles.placeholderHint}>{t('bracketTodoHint')}</p>
-          <button
-            type="button"
-            className={styles.cta}
-            onClick={handleFinishPlaceholder}
-          >
-            {t('toResult')}
-          </button>
+        <div className={styles.bracket}>
+          <Bracket
+            destinations={selectedDestinations}
+            onComplete={handleBracketComplete}
+          />
         </div>
       )}
     </div>

@@ -104,25 +104,10 @@
   }
 }
 
-.bracketPlaceholder {
-  display: grid;
-  gap: 0.75rem;
-  place-items: center;
-  padding: 3rem 1rem;
-  border: 1px dashed var(--color-border);
-  border-radius: var(--radius-lg);
-  text-align: center;
-}
-
-.placeholderTitle {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--color-fg);
-}
-
-.placeholderHint {
-  font-size: 0.875rem;
-  color: var(--color-muted);
+.bracket {
+  position: relative;
+  z-index: 2;
+  padding: 0.5rem;
 }
 
 @media (prefers-reduced-motion: reduce) {

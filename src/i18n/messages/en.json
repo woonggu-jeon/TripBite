@@ -284,11 +284,17 @@
       "selectReady": "Ready! Let's start the bracket",
       "selectedCount": "Selected {current} / max {max}",
       "startBracket": "Start bracket",
-      "bracketTodoTitle": "1:1 matchups",
-      "bracketTodoHint": "Matchup cards are coming soon",
-      "toResult": "See result (temporary)",
       "noConfig": "No tournament settings yet",
-      "goSetup": "Go to setup"
+      "goSetup": "Go to setup",
+      "matchup": {
+        "final": "Final",
+        "semifinal": "Semifinal",
+        "quarterfinal": "Quarterfinal",
+        "roundOfN": "Round of {n}",
+        "matchCount": "Match {current} / {total}",
+        "progressLabel": "Bracket progress",
+        "autoWin": "Your single pick wins automatically"
+      }
     },
     "result": {
       "luckyColor": "Lucky color",

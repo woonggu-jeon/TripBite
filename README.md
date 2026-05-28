@@ -951,6 +951,12 @@ Turborepo / Micro Frontend / Redux / GraphQL / Kubernetes / @tanstack/react-virt
 - [ ] **인증/온보딩 redirect 복원** (운영 배포 전 필수) — `middleware.ts`(인증 redirect 두 분기)와 `src/features/auth/components/AuthBootstrap.tsx`(onboarding redirect 분기)의 주석 해제. 백엔드 붙기 전 모든 페이지 확인용으로 임시 비활성된 상태
 - [ ] `@sentry/nextjs` client 도입 검토 (lazy-load로 First Load 영향 최소화)
 
+### 토너먼트
+
+- [ ] **충북 지도 매핑 최적화** — `ChungbukMap` 의 시군 좌표(`POINTS`)는 현재 `public/images/chungbuk-map.png` 라벨 위치를 육안 추정으로 잡은 값. 라벨/시군 영역과 정확히 정렬되도록 dev 서버에서 클릭 좌표 확인 후 미세조정 필요. 추가로 시군별 polygon 영역까지 분해하면 drop 이 자기 시군 영역 밖으로 튀는 케이스도 막을 수 있음 (현재는 라벨 위치 기준 ±4% jitter)
+- [ ] `config.count`(setup 의 4/8/16/32 step)는 현재 의미가 약함 — 지도 선택이 max 8 / min 1 자유 선택으로 바뀐 뒤로 직접 사용 안 됨. step 폐기 또는 다른 의미(예: 풀 사이즈 hint) 부여 결정 필요
+- [ ] PNG 외 `dark` 톤 지도 자산 추가 (현재는 light 톤 단일 — dark mode 에서 부조화)
+
 ### 공통 모듈 (아래 "공통 유틸리티" 참고)
 
 - [ ] 보안 정규식 + `graphemeLength` 중복 제거 (`lib/validation.ts`)

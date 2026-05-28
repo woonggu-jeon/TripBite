@@ -21,6 +21,10 @@ import styles from './ChungbukMap.module.scss';
 
 // 좌표는 chungbuk-map.png 라벨 위치 기준 정규화 (0~100).
 // 라벨이 시군 영역 중앙에 가깝게 배치되어 있어 drop 배치 기준점으로 사용.
+// TODO(map-mapping): 현재 값은 육안 추정 — dev 서버에서 클릭 좌표 확인 후
+//   라벨/시군 영역과 정확히 정렬되도록 미세조정 필요. 추가로 시군별 polygon
+//   분해 시 drop 이 자기 시군 영역 밖으로 튀는 케이스도 막을 수 있음.
+//   (README "후속 작업 로드맵 > 토너먼트" 항목)
 const POINTS: Record<RegionCode, { x: number; y: number }> = {
   cheongju: { x: 17, y: 52 },
   chungju: { x: 51, y: 19 },

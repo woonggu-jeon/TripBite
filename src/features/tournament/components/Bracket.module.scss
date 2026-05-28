@@ -1,0 +1,77 @@
+.wrap {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.head {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.roundLabel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+  color: var(--color-muted);
+  letter-spacing: 0.02em;
+}
+
+.round {
+  font-weight: 700;
+  color: var(--color-primary);
+  font-size: 1rem;
+}
+
+.dot {
+  opacity: 0.5;
+}
+
+.matchCount {
+  font-weight: 600;
+}
+
+.progressBar {
+  height: 6px;
+  background: color-mix(in srgb, var(--color-border) 60%, transparent);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: inherit;
+  transition: width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.matchup {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.vs {
+  align-self: center;
+  justify-self: center;
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  letter-spacing: 0.06em;
+  padding: 0.125rem 0.875rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--color-bg));
+}
+
+.doneMsg {
+  text-align: center;
+  font-size: 0.9375rem;
+  color: var(--color-muted);
+  padding: 2rem 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progressFill {
+    transition: none;
+  }
+}
