@@ -437,24 +437,7 @@ DevTools Network에서 `mockServiceWorker.js` "intercepted" 로그 확인.
 
 ### 알려진 트러블슈팅
 
-#### 1) `husky: command not found` 빌드 실패
-
-**증상**:
-
-```
-sh: line 1: husky: command not found
-npm error code 127
-Error: Command "npm install" exited with 127
-```
-
-**원인**: `prepare` lifecycle 이 husky 실행 시도 → 일부 환경에서 실패.
-
-**해결** (이미 적용됨):
-
-- `package.json` 의 `"prepare": "husky || true"` — 실패해도 install 계속
-- `husky` 가 `devDependencies` 에 등록됨
-
-#### 2) `Image with src "..." has invalid hostname`
+#### 1) `Image with src "..." has invalid hostname`
 
 `next.config.js` 의 `images.remotePatterns` 에 도메인이 등록되어 있어야 함:
 
@@ -467,7 +450,7 @@ images: {
 }
 ```
 
-#### 3) `Module not found: Can't resolve '@/...'`
+#### 2) `Module not found: Can't resolve '@/...'`
 
 `tsconfig.json` 의 `paths` 가 빌드 환경에서 안 잡힐 때.
 
@@ -479,7 +462,7 @@ images: {
 
 및 `next.config.js` 에 별도 webpack alias 불필요 (Next.js 가 자동 처리).
 
-#### 4) CSP 위반 콘솔 경고가 너무 많음
+#### 3) CSP 위반 콘솔 경고가 너무 많음
 
 현재 `Content-Security-Policy-Report-Only` 모드라 차단은 안 함. 운영 안정화 후 `Content-Security-Policy` 로 전환:
 
@@ -488,7 +471,7 @@ images: {
 { key: 'Content-Security-Policy', value: csp }   // Report-Only 제거
 ```
 
-#### 5) 첫 진입 시 Pretendard 깜빡임 (FOUT)
+#### 4) 첫 진입 시 Pretendard 깜빡임 (FOUT)
 
 `font-display: swap` 동작 — 시스템 폰트로 즉시 표시 후 Pretendard 로 교체. 정상 동작이지만 거슬리면:
 
@@ -502,7 +485,7 @@ PR 마다 자동 preview URL 생성 → Lighthouse / 디자인 리뷰 / 모바�
 PR #123 → https://your-app-git-feature-branch.vercel.app
 ```
 
-#### 6) 환경 변수 누락으로 인한 런타임 에러
+#### 5) 환경 변수 누락으로 인한 런타임 에러
 
 `NEXT_PUBLIC_API_URL` 미설정 시 `axios baseURL` 이 undefined → 모든 API 호출 실패.
 배포 직후 `/api/health` 가 200 OK 반환하는지, 홈 페이지가 빈 상태로 안 뜨는지 확인.
@@ -682,35 +665,14 @@ SENTRY_AUTH_TOKEN=
 - `.env.local` 을 git 에 커밋
 - 백엔드 secret을 클라이언트 fetch 호출에 포함
 
-### Sentry 데이터 스크러빙 (도입 시)
+### Sentry 데이터 스크러빙 ✅ 적용됨
 
-Sentry는 무심코 PII가 새는 가장 흔한 경로. `sentry.client.config.ts`:
+Sentry는 무심코 PII가 새는 가장 흔한 경로. `src/lib/sentry-scrub.ts`의 `scrubEvent`가
+`sentry.server.config.ts` / `sentry.edge.config.ts`의 `beforeSend`로 연결됨 — URL 쿼리의
+토큰/code/access_token/refresh_token 마스킹 + body의 password/token류 마스킹.
+`sendDefaultPii: false` + `initialScope.user: undefined`로 기본 비식별. 활성화는 `NEXT_PUBLIC_SENTRY_DSN` 설정 시.
 
-```ts
-Sentry.init({
-  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-  tracesSampleRate: 0.1,
-  sendDefaultPii: false,
-  beforeSend(event) {
-    // URL 쿼리에서 토큰류 파라미터 제거
-    if (event.request?.url) {
-      event.request.url = event.request.url.replace(
-        /([?&])(token|code|access_token|refresh_token)=[^&]*/gi,
-        '$1$2=***',
-      );
-    }
-    // body에 비밀번호/토큰 포함되면 제거
-    if (event.request?.data && typeof event.request.data === 'object') {
-      const data = event.request.data as Record<string, unknown>;
-      ['password', 'token', 'refresh_token', 'access_token'].forEach((k) => {
-        if (k in data) data[k] = '***';
-      });
-    }
-    return event;
-  },
-  initialScope: { user: undefined }, // 사용자 식별이 꼭 필요할 때만 ID 설정
-});
-```
+> client Sentry는 First Load +~80KB라 의도적 제외 (server/edge만 활성). 자세한 동작 조건은 "추가 권장 라이브러리 → 도입 현황" 참고.
 
 ### Service Worker / PWA 보안
 
