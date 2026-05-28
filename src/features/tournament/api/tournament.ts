@@ -17,6 +17,8 @@ import type {
  */
 export const tournamentApi = {
   fetchCandidates: async (config: TournamentConfig): Promise<Destination[]> => {
+    // pool 사이즈 = 사용자가 고를 풀. 사이즈의 ~3배 (단, 4강은 좁아 보이므로 최소 12)
+    const poolSize = Math.max(12, config.count * 3);
     const res = await api.get<Destination[]>('/destinations/random', {
       params: {
         themeKind: config.theme.kind,
@@ -24,6 +26,7 @@ export const tournamentApi = {
         categories: config.categories.join(','),
         region: config.region,
         count: config.count,
+        pool: poolSize,
       },
     });
     return res.data;

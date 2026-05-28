@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { CenterIllustration } from '@/features/tournament/components/CenterIllustration';
@@ -10,17 +10,18 @@ import { useTournamentStore } from '@/features/tournament/store/tournament-store
 import { useTournamentCandidates } from '@/features/tournament/hooks/use-tournament';
 import styles from './TournamentPlayClient.module.scss';
 
-type Phase = 'illustration' | 'map' | 'bracket';
+type Phase = 'intro' | 'map' | 'bracket';
+
+const INTRO_MS = 2500;
 
 /**
  * 토너먼트 진행 클라이언트
  *
- *   1) illustration : 중앙 일러스트 + 계절 파티클 → 탭 → map
- *   2) map          : 충북 지도 위로 N개 일러스트 낙하 → 토너먼트 시작 → bracket
- *   3) bracket      : 1:1 매치업 (Phase 3에서 본격 구현, 현재는 placeholder)
+ *   1) intro  : 중앙 일러스트 + 계절 파티클 (자동 2.5초 → map)
+ *   2) map    : 충북 지도 + 풀(여행지) 표시 → 사용자가 정확히 count 개 선택 → "다음"
+ *   3) bracket: 1:1 매치업 (Phase 3에서 본격 구현 — 현재 placeholder)
  *
- * 설정 없이 직접 진입한 경우(새로고침 등)는 안내 메시지 + 설정 화면 진입 버튼.
- * (백엔드 미연결 단계: 자동 redirect 대신 안내 표시.)
+ * 설정 없이 직접 진입 시 자동 redirect 대신 안내 + 설정 화면 진입 버튼.
  */
 export function TournamentPlayClient() {
   const router = useRouter();
@@ -28,16 +29,22 @@ export function TournamentPlayClient() {
   const config = useTournamentStore((s) => s.config);
   const setWinner = useTournamentStore((s) => s.setWinner);
 
-  const [phase, setPhase] = useState<Phase>('illustration');
-  const [tapped, setTapped] = useState(false);
-  const [mapReady, setMapReady] = useState(false);
+  const [phase, setPhase] = useState<Phase>('intro');
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const {
-    data: destinations,
+    data: pool,
     isLoading,
     isError,
     refetch,
   } = useTournamentCandidates(config);
+
+  // intro 자동 진행 (config 있을 때만)
+  useEffect(() => {
+    if (!config || phase !== 'intro') return;
+    const id = window.setTimeout(() => setPhase('map'), INTRO_MS);
+    return () => window.clearTimeout(id);
+  }, [config, phase]);
 
   if (!config) {
     return (
@@ -55,41 +62,43 @@ export function TournamentPlayClient() {
   }
 
   const theme = config.theme;
+  const targetCount = config.count;
 
-  const handleTap = () => {
-    if (!destinations || destinations.length === 0) return;
-    setTapped(true);
-    window.setTimeout(() => setPhase('map'), 500);
+  const toggleSelect = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else if (next.size < targetCount) next.add(id);
+      return next;
+    });
   };
 
-  const handleStartBracket = () => {
+  const canProceed = selected.size === targetCount;
+
+  const handleProceed = () => {
+    if (!canProceed) return;
     setPhase('bracket');
   };
 
   const handleFinishPlaceholder = () => {
-    // Phase 3 구현 전 임시: 첫 번째 후보를 우승자로 지정하고 결과로 이동
-    const first = destinations?.[0];
-    if (first) setWinner(first);
+    // Phase 3 본격 구현 전 임시: 선택된 첫 번째 항목을 winner로 두고 결과 진입
+    const firstSelectedId = selected.values().next().value;
+    const winner = pool?.find((d) => d.id === firstSelectedId);
+    if (winner) setWinner(winner);
     router.replace('/tournament/result');
   };
 
   return (
     <div className={styles.wrap}>
-      {/* 계절 파티클 — illustration/map 페이즈에서만 표시 */}
       {theme.kind === 'season' && phase !== 'bracket' && (
         <FallingPetals season={theme.value} active />
       )}
 
-      {phase === 'illustration' && (
+      {phase === 'intro' && (
         <div className={styles.center}>
-          <CenterIllustration
-            theme={theme}
-            onTap={handleTap}
-            tapped={tapped}
-            disabled={isLoading || isError || !destinations}
-          />
+          <CenterIllustration theme={theme} onTap={() => {}} disabled />
           <p className={styles.hint}>
-            {isLoading ? t('loading') : isError ? t('error') : t('tapToStart')}
+            {isLoading ? t('loading') : isError ? t('error') : t('introHint')}
           </p>
           {isError && (
             <button
@@ -103,26 +112,53 @@ export function TournamentPlayClient() {
         </div>
       )}
 
-      {phase === 'map' && destinations && (
+      {phase === 'map' && (
         <div className={styles.map}>
-          <ChungbukMap
-            destinations={destinations}
-            theme={theme}
-            onReady={() => setMapReady(true)}
-          />
-          <div className={styles.mapFooter}>
-            <p className={styles.mapHint}>
-              {mapReady ? t('mapReady') : t('mapDropping')}
-            </p>
-            <button
-              type="button"
-              className={styles.cta}
-              disabled={!mapReady}
-              onClick={handleStartBracket}
-            >
-              {t('startBracket')}
-            </button>
-          </div>
+          {!pool && isLoading && <p className={styles.hint}>{t('loading')}</p>}
+          {!pool && isError && (
+            <div className={styles.errorBox}>
+              <p>{t('error')}</p>
+              <button
+                type="button"
+                className={styles.retry}
+                onClick={() => refetch()}
+              >
+                {t('retry')}
+              </button>
+            </div>
+          )}
+          {pool && (
+            <>
+              <ChungbukMap
+                destinations={pool}
+                theme={theme}
+                selected={selected}
+                onToggle={toggleSelect}
+                maxSelect={targetCount}
+              />
+              <div className={styles.mapFooter}>
+                <p className={styles.counter}>
+                  {t('selectedCount', {
+                    current: selected.size,
+                    total: targetCount,
+                  })}
+                </p>
+                <p className={styles.mapHint}>
+                  {canProceed
+                    ? t('selectReady')
+                    : t('selectHint', { total: targetCount })}
+                </p>
+                <button
+                  type="button"
+                  className={styles.cta}
+                  disabled={!canProceed}
+                  onClick={handleProceed}
+                >
+                  {t('startBracket')}
+                </button>
+              </div>
+            </>
+          )}
         </div>
       )}
 

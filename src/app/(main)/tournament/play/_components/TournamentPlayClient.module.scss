@@ -53,10 +53,26 @@
   display: grid;
   gap: 0.5rem;
   text-align: center;
+  margin-top: 0.5rem;
+}
+
+.counter {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-fg);
+  letter-spacing: 0.02em;
 }
 
 .mapHint {
   font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+.errorBox {
+  display: grid;
+  gap: 0.5rem;
+  place-items: center;
+  padding: 2rem 1rem;
   color: var(--color-muted);
 }
 

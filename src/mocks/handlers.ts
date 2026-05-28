@@ -188,7 +188,9 @@ export const handlers = [
   http.get(`${apiUrl}/mypage/tournament-history`, () =>
     HttpResponse.json({ items: tournamentHistorySeeds, nextCursor: null }),
   ),
-  // 조건에 맞는 후보 여행지 N개 — 셔플 후 잘라서 반환
+  // 조건에 맞는 후보 여행지 풀 반환 — 셔플 후 잘라서 반환
+  //   - count: 토너먼트 사이즈 (사용자가 그 중 정확히 count개 선택)
+  //   - pool : 클라이언트에 노출할 풀 사이즈 (없으면 count와 같음)
   http.get(`${apiUrl}/destinations/random`, ({ request }) => {
     const url = new URL(request.url);
     const categoriesParam = url.searchParams.get('categories') ?? '';
@@ -197,6 +199,8 @@ export const handlers = [
       32,
       Math.max(2, Number(url.searchParams.get('count') ?? 8)),
     );
+    const poolParam = url.searchParams.get('pool');
+    const desired = poolParam !== null ? Number(poolParam) : count;
     const categories = categoriesParam
       ? categoriesParam.split(',').filter(Boolean)
       : [];
@@ -219,7 +223,9 @@ export const handlers = [
         arr[j] = ai;
       }
     }
-    return HttpResponse.json(arr.slice(0, count));
+    return HttpResponse.json(
+      arr.slice(0, Math.min(arr.length, Math.max(count, desired))),
+    );
   }),
 
   // ===== Notifications =====
