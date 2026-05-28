@@ -91,7 +91,37 @@
   }
 }
 
-.hint {
-  color: var(--color-muted);
-  font-size: 0.8125rem;
+.restart {
+  margin-top: 0.25rem;
+  padding: 0.625rem 1.25rem;
+  background: var(--color-primary);
+  color: var(--color-primary-fg);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    opacity 0.15s ease,
+    transform 0.1s ease;
+
+  &:hover {
+    opacity: 0.92;
+  }
+  &:active {
+    transform: scale(0.97);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .restart {
+    transition: none;
+    &:active {
+      transform: none;
+    }
+  }
 }

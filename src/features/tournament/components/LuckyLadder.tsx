@@ -1,8 +1,11 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { haptic } from '@/lib/haptic';
 import styles from './LuckyLadder.module.scss';
+
+// path draw 애니메이션 1.4s + 약간의 여유. reduced-motion 시 즉시 공개.
+const REVEAL_MS = 1500;
 
 /**
  * 사다리타기 — N개 라인 중 하나를 선택하면 사다리를 따라 내려가
@@ -91,6 +94,7 @@ export function LuckyLadder({
   const [mode, setMode] = useState<LuckyLadderMode>(initialMode);
   const [selected, setSelected] = useState<number | null>(null);
   const [seed, setSeed] = useState(0);
+  const [revealed, setRevealed] = useState(false);
 
   const { rungs, percents } = useMemo(() => {
     void seed; // seed 변경 시 재생성
@@ -103,12 +107,30 @@ export function LuckyLadder({
   const handlePick = useCallback((col: number) => {
     haptic.tap();
     setSelected(col);
+    setRevealed(false);
   }, []);
 
   const reset = useCallback(() => {
     setSelected(null);
+    setRevealed(false);
     setSeed((s) => s + 1);
   }, []);
+
+  // 선택 후 경로 애니메이션이 끝나면 % 공개
+  useEffect(() => {
+    if (selected === null) {
+      setRevealed(false);
+      return;
+    }
+    const reduced =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const id = window.setTimeout(
+      () => setRevealed(true),
+      reduced ? 50 : REVEAL_MS,
+    );
+    return () => window.clearTimeout(id);
+  }, [selected, seed, mode]);
 
   const W = 320;
   const H = 380;
@@ -119,7 +141,13 @@ export function LuckyLadder({
   const rowY = (r: number) => topPad + (r * (H - topPad - bottomPad)) / rows;
 
   const path = selected !== null ? tracePath(selected, rungs, rows) : [];
-  const resultPercent = selected !== null ? (percents[selected] ?? 0) : null;
+  // 사다리 끝 col (= 도착 라인). 결과 % 인덱싱은 시작 col 이 아니라 endCol 기준.
+  const endCol =
+    selected !== null && path.length > 0
+      ? (path[path.length - 1]?.col ?? selected)
+      : null;
+  const resultPercent =
+    revealed && endCol !== null ? (percents[endCol] ?? 0) : null;
 
   return (
     <div className={styles.wrap}>
@@ -231,32 +259,38 @@ export function LuckyLadder({
           </g>
         ))}
 
-        {/* 끝점 % */}
-        {percents.map((p, i) => (
-          <g key={`e${i}`}>
-            <rect
-              x={colX(i) - 22}
-              y={rowY(rows) + 8}
-              width={44}
-              height={26}
-              rx={13}
-              fill={
-                selected === i ? 'var(--color-primary)' : 'var(--color-muted)'
-              }
-              opacity={selected === null || selected === i ? 1 : 0.4}
-            />
-            <text
-              x={colX(i)}
-              y={rowY(rows) + 25}
-              textAnchor="middle"
-              fontSize={12}
-              fontWeight={700}
-              fill="var(--color-primary-fg)"
-            >
-              {p}%
-            </text>
-          </g>
-        ))}
+        {/* 끝점 % — 도착 라인 강조는 endCol 기준. 공개 전엔 '?' 로 가림. */}
+        {percents.map((p, i) => {
+          const isEnd = endCol === i;
+          const dimmed = selected !== null && !isEnd;
+          return (
+            <g key={`e${i}`}>
+              <rect
+                x={colX(i) - 22}
+                y={rowY(rows) + 8}
+                width={44}
+                height={26}
+                rx={13}
+                fill={
+                  revealed && isEnd
+                    ? 'var(--color-primary)'
+                    : 'var(--color-muted)'
+                }
+                opacity={dimmed && !revealed ? 0.5 : 1}
+              />
+              <text
+                x={colX(i)}
+                y={rowY(rows) + 25}
+                textAnchor="middle"
+                fontSize={12}
+                fontWeight={700}
+                fill="var(--color-primary-fg)"
+              >
+                {revealed ? `${p}%` : '?'}
+              </text>
+            </g>
+          );
+        })}
 
         {/* 선택 경로 — stroke-dashoffset 애니메이션 */}
         {selected !== null && (
@@ -274,15 +308,18 @@ export function LuckyLadder({
       </svg>
 
       <div className={styles.resultRow} role="status" aria-live="polite">
-        {resultPercent !== null ? (
+        {resultPercent !== null && selected !== null ? (
           <span className={styles.resultText}>
-            {selected !== null && selected + 1}번 →{' '}
-            <strong>{resultPercent}%</strong>
+            {selected + 1}번 → <strong>{resultPercent}%</strong>
           </span>
-        ) : (
-          <span className={styles.hint}>위에서 라인을 선택하세요</span>
-        )}
+        ) : null}
       </div>
+
+      {revealed && (
+        <button type="button" className={styles.restart} onClick={reset}>
+          다시하기
+        </button>
+      )}
     </div>
   );
 }
