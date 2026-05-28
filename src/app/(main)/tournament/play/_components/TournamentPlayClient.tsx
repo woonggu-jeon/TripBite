@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { CenterIllustration } from '@/features/tournament/components/CenterIllustration';
@@ -48,6 +48,23 @@ export function TournamentPlayClient() {
     return () => window.clearTimeout(id);
   }, [config, phase]);
 
+  // count = 시군 수 (4/8/10/11). pool 을 시군별 dedup 한 뒤 count 만큼 노출.
+  // (백엔드 연동 후엔 handler 가 random N개 시군의 destinations 만 반환할 예정)
+  // 주의: hook 은 항상 같은 순서로 호출되어야 하므로 early return 앞에 위치.
+  const MAX_SELECT = config?.count ?? 8;
+  const dedupedPool = useMemo<Destination[] | null>(() => {
+    if (!pool) return null;
+    const seen = new Set<string>();
+    const dedup: Destination[] = [];
+    for (const d of pool) {
+      if (seen.has(d.region)) continue;
+      seen.add(d.region);
+      dedup.push(d);
+      if (dedup.length >= MAX_SELECT) break;
+    }
+    return dedup;
+  }, [pool, MAX_SELECT]);
+
   if (!config) {
     return (
       <div className={styles.empty}>
@@ -64,9 +81,6 @@ export function TournamentPlayClient() {
   }
 
   const theme = config.theme;
-  // 토너먼트 사이즈는 고정 max 8, 최소 1개부터 시작 가능.
-  // setup 의 config.count 는 더 이상 직접 사용하지 않음 — 추후 정리 예정.
-  const MAX_SELECT = 8;
   const MIN_SELECT = 1;
 
   const toggleSelect = (id: string) => {
@@ -85,8 +99,8 @@ export function TournamentPlayClient() {
     setPhase('bracket');
   };
 
-  const selectedDestinations: Destination[] = pool
-    ? pool.filter((d) => selected.has(d.id))
+  const selectedDestinations: Destination[] = dedupedPool
+    ? dedupedPool.filter((d) => selected.has(d.id))
     : [];
 
   const handleBracketComplete = (winner: Destination) => {
@@ -120,8 +134,10 @@ export function TournamentPlayClient() {
 
       {phase === 'map' && (
         <div className={styles.map}>
-          {!pool && isLoading && <p className={styles.hint}>{t('loading')}</p>}
-          {!pool && isError && (
+          {!dedupedPool && isLoading && (
+            <p className={styles.hint}>{t('loading')}</p>
+          )}
+          {!dedupedPool && isError && (
             <div className={styles.errorBox}>
               <p>{t('error')}</p>
               <button
@@ -133,10 +149,10 @@ export function TournamentPlayClient() {
               </button>
             </div>
           )}
-          {pool && (
+          {dedupedPool && (
             <>
               <ChungbukMap
-                destinations={pool}
+                destinations={dedupedPool}
                 theme={theme}
                 selected={selected}
                 onToggle={toggleSelect}

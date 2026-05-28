@@ -5,7 +5,7 @@ import { haptic } from '@/lib/haptic';
 import type { TournamentCount } from '@/features/tournament/types';
 import styles from './CountSelector.module.scss';
 
-const COUNTS: TournamentCount[] = [4, 8, 16, 32];
+const COUNTS: TournamentCount[] = [4, 8, 10, 11];
 
 export interface CountSelectorProps {
   value: TournamentCount | null;

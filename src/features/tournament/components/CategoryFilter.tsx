@@ -6,6 +6,7 @@ import type { DestinationCategory } from '@/features/tournament/types';
 import styles from './CategoryFilter.module.scss';
 
 const CATEGORIES: { value: DestinationCategory; emoji: string }[] = [
+  { value: 'local', emoji: '🏘️' },
   { value: 'festival', emoji: '🎪' },
   { value: 'attraction', emoji: '📍' },
   { value: 'experience', emoji: '🎨' },

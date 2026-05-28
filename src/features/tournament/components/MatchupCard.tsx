@@ -7,6 +7,7 @@ import type { Destination } from '@/features/tournament/types';
 import styles from './MatchupCard.module.scss';
 
 const CATEGORY_EMOJI = {
+  local: '🏘️',
   festival: '🎪',
   attraction: '📍',
   experience: '🎨',

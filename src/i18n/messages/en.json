@@ -254,10 +254,10 @@
         }
       },
       "count": {
-        "4": "Round of 4",
-        "8": "Round of 8",
-        "16": "Round of 16",
-        "32": "Round of 32"
+        "4": "4 places",
+        "8": "8 places",
+        "10": "10 places",
+        "11": "All"
       }
     },
     "season": {
@@ -271,6 +271,7 @@
       "anniversary": "Wedding anniversary"
     },
     "category": {
+      "local": "Local",
       "festival": "Festival",
       "attraction": "Attraction",
       "experience": "Experience"
