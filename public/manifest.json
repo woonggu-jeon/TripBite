@@ -22,5 +22,38 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "토너먼트",
+      "short_name": "토너먼트",
+      "description": "여행지 1:1 매치업",
+      "url": "/tournament",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "편지 쓰기",
+      "short_name": "편지",
+      "description": "다섯 글자 편지 보내기",
+      "url": "/letter/compose",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "마이페이지",
+      "short_name": "마이",
+      "description": "도장깨기 + 우승지",
+      "url": "/mypage",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "TripBite — 충북 여행"
+    }
+  ],
+  "categories": ["travel", "lifestyle", "social"]
 }

@@ -45,7 +45,10 @@ yarn-error.log*
 .vercel
 
 # IDE
-.vscode/
+# 팀 공유 settings/extensions만 추적, 개인 파일은 ignore
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
 .idea/
 *.swp
 *.swo

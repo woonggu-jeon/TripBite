@@ -2,9 +2,12 @@
 
 import {
   QueryClient,
+  QueryCache,
   QueryClientProvider,
   type DefaultOptions,
 } from '@tanstack/react-query';
+import { toast } from '@/lib/toast';
+import { isAxiosError } from '@/services/interceptors/auth';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useEffect, useState } from 'react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -64,7 +67,23 @@ const MSW_ENABLED =
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
-    () => new QueryClient({ defaultOptions: queryClientOptions }),
+    () =>
+      new QueryClient({
+        defaultOptions: queryClientOptions,
+        // 글로벌 query 에러 → toast.
+        // 401은 axios interceptor가 /auth/refresh 처리 중이라 skip.
+        // mutation 에러는 각 폼에서 setError로 root 표시 → 자동 toast 중복 방지(여기 제외).
+        queryCache: new QueryCache({
+          onError: (error) => {
+            if (isAxiosError(error) && error.response?.status === 401) return;
+            const message = isAxiosError(error)
+              ? ((error.response?.data as { message?: string })?.message ??
+                '요청을 처리하지 못했어요.')
+              : '네트워크 오류가 발생했어요.';
+            toast.error(message);
+          },
+        }),
+      }),
   );
   const [mswReady, setMswReady] = useState(!MSW_ENABLED);
 

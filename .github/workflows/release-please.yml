@@ -1,0 +1,28 @@
+name: release-please
+
+# Conventional Commits 기반 자동 릴리스 PR + CHANGELOG + 태그.
+# main에 push 될 때마다 release-please가 다음 두 가지 중 하나:
+#   1) 직전 릴리스 이후 변경을 모은 "release PR" 생성/업데이트 (CHANGELOG 미리보기 포함)
+#   2) 그 PR이 merge되면 → tag + GitHub Release 자동 생성
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: release-please-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: googleapis/release-please-action@v4
+        with:
+          release-type: node
+          # package.json version + CHANGELOG.md 자동 갱신

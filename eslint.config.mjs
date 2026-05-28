@@ -14,7 +14,11 @@ const eslintConfig = [
   {
     ignores: ['src/generated/**', '.next/**', 'node_modules/**', 'public/**'],
   },
-  ...compat.extends('next/core-web-vitals', 'next/typescript'),
+  ...compat.extends(
+    'next/core-web-vitals',
+    'next/typescript',
+    'plugin:jsx-a11y/recommended',
+  ),
   security.configs.recommended,
   {
     rules: {
@@ -32,6 +36,14 @@ const eslintConfig = [
       'prefer-const': 'error',
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'object-shorthand': 'warn',
+      // a11y — 핵심 위반은 error(기본), 트레이드오프 큰 룰은 warn으로:
+      //  · click-events-have-key-events / no-static-element-interactions:
+      //    ConfirmDialog backdrop은 이미 Esc + focus trap 구비, dismiss는 부가
+      //  · no-autofocus: 단일 입력 페이지(NicknameStep)에서 의도적 사용
+      'jsx-a11y/click-events-have-key-events': 'warn',
+      'jsx-a11y/no-static-element-interactions': 'warn',
+      'jsx-a11y/no-noninteractive-element-interactions': 'warn',
+      'jsx-a11y/no-autofocus': 'warn',
     },
   },
 ];
