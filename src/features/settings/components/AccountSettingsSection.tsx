@@ -1,7 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { usePermissionState } from '@/features/location';
+import { ChangePasswordForm } from '@/features/auth/components/ChangePasswordForm';
 import styles from './SettingsRows.module.scss';
 
 /**
@@ -17,12 +19,28 @@ import styles from './SettingsRows.module.scss';
 export function AccountSettingsSection() {
   const t = useTranslations('settings.account');
   const permission = usePermissionState();
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   return (
     <div className={styles.list}>
       <button type="button" className={styles.button}>
         {t('changeNickname')}
       </button>
+
+      <button
+        type="button"
+        className={styles.button}
+        onClick={() => setShowChangePassword((v) => !v)}
+        aria-expanded={showChangePassword}
+      >
+        {t('changePassword')}
+      </button>
+      {showChangePassword && (
+        <div style={{ padding: '0.5rem 0.25rem' }}>
+          <ChangePasswordForm onDone={() => setShowChangePassword(false)} />
+        </div>
+      )}
+
       <button type="button" className={styles.button}>
         <div>{t('locationPermission')}</div>
         <div className={styles.rowHint}>

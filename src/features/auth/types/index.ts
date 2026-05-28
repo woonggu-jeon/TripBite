@@ -32,3 +32,18 @@ export type ResetPasswordRequest = {
   token: string;
   password: string;
 };
+
+export type ChangePasswordRequest = {
+  currentPassword: string;
+  newPassword: string;
+};
+
+export type FindIdRequest = {
+  name: string;
+  email: string;
+};
+
+export type FindIdResponse = {
+  /** 마스킹된 아이디 (예: "tes***01"). 미존재 시 null */
+  username: string | null;
+};

@@ -121,9 +121,14 @@ export function LoginForm() {
         <Link href="/signup" style={{ color: 'var(--color-primary)' }}>
           {t('toSignup')}
         </Link>
-        <Link href="/forgot-password" style={{ color: 'var(--color-muted)' }}>
-          {t('toForgot')}
-        </Link>
+        <span style={{ display: 'flex', gap: '0.75rem' }}>
+          <Link href="/find-id" style={{ color: 'var(--color-muted)' }}>
+            {t('toFindId')}
+          </Link>
+          <Link href="/forgot-password" style={{ color: 'var(--color-muted)' }}>
+            {t('toForgot')}
+          </Link>
+        </span>
       </div>
     </form>
   );

@@ -14,6 +14,8 @@ import type {
   SignupRequest,
   ForgotPasswordRequest,
   ResetPasswordRequest,
+  ChangePasswordRequest,
+  FindIdRequest,
 } from '@/features/auth/types';
 import type { User } from '@/features/user/types';
 import { isAxiosError } from '@/services/interceptors/auth';
@@ -91,6 +93,18 @@ export function useResetPassword() {
     onSuccess: () => {
       router.replace('/login?reset=success');
     },
+  });
+}
+
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: (data: ChangePasswordRequest) => authApi.changePassword(data),
+  });
+}
+
+export function useFindId() {
+  return useMutation({
+    mutationFn: (data: FindIdRequest) => authApi.findId(data),
   });
 }
 

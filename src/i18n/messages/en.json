@@ -59,7 +59,38 @@
       "failed": "Sign-in failed.",
       "unknown": "Something went wrong.",
       "toSignup": "Sign up",
-      "toForgot": "Forgot password?"
+      "toForgot": "Forgot password?",
+      "toFindId": "Find username"
+    },
+    "findId": {
+      "title": "Find username",
+      "name": "Name",
+      "email": "Email",
+      "submit": "Find username",
+      "submitting": "Searching...",
+      "resultTitle": "Result",
+      "notFound": "No matching account found.",
+      "toLogin": "Back to sign in",
+      "errors": {
+        "nameRequired": "Please enter your name.",
+        "emailInvalid": "Please enter a valid email."
+      }
+    },
+    "changePassword": {
+      "currentPassword": "Current password",
+      "newPassword": "New password (10+ chars)",
+      "confirmPassword": "Confirm new password",
+      "submit": "Change password",
+      "submitting": "Changing...",
+      "success": "Password changed.",
+      "failed": "Could not change password.",
+      "errors": {
+        "currentRequired": "Please enter your current password.",
+        "confirmRequired": "Please confirm your new password.",
+        "passwordMin": "Password must be at least 10 characters.",
+        "passwordMax": "Password is too long.",
+        "mismatch": "New passwords do not match."
+      }
     },
     "signup": {
       "title": "Create account",
@@ -285,6 +316,7 @@
     "account": {
       "section": "Account",
       "changeNickname": "Change nickname",
+      "changePassword": "Change password",
       "locationPermission": "Location permission",
       "locationGranted": "Allowed",
       "locationDenied": "Denied — change in device settings",

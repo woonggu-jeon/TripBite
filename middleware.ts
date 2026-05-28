@@ -21,6 +21,7 @@ const PUBLIC_ONLY_PATHS = [
   '/signup',
   '/forgot-password',
   '/reset-password',
+  '/find-id',
 ];
 const ACCESS_TOKEN_COOKIE = 'access_token';
 const STATE_CHANGING = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);

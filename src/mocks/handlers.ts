@@ -88,6 +88,15 @@ export const handlers = [
     `${apiUrl}/auth/reset-password`,
     () => new HttpResponse(null, { status: 204 }),
   ),
+  // 아이디 찾기 — 마스킹된 아이디 반환 (메일 발송 X)
+  http.post(`${apiUrl}/auth/find-id`, () =>
+    HttpResponse.json({ username: 'tes***01' }),
+  ),
+  // 비밀번호 변경 (로그인 상태)
+  http.post(
+    `${apiUrl}/me/change-password`,
+    () => new HttpResponse(null, { status: 204 }),
+  ),
   http.post(
     `${apiUrl}/auth/logout`,
     () => new HttpResponse(null, { status: 204 }),

@@ -5,6 +5,9 @@ import type {
   SignupRequest,
   ForgotPasswordRequest,
   ResetPasswordRequest,
+  ChangePasswordRequest,
+  FindIdRequest,
+  FindIdResponse,
 } from '@/features/auth/types';
 import type { User } from '@/features/user/types';
 
@@ -33,6 +36,17 @@ export const authApi = {
   // 메일 링크의 토큰 + 새 비밀번호
   resetPassword: async (data: ResetPasswordRequest) => {
     await api.post('/auth/reset-password', data);
+  },
+
+  // 로그인 상태에서 비밀번호 변경 (현재 비번 확인)
+  changePassword: async (data: ChangePasswordRequest) => {
+    await api.post('/me/change-password', data);
+  },
+
+  // 아이디 찾기 — 이름+이메일 매칭 → 마스킹 아이디 (메일 발송 X)
+  findId: async (data: FindIdRequest): Promise<FindIdResponse> => {
+    const res = await api.post<FindIdResponse>('/auth/find-id', data);
+    return res.data;
   },
 
   logout: async () => {

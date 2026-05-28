@@ -17,5 +17,20 @@ export const resetPasswordSchema = z.object({
   password: z.string().min(10, 'passwordMin').max(72, 'passwordMax'),
 });
 
+/**
+ * 비밀번호 변경 (로그인 상태) — 현재 비번 확인 + 새 비번(10자+) + 확인 일치
+ */
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, 'currentRequired'),
+    newPassword: z.string().min(10, 'passwordMin').max(72, 'passwordMax'),
+    confirmPassword: z.string().min(1, 'confirmRequired'),
+  })
+  .refine((d) => d.newPassword === d.confirmPassword, {
+    message: 'mismatch',
+    path: ['confirmPassword'],
+  });
+
 export type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
+export type ChangePasswordValues = z.infer<typeof changePasswordSchema>;

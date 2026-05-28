@@ -282,12 +282,34 @@ App Router `<Link>`는 기본적으로 **viewport 진입 시 자동 prefetch**. 
 
 ## 인증
 
-- **일반 이메일/비밀번호 로그인만** — 소셜 OAuth(kakao/google/naver) 없음. `next-auth`/`@auth/core`/소셜 SDK 불필요.
+- **아이디(username)/비밀번호 로그인만** — 소셜 OAuth(kakao/google/naver) 없음. `next-auth`/`@auth/core`/소셜 SDK 불필요.
 - HttpOnly Cookie (access/refresh). 프론트는 토큰 직접 관리 X (`jwt-decode` 등 클라이언트 토큰 라이브러리 불필요).
 - `services/api/client.ts` — `withCredentials: true` axios
 - `services/interceptors/auth.ts` — 401 → `/auth/refresh` 자동, 동시 401 단일 promise 공유
-- `middleware.ts` — 쿠키 존재 여부만 체크 (`/login`만 PUBLIC_ONLY, 그 외 미인증 시 `/login` 리다이렉트)
+- `middleware.ts` — 쿠키 존재 여부만 체크. PUBLIC_ONLY: `/login` `/signup` `/forgot-password` `/reset-password` `/find-id` (그 외 미인증 시 `/login` 리다이렉트)
 - `AuthBootstrap` — `GET /me` → store hydrate. `isOnboarded === false` 면 `/onboarding` 으로, 완료 사용자가 `/onboarding` 진입 시 `/` 로 redirect
+
+### 인증 — 백엔드(B/E) 구현 계약 ⭐
+
+> 프론트는 폼·검증·라우팅·MSW mock까지 완성됨(아래 모든 화면 동작 가능). **실제 동작은 백엔드가 아래 계약대로 구현해야** 함. 인증/토큰/메일은 전적으로 백엔드 책임 (보안상 프론트에 두지 않음).
+
+| 엔드포인트                   | 요청 body                                               | 성공 응답                              | 백엔드 책임                                                                                                                              |
+| ---------------------------- | ------------------------------------------------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST /auth/signup`          | `{ name, username, password, birthDate, email, phone }` | `201`                                  | 아이디·이메일·폰 **중복 검사**(409+message), **비밀번호 해싱**(argon2/bcrypt), 비속어/형식 재검증                                        |
+| `POST /auth/login`           | `{ username, password }`                                | `200` + **Set-Cookie**(access/refresh) | 자격 검증, `HttpOnly; Secure; SameSite=Lax` 쿠키 발급                                                                                    |
+| `POST /auth/logout`          | —                                                       | `204` + 쿠키 만료                      | refresh 토큰 무효화                                                                                                                      |
+| `POST /auth/refresh`         | — (refresh 쿠키)                                        | `200` + 새 access 쿠키                 | refresh 검증/회전                                                                                                                        |
+| `GET /me`                    | —                                                       | `User`(+`isOnboarded`)                 | 쿠키 기반 현재 사용자                                                                                                                    |
+| `POST /auth/find-id`         | `{ name, email }`                                       | `{ username: "tes***01" \| null }`     | 이름+이메일 매칭 → **마스킹** 아이디. **열거 방지**(미존재도 동일 형태)                                                                  |
+| `POST /auth/forgot-password` | `{ email }`                                             | `204`                                  | **재설정 토큰 생성**(랜덤·만료 ~30분·1회용·DB저장) → **메일로 링크 발송** `https://앱/reset-password?token=...`. 열거 방지(미존재도 204) |
+| `POST /auth/reset-password`  | `{ token, password }`                                   | `204`                                  | 토큰 **검증/만료확인/1회 소비** → 비밀번호 해싱 교체                                                                                     |
+| `POST /me/change-password`   | `{ currentPassword, newPassword }`                      | `204`                                  | 현재 비밀번호 **재확인** 후 교체 (로그인 상태)                                                                                           |
+
+**메일 발송**(B/E): `forgot-password`의 재설정 링크 메일. Resend / AWS SES / SMTP 등. 링크는 위 형식, 토큰은 단명·1회용. (Vercel/Next에서 보내려면 토큰 DB가 Next에 있어야 하므로, 분리 백엔드 구조에선 백엔드가 발송하는 것이 일관)
+
+**공통 보안**: 비밀번호 평문 저장 금지(해싱), `find-id`/`forgot-password` 계정 열거 방지, 재설정 토큰 단명·1회용, login/signup/forgot **rate limit**(아래 표), 프론트 zod 검증은 1차 방어일 뿐 **백엔드 재검증 필수**.
+
+**프론트 검증 규칙**(백엔드가 동일하게 재검증할 것): 아이디 `^[a-zA-Z0-9_]{4,20}$` · 비밀번호 10~72자 · 폰 `^01[016789]-?\d{3,4}-?\d{4}$` · 이메일 형식 · 이름 1~30자(제어/HTML 차단). 만 14세 확인(생년월일)은 현재 프론트 미적용 — 도입 시 백엔드도 검증.
 
 ---
 
@@ -310,20 +332,20 @@ App Router `<Link>`는 기본적으로 **viewport 진입 시 자동 prefetch**. 
 
 ## 백엔드 엔드포인트 체크리스트
 
-| 영역                    | 엔드포인트                                                                                                                                            |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ----------- | ---------- |
-| Auth                    | `POST /auth/login` `POST /auth/logout` `POST /auth/refresh` `GET /me` `POST /me/complete-onboarding`                                                  |
-| User                    | `PATCH /mypage/profile`                                                                                                                               |
-| Letter                  | `POST /letters` `GET /letters/{received,sent,liked,saved}` `GET /letters/:id` `POST /letters/:id/like` `POST /letters/:id/save` `DELETE /letters/:id` |
-| Tournament              | `GET /destinations/random` `POST /tournaments` `GET/POST/DELETE /mypage/tournaments` `GET /mypage/tournament-history`                                 |
-| Region (TourAPI 프록시) | `GET /regions/:code/summary` `GET /regions/:code/contents?type=` `GET /regions/ongoing-festivals`                                                     |
-| Ranking                 | `GET /rankings?type=weekly-winners                                                                                                                    | recommended | hidden-gems | by-region` |
-| Quiz                    | `GET /quiz/questions` `POST /quiz/submit` `GET /quiz/me`                                                                                              |
-| MyPage                  | `GET /mypage` `GET /mypage/stamps`                                                                                                                    |
-| Location                | `POST /location/reverse` `GET /location/ip`                                                                                                           |
-| Weather                 | `GET /weather/current`                                                                                                                                |
-| Notification            | `GET /notifications` `POST /notifications/:id/read` `POST /notifications/read-all` `POST /notifications/subscribe` `POST /notifications/unsubscribe`  |
-| Settings                | `GET /settings` `PATCH /settings/notifications`                                                                                                       |
+| 영역                    | 엔드포인트                                                                                                                                                                                                                        |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ----------- | ---------- |
+| Auth                    | `POST /auth/login` `POST /auth/signup` `POST /auth/logout` `POST /auth/refresh` `GET /me` `POST /me/complete-onboarding` `POST /auth/find-id` `POST /auth/forgot-password` `POST /auth/reset-password` `POST /me/change-password` |
+| User                    | `PATCH /mypage/profile`                                                                                                                                                                                                           |
+| Letter                  | `POST /letters` `GET /letters/{received,sent,liked,saved}` `GET /letters/:id` `POST /letters/:id/like` `POST /letters/:id/save` `DELETE /letters/:id`                                                                             |
+| Tournament              | `GET /destinations/random` `POST /tournaments` `GET/POST/DELETE /mypage/tournaments` `GET /mypage/tournament-history`                                                                                                             |
+| Region (TourAPI 프록시) | `GET /regions/:code/summary` `GET /regions/:code/contents?type=` `GET /regions/ongoing-festivals`                                                                                                                                 |
+| Ranking                 | `GET /rankings?type=weekly-winners                                                                                                                                                                                                | recommended | hidden-gems | by-region` |
+| Quiz                    | `GET /quiz/questions` `POST /quiz/submit` `GET /quiz/me`                                                                                                                                                                          |
+| MyPage                  | `GET /mypage` `GET /mypage/stamps`                                                                                                                                                                                                |
+| Location                | `POST /location/reverse` `GET /location/ip`                                                                                                                                                                                       |
+| Weather                 | `GET /weather/current`                                                                                                                                                                                                            |
+| Notification            | `GET /notifications` `POST /notifications/:id/read` `POST /notifications/read-all` `POST /notifications/subscribe` `POST /notifications/unsubscribe`                                                                              |
+| Settings                | `GET /settings` `PATCH /settings/notifications`                                                                                                                                                                                   |
 
 ---
 
