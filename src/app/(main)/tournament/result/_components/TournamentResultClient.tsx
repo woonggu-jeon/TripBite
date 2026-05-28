@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTournamentStore } from '@/features/tournament/store/tournament-store';
+import { LuckyLadder } from '@/features/tournament/components/LuckyLadder';
 
 /**
  * 토너먼트 결과 클라이언트
@@ -34,12 +35,37 @@ export function TournamentResultClient() {
       {/* TODO: <LuckyColor seed={winner.id} /> */}
       <Placeholder title="행운의 색" height={120} />
 
-      {/* 3) 사다리타기 */}
-      {/* TODO: <LuckyLadder seed={winner.id} /> */}
-      <Placeholder title="여행에서 인연을 만날 확률" height={300} />
+      {/* 3) 사다리타기 — 6라인 클릭 시작, 모드 토글(독립 랜덤/100% 분배) */}
+      <section
+        style={{
+          padding: '1rem',
+          border: '1px solid var(--color-border)',
+          borderRadius: 'var(--radius-lg)',
+          display: 'grid',
+          gap: '0.75rem',
+        }}
+        aria-label="여행에서 인연을 만날 확률"
+      >
+        <h3
+          style={{
+            fontSize: '0.9375rem',
+            fontWeight: 600,
+            textAlign: 'center',
+          }}
+        >
+          🎲 여행에서 인연을 만날 확률
+        </h3>
+        <LuckyLadder />
+      </section>
 
       {/* 4) 액션 */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '0.75rem',
+        }}
+      >
         <button
           style={btnPrimary}
           onClick={() => {
