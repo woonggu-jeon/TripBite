@@ -21,6 +21,7 @@ import { http, HttpResponse } from 'msw';
 import { regionContentSeeds } from './seeds/regions';
 import { letterSeeds } from './seeds/letters';
 import { tournamentHistorySeeds } from './seeds/tournament';
+import { destinationSeeds } from './seeds/destinations';
 import { notificationSeeds } from './seeds/notifications';
 
 /**
@@ -187,6 +188,39 @@ export const handlers = [
   http.get(`${apiUrl}/mypage/tournament-history`, () =>
     HttpResponse.json({ items: tournamentHistorySeeds, nextCursor: null }),
   ),
+  // 조건에 맞는 후보 여행지 N개 — 셔플 후 잘라서 반환
+  http.get(`${apiUrl}/destinations/random`, ({ request }) => {
+    const url = new URL(request.url);
+    const categoriesParam = url.searchParams.get('categories') ?? '';
+    const region = url.searchParams.get('region');
+    const count = Math.min(
+      32,
+      Math.max(2, Number(url.searchParams.get('count') ?? 8)),
+    );
+    const categories = categoriesParam
+      ? categoriesParam.split(',').filter(Boolean)
+      : [];
+
+    let pool = destinationSeeds;
+    if (categories.length > 0) {
+      pool = pool.filter((d) => categories.includes(d.category));
+    }
+    if (region) {
+      pool = pool.filter((d) => d.region === region);
+    }
+    // Fisher–Yates 부분 셔플
+    const arr = pool.slice();
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const ai = arr[i];
+      const aj = arr[j];
+      if (ai !== undefined && aj !== undefined) {
+        arr[i] = aj;
+        arr[j] = ai;
+      }
+    }
+    return HttpResponse.json(arr.slice(0, count));
+  }),
 
   // ===== Notifications =====
   http.get(`${apiUrl}/notifications`, () =>

@@ -275,6 +275,20 @@
       "attraction": "관광지",
       "experience": "체험관광"
     },
+    "play": {
+      "loading": "여행지를 불러오는 중이에요",
+      "error": "여행지를 불러오지 못했어요",
+      "retry": "다시 시도",
+      "tapToStart": "탭하면 토너먼트가 시작돼요",
+      "mapDropping": "여행지들이 떨어지고 있어요",
+      "mapReady": "모든 여행지가 준비됐어요",
+      "startBracket": "토너먼트 시작",
+      "bracketTodoTitle": "1:1 매치업",
+      "bracketTodoHint": "매치업 카드는 곧 추가됩니다",
+      "toResult": "결과 보기 (임시)",
+      "noConfig": "토너먼트 설정이 없어요",
+      "goSetup": "설정 화면으로"
+    },
     "result": {
       "luckyColor": "행운의 색",
       "meetChance": "여행에서 인연을 만날 확률",

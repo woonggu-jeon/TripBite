@@ -1,0 +1,94 @@
+.layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.particle {
+  position: absolute;
+  top: -10%;
+  animation-name: fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform, top;
+  user-select: none;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.08));
+}
+
+/* 봄·가을: 부드럽게 회전 + 좌우 흔들 */
+.spring .particle,
+.autumn .particle {
+  animation-name: fall-sway;
+}
+
+/* 여름: 빠르게 직선 (회전 X) */
+.summer .particle {
+  animation-name: fall-straight;
+  animation-timing-function: ease-in;
+  filter: drop-shadow(0 1px 2px rgba(60, 110, 180, 0.25));
+}
+
+/* 겨울: 천천히 흔들리며 회전 적음 */
+.winter .particle {
+  animation-name: fall-soft;
+}
+
+@keyframes fall {
+  from {
+    top: -10%;
+    transform: translateX(0) rotate(var(--rot, 0deg));
+  }
+  to {
+    top: 110%;
+    transform: translateX(var(--sway, 0px)) rotate(540deg);
+  }
+}
+
+@keyframes fall-sway {
+  0% {
+    top: -10%;
+    transform: translateX(0) rotate(var(--rot, 0deg));
+  }
+  50% {
+    transform: translateX(calc(var(--sway, 0px) * 1)) rotate(180deg);
+  }
+  100% {
+    top: 110%;
+    transform: translateX(calc(var(--sway, 0px) * -1)) rotate(540deg);
+  }
+}
+
+@keyframes fall-straight {
+  from {
+    top: -10%;
+    transform: translateX(0) rotate(0);
+  }
+  to {
+    top: 110%;
+    transform: translateX(0) rotate(0);
+  }
+}
+
+@keyframes fall-soft {
+  0% {
+    top: -10%;
+    transform: translateX(0) rotate(0);
+  }
+  50% {
+    transform: translateX(var(--sway, 0px)) rotate(90deg);
+  }
+  100% {
+    top: 110%;
+    transform: translateX(0) rotate(180deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .particle {
+    animation: none !important;
+    top: 50%;
+    opacity: 0.35;
+  }
+}

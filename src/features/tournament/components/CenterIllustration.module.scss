@@ -1,0 +1,108 @@
+.bubble {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: none;
+  background: radial-gradient(
+    circle at 30% 30%,
+    color-mix(in srgb, var(--tone, var(--color-primary)) 30%, transparent),
+    transparent 70%
+  );
+  cursor: pointer;
+  z-index: 2;
+  animation: float 4.5s ease-in-out infinite;
+  transition: transform 0.15s ease;
+  isolation: isolate;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 12%;
+    border-radius: 50%;
+    background: color-mix(
+      in srgb,
+      var(--tone, var(--color-primary)) 18%,
+      var(--color-bg)
+    );
+    z-index: -1;
+  }
+
+  &:hover:not(:disabled) {
+    transform: scale(1.04);
+  }
+  &:active:not(:disabled) {
+    transform: scale(0.96);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 4px;
+  }
+  &:disabled {
+    cursor: default;
+  }
+}
+
+.glyph {
+  font-size: 6rem;
+  line-height: 1;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.18));
+}
+
+/* 톤 색상 (각 계절·특별한 날별 그라데이션 베이스) */
+.spring {
+  --tone: #ff9eb5;
+}
+.summer {
+  --tone: #5db4ff;
+}
+.autumn {
+  --tone: #ff9a4d;
+}
+.winter {
+  --tone: #9ec5ff;
+}
+.special {
+  --tone: #ffcf5b;
+}
+
+/* 부드러운 부유 */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* 탭 직후 펄스 */
+.tapped {
+  animation: pulse 0.8s ease-out;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--tone) 50%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 60px transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bubble {
+    animation: none;
+    transition: none;
+  }
+  .bubble:hover:not(:disabled),
+  .bubble:active:not(:disabled) {
+    transform: none;
+  }
+  .tapped {
+    animation: none;
+  }
+}
