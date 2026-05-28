@@ -62,18 +62,21 @@ export function TournamentPlayClient() {
   }
 
   const theme = config.theme;
-  const targetCount = config.count;
+  // 토너먼트 사이즈는 고정 max 8, 최소 1개부터 시작 가능.
+  // setup 의 config.count 는 더 이상 직접 사용하지 않음 — 추후 정리 예정.
+  const MAX_SELECT = 8;
+  const MIN_SELECT = 1;
 
   const toggleSelect = (id: string) => {
     setSelected((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
-      else if (next.size < targetCount) next.add(id);
+      else if (next.size < MAX_SELECT) next.add(id);
       return next;
     });
   };
 
-  const canProceed = selected.size === targetCount;
+  const canProceed = selected.size >= MIN_SELECT;
 
   const handleProceed = () => {
     if (!canProceed) return;
@@ -134,19 +137,19 @@ export function TournamentPlayClient() {
                 theme={theme}
                 selected={selected}
                 onToggle={toggleSelect}
-                maxSelect={targetCount}
+                maxSelect={MAX_SELECT}
               />
               <div className={styles.mapFooter}>
                 <p className={styles.counter}>
                   {t('selectedCount', {
                     current: selected.size,
-                    total: targetCount,
+                    max: MAX_SELECT,
                   })}
                 </p>
                 <p className={styles.mapHint}>
                   {canProceed
                     ? t('selectReady')
-                    : t('selectHint', { total: targetCount })}
+                    : t('selectHint', { min: MIN_SELECT, max: MAX_SELECT })}
                 </p>
                 <button
                   type="button"

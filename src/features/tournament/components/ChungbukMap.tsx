@@ -19,18 +19,20 @@ import styles from './ChungbukMap.module.scss';
  *   - 미전달이면 단순 표시.
  */
 
+// 좌표는 chungbuk-map.png 라벨 위치 기준 정규화 (0~100).
+// 라벨이 시군 영역 중앙에 가깝게 배치되어 있어 drop 배치 기준점으로 사용.
 const POINTS: Record<RegionCode, { x: number; y: number }> = {
-  cheongju: { x: 17, y: 51 },
-  chungju: { x: 47, y: 19 },
-  jecheon: { x: 60, y: 11 },
-  boeun: { x: 38, y: 58 },
-  okcheon: { x: 28, y: 71 },
-  yeongdong: { x: 41, y: 84 },
-  jincheon: { x: 17, y: 32 },
-  goesan: { x: 45, y: 41 },
-  eumseong: { x: 28, y: 25 },
-  danyang: { x: 79, y: 20 },
-  jeungpyeong: { x: 30, y: 38 },
+  cheongju: { x: 17, y: 52 },
+  chungju: { x: 51, y: 19 },
+  jecheon: { x: 62, y: 11 },
+  boeun: { x: 41, y: 60 },
+  okcheon: { x: 30, y: 72 },
+  yeongdong: { x: 44, y: 87 },
+  jincheon: { x: 21, y: 31 },
+  goesan: { x: 46, y: 41 },
+  eumseong: { x: 35, y: 26 },
+  danyang: { x: 81, y: 21 },
+  jeungpyeong: { x: 32, y: 39 },
 };
 
 const SEASON_GLYPH = {
