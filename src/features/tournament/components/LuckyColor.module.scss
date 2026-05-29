@@ -26,14 +26,14 @@
   font-size: var(--font-label);
   font-weight: 600;
   color: var(--color-muted);
-  letter-spacing: 0.02em;
+  letter-spacing: var(--tracking-wide);
 }
 
 .name {
   font-size: var(--text-lg);
   font-weight: 800;
   color: var(--color-fg);
-  line-height: 1.2;
+  line-height: var(--line-tight);
 }
 
 .hex {

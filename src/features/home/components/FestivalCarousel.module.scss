@@ -55,14 +55,14 @@
   font-size: 0.625rem;
   font-weight: 700;
   color: var(--accent, var(--color-muted));
-  letter-spacing: -0.01em;
+  letter-spacing: var(--tracking-snug);
 }
 
 .name {
   font-size: var(--font-label);
   font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--line-tight);
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -75,7 +75,7 @@
   font-size: 0.625rem;
   color: var(--color-muted);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.01em;
+  letter-spacing: var(--tracking-snug);
 }
 
 // 톤별 accent — light/dark 양쪽에서 잘 보이는 saturation 유지

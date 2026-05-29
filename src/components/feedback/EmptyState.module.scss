@@ -29,7 +29,7 @@
   font-size: var(--text-sm);
   color: var(--color-muted);
   max-width: 28ch;
-  line-height: 1.5;
+  line-height: var(--line-normal);
 }
 
 .action {

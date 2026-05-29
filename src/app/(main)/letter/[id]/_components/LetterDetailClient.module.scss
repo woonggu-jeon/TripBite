@@ -64,7 +64,7 @@
   font-size: var(--font-body);
   font-weight: 800;
   color: var(--color-fg);
-  letter-spacing: -0.01em;
+  letter-spacing: var(--tracking-snug);
 }
 
 .noticeBody {
@@ -159,7 +159,7 @@
   font-weight: 800;
   letter-spacing: 0.25em;
   color: var(--color-fg);
-  line-height: 1.3;
+  line-height: var(--line-snug);
   word-break: keep-all;
   padding-left: 0.25em;
 }
@@ -188,5 +188,5 @@
   color: var(--color-muted);
   text-align: center;
   padding: 0.5rem;
-  letter-spacing: -0.01em;
+  letter-spacing: var(--tracking-snug);
 }

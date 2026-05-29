@@ -20,7 +20,7 @@
   font-size: var(--text-sm);
   color: var(--color-muted);
   max-width: 32ch;
-  line-height: 1.5;
+  line-height: var(--line-normal);
 }
 
 .retry {

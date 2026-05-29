@@ -67,7 +67,7 @@
 .title {
   font-size: var(--font-body-sm);
   font-weight: 800;
-  letter-spacing: -0.01em;
+  letter-spacing: var(--tracking-snug);
   color: var(--color-fg);
   white-space: nowrap;
   overflow: hidden;

@@ -12,7 +12,7 @@
   font-size: var(--font-body-sm);
   font-weight: 700;
   color: var(--color-fg);
-  letter-spacing: -0.01em;
+  letter-spacing: var(--tracking-snug);
 }
 
 .countRow {
@@ -25,7 +25,7 @@
   font-weight: 600;
   color: var(--color-muted);
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
+  letter-spacing: var(--tracking-wide);
 }
 
 .error {
@@ -61,7 +61,7 @@
   font-size: var(--font-label);
   font-weight: 700;
   color: var(--color-fg);
-  letter-spacing: -0.01em;
+  letter-spacing: var(--tracking-snug);
 }
 
 .locationLine2 {
@@ -80,7 +80,7 @@
   background: var(--color-primary-tint);
   color: color-mix(in srgb, var(--color-primary) 80%, var(--color-fg));
   border-radius: var(--radius-sm);
-  letter-spacing: -0.01em;
+  letter-spacing: var(--tracking-snug);
 }
 
 .allowBtn {

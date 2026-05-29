@@ -35,7 +35,7 @@
 }
 
 .label {
-  letter-spacing: -0.02em;
+  letter-spacing: var(--tracking-tight);
 }
 
 /* 가운데 강조 버튼 — raised circle */

@@ -41,7 +41,29 @@ export function Card({
   children,
   ...rest
 }: CardProps) {
-  const cls = [
+  return (
+    <Tag className={cardClasses({ variant, padding, className })} {...rest}>
+      {children}
+    </Tag>
+  );
+}
+
+/**
+ * Card 스타일만 필요할 때 — Next/Link 처럼 polymorphic 으로 받기 어려운 컴포넌트에
+ * className 으로 직접 적용. Card primitive 와 동일한 SCSS 클래스 매핑.
+ *
+ *   <Link className={cardClasses({ variant: 'surface' })}>...</Link>
+ */
+export function cardClasses({
+  variant = 'surface',
+  padding = 'md',
+  className,
+}: {
+  variant?: CardVariant;
+  padding?: CardPadding;
+  className?: string;
+} = {}): string {
+  return [
     styles.card,
     styles[`v-${variant}`],
     styles[`p-${padding}`],
@@ -49,9 +71,4 @@ export function Card({
   ]
     .filter(Boolean)
     .join(' ');
-  return (
-    <Tag className={cls} {...rest}>
-      {children}
-    </Tag>
-  );
 }

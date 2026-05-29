@@ -1,12 +1,11 @@
+// cardClasses({variant:'surface'}) 가 bg/border/radius 담당.
+// 본 SCSS 는 Link 의 grid layout + hover/active 만.
 .card {
   display: grid;
   grid-template-columns: 80px 1fr auto;
   gap: var(--space-3);
   align-items: center;
   padding: var(--space-3);
-  background: var(--color-bg);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-lg);
   text-decoration: none;
   color: var(--color-fg);
   transition:
@@ -106,7 +105,7 @@
   font-size: var(--font-caption);
   color: var(--color-muted);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.01em;
+  letter-spacing: var(--tracking-snug);
 }
 
 @media (prefers-reduced-motion: reduce) {

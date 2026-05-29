@@ -106,6 +106,25 @@ import { Card, Chip, IconButton, PageSection } from '@/components/ui';
 - `padding`: `none` / `sm` / `md` (default) / `lg`
 - `as`: `div` (default) / `section` / `article`
 
+#### Link 같은 polymorphic 미지원 컴포넌트에 적용
+
+`Card` 가 `as` 로 `next/link` 같은 컴포넌트의 `href` 까지 받기 어려우므로 `cardClasses` 헬퍼 사용:
+
+```tsx
+import { cardClasses } from '@/components/ui';
+
+<Link
+  href={...}
+  className={cardClasses({
+    variant: 'surface',
+    padding: 'none',
+    className: styles.cardLayout,
+  })}
+>
+  ...
+</Link>
+```
+
 ### Chip 변형
 
 - `default` / `primary` / `outline` / `subtle` / `solid`
@@ -142,11 +161,13 @@ shadow 강도 조정 시 `--shadow-card-strong` 한 곳. dark/light 분기는 �
 | Card 마이그레이션: WinnerCard / ProfileCard / TravelTypeResult / Share / Top5Card     | ✅   |
 | Chip 마이그레이션: WinnerCard / Profile / Result / Share keywords·code                | ✅   |
 | IconButton 마이그레이션: Profile camera / Share back                                  | ✅   |
-| LetterRowCard / NotificationDropdown 토큰화 (Link 자체 wrap 유지)                     | ✅   |
+| LetterRowCard / NotificationDropdown 토큰화                                           | ✅   |
+| `cardClasses` 헬퍼 + LetterRowCard Link 에 Card 스타일 적용                           | ✅   |
+| `letter-spacing` 일괄 토큰화 (-0.01/-0.02/0.02/0.06em → tracking-\*)                  | ✅   |
+| `line-height` 일괄 토큰화 (1.2/1.3/1.5 → line-\*)                                     | ✅   |
 
 ## 5. 남은 후속 정비 (점진)
 
-- 1.75rem / 2.25rem / 4rem 등 컴포넌트 고유 큰 글씨 — 의미가 컴포넌트별이라 그대로 유지 또는 손댈 때 토큰 추가
-- 남은 색 변형 5%/6%/14%/20%/50%/80% — 의미가 모호한 변형, 디자인 결정 후 토큰화
-- typography `line-height` / `letter-spacing` raw 값 — `--line-*` / `--tracking-*` 토큰 정의됐고 컴포넌트별 마이그레이션은 점진
-- LetterRowCard 등 Link wrapper 카드 — Card primitive 가 `as` 로 Link 받도록 확장 후 마이그레이션
+- **컴포넌트 고유 큰 글씨** (1.75 / 2.25 / 2.75 / 4 / 4.5 / 5 / 6 rem) — emoji hero 등 표현이라 컴포넌트별 의도 그대로 유지. 동일 비율이 반복되면 `--font-hero-emoji` 같은 의미 토큰 추가 검토.
+- **남은 색 변형** (primary 5/6/14/20/50/80%) — 의미가 모호한 변형. 디자인 시스템 색 체계 (예: 50/100/.../900 스케일) 결정 후 일괄 토큰화.
+- **나머지 line-height / letter-spacing** (1.1 / 1.25 / 1.4 / 1.55 / 0.04em / 0.05em / 0.1em 등) — 컴포넌트별 미세 조정값. 토큰화 가치 낮음.
