@@ -360,6 +360,15 @@
         "blue": "파랑",
         "purple": "보라",
         "pink": "분홍"
+      },
+      "stats": {
+        "label": "우승 정보",
+        "bracketSize": "토너먼트",
+        "matches": "총 매치",
+        "matchesValue": "{n}매치",
+        "region": "시군",
+        "category": "카테고리",
+        "runnerUp": "결승 상대"
       }
     }
   },

@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useTournamentStore } from '@/features/tournament/store/tournament-store';
 import { useSaveTournament } from '@/features/tournament/hooks/use-tournament';
 import { WinnerCard } from '@/features/tournament/components/WinnerCard';
+import { TournamentStats } from '@/features/tournament/components/TournamentStats';
 import { LuckyColor } from '@/features/tournament/components/LuckyColor';
 import { LuckyLadder } from '@/features/tournament/components/LuckyLadder';
 import styles from './TournamentResultClient.module.scss';
@@ -28,6 +29,9 @@ export function TournamentResultClient() {
   const router = useRouter();
   const t = useTranslations('tournament.result');
   const winner = useTournamentStore((s) => s.winner);
+  const runnerUp = useTournamentStore((s) => s.runnerUp);
+  const matchesPlayed = useTournamentStore((s) => s.matchesPlayed);
+  const tournamentSize = useTournamentStore((s) => s.config?.tournamentSize);
   const reset = useTournamentStore((s) => s.reset);
   const save = useSaveTournament();
 
@@ -67,6 +71,12 @@ export function TournamentResultClient() {
   return (
     <div className={styles.wrap}>
       <WinnerCard destination={winner} />
+      <TournamentStats
+        winner={winner}
+        runnerUp={runnerUp}
+        matchesPlayed={matchesPlayed}
+        tournamentSize={tournamentSize}
+      />
       <LuckyColor seed={winner.id} />
 
       <section className={styles.ladderSection} aria-label={t('meetChance')}>

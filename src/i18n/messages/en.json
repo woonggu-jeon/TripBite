@@ -360,6 +360,15 @@
         "blue": "Blue",
         "purple": "Purple",
         "pink": "Pink"
+      },
+      "stats": {
+        "label": "Winner stats",
+        "bracketSize": "Bracket",
+        "matches": "Matches",
+        "matchesValue": "{n} matches",
+        "region": "Region",
+        "category": "Category",
+        "runnerUp": "Runner-up"
       }
     }
   },

@@ -67,6 +67,19 @@ export type BracketMatch = {
   winnerId?: string;
 };
 
+/**
+ * Bracket 종료 시 onComplete 로 전달되는 결과 메타.
+ *
+ * - winner: 우승 여행지
+ * - runnerUp: 결승 상대 (참가 1명일 땐 null)
+ * - matchesPlayed: 결정된 매치 수 (= participants - 1)
+ */
+export type BracketResult = {
+  winner: Destination;
+  runnerUp: Destination | null;
+  matchesPlayed: number;
+};
+
 export type SavedTournament = {
   id: string;
   destination: Destination;

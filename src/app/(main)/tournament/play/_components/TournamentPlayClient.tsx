@@ -8,7 +8,11 @@ import { FallingPetals } from '@/features/tournament/components/FallingPetals';
 import { ChungbukMap } from '@/features/tournament/components/ChungbukMap';
 import { CountSelector } from '@/features/tournament/components/CountSelector';
 import { Bracket } from '@/features/tournament/components/Bracket';
-import type { Destination, TournamentCount } from '@/features/tournament/types';
+import type {
+  BracketResult,
+  Destination,
+  TournamentCount,
+} from '@/features/tournament/types';
 import { useTournamentStore } from '@/features/tournament/store/tournament-store';
 import { useTournamentCandidates } from '@/features/tournament/hooks/use-tournament';
 import styles from './TournamentPlayClient.module.scss';
@@ -38,11 +42,14 @@ export function TournamentPlayClient() {
   const t = useTranslations('tournament.play');
   const config = useTournamentStore((s) => s.config);
   const setTournamentSize = useTournamentStore((s) => s.setTournamentSize);
-  const setWinner = useTournamentStore((s) => s.setWinner);
+  const setBracketResult = useTournamentStore((s) => s.setBracketResult);
 
   const [phase, setPhase] = useState<Phase>('intro');
   const [pendingSize, setPendingSize] = useState<TournamentCount | null>(null);
-  const [pendingWinner, setPendingWinner] = useState<Destination | null>(null);
+  const [pendingResult, setPendingResult] = useState<BracketResult | null>(
+    null,
+  );
+  const pendingWinner = pendingResult?.winner ?? null;
 
   const {
     data: pool,
@@ -60,17 +67,17 @@ export function TournamentPlayClient() {
 
   // celebration → result 자동 이동
   useEffect(() => {
-    if (phase !== 'celebration' || !pendingWinner) return;
+    if (phase !== 'celebration' || !pendingResult) return;
     const reduced =
       typeof window !== 'undefined' &&
       window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     const delay = reduced ? 400 : CELEBRATION_MS;
     const id = window.setTimeout(() => {
-      setWinner(pendingWinner);
+      setBracketResult(pendingResult);
       router.replace('/tournament/result');
     }, delay);
     return () => window.clearTimeout(id);
-  }, [phase, pendingWinner, setWinner, router]);
+  }, [phase, pendingResult, setBracketResult, router]);
 
   // 시군별 dedup → 여행지 갯수(N) 만큼 노출.
   // hook 은 항상 같은 순서로 호출되어야 하므로 early return 앞에 배치.
@@ -123,9 +130,9 @@ export function TournamentPlayClient() {
     setPhase('bracket');
   };
 
-  const handleBracketComplete = (winner: Destination) => {
+  const handleBracketComplete = (result: BracketResult) => {
     // 즉시 result 이동 X — celebration phase 에서 1.8s 우승자 강조 후 자동 이동.
-    setPendingWinner(winner);
+    setPendingResult(result);
     setPhase('celebration');
   };
 

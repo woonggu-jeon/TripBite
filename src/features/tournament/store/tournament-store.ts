@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type {
+  BracketResult,
   Destination,
   TournamentConfig,
   TournamentCount,
@@ -27,6 +28,10 @@ import type {
 type TournamentState = {
   config: TournamentConfig | null;
   winner: Destination | null;
+  /** 결승 상대 (참가 1명이거나 bye 우승이면 null) — Result 화면 stat 카드용. */
+  runnerUp: Destination | null;
+  /** 결정된 매치 수 — Result 화면 "총 N매치" 표시용. */
+  matchesPlayed: number;
 };
 
 type TournamentActions = {
@@ -37,6 +42,8 @@ type TournamentActions = {
    */
   setTournamentSize: (size: TournamentCount) => void;
   setWinner: (winner: Destination) => void;
+  /** Bracket onComplete 결과(우승자/결승상대/매치수) 일괄 저장. */
+  setBracketResult: (result: BracketResult) => void;
   reset: () => void;
 };
 
@@ -45,6 +52,8 @@ export const useTournamentStore = create<TournamentState & TournamentActions>()(
     (set) => ({
       config: null,
       winner: null,
+      runnerUp: null,
+      matchesPlayed: 0,
 
       setConfig: (config) => set({ config }),
       setTournamentSize: (size) =>
@@ -54,7 +63,14 @@ export const useTournamentStore = create<TournamentState & TournamentActions>()(
             : { config: state.config },
         ),
       setWinner: (winner) => set({ winner }),
-      reset: () => set({ config: null, winner: null }),
+      setBracketResult: (result) =>
+        set({
+          winner: result.winner,
+          runnerUp: result.runnerUp,
+          matchesPlayed: result.matchesPlayed,
+        }),
+      reset: () =>
+        set({ config: null, winner: null, runnerUp: null, matchesPlayed: 0 }),
     }),
     {
       name: 'tournament',
@@ -69,7 +85,12 @@ export const useTournamentStore = create<TournamentState & TournamentActions>()(
           : sessionStorage,
       ),
       // server 데이터 일부 필드만 저장하려면 partialize 사용
-      partialize: (state) => ({ config: state.config, winner: state.winner }),
+      partialize: (state) => ({
+        config: state.config,
+        winner: state.winner,
+        runnerUp: state.runnerUp,
+        matchesPlayed: state.matchesPlayed,
+      }),
     },
   ),
 );

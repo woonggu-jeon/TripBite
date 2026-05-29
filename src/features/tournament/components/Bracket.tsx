@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useReducer } from 'react';
+import { useEffect, useMemo, useReducer } from 'react';
 import { useTranslations } from 'next-intl';
-import type { Destination } from '@/features/tournament/types';
+import type { BracketResult, Destination } from '@/features/tournament/types';
 import {
   pairRound,
   roundLabelKey,
@@ -117,7 +117,7 @@ function useRoundLabel(participants: number): string {
 
 export interface BracketProps {
   destinations: Destination[];
-  onComplete: (winner: Destination) => void;
+  onComplete: (result: BracketResult) => void;
 }
 
 /**
@@ -136,12 +136,29 @@ export function Bracket({ destinations, onComplete }: BracketProps) {
   const round = state.rounds[state.currentRoundIndex];
   const label = useRoundLabel(round?.participants.length ?? 0);
 
+  // 결승 상대 (마지막으로 채워진 매치의 패자) — 결승전이 실제로 있었던 경우만.
+  const runnerUp = useMemo<Destination | null>(() => {
+    if (!state.done || !state.winner) return null;
+    const lastRound = state.rounds[state.rounds.length - 1];
+    const finalMatch = lastRound?.matches[lastRound.matches.length - 1];
+    if (!finalMatch?.winner) return null;
+    return finalMatch.winner.id === finalMatch.a.id
+      ? finalMatch.b
+      : finalMatch.a;
+  }, [state.done, state.winner, state.rounds]);
+
+  // 결정된 매치 수 = participants - 1 (bye 포함 시에도 일관)
+  const matchesPlayed = useMemo(
+    () => state.rounds.flatMap((r) => r.matches).filter((m) => m.winner).length,
+    [state.rounds],
+  );
+
   // 최종 우승 시 부모로 전파
   useEffect(() => {
     if (state.done && state.winner) {
-      onComplete(state.winner);
+      onComplete({ winner: state.winner, runnerUp, matchesPlayed });
     }
-  }, [state.done, state.winner, onComplete]);
+  }, [state.done, state.winner, runnerUp, matchesPlayed, onComplete]);
 
   if (!round) return null;
   if (state.done) {
@@ -155,12 +172,13 @@ export function Bracket({ destinations, onComplete }: BracketProps) {
   const match = round.matches[state.currentMatchIndex];
   if (!match) return null;
 
-  // 전체 진행도 = 결정된 매치 / (N-1)
+  // 전체 진행도 = 결정된 매치 / (N-1) — segment 단위 점선 표시
   const totalMatchesNeeded = Math.max(1, destinations.length - 1);
   const decided = state.rounds
     .flatMap((r) => r.matches)
     .filter((m) => m.winner !== undefined).length;
   const progress = Math.min(100, (decided / totalMatchesNeeded) * 100);
+  const segments = Array.from({ length: totalMatchesNeeded });
 
   return (
     <div className={styles.wrap}>
@@ -185,10 +203,17 @@ export function Bracket({ destinations, onComplete }: BracketProps) {
           aria-valuenow={Math.round(progress)}
           aria-label={t('progressLabel')}
         >
-          <div
-            className={styles.progressFill}
-            style={{ width: `${progress}%` }}
-          />
+          {segments.map((_, i) => (
+            <span
+              key={i}
+              aria-hidden
+              className={
+                i < decided
+                  ? `${styles.progressSeg} ${styles.progressSegDone}`
+                  : styles.progressSeg
+              }
+            />
+          ))}
         </div>
       </header>
 
