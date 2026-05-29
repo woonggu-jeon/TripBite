@@ -84,7 +84,14 @@
   /* Divider / hover / overlay — fg 알파 mix 의 의미별 토큰 */
   --color-divider: color-mix(in srgb, var(--color-fg) 7%, transparent);
   --color-hover: color-mix(in srgb, var(--color-fg) 8%, transparent);
+  --color-hover-soft: color-mix(in srgb, var(--color-fg) 6%, transparent);
   --color-overlay: color-mix(in srgb, var(--color-fg) 50%, transparent);
+  /* hover/active 시 카드 surface 위 매우 옅은 강조 */
+  --color-primary-fade: color-mix(
+    in srgb,
+    var(--color-primary) 4%,
+    var(--color-bg)
+  );
 
   /* Glass — sticky header / popover blur 배경. blur 와 함께 사용. */
   --color-glass: color-mix(in srgb, var(--color-bg) 82%, transparent);

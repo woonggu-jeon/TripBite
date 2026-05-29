@@ -4,7 +4,7 @@
 }
 
 .sectionTitle {
-  font-size: 1rem;
+  font-size: var(--font-body);
   font-weight: 800;
   color: var(--color-fg);
   letter-spacing: -0.02em;
@@ -22,7 +22,7 @@
   place-items: center;
   padding: 2rem 1rem;
   color: var(--color-muted);
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   background: color-mix(in srgb, var(--color-fg) 3%, transparent);
   border-radius: var(--radius-md);
 }

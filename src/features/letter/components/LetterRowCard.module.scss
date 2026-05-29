@@ -16,7 +16,7 @@
 
   &:hover {
     border-color: var(--color-primary);
-    background: color-mix(in srgb, var(--color-primary) 4%, var(--color-bg));
+    background: var(--color-primary-fade);
   }
   &:active {
     transform: scale(0.99);
@@ -38,10 +38,10 @@
 }
 
 .body {
-  font-size: 1rem;
+  font-size: var(--font-body);
   font-weight: 800;
   color: #fff;
-  letter-spacing: 0.04em;
+  letter-spacing: var(--tracking-wide);
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   text-align: center;
   word-break: keep-all;
@@ -84,7 +84,7 @@
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   color: var(--color-muted);
   transition:
     color var(--motion-base) ease,
@@ -92,7 +92,7 @@
     transform var(--motion-fast) ease;
 
   &:hover {
-    background: color-mix(in srgb, var(--color-fg) 6%, transparent);
+    background: var(--color-hover-soft);
   }
   &:active {
     transform: scale(0.92);

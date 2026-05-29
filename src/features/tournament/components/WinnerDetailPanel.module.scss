@@ -111,7 +111,7 @@
 }
 
 .rowValue {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--color-fg);
   margin: 0;
@@ -141,7 +141,7 @@
 .skelLine {
   display: block;
   height: 12px;
-  background: color-mix(in srgb, var(--color-fg) 8%, transparent);
+  background: var(--color-hover);
   border-radius: var(--radius-sm);
   animation: skel 1.2s ease-in-out infinite;
 }

@@ -1,16 +1,10 @@
+// Card primitive variant="surface" 가 bg/border/radius 담당. 본 SCSS 는 grid + 인 padding 만.
 .card {
   display: grid;
   grid-template-columns: 44px 1fr auto;
   gap: 0.875rem;
   align-items: center;
   padding: 0.875rem 1rem;
-  background: var(--color-bg);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  transition:
-    border-color var(--motion-base) ease,
-    transform var(--motion-fast) ease,
-    box-shadow var(--motion-base) ease;
 }
 
 .rank {
@@ -18,12 +12,12 @@
   place-items: center;
   width: 44px;
   height: 44px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--color-fg) 6%, transparent);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-soft);
   color: var(--color-fg);
-  font-size: 1.125rem;
+  font-size: var(--text-lg);
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--tracking-tight);
   font-variant-numeric: tabular-nums;
 }
 
@@ -69,11 +63,11 @@
 }
 
 .scoreNum {
-  font-size: 1.25rem;
+  font-size: var(--font-h2);
   font-weight: 800;
   color: var(--color-primary);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--tracking-tight);
 }
 
 .scoreLabel {

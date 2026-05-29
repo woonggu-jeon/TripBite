@@ -42,7 +42,7 @@
 
 .description {
   margin-top: 0.5rem;
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   color: var(--color-muted);
   line-height: 1.55;
   word-break: keep-all;
@@ -176,7 +176,7 @@
   background: var(--color-primary);
   color: var(--color-primary-fg);
   border-radius: var(--radius-md);
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   font-weight: 700;
   border: 0;
   cursor: pointer;

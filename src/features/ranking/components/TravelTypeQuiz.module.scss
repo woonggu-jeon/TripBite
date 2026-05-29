@@ -82,7 +82,7 @@
 }
 
 .question {
-  font-size: 1.25rem;
+  font-size: var(--font-h2);
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--color-fg);
@@ -143,7 +143,7 @@
 
 .submitError {
   text-align: center;
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   margin-top: 0.5rem;
   color: var(--color-danger);
 }
@@ -206,7 +206,7 @@
 }
 
 .finishingTitle {
-  font-size: 1.125rem;
+  font-size: var(--text-lg);
   font-weight: 800;
   color: var(--color-fg);
   letter-spacing: -0.02em;

@@ -15,7 +15,7 @@
 .tab {
   padding: 0.5rem 0.75rem;
   border-radius: calc(var(--radius-md) - 2px);
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   font-weight: 700;
   color: var(--color-muted);
   background: transparent;
@@ -42,7 +42,7 @@
   place-items: center;
   padding: 2.5rem 1rem;
   color: var(--color-muted);
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
 }
 
 .retry {
@@ -59,7 +59,7 @@
   padding: 2.5rem 1rem;
   color: var(--color-muted);
   text-align: center;
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
 }
 
 @media (prefers-reduced-motion: reduce) {

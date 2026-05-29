@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { Card } from '@/components/ui';
 import { isRegionCode } from '@/constants/regions';
 import type { RankedDestination } from '@/features/ranking/types';
 import styles from './Top5Card.module.scss';
@@ -24,7 +25,10 @@ export function Top5Card({ item }: { item: RankedDestination }) {
   const shortRegion = regionName.replace(/(시|군)$/u, '');
 
   return (
-    <article
+    <Card
+      as="article"
+      variant="surface"
+      padding="none"
       className={`${styles.card} ${styles[`rank${Math.min(item.rank, 5)}`] ?? ''}`}
       aria-label={`${item.rank}위 ${item.destination.name}`}
     >
@@ -39,6 +43,6 @@ export function Top5Card({ item }: { item: RankedDestination }) {
         <span className={styles.scoreNum}>{item.score}</span>
         <span className={styles.scoreLabel}>{t('winsUnit')}</span>
       </div>
-    </article>
+    </Card>
   );
 }

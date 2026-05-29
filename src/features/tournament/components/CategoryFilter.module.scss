@@ -41,17 +41,17 @@
 }
 
 .emoji {
-  font-size: 1.5rem;
+  font-size: var(--font-h1);
   line-height: 1;
 }
 
 .label {
-  font-size: 1rem;
+  font-size: var(--font-body);
   font-weight: 700;
 }
 
 .check {
-  font-size: 1rem;
+  font-size: var(--font-body);
   font-weight: 800;
   color: var(--color-primary);
   text-align: right;

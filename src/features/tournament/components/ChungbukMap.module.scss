@@ -71,7 +71,7 @@
 .drop {
   position: absolute;
   transform: translate(-50%, -50%) scale(0);
-  font-size: 1.5rem;
+  font-size: var(--font-h1);
   line-height: 1;
   animation-name: drop;
   animation-duration: 0.8s;

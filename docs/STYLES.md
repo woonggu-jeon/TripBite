@@ -131,17 +131,22 @@ shadow 강도 조정 시 `--shadow-card-strong` 한 곳. dark/light 분기는 �
 
 ## 4. 마이그레이션 상태
 
-| 항목                                                                                  | 상태                              |
-| ------------------------------------------------------------------------------------- | --------------------------------- |
-| Typography 시멘틱 토큰 (`--font-display/h1/h2/h3/body/body-sm/label/caption/eyebrow`) | ✅ 도입                           |
-| `font-size: 0.6875/0.75/0.8125/0.9375/1.0625rem` hardcoded → 시멘틱 토큰              | ✅ 일괄 마이그레이션              |
-| Primary mix 변형 토큰화 (`--color-primary-ring-soft/glow/text-bold`)                  | ✅ 핵심 변형 추가                 |
-| `<PageSection>` primitive                                                             | ✅ 추가 + RankingPageContent 적용 |
-| WinnerCard / ProfileCard / TravelTypeResult / TravelTypeShareCard → primitive         | ✅ 1차 마이그레이션               |
+| 항목                                                                                  | 상태 |
+| ------------------------------------------------------------------------------------- | ---- |
+| Typography 시멘틱 토큰 (`--font-display/h1/h2/h3/body/body-sm/label/caption/eyebrow`) | ✅   |
+| `font-size: 0.6875/0.75/0.8125/0.875/0.9375/1/1.0625/1.125/1.25/1.5/2.5 rem` → 시멘틱 | ✅   |
+| Primary mix 변형 토큰화 (`--color-primary-fade/ring-soft/glow/text-bold`)             | ✅   |
+| fg alpha 토큰 (`--color-hover-soft`, `--color-divider`, `--color-overlay`)            | ✅   |
+| multi-line `color-mix` perl 일괄 토큰화 (15+ 컴포넌트)                                | ✅   |
+| `<PageSection>` primitive + RankingPageContent 적용                                   | ✅   |
+| Card 마이그레이션: WinnerCard / ProfileCard / TravelTypeResult / Share / Top5Card     | ✅   |
+| Chip 마이그레이션: WinnerCard / Profile / Result / Share keywords·code                | ✅   |
+| IconButton 마이그레이션: Profile camera / Share back                                  | ✅   |
+| LetterRowCard / NotificationDropdown 토큰화 (Link 자체 wrap 유지)                     | ✅   |
 
-## 5. 남은 후속 정비
+## 5. 남은 후속 정비 (점진)
 
-- 1rem 이상의 폰트 크기들 — 컴포넌트별 의미 다양해서 일괄 변환 보류, 손댈 때 자연스럽게 토큰화
-- multi-line 으로 prettier 가 정리한 `color-mix` 들 — sed 단일라인 미매칭. 컴포넌트 마이그레이션 시 인라인 교체
-- 남은 hardcoded card/chip (LetterRowCard / Top5Card / NotificationDropdown 등) — primitive 로 점진 교체
-- typography `line-height` / `letter-spacing` 도 토큰만 정의됐고, 컴포넌트별 raw 값 잔존
+- 1.75rem / 2.25rem / 4rem 등 컴포넌트 고유 큰 글씨 — 의미가 컴포넌트별이라 그대로 유지 또는 손댈 때 토큰 추가
+- 남은 색 변형 5%/6%/14%/20%/50%/80% — 의미가 모호한 변형, 디자인 결정 후 토큰화
+- typography `line-height` / `letter-spacing` raw 값 — `--line-*` / `--tracking-*` 토큰 정의됐고 컴포넌트별 마이그레이션은 점진
+- LetterRowCard 등 Link wrapper 카드 — Card primitive 가 `as` 로 Link 받도록 확장 후 마이그레이션
