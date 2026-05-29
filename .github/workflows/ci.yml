@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - dev
-      - main
+# main push 검증은 .github/workflows/deploy.yml 의 build job 이 담당 (중복 방지)
 
 # 같은 ref에 새 push 시 진행 중인 run 취소 (CI 분 절약)
 concurrency:
