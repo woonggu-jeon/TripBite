@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
@@ -13,11 +13,7 @@ import {
 } from '@/features/letter/schemas/letter';
 import { useSendLetter } from '@/features/letter/hooks/use-letters';
 import { useLetterStore } from '@/features/letter/store/letter-store';
-import {
-  LocationPermissionPrompt,
-  useResolveLocation,
-  usePermissionState,
-} from '@/features/location';
+import { useResolveLocation, usePermissionState } from '@/features/location';
 import { useLocationStore } from '@/stores/location-store';
 import { haptic } from '@/lib/haptic';
 import { PinLikeInput } from './PinLikeInput';
@@ -50,19 +46,24 @@ export function LetterComposeForm() {
   const resolved = useLocationStore((s) => s.resolved);
   const setResolved = useLocationStore((s) => s.setResolved);
   const clearResolved = useLocationStore((s) => s.clear);
-  const grantedAutoTriggered = useRef(false);
-  const [locationDismissed, setLocationDismissed] = useState(false);
+  const autoTriggered = useRef(false);
 
-  // granted 인데 store 비어있으면 자동 resolve
+  // 1차 자동 resolve — granted 일 때 즉시, prompt/unsupported 도 시도(브라우저 native prompt 띄움)
+  // store 에 이미 있으면 skip. 컴포넌트 mount 당 1회만.
   useEffect(() => {
-    if (resolved || permission !== 'granted' || grantedAutoTriggered.current) {
-      return;
-    }
-    grantedAutoTriggered.current = true;
+    if (resolved || autoTriggered.current) return;
+    if (permission === 'denied') return; // denied 는 사용자 명시 클릭 필요
+    autoTriggered.current = true;
     void resolve().then((r) => {
       if (r) setResolved(r);
     });
   }, [permission, resolved, resolve, setResolved]);
+
+  const handleRequestLocation = async () => {
+    haptic.tap();
+    const r = await resolve();
+    if (r) setResolved(r);
+  };
 
   const {
     control,
@@ -107,20 +108,6 @@ export function LetterComposeForm() {
     reset({ body: '' });
   };
 
-  async function handleAcceptLocation() {
-    const r = await resolve();
-    if (r) setResolved(r);
-    else setLocationDismissed(true);
-  }
-  function handleSkipLocation() {
-    setLocationDismissed(true);
-  }
-
-  const showPrompt =
-    !resolved &&
-    !locationDismissed &&
-    (permission === 'prompt' || permission === 'unsupported');
-
   const canSubmit = count > 0 && count <= 5 && !errors.body;
 
   return (
@@ -160,12 +147,12 @@ export function LetterComposeForm() {
         )}
       </div>
 
-      {/* 3) 하단 위치 */}
+      {/* 3) 하단 위치 — 항상 1줄 인라인 상태 */}
       <div className={styles.locationSection}>
+        <MapPin size={14} aria-hidden className={styles.locationIcon} />
         {resolved ? (
-          <p className={styles.locationLine}>
-            <MapPin size={14} aria-hidden />
-            <span>
+          <>
+            <span className={styles.locationText}>
               <strong>{tLoc('current')}</strong>: {resolved.label}
             </span>
             <button
@@ -173,28 +160,31 @@ export function LetterComposeForm() {
               className={styles.changeBtn}
               onClick={() => {
                 clearResolved();
-                setLocationDismissed(false);
-                grantedAutoTriggered.current = false;
+                autoTriggered.current = false;
               }}
             >
               {tLoc('change')}
             </button>
-          </p>
-        ) : showPrompt ? (
-          <LocationPermissionPrompt
-            onAccept={handleAcceptLocation}
-            onSkip={handleSkipLocation}
-          />
+          </>
         ) : isResolving ? (
-          <p className={styles.locationLine}>
-            <MapPin size={14} aria-hidden />
-            {tLoc('resolving')}
-          </p>
+          <span className={styles.locationText}>{tLoc('resolving')}</span>
+        ) : permission === 'denied' ? (
+          <span className={styles.locationText}>
+            {tLoc('permission.denied')}
+          </span>
         ) : (
-          <p className={styles.locationLine}>
-            <MapPin size={14} aria-hidden />
-            {tLoc('permission.skip')}
-          </p>
+          <>
+            <span className={styles.locationText}>
+              {tLoc('permission.needed')}
+            </span>
+            <button
+              type="button"
+              className={styles.changeBtn}
+              onClick={handleRequestLocation}
+            >
+              {tLoc('permission.request')}
+            </button>
+          </>
         )}
       </div>
 

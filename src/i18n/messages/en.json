@@ -383,6 +383,20 @@
     },
     "author": {
       "anonymous": "Anonymous traveler"
+    },
+    "sent": {
+      "title": "Sent letter",
+      "noticeTitle": "Sent!",
+      "noticeBody": "It will reach an anonymous traveler soon",
+      "letterAria": "Sent letter card",
+      "from": "From",
+      "to": "To",
+      "toMessage": "Arriving to {recipient} in about {minutes} minutes",
+      "sentBadge": "Sent",
+      "again": "Write again",
+      "home": "Home",
+      "empty": "No letter just sent",
+      "goCompose": "Write a letter"
     }
   },
   "quiz": {
@@ -476,7 +490,8 @@
       "description": "Allow location access to attach where your letter was sent from.",
       "request": "Allow",
       "skip": "Skip",
-      "denied": "Location permission denied",
+      "needed": "Allow location to attach it",
+      "denied": "Location permission denied (change in device settings)",
       "openSettings": "You can change this in your device settings"
     },
     "errors": {

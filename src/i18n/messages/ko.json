@@ -383,6 +383,20 @@
     },
     "author": {
       "anonymous": "익명의 여행자"
+    },
+    "sent": {
+      "title": "보낸 편지",
+      "noticeTitle": "전송 완료",
+      "noticeBody": "익명의 한 명에게 곧 도착할 거예요",
+      "letterAria": "보낸 편지 카드",
+      "from": "From",
+      "to": "To",
+      "toMessage": "{recipient} 님에게 약 {minutes}분 후 도착해요",
+      "sentBadge": "전송됨",
+      "again": "또 쓰기",
+      "home": "홈으로",
+      "empty": "방금 보낸 편지가 없어요",
+      "goCompose": "편지 쓰러 가기"
     }
   },
   "quiz": {
@@ -476,7 +490,8 @@
       "description": "편지에 보낸 위치를 표시하려면 위치 접근을 허용해주세요.",
       "request": "허용하기",
       "skip": "건너뛰기",
-      "denied": "위치 권한이 거부되었어요",
+      "needed": "위치를 첨부하려면 권한 허용이 필요해요",
+      "denied": "위치 권한이 거부됐어요 (기기 설정에서 변경)",
       "openSettings": "기기 설정에서 권한을 변경할 수 있어요"
     },
     "errors": {
