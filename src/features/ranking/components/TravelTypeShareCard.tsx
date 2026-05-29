@@ -1,20 +1,111 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { Share2, ChevronLeft } from 'lucide-react';
+import { haptic } from '@/lib/haptic';
+import { useMyTravelType } from '@/features/ranking/hooks/use-ranking';
+import styles from './TravelTypeShareCard.module.scss';
+
 /**
- * <TravelTypeShareCard />
+ * 여행 유형 공유 카드.
  *
- * 여행 유형 결과 공유 카드
+ * 데이터: useMyTravelType (서버 응답 그대로). 결과 없음 시 /travel-type 으로 redirect.
  *
- * 사양:
- *   - 정사각형(1080x1080) 또는 9:16 카드 형태로 결과 시각화
- *   - 유형 코드 + 타이틀 + 핵심 키워드 + 일러스트
- *   - 다운로드 / 공유 (Web Share API)
- *     - navigator.share 미지원 환경엔 이미지 저장 fallback
- *
- * 구현 옵션:
- *   - DOM → html2canvas 또는 dom-to-image로 PNG 추출
- *   - 또는 서버에서 OG 이미지 생성 후 URL 제공
+ * 공유:
+ *   - Web Share API (navigator.share) 우선 사용
+ *   - 미지원/실패 시 클립보드 복사 fallback
+ *   - 이미지 추출(html2canvas 등)은 추후 — 현재는 텍스트 + URL share
  */
 export function TravelTypeShareCard() {
-  return null;
+  const t = useTranslations('travelType.share');
+  const router = useRouter();
+  const { data, isLoading } = useMyTravelType();
+
+  if (isLoading) {
+    return <div className={styles.fallback}>{t('loading')}</div>;
+  }
+  if (!data) {
+    return (
+      <div className={styles.fallback}>
+        <p>{t('empty')}</p>
+        <button
+          type="button"
+          className={styles.retry}
+          onClick={() => router.replace('/quiz')}
+        >
+          {t('startTest')}
+        </button>
+      </div>
+    );
+  }
+
+  const shareText = `${data.emoji} ${data.title} — ${data.keywords.join(' ')}`;
+
+  const handleShare = async () => {
+    haptic.tap();
+    const shareData = {
+      title: data.title,
+      text: shareText,
+      url: typeof window !== 'undefined' ? window.location.href : undefined,
+    };
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share(shareData);
+        return;
+      } catch {
+        // 사용자 취소 / 권한 거부 — fallback 으로
+      }
+    }
+    // clipboard fallback
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(
+          `${shareText}\n${shareData.url ?? ''}`,
+        );
+      } catch {
+        // 무시 — 마지막 사용자 알림은 toast 인프라가 있으면 연결
+      }
+    }
+  };
+
+  return (
+    <div className={styles.wrap}>
+      <header className={styles.head}>
+        <button
+          type="button"
+          className={styles.back}
+          onClick={() => {
+            haptic.tap();
+            router.back();
+          }}
+          aria-label={t('back')}
+        >
+          <ChevronLeft size={22} />
+        </button>
+        <h2 className={styles.heading}>{t('heading')}</h2>
+      </header>
+
+      {/* 정사각 공유 카드 — 추후 html2canvas/dom-to-image 로 PNG 추출 */}
+      <article className={styles.card} aria-label={data.title}>
+        <span className={styles.cardEmoji} aria-hidden>
+          {data.emoji}
+        </span>
+        <p className={styles.cardCode}>{data.code}</p>
+        <h3 className={styles.cardTitle}>{data.title}</h3>
+        <ul className={styles.cardKeywords}>
+          {data.keywords.map((k) => (
+            <li key={k}>{k}</li>
+          ))}
+        </ul>
+        <p className={styles.cardBrand}>TripBite · 여행 유형 테스트</p>
+      </article>
+
+      <button type="button" className={styles.shareBtn} onClick={handleShare}>
+        <Share2 size={18} aria-hidden />
+        <span>{t('shareCta')}</span>
+      </button>
+      <p className={styles.shareHint}>{t('shareHint')}</p>
+    </div>
+  );
 }

@@ -1,11 +1,48 @@
 'use client';
 
+import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { ArrowRight } from 'lucide-react';
+import { useMyTravelType } from '@/features/ranking/hooks/use-ranking';
+import styles from './TravelTypeTestEntry.module.scss';
+
 /**
- * <TravelTypeTestEntry />
+ * 여행 유형 테스트 진입 배너.
  *
- * TODO: 랭킹/여행 유형 기능 구현 시 작성.
- * features/ranking 의 components 폴더에 위치하는 프레젠테이션 컴포넌트.
+ *   - 결과 없음 → "지금 테스트하기" (5문항 안내)
+ *   - 결과 있음 → 내 유형 emoji + title + "다시 결과 보기"
+ *
+ * 랭킹 페이지/홈 위젯 등 어디서든 import 가능. 데이터는 useMyTravelType (서버 단일 소스).
  */
 export function TravelTypeTestEntry() {
-  return null;
+  const t = useTranslations('travelType.entry');
+  const { data } = useMyTravelType();
+
+  if (data) {
+    return (
+      <Link href="/quiz/result" className={styles.card}>
+        <span className={styles.emoji} aria-hidden>
+          {data.emoji}
+        </span>
+        <div className={styles.text}>
+          <p className={styles.eyebrow}>{t('myTypeEyebrow')}</p>
+          <p className={styles.title}>{data.title}</p>
+        </div>
+        <ArrowRight className={styles.arrow} size={18} aria-hidden />
+      </Link>
+    );
+  }
+
+  return (
+    <Link href="/quiz" className={`${styles.card} ${styles.cta}`}>
+      <span className={styles.emoji} aria-hidden>
+        🧭
+      </span>
+      <div className={styles.text}>
+        <p className={styles.eyebrow}>{t('ctaEyebrow')}</p>
+        <p className={styles.title}>{t('ctaTitle')}</p>
+      </div>
+      <ArrowRight className={styles.arrow} size={18} aria-hidden />
+    </Link>
+  );
 }

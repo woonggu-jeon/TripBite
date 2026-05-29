@@ -23,6 +23,14 @@ import { letterSeeds } from './seeds/letters';
 import { tournamentHistorySeeds } from './seeds/tournament';
 import { destinationSeeds } from './seeds/destinations';
 import { notificationSeeds } from './seeds/notifications';
+import {
+  travelTypeMetaSeed,
+  travelTypeMockScoreMap,
+  travelTypeQuizSeed,
+  travelTypeRecommendCategoriesSeed,
+  type TravelTypeMockCode,
+} from './seeds/travel-types';
+import type { TravelType, TravelTypeAnswer } from '@/features/ranking/types';
 
 /**
  * URL 매칭 base.
@@ -57,6 +65,58 @@ const mockUser = {
  * dev 서버(서비스워커) 재시작 시 false로 리셋.
  */
 let onboardedState = false;
+
+/**
+ * 여행 유형 테스트 — 사용자의 저장된 결과(mutable). submit 시 갱신.
+ * dev 서버 재시작 시 null 로 리셋.
+ */
+let myTravelType: TravelType | null = null;
+
+/** 셔플 후 N 개 — Fisher–Yates 부분 */
+function pickRandom<T>(arr: readonly T[], n: number): T[] {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const ai = a[i];
+    const aj = a[j];
+    if (ai !== undefined && aj !== undefined) {
+      a[i] = aj;
+      a[j] = ai;
+    }
+  }
+  return a.slice(0, Math.min(n, a.length));
+}
+
+/**
+ * mock 측 점수 계산 — answers 의 optionId 마다 매핑된 유형에 +1, 최고점 유형 반환.
+ * 동점 시 첫 등장 유형 우선 (Map 순서).
+ */
+function resolveTravelType(answers: TravelTypeAnswer[]): TravelType {
+  const score: Record<TravelTypeMockCode, number> = {
+    adventurer: 0,
+    explorer: 0,
+    relaxer: 0,
+    foodie: 0,
+  };
+  answers.forEach((a) => {
+    const code = travelTypeMockScoreMap[a.optionId];
+    if (code) score[code] += 1;
+  });
+  let best: TravelTypeMockCode = 'adventurer';
+  let bestScore = -1;
+  (Object.keys(score) as TravelTypeMockCode[]).forEach((k) => {
+    if (score[k] > bestScore) {
+      bestScore = score[k];
+      best = k;
+    }
+  });
+  const meta = travelTypeMetaSeed[best];
+  const cats = travelTypeRecommendCategoriesSeed[best];
+  const pool = destinationSeeds.filter((d) =>
+    cats.includes(d.category as (typeof cats)[number]),
+  );
+  return { ...meta, recommended: pickRandom(pool, 3) };
+}
 
 // dev mock — 단일 좌표라도 사용자에게 다양해 보이도록 좌표 hash 기반 11시군 매핑.
 // 좌표가 같으면 같은 시군 반환(deterministic). 실제 backend 는 정확한 reverse geocoding.
@@ -319,4 +379,17 @@ export const handlers = [
       unreadCount: notificationSeeds.filter((n) => !n.read).length,
     }),
   ),
+
+  // ===== Travel type test =====
+  // 옵션은 단순 id+text만 반환 — 클라이언트는 점수 매핑 미인식
+  http.get(`${apiUrl}/travel-types/quiz`, () =>
+    HttpResponse.json(travelTypeQuizSeed),
+  ),
+  http.post(`${apiUrl}/travel-types/submit`, async ({ request }) => {
+    const body = (await request.json()) as { answers: TravelTypeAnswer[] };
+    const result = resolveTravelType(body.answers ?? []);
+    myTravelType = result;
+    return HttpResponse.json(result);
+  }),
+  http.get(`${apiUrl}/travel-types/me`, () => HttpResponse.json(myTravelType)),
 ];

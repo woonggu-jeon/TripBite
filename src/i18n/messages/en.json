@@ -488,6 +488,40 @@
       "retake": "Retake"
     }
   },
+  "travelType": {
+    "loading": "Loading test…",
+    "error": "Couldn't load the test",
+    "retry": "Try again",
+    "back": "Back",
+    "progress": "{current}/{total}",
+    "submitting": "Calculating your result…",
+    "submitError": "Couldn't save the result. Please try again.",
+    "result": {
+      "metaTitle": "Travel type result",
+      "loading": "Loading your result…",
+      "empty": "No saved result yet",
+      "startTest": "Start the test",
+      "keywordsAria": "Type keywords",
+      "recommendTitle": "Destinations you'll love",
+      "share": "Create share card",
+      "retake": "Retake"
+    },
+    "share": {
+      "metaTitle": "Share card",
+      "heading": "My travel type card",
+      "back": "Back",
+      "loading": "Loading card…",
+      "empty": "No result to share yet",
+      "startTest": "Start the test",
+      "shareCta": "Share",
+      "shareHint": "If sharing isn't supported, the text is copied to your clipboard"
+    },
+    "entry": {
+      "ctaEyebrow": "Travel type test",
+      "ctaTitle": "Find your travel style in 5 questions",
+      "myTypeEyebrow": "My travel type"
+    }
+  },
   "mypage": {
     "title": "My Page",
     "sections": {

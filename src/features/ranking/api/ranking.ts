@@ -4,6 +4,7 @@ import type {
   RankingType,
   TravelType,
   TravelTypeAnswer,
+  TravelTypeQuiz,
 } from '@/features/ranking/types';
 import type { DestinationCategory } from '@/features/tournament/types';
 
@@ -33,18 +34,14 @@ export const rankingApi = {
     return res.data;
   },
 
-  getTravelTypeQuiz: async () => {
-    const res = await api.get('/travel-types/quiz');
-    return res.data as {
-      questions: Array<{
-        id: string;
-        text: string;
-        options: Array<{ id: string; text: string }>;
-      }>;
-    };
+  getTravelTypeQuiz: async (): Promise<TravelTypeQuiz> => {
+    const res = await api.get<TravelTypeQuiz>('/travel-types/quiz');
+    return res.data;
   },
 
-  submitTravelType: async (answers: TravelTypeAnswer[]): Promise<TravelType> => {
+  submitTravelType: async (
+    answers: TravelTypeAnswer[],
+  ): Promise<TravelType> => {
     const res = await api.post<TravelType>('/travel-types/submit', { answers });
     return res.data;
   },

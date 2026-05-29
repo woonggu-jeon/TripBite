@@ -1,0 +1,89 @@
+.card {
+  display: grid;
+  grid-template-columns: 44px 1fr 18px;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  background: linear-gradient(
+    100deg,
+    var(--color-primary-surface-grad-start),
+    var(--color-bg) 80%
+  );
+  border: 1.5px solid var(--color-primary-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-fg);
+  text-decoration: none;
+  transition:
+    border-color 0.15s ease,
+    transform 0.1s ease;
+
+  &:hover {
+    border-color: var(--color-primary);
+  }
+  &:active {
+    transform: scale(0.99);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.cta {
+  // CTA 강조 — 결과가 아직 없을 때
+  background: linear-gradient(
+    100deg,
+    var(--color-primary-tint),
+    var(--color-bg) 80%
+  );
+}
+
+.emoji {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  font-size: 1.75rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-primary-border);
+  border-radius: 50%;
+  line-height: 1;
+}
+
+.text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--color-primary-muted);
+  text-transform: uppercase;
+}
+
+.title {
+  font-size: 0.9375rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--color-fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.arrow {
+  color: var(--color-muted);
+  justify-self: end;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+    &:active {
+      transform: none;
+    }
+  }
+}

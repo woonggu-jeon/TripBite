@@ -1,0 +1,180 @@
+.wrap {
+  display: grid;
+  gap: 1rem;
+  padding-top: 0.5rem;
+}
+
+.head {
+  display: grid;
+  grid-template-columns: 32px 1fr 32px;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.back {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--color-fg);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-hover);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.heading {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--color-fg);
+  letter-spacing: -0.01em;
+}
+
+// 1:1 카드 — 추후 PNG 변환 시 동일 비율 유지
+.card {
+  display: grid;
+  place-items: center;
+  gap: 0.75rem;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem;
+  background: linear-gradient(
+    140deg,
+    var(--color-primary-surface-grad-start),
+    var(--color-bg) 70%
+  );
+  border: 1.5px solid var(--color-primary-border);
+  border-radius: var(--radius-xl);
+  text-align: center;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.cardEmoji {
+  font-size: 4.5rem;
+  line-height: 1;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.14));
+}
+
+.cardCode {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.625rem;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  background: var(--color-bg);
+  border: 1px solid var(--color-primary-border);
+  border-radius: 999px;
+}
+
+.cardTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--color-fg);
+  word-break: keep-all;
+}
+
+.cardKeywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  li {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-primary-muted);
+    padding: 0.125rem 0.5rem;
+    background: color-mix(in srgb, var(--color-bg) 80%, transparent);
+    border-radius: 999px;
+  }
+}
+
+.cardBrand {
+  margin-top: auto;
+  font-size: 0.6875rem;
+  color: var(--color-muted);
+  letter-spacing: 0.04em;
+}
+
+.shareBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  background: var(--color-primary);
+  color: var(--color-primary-fg);
+  border: 0;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition:
+    opacity 0.15s ease,
+    transform 0.1s ease;
+
+  &:hover {
+    opacity: 0.92;
+  }
+  &:active {
+    transform: scale(0.98);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.shareHint {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.fallback {
+  display: grid;
+  gap: 0.75rem;
+  place-items: center;
+  padding: 3rem 1rem;
+  color: var(--color-muted);
+  text-align: center;
+}
+
+.retry {
+  padding: 0.625rem 1rem;
+  background: var(--color-primary);
+  color: var(--color-primary-fg);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 700;
+  border: 0;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shareBtn {
+    transition: none;
+    &:active {
+      transform: none;
+    }
+  }
+}

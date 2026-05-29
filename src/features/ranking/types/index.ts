@@ -15,17 +15,47 @@ export type RankingType =
   | 'by-travel-type'
   | 'by-region';
 
-/** 여행 유형 테스트 */
+/**
+ * 여행 유형 테스트
+ *
+ * 점수 매핑 / 유형 결정 로직은 서버 책임 — 클라이언트는 단순히 questions/options 를
+ * 렌더링하고 사용자가 선택한 (questionId, optionId) 만 submit 으로 전송.
+ *
+ * Quiz 응답에 옵션별 가중치 같은 정보는 노출하지 않음 (스포일러 + 추후 정책 변경 자유).
+ * 결과 화면에 필요한 모든 정보(유형 메타, 키워드, 추천 여행지)는 submit 응답에 포함.
+ */
 export type TravelTypeAnswer = {
   questionId: string;
   optionId: string;
 };
 
+/**
+ * 유형 코드는 서버 contract 이지만, UI 가 알 필요는 없음(string 으로 받음).
+ * 별도 enum 유지 시 새 유형 추가 때 양쪽 동기화 필요 — 일단 자유 문자열로 두고
+ * 결과 객체의 title/description/emoji 로 UI 렌더.
+ */
+export type TravelTypeQuizQuestion = {
+  id: string;
+  text: string;
+  options: Array<{
+    id: string;
+    text: string;
+  }>;
+};
+
+export type TravelTypeQuiz = {
+  questions: TravelTypeQuizQuestion[];
+};
+
 export type TravelType = {
-  /** 예: "ENFP-T (계획없는 모험가)" 같은 짧은 코드/라벨 */
+  /** 서버 발급 코드 (예: 'adventurer'). UI 분기보다는 식별/공유용. */
   code: string;
   title: string;
   description: string;
-  /** 공유 카드 생성용 핵심 키워드 */
+  /** 공유 카드 / 결과 화면용 핵심 키워드 (#태그) */
   keywords: string[];
+  /** 유형 시각화 emoji — 서버가 제공 (대체 가능 자산) */
+  emoji: string;
+  /** 추천 여행지 (서버가 유형에 맞춰 선정 — 보통 3곳) */
+  recommended: import('@/features/tournament/types').Destination[];
 };
