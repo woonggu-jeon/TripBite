@@ -1,0 +1,44 @@
+.box {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.swatch {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border: 1.5px solid color-mix(in srgb, var(--color-fg) 8%, transparent);
+}
+
+.info {
+  display: grid;
+  gap: 0.125rem;
+}
+
+.title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  letter-spacing: 0.02em;
+}
+
+.name {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--color-fg);
+  line-height: 1.2;
+}
+
+.hex {
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  letter-spacing: 0.04em;
+}

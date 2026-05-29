@@ -310,8 +310,24 @@
       "luckyColor": "행운의 색",
       "meetChance": "여행에서 인연을 만날 확률",
       "saveToMypage": "마이페이지에 저장",
+      "saving": "저장 중...",
+      "saved": "저장됐어요",
+      "saveFailed": "저장에 실패했어요",
       "retry": "다시 하기",
-      "savedToast": "저장되었어요"
+      "savedToast": "저장되었어요",
+      "noWinner": "토너먼트 결과가 없어요",
+      "goSetup": "토너먼트 시작하기",
+      "color": {
+        "label": "행운의 색",
+        "red": "빨강",
+        "orange": "주황",
+        "yellow": "노랑",
+        "green": "초록",
+        "teal": "청록",
+        "blue": "파랑",
+        "purple": "보라",
+        "pink": "분홍"
+      }
     }
   },
   "letter": {

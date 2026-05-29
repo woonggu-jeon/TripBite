@@ -310,8 +310,24 @@
       "luckyColor": "Lucky color",
       "meetChance": "Chance of a fated encounter",
       "saveToMypage": "Save to My Page",
+      "saving": "Saving…",
+      "saved": "Saved",
+      "saveFailed": "Save failed",
       "retry": "Try again",
-      "savedToast": "Saved"
+      "savedToast": "Saved",
+      "noWinner": "No tournament result yet",
+      "goSetup": "Start a bracket",
+      "color": {
+        "label": "Lucky color",
+        "red": "Red",
+        "orange": "Orange",
+        "yellow": "Yellow",
+        "green": "Green",
+        "teal": "Teal",
+        "blue": "Blue",
+        "purple": "Purple",
+        "pink": "Pink"
+      }
     }
   },
   "letter": {

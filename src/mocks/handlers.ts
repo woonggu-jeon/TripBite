@@ -188,6 +188,19 @@ export const handlers = [
   http.get(`${apiUrl}/mypage/tournament-history`, () =>
     HttpResponse.json({ items: tournamentHistorySeeds, nextCursor: null }),
   ),
+  // 우승 여행지를 마이페이지에 저장
+  http.post(`${apiUrl}/mypage/tournaments`, async ({ request }) => {
+    const body = (await request.json()) as { destinationId: string };
+    const dest = destinationSeeds.find((d) => d.id === body.destinationId);
+    if (!dest) return new HttpResponse(null, { status: 404 });
+    return HttpResponse.json({
+      id: `saved-${body.destinationId}`,
+      destination: dest,
+      luckyColor: '#7AC7E8',
+      meetChance: 75,
+      savedAt: new Date().toISOString(),
+    });
+  }),
   // 조건에 맞는 후보 여행지 풀 반환 — 셔플 후 잘라서 반환
   //   - count: 여행지 갯수 (N)
   //   - tournamentSize: 매치업 사이즈 (M ≤ N) — 현재 mock 은 무시, 백엔드 연동 후 활용

@@ -1,122 +1,96 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useTournamentStore } from '@/features/tournament/store/tournament-store';
+import { useSaveTournament } from '@/features/tournament/hooks/use-tournament';
+import { WinnerCard } from '@/features/tournament/components/WinnerCard';
+import { LuckyColor } from '@/features/tournament/components/LuckyColor';
 import { LuckyLadder } from '@/features/tournament/components/LuckyLadder';
+import styles from './TournamentResultClient.module.scss';
 
 /**
  * 토너먼트 결과 클라이언트
  *
- * 컴포넌트 분할 (features/tournament/components):
- *   - <WinnerCard destination={...} />
- *   - <LuckyColor seed={winnerId} />
- *   - <LuckyLadder seed={winnerId} />
- *   - <ResultActions onSave={...} onRetry={...} />
+ * 구성:
+ *   1) WinnerCard  — 우승 여행지(이름·시군·카테고리)
+ *   2) LuckyColor  — winner.id seed 기반 deterministic 행운의 색
+ *   3) LuckyLadder — 인연 만날 확률 사다리타기
+ *   4) 액션        — 마이페이지 저장 / 다시 하기
+ *
+ * 저장: useSaveTournament(useMutation) → POST /mypage/tournaments
+ *   - 성공 시 버튼 라벨 "저장됐어요" 로 전환 + disabled
+ *   - 실패 시 다시 시도 가능
+ *
+ * 설정/우승자 없이 진입 시: redirect 대신 안내(백엔드 미연결 정책).
  */
 export function TournamentResultClient() {
   const router = useRouter();
+  const t = useTranslations('tournament.result');
   const winner = useTournamentStore((s) => s.winner);
   const reset = useTournamentStore((s) => s.reset);
+  const save = useSaveTournament();
 
-  useEffect(() => {
-    if (!winner) router.replace('/tournament');
-  }, [winner, router]);
+  if (!winner) {
+    return (
+      <div className={styles.empty}>
+        <p>{t('noWinner')}</p>
+        <button
+          type="button"
+          className={styles.cta}
+          onClick={() => router.replace('/tournament')}
+        >
+          {t('goSetup')}
+        </button>
+      </div>
+    );
+  }
 
-  if (!winner) return null;
+  const handleSave = () => {
+    if (save.isPending || save.isSuccess) return;
+    save.mutate(winner.id);
+  };
+
+  const handleRetry = () => {
+    reset();
+    router.replace('/tournament');
+  };
+
+  const saveLabel = save.isPending
+    ? t('saving')
+    : save.isSuccess
+      ? t('saved')
+      : save.isError
+        ? t('saveFailed')
+        : t('saveToMypage');
 
   return (
-    <div style={{ display: 'grid', gap: '1.5rem' }}>
-      {/* 1) 우승 여행지 */}
-      {/* TODO: <WinnerCard destination={winner} /> */}
-      <Placeholder title={`🏆 ${winner.name}`} height={260} />
+    <div className={styles.wrap}>
+      <WinnerCard destination={winner} />
+      <LuckyColor seed={winner.id} />
 
-      {/* 2) 행운의 색 */}
-      {/* TODO: <LuckyColor seed={winner.id} /> */}
-      <Placeholder title="행운의 색" height={120} />
-
-      {/* 3) 사다리타기 — 6라인 클릭 시작, 모드 토글(독립 랜덤/100% 분배) */}
-      <section
-        style={{
-          padding: '1rem',
-          border: '1px solid var(--color-border)',
-          borderRadius: 'var(--radius-lg)',
-          display: 'grid',
-          gap: '0.75rem',
-        }}
-        aria-label="여행에서 인연을 만날 확률"
-      >
-        <h3
-          style={{
-            fontSize: '0.9375rem',
-            fontWeight: 600,
-            textAlign: 'center',
-          }}
-        >
-          🎲 여행에서 인연을 만날 확률
-        </h3>
+      <section className={styles.ladderSection} aria-label={t('meetChance')}>
+        <h3 className={styles.ladderTitle}>🎲 {t('meetChance')}</h3>
         <LuckyLadder />
       </section>
 
-      {/* 4) 액션 */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '0.75rem',
-        }}
-      >
+      <div className={styles.actions}>
         <button
-          style={btnPrimary}
-          onClick={() => {
-            // TODO: POST /mypage/tournaments + toast
-          }}
+          type="button"
+          className={styles.primary}
+          onClick={handleSave}
+          disabled={save.isPending || save.isSuccess}
         >
-          마이페이지에 저장
+          {saveLabel}
         </button>
         <button
-          style={btnSecondary}
-          onClick={() => {
-            reset();
-            router.replace('/tournament');
-          }}
+          type="button"
+          className={styles.secondary}
+          onClick={handleRetry}
         >
-          다시 하기
+          {t('retry')}
         </button>
       </div>
     </div>
   );
 }
-
-function Placeholder({ title, height }: { title: string; height: number }) {
-  return (
-    <div
-      style={{
-        height,
-        border: '1px dashed var(--color-border)',
-        borderRadius: 'var(--radius-lg)',
-        display: 'grid',
-        placeItems: 'center',
-        color: 'var(--color-muted)',
-        fontWeight: 600,
-      }}
-    >
-      {title}
-    </div>
-  );
-}
-
-const btnPrimary: React.CSSProperties = {
-  padding: '0.875rem',
-  background: 'var(--color-primary)',
-  color: 'var(--color-primary-fg)',
-  borderRadius: 'var(--radius-md)',
-  fontWeight: 600,
-};
-const btnSecondary: React.CSSProperties = {
-  padding: '0.875rem',
-  background: 'transparent',
-  border: '1px solid var(--color-border)',
-  borderRadius: 'var(--radius-md)',
-  fontWeight: 600,
-};
