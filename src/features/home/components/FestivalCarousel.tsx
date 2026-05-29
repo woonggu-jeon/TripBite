@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Carousel } from '@/features/carousel';
@@ -73,16 +74,41 @@ const FESTIVALS: readonly Festival[] = [
   },
 ] as const;
 
+/**
+ * 화면 너비별 slidesPerView — 작은 화면 카드 잘림 방지.
+ *   ≤ 360px : 1.8 (한 장 + 다음 카드 미리보기)
+ *   ≤ 480px : 2.2
+ *   그 외   : 3
+ *
+ * embla 의 slidesPerView 옵션은 컴포넌트 mount 시 적용되므로 useEffect 로
+ * resize 추적 + reInit. 잦은 리사이즈는 SSR/모바일 회전에서만 일어남.
+ */
+function useResponsiveSlidesPerView() {
+  const [v, setV] = useState(3);
+  useEffect(() => {
+    const update = () => {
+      const w = window.innerWidth;
+      setV(w <= 360 ? 1.8 : w <= 480 ? 2.2 : 3);
+    };
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
+  return v;
+}
+
 export function FestivalCarousel() {
   const t = useTranslations('home.festivals');
+  const slidesPerView = useResponsiveSlidesPerView();
 
   return (
     <Carousel
+      // key 로 강제 remount — slidesPerView 변경 시 embla 재초기화 (옵션은 mount 시점에만 적용)
+      key={slidesPerView}
       slides={[...FESTIVALS]}
       renderSlide={(f) => <Card festival={f} />}
       keyExtractor={(f) => f.id}
-      // 한 화면에 3개 정확히 보이고 prev/next 가 한 칸씩 (embla 기본 slidesToScroll=1)
-      options={{ slidesPerView: 3, gap: 8 }}
+      options={{ slidesPerView, gap: 8 }}
       showDots={false}
       // dynamic import 동안 자리잡이 — CLS 방지
       fallbackHeight={180}

@@ -241,12 +241,23 @@
 /* Breakpoints — SCSS module 에서 미디어 쿼리 작성 시 참고 (mixin 사용 권장) */
 /* xs: 360, sm: 600, md: 768, lg: 1024 */
 
-/* 360px 미만 (구 iPhone SE 1세대, 갤럭시 Fold 닫은 상태 등) — content 영역이 비좁아
-   기본 padding 1rem 그대로면 카드/grid 가 답답하거나 overflow.
-   --content-pad 만 축소하면 layout 전반에 자동 반영 (contentInner / SubHeader inner). */
-@media (max-width: 359.98px) {
+/* 작은 모바일 (≤ 380px) — 갤럭시 S8(360), iPhone SE 2/3(375).
+   content padding / hero emoji 크기를 축소해 카드 내부 컨텐츠 잘림 방지.
+   --content-pad / --emoji-* 만 축소하면 layout 전반 자동 반영. */
+@media (max-width: 380px) {
   :root {
     --content-pad: 0.75rem;
+    --emoji-xl: 3rem; /* 4rem → 3rem (hero 카드 emoji) */
+    --emoji-2xl: 3.5rem; /* 4.5rem → 3.5rem */
+  }
+}
+
+/* 더 작은 화면 (≤ 320px) — iPhone SE 1세대, 갤럭시 Fold 닫힘 */
+@media (max-width: 320px) {
+  :root {
+    --content-pad: 0.625rem;
+    --emoji-lg: 1.875rem;
+    --emoji-md: 1.5rem;
   }
 }
 
