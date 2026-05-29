@@ -7,7 +7,7 @@ import { Share2, RotateCcw } from 'lucide-react';
 import { haptic } from '@/lib/haptic';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { EmptyState } from '@/components/feedback/EmptyState';
-import { Card, Chip } from '@/components/ui';
+import { Button, Card, Chip } from '@/components/ui';
 import { useMyTravelType } from '@/features/ranking/hooks/use-ranking';
 import type { TravelType } from '@/features/ranking/types';
 import styles from './TravelTypeResult.module.scss';
@@ -132,17 +132,16 @@ export function TravelTypeResult() {
           <Share2 size={18} aria-hidden />
           <span>{t('share')}</span>
         </Link>
-        <button
-          type="button"
-          className={styles.secondary}
+        <Button
+          variant="secondary"
           onClick={() => {
             haptic.tap();
             router.replace('/quiz');
           }}
+          leadingIcon={<RotateCcw size={16} aria-hidden />}
         >
-          <RotateCcw size={16} aria-hidden />
-          <span>{t('retake')}</span>
-        </button>
+          {t('retake')}
+        </Button>
       </div>
     </div>
   );

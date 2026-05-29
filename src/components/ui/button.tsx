@@ -1,52 +1,81 @@
-import * as React from 'react';
-import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/utils';
+import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
+import styles from './Button.module.scss';
 
 /**
- * 샘플 Button — shadcn/ui 컨벤션
+ * 디자인 시스템 버튼 primitive — SCSS module + variant/size/fullWidth.
  *
- * 실제 사용 시:
- *   `npx shadcn@latest add button` 으로 정식 버전 생성 권장.
- * 이 파일은 참고용.
+ * variant:
+ *   - primary   : 채움 (가장 강한 강조 — submit/CTA)
+ *   - secondary : border + 투명 배경
+ *   - ghost     : 배경/border 없음 — text-like
+ *   - danger    : 위험 액션 (삭제 confirm 등)
+ *
+ * size:
+ *   - sm (32) / md (44, default) / lg (52)  — 모바일 hit target 44px 보장
+ *
+ * fullWidth: 부모 너비 100%
+ *
+ * loading: 로딩 중엔 disabled + aria-busy. 텍스트는 호출부가 변경 (예: '저장 중...')
+ *
+ * 사용 가이드:
+ *   <Button variant="primary" type="submit" fullWidth>{label}</Button>
+ *   <Button variant="ghost" size="sm" leadingIcon={<Icon />}>...</Button>
+ *
+ * 기존 컴포넌트의 .primary/.secondary 클래스 대체용. 자체 SCSS 의 padding/radius/
+ * transition 반복 제거.
  */
-const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:opacity-50 disabled:pointer-events-none',
-  {
-    variants: {
-      variant: {
-        default: 'bg-neutral-900 text-white hover:bg-neutral-800',
-        outline:
-          'border border-neutral-200 bg-transparent hover:bg-neutral-100',
-        ghost: 'hover:bg-neutral-100',
-        destructive: 'bg-red-600 text-white hover:bg-red-700',
-      },
-      size: {
-        default: 'h-10 px-4',
-        sm: 'h-8 px-3 text-xs',
-        lg: 'h-12 px-6',
-        icon: 'h-10 w-10',
-      },
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+export type ButtonSize = 'sm' | 'md' | 'lg';
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  fullWidth?: boolean;
+  loading?: boolean;
+  leadingIcon?: ReactNode;
+  trailingIcon?: ReactNode;
+}
+
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  function Button(
+    {
+      variant = 'primary',
+      size = 'md',
+      fullWidth,
+      loading,
+      leadingIcon,
+      trailingIcon,
+      className,
+      children,
+      type,
+      disabled,
+      ...rest
     },
-    defaultVariants: {
-      variant: 'default',
-      size: 'default',
-    },
+    ref,
+  ) {
+    const cls = [
+      styles.btn,
+      styles[`v-${variant}`],
+      styles[`s-${size}`],
+      fullWidth ? styles.fullWidth : '',
+      loading ? styles.loading : '',
+      className,
+    ]
+      .filter(Boolean)
+      .join(' ');
+    return (
+      <button
+        ref={ref}
+        type={type ?? 'button'}
+        className={cls}
+        disabled={disabled || loading}
+        aria-busy={loading || undefined}
+        {...rest}
+      >
+        {leadingIcon && <span className={styles.icon}>{leadingIcon}</span>}
+        <span className={styles.label}>{children}</span>
+        {trailingIcon && <span className={styles.icon}>{trailingIcon}</span>}
+      </button>
+    );
   },
 );
-
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {}
-
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, ...props }, ref) => (
-    <button
-      ref={ref}
-      className={cn(buttonVariants({ variant, size }), className)}
-      {...props}
-    />
-  ),
-);
-Button.displayName = 'Button';
-
-export { buttonVariants };

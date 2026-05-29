@@ -12,3 +12,4 @@ export {
   type IconButtonSize,
 } from './IconButton';
 export { PageSection } from './PageSection';
+export { Button, type ButtonVariant, type ButtonSize } from './button';

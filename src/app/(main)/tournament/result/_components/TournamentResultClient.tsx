@@ -7,6 +7,7 @@ import {
   useDestinationDetail,
   useSaveTournament,
 } from '@/features/tournament/hooks/use-tournament';
+import { Button } from '@/components/ui';
 import { WinnerCard } from '@/features/tournament/components/WinnerCard';
 import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetailPanel';
 import { TournamentStats } from '@/features/tournament/components/TournamentStats';
@@ -46,13 +47,9 @@ export function TournamentResultClient() {
     return (
       <div className={styles.empty}>
         <p>{t('noWinner')}</p>
-        <button
-          type="button"
-          className={styles.cta}
-          onClick={() => router.replace('/tournament')}
-        >
+        <Button variant="primary" onClick={() => router.replace('/tournament')}>
           {t('goSetup')}
-        </button>
+        </Button>
       </div>
     );
   }
@@ -102,21 +99,18 @@ export function TournamentResultClient() {
       </section>
 
       <div className={styles.actions}>
-        <button
-          type="button"
-          className={styles.primary}
+        <Button
+          variant="primary"
+          fullWidth
           onClick={handleSave}
-          disabled={save.isPending || save.isSuccess}
+          disabled={save.isSuccess}
+          loading={save.isPending}
         >
           {saveLabel}
-        </button>
-        <button
-          type="button"
-          className={styles.secondary}
-          onClick={handleRetry}
-        >
+        </Button>
+        <Button variant="secondary" fullWidth onClick={handleRetry}>
           {t('retry')}
-        </button>
+        </Button>
       </div>
     </div>
   );

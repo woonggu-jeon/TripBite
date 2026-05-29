@@ -15,6 +15,7 @@ import { useSendLetter } from '@/features/letter/hooks/use-letters';
 import { useLetterStore } from '@/features/letter/store/letter-store';
 import { useResolveLocation, usePermissionState } from '@/features/location';
 import { useLocationStore } from '@/stores/location-store';
+import { Button } from '@/components/ui';
 import { haptic } from '@/lib/haptic';
 import { PinLikeInput } from './PinLikeInput';
 import styles from './LetterComposeForm.module.scss';
@@ -178,21 +179,23 @@ export function LetterComposeForm() {
 
       {/* 4) 액션 */}
       <div className={styles.actions}>
-        <button
-          type="button"
-          className={styles.secondary}
+        <Button
+          variant="secondary"
+          fullWidth
           onClick={handleReset}
           disabled={isSubmitting || body.length === 0}
         >
           {t('reset')}
-        </button>
-        <button
+        </Button>
+        <Button
           type="submit"
-          className={styles.primary}
-          disabled={isSubmitting || !canSubmit}
+          variant="primary"
+          fullWidth
+          disabled={!canSubmit}
+          loading={isSubmitting}
         >
           {isSubmitting ? t('submitting') : t('submit')}
-        </button>
+        </Button>
       </div>
     </form>
   );

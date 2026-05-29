@@ -151,6 +151,19 @@ import { cardClasses } from '@/components/ui';
 - `title` / `hint` / `action` / `level` (h2/h3)
 - 페이지 안 섹션 헤더 + 본문 wrapper.
 
+### Button 변형
+
+- `variant`: `primary` (채움 / submit) / `secondary` (border) / `ghost` / `danger`
+- `size`: `sm` (32) / `md` (44, default — 모바일 hit target) / `lg` (52)
+- `fullWidth`: 부모 너비 100%
+- `loading`: aria-busy + disabled (텍스트는 호출부가 변경)
+- `leadingIcon` / `trailingIcon`: 좌우 아이콘 슬롯
+
+```tsx
+<Button variant="primary" fullWidth onClick={save} loading={isSaving}>저장</Button>
+<Button variant="secondary" leadingIcon={<RotateCcw size={16} />}>다시</Button>
+```
+
 ## 3. 디자인 교체 시나리오
 
 브랜드 색을 핑크(#ec4899) 로 바꾼다면 — `globals.scss` 의 `--color-primary` 한 줄만 수정.
