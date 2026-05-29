@@ -135,7 +135,8 @@
   }
 }
 
-// 결과 강조 패널 — 도착점 % 를 크게 보여주고 다시 시도 CTA 제공
+// 결과 강조 패널 — 도착점 % 를 크게 보여주고 다시 시도 CTA 제공.
+// transform-origin: top center 로 사다리에서 펼쳐지는 듯한 등장.
 .result {
   display: grid;
   gap: 0.5rem;
@@ -151,17 +152,24 @@
   border: 1px solid var(--color-primary-border);
   border-radius: var(--radius-lg);
   text-align: center;
-  animation: resultRise 0.45s ease-out both;
+  transform-origin: top center;
+  animation: resultUnfold 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-@keyframes resultRise {
-  from {
+@keyframes resultUnfold {
+  0% {
     opacity: 0;
-    transform: translateY(8px);
+    transform: scaleY(0.7) translateY(-6px);
+    filter: blur(2px);
   }
-  to {
+  60% {
     opacity: 1;
-    transform: translateY(0);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleY(1) translateY(0);
+    filter: blur(0);
   }
 }
 
@@ -178,6 +186,9 @@
   gap: 2px;
   color: var(--color-primary);
   line-height: 1;
+  // count-up 중 숫자 폭 흔들림 방지
+  min-width: 4ch;
+  justify-content: center;
 }
 
 .resultNumber {

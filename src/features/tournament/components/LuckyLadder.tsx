@@ -7,6 +7,8 @@ import styles from './LuckyLadder.module.scss';
 
 // path draw 애니메이션 1.4s + 약간의 여유. reduced-motion 시 즉시 공개.
 const REVEAL_MS = 1500;
+// 결과 % count-up 시간
+const COUNTUP_MS = 800;
 
 /**
  * 사다리타기 — N개 라인 중 하나를 선택하면 사다리를 따라 내려가
@@ -113,6 +115,8 @@ export function LuckyLadder({
   const mode = initialMode;
   const [selected, setSelected] = useState<number | null>(null);
   const [revealed, setRevealed] = useState(false);
+  // 결과 % count-up 표시값 (0 → 최종)
+  const [displayPercent, setDisplayPercent] = useState(0);
   // 다시 시도 시 사다리·% 재생성 트리거
   const [resetKey, setResetKey] = useState(0);
 
@@ -140,6 +144,7 @@ export function LuckyLadder({
     haptic.tap();
     setSelected(null);
     setRevealed(false);
+    setDisplayPercent(0);
     setResetKey((k) => k + 1);
   }, []);
 
@@ -178,6 +183,32 @@ export function LuckyLadder({
       : null;
   const resultPercent =
     revealed && endCol !== null ? (percents[endCol] ?? null) : null;
+
+  // 결과 공개 시 0 → resultPercent count-up (easeOutCubic).
+  // reduced-motion 시 즉시 표시.
+  useEffect(() => {
+    if (!revealed || resultPercent === null) return;
+    const reduced =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) {
+      setDisplayPercent(resultPercent);
+      return;
+    }
+    let raf = 0;
+    let start = 0;
+    const tick = (ts: number) => {
+      if (!start) start = ts;
+      const elapsed = ts - start;
+      const progress = Math.min(1, elapsed / COUNTUP_MS);
+      // easeOutCubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplayPercent(Math.round(eased * resultPercent));
+      if (progress < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [revealed, resultPercent]);
 
   return (
     <div className={styles.wrap}>
@@ -340,7 +371,7 @@ export function LuckyLadder({
         <div className={styles.result} role="status" aria-live="polite">
           <span className={styles.resultLabel}>{t('resultLabel')}</span>
           <span className={styles.resultValue}>
-            <span className={styles.resultNumber}>{resultPercent}</span>
+            <span className={styles.resultNumber}>{displayPercent}</span>
             <span className={styles.resultUnit}>%</span>
           </span>
           <button type="button" className={styles.retry} onClick={handleRetry}>

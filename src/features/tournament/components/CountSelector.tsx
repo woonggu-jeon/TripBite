@@ -30,7 +30,11 @@ export function CountSelector({
   showLabel = true,
 }: CountSelectorProps) {
   const tDestination = useTranslations('tournament.setup.count');
+  const tDestinationSub = useTranslations('tournament.setup.count.sub');
   const tTournament = useTranslations('tournament.play.tournamentSize.count');
+  const tTournamentSub = useTranslations(
+    'tournament.play.tournamentSize.count.sub',
+  );
   const tAria = useTranslations('tournament');
 
   const options =
@@ -43,7 +47,8 @@ export function CountSelector({
       ? tAria('setup.steps.count.title')
       : tAria('play.tournamentSize.title');
 
-  const labelOf = (c: TournamentCount): string => {
+  // 메인 타이틀 — "2개" / "4강"
+  const titleOf = (c: TournamentCount): string => {
     if (mode === 'destination') {
       switch (c) {
         case 2:
@@ -72,6 +77,36 @@ export function CountSelector({
     }
   };
 
+  // 하단 sub 텍스트 — "가볍게" / "기본 추천" 등
+  const subOf = (c: TournamentCount): string => {
+    if (mode === 'destination') {
+      switch (c) {
+        case 2:
+          return tDestinationSub('2');
+        case 4:
+          return tDestinationSub('4');
+        case 6:
+          return tDestinationSub('6');
+        case 8:
+          return tDestinationSub('8');
+        default:
+          return '';
+      }
+    }
+    switch (c) {
+      case 4:
+        return tTournamentSub('4');
+      case 8:
+        return tTournamentSub('8');
+      case 16:
+        return tTournamentSub('16');
+      case 32:
+        return tTournamentSub('32');
+      default:
+        return '';
+    }
+  };
+
   const pick = (c: TournamentCount) => {
     haptic.tap();
     onChange(c);
@@ -90,8 +125,8 @@ export function CountSelector({
             className={`${styles.card} ${active ? styles.active : ''}`}
             onClick={() => pick(c)}
           >
-            <span className={styles.num}>{c}</span>
-            {showLabel && <span className={styles.label}>{labelOf(c)}</span>}
+            <span className={styles.title}>{titleOf(c)}</span>
+            {showLabel && <span className={styles.sub}>{subOf(c)}</span>}
           </button>
         );
       })}
