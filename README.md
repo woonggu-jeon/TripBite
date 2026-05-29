@@ -944,6 +944,7 @@ Turborepo / Micro Frontend / Redux / GraphQL / Kubernetes / @tanstack/react-virt
 - [ ] serwist SW **런타임 검증** (production 실기기: 오프라인/업데이트배너/푸시/설치)
 - [ ] Pretendard fallback 메트릭 capsize 정밀 측정 (현재 근사값)
 - [ ] Lighthouse CI assertion warn → error (baseline 후)
+- [ ] **명시적 테마 토글** — 현재 `prefers-color-scheme: dark` 자동 분기만 처리 (시스템 설정 의존). 사용자가 직접 light/dark 전환 + localStorage 영속화는 미구현. Settings 페이지에 토글 추가 시 `html[data-theme]` 분기 + ThemeProvider(자체 구현 또는 `next-themes`) 도입 필요
 
 ### 기능 연동
 
