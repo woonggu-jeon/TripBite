@@ -182,6 +182,13 @@
         "letter": "Write letter",
         "quiz": "Type test"
       }
+    },
+    "recommendation": {
+      "label": "Today's pick",
+      "cta": "See more"
+    },
+    "festivals": {
+      "label": "Festivals happening now"
     }
   },
   "region": {

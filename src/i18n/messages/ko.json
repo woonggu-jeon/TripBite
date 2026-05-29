@@ -182,6 +182,13 @@
         "letter": "편지 쓰기",
         "quiz": "유형 테스트"
       }
+    },
+    "recommendation": {
+      "label": "오늘의 추천",
+      "cta": "자세히 보기"
+    },
+    "festivals": {
+      "label": "지금 열리는 축제"
     }
   },
   "region": {

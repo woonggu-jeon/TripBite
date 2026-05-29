@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Trophy, Mail, Sparkles } from 'lucide-react';
 import { ROUTES } from '@/constants/routes';
+import { RecommendationBanner } from '@/features/home/components/RecommendationBanner';
+import { FestivalCarousel } from '@/features/home/components/FestivalCarousel';
 import styles from './HomeDashboard.module.scss';
 
 /**
@@ -27,31 +29,22 @@ export function HomeDashboard() {
 
   return (
     <div className={styles.grid}>
-      {/* 1) 위치+날씨 기반 오늘의 추천 */}
-      <section data-widget="weather-recommendation">
-        {/* TODO: <WeatherWidget />
-                  - 좌측: 온도/condition/locationLabel
-                  - 우측: 추천 여행지 1~3 */}
-        <Placeholder height={120} title={t('weatherRecommendation')} />
+      {/* 1) 오늘의 추천 — 빌보드 배너 */}
+      <section
+        data-widget="weather-recommendation"
+        aria-label={t('weatherRecommendation')}
+      >
+        <h2 className={styles.sectionTitle}>{t('weatherRecommendation')}</h2>
+        <RecommendationBanner />
       </section>
 
-      {/* 2) 진행 중인 충북 축제 슬라이드 */}
-      <section data-widget="ongoing-festivals">
-        {/* TODO:
-              const { data: festivals } = useOngoingFestivals();
-              <Carousel
-                slides={festivals ?? []}
-                renderSlide={(f) => <FestivalCard festival={f} />}
-                keyExtractor={(f) => f.id}
-                options={{ loop: true, autoplayMs: 4500 }}
-                showDots fallbackHeight={180}
-                ariaLabel={t('ongoingFestivals')}
-              /> */}
-        <Placeholder
-          height={180}
-          title={t('ongoingFestivals')}
-          note="Carousel"
-        />
+      {/* 2) 지금 열리는 충북 축제 — 카드 스와이퍼 */}
+      <section
+        data-widget="ongoing-festivals"
+        aria-label={t('ongoingFestivals')}
+      >
+        <h2 className={styles.sectionTitle}>{t('ongoingFestivals')}</h2>
+        <FestivalCarousel />
       </section>
 
       {/* 3) 빠른 시작 3버튼 */}
