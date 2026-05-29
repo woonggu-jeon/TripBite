@@ -329,6 +329,68 @@ export const handlers = [
       savedAt: new Date().toISOString(),
     });
   }),
+  // 여행지 상세 — id 기반 deterministic mock 메타 합성.
+  // 실 백엔드는 외부 데이터/큐레이션 DB 와 결합해 다양한 필드 제공.
+  // 응답 필드는 모두 optional 이라 누락되어도 UI 가 자연스럽게 처리.
+  http.get(`${apiUrl}/destinations/:id`, ({ params }) => {
+    const id = String(params.id);
+    const seed = destinationSeeds.find((d) => d.id === id);
+    if (!seed) return new HttpResponse(null, { status: 404 });
+
+    // id 기반 deterministic hash → 같은 id 면 항상 같은 mock 메타
+    let h = 0;
+    for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0;
+    const u = (n: number) => (Math.abs(h + n) % 1000) / 1000; // 0~1
+
+    const seasonPool: Array<'spring' | 'summer' | 'autumn' | 'winter'> = [
+      'spring',
+      'summer',
+      'autumn',
+      'winter',
+    ];
+    const bestSeasons = seasonPool.filter((_, i) => u(i + 1) > 0.4);
+
+    const tagPool: Record<string, string[]> = {
+      local: ['#로컬', '#시군대표', '#골목투어'],
+      festival: ['#축제', '#연중행사', '#포토존'],
+      attraction: ['#명소', '#자연', '#뷰맛집'],
+      experience: ['#체험', '#가족', '#실내'],
+    };
+    const tags = tagPool[seed.category] ?? [];
+
+    const detail = {
+      ...seed,
+      summary: `${seed.name} — ${seed.region} 대표 ${seed.category}`,
+      photos: [
+        // 실제 백엔드는 CDN URL. mock 은 placeholder 또는 빈 배열.
+        // 클라이언트는 photos 없어도 카드만 보이도록 처리해야 함.
+      ],
+      address: `충북 ${seed.region.replace(/[a-z]+/i, '')} ${seed.name} 일대`,
+      phone:
+        u(10) > 0.3
+          ? `043-${200 + Math.floor(u(11) * 800)}-${1000 + Math.floor(u(12) * 8999)}`
+          : undefined,
+      website: u(20) > 0.5 ? `https://example.com/${id}` : undefined,
+      openingHours:
+        u(30) > 0.3 ? '매일 09:00 - 18:00 (월요일 휴무)' : undefined,
+      admissionFee:
+        u(40) > 0.5
+          ? `성인 ${1000 + Math.floor(u(41) * 9) * 1000}원 · 청소년 ${1000 + Math.floor(u(42) * 5) * 500}원`
+          : '무료',
+      tags: tags.length > 0 ? tags : undefined,
+      rating: {
+        value: Math.round((3.5 + u(50) * 1.5) * 10) / 10,
+        count: 30 + Math.floor(u(51) * 470),
+      },
+      bestSeasons: bestSeasons.length > 0 ? bestSeasons : undefined,
+      coords: {
+        lat: 36.5 + u(60) * 1.2,
+        lng: 127.4 + u(61) * 0.9,
+      },
+    };
+    return HttpResponse.json(detail);
+  }),
+
   // 조건에 맞는 후보 여행지 풀 반환 — 셔플 후 잘라서 반환
   //   - count: 여행지 갯수 (N)
   //   - tournamentSize: 매치업 사이즈 (M ≤ N) — 현재 mock 은 무시, 백엔드 연동 후 활용

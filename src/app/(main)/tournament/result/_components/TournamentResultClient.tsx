@@ -3,8 +3,12 @@
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useTournamentStore } from '@/features/tournament/store/tournament-store';
-import { useSaveTournament } from '@/features/tournament/hooks/use-tournament';
+import {
+  useDestinationDetail,
+  useSaveTournament,
+} from '@/features/tournament/hooks/use-tournament';
 import { WinnerCard } from '@/features/tournament/components/WinnerCard';
+import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetailPanel';
 import { TournamentStats } from '@/features/tournament/components/TournamentStats';
 import { LuckyColor } from '@/features/tournament/components/LuckyColor';
 import { LuckyLadder } from '@/features/tournament/components/LuckyLadder';
@@ -34,6 +38,9 @@ export function TournamentResultClient() {
   const tournamentSize = useTournamentStore((s) => s.config?.tournamentSize);
   const reset = useTournamentStore((s) => s.reset);
   const save = useSaveTournament();
+  // 우승자 풍부 정보 — winner.id 기준 별도 fetch.
+  // winner/stats 는 store 만으로 즉시 렌더 → 상세는 비동기로 채워짐 (렌더 속도 우선).
+  const detailQuery = useDestinationDetail(winner?.id);
 
   if (!winner) {
     return (
@@ -71,6 +78,10 @@ export function TournamentResultClient() {
   return (
     <div className={styles.wrap}>
       <WinnerCard destination={winner} />
+      <WinnerDetailPanel
+        detail={detailQuery.data}
+        isLoading={detailQuery.isLoading}
+      />
       <TournamentStats
         winner={winner}
         runnerUp={runnerUp}

@@ -59,6 +59,41 @@ export type Destination = {
   // 기타 메타: 운영시간, 주소, 좌표 등
 };
 
+/**
+ * 여행지 상세 — 토너먼트 결과 화면 등에서 별도 fetch 로 받는 풍부한 메타.
+ *
+ * 모든 추가 필드는 optional — 백엔드 응답이 점진적으로 채워져도 (또는 누락되어도)
+ * 컴포넌트가 깨지지 않도록. UI 는 있는 필드만 렌더 (분기/디폴트 X).
+ *
+ * API: GET /destinations/:id → DestinationDetail
+ *
+ * 이미지 / 평점 / 운영시간 / 주소 등은 백엔드가 외부 데이터 소스(공공 API,
+ * 큐레이션 DB) 와 결합해 제공한다고 가정.
+ */
+export type DestinationDetail = Destination & {
+  /** 한 줄 요약 (카드용) */
+  summary?: string;
+  /** 대표 이미지 URL 들 — 첫 항목이 헤로 */
+  photos?: string[];
+  address?: string;
+  phone?: string;
+  website?: string;
+  /** 운영시간 — 줄바꿈 가능한 자유 문자열 (백엔드가 i18n/포맷 책임) */
+  openingHours?: string;
+  /** 입장료 / 가격 안내 */
+  admissionFee?: string;
+  /** 좌표 (지도 표시용) */
+  coords?: { lat: number; lng: number };
+  tags?: string[];
+  rating?: {
+    /** 0~5 평균 */
+    value: number;
+    count: number;
+  };
+  /** 추천 시즌 (Season 코드 배열) */
+  bestSeasons?: Season[];
+};
+
 export type BracketMatch = {
   round: number; // 1=결승, 2=준결승, ...
   matchId: string;

@@ -383,6 +383,15 @@
         "category": "Category",
         "runnerUp": "Runner-up"
       },
+      "detail": {
+        "panelLabel": "Destination detail",
+        "address": "Address",
+        "openingHours": "Hours",
+        "admissionFee": "Admission",
+        "phone": "Phone",
+        "website": "Website",
+        "reviewCount": "{n} reviews"
+      },
       "ladder": {
         "subtitle": "Pick a line and see the chance at its endpoint",
         "hintIdle": "Pick a line to start",

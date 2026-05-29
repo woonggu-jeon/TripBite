@@ -1,6 +1,7 @@
 import { api } from '@/services/api/client';
 import type {
   Destination,
+  DestinationDetail,
   SavedTournament,
   TournamentConfig,
 } from '@/features/tournament/types';
@@ -10,12 +11,22 @@ import type {
  *
  * 백엔드 엔드포인트 예시 (실제 스펙에 맞춰 수정):
  *   GET  /destinations/random           — 조건에 맞는 랜덤 N개
+ *   GET  /destinations/:id              — 여행지 상세 (Detail)
  *   POST /tournaments                   — 토너먼트 결과 기록 (랭킹용)
  *   POST /mypage/tournaments            — 마이페이지 저장
  *   GET  /mypage/tournaments            — 저장 목록
  *   DELETE /mypage/tournaments/:id      — 삭제
  */
 export const tournamentApi = {
+  /**
+   * 여행지 상세 — 토너먼트 결과 화면 등에서 풍부한 메타가 필요할 때 호출.
+   * 응답 필드는 모두 optional. 백엔드가 점진적으로 채우는 시나리오 가정.
+   */
+  getDestinationDetail: async (id: string): Promise<DestinationDetail> => {
+    const res = await api.get<DestinationDetail>(`/destinations/${id}`);
+    return res.data;
+  },
+
   fetchCandidates: async (config: TournamentConfig): Promise<Destination[]> => {
     // pool 사이즈 — 매치업 진입 시 토너먼트 사이즈(M, 최대 32) 만큼 destinations 가
     // 필요하므로 최소 32 보장. 여행지 갯수(N) 대비 여유.

@@ -17,6 +17,8 @@ export const tournamentKeys = {
   candidates: (config: CandidateKeyShape) =>
     [...tournamentKeys.all, 'candidates', config] as const,
   saved: () => [...tournamentKeys.all, 'saved'] as const,
+  destinationDetail: (id: string) =>
+    [...tournamentKeys.all, 'destination', id] as const,
 };
 
 /**
@@ -57,6 +59,24 @@ export function useSaveTournament() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: tournamentKeys.saved() });
     },
+  });
+}
+
+/**
+ * 여행지 상세(풍부한 메타) — 우승자 화면 등에서 부가 정보 노출용.
+ *
+ * - id 유효할 때만 enabled
+ * - CACHE.slow: 상세는 자주 안 바뀌므로 길게 (30min stale)
+ * - 응답 필드 모두 optional → UI 는 있는 것만 렌더
+ */
+export function useDestinationDetail(id: string | undefined) {
+  return useQuery({
+    queryKey: id
+      ? tournamentKeys.destinationDetail(id)
+      : ['tournament', 'destination', 'idle'],
+    queryFn: () => tournamentApi.getDestinationDetail(id!),
+    enabled: !!id,
+    ...CACHE.slow,
   });
 }
 

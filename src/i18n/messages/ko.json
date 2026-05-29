@@ -383,6 +383,15 @@
         "category": "카테고리",
         "runnerUp": "결승 상대"
       },
+      "detail": {
+        "panelLabel": "여행지 상세",
+        "address": "주소",
+        "openingHours": "운영시간",
+        "admissionFee": "입장료",
+        "phone": "전화",
+        "website": "웹사이트",
+        "reviewCount": "리뷰 {n}"
+      },
       "ladder": {
         "subtitle": "라인을 선택하면 도착점의 확률이 공개돼요",
         "hintIdle": "원하는 라인을 선택해주세요",
