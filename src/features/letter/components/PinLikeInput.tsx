@@ -83,6 +83,8 @@ export const PinLikeInput = forwardRef<HTMLInputElement, PinLikeInputProps>(
           name={name}
           type="text"
           inputMode="text"
+          // 모바일 키패드 return 키를 "보내기" 로 표시 (iOS 14+, Android Chrome 77+)
+          enterKeyHint="send"
           autoComplete="off"
           autoCapitalize="off"
           autoCorrect="off"
