@@ -17,6 +17,63 @@
   --color-success: #16a34a;
   --color-warning: #d97706;
 
+  /* Primary scale — 컴포넌트 전반에서 자주 쓰던 color-mix() 패턴을 토큰화.
+     사용 가이드:
+       - soft       : 카드 surface 배경 (bg 위 8% 톤)
+       - tint       : chip / badge / 부드러운 강조 배경 (alpha 12%)
+       - border     : 강조 카드 테두리 (solid, border 위 30% mix)
+       - ring       : focus ring / outline 강조 (alpha 30%)
+       - muted      : secondary 텍스트 톤 (fg 위 60% mix)
+       - surface-grad-start : 카드 상단 그라데이션 시작 (10% bg mix) */
+  --color-primary-soft: color-mix(
+    in srgb,
+    var(--color-primary) 8%,
+    var(--color-bg)
+  );
+  --color-primary-surface-grad-start: color-mix(
+    in srgb,
+    var(--color-primary) 10%,
+    var(--color-bg)
+  );
+  --color-primary-tint: color-mix(
+    in srgb,
+    var(--color-primary) 12%,
+    transparent
+  );
+  --color-primary-border: color-mix(
+    in srgb,
+    var(--color-primary) 30%,
+    var(--color-border)
+  );
+  --color-primary-ring: color-mix(
+    in srgb,
+    var(--color-primary) 30%,
+    transparent
+  );
+  --color-primary-muted: color-mix(
+    in srgb,
+    var(--color-primary) 60%,
+    var(--color-fg)
+  );
+
+  /* Surface — bg 위에 elevation 단계별 톤 (카드 / dialog body / popover) */
+  --color-surface: var(--color-bg);
+  --color-surface-soft: color-mix(in srgb, var(--color-fg) 4%, var(--color-bg));
+  --color-surface-elevated: color-mix(
+    in srgb,
+    var(--color-fg) 6%,
+    var(--color-bg)
+  );
+
+  /* Divider / hover / overlay — fg 알파 mix 의 의미별 토큰 */
+  --color-divider: color-mix(in srgb, var(--color-fg) 7%, transparent);
+  --color-hover: color-mix(in srgb, var(--color-fg) 8%, transparent);
+  --color-overlay: color-mix(in srgb, var(--color-fg) 50%, transparent);
+
+  /* Glass — sticky header / popover blur 배경. blur 와 함께 사용. */
+  --color-glass: color-mix(in srgb, var(--color-bg) 82%, transparent);
+  --blur-glass: saturate(180%) blur(12px);
+
   /* Spacing scale (4px grid) */
   --space-1: 0.25rem; /* 4px */
   --space-2: 0.5rem; /* 8 */
@@ -67,6 +124,7 @@
 
   /* Layout */
   --content-max: 720px;
+  --content-pad: 1rem; /* (main)/layout content 의 좌우 padding 과 동일 */
   --header-h: 56px;
   --bottom-nav-h: 64px;
 
@@ -114,6 +172,8 @@
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
     --shadow-lg: 0 10px 32px rgba(0, 0, 0, 0.6);
+    /* dark 에서 overlay/divider 는 흰색 mix → 더 잘 보이도록 */
+    --color-overlay: rgba(0, 0, 0, 0.6);
   }
 }
 

@@ -51,16 +51,18 @@ export function SubHeader({
 
   return (
     <div className={styles.bar}>
-      <button
-        type="button"
-        aria-label="뒤로가기"
-        className={styles.back}
-        onClick={handleBack}
-      >
-        <ChevronLeft size={22} />
-      </button>
-      <h1 className={styles.title}>{title}</h1>
-      <div className={styles.rightSlot}>{rightSlot}</div>
+      <div className={styles.inner}>
+        <button
+          type="button"
+          aria-label="뒤로가기"
+          className={styles.back}
+          onClick={handleBack}
+        >
+          <ChevronLeft size={22} />
+        </button>
+        <h1 className={styles.title}>{title}</h1>
+        <div className={styles.rightSlot}>{rightSlot}</div>
+      </div>
     </div>
   );
 }

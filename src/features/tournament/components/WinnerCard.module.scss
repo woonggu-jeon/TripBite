@@ -5,11 +5,10 @@
   padding: 2rem 1.25rem;
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--color-primary) 10%, var(--color-bg)),
+    var(--color-primary-surface-grad-start),
     var(--color-bg)
   );
-  border: 1.5px solid
-    color-mix(in srgb, var(--color-primary) 30%, var(--color-border));
+  border: 1.5px solid var(--color-primary-border);
   border-radius: var(--radius-lg);
   text-align: center;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
@@ -52,5 +51,5 @@
 
 .region {
   font-weight: 600;
-  color: color-mix(in srgb, var(--color-primary) 60%, var(--color-fg));
+  color: var(--color-primary-muted);
 }

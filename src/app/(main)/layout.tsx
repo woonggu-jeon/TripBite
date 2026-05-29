@@ -32,7 +32,9 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   return (
     <div className={styles.shell}>
       <HeaderSwitch />
-      <main className={styles.content}>{children}</main>
+      <main className={styles.content}>
+        <div className={styles.contentInner}>{children}</div>
+      </main>
       <BottomNav />
     </div>
   );

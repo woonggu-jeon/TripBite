@@ -76,7 +76,7 @@
   letter-spacing: 0.06em;
   padding: 0.25rem 0.625rem;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--color-primary) 10%, var(--color-bg));
+  background: var(--color-primary-surface-grad-start);
 }
 
 .doneMsg {

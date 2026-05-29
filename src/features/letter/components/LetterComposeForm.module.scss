@@ -77,7 +77,7 @@
   font-size: 0.6875rem;
   font-weight: 600;
   padding: 1px 6px;
-  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  background: var(--color-primary-tint);
   color: color-mix(in srgb, var(--color-primary) 80%, var(--color-fg));
   border-radius: var(--radius-sm);
   letter-spacing: -0.01em;

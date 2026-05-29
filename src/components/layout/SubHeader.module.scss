@@ -1,19 +1,32 @@
+/* outer — 풀폭 sticky.
+   .contentInner(720px + padding) 안에서 100vw 트릭으로 viewport 전체로 확장.
+   .shell 에 overflow-x:hidden 이 있어 미세 스크롤 발생 X.
+   layout content 의 top padding 도 음수 마진으로 상쇄. */
 .bar {
   position: sticky;
   top: 0;
   z-index: var(--z-header);
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  margin-top: calc(-1 * var(--content-pad));
+  margin-bottom: var(--space-3);
+  background: var(--color-glass);
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.inner {
   display: grid;
   grid-template-columns: 40px 1fr 40px;
   align-items: center;
   gap: var(--space-2);
+  max-width: var(--content-max);
+  width: 100%;
   height: var(--header-h);
-  /* layout.content 의 좌우 padding(var(--space-4)) 을 상쇄해 가장자리까지 채움 */
-  margin: calc(-1 * var(--space-4)) calc(-1 * var(--space-4)) var(--space-3);
+  margin: 0 auto;
   padding: 0 var(--space-3);
-  background: color-mix(in srgb, var(--color-bg) 82%, transparent);
-  backdrop-filter: saturate(180%) blur(12px);
-  -webkit-backdrop-filter: saturate(180%) blur(12px);
-  border-bottom: 1px solid color-mix(in srgb, var(--color-fg) 7%, transparent);
 }
 
 .back {
@@ -29,7 +42,7 @@
     transform 0.1s ease;
 
   &:hover {
-    background: color-mix(in srgb, var(--color-fg) 8%, transparent);
+    background: var(--color-hover);
   }
   &:active {
     transform: scale(0.94);
@@ -50,6 +63,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   padding: 0 var(--space-1);
+  min-width: 0; /* ellipsis 가 grid track 안에서 동작하도록 */
 }
 
 .rightSlot {

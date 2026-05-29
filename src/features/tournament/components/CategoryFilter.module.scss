@@ -35,7 +35,7 @@
 
   &.active {
     border-color: var(--color-primary);
-    background: color-mix(in srgb, var(--color-primary) 8%, var(--color-bg));
+    background: var(--color-primary-soft);
     color: var(--color-primary);
   }
 }

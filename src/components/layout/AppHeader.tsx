@@ -24,36 +24,38 @@ export function AppHeader() {
 
   return (
     <header className={styles.header}>
-      {/* 1) 알림 */}
-      <div className={styles.slot}>
-        <button
-          type="button"
-          aria-label={t('notification')}
-          className={styles.iconButton}
-          onClick={() => setOpenNotification((v) => !v)}
-        >
-          <Icon name="bell" size="lg" />
-          {hasUnread && <span className={styles.dot} aria-hidden />}
-        </button>
-        {openNotification && (
-          <NotificationDropdown onClose={() => setOpenNotification(false)} />
-        )}
-      </div>
+      <div className={styles.inner}>
+        {/* 1) 알림 */}
+        <div className={styles.slot}>
+          <button
+            type="button"
+            aria-label={t('notification')}
+            className={styles.iconButton}
+            onClick={() => setOpenNotification((v) => !v)}
+          >
+            <Icon name="bell" size="lg" />
+            {hasUnread && <span className={styles.dot} aria-hidden />}
+          </button>
+          {openNotification && (
+            <NotificationDropdown onClose={() => setOpenNotification(false)} />
+          )}
+        </div>
 
-      {/* 2) 로고 */}
-      <Link href={ROUTES.HOME} className={styles.logo} aria-label="Home">
-        {t('logo')}
-      </Link>
-
-      {/* 3) 설정 */}
-      <div className={styles.slot} style={{ justifyContent: 'flex-end' }}>
-        <Link
-          href={ROUTES.SETTINGS}
-          aria-label={t('settings')}
-          className={styles.iconButton}
-        >
-          <Icon name="settings" size="lg" />
+        {/* 2) 로고 */}
+        <Link href={ROUTES.HOME} className={styles.logo} aria-label="Home">
+          {t('logo')}
         </Link>
+
+        {/* 3) 설정 */}
+        <div className={`${styles.slot} ${styles.slotEnd}`}>
+          <Link
+            href={ROUTES.SETTINGS}
+            aria-label={t('settings')}
+            className={styles.iconButton}
+          >
+            <Icon name="settings" size="lg" />
+          </Link>
+        </div>
       </div>
     </header>
   );
