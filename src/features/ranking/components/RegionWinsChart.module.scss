@@ -22,9 +22,9 @@
   text-align: left;
   cursor: pointer;
   transition:
-    border-color 0.15s ease,
-    transform 0.1s ease,
-    background 0.15s ease;
+    border-color var(--motion-base) ease,
+    transform var(--motion-fast) ease,
+    background var(--motion-base) ease;
 
   &:hover {
     border-color: var(--color-primary-border);
@@ -76,8 +76,8 @@
   border-radius: inherit;
   // mount 시 width 가 inline style 로 즉시 들어가지만,
   // 동일 width 재할당 시 안정적인 transition 을 위해 ease-out.
-  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  animation: barIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: width 0.6s var(--ease-out);
+  animation: barIn 0.6s var(--ease-out) both;
   transform-origin: left center;
 }
 

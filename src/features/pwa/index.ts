@@ -12,6 +12,7 @@
 export { PwaUpdateBanner } from './components/PwaUpdateBanner';
 export { OfflineBanner } from './components/OfflineBanner';
 export { InstallPromptBanner } from './components/InstallPromptBanner';
+export { MockModeBanner } from './components/MockModeBanner';
 export { useServiceWorkerUpdate } from './hooks/use-service-worker-update';
 export { useInstallPrompt } from './hooks/use-install-prompt';
 export { useOnline } from './hooks/use-online';

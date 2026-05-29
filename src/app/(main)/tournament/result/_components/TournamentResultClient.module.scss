@@ -58,8 +58,8 @@
   font-size: 0.9375rem;
   cursor: pointer;
   transition:
-    opacity 0.15s ease,
-    transform 0.1s ease;
+    opacity var(--motion-base) ease,
+    transform var(--motion-fast) ease;
 
   &:hover:not(:disabled) {
     opacity: 0.92;

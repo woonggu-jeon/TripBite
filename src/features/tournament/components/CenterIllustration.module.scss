@@ -14,7 +14,7 @@
   cursor: pointer;
   z-index: 2;
   animation: float 4.5s ease-in-out infinite;
-  transition: transform 0.15s ease;
+  transition: transform var(--motion-base) ease;
   isolation: isolate;
 
   &::before {

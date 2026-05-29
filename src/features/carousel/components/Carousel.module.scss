@@ -53,7 +53,9 @@
   height: 6px;
   border-radius: 9999px;
   background: var(--color-border);
-  transition: width 0.2s ease, background 0.2s ease;
+  transition:
+    width var(--motion-base) ease,
+    background var(--motion-base) ease;
 }
 
 .dotActive {

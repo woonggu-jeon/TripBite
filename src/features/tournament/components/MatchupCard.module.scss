@@ -10,15 +10,15 @@
   text-align: center;
   cursor: pointer;
   transition:
-    border-color 0.15s ease,
-    background 0.15s ease,
-    transform 0.1s ease,
-    box-shadow 0.15s ease;
+    border-color var(--motion-base) ease,
+    background var(--motion-base) ease,
+    transform var(--motion-fast) ease,
+    box-shadow var(--motion-base) ease;
 
   &:hover:not(:disabled) {
     border-color: var(--color-primary);
     background: color-mix(in srgb, var(--color-primary) 6%, var(--color-bg));
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-md);
   }
   &:active:not(:disabled) {
     transform: scale(0.97);

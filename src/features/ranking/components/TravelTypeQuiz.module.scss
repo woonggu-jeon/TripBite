@@ -28,9 +28,9 @@
   background: color-mix(in srgb, var(--color-border) 70%, transparent);
   cursor: default;
   transition:
-    background-color 0.2s ease,
-    height 0.2s ease,
-    box-shadow 0.2s ease;
+    background-color var(--motion-base) ease,
+    height var(--motion-base) ease,
+    box-shadow var(--motion-base) ease;
 }
 
 .segDone {
@@ -115,9 +115,9 @@
   border-radius: var(--radius-md);
   cursor: pointer;
   transition:
-    border-color 0.15s ease,
-    background 0.15s ease,
-    transform 0.1s ease;
+    border-color var(--motion-base) ease,
+    background var(--motion-base) ease,
+    transform var(--motion-fast) ease;
   word-break: keep-all;
 
   &:hover:not(:disabled) {
@@ -202,7 +202,7 @@
   font-size: 4.5rem;
   line-height: 1;
   filter: var(--drop-shadow-icon-strong);
-  animation: finishingPop 0.7s cubic-bezier(0.34, 1.6, 0.64, 1) both;
+  animation: finishingPop 0.7s var(--ease-spring) both;
   z-index: 1;
 }
 
@@ -211,7 +211,7 @@
   font-weight: 800;
   color: var(--color-fg);
   letter-spacing: -0.02em;
-  animation: finishingRise 0.6s 0.2s ease-out both;
+  animation: finishingRise 0.6s var(--motion-base) ease-out both;
   opacity: 0;
   z-index: 1;
 }

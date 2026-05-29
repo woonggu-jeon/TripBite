@@ -38,8 +38,8 @@
   border-radius: var(--radius-md);
   color: var(--color-fg);
   transition:
-    background 0.15s ease,
-    transform 0.1s ease;
+    background var(--motion-base) ease,
+    transform var(--motion-fast) ease;
 
   &:hover {
     background: var(--color-hover);

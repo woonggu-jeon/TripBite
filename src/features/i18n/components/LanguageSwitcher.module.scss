@@ -1,6 +1,6 @@
 .wrap {
   padding: var(--space-3) 0;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--motion-base) ease;
 
   &[data-pending] {
     opacity: 0.55;

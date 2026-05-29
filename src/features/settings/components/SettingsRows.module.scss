@@ -12,7 +12,7 @@
   background: var(--color-bg);
   border: 1.5px solid var(--color-border);
   border-radius: var(--radius-md);
-  transition: border-color 0.15s ease;
+  transition: border-color var(--motion-base) ease;
 
   &:hover {
     border-color: color-mix(in srgb, var(--color-fg) 18%, var(--color-border));
@@ -48,7 +48,7 @@
   color: var(--color-fg);
   font-size: 0.9375rem;
   font-weight: 600;
-  transition: border-color 0.15s ease;
+  transition: border-color var(--motion-base) ease;
 
   &:hover {
     border-color: color-mix(in srgb, var(--color-fg) 18%, var(--color-border));

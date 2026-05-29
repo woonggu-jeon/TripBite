@@ -23,7 +23,7 @@
   color: var(--color-muted);
   font-size: 0.6875rem;
   font-weight: 500;
-  transition: color 0.15s ease;
+  transition: color var(--motion-base) ease;
 
   &:hover {
     color: var(--color-fg);
@@ -60,7 +60,7 @@
   // 활성 상태에서 살짝 강조
   .active & {
     transform: translateY(-2px);
-    transition: transform 0.15s ease;
+    transition: transform var(--motion-base) ease;
   }
 }
 

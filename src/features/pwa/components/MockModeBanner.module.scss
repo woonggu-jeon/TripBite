@@ -1,0 +1,8 @@
+.wrap {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + var(--space-2));
+  right: var(--space-3);
+  z-index: var(--z-elevated);
+  pointer-events: none;
+  opacity: 0.85;
+}

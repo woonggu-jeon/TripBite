@@ -8,9 +8,9 @@
   border: 1.5px solid var(--color-border);
   border-radius: var(--radius-lg);
   transition:
-    border-color 0.15s ease,
-    transform 0.1s ease,
-    box-shadow 0.15s ease;
+    border-color var(--motion-base) ease,
+    transform var(--motion-fast) ease,
+    box-shadow var(--motion-base) ease;
 }
 
 .rank {

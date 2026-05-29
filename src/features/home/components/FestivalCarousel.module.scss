@@ -10,13 +10,13 @@
   overflow: hidden;
   height: 100%;
   transition:
-    border-color 0.15s ease,
-    transform 0.1s ease,
-    box-shadow 0.15s ease;
+    border-color var(--motion-base) ease,
+    transform var(--motion-fast) ease,
+    box-shadow var(--motion-base) ease;
 
   &:hover {
     border-color: var(--accent, var(--color-primary));
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-md);
   }
   &:active {
     transform: scale(0.97);

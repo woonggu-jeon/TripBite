@@ -9,9 +9,9 @@
   color: var(--color-fg);
   position: relative;
   transition:
-    border-color 0.15s ease,
-    transform 0.1s ease,
-    box-shadow 0.15s ease;
+    border-color var(--motion-base) ease,
+    transform var(--motion-fast) ease,
+    box-shadow var(--motion-base) ease;
 
   &:hover {
     border-color: var(--color-primary);

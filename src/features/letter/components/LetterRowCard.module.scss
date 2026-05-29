@@ -10,9 +10,9 @@
   text-decoration: none;
   color: var(--color-fg);
   transition:
-    border-color 0.15s ease,
-    background 0.15s ease,
-    transform 0.1s ease;
+    border-color var(--motion-base) ease,
+    background var(--motion-base) ease,
+    transform var(--motion-fast) ease;
 
   &:hover {
     border-color: var(--color-primary);
@@ -87,9 +87,9 @@
   border-radius: 50%;
   color: var(--color-muted);
   transition:
-    color 0.15s ease,
-    background 0.15s ease,
-    transform 0.1s ease;
+    color var(--motion-base) ease,
+    background var(--motion-base) ease,
+    transform var(--motion-fast) ease;
 
   &:hover {
     background: color-mix(in srgb, var(--color-fg) 6%, transparent);

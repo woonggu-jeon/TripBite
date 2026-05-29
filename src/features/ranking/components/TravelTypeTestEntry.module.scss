@@ -14,8 +14,8 @@
   color: var(--color-fg);
   text-decoration: none;
   transition:
-    border-color 0.15s ease,
-    transform 0.1s ease;
+    border-color var(--motion-base) ease,
+    transform var(--motion-fast) ease;
 
   &:hover {
     border-color: var(--color-primary);

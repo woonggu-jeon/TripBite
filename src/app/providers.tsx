@@ -19,6 +19,7 @@ import {
   PwaUpdateBanner,
   OfflineBanner,
   InstallPromptBanner,
+  MockModeBanner,
 } from '@/features/pwa';
 import { usePageView } from '@/features/analytics/hooks/use-page-view';
 import { WebVitalsTracker } from '@/features/analytics/web-vitals';
@@ -55,15 +56,25 @@ function PageViewTracker() {
 }
 
 /**
- * MSW worker 초기 상태:
- *   - production 또는 토글 OFF면 ready=true (즉시 렌더)
- *   - dev + 토글 ON이면 ready=false → useEffect 안에서 worker.start() 완료 후 true
+ * MSW worker 활성화 조건 — NODE_ENV 무관, env 토글로만 결정.
  *
- * dev에서 첫 렌더가 잠시 빈 화면이 되는 비용은 감수 (백엔드 mock 호출 누락 방지).
+ *   ▸ NEXT_PUBLIC_USE_MSW=true 면 dev / preview / prod 어디서든 mock 활성화
+ *   ▸ 운영(prod) 활용 시나리오:
+ *       - 백엔드 미준비 상태로 데모/마케팅 공개
+ *       - 스테이징/QA — 결정적 mock 시드로 회귀 시나리오 재현
+ *       - 오프라인 시연
+ *   ▸ 주의사항:
+ *       - MSW 번들(~80KB) + seeds 가 운영 청크에 포함 → 번들 사이즈 증가
+ *       - public/mockServiceWorker.js 가 root scope 에 등록 — Serwist 의 /sw.js 와
+ *         별도 파일이라 충돌은 없지만, 두 sw 가 같은 fetch 를 처리하지 않도록
+ *         MSW 핸들러 prefix(`/api/backend`)와 Serwist precache 영역을 분리해야 함
+ *       - 사용자가 실제 API 와 헷갈리지 않도록 운영 활성화 시 화면에 mock 배너 노출 권장
+ *
+ * 초기 상태:
+ *   - 토글 OFF면 ready=true (즉시 렌더)
+ *   - 토글 ON이면 ready=false → worker.start() 완료 후 true
  */
-const MSW_ENABLED =
-  process.env.NODE_ENV === 'development' &&
-  process.env.NEXT_PUBLIC_USE_MSW === 'true';
+const MSW_ENABLED = process.env.NEXT_PUBLIC_USE_MSW === 'true';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -121,6 +132,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <PwaUpdateBanner />
       <OfflineBanner />
       <InstallPromptBanner />
+
+      {/* 운영에서 mock 활성화 시 사용자에게 DEMO 모드임을 알리는 작은 chip */}
+      {MSW_ENABLED && <MockModeBanner />}
 
       {process.env.NODE_ENV === 'development' && (
         <ReactQueryDevtools initialIsOpen={false} />

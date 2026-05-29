@@ -154,9 +154,9 @@
   border-radius: var(--radius-md);
   cursor: pointer;
   transition:
-    opacity 0.15s ease,
-    transform 0.1s ease,
-    border-color 0.15s ease;
+    opacity var(--motion-base) ease,
+    transform var(--motion-fast) ease,
+    border-color var(--motion-base) ease;
 
   &:active {
     transform: scale(0.98);

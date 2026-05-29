@@ -37,8 +37,8 @@
     stroke: var(--map-region-stroke);
     stroke-width: 2;
     transition:
-      fill 0.15s ease,
-      stroke 0.15s ease;
+      fill var(--motion-base) ease,
+      stroke var(--motion-base) ease;
   }
 
   // 시군 그룹 hover — 같은 시군의 모든 path 에 클래스 부여 (JS 에서 토글).
@@ -76,7 +76,7 @@
   animation-name: drop;
   animation-duration: 0.8s;
   animation-fill-mode: forwards;
-  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation-timing-function: var(--ease-spring);
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.18));
   user-select: none;
 }
@@ -89,9 +89,9 @@
   border-radius: 50%;
   cursor: pointer;
   transition:
-    background 0.15s ease,
-    box-shadow 0.15s ease,
-    filter 0.15s ease;
+    background var(--motion-base) ease,
+    box-shadow var(--motion-base) ease,
+    filter var(--motion-base) ease;
 
   &:hover:not(.dimmed) {
     background: color-mix(in srgb, var(--color-primary) 18%, transparent);

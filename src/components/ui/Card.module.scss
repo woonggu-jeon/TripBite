@@ -1,0 +1,55 @@
+.card {
+  display: block;
+  border-radius: var(--radius-lg);
+  transition:
+    border-color var(--motion-base) ease,
+    background var(--motion-base) ease,
+    box-shadow var(--motion-base) ease;
+}
+
+// variants
+.v-surface {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+}
+
+.v-soft {
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+}
+
+.v-elevated {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card-strong);
+}
+
+.v-highlighted {
+  background: linear-gradient(
+    180deg,
+    var(--color-primary-surface-grad-start),
+    var(--color-bg)
+  );
+  border: 1.5px solid var(--color-primary-border);
+  box-shadow: var(--shadow-card-strong);
+}
+
+// padding scale (var(--space-*) 토큰 활용)
+.p-none {
+  padding: 0;
+}
+.p-sm {
+  padding: var(--space-3);
+}
+.p-md {
+  padding: var(--space-4);
+}
+.p-lg {
+  padding: var(--space-6) var(--space-5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+}

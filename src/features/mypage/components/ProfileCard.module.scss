@@ -27,7 +27,7 @@
   display: grid;
   place-items: center;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-md);
 }
 
 .avatarImg {
@@ -58,7 +58,7 @@
   color: var(--color-primary-fg);
   border: 2px solid var(--color-bg);
   cursor: pointer;
-  transition: transform 0.1s ease;
+  transition: transform var(--motion-fast) ease;
 
   &:hover {
     transform: scale(1.05);
