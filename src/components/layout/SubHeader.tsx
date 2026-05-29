@@ -22,13 +22,24 @@ import styles from './SubHeader.module.scss';
 export function SubHeader({
   title,
   rightSlot,
+  onBack,
 }: {
   title: string;
   rightSlot?: React.ReactNode;
+  /**
+   * 뒤로가기 동작 override. 미전달 시 기본 동작:
+   * history > 1 → router.back, 아니면 홈(/)으로 replace.
+   * wizard step state 등 페이지 내부 분기 가 필요할 때 전달.
+   */
+  onBack?: () => void;
 }) {
   const router = useRouter();
 
   const handleBack = () => {
+    if (onBack) {
+      onBack();
+      return;
+    }
     // 직접 진입(history 1) 시 router.back 은 새 탭/외부에서 들어왔을 때 동작 안 함.
     // 안전하게 홈으로 fallback.
     if (typeof window !== 'undefined' && window.history.length > 1) {

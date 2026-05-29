@@ -221,12 +221,9 @@
     "resultTitle": "Bracket result",
     "inProgressTitle": "Bracket in progress",
     "setup": {
-      "back": "Back",
       "next": "Next",
       "start": "Start",
-      "progress": "{current} / {total}",
       "selectToContinue": "Pick one to continue",
-      "selectAtLeastOne": "Select at least one",
       "steps": {
         "themeKind": {
           "title": "What's the theme?",

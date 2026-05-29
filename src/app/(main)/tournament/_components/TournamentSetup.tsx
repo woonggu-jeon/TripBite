@@ -11,6 +11,7 @@ import { SeasonSelector } from '@/features/tournament/components/SeasonSelector'
 import { SpecialDaySelector } from '@/features/tournament/components/SpecialDaySelector';
 import { CategoryFilter } from '@/features/tournament/components/CategoryFilter';
 import { CountSelector } from '@/features/tournament/components/CountSelector';
+import { SubHeader } from '@/components/layout/SubHeader';
 import { useTournamentStore } from '@/features/tournament/store/tournament-store';
 import type {
   DestinationCategory,
@@ -42,9 +43,6 @@ import styles from './TournamentSetup.module.scss';
  */
 
 type Step = 1 | 2 | 3 | 4;
-// progress UI 비노출 — 추후 복원 시 사용. 주석 해제하면 lint warning 사라짐.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const TOTAL_STEPS = 4;
 
 export function TournamentSetup() {
   const router = useRouter();
@@ -132,89 +130,62 @@ export function TournamentSetup() {
   })();
 
   return (
-    <div className={styles.wrap}>
-      <header className={styles.head}>
-        <button
-          type="button"
-          className={styles.back}
-          onClick={goBack}
-          aria-label={t('back')}
-        >
-          ←
-        </button>
-        {/* 진행 표시 — 일단 비노출. 추후 복원 시 주석 해제.
-        <span className={styles.progress}>
-          {t('progress', { current: step, total: TOTAL_STEPS })}
-        </span>
-        */}
-        <span aria-hidden className={styles.headSpacer} />
-      </header>
+    <>
+      <SubHeader title={heading.title} onBack={goBack} />
+      <div className={styles.wrap}>
+        <div className={styles.section}>
+          <p className={styles.hint}>{heading.hint}</p>
 
-      {/* 진행 바 — 일단 비노출. 추후 복원 시 주석 해제.
-      <div
-        className={styles.progressBar}
-        role="progressbar"
-        aria-valuemin={1}
-        aria-valuemax={TOTAL_STEPS}
-        aria-valuenow={step}
-      >
-        <div
-          className={styles.progressFill}
-          style={{ width: `${(step / TOTAL_STEPS) * 100}%` }}
-        />
-      </div>
-      */}
+          {step === 1 && (
+            <ThemeKindSelector value={themeKind} onChange={handleKind} />
+          )}
+          {step === 2 && themeKind === 'season' && (
+            <SeasonSelector value={season} onChange={handleSeason} />
+          )}
+          {step === 2 && themeKind === 'special' && (
+            <SpecialDaySelector
+              value={specialDay}
+              onChange={handleSpecialDay}
+            />
+          )}
+          {step === 3 && (
+            <CategoryFilter values={categories} onChange={setCategories} />
+          )}
+          {step === 4 && (
+            <CountSelector
+              value={count}
+              onChange={handleCount}
+              mode="destination"
+            />
+          )}
+        </div>
 
-      <div className={styles.section}>
-        <h2 className={styles.title}>{heading.title}</h2>
-        <p className={styles.hint}>{heading.hint}</p>
-
-        {step === 1 && (
-          <ThemeKindSelector value={themeKind} onChange={handleKind} />
-        )}
-        {step === 2 && themeKind === 'season' && (
-          <SeasonSelector value={season} onChange={handleSeason} />
-        )}
-        {step === 2 && themeKind === 'special' && (
-          <SpecialDaySelector value={specialDay} onChange={handleSpecialDay} />
-        )}
         {step === 3 && (
-          <CategoryFilter values={categories} onChange={setCategories} />
+          <button
+            type="button"
+            className={styles.next}
+            onClick={() => setStep(4)}
+            disabled={categories.length === 0}
+          >
+            {t('next')}
+          </button>
         )}
+
         {step === 4 && (
-          <CountSelector
-            value={count}
-            onChange={handleCount}
-            mode="destination"
-          />
+          <button
+            type="button"
+            className={styles.start}
+            onClick={handleStart}
+            disabled={!canStart}
+          >
+            {t('start')}
+          </button>
+        )}
+
+        {(step === 1 || step === 2) && (
+          <p className={styles.autoHint}>{t('selectToContinue')}</p>
         )}
       </div>
-
-      {step === 3 && (
-        <button
-          type="button"
-          className={styles.next}
-          onClick={() => setStep(4)}
-          disabled={categories.length === 0}
-        >
-          {t('next')}
-        </button>
-      )}
-
-      {step === 4 && (
-        <button
-          type="button"
-          className={styles.start}
-          onClick={handleStart}
-          disabled={!canStart}
-        >
-          {t('start')}
-        </button>
-      )}
-
-      {(step === 1 || step === 2) && (
-        <p className={styles.autoHint}>{t('selectToContinue')}</p>
-      )}
-    </div>
+    </>
   );
 }

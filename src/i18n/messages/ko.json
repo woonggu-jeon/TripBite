@@ -221,12 +221,9 @@
     "resultTitle": "토너먼트 결과",
     "inProgressTitle": "토너먼트 진행 중",
     "setup": {
-      "back": "뒤로",
       "next": "다음",
       "start": "시작하기",
-      "progress": "{current} / {total}",
       "selectToContinue": "선택하면 다음으로 진행해요",
-      "selectAtLeastOne": "최소 1개 이상 선택해주세요",
       "steps": {
         "themeKind": {
           "title": "어떤 테마로 떠나볼까요?",
