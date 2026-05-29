@@ -503,12 +503,23 @@
     "retry": "Try again",
     "back": "Back",
     "progress": "{current}/{total}",
+    "progressLabel": "Test progress",
+    "progressHint": "Tap the progress to revisit a previous question",
+    "jumpTo": "Jump to question {n}",
+    "emptyTitle": "Test is being prepared",
+    "emptyHint": "Please try again shortly",
+    "finishing": {
+      "making": "Calculating your result…",
+      "done": "Test complete!",
+      "moving": "Heading to your result"
+    },
     "submitting": "Calculating your result…",
     "submitError": "Couldn't save the result. Please try again.",
     "result": {
       "metaTitle": "Travel type result",
       "loading": "Loading your result…",
       "empty": "No saved result yet",
+      "emptyHint": "Take the 5-question test to discover your travel style",
       "startTest": "Start the test",
       "keywordsAria": "Type keywords",
       "recommendTitle": "Destinations you'll love",
@@ -521,6 +532,7 @@
       "back": "Back",
       "loading": "Loading card…",
       "empty": "No result to share yet",
+      "emptyHint": "Take the test first",
       "startTest": "Start the test",
       "shareCta": "Share",
       "shareHint": "If sharing isn't supported, the text is copied to your clipboard"

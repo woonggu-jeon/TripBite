@@ -503,12 +503,23 @@
     "retry": "다시 시도",
     "back": "뒤로",
     "progress": "{current}/{total}",
+    "progressLabel": "테스트 진행도",
+    "progressHint": "프로그레스를 누르면 이전 질문으로 돌아갈 수 있어요",
+    "jumpTo": "{n}번 질문으로 이동",
+    "emptyTitle": "테스트를 준비 중이에요",
+    "emptyHint": "잠시 후 다시 시도해주세요",
+    "finishing": {
+      "making": "결과를 만드는 중...",
+      "done": "테스트 완료!",
+      "moving": "잠시 후 결과 화면으로 이동합니다"
+    },
     "submitting": "결과를 만드는 중...",
     "submitError": "결과 저장에 실패했어요. 잠시 후 다시 시도해주세요.",
     "result": {
       "metaTitle": "여행 유형 결과",
       "loading": "결과를 불러오는 중...",
       "empty": "아직 테스트한 결과가 없어요",
+      "emptyHint": "5문항 테스트로 내 여행 스타일을 찾아보세요",
       "startTest": "테스트 시작하기",
       "keywordsAria": "유형 키워드",
       "recommendTitle": "이런 여행지가 어울려요",
@@ -521,6 +532,7 @@
       "back": "뒤로",
       "loading": "카드를 불러오는 중...",
       "empty": "공유할 결과가 없어요",
+      "emptyHint": "테스트를 먼저 마쳐주세요",
       "startTest": "테스트 시작하기",
       "shareCta": "공유하기",
       "shareHint": "지원되지 않는 환경에선 자동으로 클립보드에 복사돼요"

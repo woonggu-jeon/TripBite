@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { Share2, RotateCcw } from 'lucide-react';
 import { haptic } from '@/lib/haptic';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
+import { EmptyState } from '@/components/feedback/EmptyState';
 import { useMyTravelType } from '@/features/ranking/hooks/use-ranking';
 import type { TravelType } from '@/features/ranking/types';
 import styles from './TravelTypeResult.module.scss';
@@ -44,23 +45,33 @@ export function TravelTypeResult() {
   }
   if (!data) {
     return (
-      <div className={styles.fallback}>
-        <p>{t('empty')}</p>
-        <button
-          type="button"
-          className={styles.retry}
-          onClick={() => {
-            haptic.tap();
-            router.replace('/quiz');
-          }}
-        >
-          {t('startTest')}
-        </button>
-      </div>
+      <EmptyState
+        icon={
+          <span aria-hidden style={{ fontSize: 28 }}>
+            🧭
+          </span>
+        }
+        title={t('empty')}
+        description={t('emptyHint')}
+        action={
+          <button
+            type="button"
+            className={styles.retry}
+            onClick={() => {
+              haptic.tap();
+              router.replace('/quiz');
+            }}
+          >
+            {t('startTest')}
+          </button>
+        }
+      />
     );
   }
 
   const result: TravelType = data;
+  const keywords = result.keywords ?? [];
+  const recommended = result.recommended ?? [];
 
   return (
     <div className={styles.wrap}>
@@ -70,36 +81,42 @@ export function TravelTypeResult() {
         </div>
         <p className={styles.codeBadge}>{result.code}</p>
         <h2 className={styles.title}>{result.title}</h2>
-        <ul className={styles.keywords} aria-label={t('keywordsAria')}>
-          {result.keywords.map((k) => (
-            <li key={k} className={styles.keyword}>
-              {k}
-            </li>
-          ))}
-        </ul>
-        <p className={styles.description}>{result.description}</p>
+        {keywords.length > 0 && (
+          <ul className={styles.keywords} aria-label={t('keywordsAria')}>
+            {keywords.map((k) => (
+              <li key={k} className={styles.keyword}>
+                {k}
+              </li>
+            ))}
+          </ul>
+        )}
+        {result.description && (
+          <p className={styles.description}>{result.description}</p>
+        )}
       </section>
 
-      <section className={styles.recommend}>
-        <h3 className={styles.recommendTitle}>{t('recommendTitle')}</h3>
-        <ul className={styles.recommendList}>
-          {result.recommended.map((d) => {
-            const region = CHUNGBUK_REGIONS.find((r) => r.code === d.region);
-            const regionLabel = region?.ko ?? d.region;
-            return (
-              <li key={d.id} className={styles.recommendItem}>
-                <span className={styles.recEmoji} aria-hidden>
-                  {CATEGORY_EMOJI[d.category]}
-                </span>
-                <div className={styles.recText}>
-                  <p className={styles.recName}>{d.name}</p>
-                  <p className={styles.recMeta}>{regionLabel}</p>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
+      {recommended.length > 0 && (
+        <section className={styles.recommend}>
+          <h3 className={styles.recommendTitle}>{t('recommendTitle')}</h3>
+          <ul className={styles.recommendList}>
+            {recommended.map((d) => {
+              const region = CHUNGBUK_REGIONS.find((r) => r.code === d.region);
+              const regionLabel = region?.ko ?? d.region;
+              return (
+                <li key={d.id} className={styles.recommendItem}>
+                  <span className={styles.recEmoji} aria-hidden>
+                    {CATEGORY_EMOJI[d.category]}
+                  </span>
+                  <div className={styles.recText}>
+                    <p className={styles.recName}>{d.name}</p>
+                    <p className={styles.recMeta}>{regionLabel}</p>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
 
       <div className={styles.actions}>
         <Link

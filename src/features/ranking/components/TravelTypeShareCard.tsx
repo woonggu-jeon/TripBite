@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Share2, ChevronLeft } from 'lucide-react';
 import { haptic } from '@/lib/haptic';
+import { EmptyState } from '@/components/feedback/EmptyState';
 import { useMyTravelType } from '@/features/ranking/hooks/use-ranking';
 import styles from './TravelTypeShareCard.module.scss';
 
@@ -27,20 +28,32 @@ export function TravelTypeShareCard() {
   }
   if (!data) {
     return (
-      <div className={styles.fallback}>
-        <p>{t('empty')}</p>
-        <button
-          type="button"
-          className={styles.retry}
-          onClick={() => router.replace('/quiz')}
-        >
-          {t('startTest')}
-        </button>
-      </div>
+      <EmptyState
+        icon={
+          <span aria-hidden style={{ fontSize: 28 }}>
+            🧭
+          </span>
+        }
+        title={t('empty')}
+        description={t('emptyHint')}
+        action={
+          <button
+            type="button"
+            className={styles.retry}
+            onClick={() => router.replace('/quiz')}
+          >
+            {t('startTest')}
+          </button>
+        }
+      />
     );
   }
 
-  const shareText = `${data.emoji} ${data.title} — ${data.keywords.join(' ')}`;
+  const keywords = data.keywords ?? [];
+  const shareText =
+    keywords.length > 0
+      ? `${data.emoji} ${data.title} — ${keywords.join(' ')}`
+      : `${data.emoji} ${data.title}`;
 
   const handleShare = async () => {
     haptic.tap();
@@ -93,11 +106,13 @@ export function TravelTypeShareCard() {
         </span>
         <p className={styles.cardCode}>{data.code}</p>
         <h3 className={styles.cardTitle}>{data.title}</h3>
-        <ul className={styles.cardKeywords}>
-          {data.keywords.map((k) => (
-            <li key={k}>{k}</li>
-          ))}
-        </ul>
+        {keywords.length > 0 && (
+          <ul className={styles.cardKeywords}>
+            {keywords.map((k) => (
+              <li key={k}>{k}</li>
+            ))}
+          </ul>
+        )}
         <p className={styles.cardBrand}>TripBite · 여행 유형 테스트</p>
       </article>
 
