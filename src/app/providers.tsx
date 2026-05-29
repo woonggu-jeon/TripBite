@@ -102,8 +102,25 @@ export function Providers({ children }: { children: React.ReactNode }) {
     if (!MSW_ENABLED || mswReady) return;
     let cancelled = false;
     void (async () => {
-      const { worker } = await import('@/mocks/browser');
-      await worker.start({ onUnhandledRequest: 'bypass' });
+      try {
+        const { worker } = await import('@/mocks/browser');
+        await worker.start({
+          onUnhandledRequest: 'bypass',
+          // public/mockServiceWorker.js 가 root scope 에 등록되도록 명시.
+          // Serwist /sw.js 와 별도 파일이라 충돌 없음.
+          serviceWorker: { url: '/mockServiceWorker.js' },
+        });
+      } catch (err) {
+        // 운영 환경에서 service worker 등록 실패 시(권한/스코프/네트워크) 앱이 멈추지 않도록.
+        // 콘솔에만 경고하고 mswReady=true 로 진행 — 이후 API 호출은 실 백엔드로 감.
+        // (실 백엔드 없으면 각 fetch 가 404 → 화면별 에러 UI 가 처리)
+        if (typeof window !== 'undefined') {
+          console.warn(
+            '[mock] MSW worker 등록 실패 — 앱은 진행하되 API 호출이 실 백엔드로 갑니다.',
+            err,
+          );
+        }
+      }
       if (!cancelled) setMswReady(true);
     })();
     return () => {
