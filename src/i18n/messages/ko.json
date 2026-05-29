@@ -334,6 +334,9 @@
         "matchCount": "매치 {current} / {total}",
         "progressLabel": "토너먼트 진행도",
         "autoWin": "선택한 한 곳이 바로 우승이에요"
+      },
+      "celebration": {
+        "title": "🎊 우승!"
       }
     },
     "result": {

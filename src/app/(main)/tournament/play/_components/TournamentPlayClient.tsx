@@ -13,9 +13,10 @@ import { useTournamentStore } from '@/features/tournament/store/tournament-store
 import { useTournamentCandidates } from '@/features/tournament/hooks/use-tournament';
 import styles from './TournamentPlayClient.module.scss';
 
-type Phase = 'intro' | 'map' | 'tournamentSize' | 'bracket';
+type Phase = 'intro' | 'map' | 'tournamentSize' | 'bracket' | 'celebration';
 
 const INTRO_MS = 2500;
+const CELEBRATION_MS = 1800;
 
 /**
  * 토너먼트 진행 클라이언트
@@ -41,6 +42,7 @@ export function TournamentPlayClient() {
 
   const [phase, setPhase] = useState<Phase>('intro');
   const [pendingSize, setPendingSize] = useState<TournamentCount | null>(null);
+  const [pendingWinner, setPendingWinner] = useState<Destination | null>(null);
 
   const {
     data: pool,
@@ -55,6 +57,20 @@ export function TournamentPlayClient() {
     const id = window.setTimeout(() => setPhase('map'), INTRO_MS);
     return () => window.clearTimeout(id);
   }, [config, phase]);
+
+  // celebration → result 자동 이동
+  useEffect(() => {
+    if (phase !== 'celebration' || !pendingWinner) return;
+    const reduced =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const delay = reduced ? 400 : CELEBRATION_MS;
+    const id = window.setTimeout(() => {
+      setWinner(pendingWinner);
+      router.replace('/tournament/result');
+    }, delay);
+    return () => window.clearTimeout(id);
+  }, [phase, pendingWinner, setWinner, router]);
 
   // 시군별 dedup → 여행지 갯수(N) 만큼 노출.
   // hook 은 항상 같은 순서로 호출되어야 하므로 early return 앞에 배치.
@@ -108,8 +124,9 @@ export function TournamentPlayClient() {
   };
 
   const handleBracketComplete = (winner: Destination) => {
-    setWinner(winner);
-    router.replace('/tournament/result');
+    // 즉시 result 이동 X — celebration phase 에서 1.8s 우승자 강조 후 자동 이동.
+    setPendingWinner(winner);
+    setPhase('celebration');
   };
 
   // 여행지 수(N)와 토너먼트 수(M)는 독립. 매치업 destinations 은 풀에서 random M개.
@@ -203,6 +220,27 @@ export function TournamentPlayClient() {
             destinations={matchupDestinations}
             onComplete={handleBracketComplete}
           />
+        </div>
+      )}
+
+      {phase === 'celebration' && pendingWinner && (
+        <div className={styles.celebration} role="status" aria-live="polite">
+          <div className={styles.celebGlow} aria-hidden />
+          <div className={styles.celebTrophy} aria-hidden>
+            🏆
+          </div>
+          <p className={styles.celebTitle}>{t('celebration.title')}</p>
+          <p className={styles.celebName}>{pendingWinner.name}</p>
+          <p className={styles.celebRegion}>{pendingWinner.region}</p>
+          <span className={styles.celebSparkle1} aria-hidden>
+            ✦
+          </span>
+          <span className={styles.celebSparkle2} aria-hidden>
+            ✦
+          </span>
+          <span className={styles.celebSparkle3} aria-hidden>
+            ✧
+          </span>
         </div>
       )}
     </div>

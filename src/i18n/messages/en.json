@@ -334,6 +334,9 @@
         "matchCount": "Match {current} / {total}",
         "progressLabel": "Bracket progress",
         "autoWin": "Your single pick wins automatically"
+      },
+      "celebration": {
+        "title": "🎊 Winner!"
       }
     },
     "result": {
