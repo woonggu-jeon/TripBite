@@ -365,9 +365,11 @@
     },
     "compose": {
       "title": "Write a letter",
+      "notice": "1–5 chars. Spaces and symbols allowed. Your location will be attached.",
       "label": "Body ({count}/5)",
       "placeholder": "Up to 5 characters",
-      "submit": "Send",
+      "reset": "Rewrite",
+      "submit": "Send letter",
       "submitting": "Sending...",
       "errors": {
         "empty": "Please enter content.",

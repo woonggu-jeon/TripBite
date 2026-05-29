@@ -365,9 +365,11 @@
     },
     "compose": {
       "title": "편지 쓰기",
+      "notice": "1~5자, 띄어쓰기와 특수문자도 보낼 수 있어요. 위치 정보가 함께 전송됩니다.",
       "label": "내용 ({count}/5)",
       "placeholder": "다섯 글자 이내",
-      "submit": "보내기",
+      "reset": "또 쓰기",
+      "submit": "편지 보내기",
       "submitting": "보내는 중...",
       "errors": {
         "empty": "내용을 입력해주세요.",

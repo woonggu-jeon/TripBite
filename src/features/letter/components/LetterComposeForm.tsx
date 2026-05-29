@@ -1,35 +1,41 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { MapPin, Info } from 'lucide-react';
 import {
   letterSchema,
   graphemeLength,
   type LetterFormValues,
 } from '@/features/letter/schemas/letter';
 import { useSendLetter } from '@/features/letter/hooks/use-letters';
+import { useLetterStore } from '@/features/letter/store/letter-store';
 import {
   LocationPermissionPrompt,
   useResolveLocation,
   usePermissionState,
 } from '@/features/location';
 import { useLocationStore } from '@/stores/location-store';
+import { haptic } from '@/lib/haptic';
+import { PinLikeInput } from './PinLikeInput';
+import styles from './LetterComposeForm.module.scss';
 
 /**
  * 편지 작성 폼
  *
- * - 5글자 이하 입력 (zod 검증)
- * - 보낸 위치 자동 채우기:
- *   1) location-store에 이미 resolve된 좌표가 있으면 그대로 표시
- *   2) 없으면:
- *      · permission='granted' → mount 직후 자동 resolve (prompt 안 뜸)
- *      · 그 외 → LocationPermissionPrompt 노출, 사용자가 명시 클릭으로 resolve
- *   3) 거부/실패는 무해 — 위치 없이 보낼 수 있음 (백엔드가 IP fallback)
- *
- * 라벨/에러는 i18n 변환.
+ * 구성:
+ *   1) 상단 알림 문구 (info)
+ *   2) PIN 코드 형식 5칸 시각 + 단일 input
+ *      · 1~5자 (zod schema), 띄어쓰기/특수문자/이모지 허용
+ *      · 한국어 IME 안전 (5칸 분리 input 대신 1개 input + 시각)
+ *      · inputMode="text" — 모바일 일반 키패드
+ *   3) 하단 현재 위치 노출 (location store + 권한 prompt)
+ *   4) 또 쓰기 / 편지 보내기 두 버튼
+ *      · 또 쓰기 = 입력 초기화 (form.reset)
+ *      · 편지 보내기 → store.setLastSent + /letter/sent 이동
  */
 export function LetterComposeForm() {
   const t = useTranslations('letter.compose');
@@ -37,6 +43,7 @@ export function LetterComposeForm() {
   const tLoc = useTranslations('location');
   const router = useRouter();
   const { mutateAsync: send } = useSendLetter();
+  const setLastSent = useLetterStore((s) => s.setLastSent);
 
   const permission = usePermissionState();
   const { resolve, isLoading: isResolving } = useResolveLocation();
@@ -46,7 +53,7 @@ export function LetterComposeForm() {
   const grantedAutoTriggered = useRef(false);
   const [locationDismissed, setLocationDismissed] = useState(false);
 
-  // granted인데 아직 store에 없으면 mount 직후 자동 resolve (prompt 안 뜸)
+  // granted 인데 store 비어있으면 자동 resolve
   useEffect(() => {
     if (resolved || permission !== 'granted' || grantedAutoTriggered.current) {
       return;
@@ -58,19 +65,22 @@ export function LetterComposeForm() {
   }, [permission, resolved, resolve, setResolved]);
 
   const {
-    register,
+    control,
     handleSubmit,
     watch,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<LetterFormValues>({
     resolver: zodResolver(letterSchema),
     defaultValues: { body: '' },
+    mode: 'onChange',
   });
 
   const body = watch('body') ?? '';
   const count = graphemeLength(body);
 
   const onSubmit = handleSubmit(async (values) => {
+    haptic.success();
     await send({
       ...values,
       location: resolved
@@ -82,109 +92,130 @@ export function LetterComposeForm() {
           }
         : undefined,
     });
-    router.replace('/letter');
+    setLastSent({
+      body: values.body,
+      location: resolved
+        ? { label: resolved.label, regionCode: resolved.regionCode }
+        : undefined,
+      sentAt: new Date().toISOString(),
+    });
+    router.push('/letter/sent');
   });
+
+  const handleReset = () => {
+    haptic.tap();
+    reset({ body: '' });
+  };
 
   async function handleAcceptLocation() {
     const r = await resolve();
     if (r) setResolved(r);
     else setLocationDismissed(true);
   }
-
   function handleSkipLocation() {
     setLocationDismissed(true);
   }
 
-  // 위치 UI 분기
   const showPrompt =
     !resolved &&
     !locationDismissed &&
     (permission === 'prompt' || permission === 'unsupported');
 
-  return (
-    <form onSubmit={onSubmit} style={{ display: 'grid', gap: '1rem' }}>
-      {/* 위치 영역 */}
-      {resolved ? (
-        <p style={{ fontSize: '0.875rem', color: 'var(--color-muted)' }}>
-          {tLoc('current')}: {resolved.label}{' '}
-          <button
-            type="button"
-            onClick={() => {
-              clearResolved();
-              setLocationDismissed(false);
-              grantedAutoTriggered.current = false;
-            }}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'var(--color-primary)',
-              cursor: 'pointer',
-              padding: 0,
-              marginLeft: 4,
-              fontSize: 'inherit',
-            }}
-          >
-            · {tLoc('change')}
-          </button>
-        </p>
-      ) : showPrompt ? (
-        <LocationPermissionPrompt
-          onAccept={handleAcceptLocation}
-          onSkip={handleSkipLocation}
-        />
-      ) : isResolving ? (
-        <p style={{ fontSize: '0.875rem', color: 'var(--color-muted)' }}>
-          {tLoc('resolving')}
-        </p>
-      ) : null}
+  const canSubmit = count > 0 && count <= 5 && !errors.body;
 
-      <div>
-        <label htmlFor="body" style={{ fontSize: '0.875rem', fontWeight: 500 }}>
-          {t('label', { count })}
-        </label>
-        <input
-          id="body"
-          type="text"
-          maxLength={10}
-          placeholder={t('placeholder')}
-          style={{
-            width: '100%',
-            marginTop: 8,
-            padding: '0.75rem',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius-md)',
-            fontSize: '1.125rem',
-            textAlign: 'center',
-            letterSpacing: '0.5em',
-          }}
-          {...register('body')}
+  return (
+    <form onSubmit={onSubmit} className={styles.form}>
+      {/* 1) 상단 알림 */}
+      <div className={styles.notice} role="note">
+        <Info size={16} aria-hidden />
+        <p>{t('notice')}</p>
+      </div>
+
+      {/* 2) PIN 5칸 입력 */}
+      <div className={styles.inputSection}>
+        <div className={styles.labelRow}>
+          <label htmlFor="body" className={styles.label}>
+            {t('label', { count })}
+          </label>
+        </div>
+        <Controller
+          name="body"
+          control={control}
+          render={({ field }) => (
+            <PinLikeInput
+              id="body"
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              name={field.name}
+              placeholder={t('placeholder')}
+              aria-label={t('placeholder')}
+            />
+          )}
         />
         {errors.body && (
-          <p
-            style={{
-              color: 'var(--color-danger)',
-              fontSize: '0.8125rem',
-              marginTop: 6,
-            }}
-          >
+          <p className={styles.error} role="alert">
             {tErr(errors.body.message as Parameters<typeof tErr>[0])}
           </p>
         )}
       </div>
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        style={{
-          padding: '0.875rem',
-          background: 'var(--color-primary)',
-          color: 'var(--color-primary-fg)',
-          borderRadius: 'var(--radius-md)',
-          fontWeight: 600,
-        }}
-      >
-        {isSubmitting ? t('submitting') : t('submit')}
-      </button>
+      {/* 3) 하단 위치 */}
+      <div className={styles.locationSection}>
+        {resolved ? (
+          <p className={styles.locationLine}>
+            <MapPin size={14} aria-hidden />
+            <span>
+              <strong>{tLoc('current')}</strong>: {resolved.label}
+            </span>
+            <button
+              type="button"
+              className={styles.changeBtn}
+              onClick={() => {
+                clearResolved();
+                setLocationDismissed(false);
+                grantedAutoTriggered.current = false;
+              }}
+            >
+              {tLoc('change')}
+            </button>
+          </p>
+        ) : showPrompt ? (
+          <LocationPermissionPrompt
+            onAccept={handleAcceptLocation}
+            onSkip={handleSkipLocation}
+          />
+        ) : isResolving ? (
+          <p className={styles.locationLine}>
+            <MapPin size={14} aria-hidden />
+            {tLoc('resolving')}
+          </p>
+        ) : (
+          <p className={styles.locationLine}>
+            <MapPin size={14} aria-hidden />
+            {tLoc('permission.skip')}
+          </p>
+        )}
+      </div>
+
+      {/* 4) 액션 */}
+      <div className={styles.actions}>
+        <button
+          type="button"
+          className={styles.secondary}
+          onClick={handleReset}
+          disabled={isSubmitting || body.length === 0}
+        >
+          {t('reset')}
+        </button>
+        <button
+          type="submit"
+          className={styles.primary}
+          disabled={isSubmitting || !canSubmit}
+        >
+          {isSubmitting ? t('submitting') : t('submit')}
+        </button>
+      </div>
     </form>
   );
 }
