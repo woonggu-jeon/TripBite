@@ -18,7 +18,7 @@
   border: 2px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-bg);
-  font-size: 1.75rem;
+  font-size: var(--emoji-md);
   font-weight: 800;
   color: var(--color-fg);
   transition:
@@ -29,7 +29,7 @@
 
 .cell.active {
   border-color: var(--color-primary);
-  background: color-mix(in srgb, var(--color-primary) 6%, var(--color-bg));
+  background: var(--color-primary-fade);
   // 깜빡이는 caret
   &::after {
     content: '';
@@ -53,7 +53,7 @@
     var(--color-primary) 60%,
     var(--color-border)
   );
-  background: color-mix(in srgb, var(--color-primary) 3%, var(--color-bg));
+  background: var(--color-primary-fade);
 }
 
 .char {
@@ -74,7 +74,7 @@
   caret-color: transparent;
   outline: none;
   text-align: center;
-  font-size: 1.75rem;
+  font-size: var(--emoji-md);
   letter-spacing: 1em;
 
   &:focus {

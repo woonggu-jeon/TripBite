@@ -17,7 +17,7 @@
 
   &:hover:not(:disabled) {
     border-color: var(--color-primary);
-    background: color-mix(in srgb, var(--color-primary) 6%, var(--color-bg));
+    background: var(--color-primary-fade);
     box-shadow: var(--shadow-md);
   }
   &:active:not(:disabled) {
@@ -39,15 +39,15 @@
   border-radius: var(--radius-md);
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--color-primary) 14%, var(--color-bg)),
-    color-mix(in srgb, var(--color-primary) 5%, var(--color-bg))
+    var(--color-primary-tint-strong),
+    var(--color-primary-fade)
   );
   display: grid;
   place-items: center;
 }
 
 .emoji {
-  font-size: 2.25rem;
+  font-size: var(--emoji-lg);
   line-height: 1;
 }
 

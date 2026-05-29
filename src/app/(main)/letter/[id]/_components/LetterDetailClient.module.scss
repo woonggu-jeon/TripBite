@@ -44,7 +44,7 @@
   gap: 0.75rem;
   align-items: center;
   padding: 0.875rem 1rem;
-  background: color-mix(in srgb, var(--color-primary) 6%, var(--color-bg));
+  background: var(--color-primary-fade);
   border: 1px solid
     color-mix(in srgb, var(--color-primary) 22%, var(--color-border));
   border-radius: var(--radius-lg);
@@ -179,7 +179,7 @@
 .toLine {
   font-size: var(--text-sm);
   color: var(--color-fg);
-  line-height: 1.4;
+  line-height: var(--line-snug);
 }
 
 // 4) 자동 삭제 안내

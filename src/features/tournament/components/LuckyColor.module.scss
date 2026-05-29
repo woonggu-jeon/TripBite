@@ -40,5 +40,5 @@
   font-size: var(--font-label);
   color: var(--color-muted);
   font-family: 'JetBrains Mono', 'Courier New', monospace;
-  letter-spacing: 0.04em;
+  letter-spacing: var(--tracking-uppercase);
 }

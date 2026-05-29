@@ -86,7 +86,7 @@
   font-weight: 800;
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
-  line-height: 1.4;
+  line-height: var(--line-snug);
   word-break: keep-all;
   text-align: center;
   padding: 0.5rem 0.5rem 0;
@@ -190,7 +190,7 @@
   inset: 0;
   background: radial-gradient(
     circle at center,
-    color-mix(in srgb, var(--color-primary) 20%, transparent),
+    var(--color-primary-ring-soft),
     transparent 70%
   );
   pointer-events: none;
@@ -198,7 +198,7 @@
 }
 
 .finishingEmoji {
-  font-size: 4.5rem;
+  font-size: var(--emoji-2xl);
   line-height: 1;
   filter: var(--drop-shadow-icon-strong);
   animation: finishingPop 0.7s var(--ease-spring) both;

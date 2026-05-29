@@ -40,7 +40,7 @@
 }
 
 .emoji {
-  font-size: 1.75rem;
+  font-size: var(--emoji-md);
   line-height: 1;
   filter: var(--drop-shadow-icon);
 }

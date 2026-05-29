@@ -169,14 +169,14 @@
   font-size: var(--font-body);
   font-weight: 700;
   color: var(--color-primary-text-bold);
-  letter-spacing: 0.04em;
+  letter-spacing: var(--tracking-uppercase);
   animation: celebRise 0.6s 0.25s ease-out both;
   opacity: 0;
   z-index: 1;
 }
 
 .celebName {
-  font-size: 1.75rem;
+  font-size: var(--emoji-md);
   font-weight: 800;
   color: var(--color-fg);
   letter-spacing: var(--tracking-tight);

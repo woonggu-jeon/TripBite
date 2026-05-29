@@ -78,6 +78,16 @@ primitive: `--text-xs/sm/base/lg/xl/2xl/3xl` (크기만)
 | 메타 정보               | `var(--font-caption)` (12px) |
 | 머리 라벨 / chip        | `var(--font-eyebrow)` (11px) |
 
+### Emoji 스케일
+
+| 용도                        | 토큰                      |
+| --------------------------- | ------------------------- |
+| 추천 카드 내 emoji          | `var(--emoji-sm)` (22px)  |
+| 일반 emoji 아이콘           | `var(--emoji-md)` (28px)  |
+| 선택 카드 emoji             | `var(--emoji-lg)` (36px)  |
+| hero 카드 emoji (결과 화면) | `var(--emoji-xl)` (64px)  |
+| finishing / 공유 카드 emoji | `var(--emoji-2xl)` (72px) |
+
 line-height: `var(--line-tight/snug/normal/relaxed)` (1.2/1.35/1.5/1.65)
 letter-spacing: `var(--tracking-tight/snug/normal/wide/uppercase)` (-0.02 / -0.01 / 0 / 0.02 / 0.06em)
 
@@ -164,10 +174,15 @@ shadow 강도 조정 시 `--shadow-card-strong` 한 곳. dark/light 분기는 �
 | LetterRowCard / NotificationDropdown 토큰화                                           | ✅   |
 | `cardClasses` 헬퍼 + LetterRowCard Link 에 Card 스타일 적용                           | ✅   |
 | `letter-spacing` 일괄 토큰화 (-0.01/-0.02/0.02/0.06em → tracking-\*)                  | ✅   |
-| `line-height` 일괄 토큰화 (1.2/1.3/1.5 → line-\*)                                     | ✅   |
+| `line-height` 일괄 토큰화 (1.2/1.3/1.4/1.5 → line-\*)                                 | ✅   |
+| Emoji 스케일 토큰 + 컴포넌트별 1.375/1.75/2.25/4/4.5rem 매핑                          | ✅   |
+| 색 변형 추가 (`--color-primary-tint-strong/dimmed`) + 3/5/6/14/20/50/80% 통합 매핑    | ✅   |
 
 ## 5. 남은 후속 정비 (점진)
 
-- **컴포넌트 고유 큰 글씨** (1.75 / 2.25 / 2.75 / 4 / 4.5 / 5 / 6 rem) — emoji hero 등 표현이라 컴포넌트별 의도 그대로 유지. 동일 비율이 반복되면 `--font-hero-emoji` 같은 의미 토큰 추가 검토.
-- **남은 색 변형** (primary 5/6/14/20/50/80%) — 의미가 모호한 변형. 디자인 시스템 색 체계 (예: 50/100/.../900 스케일) 결정 후 일괄 토큰화.
-- **나머지 line-height / letter-spacing** (1.1 / 1.25 / 1.4 / 1.55 / 0.04em / 0.05em / 0.1em 등) — 컴포넌트별 미세 조정값. 토큰화 가치 낮음.
+대부분 컴포넌트 고유 미세 조정값 — 디자인 시스템 안정화되면 손댈 때 자연스럽게 토큰화.
+
+- **컴포넌트 단발성 큰 글씨** (1.625 / 2.75 / 3.5 / 5 / 6 rem) — 사용처 1곳뿐이라 emoji-\* 스케일에 통합 X
+- **두 번째 인자가 외부 hex / border 인 mix** — 디자인 시스템 색 스케일 결정 후 토큰화
+- **컴포넌트별 line-height** (1.1 / 1.25 / 1.55) — 의도된 미세값
+- **letter-spacing** (0.05 / 0.1 / 0.12 / 0.25 / 1em / -0.04em) — 강조 / 일러스트성 일회 사용

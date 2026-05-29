@@ -43,7 +43,7 @@
   place-items: center;
   width: 44px;
   height: 44px;
-  font-size: 1.75rem;
+  font-size: var(--emoji-md);
   background: var(--color-bg);
   border: 1px solid var(--color-primary-border);
   border-radius: 50%;
@@ -59,7 +59,7 @@
 .eyebrow {
   font-size: var(--font-eyebrow);
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: var(--tracking-uppercase);
   color: var(--color-primary-muted);
   text-transform: uppercase;
 }

@@ -39,7 +39,7 @@
 }
 
 .cardEmoji {
-  font-size: 4.5rem;
+  font-size: var(--emoji-2xl);
   line-height: 1;
   filter: var(--drop-shadow-icon-strong);
 }
@@ -71,7 +71,7 @@
   margin-top: auto;
   font-size: var(--font-eyebrow);
   color: var(--color-muted);
-  letter-spacing: 0.04em;
+  letter-spacing: var(--tracking-uppercase);
 }
 
 .shareBtn {

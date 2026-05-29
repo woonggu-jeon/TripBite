@@ -71,6 +71,18 @@
     var(--color-primary) 22%,
     transparent
   );
+  /* 강한 tint — chip 강조 / 활성 상태 surface */
+  --color-primary-tint-strong: color-mix(
+    in srgb,
+    var(--color-primary) 14%,
+    transparent
+  );
+  /* dimmed — disabled / placeholder 톤 (50% alpha) */
+  --color-primary-dimmed: color-mix(
+    in srgb,
+    var(--color-primary) 50%,
+    transparent
+  );
 
   /* Surface — bg 위에 elevation 단계별 톤 (카드 / dialog body / popover) */
   --color-surface: var(--color-bg);
@@ -135,6 +147,14 @@
   --font-label: 0.8125rem; /* 폼 라벨 / 작은 강조 (13px) */
   --font-caption: 0.75rem; /* 메타 정보 (12px) */
   --font-eyebrow: 0.6875rem; /* 머리 라벨 / chip (11px) */
+
+  /* Emoji 스케일 — 컴포넌트마다 emoji/일러스트 크기가 반복되어 의미 단위 토큰화.
+     디자인 교체 시 한 곳에서 emoji 전반 비율 조정. */
+  --emoji-sm: 1.375rem; /* 추천 카드 내 emoji */
+  --emoji-md: 1.75rem; /* 일반 emoji 아이콘 */
+  --emoji-lg: 2.25rem; /* 선택 카드 emoji */
+  --emoji-xl: 4rem; /* hero 카드 emoji (결과 화면) */
+  --emoji-2xl: 4.5rem; /* finishing/공유 카드 emoji */
 
   /* Line-height 시멘틱 */
   --line-tight: 1.2;

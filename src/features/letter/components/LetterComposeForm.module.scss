@@ -40,14 +40,14 @@
   gap: 0.625rem;
   align-items: start;
   padding: 0.875rem 1rem;
-  background: color-mix(in srgb, var(--color-primary) 5%, var(--color-bg));
+  background: var(--color-primary-fade);
   border: 1px solid
     color-mix(in srgb, var(--color-primary) 20%, var(--color-border));
   border-radius: var(--radius-md);
 }
 
 .locationIcon {
-  color: color-mix(in srgb, var(--color-primary) 80%, var(--color-fg));
+  color: var(--color-primary-text-bold);
   margin-top: 1px;
 }
 
@@ -78,7 +78,7 @@
   font-weight: 600;
   padding: 1px 6px;
   background: var(--color-primary-tint);
-  color: color-mix(in srgb, var(--color-primary) 80%, var(--color-fg));
+  color: var(--color-primary-text-bold);
   border-radius: var(--radius-sm);
   letter-spacing: var(--tracking-snug);
 }
