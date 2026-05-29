@@ -129,26 +129,33 @@
   );
 }
 
-// 작은 모바일 (≤ 380px) — slide 전체 축소 + emoji 영역 축소
+// 일반 모바일 (≤ 480px, iPhone 15/16/17 포함) — slide 영역 모바일 친화
+@media (max-width: 480px) {
+  .slide {
+    grid-template-columns: 72px 1fr;
+    height: 180px;
+    padding: var(--space-4);
+    gap: var(--space-3);
+  }
+  .destination {
+    font-size: var(--text-lg);
+  }
+}
+
+// 작은 모바일 (≤ 380px) — 더 축소
 @media (max-width: 380px) {
   .slide {
     grid-template-columns: 64px 1fr;
     height: 168px;
     padding: var(--space-3) var(--space-4);
     gap: var(--space-2);
-    border-radius: var(--radius-lg);
   }
-  .destination {
-    font-size: var(--text-lg);
-  }
-  .description {
-    font-size: var(--font-caption);
-  }
-  .headline {
+  .description,
+  .headline,
+  .cta {
     font-size: var(--font-caption);
   }
   .cta {
-    font-size: var(--font-caption);
     margin-top: 0.25rem;
   }
 }

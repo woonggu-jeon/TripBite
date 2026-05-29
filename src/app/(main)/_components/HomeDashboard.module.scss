@@ -70,14 +70,34 @@
   max-width: 100%;
 }
 
-// 메인 화면 작은 모바일 (≤ 380px) — gap / padding 축소로 카드 잘림 방지
-@media (max-width: 380px) {
+// 일반 모바일 (≤ 480px) — iPhone 15/16/17 포함
+@media (max-width: 480px) {
   .grid {
     gap: var(--space-5);
   }
   .sectionTitle {
     margin-bottom: var(--space-2);
   }
+  .quickActions {
+    gap: var(--space-2);
+  }
+  // banner height 180px, festival fallbackHeight 180 — 모바일 min-height 일치
+  .grid [data-widget='weather-recommendation'] {
+    min-height: calc(180px + 2rem); // slide 180 + dots
+  }
+  .grid [data-widget='ongoing-festivals'] {
+    min-height: calc(160px + 2rem);
+  }
+  .grid [data-widget='latest-letter'] {
+    min-height: calc(96px + 2rem);
+  }
+  .grid [data-widget='my-winners'] {
+    min-height: calc(130px + 0.5rem);
+  }
+}
+
+// 작은 모바일 (≤ 380px) — gap / padding 더 축소
+@media (max-width: 380px) {
   .quickActions {
     gap: var(--space-1);
   }
@@ -89,9 +109,8 @@
     width: 32px;
     height: 32px;
   }
-  // 위젯 min-height 도 모바일 축소된 크기에 맞춰 좁힘 (CLS 보장은 유지)
   .grid [data-widget='weather-recommendation'] {
-    min-height: calc(168px + 2rem); // slide 168 + dots
+    min-height: calc(168px + 2rem);
   }
   .grid [data-widget='ongoing-festivals'] {
     min-height: calc(150px + 2rem);
