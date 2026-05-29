@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
+import { useEffect, useRef, useState } from 'react';
 import type { RegionCode } from '@/constants/regions';
 import { haptic } from '@/lib/haptic';
 import type { Destination, TournamentTheme } from '@/features/tournament/types';
@@ -10,17 +9,17 @@ import styles from './ChungbukMap.module.scss';
 /**
  * 충북 지도 + 풀(여행지) 표시 + 다중 선택.
  *
- * 배경: public/images/chungbuk-map.png (시군 외곽 + 라벨 포함된 light 톤 일러스트).
- * 시군 좌표(POINTS)는 해당 이미지의 라벨 위치 기준으로 정규화 (0~100).
- * 각 여행지는 자기 시군 좌표 근처로 jitter 후 배치.
+ * 배경: public/images/chungbuk-final-map.svg 를 inline embed.
+ *   - fetch → 내장 <style> 제거 → dangerouslySetInnerHTML
+ *   - 외부 CSS module 의 :global 선택자로 path/text 색상 컨트롤
+ *   - CSS variable 로 light/dark 톤 분기 (prefers-color-scheme)
+ *   - path.region 에 hover/click 이벤트 직접 부착 (useEffect + ref)
  *
- * 모드:
- *   - selected/onToggle/maxSelect 가 주어지면 다중 선택 가능 (button).
- *   - 미전달이면 단순 표시.
+ * 좌표(POINTS): SVG <text class="label"> 의 viewBox 좌표를 0~100 정규화.
  */
 
-// 좌표는 chungbuk-final-map.svg 의 <text class="label"> 좌표(800×903 viewBox)를
-// 0~100 비율로 정규화. SVG 라벨이 시군 영역 중앙에 배치돼 있어 drop 기준점으로 정확.
+const SVG_URL = '/images/chungbuk-final-map.svg';
+
 const SVG_W = 800;
 const SVG_H = 903;
 const norm = (x: number, y: number) => ({
@@ -68,8 +67,6 @@ interface Placed {
 }
 
 function placeAll(destinations: Destination[]): Placed[] {
-  // 같은 시군 다중 항목은 라벨 주변에 deterministic spiral 로 배치 (random jitter X).
-  // 매번 같은 자리에 그려져 사용자가 "위치가 안 맞다"고 느끼지 않도록.
   const perRegion = new Map<RegionCode, number>();
   return destinations.map((d, i) => {
     const region = d.region as RegionCode;
@@ -77,7 +74,6 @@ function placeAll(destinations: Destination[]): Placed[] {
     const idx = perRegion.get(region) ?? 0;
     perRegion.set(region, idx + 1);
 
-    // 첫 항목은 라벨 위치. 두 번째부터 golden angle spiral.
     let dx = 0;
     let dy = 0;
     if (idx > 0) {
@@ -100,14 +96,15 @@ function placeAll(destinations: Destination[]): Placed[] {
 export interface ChungbukMapProps {
   destinations: Destination[];
   theme: TournamentTheme;
-  /** 다중 선택 모드 — 선택된 id 집합 */
   selected?: Set<string>;
-  /** 선택 토글 */
   onToggle?: (id: string) => void;
-  /** 최대 선택 가능 개수 (도달 시 추가 선택 불가) */
   maxSelect?: number;
-  /** 모든 일러스트 낙하 완료 후 호출 */
   onReady?: () => void;
+  /**
+   * 시군 path 클릭 콜백 — path 의 한글 id (예: '청주시 상당구', '괴산군') 전달.
+   * 미전달 시 path 클릭 효과 비활성 (cursor default).
+   */
+  onRegionClick?: (regionName: string) => void;
 }
 
 export function ChungbukMap({
@@ -117,10 +114,53 @@ export function ChungbukMap({
   onToggle,
   maxSelect,
   onReady,
+  onRegionClick,
 }: ChungbukMapProps) {
   const [placed] = useState<Placed[]>(() => placeAll(destinations));
+  const [svg, setSvg] = useState<string | null>(null);
+  const svgWrapRef = useRef<HTMLDivElement>(null);
   const glyph = getGlyph(theme);
   const selectable = !!selected && !!onToggle;
+
+  // SVG fetch + 내장 <style> 제거 (외부 CSS variable 로 컨트롤)
+  useEffect(() => {
+    let cancelled = false;
+    fetch(SVG_URL)
+      .then((r) => r.text())
+      .then((text) => {
+        if (cancelled) return;
+        const stripped = text.replace(/<style[\s\S]*?<\/style>/g, '');
+        setSvg(stripped);
+      })
+      .catch(() => {
+        // network 오류 — fallback 없음 (지도 없이 drop 만 표시되도록)
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // path.region 에 click 이벤트 부착
+  useEffect(() => {
+    if (!svgWrapRef.current || !svg) return;
+    const root = svgWrapRef.current;
+    const paths = root.querySelectorAll<SVGPathElement>('path.region');
+    if (paths.length === 0) return;
+    const cleanups: Array<() => void> = [];
+    paths.forEach((p) => {
+      const handler = () => {
+        if (!onRegionClick) return;
+        haptic.tap();
+        onRegionClick(p.id);
+      };
+      p.addEventListener('click', handler);
+      p.style.cursor = onRegionClick ? 'pointer' : 'default';
+      cleanups.push(() => p.removeEventListener('click', handler));
+    });
+    return () => {
+      cleanups.forEach((fn) => fn());
+    };
+  }, [svg, onRegionClick]);
 
   useEffect(() => {
     if (!onReady) return;
@@ -133,14 +173,13 @@ export function ChungbukMap({
 
   return (
     <div className={styles.wrap}>
-      <Image
-        src="/images/chungbuk-final-map.svg"
-        alt="충청북도 지도"
-        fill
-        priority
-        unoptimized
-        sizes="(max-width: 480px) 100vw, 420px"
-        className={styles.bg}
+      <div
+        ref={svgWrapRef}
+        className={styles.svgWrap}
+        // SVG 는 우리 정적 파일(public/images/chungbuk-final-map.svg) 이라 신뢰 가능.
+        // 내장 <style> 만 제거하고 path/text 가 외부 CSS 로 cascade 되도록.
+        dangerouslySetInnerHTML={{ __html: svg ?? '' }}
+        aria-label="충청북도 지도"
       />
 
       <div className={styles.overlay}>

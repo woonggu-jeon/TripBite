@@ -954,9 +954,10 @@ Turborepo / Micro Frontend / Redux / GraphQL / Kubernetes / @tanstack/react-virt
 ### 토너먼트
 
 - [x] **충북 지도 매핑 최적화** — `chungbuk-final-map.svg` 의 `<text class="label">` 좌표(800×903 viewBox)를 0~100 비율로 정규화하여 시군 라벨 위치와 정확히 매칭됨
-- [ ] **시군별 path 클릭 인터랙션** — 현재 SVG path 들이 hover 시 fill 만 변경됨. React 통합해서 시군 클릭 → 해당 시군 destinations 필터, 또는 영역 안에서만 drop 배치 등 가능
+- [x] **시군별 path 클릭 인터랙션** — `ChungbukMap` 이 SVG 를 inline embed (fetch + 내장 `<style>` 제거 + `dangerouslySetInnerHTML`) 하고 ref + `addEventListener` 로 `path.region` 클릭/hover 이벤트 부착. `onRegionClick` prop 으로 시군 클릭 콜백 받음(현재 토너먼트 play 에선 미연결, 추후 시군 필터링 등에 활용 가능)
+- [x] **dark 톤 지도** — SVG inline + 외부 CSS variable (`--map-region-fill / -stroke / -hover / --map-label-fill / -stroke`) + `prefers-color-scheme: dark` 분기. 별도 dark SVG 파일 불필요
+- [x] **Result placeholder 마무리** — `WinnerCard` (트로피 + 카테고리 이모지 + 이름·시군·카테고리) / `LuckyColor` (`winner.id` deterministic hex + 한국어 색이름) 정식 구현. 마이페이지 저장(`POST /mypage/tournaments`) mock handler + `useSaveTournament` 연결
 - [ ] `config.count`(setup 의 4/8/16/32 step)는 현재 의미가 약함 — 지도 선택이 max 8 / min 1 자유 선택으로 바뀐 뒤로 직접 사용 안 됨. step 폐기 또는 다른 의미(예: 풀 사이즈 hint) 부여 결정 필요
-- [ ] dark 톤 지도 자산 추가 (현재는 light 톤 단일 — dark mode 에서 부조화)
 
 ### 공통 모듈 (아래 "공통 유틸리티" 참고)
 
