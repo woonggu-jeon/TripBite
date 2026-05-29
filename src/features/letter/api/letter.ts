@@ -1,5 +1,21 @@
 import { api } from '@/services/api/client';
-import type { Letter, SendLetterRequest } from '@/features/letter/types';
+import type {
+  Letter,
+  LetterPage,
+  SendLetterRequest,
+} from '@/features/letter/types';
+
+const PAGE_LIMIT = 10;
+
+async function fetchLetterPage(
+  url: string,
+  cursor: number,
+): Promise<LetterPage> {
+  const res = await api.get<LetterPage>(url, {
+    params: { cursor, limit: PAGE_LIMIT },
+  });
+  return res.data;
+}
 
 /**
  * 다섯글자 편지 API
@@ -24,15 +40,9 @@ export const letterApi = {
     await api.post('/letters', data);
   },
 
-  listReceived: async (): Promise<Letter[]> => {
-    const res = await api.get<Letter[]>('/letters/received');
-    return res.data;
-  },
-
-  listSent: async (): Promise<Letter[]> => {
-    const res = await api.get<Letter[]>('/letters/sent');
-    return res.data;
-  },
+  listReceived: (cursor = 0) => fetchLetterPage('/letters/received', cursor),
+  listSent: (cursor = 0) => fetchLetterPage('/letters/sent', cursor),
+  listLiked: (cursor = 0) => fetchLetterPage('/letters/liked', cursor),
 
   get: async (id: string): Promise<Letter> => {
     const res = await api.get<Letter>(`/letters/${id}`);

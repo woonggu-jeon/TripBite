@@ -1,0 +1,24 @@
+.error {
+  display: grid;
+  gap: 0.5rem;
+  place-items: center;
+  padding: 2rem 1rem;
+  color: var(--color-muted);
+  text-align: center;
+}
+
+.retry {
+  padding: 0.5rem 1rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-fg);
+}
+
+.empty {
+  padding: 2.5rem 1rem;
+  color: var(--color-muted);
+  text-align: center;
+  font-size: 0.875rem;
+}

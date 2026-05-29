@@ -344,6 +344,25 @@
     "sent": "Sent",
     "liked": "Liked",
     "saved": "Saved",
+    "tabs": {
+      "section": "Letters",
+      "received": "Received",
+      "sent": "Sent",
+      "liked": "Hearts"
+    },
+    "empty": {
+      "received": "No letters yet",
+      "sent": "No letters sent yet",
+      "liked": "No hearts yet"
+    },
+    "listError": "Couldn't load letters",
+    "listRetry": "Try again",
+    "relativeTime": {
+      "justNow": "Just now",
+      "minutesAgo": "{n}m ago",
+      "hoursAgo": "{n}h ago",
+      "daysAgo": "{n}d ago"
+    },
     "compose": {
       "title": "Write a letter",
       "label": "Body ({count}/5)",

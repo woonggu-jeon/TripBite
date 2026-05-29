@@ -144,28 +144,20 @@ export const handlers = [
 
   // ===== Letters =====
   http.post(`${apiUrl}/letters`, () => new HttpResponse(null, { status: 201 })),
-  http.get(`${apiUrl}/letters/received`, ({ request }) => {
-    const url = new URL(request.url);
-    const cursor = Number(url.searchParams.get('cursor') ?? 0);
-    const limit = Number(url.searchParams.get('limit') ?? 10);
-    const slice = letterSeeds.slice(cursor, cursor + limit);
-    const nextCursor =
-      cursor + limit < letterSeeds.length ? cursor + limit : null;
-    return HttpResponse.json({ items: slice, nextCursor });
-  }),
-  http.get(`${apiUrl}/letters/sent`, () =>
-    HttpResponse.json({ items: letterSeeds.slice(0, 5), nextCursor: null }),
-  ),
-  http.get(`${apiUrl}/letters/liked`, () =>
-    HttpResponse.json({
-      items: letterSeeds.filter((l) => l.liked),
-      nextCursor: null,
-    }),
-  ),
-  http.get(`${apiUrl}/letters/saved`, () =>
-    HttpResponse.json({
-      items: letterSeeds.filter((l) => l.saved),
-      nextCursor: null,
+  // 편지 목록 — 모두 cursor 기반 페이지네이션 통일
+  ...['received', 'sent', 'liked', 'saved'].map((kind) =>
+    http.get(`${apiUrl}/letters/${kind}`, ({ request }) => {
+      const url = new URL(request.url);
+      const cursor = Number(url.searchParams.get('cursor') ?? 0);
+      const limit = Number(url.searchParams.get('limit') ?? 10);
+      let pool = letterSeeds;
+      if (kind === 'sent') pool = letterSeeds.filter((l) => l.isMine);
+      else if (kind === 'received') pool = letterSeeds.filter((l) => !l.isMine);
+      else if (kind === 'liked') pool = letterSeeds.filter((l) => l.liked);
+      else if (kind === 'saved') pool = letterSeeds.filter((l) => l.saved);
+      const slice = pool.slice(cursor, cursor + limit);
+      const nextCursor = cursor + limit < pool.length ? cursor + limit : null;
+      return HttpResponse.json({ items: slice, nextCursor });
     }),
   ),
   http.get(`${apiUrl}/letters/:id`, ({ params }) => {

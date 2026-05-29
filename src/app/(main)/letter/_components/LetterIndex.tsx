@@ -1,68 +1,67 @@
 'use client';
 
-import Link from 'next/link';
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { ComposeEntryCard } from '@/features/letter/components/ComposeEntryCard';
+import { LetterListPanel } from '@/features/letter/components/LetterListPanel';
+import type { LetterListKind } from '@/features/letter/types';
+import { haptic } from '@/lib/haptic';
+import styles from './LetterIndex.module.scss';
 
 /**
- * /letter 메인 컴포지션
+ * /letter 메인
  *
- * 컴포넌트 분할 (features/letter/components):
- *   - <ComposeEntryCard />     — 편지 일러스트 위 CTA 버튼
- *   - <ReceivedLetterList />   — 도착한 편지 카드 그리드
- *   - <SentLetterList />       — 내가 보낸 편지 (옵션)
+ *   ┌────────────────────────────┐
+ *   │ ComposeEntryCard (hero)    │ ← 편지 보내러 가기
+ *   ├────────────────────────────┤
+ *   │ 받은 · 보낸 · 하트 (탭)     │
+ *   ├────────────────────────────┤
+ *   │ LetterRowCard × N          │ ← InfiniteList (useLettersInfinite)
+ *   └────────────────────────────┘
  */
+const TABS: { key: LetterListKind; labelKey: 'received' | 'sent' | 'liked' }[] =
+  [
+    { key: 'received', labelKey: 'received' },
+    { key: 'sent', labelKey: 'sent' },
+    { key: 'liked', labelKey: 'liked' },
+  ];
+
 export function LetterIndex() {
+  const t = useTranslations('letter.tabs');
+  const [active, setActive] = useState<LetterListKind>('received');
+
   return (
-    <div style={{ display: 'grid', gap: '1.5rem' }}>
-      {/* A) 편지 보내러 가기 CTA */}
-      <Link
-        href="/letter/compose"
-        style={{
-          display: 'block',
-          padding: '2rem 1rem',
-          border: '1px dashed var(--color-border)',
-          borderRadius: 'var(--radius-lg)',
-          textAlign: 'center',
-          background: 'transparent',
-        }}
-      >
-        {/* TODO: 편지 일러스트 배경 + 중앙 CTA 버튼 */}
-        <div style={{ fontSize: '1.125rem', fontWeight: 700 }}>
-          편지 보내러 가기 ✉️
+    <div className={styles.wrap}>
+      <ComposeEntryCard />
+
+      <section aria-label={t('section')}>
+        <div className={styles.tabs} role="tablist" aria-label={t('section')}>
+          {TABS.map((tab) => {
+            const isActive = active === tab.key;
+            return (
+              <button
+                key={tab.key}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                className={`${styles.tab} ${isActive ? styles.active : ''}`}
+                onClick={() => {
+                  if (active !== tab.key) {
+                    haptic.tap();
+                    setActive(tab.key);
+                  }
+                }}
+              >
+                {t(tab.labelKey)}
+              </button>
+            );
+          })}
         </div>
-        <p style={{ color: 'var(--color-muted)', marginTop: 8, fontSize: '0.875rem' }}>
-          단 다섯 글자, 누군가에게 닿습니다
-        </p>
-      </Link>
 
-      {/* B) 도착한 편지 */}
-      <section>
-        <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.75rem' }}>
-          도착한 편지
-        </h2>
-        {/* TODO: <ReceivedLetterList /> */}
-        <Placeholder height={240} />
-      </section>
-
-      {/* C) 내가 보낸 편지 (옵션) */}
-      <section>
-        <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.75rem' }}>
-          내가 보낸 편지
-        </h2>
-        {/* TODO: <SentLetterList /> */}
-        <Placeholder height={180} />
+        <div className={styles.list}>
+          <LetterListPanel kind={active} />
+        </div>
       </section>
     </div>
-  );
-}
-
-function Placeholder({ height }: { height: number }) {
-  return (
-    <div
-      style={{
-        height,
-        border: '1px dashed var(--color-border)',
-        borderRadius: 'var(--radius-lg)',
-      }}
-    />
   );
 }

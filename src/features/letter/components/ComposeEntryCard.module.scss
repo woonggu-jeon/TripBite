@@ -1,0 +1,107 @@
+.card {
+  display: grid;
+  grid-template-rows: 140px auto;
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  text-decoration: none;
+  color: var(--color-fg);
+  overflow: hidden;
+  transition:
+    border-color 0.15s ease,
+    transform 0.1s ease,
+    box-shadow 0.15s ease;
+
+  &:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+  &:active {
+    transform: scale(0.99);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.hero {
+  position: relative;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #ff9eb5 22%, var(--color-bg)),
+    color-mix(in srgb, #ffcf5b 18%, var(--color-bg)) 50%,
+    color-mix(in srgb, #9ec5ff 22%, var(--color-bg))
+  );
+  overflow: hidden;
+}
+
+.envelope {
+  font-size: 3.5rem;
+  line-height: 1;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.15));
+  z-index: 1;
+}
+
+.sparkle1,
+.sparkle2 {
+  position: absolute;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+.sparkle1 {
+  top: 20%;
+  left: 22%;
+  font-size: 0.875rem;
+}
+
+.sparkle2 {
+  bottom: 22%;
+  right: 24%;
+  font-size: 1.25rem;
+}
+
+.body {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.title {
+  font-size: 1.0625rem;
+  font-weight: 800;
+  color: var(--color-fg);
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.subtitle {
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+  margin-top: 0.25rem;
+}
+
+.arrow {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--color-primary-fg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+    &:active {
+      transform: none;
+    }
+  }
+}

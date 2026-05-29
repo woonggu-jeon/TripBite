@@ -344,6 +344,25 @@
     "sent": "내가 보낸 편지",
     "liked": "좋아요한 편지",
     "saved": "저장한 편지",
+    "tabs": {
+      "section": "도착한 편지",
+      "received": "받은 편지",
+      "sent": "보낸 편지",
+      "liked": "하트"
+    },
+    "empty": {
+      "received": "아직 도착한 편지가 없어요",
+      "sent": "아직 보낸 편지가 없어요",
+      "liked": "아직 하트를 누른 편지가 없어요"
+    },
+    "listError": "편지를 불러오지 못했어요",
+    "listRetry": "다시 시도",
+    "relativeTime": {
+      "justNow": "방금 전",
+      "minutesAgo": "{n}분 전",
+      "hoursAgo": "{n}시간 전",
+      "daysAgo": "{n}일 전"
+    },
     "compose": {
       "title": "편지 쓰기",
       "label": "내용 ({count}/5)",

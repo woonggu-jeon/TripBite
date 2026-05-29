@@ -18,6 +18,15 @@ export type Letter = {
   likeCount?: number;
 };
 
+/** cursor 기반 페이지네이션 응답 */
+export type LetterPage = {
+  items: Letter[];
+  nextCursor: number | null;
+};
+
+/** 편지 목록 종류 — 받은 / 보낸 / 좋아요(하트) */
+export type LetterListKind = 'received' | 'sent' | 'liked';
+
 export type SendLetterRequest = {
   body: string; // 1~5자
   /**
