@@ -1,13 +1,17 @@
 .header {
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: var(--z-header);
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-bg);
-  border-bottom: 1px solid var(--color-border);
+  height: var(--header-h);
+  padding: 0 var(--space-3);
+  /* iOS 모던 모바일 톤 — 반투명 + blur */
+  background: color-mix(in srgb, var(--color-bg) 82%, transparent);
+  backdrop-filter: saturate(180%) blur(12px);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-fg) 7%, transparent);
 }
 
 .slot {
@@ -18,27 +22,65 @@
 
 .iconButton {
   position: relative;
-  padding: var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
   border-radius: var(--radius-md);
+  color: var(--color-fg);
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease;
 
   &:hover {
-    background: var(--color-border);
+    background: color-mix(in srgb, var(--color-fg) 8%, transparent);
+  }
+  &:active {
+    transform: scale(0.94);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
   }
 }
 
 .dot {
   position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 8px;
-  height: 8px;
+  top: 7px;
+  right: 7px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--color-danger);
-  border: 2px solid var(--color-bg);
+  /* dot 안쪽 그림자로 헤더 배경과 부드러운 분리 */
+  box-shadow: 0 0 0 2px var(--color-bg);
 }
 
 .logo {
   font-weight: 800;
-  font-size: 1.125rem;
-  letter-spacing: -0.02em;
+  font-size: 1.0625rem;
+  letter-spacing: -0.01em;
+  color: var(--color-fg);
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-md);
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 0.7;
+  }
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iconButton,
+  .logo {
+    transition: none;
+    &:active {
+      transform: none;
+    }
+  }
 }

@@ -1,9 +1,19 @@
 .bar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
   display: grid;
   grid-template-columns: 40px 1fr 40px;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-2) 0 var(--space-4);
+  height: var(--header-h);
+  /* layout.content 의 좌우 padding(var(--space-4)) 을 상쇄해 가장자리까지 채움 */
+  margin: calc(-1 * var(--space-4)) calc(-1 * var(--space-4)) var(--space-3);
+  padding: 0 var(--space-3);
+  background: color-mix(in srgb, var(--color-bg) 82%, transparent);
+  backdrop-filter: saturate(180%) blur(12px);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-fg) 7%, transparent);
 }
 
 .back {
@@ -13,9 +23,20 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-md);
+  color: var(--color-fg);
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease;
 
   &:hover {
-    background: var(--color-border);
+    background: color-mix(in srgb, var(--color-fg) 8%, transparent);
+  }
+  &:active {
+    transform: scale(0.94);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
   }
 }
 
@@ -23,10 +44,24 @@
   text-align: center;
   font-size: 1rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
+  color: var(--color-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 var(--space-1);
 }
 
 .rightSlot {
   display: flex;
   justify-content: flex-end;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .back {
+    transition: none;
+    &:active {
+      transform: none;
+    }
+  }
 }
