@@ -7,6 +7,7 @@ import { Share2, RotateCcw } from 'lucide-react';
 import { haptic } from '@/lib/haptic';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { EmptyState } from '@/components/feedback/EmptyState';
+import { Card, Chip } from '@/components/ui';
 import { useMyTravelType } from '@/features/ranking/hooks/use-ranking';
 import type { TravelType } from '@/features/ranking/types';
 import styles from './TravelTypeResult.module.scss';
@@ -75,17 +76,21 @@ export function TravelTypeResult() {
 
   return (
     <div className={styles.wrap}>
-      <section className={styles.hero}>
+      <Card variant="highlighted" padding="lg" className={styles.hero}>
         <div className={styles.heroEmoji} aria-hidden>
           {result.emoji}
         </div>
-        <p className={styles.codeBadge}>{result.code}</p>
+        <Chip variant="primary" size="sm" className={styles.codeBadge}>
+          {result.code}
+        </Chip>
         <h2 className={styles.title}>{result.title}</h2>
         {keywords.length > 0 && (
           <ul className={styles.keywords} aria-label={t('keywordsAria')}>
             {keywords.map((k) => (
-              <li key={k} className={styles.keyword}>
-                {k}
+              <li key={k}>
+                <Chip variant="outline" size="sm">
+                  {k}
+                </Chip>
               </li>
             ))}
           </ul>
@@ -93,7 +98,7 @@ export function TravelTypeResult() {
         {result.description && (
           <p className={styles.description}>{result.description}</p>
         )}
-      </section>
+      </Card>
 
       {recommended.length > 0 && (
         <section className={styles.recommend}>

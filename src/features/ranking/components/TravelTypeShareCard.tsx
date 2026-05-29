@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Share2, ChevronLeft } from 'lucide-react';
 import { haptic } from '@/lib/haptic';
 import { EmptyState } from '@/components/feedback/EmptyState';
+import { Card, Chip, IconButton } from '@/components/ui';
 import { useMyTravelType } from '@/features/ranking/hooks/use-ranking';
 import styles from './TravelTypeShareCard.module.scss';
 
@@ -85,36 +86,49 @@ export function TravelTypeShareCard() {
   return (
     <div className={styles.wrap}>
       <header className={styles.head}>
-        <button
-          type="button"
-          className={styles.back}
+        <IconButton
+          variant="ghost"
+          size="sm"
+          aria-label={t('back')}
           onClick={() => {
             haptic.tap();
             router.back();
           }}
-          aria-label={t('back')}
         >
           <ChevronLeft size={22} />
-        </button>
+        </IconButton>
         <h2 className={styles.heading}>{t('heading')}</h2>
+        <span aria-hidden className={styles.headSpacer} />
       </header>
 
       {/* 정사각 공유 카드 — 추후 html2canvas/dom-to-image 로 PNG 추출 */}
-      <article className={styles.card} aria-label={data.title}>
+      <Card
+        as="article"
+        variant="highlighted"
+        padding="lg"
+        className={styles.card}
+        aria-label={data.title}
+      >
         <span className={styles.cardEmoji} aria-hidden>
           {data.emoji}
         </span>
-        <p className={styles.cardCode}>{data.code}</p>
+        <Chip variant="outline" size="sm" className={styles.cardCode}>
+          {data.code}
+        </Chip>
         <h3 className={styles.cardTitle}>{data.title}</h3>
         {keywords.length > 0 && (
           <ul className={styles.cardKeywords}>
             {keywords.map((k) => (
-              <li key={k}>{k}</li>
+              <li key={k}>
+                <Chip variant="default" size="sm">
+                  {k}
+                </Chip>
+              </li>
             ))}
           </ul>
         )}
         <p className={styles.cardBrand}>TripBite · 여행 유형 테스트</p>
-      </article>
+      </Card>
 
       <button type="button" className={styles.shareBtn} onClick={handleShare}>
         <Share2 size={18} aria-hidden />

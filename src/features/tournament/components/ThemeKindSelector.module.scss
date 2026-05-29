@@ -45,17 +45,17 @@
 }
 
 .label {
-  font-size: 1.0625rem;
+  font-size: var(--font-h3);
   font-weight: 700;
 }
 
 .desc {
-  font-size: 0.75rem;
+  font-size: var(--font-caption);
   color: var(--color-muted);
   text-align: center;
 
   .active & {
-    color: color-mix(in srgb, var(--color-primary) 70%, var(--color-fg));
+    color: var(--color-primary-text-bold);
   }
 }
 

@@ -56,22 +56,44 @@
 
 예: `transition: border-color var(--motion-base) ease, transform var(--motion-fast) ease;`
 
-### Spacing / Typography
+### Spacing
 
 - 간격: `var(--space-1)` ~ `var(--space-12)` (4px grid)
-- 폰트 크기: `var(--text-xs)` ~ `var(--text-3xl)` (단, 컴포넌트 고유 크기는 rem 직접 허용)
+
+### Typography
+
+primitive: `--text-xs/sm/base/lg/xl/2xl/3xl` (크기만)
+
+시멘틱 (선호):
+
+| 용도                    | 토큰                         |
+| ----------------------- | ---------------------------- |
+| 큰 결과 숫자/디스플레이 | `var(--font-display)` (40px) |
+| 페이지/카드 메인 타이틀 | `var(--font-h1)` (24px)      |
+| 섹션 헤더               | `var(--font-h2)` (20px)      |
+| 카드 헤더               | `var(--font-h3)` (17px)      |
+| 본문                    | `var(--font-body)` (16px)    |
+| 보조 본문               | `var(--font-body-sm)` (15px) |
+| 폼 라벨 / 작은 강조     | `var(--font-label)` (13px)   |
+| 메타 정보               | `var(--font-caption)` (12px) |
+| 머리 라벨 / chip        | `var(--font-eyebrow)` (11px) |
+
+line-height: `var(--line-tight/snug/normal/relaxed)` (1.2/1.35/1.5/1.65)
+letter-spacing: `var(--tracking-tight/snug/normal/wide/uppercase)` (-0.02 / -0.01 / 0 / 0.02 / 0.06em)
 
 ## 2. Primitive 컴포넌트
 
-새 카드/칩/아이콘버튼은 hardcoded SCSS 대신 다음을 사용.
+새 카드/칩/아이콘버튼/섹션은 hardcoded SCSS 대신 다음을 사용.
 
 ```tsx
-import { Card, Chip, IconButton } from '@/components/ui';
+import { Card, Chip, IconButton, PageSection } from '@/components/ui';
 
-<Card variant="highlighted" padding="lg">
-  <h2>우승</h2>
-  <Chip variant="primary" size="sm">#액티비티</Chip>
-</Card>
+<PageSection title="이번주 우승 Top 5" hint="투표 기반">
+  <Card variant="highlighted" padding="lg">
+    <h2>우승</h2>
+    <Chip variant="primary" size="sm">#액티비티</Chip>
+  </Card>
+</PageSection>
 
 <IconButton aria-label="설정" variant="ghost" size="md">
   <Settings size={20} />
@@ -81,6 +103,8 @@ import { Card, Chip, IconButton } from '@/components/ui';
 ### Card 변형
 
 - `surface` (기본) / `soft` / `elevated` / `highlighted`
+- `padding`: `none` / `sm` / `md` (default) / `lg`
+- `as`: `div` (default) / `section` / `article`
 
 ### Chip 변형
 
@@ -93,6 +117,11 @@ import { Card, Chip, IconButton } from '@/components/ui';
 - `size`: `sm` (32) / `md` (40) / `lg` (44)
 - `aria-label` 필수
 
+### PageSection
+
+- `title` / `hint` / `action` / `level` (h2/h3)
+- 페이지 안 섹션 헤더 + 본문 wrapper.
+
 ## 3. 디자인 교체 시나리오
 
 브랜드 색을 핑크(#ec4899) 로 바꾼다면 — `globals.scss` 의 `--color-primary` 한 줄만 수정.
@@ -100,9 +129,19 @@ import { Card, Chip, IconButton } from '@/components/ui';
 
 shadow 강도 조정 시 `--shadow-card-strong` 한 곳. dark/light 분기는 자동.
 
-## 4. 후속 정비 (TODO)
+## 4. 마이그레이션 상태
 
-- 기존 컴포넌트의 `font-size: 0.X rem` hardcoded → 의미별 typography 클래스/mixin 도입
-- 남은 ad-hoc `color-mix(... primary X%, ...)` 변형(5/14/18/22%) — 의미가 명확한 것만 토큰화
-- 자주 쓰이는 페이지 컨테이너(섹션 wrapper) primitive 화 (`<PageSection>`)
-- 기존 hardcoded card/chip 패턴을 점진적으로 `<Card>` / `<Chip>` 으로 마이그레이션
+| 항목                                                                                  | 상태                              |
+| ------------------------------------------------------------------------------------- | --------------------------------- |
+| Typography 시멘틱 토큰 (`--font-display/h1/h2/h3/body/body-sm/label/caption/eyebrow`) | ✅ 도입                           |
+| `font-size: 0.6875/0.75/0.8125/0.9375/1.0625rem` hardcoded → 시멘틱 토큰              | ✅ 일괄 마이그레이션              |
+| Primary mix 변형 토큰화 (`--color-primary-ring-soft/glow/text-bold`)                  | ✅ 핵심 변형 추가                 |
+| `<PageSection>` primitive                                                             | ✅ 추가 + RankingPageContent 적용 |
+| WinnerCard / ProfileCard / TravelTypeResult / TravelTypeShareCard → primitive         | ✅ 1차 마이그레이션               |
+
+## 5. 남은 후속 정비
+
+- 1rem 이상의 폰트 크기들 — 컴포넌트별 의미 다양해서 일괄 변환 보류, 손댈 때 자연스럽게 토큰화
+- multi-line 으로 prettier 가 정리한 `color-mix` 들 — sed 단일라인 미매칭. 컴포넌트 마이그레이션 시 인라인 교체
+- 남은 hardcoded card/chip (LetterRowCard / Top5Card / NotificationDropdown 등) — primitive 로 점진 교체
+- typography `line-height` / `letter-spacing` 도 토큰만 정의됐고, 컴포넌트별 raw 값 잔존

@@ -94,7 +94,7 @@
     filter var(--motion-base) ease;
 
   &:hover:not(.dimmed) {
-    background: color-mix(in srgb, var(--color-primary) 18%, transparent);
+    background: var(--color-primary-ring-soft);
   }
   &:focus-visible {
     outline: 2px solid var(--color-primary);

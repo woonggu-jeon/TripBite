@@ -39,7 +39,7 @@
 }
 
 .ladderSubtitle {
-  font-size: 0.8125rem;
+  font-size: var(--font-label);
   color: var(--color-muted);
 }
 
@@ -55,7 +55,7 @@
   padding: 0.875rem;
   border-radius: var(--radius-md);
   font-weight: 700;
-  font-size: 0.9375rem;
+  font-size: var(--font-body-sm);
   cursor: pointer;
   transition:
     opacity var(--motion-base) ease,

@@ -41,8 +41,7 @@
 .segCurrent {
   height: 8px;
   background: var(--color-primary);
-  box-shadow: 0 0 0 1px
-    color-mix(in srgb, var(--color-primary) 22%, transparent);
+  box-shadow: 0 0 0 1px var(--color-primary-glow);
 }
 
 .segClickable {
@@ -62,7 +61,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  font-size: 0.6875rem;
+  font-size: var(--font-eyebrow);
   color: var(--color-muted);
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -106,7 +105,7 @@
   width: 100%;
   padding: 1rem 1.125rem;
   text-align: left;
-  font-size: 0.9375rem;
+  font-size: var(--font-body-sm);
   font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--color-fg);
@@ -164,7 +163,7 @@
   border: 1.5px solid var(--color-border);
   border-radius: var(--radius-md);
   color: var(--color-fg);
-  font-size: 0.8125rem;
+  font-size: var(--font-label);
   font-weight: 600;
   cursor: pointer;
 
@@ -217,7 +216,7 @@
 }
 
 .finishingHint {
-  font-size: 0.8125rem;
+  font-size: var(--font-label);
   color: var(--color-muted);
   animation: finishingRise 0.6s 0.35s ease-out both;
   opacity: 0;

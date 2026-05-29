@@ -55,7 +55,7 @@
 }
 
 .author {
-  font-size: 0.9375rem;
+  font-size: var(--font-body-sm);
   font-weight: 700;
   color: var(--color-fg);
   overflow: hidden;
@@ -64,7 +64,7 @@
 }
 
 .location {
-  font-size: 0.75rem;
+  font-size: var(--font-caption);
   color: var(--color-muted);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -103,7 +103,7 @@
 }
 
 .time {
-  font-size: 0.75rem;
+  font-size: var(--font-caption);
   color: var(--color-muted);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;

@@ -11,34 +11,19 @@
   gap: 0.5rem;
 }
 
-.back {
+.headSpacer {
   width: 32px;
-  height: 32px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-md);
-  color: var(--color-fg);
-  cursor: pointer;
-
-  &:hover {
-    background: var(--color-hover);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
-  }
 }
 
 .heading {
   text-align: center;
-  font-size: 1rem;
+  font-size: var(--font-body);
   font-weight: 800;
   color: var(--color-fg);
-  letter-spacing: -0.01em;
+  letter-spacing: var(--tracking-snug);
 }
 
-// 1:1 카드 — 추후 PNG 변환 시 동일 비율 유지
+// Card primitive variant="highlighted" 위에 정사각 + emphasis shadow 만 추가
 .card {
   display: grid;
   place-items: center;
@@ -47,44 +32,27 @@
   width: 100%;
   max-width: 360px;
   margin: 0 auto;
-  padding: 1.5rem 1.25rem;
-  background: linear-gradient(
-    140deg,
-    var(--color-primary-surface-grad-start),
-    var(--color-bg) 70%
-  );
-  border: 1.5px solid var(--color-primary-border);
-  border-radius: var(--radius-xl);
-  text-align: center;
   box-shadow: var(--shadow-emphasis);
   position: relative;
   overflow: hidden;
+  text-align: center;
 }
 
 .cardEmoji {
   font-size: 4.5rem;
   line-height: 1;
-  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.14));
+  filter: var(--drop-shadow-icon-strong);
 }
 
 .cardCode {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.125rem 0.625rem;
-  font-size: 0.6875rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--color-primary);
-  background: var(--color-bg);
-  border: 1px solid var(--color-primary-border);
-  border-radius: var(--radius-full);
+  letter-spacing: var(--tracking-uppercase);
 }
 
 .cardTitle {
-  font-size: 1.5rem;
+  font-size: var(--font-h1);
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
   word-break: keep-all;
 }
@@ -97,20 +65,11 @@
   padding: 0;
   margin: 0;
   list-style: none;
-
-  li {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--color-primary-muted);
-    padding: 0.125rem 0.5rem;
-    background: color-mix(in srgb, var(--color-bg) 80%, transparent);
-    border-radius: var(--radius-full);
-  }
 }
 
 .cardBrand {
   margin-top: auto;
-  font-size: 0.6875rem;
+  font-size: var(--font-eyebrow);
   color: var(--color-muted);
   letter-spacing: 0.04em;
 }
@@ -126,7 +85,7 @@
   border: 0;
   border-radius: var(--radius-md);
   font-weight: 700;
-  font-size: 0.9375rem;
+  font-size: var(--font-body-sm);
   cursor: pointer;
   transition:
     opacity var(--motion-base) ease,
@@ -146,7 +105,7 @@
 
 .shareHint {
   text-align: center;
-  font-size: 0.75rem;
+  font-size: var(--font-caption);
   color: var(--color-muted);
 }
 

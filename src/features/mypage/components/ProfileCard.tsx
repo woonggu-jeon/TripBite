@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { useTranslations } from 'next-intl';
 import { Camera, User } from 'lucide-react';
 import { useMypage } from '@/features/mypage/hooks/use-mypage';
+import { Card, Chip, IconButton } from '@/components/ui';
 import { haptic } from '@/lib/haptic';
 import styles from './ProfileCard.module.scss';
 
@@ -47,7 +48,12 @@ export function ProfileCard() {
   const avatarSrc = localPreview;
 
   return (
-    <article className={styles.card}>
+    <Card
+      as="article"
+      variant="highlighted"
+      padding="md"
+      className={styles.card}
+    >
       <div className={styles.avatarWrap}>
         <div className={styles.avatar}>
           {avatarSrc ? (
@@ -64,14 +70,15 @@ export function ProfileCard() {
             </span>
           )}
         </div>
-        <button
-          type="button"
+        <IconButton
+          variant="solid"
+          size="sm"
           className={styles.cameraBtn}
           onClick={onPick}
           aria-label={t('changeAvatar')}
         >
           <Camera size={16} />
-        </button>
+        </IconButton>
         <input
           ref={fileRef}
           type="file"
@@ -87,8 +94,10 @@ export function ProfileCard() {
         {nickname || <span className={styles.nicknameSkeleton} aria-hidden />}
       </h2>
       {data?.travelType?.title && (
-        <span className={styles.badge}>{data.travelType.title}</span>
+        <Chip variant="primary" size="md">
+          {data.travelType.title}
+        </Chip>
       )}
-    </article>
+    </Card>
   );
 }

@@ -3,44 +3,29 @@
   gap: 1.25rem;
 }
 
+// Card primitive variant="highlighted" 가 bg/border/radius 담당.
 .hero {
   display: grid;
   gap: 0.5rem;
   place-items: center;
-  padding: 1.75rem 1rem 1.5rem;
-  background: linear-gradient(
-    180deg,
-    var(--color-primary-surface-grad-start),
-    var(--color-bg)
-  );
-  border: 1px solid var(--color-primary-border);
-  border-radius: var(--radius-lg);
   text-align: center;
 }
 
 .heroEmoji {
   font-size: 4rem;
   line-height: 1;
-  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.12));
+  filter: var(--drop-shadow-icon-strong);
 }
 
 .codeBadge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.125rem 0.625rem;
-  font-size: 0.6875rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--color-primary);
-  background: var(--color-primary-tint);
-  border-radius: var(--radius-full);
+  letter-spacing: var(--tracking-uppercase);
 }
 
 .title {
-  font-size: 1.5rem;
+  font-size: var(--font-h1);
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
   word-break: keep-all;
 }
@@ -53,16 +38,6 @@
   padding: 0;
   margin: 0;
   list-style: none;
-}
-
-.keyword {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--color-primary-muted);
-  padding: 0.125rem 0.5rem;
-  background: var(--color-bg);
-  border: 1px solid var(--color-primary-border);
-  border-radius: var(--radius-full);
 }
 
 .description {
@@ -80,7 +55,7 @@
 }
 
 .recommendTitle {
-  font-size: 0.9375rem;
+  font-size: var(--font-body-sm);
   font-weight: 800;
   color: var(--color-fg);
   letter-spacing: -0.02em;
@@ -122,7 +97,7 @@
 }
 
 .recName {
-  font-size: 0.9375rem;
+  font-size: var(--font-body-sm);
   font-weight: 700;
   color: var(--color-fg);
   letter-spacing: -0.01em;
@@ -132,7 +107,7 @@
 }
 
 .recMeta {
-  font-size: 0.75rem;
+  font-size: var(--font-caption);
   color: var(--color-muted);
 }
 
@@ -149,7 +124,7 @@
   justify-content: center;
   gap: 0.375rem;
   padding: 0.875rem 1rem;
-  font-size: 0.9375rem;
+  font-size: var(--font-body-sm);
   font-weight: 700;
   border-radius: var(--radius-md);
   cursor: pointer;

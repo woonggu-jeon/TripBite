@@ -59,7 +59,7 @@
 }
 
 .name {
-  font-size: 0.8125rem;
+  font-size: var(--font-label);
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.2;

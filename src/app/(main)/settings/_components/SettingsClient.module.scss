@@ -9,7 +9,7 @@
 }
 
 .sectionTitle {
-  font-size: 0.8125rem;
+  font-size: var(--font-label);
   font-weight: 700;
   color: var(--color-muted);
   text-transform: uppercase;

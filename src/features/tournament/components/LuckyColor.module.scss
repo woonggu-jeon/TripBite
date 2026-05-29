@@ -23,7 +23,7 @@
 }
 
 .title {
-  font-size: 0.8125rem;
+  font-size: var(--font-label);
   font-weight: 600;
   color: var(--color-muted);
   letter-spacing: 0.02em;
@@ -37,7 +37,7 @@
 }
 
 .hex {
-  font-size: 0.8125rem;
+  font-size: var(--font-label);
   color: var(--color-muted);
   font-family: 'JetBrains Mono', 'Courier New', monospace;
   letter-spacing: 0.04em;

@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { Skeleton } from '@/components/feedback/Skeleton';
+import { PageSection } from '@/components/ui';
 import { useWeeklyTopDestinations } from '@/features/ranking/hooks/use-ranking';
 import { Top5Card } from '@/features/ranking/components/Top5Card';
 import { RegionWinsChart } from '@/features/ranking/components/RegionWinsChart';
@@ -22,10 +23,7 @@ export function RankingPageContent() {
   return (
     <div className={styles.wrap}>
       {/* 1) Top 5 */}
-      <section>
-        <h2 className={styles.sectionTitle}>
-          {t('weeklyWinners', { limit: 5 })}
-        </h2>
+      <PageSection title={t('weeklyWinners', { limit: 5 })}>
         {isLoading && (
           <div className={styles.list}>
             {Array.from({ length: 5 }).map((_, i) => (
@@ -55,14 +53,12 @@ export function RankingPageContent() {
             ))}
           </div>
         )}
-      </section>
+      </PageSection>
 
       {/* 2) 시군별 우승 횟수 차트 */}
-      <section>
-        <h2 className={styles.sectionTitle}>{t('byRegionChart')}</h2>
-        <p className={styles.chartHint}>{t('byRegionChartHint')}</p>
+      <PageSection title={t('byRegionChart')} hint={t('byRegionChartHint')}>
         <RegionWinsChart />
-      </section>
+      </PageSection>
     </div>
   );
 }

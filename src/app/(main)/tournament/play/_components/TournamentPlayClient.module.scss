@@ -26,7 +26,7 @@
 }
 
 .hint {
-  font-size: 0.9375rem;
+  font-size: var(--font-body-sm);
   color: var(--color-muted);
   text-align: center;
 }
@@ -150,7 +150,7 @@
   inset: 0;
   background: radial-gradient(
     circle at center,
-    color-mix(in srgb, var(--color-primary) 22%, transparent),
+    var(--color-primary-glow),
     transparent 70%
   );
   pointer-events: none;
@@ -168,7 +168,7 @@
 .celebTitle {
   font-size: 1rem;
   font-weight: 700;
-  color: color-mix(in srgb, var(--color-primary) 70%, var(--color-fg));
+  color: var(--color-primary-text-bold);
   letter-spacing: 0.04em;
   animation: celebRise 0.6s 0.25s ease-out both;
   opacity: 0;
@@ -188,7 +188,7 @@
 }
 
 .celebRegion {
-  font-size: 0.9375rem;
+  font-size: var(--font-body-sm);
   color: var(--color-muted);
   animation: celebRise 0.6s 0.55s ease-out both;
   opacity: 0;

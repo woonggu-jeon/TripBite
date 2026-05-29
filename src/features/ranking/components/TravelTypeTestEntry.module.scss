@@ -57,7 +57,7 @@
 }
 
 .eyebrow {
-  font-size: 0.6875rem;
+  font-size: var(--font-eyebrow);
   font-weight: 700;
   letter-spacing: 0.04em;
   color: var(--color-primary-muted);
@@ -65,7 +65,7 @@
 }
 
 .title {
-  font-size: 0.9375rem;
+  font-size: var(--font-body-sm);
   font-weight: 800;
   letter-spacing: -0.01em;
   color: var(--color-fg);

@@ -11,3 +11,4 @@ export {
   type IconButtonVariant,
   type IconButtonSize,
 } from './IconButton';
+export { PageSection } from './PageSection';

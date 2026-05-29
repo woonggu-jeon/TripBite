@@ -52,7 +52,7 @@
 }
 
 .headline {
-  font-size: 0.8125rem;
+  font-size: var(--font-label);
   font-weight: 600;
   color: color-mix(
     in srgb,
@@ -82,7 +82,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  font-size: 0.8125rem;
+  font-size: var(--font-label);
   font-weight: 700;
   color: var(--accent, var(--color-primary));
 }

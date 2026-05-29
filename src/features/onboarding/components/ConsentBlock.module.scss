@@ -37,16 +37,16 @@
 .required {
   color: var(--color-primary);
   font-weight: 600;
-  font-size: 0.75rem;
+  font-size: var(--font-caption);
 }
 
 .optional {
   color: var(--color-muted);
-  font-size: 0.75rem;
+  font-size: var(--font-caption);
 }
 
 .viewLink {
-  font-size: 0.75rem;
+  font-size: var(--font-caption);
   color: var(--color-muted);
   text-decoration: underline;
 

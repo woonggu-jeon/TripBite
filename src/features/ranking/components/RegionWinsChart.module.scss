@@ -40,7 +40,7 @@
 }
 
 .rank {
-  font-size: 0.75rem;
+  font-size: var(--font-caption);
   font-weight: 800;
   color: var(--color-muted);
   text-align: center;
@@ -48,7 +48,7 @@
 }
 
 .regionName {
-  font-size: 0.9375rem;
+  font-size: var(--font-body-sm);
   font-weight: 700;
   letter-spacing: -0.02em;
   overflow: hidden;
@@ -106,7 +106,7 @@
 }
 
 .winsUnit {
-  font-size: 0.6875rem;
+  font-size: var(--font-eyebrow);
   font-weight: 600;
   color: var(--color-muted);
 }
@@ -134,7 +134,7 @@
   border: 1.5px solid var(--color-border);
   border-radius: var(--radius-md);
   color: var(--color-fg);
-  font-size: 0.8125rem;
+  font-size: var(--font-label);
   font-weight: 600;
   cursor: pointer;
 

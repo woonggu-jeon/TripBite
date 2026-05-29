@@ -22,7 +22,7 @@
 }
 
 .cellLabel {
-  font-size: 0.75rem;
+  font-size: var(--font-caption);
   font-weight: 600;
   color: var(--color-muted);
   letter-spacing: 0.02em;
@@ -59,19 +59,19 @@
 }
 
 .runnerUpLabel {
-  font-size: 0.75rem;
+  font-size: var(--font-caption);
   font-weight: 600;
   color: var(--color-muted);
 }
 
 .runnerUpName {
-  font-size: 0.9375rem;
+  font-size: var(--font-body-sm);
   font-weight: 700;
   color: var(--color-fg);
   word-break: keep-all;
 }
 
 .runnerUpRegion {
-  font-size: 0.8125rem;
+  font-size: var(--font-label);
   color: var(--color-muted);
 }

@@ -28,7 +28,7 @@
 }
 
 .allRead {
-  font-size: 0.75rem;
+  font-size: var(--font-caption);
   color: var(--color-muted);
 
   &:hover {
@@ -81,6 +81,6 @@
 
 .itemBody {
   margin-top: 2px;
-  font-size: 0.75rem;
+  font-size: var(--font-caption);
   color: var(--color-muted);
 }

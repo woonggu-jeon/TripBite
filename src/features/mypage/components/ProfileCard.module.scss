@@ -1,15 +1,9 @@
+// Card primitive variant="highlighted" 가 bg/border/radius 담당.
 .card {
   display: grid;
   place-items: center;
   gap: 0.625rem;
-  padding: 1.5rem 1rem;
-  background: linear-gradient(
-    180deg,
-    var(--color-primary-soft),
-    var(--color-bg)
-  );
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  text-align: center;
 }
 
 .avatarWrap {
@@ -21,7 +15,7 @@
 .avatar {
   width: 100px;
   height: 100px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   background: var(--color-bg);
   border: 2px solid var(--color-primary-border);
   display: grid;
@@ -45,31 +39,13 @@
   background: color-mix(in srgb, var(--color-fg) 4%, transparent);
 }
 
+// IconButton primitive 의 position 만 absolute 로 override
 .cameraBtn {
   position: absolute;
   bottom: 0;
   right: 0;
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--color-primary);
-  color: var(--color-primary-fg);
+  border-radius: var(--radius-full);
   border: 2px solid var(--color-bg);
-  cursor: pointer;
-  transition: transform var(--motion-fast) ease;
-
-  &:hover {
-    transform: scale(1.05);
-  }
-  &:active {
-    transform: scale(0.94);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
-  }
 }
 
 .fileInput {
@@ -84,10 +60,10 @@
 }
 
 .nickname {
-  font-size: 1.125rem;
+  font-size: var(--text-lg);
   font-weight: 800;
   color: var(--color-fg);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--tracking-tight);
   min-height: 1.4em;
 }
 
@@ -97,26 +73,4 @@
   height: 1.1em;
   background: color-mix(in srgb, var(--color-fg) 10%, transparent);
   border-radius: var(--radius-sm);
-}
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.25rem 0.75rem;
-  background: var(--color-primary-tint);
-  color: var(--color-primary);
-  border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cameraBtn {
-    transition: none;
-    &:hover,
-    &:active {
-      transform: none;
-    }
-  }
 }

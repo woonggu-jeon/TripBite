@@ -26,14 +26,14 @@
 }
 
 .rowLabel {
-  font-size: 0.9375rem;
+  font-size: var(--font-body-sm);
   font-weight: 600;
   color: var(--color-fg);
   letter-spacing: -0.01em;
 }
 
 .rowHint {
-  font-size: 0.75rem;
+  font-size: var(--font-caption);
   color: var(--color-muted);
 }
 
@@ -46,7 +46,7 @@
   border-radius: var(--radius-md);
   background: var(--color-bg);
   color: var(--color-fg);
-  font-size: 0.9375rem;
+  font-size: var(--font-body-sm);
   font-weight: 600;
   transition: border-color var(--motion-base) ease;
 

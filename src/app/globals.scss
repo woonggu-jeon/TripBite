@@ -55,6 +55,22 @@
     var(--color-primary) 60%,
     var(--color-fg)
   );
+  --color-primary-text-bold: color-mix(
+    in srgb,
+    var(--color-primary) 70%,
+    var(--color-fg)
+  );
+  /* alpha 단계별 ring/glow — focus / outline / 강조 영역 */
+  --color-primary-ring-soft: color-mix(
+    in srgb,
+    var(--color-primary) 18%,
+    transparent
+  );
+  --color-primary-glow: color-mix(
+    in srgb,
+    var(--color-primary) 22%,
+    transparent
+  );
 
   /* Surface — bg 위에 elevation 단계별 톤 (카드 / dialog body / popover) */
   --color-surface: var(--color-bg);
@@ -92,7 +108,7 @@
   --radius-xl: 1rem;
   --radius-full: 9999px;
 
-  /* Typography scale */
+  /* Typography scale — primitive (크기만) */
   --text-xs: 0.75rem; /* 12px */
   --text-sm: 0.875rem; /* 14 */
   --text-base: 1rem; /* 16 */
@@ -100,6 +116,31 @@
   --text-xl: 1.25rem; /* 20 */
   --text-2xl: 1.5rem; /* 24 */
   --text-3xl: 1.875rem; /* 30 */
+
+  /* Typography — 의미별 시멘틱 (컴포넌트는 가급적 이쪽 사용).
+     디자인 교체 시 한 곳만 수정해 전체 폰트 스케일 반영. */
+  --font-display: 2.5rem; /* 결과 숫자 등 큰 임팩트 */
+  --font-h1: 1.5rem; /* 페이지/카드 메인 타이틀 */
+  --font-h2: 1.25rem; /* 섹션 헤더 */
+  --font-h3: 1.0625rem; /* 카드 헤더 */
+  --font-body: 1rem; /* 본문 */
+  --font-body-sm: 0.9375rem; /* 보조 본문 (15px) */
+  --font-label: 0.8125rem; /* 폼 라벨 / 작은 강조 (13px) */
+  --font-caption: 0.75rem; /* 메타 정보 (12px) */
+  --font-eyebrow: 0.6875rem; /* 머리 라벨 / chip (11px) */
+
+  /* Line-height 시멘틱 */
+  --line-tight: 1.2;
+  --line-snug: 1.35;
+  --line-normal: 1.5;
+  --line-relaxed: 1.65;
+
+  /* Letter-spacing 시멘틱 */
+  --tracking-tight: -0.02em;
+  --tracking-snug: -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.02em;
+  --tracking-uppercase: 0.06em;
 
   /* Icon size tokens — 호환성 유지를 위해 의미별로 분리 */
   --icon-sm: 16px; /* 인라인 텍스트 옆 */
