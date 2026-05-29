@@ -1,13 +1,17 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Heart } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { haptic } from '@/lib/haptic';
+import { useDebouncedCallback } from '@/hooks/use-debounced-callback';
 import { relativeTimeToken } from '@/lib/relative-time';
 import { useToggleLikeLetter } from '@/features/letter/hooks/use-letters';
 import type { Letter } from '@/features/letter/types';
 import styles from './LetterRowCard.module.scss';
+
+const TOGGLE_DEBOUNCE_MS = 400;
 
 /**
  * 편지 목록의 row 카드.
@@ -56,12 +60,25 @@ export function LetterRowCard({ letter }: { letter: Letter }) {
   const toggle = useToggleLikeLetter();
   const hue = hueFromId(letter.id);
 
+  // 즉각 UI 피드백 + 디바운스 commit (LetterActions 와 동일 패턴).
+  // 짝수 번 클릭으로 원상복귀 시 API 호출 skip.
+  const [likedLocal, setLikedLocal] = useState(letter.liked);
+  useEffect(() => setLikedLocal(letter.liked), [letter.liked]);
+
+  const commitLike = useDebouncedCallback((target: boolean) => {
+    if (target === letter.liked) return;
+    toggle.mutate(letter.id);
+  }, TOGGLE_DEBOUNCE_MS);
+
   const onLike = (e: React.MouseEvent) => {
     e.preventDefault(); // Link 진입 차단
     e.stopPropagation();
-    if (toggle.isPending) return;
     haptic.tap();
-    toggle.mutate(letter.id);
+    setLikedLocal((v) => {
+      const next = !v;
+      commitLike(next);
+      return next;
+    });
   };
 
   return (
@@ -92,12 +109,12 @@ export function LetterRowCard({ letter }: { letter: Letter }) {
       <div className={styles.right}>
         <button
           type="button"
-          className={`${styles.heart} ${letter.liked ? styles.liked : ''}`}
+          className={`${styles.heart} ${likedLocal ? styles.liked : ''}`}
           onClick={onLike}
           aria-label={t('detail.like')}
-          aria-pressed={letter.liked}
+          aria-pressed={likedLocal}
         >
-          <Heart size={18} fill={letter.liked ? 'currentColor' : 'none'} />
+          <Heart size={18} fill={likedLocal ? 'currentColor' : 'none'} />
         </button>
         <time className={styles.time} dateTime={letter.arrivedAt}>
           {time}

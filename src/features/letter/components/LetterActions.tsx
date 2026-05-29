@@ -1,9 +1,11 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Heart, Bookmark, Trash2 } from 'lucide-react';
 import { useConfirm } from '@/hooks/use-confirm';
+import { useDebouncedCallback } from '@/hooks/use-debounced-callback';
 import { haptic } from '@/lib/haptic';
 import {
   useDeleteLetter,
@@ -15,9 +17,18 @@ import styles from './LetterActions.module.scss';
 
 /**
  * 편지 상세 액션 — 좋아요 / 저장 / 삭제.
- *   - 좋아요/저장: toggle (hook 의 onSuccess 가 cache 갱신)
- *   - 삭제: useConfirm() Promise 확인 → DELETE → router.back()
+ *
+ * 좋아요·저장: 빠른 연속 클릭을 흡수하기 위해 컴포넌트 로컬 상태 + 디바운스(400ms).
+ *   - 클릭 즉시 로컬 state 토글(즉각 UI 피드백, haptic.tap)
+ *   - 디바운스 만료 시 서버 진실(letter.liked/saved)과 비교 → net change 시에만 mutate
+ *   - 짝수 번 클릭으로 원위치 시 API 호출 자체 skip → 서버 부담 / race ↓
+ *   - mutate 의 onMutate optimistic update 가 다른 화면(LetterRow 등) 까지 즉시 동기화
+ *
+ * 삭제: useConfirm() Promise 확인 → DELETE → router.back().
+ *   디바운스 불필요 — 명시적 확인 단계가 이미 게이트 역할.
  */
+const TOGGLE_DEBOUNCE_MS = 400;
+
 export function LetterActions({ letter }: { letter: Letter }) {
   const t = useTranslations('letter.detail');
   const router = useRouter();
@@ -26,16 +37,39 @@ export function LetterActions({ letter }: { letter: Letter }) {
   const toggleSave = useToggleSaveLetter();
   const del = useDeleteLetter();
 
-  const onLike = () => {
-    if (toggleLike.isPending) return;
-    haptic.tap();
+  const [likedLocal, setLikedLocal] = useState(letter.liked);
+  const [savedLocal, setSavedLocal] = useState(letter.saved);
+
+  // 외부에서 letter 가 갱신되면 (예: cache invalidate 후 refetch) 로컬도 동기.
+  useEffect(() => setLikedLocal(letter.liked), [letter.liked]);
+  useEffect(() => setSavedLocal(letter.saved), [letter.saved]);
+
+  const commitLike = useDebouncedCallback((targetLiked: boolean) => {
+    if (targetLiked === letter.liked) return; // net change 없음 — skip
     toggleLike.mutate(letter.id);
+  }, TOGGLE_DEBOUNCE_MS);
+
+  const commitSave = useDebouncedCallback((targetSaved: boolean) => {
+    if (targetSaved === letter.saved) return;
+    toggleSave.mutate(letter.id);
+  }, TOGGLE_DEBOUNCE_MS);
+
+  const onLike = () => {
+    haptic.tap();
+    setLikedLocal((v) => {
+      const next = !v;
+      commitLike(next);
+      return next;
+    });
   };
 
   const onSave = () => {
-    if (toggleSave.isPending) return;
     haptic.tap();
-    toggleSave.mutate(letter.id);
+    setSavedLocal((v) => {
+      const next = !v;
+      commitSave(next);
+      return next;
+    });
   };
 
   const onDelete = async () => {
@@ -50,6 +84,9 @@ export function LetterActions({ letter }: { letter: Letter }) {
     });
     if (!ok) return;
     haptic.warning();
+    // 삭제 직전 대기 중인 토글이 있으면 즉시 flush — 서버 상태 일관성 보장
+    commitLike.flush();
+    commitSave.flush();
     del.mutate(letter.id, {
       onSuccess: () => router.back(),
     });
@@ -59,14 +96,13 @@ export function LetterActions({ letter }: { letter: Letter }) {
     <div className={styles.actions} role="group" aria-label={t('actionsAria')}>
       <button
         type="button"
-        className={`${styles.action} ${letter.liked ? styles.liked : ''}`}
+        className={`${styles.action} ${likedLocal ? styles.liked : ''}`}
         onClick={onLike}
-        aria-pressed={letter.liked}
-        disabled={toggleLike.isPending}
+        aria-pressed={likedLocal}
       >
         <Heart
           size={20}
-          fill={letter.liked ? 'currentColor' : 'none'}
+          fill={likedLocal ? 'currentColor' : 'none'}
           aria-hidden
         />
         <span>{t('like')}</span>
@@ -74,14 +110,13 @@ export function LetterActions({ letter }: { letter: Letter }) {
 
       <button
         type="button"
-        className={`${styles.action} ${letter.saved ? styles.saved : ''}`}
+        className={`${styles.action} ${savedLocal ? styles.saved : ''}`}
         onClick={onSave}
-        aria-pressed={letter.saved}
-        disabled={toggleSave.isPending}
+        aria-pressed={savedLocal}
       >
         <Bookmark
           size={20}
-          fill={letter.saved ? 'currentColor' : 'none'}
+          fill={savedLocal ? 'currentColor' : 'none'}
           aria-hidden
         />
         <span>{t('save')}</span>
