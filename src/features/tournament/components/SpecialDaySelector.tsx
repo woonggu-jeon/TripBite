@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { haptic } from '@/lib/haptic';
+import { cardClasses } from '@/components/ui';
 import type { SpecialDay } from '@/features/tournament/types';
 import styles from './SpecialDaySelector.module.scss';
 
@@ -46,7 +47,11 @@ export function SpecialDaySelector({
             type="button"
             role="radio"
             aria-checked={active}
-            className={`${styles.card} ${active ? styles.active : ''}`}
+            className={cardClasses({
+              variant: 'surface',
+              padding: 'none',
+              className: `${styles.card} ${active ? styles.active : ''}`,
+            })}
             onClick={() => pick(it.value)}
           >
             <span className={styles.emoji} aria-hidden>

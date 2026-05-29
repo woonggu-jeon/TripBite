@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { Info } from 'lucide-react';
 import { haptic } from '@/lib/haptic';
 import { EmptyState } from '@/components/feedback/EmptyState';
+import { Button } from '@/components/ui';
 import {
   useSubmitTravelType,
   useTravelTypeQuiz,
@@ -70,13 +71,9 @@ export function TravelTypeQuiz() {
         title={t('emptyTitle')}
         description={t('emptyHint')}
         action={
-          <button
-            type="button"
-            className={styles.retry}
-            onClick={() => refetch()}
-          >
+          <Button variant="secondary" size="sm" onClick={() => refetch()}>
             {t('retry')}
-          </button>
+          </Button>
         }
       />
     );

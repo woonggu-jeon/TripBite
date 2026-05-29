@@ -21,6 +21,7 @@ import type {
   TournamentTheme,
 } from '@/features/tournament/types';
 import { haptic } from '@/lib/haptic';
+import { Button } from '@/components/ui';
 import styles from './TournamentSetup.module.scss';
 
 /**
@@ -167,14 +168,15 @@ export function TournamentSetup() {
         </div>
 
         {step === 4 && (
-          <button
-            type="button"
-            className={styles.start}
+          <Button
+            variant="primary"
+            size="lg"
+            fullWidth
             onClick={handleStart}
             disabled={!canStart}
           >
             {t('start')}
-          </button>
+          </Button>
         )}
 
         {(step === 1 || step === 2 || step === 3) && (

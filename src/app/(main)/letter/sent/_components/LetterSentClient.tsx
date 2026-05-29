@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Check, MailOpen } from 'lucide-react';
 import { useLetterStore } from '@/features/letter/store/letter-store';
+import { Button } from '@/components/ui';
 import styles from './LetterSentClient.module.scss';
 
 /**
@@ -68,13 +69,12 @@ export function LetterSentClient() {
     return (
       <div className={styles.empty}>
         <p>{t('empty')}</p>
-        <button
-          type="button"
-          className={styles.primary}
+        <Button
+          variant="primary"
           onClick={() => router.replace('/letter/compose')}
         >
           {t('goCompose')}
-        </button>
+        </Button>
       </div>
     );
   }
@@ -158,16 +158,12 @@ export function LetterSentClient() {
 
       {/* 3) 액션 */}
       <div className={styles.actions}>
-        <button
-          type="button"
-          className={styles.secondary}
-          onClick={handleAgain}
-        >
+        <Button variant="secondary" fullWidth onClick={handleAgain}>
           {t('again')}
-        </button>
-        <button type="button" className={styles.primary} onClick={handleHome}>
+        </Button>
+        <Button variant="primary" fullWidth onClick={handleHome}>
           {t('home')}
-        </button>
+        </Button>
       </div>
     </div>
   );

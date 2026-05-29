@@ -9,22 +9,19 @@ import {
 } from '@/features/location';
 import { useLocationStore } from '@/stores/location-store';
 import { track } from '@/features/analytics';
+import { Button } from '@/components/ui';
+import styles from './OnboardingStep.module.scss';
 
 /**
  * <LocationStep /> — 온보딩 step 2
  *
  * 권한 상태별 분기:
- *   - 'granted': step 진입 직후 자동 resolve (prompt 안 뜸)
- *   - 'prompt' / 'unsupported': LocationPermissionPrompt 노출 → 사용자가 "허용" 클릭 시 resolve
- *   - 'denied': "권한 차단" 안내 + 건너뛰기만 가능 (브라우저가 prompt 재요청 막음)
+ *   - 'granted'           : mount 시 자동 resolve (prompt 미발생)
+ *   - 'prompt'/'unsupported': LocationPermissionPrompt → 사용자 클릭으로 resolve
+ *   - 'denied'            : 안내 + 건너뛰기만 (브라우저가 prompt 차단)
  *
- * iOS 정책:
- *   getCurrentPosition은 사용자 액션 직후에만. 'granted' 상태에서 mount-time 호출은
- *   prompt가 안 뜨므로 정책 위반 아님. 그 외 상태는 항상 버튼 클릭으로 트리거.
- *
- * 결과 처리:
- *   - resolve 성공 → location-store에 저장 + 'onboarding.location_allowed' track
- *   - skip 또는 실패 → 'onboarding.location_skipped' track + onNext (없으면 onSkip)
+ * iOS 정책 — getCurrentPosition 은 사용자 액션 직후만. granted 상태의 mount-time
+ * 호출은 prompt 가 안 떠서 위반 X. 그 외 상태는 버튼 클릭으로 트리거.
  */
 export function LocationStep({
   onNext,
@@ -44,7 +41,6 @@ export function LocationStep({
   >('idle');
   const grantedAutoTriggered = useRef(false);
 
-  // 'granted' 상태에서만 자동 resolve (prompt 뜨지 않음)
   useEffect(() => {
     if (permission !== 'granted' || grantedAutoTriggered.current) return;
     grantedAutoTriggered.current = true;
@@ -70,7 +66,6 @@ export function LocationStep({
         setStatus('resolved');
         onNext?.();
       } else {
-        // GPS 거부 + IP fallback 실패. skip 처리.
         track('onboarding.location_skipped');
         setStatus('failed');
         (onSkip ?? onNext)?.();
@@ -83,50 +78,53 @@ export function LocationStep({
     (onSkip ?? onNext)?.();
   }
 
-  // denied: 브라우저가 prompt 재요청을 차단 — 안내 + 건너뛰기만
   if (permission === 'denied') {
     return (
-      <div style={{ display: 'grid', gap: '1rem', padding: '1rem 0' }}>
-        <p style={{ color: 'var(--color-muted)' }}>{t('permission.denied')}</p>
-        <p style={{ fontSize: '0.875rem', color: 'var(--color-muted)' }}>
-          {t('permission.openSettings')}
-        </p>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
+      <div className={styles.step}>
+        <p className={styles.description}>{t('permission.denied')}</p>
+        <p className={styles.description}>{t('permission.openSettings')}</p>
+        <div className={`${styles.actions} ${styles.actionsRow}`}>
           {onPrev && (
-            <button type="button" onClick={onPrev}>
+            <Button variant="secondary" onClick={onPrev}>
               {t('back')}
-            </button>
+            </Button>
           )}
-          <button type="button" onClick={handleSkip} disabled={isLoading}>
+          <Button variant="primary" onClick={handleSkip} disabled={isLoading}>
             {t('permission.skip')}
-          </button>
+          </Button>
         </div>
       </div>
     );
   }
 
-  // granted: 자동 resolve 진행 중. 로딩만 표시.
   if (permission === 'granted') {
     return (
-      <div style={{ display: 'grid', gap: '0.5rem', padding: '1rem 0' }}>
-        <p>{t('resolving')}</p>
+      <div className={styles.step}>
+        <p className={styles.description}>{t('resolving')}</p>
         {status === 'failed' && error && (
-          <button type="button" onClick={handleAccept} disabled={isLoading}>
-            {t('retry')}
-          </button>
+          <div className={`${styles.actions} ${styles.actionsCenter}`}>
+            <Button
+              variant="primary"
+              onClick={handleAccept}
+              disabled={isLoading}
+            >
+              {t('retry')}
+            </Button>
+          </div>
         )}
       </div>
     );
   }
 
-  // prompt / unsupported: 사전 안내 → 사용자 명시 클릭으로 권한 요청
   return (
-    <div style={{ display: 'grid', gap: '1rem', padding: '1rem 0' }}>
+    <div className={styles.step}>
       <LocationPermissionPrompt onAccept={handleAccept} onSkip={handleSkip} />
       {onPrev && (
-        <button type="button" onClick={onPrev} disabled={isLoading}>
-          {t('back')}
-        </button>
+        <div className={`${styles.actions} ${styles.actionsCenter}`}>
+          <Button variant="ghost" onClick={onPrev} disabled={isLoading}>
+            {t('back')}
+          </Button>
+        </div>
       )}
     </div>
   );

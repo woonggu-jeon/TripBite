@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Share2, ChevronLeft } from 'lucide-react';
 import { haptic } from '@/lib/haptic';
 import { EmptyState } from '@/components/feedback/EmptyState';
-import { Card, Chip, IconButton } from '@/components/ui';
+import { Button, Card, Chip, IconButton } from '@/components/ui';
 import { useMyTravelType } from '@/features/ranking/hooks/use-ranking';
 import styles from './TravelTypeShareCard.module.scss';
 
@@ -38,13 +38,13 @@ export function TravelTypeShareCard() {
         title={t('empty')}
         description={t('emptyHint')}
         action={
-          <button
-            type="button"
-            className={styles.retry}
+          <Button
+            variant="primary"
+            size="sm"
             onClick={() => router.replace('/quiz')}
           >
             {t('startTest')}
-          </button>
+          </Button>
         }
       />
     );
@@ -130,10 +130,14 @@ export function TravelTypeShareCard() {
         <p className={styles.cardBrand}>TripBite · 여행 유형 테스트</p>
       </Card>
 
-      <button type="button" className={styles.shareBtn} onClick={handleShare}>
-        <Share2 size={18} aria-hidden />
-        <span>{t('shareCta')}</span>
-      </button>
+      <Button
+        variant="primary"
+        fullWidth
+        onClick={handleShare}
+        leadingIcon={<Share2 size={18} aria-hidden />}
+      >
+        {t('shareCta')}
+      </Button>
       <p className={styles.shareHint}>{t('shareHint')}</p>
     </div>
   );

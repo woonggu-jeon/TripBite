@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import { useUIStore } from '@/stores/ui-store';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
 import { useKeyboard } from '@/hooks/use-keyboard';
+import { Button } from '@/components/ui';
 import styles from './ConfirmDialog.module.scss';
 
 /**
@@ -61,20 +62,20 @@ export function ConfirmDialog() {
           </p>
         )}
         <div className={styles.actions}>
-          <button
-            type="button"
-            className={styles.cancel}
+          <Button
+            variant="secondary"
+            fullWidth
             onClick={() => resolve(id, false)}
           >
             {cancelLabel}
-          </button>
-          <button
-            type="button"
-            className={`${styles.confirm} ${destructive ? styles.destructive : ''}`}
+          </Button>
+          <Button
+            variant={destructive ? 'danger' : 'primary'}
+            fullWidth
             onClick={() => resolve(id, true)}
           >
             {confirmLabel}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

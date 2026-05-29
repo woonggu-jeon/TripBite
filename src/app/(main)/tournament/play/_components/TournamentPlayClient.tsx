@@ -15,6 +15,7 @@ import type {
 } from '@/features/tournament/types';
 import { useTournamentStore } from '@/features/tournament/store/tournament-store';
 import { useTournamentCandidates } from '@/features/tournament/hooks/use-tournament';
+import { Button } from '@/components/ui';
 import styles from './TournamentPlayClient.module.scss';
 
 type Phase = 'intro' | 'map' | 'tournamentSize' | 'bracket' | 'celebration';
@@ -107,13 +108,9 @@ export function TournamentPlayClient() {
     return (
       <div className={styles.empty}>
         <p>{t('noConfig')}</p>
-        <button
-          type="button"
-          className={styles.cta}
-          onClick={() => router.replace('/tournament')}
-        >
+        <Button variant="primary" onClick={() => router.replace('/tournament')}>
           {t('goSetup')}
-        </button>
+        </Button>
       </div>
     );
   }
@@ -152,13 +149,9 @@ export function TournamentPlayClient() {
             {isLoading ? t('loading') : isError ? t('error') : t('introHint')}
           </p>
           {isError && (
-            <button
-              type="button"
-              className={styles.retry}
-              onClick={() => refetch()}
-            >
+            <Button variant="secondary" size="sm" onClick={() => refetch()}>
               {t('retry')}
-            </button>
+            </Button>
           )}
         </div>
       )}
@@ -171,13 +164,9 @@ export function TournamentPlayClient() {
           {!dedupedPool && isError && (
             <div className={styles.errorBox}>
               <p>{t('error')}</p>
-              <button
-                type="button"
-                className={styles.retry}
-                onClick={() => refetch()}
-              >
+              <Button variant="secondary" size="sm" onClick={() => refetch()}>
                 {t('retry')}
-              </button>
+              </Button>
             </div>
           )}
           {dedupedPool && (
@@ -188,13 +177,14 @@ export function TournamentPlayClient() {
                 <p className={styles.counter}>
                   {t('mapSummary', { destinations: N })}
                 </p>
-                <button
-                  type="button"
-                  className={styles.cta}
+                <Button
+                  variant="primary"
+                  size="lg"
+                  fullWidth
                   onClick={handleMapNext}
                 >
                   {t('next')}
-                </button>
+                </Button>
               </div>
             </>
           )}
@@ -210,14 +200,15 @@ export function TournamentPlayClient() {
             onChange={setPendingSize}
             mode="tournament"
           />
-          <button
-            type="button"
-            className={styles.cta}
+          <Button
+            variant="primary"
+            size="lg"
+            fullWidth
             disabled={!canStartBracket}
             onClick={handleStartBracket}
           >
             {t('startBracket')}
-          </button>
+          </Button>
         </div>
       )}
 

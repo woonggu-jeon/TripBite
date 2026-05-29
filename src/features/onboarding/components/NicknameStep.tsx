@@ -7,12 +7,15 @@ import {
   nicknameSchema,
   type NicknameFormValues,
 } from '@/features/onboarding/schemas/nickname';
+import { Button } from '@/components/ui';
+import authStyles from '@/features/auth/components/AuthForm.module.scss';
+import styles from './OnboardingStep.module.scss';
 
 /**
- * <NicknameStep /> — 온보딩 step 3
+ * <NicknameStep /> — 온보딩 step 3 (현재 미노출, 컴포넌트는 보존)
  *
- * 닉네임 입력 + zod 검증. 제출 시 부모(OnboardingFlow)가 receive해서
- * onboardingApi.complete로 전송. regionCode는 OnboardingFlow가 location-store에서 가져옴.
+ * 닉네임 입력 + zod 검증. 제출 시 부모(OnboardingFlow) 가 onboardingApi.complete 로 전송.
+ * 폼 요소는 AuthForm module 의 .field/.input/.error 재사용.
  */
 export function NicknameStep({
   onSubmit,
@@ -38,69 +41,39 @@ export function NicknameStep({
   });
 
   return (
-    <form onSubmit={submit} style={{ display: 'grid', gap: '1rem' }}>
-      <h2 style={{ fontSize: '1.25rem', fontWeight: 700 }}>
-        {t('nickname.title')}
-      </h2>
+    <form onSubmit={submit} className={styles.step}>
+      <h2 className={styles.title}>{t('nickname.title')}</h2>
 
-      <div>
+      <div className={authStyles.field}>
         <input
           type="text"
           placeholder={t('nickname.placeholder')}
           maxLength={20}
-          autoFocus
-          style={{
-            width: '100%',
-            padding: '0.75rem',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius-md)',
-            fontSize: '1rem',
-          }}
+          className={authStyles.input}
+          aria-invalid={!!errors.nickname}
           {...register('nickname')}
         />
         {errors.nickname && (
-          <p
-            style={{
-              color: 'var(--color-danger)',
-              fontSize: '0.8125rem',
-              marginTop: 6,
-            }}
-          >
+          <p className={authStyles.error}>
             {tErr(errors.nickname.message as Parameters<typeof tErr>[0])}
           </p>
         )}
       </div>
 
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
+      <div className={`${styles.actions} ${styles.actionsRow}`}>
         {onPrev && (
-          <button
-            type="button"
-            onClick={onPrev}
-            disabled={isSubmitting}
-            style={{
-              padding: '0.875rem 1rem',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius-md)',
-              background: 'transparent',
-            }}
-          >
+          <Button variant="secondary" onClick={onPrev} disabled={isSubmitting}>
             {t('back')}
-          </button>
+          </Button>
         )}
-        <button
+        <Button
           type="submit"
+          variant="primary"
+          loading={isSubmitting}
           disabled={isSubmitting}
-          style={{
-            flex: 1,
-            padding: '0.875rem',
-            background: 'var(--color-primary)',
-            color: 'var(--color-primary-fg)',
-            borderRadius: 'var(--radius-md)',
-            fontWeight: 600,
-          }}
         >
           {t('nickname.submit')}
-        </button>
+        </Button>
       </div>
     </form>
   );

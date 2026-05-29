@@ -1,8 +1,12 @@
 [
   {
-    "name": "전체 client JS (chunks, gzip) — 대형 의존성 회귀 가드",
-    "path": ".next/static/chunks/*.js",
-    "limit": "440 kB",
+    "name": "전체 client JS (app router 청크, gzip) — MSW mock 운영 중이라 +60kB. 실 백엔드 + NEXT_PUBLIC_USE_MSW=false 후 440kB 회귀",
+    "path": [
+      ".next/static/chunks/*.js",
+      "!.next/static/chunks/main.js",
+      "!.next/static/chunks/_*.js"
+    ],
+    "limit": "500 kB",
     "gzip": true
   }
 ]

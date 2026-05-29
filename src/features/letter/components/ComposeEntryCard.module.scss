@@ -1,8 +1,8 @@
+// cardClasses 가 bg/border/radius 담당. 본 SCSS 는 layout + interactive 만.
+// radius-xl 이 필요한 경우 override 가능 (Card primitive 는 radius-lg).
 .card {
   display: grid;
   grid-template-rows: 140px auto;
-  background: var(--color-bg);
-  border: 1.5px solid var(--color-border);
   border-radius: var(--radius-xl);
   text-decoration: none;
   color: var(--color-fg);
@@ -14,7 +14,7 @@
 
   &:hover {
     border-color: var(--color-primary);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-card-strong);
   }
   &:active {
     transform: scale(0.99);

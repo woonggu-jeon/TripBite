@@ -9,6 +9,8 @@ import {
   forgotPasswordSchema,
   type ForgotPasswordValues,
 } from '@/features/auth/schemas/password-reset';
+import { Button } from '@/components/ui';
+import styles from './AuthForm.module.scss';
 
 /**
  * 비밀번호 찾기 — 이메일 입력 → 백엔드가 재설정 링크 메일 발송.
@@ -29,29 +31,19 @@ export function ForgotPasswordForm() {
   });
 
   const onSubmit = handleSubmit(async (values) => {
-    // 계정 미존재여도 동일 안내 (열거 방지) — 에러를 사용자에 노출 안 함
     try {
       await forgot(values);
     } catch {
-      /* swallow — 동일 안내 */
+      /* swallow — 동일 안내 (열거 방지) */
     }
   });
 
   if (isSuccess) {
     return (
-      <div
-        style={{
-          maxWidth: 360,
-          textAlign: 'center',
-          display: 'grid',
-          gap: '1rem',
-        }}
-      >
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 700 }}>
-          {t('sentTitle')}
-        </h1>
-        <p style={{ color: 'var(--color-muted)' }}>{t('sentDescription')}</p>
-        <Link href="/login" style={{ color: 'var(--color-primary)' }}>
+      <div className={`${styles.form} ${styles.center}`}>
+        <h1 className={styles.title}>{t('sentTitle')}</h1>
+        <p className={styles.subtitle}>{t('sentDescription')}</p>
+        <Link href="/login" className={styles.footLinkPrimary}>
           {t('toLogin')}
         </Link>
       </div>
@@ -59,21 +51,12 @@ export function ForgotPasswordForm() {
   }
 
   return (
-    <form
-      onSubmit={onSubmit}
-      noValidate
-      style={{ display: 'grid', gap: '1rem', width: '100%', maxWidth: 360 }}
-    >
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 700 }}>{t('title')}</h1>
-      <p style={{ color: 'var(--color-muted)', fontSize: '0.875rem' }}>
-        {t('description')}
-      </p>
+    <form onSubmit={onSubmit} noValidate className={styles.form}>
+      <h1 className={styles.title}>{t('title')}</h1>
+      <p className={styles.subtitle}>{t('description')}</p>
 
-      <div>
-        <label
-          htmlFor="email"
-          style={{ fontSize: '0.875rem', fontWeight: 500 }}
-        >
+      <div className={styles.field}>
+        <label htmlFor="email" className={styles.label}>
           {t('email')}
         </label>
         <input
@@ -81,50 +64,28 @@ export function ForgotPasswordForm() {
           type="email"
           autoComplete="email"
           aria-invalid={!!errors.email}
-          style={{
-            width: '100%',
-            marginTop: 6,
-            padding: '0.75rem',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius-md)',
-          }}
+          className={styles.input}
           {...register('email')}
         />
         {errors.email && (
-          <p
-            style={{
-              color: 'var(--color-danger)',
-              fontSize: '0.8125rem',
-              marginTop: 4,
-            }}
-          >
+          <p className={styles.error}>
             {tErr(errors.email.message as Parameters<typeof tErr>[0])}
           </p>
         )}
       </div>
 
-      <button
+      <Button
         type="submit"
+        variant="primary"
+        size="lg"
+        fullWidth
+        loading={isPending}
         disabled={isPending}
-        style={{
-          padding: '0.875rem',
-          background: 'var(--color-primary)',
-          color: 'var(--color-primary-fg)',
-          borderRadius: 'var(--radius-md)',
-          fontWeight: 600,
-        }}
       >
         {isPending ? t('submitting') : t('submit')}
-      </button>
+      </Button>
 
-      <Link
-        href="/login"
-        style={{
-          textAlign: 'center',
-          fontSize: '0.875rem',
-          color: 'var(--color-muted)',
-        }}
-      >
+      <Link href="/login" className={styles.footCenter}>
         {t('toLogin')}
       </Link>
     </form>

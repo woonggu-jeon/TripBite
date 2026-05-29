@@ -1,6 +1,8 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui';
+import styles from './OnboardingStep.module.scss';
 
 /**
  * <ConceptStep /> — 온보딩 step 1
@@ -12,42 +14,17 @@ export function ConceptStep({ onNext }: { onNext?: () => void }) {
   const t = useTranslations('onboarding');
 
   return (
-    <div
-      style={{
-        display: 'grid',
-        gap: '1.5rem',
-        padding: '1rem 0',
-        textAlign: 'center',
-      }}
-    >
-      <div style={{ fontSize: '4rem', lineHeight: 1 }} aria-hidden>
+    <div className={styles.step}>
+      <div className={styles.emoji} aria-hidden>
         🗺️
       </div>
-      <h2 style={{ fontSize: '1.5rem', fontWeight: 700 }}>
-        {t('concept.title')}
-      </h2>
-      <p
-        style={{
-          fontSize: '0.95rem',
-          color: 'var(--color-muted)',
-          lineHeight: 1.6,
-        }}
-      >
-        {t('concept.description')}
-      </p>
-      <button
-        type="button"
-        onClick={onNext}
-        style={{
-          padding: '0.875rem',
-          background: 'var(--color-primary)',
-          color: 'var(--color-primary-fg)',
-          borderRadius: 'var(--radius-md)',
-          fontWeight: 600,
-        }}
-      >
-        {t('next')}
-      </button>
+      <h2 className={styles.title}>{t('concept.title')}</h2>
+      <p className={styles.description}>{t('concept.description')}</p>
+      <div className={`${styles.actions} ${styles.actionsCenter}`}>
+        <Button variant="primary" size="lg" fullWidth onClick={onNext}>
+          {t('next')}
+        </Button>
+      </div>
     </div>
   );
 }

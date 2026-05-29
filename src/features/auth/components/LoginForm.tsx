@@ -12,7 +12,7 @@ import {
 } from '@/features/auth/schemas/login';
 import { isAxiosError } from '@/services/interceptors/auth';
 import { Button } from '@/components/ui';
-import styles from './LoginForm.module.scss';
+import styles from './AuthForm.module.scss';
 
 /**
  * 로그인 폼 — i18n 적용 예시
@@ -59,7 +59,11 @@ export function LoginForm() {
   });
 
   return (
-    <form onSubmit={onSubmit} className={styles.form} noValidate>
+    <form
+      onSubmit={onSubmit}
+      className={`${styles.form} ${styles.card}`}
+      noValidate
+    >
       <h1 className={styles.title}>{t('title')}</h1>
 
       <div className={styles.field}>

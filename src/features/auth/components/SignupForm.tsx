@@ -10,12 +10,11 @@ import {
   type SignupFormValues,
 } from '@/features/auth/schemas/signup';
 import { isAxiosError } from '@/services/interceptors/auth';
+import { Button } from '@/components/ui';
+import styles from './AuthForm.module.scss';
 
 /**
  * 회원가입 폼 — 이름/아이디/비번(10+)/생년월일/이메일/폰 (전부 필수)
- *
- * 검증은 signupSchema(zod). 에러 메시지는 i18n 키 → t() 변환.
- * 중복확인/실제 가입은 백엔드 (POST /auth/signup).
  */
 const FIELDS = [
   { name: 'name', type: 'text', autoComplete: 'name' },
@@ -60,24 +59,12 @@ export function SignupForm() {
   });
 
   return (
-    <form
-      onSubmit={onSubmit}
-      noValidate
-      style={{
-        display: 'grid',
-        gap: '1rem',
-        width: '100%',
-        maxWidth: 360,
-      }}
-    >
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 700 }}>{t('title')}</h1>
+    <form onSubmit={onSubmit} noValidate className={styles.form}>
+      <h1 className={styles.title}>{t('title')}</h1>
 
       {FIELDS.map((f) => (
-        <div key={f.name}>
-          <label
-            htmlFor={f.name}
-            style={{ fontSize: '0.875rem', fontWeight: 500 }}
-          >
+        <div key={f.name} className={styles.field}>
+          <label htmlFor={f.name} className={styles.label}>
             {t(f.name)}
           </label>
           <input
@@ -86,23 +73,11 @@ export function SignupForm() {
             autoComplete={f.autoComplete}
             placeholder={t(`${f.name}Placeholder`)}
             aria-invalid={!!errors[f.name]}
-            style={{
-              width: '100%',
-              marginTop: 6,
-              padding: '0.75rem',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius-md)',
-            }}
+            className={styles.input}
             {...register(f.name)}
           />
           {errors[f.name] && (
-            <p
-              style={{
-                color: 'var(--color-danger)',
-                fontSize: '0.8125rem',
-                marginTop: 4,
-              }}
-            >
+            <p className={styles.error}>
               {tErr(errors[f.name]?.message as Parameters<typeof tErr>[0])}
             </p>
           )}
@@ -110,33 +85,23 @@ export function SignupForm() {
       ))}
 
       {errors.root && (
-        <p style={{ color: 'var(--color-danger)' }} role="alert">
+        <p className={styles.error} role="alert">
           {errors.root.message}
         </p>
       )}
 
-      <button
+      <Button
         type="submit"
+        variant="primary"
+        size="lg"
+        fullWidth
+        loading={isSubmitting}
         disabled={isSubmitting}
-        style={{
-          padding: '0.875rem',
-          background: 'var(--color-primary)',
-          color: 'var(--color-primary-fg)',
-          borderRadius: 'var(--radius-md)',
-          fontWeight: 600,
-        }}
       >
         {isSubmitting ? t('submitting') : t('submit')}
-      </button>
+      </Button>
 
-      <Link
-        href="/login"
-        style={{
-          textAlign: 'center',
-          fontSize: '0.875rem',
-          color: 'var(--color-muted)',
-        }}
-      >
+      <Link href="/login" className={styles.footCenter}>
         {t('toLogin')}
       </Link>
     </form>

@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { MapPin } from 'lucide-react';
+import { Button } from '@/components/ui';
 import styles from './LocationPermissionPrompt.module.scss';
 
 /**
@@ -31,7 +32,11 @@ export function LocationPermissionPrompt({
   const t = useTranslations('location.permission');
 
   return (
-    <div className={styles.prompt} role="dialog" aria-labelledby="loc-perm-title">
+    <div
+      className={styles.prompt}
+      role="dialog"
+      aria-labelledby="loc-perm-title"
+    >
       <MapPin size={28} className={styles.icon} />
       <h3 id="loc-perm-title" className={styles.title}>
         {t('title')}
@@ -39,13 +44,13 @@ export function LocationPermissionPrompt({
       <p className={styles.description}>{t('description')}</p>
       <div className={styles.actions}>
         {onSkip && (
-          <button type="button" className={styles.skip} onClick={onSkip}>
+          <Button variant="ghost" onClick={onSkip}>
             {t('skip')}
-          </button>
+          </Button>
         )}
-        <button type="button" className={styles.accept} onClick={onAccept}>
+        <Button variant="primary" onClick={onAccept}>
           {t('request')}
-        </button>
+        </Button>
       </div>
     </div>
   );

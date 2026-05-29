@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { haptic } from '@/lib/haptic';
+import { cardClasses } from '@/components/ui';
 import styles from './ThemeKindSelector.module.scss';
 
 export type ThemeKind = 'season' | 'special';
@@ -48,7 +49,11 @@ export function ThemeKindSelector({ value, onChange }: ThemeKindSelectorProps) {
             type="button"
             role="radio"
             aria-checked={active}
-            className={`${styles.card} ${active ? styles.active : ''}`}
+            className={cardClasses({
+              variant: 'surface',
+              padding: 'none',
+              className: `${styles.card} ${active ? styles.active : ''}`,
+            })}
             onClick={() => pick(k.value)}
           >
             <span className={styles.emoji} aria-hidden>

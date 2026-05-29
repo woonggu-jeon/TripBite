@@ -11,6 +11,8 @@ import {
   type ResetPasswordValues,
 } from '@/features/auth/schemas/password-reset';
 import { isAxiosError } from '@/services/interceptors/auth';
+import { Button } from '@/components/ui';
+import styles from './AuthForm.module.scss';
 
 /**
  * 비밀번호 재설정 — 메일 링크의 토큰(?token=) + 새 비밀번호(10자+).
@@ -45,19 +47,10 @@ export function ResetPasswordForm() {
 
   if (!token) {
     return (
-      <div
-        style={{
-          maxWidth: 360,
-          textAlign: 'center',
-          display: 'grid',
-          gap: '1rem',
-        }}
-      >
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 700 }}>
-          {t('invalidTitle')}
-        </h1>
-        <p style={{ color: 'var(--color-muted)' }}>{t('invalidDescription')}</p>
-        <Link href="/forgot-password" style={{ color: 'var(--color-primary)' }}>
+      <div className={`${styles.form} ${styles.center}`}>
+        <h1 className={styles.title}>{t('invalidTitle')}</h1>
+        <p className={styles.subtitle}>{t('invalidDescription')}</p>
+        <Link href="/forgot-password" className={styles.footLinkPrimary}>
           {t('retry')}
         </Link>
       </div>
@@ -65,20 +58,13 @@ export function ResetPasswordForm() {
   }
 
   return (
-    <form
-      onSubmit={onSubmit}
-      noValidate
-      style={{ display: 'grid', gap: '1rem', width: '100%', maxWidth: 360 }}
-    >
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 700 }}>{t('title')}</h1>
+    <form onSubmit={onSubmit} noValidate className={styles.form}>
+      <h1 className={styles.title}>{t('title')}</h1>
 
       <input type="hidden" {...register('token')} />
 
-      <div>
-        <label
-          htmlFor="password"
-          style={{ fontSize: '0.875rem', fontWeight: 500 }}
-        >
+      <div className={styles.field}>
+        <label htmlFor="password" className={styles.label}>
           {t('password')}
         </label>
         <input
@@ -86,47 +72,32 @@ export function ResetPasswordForm() {
           type="password"
           autoComplete="new-password"
           aria-invalid={!!errors.password}
-          style={{
-            width: '100%',
-            marginTop: 6,
-            padding: '0.75rem',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius-md)',
-          }}
+          className={styles.input}
           {...register('password')}
         />
         {errors.password && (
-          <p
-            style={{
-              color: 'var(--color-danger)',
-              fontSize: '0.8125rem',
-              marginTop: 4,
-            }}
-          >
+          <p className={styles.error}>
             {tErr(errors.password.message as Parameters<typeof tErr>[0])}
           </p>
         )}
       </div>
 
       {errors.root && (
-        <p style={{ color: 'var(--color-danger)' }} role="alert">
+        <p className={styles.error} role="alert">
           {errors.root.message}
         </p>
       )}
 
-      <button
+      <Button
         type="submit"
+        variant="primary"
+        size="lg"
+        fullWidth
+        loading={isSubmitting}
         disabled={isSubmitting}
-        style={{
-          padding: '0.875rem',
-          background: 'var(--color-primary)',
-          color: 'var(--color-primary-fg)',
-          borderRadius: 'var(--radius-md)',
-          fontWeight: 600,
-        }}
       >
         {isSubmitting ? t('submitting') : t('submit')}
-      </button>
+      </Button>
     </form>
   );
 }

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { ArrowRight } from 'lucide-react';
+import { cardClasses } from '@/components/ui';
 import { useMyTravelType } from '@/features/ranking/hooks/use-ranking';
 import styles from './TravelTypeTestEntry.module.scss';
 
@@ -18,9 +19,15 @@ export function TravelTypeTestEntry() {
   const t = useTranslations('travelType.entry');
   const { data } = useMyTravelType();
 
+  const cardCls = cardClasses({
+    variant: 'surface',
+    padding: 'none',
+    className: styles.card,
+  });
+
   if (data) {
     return (
-      <Link href="/quiz/result" className={styles.card}>
+      <Link href="/quiz/result" className={cardCls}>
         <span className={styles.emoji} aria-hidden>
           {data.emoji}
         </span>
@@ -34,7 +41,7 @@ export function TravelTypeTestEntry() {
   }
 
   return (
-    <Link href="/quiz" className={`${styles.card} ${styles.cta}`}>
+    <Link href="/quiz" className={`${cardCls} ${styles.cta}`}>
       <span className={styles.emoji} aria-hidden>
         🧭
       </span>

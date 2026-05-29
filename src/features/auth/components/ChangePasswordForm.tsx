@@ -10,18 +10,12 @@ import {
 } from '@/features/auth/schemas/password-reset';
 import { isAxiosError } from '@/services/interceptors/auth';
 import { toast } from '@/lib/toast';
-
-const inputStyle = {
-  width: '100%',
-  marginTop: 6,
-  padding: '0.75rem',
-  border: '1px solid var(--color-border)',
-  borderRadius: 'var(--radius-md)',
-} as const;
+import { Button } from '@/components/ui';
+import styles from './AuthForm.module.scss';
 
 /**
  * 비밀번호 변경 (로그인 상태) — 현재 비번 확인 + 새 비번(10자+) + 확인.
- * 설정 계정 섹션에서 인라인으로 펼쳐 사용. 성공 시 onDone으로 닫음.
+ * 설정 계정 섹션에서 인라인으로 펼쳐 사용. 성공 시 onDone 으로 닫음.
  */
 export function ChangePasswordForm({ onDone }: { onDone?: () => void }) {
   const t = useTranslations('auth.changePassword');
@@ -67,17 +61,10 @@ export function ChangePasswordForm({ onDone }: { onDone?: () => void }) {
   ] as const;
 
   return (
-    <form
-      onSubmit={onSubmit}
-      noValidate
-      style={{ display: 'grid', gap: '0.75rem' }}
-    >
+    <form onSubmit={onSubmit} noValidate className={styles.form}>
       {fields.map((f) => (
-        <div key={f.name}>
-          <label
-            htmlFor={f.name}
-            style={{ fontSize: '0.8125rem', fontWeight: 500 }}
-          >
+        <div key={f.name} className={styles.field}>
+          <label htmlFor={f.name} className={styles.label}>
             {t(f.name)}
           </label>
           <input
@@ -85,17 +72,11 @@ export function ChangePasswordForm({ onDone }: { onDone?: () => void }) {
             type="password"
             autoComplete={f.auto}
             aria-invalid={!!errors[f.name]}
-            style={inputStyle}
+            className={styles.input}
             {...register(f.name)}
           />
           {errors[f.name] && (
-            <p
-              style={{
-                color: 'var(--color-danger)',
-                fontSize: '0.8125rem',
-                marginTop: 4,
-              }}
-            >
+            <p className={styles.error}>
               {tErr(errors[f.name]?.message as Parameters<typeof tErr>[0])}
             </p>
           )}
@@ -103,27 +84,20 @@ export function ChangePasswordForm({ onDone }: { onDone?: () => void }) {
       ))}
 
       {errors.root && (
-        <p
-          style={{ color: 'var(--color-danger)', fontSize: '0.8125rem' }}
-          role="alert"
-        >
+        <p className={styles.error} role="alert">
           {errors.root.message}
         </p>
       )}
 
-      <button
+      <Button
         type="submit"
+        variant="primary"
+        fullWidth
+        loading={isSubmitting}
         disabled={isSubmitting}
-        style={{
-          padding: '0.75rem',
-          background: 'var(--color-primary)',
-          color: 'var(--color-primary-fg)',
-          borderRadius: 'var(--radius-md)',
-          fontWeight: 600,
-        }}
       >
         {isSubmitting ? t('submitting') : t('submit')}
-      </button>
+      </Button>
     </form>
   );
 }

@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui';
 import { useRanking } from '@/features/ranking/hooks/use-ranking';
 import { isRegionCode, type RegionCode } from '@/constants/regions';
 import { haptic } from '@/lib/haptic';
@@ -59,13 +60,9 @@ export function RegionWinsChart() {
     return (
       <div className={styles.fallback}>
         <p>{t('chart.error')}</p>
-        <button
-          type="button"
-          className={styles.retry}
-          onClick={() => refetch()}
-        >
+        <Button variant="secondary" size="sm" onClick={() => refetch()}>
           {t('chart.retry')}
-        </button>
+        </Button>
       </div>
     );
   }

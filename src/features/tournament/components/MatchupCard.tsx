@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { haptic } from '@/lib/haptic';
+import { cardClasses } from '@/components/ui';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import type { Destination } from '@/features/tournament/types';
 import styles from './MatchupCard.module.scss';
@@ -37,7 +38,11 @@ export function MatchupCard({
   return (
     <button
       type="button"
-      className={styles.card}
+      className={cardClasses({
+        variant: 'surface',
+        padding: 'none',
+        className: styles.card,
+      })}
       onClick={() => {
         if (disabled) return;
         haptic.tap();

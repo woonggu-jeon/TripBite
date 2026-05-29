@@ -1,0 +1,48 @@
+// Onboarding step 공통 SCSS — Concept/Location/Nickname step 이 동일한
+// (emoji/icon → title → description → actions) 구조라 단일 module 공유.
+
+.step {
+  display: grid;
+  gap: var(--space-5);
+  padding: var(--space-4) 0;
+  text-align: center;
+}
+
+.emoji {
+  font-size: var(--emoji-xl);
+  line-height: 1;
+}
+
+.title {
+  font-size: var(--font-h1);
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
+}
+
+.description {
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+  line-height: var(--line-relaxed);
+  word-break: keep-all;
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+// 좌(back) + 우(primary) 행 레이아웃
+.actionsRow {
+  > :first-child {
+    flex-shrink: 0;
+  }
+  > :last-child {
+    flex: 1;
+  }
+}
+
+// 가운데 (단일 CTA)
+.actionsCenter {
+  justify-content: center;
+}

@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { haptic } from '@/lib/haptic';
+import { cardClasses } from '@/components/ui';
 import type { Season } from '@/features/tournament/types';
 import styles from './SeasonSelector.module.scss';
 
@@ -43,7 +44,11 @@ export function SeasonSelector({ value, onChange }: SeasonSelectorProps) {
             type="button"
             role="radio"
             aria-checked={active}
-            className={`${styles.card} ${active ? styles.active : ''} ${styles[s.value] ?? ''}`}
+            className={cardClasses({
+              variant: 'surface',
+              padding: 'none',
+              className: `${styles.card} ${active ? styles.active : ''} ${styles[s.value] ?? ''}`,
+            })}
             onClick={() => pick(s.value)}
           >
             <span className={styles.emoji} aria-hidden>

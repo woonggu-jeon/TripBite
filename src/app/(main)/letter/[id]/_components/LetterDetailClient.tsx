@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Mail, Inbox } from 'lucide-react';
 import { Skeleton } from '@/components/feedback/Skeleton';
+import { Button } from '@/components/ui';
 import { useLetter } from '@/features/letter/hooks/use-letters';
 import { LetterActions } from '@/features/letter/components/LetterActions';
 import styles from './LetterDetailClient.module.scss';
@@ -56,20 +57,12 @@ export function LetterDetailClient({ letterId }: { letterId: string }) {
       <div className={styles.empty}>
         <p>{t('loadError')}</p>
         <div className={styles.emptyActions}>
-          <button
-            type="button"
-            className={styles.secondary}
-            onClick={() => refetch()}
-          >
+          <Button variant="secondary" onClick={() => refetch()}>
             {t('retry')}
-          </button>
-          <button
-            type="button"
-            className={styles.primary}
-            onClick={() => router.replace('/letter')}
-          >
+          </Button>
+          <Button variant="primary" onClick={() => router.replace('/letter')}>
             {t('backToList')}
-          </button>
+          </Button>
         </div>
       </div>
     );

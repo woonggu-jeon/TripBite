@@ -4,6 +4,7 @@
   gap: 0.75rem;
 }
 
+// cardClasses 가 bg/border/radius 담당. layout + interactive 만.
 .card {
   display: flex;
   flex-direction: column;
@@ -12,9 +13,6 @@
   gap: 0.5rem;
   aspect-ratio: 1.4 / 1;
   padding: 1rem 0.5rem;
-  background: var(--color-bg);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-lg);
   color: var(--color-fg);
   cursor: pointer;
   transition:

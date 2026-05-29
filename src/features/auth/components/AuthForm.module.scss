@@ -1,0 +1,121 @@
+// Auth 폼 공통 SCSS — Login/Signup/FindId/ForgotPassword/ResetPassword/ChangePassword 가
+// 거의 동일한 (form > title > field × N > submit > foot) 구조라 단일 module 공유.
+
+.form {
+  display: grid;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 360px;
+}
+
+// 카드 형태 form (Login 처럼 카드 wrap)
+.card {
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.title {
+  font-size: var(--font-h1);
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
+  margin-bottom: var(--space-2);
+}
+
+.subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+  margin-top: calc(-1 * var(--space-2));
+}
+
+.field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-fg);
+}
+
+.input {
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-size: var(--font-body-sm);
+  outline: none;
+  transition: border-color var(--motion-base) ease;
+
+  &::placeholder {
+    color: var(--color-muted);
+  }
+  &:focus {
+    border-color: var(--color-primary);
+  }
+  &[aria-invalid='true'] {
+    border-color: var(--color-danger);
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.error {
+  font-size: var(--font-label);
+  color: var(--color-danger);
+  margin-top: -2px;
+}
+
+.success {
+  font-size: var(--font-label);
+  color: var(--color-success);
+}
+
+// 하단 링크 (foot)
+.foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.footRight {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.footLinkPrimary {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.footLinkMuted {
+  color: var(--color-muted);
+}
+
+.footCenter {
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+  margin-top: var(--space-2);
+}
+
+// FindId 결과 표시 등에 쓰는 가운데 정렬 form
+.center {
+  text-align: center;
+  justify-items: center;
+}
+
+// 결과로 표시되는 아이디 강조
+.resultId {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  letter-spacing: var(--tracking-snug);
+  color: var(--color-fg);
+}

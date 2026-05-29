@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { ROUTES } from '@/constants/routes';
+import { cardClasses } from '@/components/ui';
 import styles from './ComposeEntryCard.module.scss';
 
 /**
@@ -14,7 +15,14 @@ export function ComposeEntryCard() {
   const t = useTranslations('letter.indexCta');
 
   return (
-    <Link href={ROUTES.LETTER_COMPOSE} className={styles.card}>
+    <Link
+      href={ROUTES.LETTER_COMPOSE}
+      className={cardClasses({
+        variant: 'surface',
+        padding: 'none',
+        className: styles.card,
+      })}
+    >
       <div className={styles.hero} aria-hidden>
         <span className={styles.envelope}>✉️</span>
         <span className={styles.sparkle1}>✦</span>

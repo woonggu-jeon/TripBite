@@ -1,3 +1,4 @@
+// cardClasses 가 base bg/border/radius 담당. 본 SCSS 는 layout + gradient override + interactive.
 .card {
   display: grid;
   grid-template-columns: 44px 1fr 18px;
@@ -9,8 +10,7 @@
     var(--color-primary-surface-grad-start),
     var(--color-bg) 80%
   );
-  border: 1.5px solid var(--color-primary-border);
-  border-radius: var(--radius-lg);
+  border-color: var(--color-primary-border);
   color: var(--color-fg);
   text-decoration: none;
   transition:

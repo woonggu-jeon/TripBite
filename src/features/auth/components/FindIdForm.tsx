@@ -10,14 +10,8 @@ import {
   findIdSchema,
   type FindIdValues,
 } from '@/features/auth/schemas/find-id';
-
-const inputStyle = {
-  width: '100%',
-  marginTop: 6,
-  padding: '0.75rem',
-  border: '1px solid var(--color-border)',
-  borderRadius: 'var(--radius-md)',
-} as const;
+import { Button } from '@/components/ui';
+import styles from './AuthForm.module.scss';
 
 /**
  * 아이디 찾기 — 이름 + 가입 이메일 매칭 → 마스킹 아이디를 화면에 표시.
@@ -49,23 +43,14 @@ export function FindIdForm() {
 
   if (result !== undefined) {
     return (
-      <div
-        style={{
-          maxWidth: 360,
-          textAlign: 'center',
-          display: 'grid',
-          gap: '1rem',
-        }}
-      >
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 700 }}>
-          {t('resultTitle')}
-        </h1>
+      <div className={`${styles.form} ${styles.center}`}>
+        <h1 className={styles.title}>{t('resultTitle')}</h1>
         {result ? (
-          <p style={{ fontSize: '1.25rem', fontWeight: 600 }}>{result}</p>
+          <p className={styles.resultId}>{result}</p>
         ) : (
-          <p style={{ color: 'var(--color-muted)' }}>{t('notFound')}</p>
+          <p className={styles.subtitle}>{t('notFound')}</p>
         )}
-        <Link href="/login" style={{ color: 'var(--color-primary)' }}>
+        <Link href="/login" className={styles.footLinkPrimary}>
           {t('toLogin')}
         </Link>
       </div>
@@ -73,15 +58,11 @@ export function FindIdForm() {
   }
 
   return (
-    <form
-      onSubmit={onSubmit}
-      noValidate
-      style={{ display: 'grid', gap: '1rem', width: '100%', maxWidth: 360 }}
-    >
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 700 }}>{t('title')}</h1>
+    <form onSubmit={onSubmit} noValidate className={styles.form}>
+      <h1 className={styles.title}>{t('title')}</h1>
 
-      <div>
-        <label htmlFor="name" style={{ fontSize: '0.875rem', fontWeight: 500 }}>
+      <div className={styles.field}>
+        <label htmlFor="name" className={styles.label}>
           {t('name')}
         </label>
         <input
@@ -89,27 +70,18 @@ export function FindIdForm() {
           type="text"
           autoComplete="name"
           aria-invalid={!!errors.name}
-          style={inputStyle}
+          className={styles.input}
           {...register('name')}
         />
         {errors.name && (
-          <p
-            style={{
-              color: 'var(--color-danger)',
-              fontSize: '0.8125rem',
-              marginTop: 4,
-            }}
-          >
+          <p className={styles.error}>
             {tErr(errors.name.message as Parameters<typeof tErr>[0])}
           </p>
         )}
       </div>
 
-      <div>
-        <label
-          htmlFor="email"
-          style={{ fontSize: '0.875rem', fontWeight: 500 }}
-        >
+      <div className={styles.field}>
+        <label htmlFor="email" className={styles.label}>
           {t('email')}
         </label>
         <input
@@ -117,44 +89,28 @@ export function FindIdForm() {
           type="email"
           autoComplete="email"
           aria-invalid={!!errors.email}
-          style={inputStyle}
+          className={styles.input}
           {...register('email')}
         />
         {errors.email && (
-          <p
-            style={{
-              color: 'var(--color-danger)',
-              fontSize: '0.8125rem',
-              marginTop: 4,
-            }}
-          >
+          <p className={styles.error}>
             {tErr(errors.email.message as Parameters<typeof tErr>[0])}
           </p>
         )}
       </div>
 
-      <button
+      <Button
         type="submit"
+        variant="primary"
+        size="lg"
+        fullWidth
+        loading={isSubmitting}
         disabled={isSubmitting}
-        style={{
-          padding: '0.875rem',
-          background: 'var(--color-primary)',
-          color: 'var(--color-primary-fg)',
-          borderRadius: 'var(--radius-md)',
-          fontWeight: 600,
-        }}
       >
         {isSubmitting ? t('submitting') : t('submit')}
-      </button>
+      </Button>
 
-      <Link
-        href="/login"
-        style={{
-          textAlign: 'center',
-          fontSize: '0.875rem',
-          color: 'var(--color-muted)',
-        }}
-      >
+      <Link href="/login" className={styles.footCenter}>
         {t('toLogin')}
       </Link>
     </form>
