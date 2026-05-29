@@ -11,13 +11,13 @@
   border: 1.5px solid var(--color-primary-border);
   border-radius: var(--radius-lg);
   text-align: center;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-card-strong);
 }
 
 .trophy {
   font-size: 2rem;
   line-height: 1;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+  filter: var(--drop-shadow-icon);
 }
 
 .image {
@@ -25,9 +25,9 @@
   place-items: center;
   width: 96px;
   height: 96px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   background: var(--color-bg);
-  border: 2px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+  border: 2px solid var(--color-primary-ring);
   margin-top: 0.25rem;
 }
 

@@ -3,7 +3,7 @@
   display: inline-block;
   width: 44px;
   height: 24px;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: color-mix(in srgb, var(--color-fg) 18%, transparent);
   border: 1.5px solid transparent;
   cursor: pointer;

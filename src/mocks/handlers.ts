@@ -329,6 +329,51 @@ export const handlers = [
       savedAt: new Date().toISOString(),
     });
   }),
+  // 조건에 맞는 후보 여행지 풀 반환 — 셔플 후 잘라서 반환
+  //   - count: 여행지 갯수 (N)
+  //   - tournamentSize: 매치업 사이즈 (M ≤ N) — 현재 mock 은 무시, 백엔드 연동 후 활용
+  //   - pool : 클라이언트에 노출할 풀 사이즈 (없으면 count와 같음)
+  //
+  // ⚠ 반드시 `/destinations/:id` 보다 먼저 등록 — :id 가 'random' 도 매칭하므로.
+  http.get(`${apiUrl}/destinations/random`, ({ request }) => {
+    const url = new URL(request.url);
+    const categoriesParam = url.searchParams.get('categories') ?? '';
+    const region = url.searchParams.get('region');
+    const count = Math.min(
+      32,
+      Math.max(2, Number(url.searchParams.get('count') ?? 8)),
+    );
+    // tournamentSize 는 수신만 (mock 동작에 영향 X)
+    void url.searchParams.get('tournamentSize');
+    const poolParam = url.searchParams.get('pool');
+    const desired = poolParam !== null ? Number(poolParam) : count;
+    const categories = categoriesParam
+      ? categoriesParam.split(',').filter(Boolean)
+      : [];
+
+    let pool = destinationSeeds;
+    if (categories.length > 0) {
+      pool = pool.filter((d) => categories.includes(d.category));
+    }
+    if (region) {
+      pool = pool.filter((d) => d.region === region);
+    }
+    // Fisher–Yates 부분 셔플
+    const arr = pool.slice();
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const ai = arr[i];
+      const aj = arr[j];
+      if (ai !== undefined && aj !== undefined) {
+        arr[i] = aj;
+        arr[j] = ai;
+      }
+    }
+    return HttpResponse.json(
+      arr.slice(0, Math.min(arr.length, Math.max(count, desired))),
+    );
+  }),
+
   // 여행지 상세 — id 기반 deterministic mock 메타 합성.
   // 실 백엔드는 외부 데이터/큐레이션 DB 와 결합해 다양한 필드 제공.
   // 응답 필드는 모두 optional 이라 누락되어도 UI 가 자연스럽게 처리.
@@ -389,49 +434,6 @@ export const handlers = [
       },
     };
     return HttpResponse.json(detail);
-  }),
-
-  // 조건에 맞는 후보 여행지 풀 반환 — 셔플 후 잘라서 반환
-  //   - count: 여행지 갯수 (N)
-  //   - tournamentSize: 매치업 사이즈 (M ≤ N) — 현재 mock 은 무시, 백엔드 연동 후 활용
-  //   - pool : 클라이언트에 노출할 풀 사이즈 (없으면 count와 같음)
-  http.get(`${apiUrl}/destinations/random`, ({ request }) => {
-    const url = new URL(request.url);
-    const categoriesParam = url.searchParams.get('categories') ?? '';
-    const region = url.searchParams.get('region');
-    const count = Math.min(
-      32,
-      Math.max(2, Number(url.searchParams.get('count') ?? 8)),
-    );
-    // tournamentSize 는 수신만 (mock 동작에 영향 X)
-    void url.searchParams.get('tournamentSize');
-    const poolParam = url.searchParams.get('pool');
-    const desired = poolParam !== null ? Number(poolParam) : count;
-    const categories = categoriesParam
-      ? categoriesParam.split(',').filter(Boolean)
-      : [];
-
-    let pool = destinationSeeds;
-    if (categories.length > 0) {
-      pool = pool.filter((d) => categories.includes(d.category));
-    }
-    if (region) {
-      pool = pool.filter((d) => d.region === region);
-    }
-    // Fisher–Yates 부분 셔플
-    const arr = pool.slice();
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      const ai = arr[i];
-      const aj = arr[j];
-      if (ai !== undefined && aj !== undefined) {
-        arr[i] = aj;
-        arr[j] = ai;
-      }
-    }
-    return HttpResponse.json(
-      arr.slice(0, Math.min(arr.length, Math.max(count, desired))),
-    );
   }),
 
   // ===== Notifications =====

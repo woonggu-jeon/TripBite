@@ -44,7 +44,7 @@
   flex: 1;
   min-width: 4px;
   height: 4px;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: color-mix(in srgb, var(--color-border) 70%, transparent);
   transition:
     background-color 0.3s ease,
@@ -75,7 +75,7 @@
   color: var(--color-primary);
   letter-spacing: 0.06em;
   padding: 0.25rem 0.625rem;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: var(--color-primary-surface-grad-start);
 }
 

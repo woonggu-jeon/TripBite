@@ -59,7 +59,7 @@
   border: 1.5px solid color-mix(in srgb, #d97706 24%, var(--color-border));
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-card-strong);
 }
 
 .label {
@@ -213,7 +213,7 @@
   padding: 0.25rem 0.625rem;
   background: var(--color-success);
   color: #fff;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   font-size: 0.75rem;
   font-weight: 700;
   white-space: nowrap;

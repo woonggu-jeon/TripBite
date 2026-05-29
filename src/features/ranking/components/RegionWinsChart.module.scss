@@ -61,7 +61,7 @@
   height: 8px;
   width: 100%;
   background: var(--color-surface-soft);
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   overflow: hidden;
 }
 

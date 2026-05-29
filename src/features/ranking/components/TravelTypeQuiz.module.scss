@@ -24,7 +24,7 @@
   height: 4px;
   border: 0;
   padding: 0;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: color-mix(in srgb, var(--color-border) 70%, transparent);
   cursor: default;
   transition:
@@ -201,7 +201,7 @@
 .finishingEmoji {
   font-size: 4.5rem;
   line-height: 1;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.18));
+  filter: var(--drop-shadow-icon-strong);
   animation: finishingPop 0.7s cubic-bezier(0.34, 1.6, 0.64, 1) both;
   z-index: 1;
 }

@@ -14,7 +14,7 @@
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--color-muted);
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: var(--color-surface-soft);
   transition:
     color 0.2s ease,
@@ -215,7 +215,7 @@
   color: var(--color-fg);
   background: var(--color-bg);
   border: 1.5px solid var(--color-border);
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   cursor: pointer;
   transition:
     border-color 0.15s ease,
