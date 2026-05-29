@@ -134,7 +134,7 @@
   .button {
     transition: none;
   }
-  :global(svg path.region) {
+  .svgWrap :global(svg path.region) {
     transition: none;
   }
 }

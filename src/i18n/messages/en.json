@@ -189,6 +189,13 @@
     },
     "festivals": {
       "label": "Festivals happening now"
+    },
+    "latestLetterWidget": {
+      "badge": "New letter",
+      "justNow": "Just now",
+      "minutesAgo": "{n}m ago",
+      "hoursAgo": "{n}h ago",
+      "daysAgo": "{n}d ago"
     }
   },
   "region": {

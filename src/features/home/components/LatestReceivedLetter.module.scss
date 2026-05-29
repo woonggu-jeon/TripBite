@@ -1,0 +1,106 @@
+.card {
+  display: grid;
+  gap: 0.625rem;
+  padding: 0.875rem 1rem;
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  color: var(--color-fg);
+  position: relative;
+  transition:
+    border-color 0.15s ease,
+    transform 0.1s ease,
+    box-shadow 0.15s ease;
+
+  &:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+  }
+  &:active {
+    transform: scale(0.99);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  align-self: flex-start;
+  padding: 0.125rem 0.5rem;
+  background: color-mix(in srgb, var(--color-primary) 14%, transparent);
+  color: var(--color-primary);
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+// 5자 미니 PIN (단축형 — sent/detail 패턴 축소)
+.pin {
+  display: inline-grid;
+  grid-template-columns: repeat(5, 24px);
+  gap: 3px;
+}
+
+.cell {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 28px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: var(--color-fg);
+}
+
+.filled {
+  border-color: color-mix(
+    in srgb,
+    var(--color-primary) 50%,
+    var(--color-border)
+  );
+}
+
+.meta {
+  display: grid;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.author {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-fg);
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.time {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+    &:active {
+      transform: none;
+    }
+  }
+}

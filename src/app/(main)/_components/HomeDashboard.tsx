@@ -6,6 +6,7 @@ import { Trophy, Mail, Sparkles } from 'lucide-react';
 import { ROUTES } from '@/constants/routes';
 import { RecommendationBanner } from '@/features/home/components/RecommendationBanner';
 import { FestivalCarousel } from '@/features/home/components/FestivalCarousel';
+import { LatestReceivedLetter } from '@/features/home/components/LatestReceivedLetter';
 import styles from './HomeDashboard.module.scss';
 
 /**
@@ -67,11 +68,9 @@ export function HomeDashboard() {
       </section>
 
       {/* 4) 새로 도착한 편지 미리보기 */}
-      <section data-widget="latest-letter">
-        {/* TODO: <LatestReceivedLetter />
-                  - 가장 최근 1장 원고지 미니 카드 + 도트
-                  - 클릭 시 /letter/[id] */}
-        <Placeholder height={140} title={t('latestLetter')} />
+      <section data-widget="latest-letter" aria-label={t('latestLetter')}>
+        <h2 className={styles.sectionTitle}>{t('latestLetter')}</h2>
+        <LatestReceivedLetter />
       </section>
 
       {/* 5) 내 우승지 가로 슬라이드 */}

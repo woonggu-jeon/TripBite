@@ -59,6 +59,8 @@ export function LetterIndex() {
         </div>
 
         <div className={styles.list}>
+          {/* 활성 탭만 mount + fetch — 첫 렌더 속도 우선 (메모리 정책).
+              깜빡임은 LetterListPanel min-height + skeleton 제어로 완화. */}
           <LetterListPanel kind={active} />
         </div>
       </section>
