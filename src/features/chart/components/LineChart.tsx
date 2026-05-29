@@ -53,5 +53,5 @@ export function LineChart<T extends ChartDatum>(props: ChartProps<T>) {
     );
   }
 
-  return <LineChartLazy {...(props as ChartProps<ChartDatum>)} />;
+  return <LineChartLazy {...(props as unknown as ChartProps<ChartDatum>)} />;
 }

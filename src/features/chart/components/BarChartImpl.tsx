@@ -21,28 +21,59 @@ export default function BarChartImpl<T extends ChartDatum>({
   height = 240,
   showLegend,
   showGrid = true,
+  layout = 'horizontal',
+  onBarClick,
 }: ChartProps<T>) {
   const showLegendEffective = showLegend ?? series.length > 1;
+  const isVertical = layout === 'vertical';
 
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <RBarChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
+      <RBarChart
+        data={data}
+        layout={layout}
+        margin={{ top: 8, right: 16, left: 0, bottom: 0 }}
+      >
         {showGrid && (
-          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="var(--color-border)"
+            vertical={isVertical}
+            horizontal={!isVertical}
+          />
         )}
+        {/* horizontal(세로 막대): X=category / vertical(가로 막대): X=numeric */}
         <XAxis
-          dataKey={xAxis.dataKey}
+          {...(isVertical
+            ? { type: 'number' as const }
+            : { dataKey: xAxis.dataKey, type: 'category' as const })}
           stroke="var(--color-muted)"
           fontSize={12}
           tickLine={false}
-          tickFormatter={xAxis.format as (v: unknown) => string}
+          tickFormatter={
+            isVertical
+              ? (yAxis?.format as (v: unknown) => string)
+              : (xAxis.format as (v: unknown) => string)
+          }
         />
         <YAxis
+          {...(isVertical
+            ? {
+                dataKey: xAxis.dataKey,
+                type: 'category' as const,
+                width: 72,
+                interval: 0,
+              }
+            : { type: 'number' as const })}
           stroke="var(--color-muted)"
           fontSize={12}
           tickLine={false}
           axisLine={false}
-          tickFormatter={yAxis?.format as (v: unknown) => string}
+          tickFormatter={
+            isVertical
+              ? (xAxis.format as (v: unknown) => string)
+              : (yAxis?.format as (v: unknown) => string)
+          }
         />
         <Tooltip
           contentStyle={{
@@ -50,6 +81,10 @@ export default function BarChartImpl<T extends ChartDatum>({
             border: '1px solid var(--color-border)',
             borderRadius: 8,
             fontSize: 12,
+            color: 'var(--color-fg)',
+          }}
+          cursor={{
+            fill: 'color-mix(in srgb, var(--color-fg) 6%, transparent)',
           }}
         />
         {showLegendEffective && <Legend />}
@@ -59,8 +94,14 @@ export default function BarChartImpl<T extends ChartDatum>({
             dataKey={s.key}
             name={s.label ?? s.key}
             fill={s.color ?? getSeriesColor(i)}
-            radius={[6, 6, 0, 0]}
+            radius={isVertical ? [0, 6, 6, 0] : [6, 6, 0, 0]}
             isAnimationActive={false}
+            onClick={(payload, index) => {
+              if (!onBarClick) return;
+              const datum = (payload as unknown as { payload?: T }).payload;
+              if (datum) onBarClick(datum, index);
+            }}
+            cursor={onBarClick ? 'pointer' : undefined}
           />
         ))}
       </RBarChart>

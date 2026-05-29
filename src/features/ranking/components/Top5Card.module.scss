@@ -1,0 +1,83 @@
+.card {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  gap: 0.875rem;
+  align-items: center;
+  padding: 0.875rem 1rem;
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition:
+    border-color 0.15s ease,
+    transform 0.1s ease,
+    box-shadow 0.15s ease;
+}
+
+.rank {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-fg) 6%, transparent);
+  color: var(--color-fg);
+  font-size: 1.125rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.rank1 .rank {
+  background: linear-gradient(135deg, #fde047, #f59e0b);
+  color: #422006;
+}
+.rank2 .rank {
+  background: linear-gradient(135deg, #e5e7eb, #9ca3af);
+  color: #1f2937;
+}
+.rank3 .rank {
+  background: linear-gradient(135deg, #fdba74, #c2410c);
+  color: #431407;
+}
+
+.body {
+  display: grid;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.name {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-fg);
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.region {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.score {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.scoreNum {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.scoreLabel {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  font-weight: 600;
+}

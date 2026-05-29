@@ -31,5 +31,5 @@ export function BarChart<T extends ChartDatum>(props: ChartProps<T>) {
     );
   }
 
-  return <BarChartLazy {...(props as ChartProps<ChartDatum>)} />;
+  return <BarChartLazy {...(props as unknown as ChartProps<ChartDatum>)} />;
 }

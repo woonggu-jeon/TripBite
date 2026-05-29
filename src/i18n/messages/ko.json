@@ -209,18 +209,37 @@
     "tabs": {
       "attraction": "관광지",
       "festival": "축제",
-      "experience": "체험",
+      "experience": "체험관광",
+      "sectionAria": "시군 콘텐츠 분류",
       "startTournamentHere": "이 시군으로 토너먼트 시작"
-    }
+    },
+    "empty": {
+      "attraction": "관광지 정보가 없어요",
+      "festival": "진행 중인 축제가 없어요",
+      "experience": "체험 콘텐츠가 없어요"
+    },
+    "listError": "콘텐츠를 불러오지 못했어요",
+    "listRetry": "다시 시도"
   },
   "ranking": {
     "title": "여행지 랭킹",
+    "winsUnit": "회",
     "sections": {
       "weeklyWinners": "이번주 가장 많이 우승한 여행지 TOP {limit}",
       "recommended": "추천 여행지 TOP {limit}",
       "hiddenGems": "숨은 명소 TOP {limit}",
-      "byRegionChart": "시군별 인기",
-      "travelTypeTest": "여행 유형 테스트"
+      "byRegionChart": "시군별 우승 횟수",
+      "byRegionChartHint": "막대를 누르면 해당 시군 상세로 이동해요",
+      "travelTypeTest": "여행 유형 테스트",
+      "error": "랭킹을 불러오지 못했어요",
+      "retry": "다시 시도"
+    },
+    "chart": {
+      "winsLabel": "우승 횟수",
+      "loading": "차트를 불러오는 중...",
+      "error": "차트를 불러오지 못했어요",
+      "retry": "다시 시도",
+      "empty": "데이터가 없어요"
     }
   },
   "tournament": {

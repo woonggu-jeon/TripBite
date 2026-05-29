@@ -214,6 +214,44 @@ export const handlers = [
     return HttpResponse.json({ items, nextCursor: null });
   }),
 
+  // ===== Rankings =====
+  http.get(`${apiUrl}/rankings`, ({ request }) => {
+    const url = new URL(request.url);
+    const type = url.searchParams.get('type');
+    const limit = Number(url.searchParams.get('limit') ?? 5);
+
+    if (type === 'weekly-winners') {
+      // 우승 횟수 desc 시뮬레이션 — destinationSeeds 앞 N개
+      const top = destinationSeeds
+        .slice(0, Math.min(limit, 10))
+        .map((d, i) => ({
+          rank: i + 1,
+          destination: d,
+          score: 28 - i * 3, // 28, 25, 22 ...
+        }));
+      return HttpResponse.json(top);
+    }
+
+    if (type === 'by-region') {
+      // 11 시군별 누적 우승 횟수 — deterministic 가짜 데이터 (시드 기반)
+      const ranks = MOCK_REGIONS.map((r, i) => ({
+        rank: i + 1,
+        destination: {
+          id: `region-${r.regionCode}`,
+          name: r.label.replace('충북 ', ''),
+          category: 'attraction' as const,
+          region: r.regionCode,
+        },
+        score: 48 - i * 3 + ((i * 7) % 5), // 48..15 살짝 흩어짐
+      }))
+        .sort((a, b) => b.score - a.score)
+        .map((r, i) => ({ ...r, rank: i + 1 }));
+      return HttpResponse.json(ranks);
+    }
+
+    return HttpResponse.json([]);
+  }),
+
   // ===== Tournament =====
   http.get(`${apiUrl}/mypage/tournament-history`, () =>
     HttpResponse.json({ items: tournamentHistorySeeds, nextCursor: null }),

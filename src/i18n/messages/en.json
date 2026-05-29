@@ -210,17 +210,36 @@
       "attraction": "Attractions",
       "festival": "Festivals",
       "experience": "Experiences",
+      "sectionAria": "Region content category",
       "startTournamentHere": "Start a bracket here"
-    }
+    },
+    "empty": {
+      "attraction": "No attractions yet",
+      "festival": "No festivals on now",
+      "experience": "No experiences yet"
+    },
+    "listError": "Couldn't load contents",
+    "listRetry": "Try again"
   },
   "ranking": {
     "title": "Destination ranking",
+    "winsUnit": "wins",
     "sections": {
       "weeklyWinners": "Top {limit} most-won this week",
       "recommended": "Recommended top {limit}",
       "hiddenGems": "Hidden gems top {limit}",
-      "byRegionChart": "Popularity by region",
-      "travelTypeTest": "Travel type test"
+      "byRegionChart": "Wins by region",
+      "byRegionChartHint": "Tap a bar to open the region",
+      "travelTypeTest": "Travel type test",
+      "error": "Couldn't load rankings",
+      "retry": "Try again"
+    },
+    "chart": {
+      "winsLabel": "Wins",
+      "loading": "Loading chart...",
+      "error": "Couldn't load chart",
+      "retry": "Try again",
+      "empty": "No data"
     }
   },
   "tournament": {

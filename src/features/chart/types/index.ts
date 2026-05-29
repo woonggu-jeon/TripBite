@@ -38,4 +38,11 @@ export type ChartProps<T extends ChartDatum = ChartDatum> = {
   showGrid?: boolean;
   /** 빈 데이터 메시지 (미지정 시 i18n 'chart.empty' 사용) */
   emptyMessage?: string;
+  /**
+   * BarChart 전용 — 'horizontal'(기본, 세로 막대) / 'vertical'(가로 막대).
+   * 가로 막대 시 xAxis 가 numeric, yAxis 가 category 로 자동 매핑.
+   */
+  layout?: 'horizontal' | 'vertical';
+  /** Bar 클릭 콜백 — payload(원본 datum) 전달 */
+  onBarClick?: (datum: T, index: number) => void;
 };

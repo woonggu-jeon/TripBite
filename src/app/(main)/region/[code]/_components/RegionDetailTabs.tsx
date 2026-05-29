@@ -1,102 +1,112 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import type { RegionCode } from '@/constants/regions';
-
-type Tab = 'attraction' | 'festival' | 'experience';
+import type { RegionContentType } from '@/features/region/types';
+import { useRegionContents } from '@/features/region/hooks/use-region';
+import { InfiniteList } from '@/features/list/components/InfiniteList';
+import { RegionContentRow } from '@/features/region/components/RegionContentRow';
+import { haptic } from '@/lib/haptic';
+import styles from './RegionDetailTabs.module.scss';
 
 /**
- * 시군 상세 — 탭 + InfiniteList
+ * 시군 상세 — 3탭 + InfiniteList + row 카드
  *
- * 컴포넌트 분할 (features/region/components):
- *   - <RegionHero code={...} />            대표 이미지 (OptimizedImage priority)
- *   - <RegionAttractionList code={...} />  TourAPI contentTypeId=12 (관광지)
- *   - <RegionFestivalList code={...} />    TourAPI contentTypeId=15 (축제)
- *   - <RegionExperienceList code={...} />  TourAPI contentTypeId=28 (체험)
- *
- * 각 List 컴포넌트는 useInfiniteList + InfiniteList 조합 사용.
+ *   ┌─────────────────────────────┐
+ *   │ 관광지 │ 축제 │ 체험관광       │  segmented tabs
+ *   ├─────────────────────────────┤
+ *   │ [이모지] 제목                │
+ *   │         한 줄 소개      ›    │  RegionContentRow × N
+ *   │ ...                          │
+ *   └─────────────────────────────┘
  */
-export function RegionDetailTabs({ code: _code }: { code: RegionCode }) {
+
+const TABS: {
+  key: RegionContentType;
+  labelKey: 'attraction' | 'festival' | 'experience';
+}[] = [
+  { key: 'attraction', labelKey: 'attraction' },
+  { key: 'festival', labelKey: 'festival' },
+  { key: 'experience', labelKey: 'experience' },
+];
+
+export function RegionDetailTabs({ code }: { code: RegionCode }) {
   const t = useTranslations('region.tabs');
-  const router = useRouter();
-  const [tab, setTab] = useState<Tab>('attraction');
+  const [tab, setTab] = useState<RegionContentType>('attraction');
 
   return (
-    <div style={{ display: 'grid', gap: '1rem' }}>
-      {/* TODO: <RegionHero code={code} /> */}
-      <div
-        style={{
-          aspectRatio: '16 / 9',
-          border: '1px dashed var(--color-border)',
-          borderRadius: 'var(--radius-lg)',
-          display: 'grid',
-          placeItems: 'center',
-          color: 'var(--color-muted)',
-        }}
-      >
-        대표 이미지 (OptimizedImage priority)
+    <div className={styles.wrap}>
+      <div role="tablist" className={styles.tabs} aria-label={t('sectionAria')}>
+        {TABS.map((it) => {
+          const isActive = tab === it.key;
+          return (
+            <button
+              key={it.key}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              className={`${styles.tab} ${isActive ? styles.active : ''}`}
+              onClick={() => {
+                if (tab === it.key) return;
+                haptic.tap();
+                setTab(it.key);
+              }}
+            >
+              {t(it.labelKey)}
+            </button>
+          );
+        })}
       </div>
 
-      {/* 탭 */}
-      <div role="tablist" style={{ display: 'flex', gap: 8 }}>
-        {(['attraction', 'festival', 'experience'] as const).map((key) => (
-          <button
-            key={key}
-            role="tab"
-            aria-selected={tab === key}
-            onClick={() => setTab(key)}
-            style={{
-              flex: 1,
-              padding: '0.625rem',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius-md)',
-              background: tab === key ? 'var(--color-fg)' : 'transparent',
-              color: tab === key ? 'var(--color-bg)' : 'var(--color-fg)',
-              fontWeight: 600,
-              fontSize: '0.875rem',
-            }}
-          >
-            {t(key)}
-          </button>
-        ))}
-      </div>
-
-      {/* 탭별 InfiniteList — 컴포넌트 분기 */}
-      <div role="tabpanel">
-        {/* TODO: tab === 'attraction' && <RegionAttractionList code={code} /> 등 */}
-        <div
-          style={{
-            minHeight: 240,
-            border: '1px dashed var(--color-border)',
-            borderRadius: 'var(--radius-lg)',
-            display: 'grid',
-            placeItems: 'center',
-            color: 'var(--color-muted)',
-          }}
-        >
-          InfiniteList ({tab})
-        </div>
-      </div>
-
-      {/* 하단 CTA */}
-      <button
-        type="button"
-        style={{
-          padding: '1rem',
-          background: 'var(--color-primary)',
-          color: 'var(--color-primary-fg)',
-          borderRadius: 'var(--radius-md)',
-          fontWeight: 600,
-        }}
-        onClick={() => {
-          // TODO: useTournamentStore.getState().setConfig({ region: code, ... })
-          router.push('/tournament');
-        }}
-      >
-        {t('startTournamentHere')}
-      </button>
+      <RegionContentPanel code={code} type={tab} />
     </div>
+  );
+}
+
+function RegionContentPanel({
+  code,
+  type,
+}: {
+  code: RegionCode;
+  type: RegionContentType;
+}) {
+  const t = useTranslations('region');
+  const {
+    items,
+    hasNext,
+    isFetchingNext,
+    fetchNext,
+    isLoading,
+    error,
+    refetch,
+  } = useRegionContents(code, type);
+
+  if (error) {
+    return (
+      <div className={styles.fallback}>
+        <p>{t('listError')}</p>
+        <button
+          type="button"
+          className={styles.retry}
+          onClick={() => refetch()}
+        >
+          {t('listRetry')}
+        </button>
+      </div>
+    );
+  }
+
+  const emptyKey = `empty.${type}` as const;
+  return (
+    <InfiniteList
+      items={items}
+      hasNext={hasNext}
+      isFetchingNext={isFetchingNext || isLoading}
+      onReachEnd={fetchNext}
+      keyExtractor={(i) => i.id}
+      renderItem={(i) => <RegionContentRow content={i} />}
+      emptyState={<p className={styles.empty}>{t(emptyKey)}</p>}
+    />
   );
 }
