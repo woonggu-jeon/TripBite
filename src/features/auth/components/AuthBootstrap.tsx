@@ -30,15 +30,16 @@ export function AuthBootstrap() {
     if (isSuccess && data) {
       setAuth(data);
 
-      // ⚠️ onboarding redirect 임시 비활성 — 백엔드 API 붙기 전 모든 페이지 확인용.
-      //    백엔드 연동 후 아래 블록 주석 해제.
-      //
-      // const isOnboarded = (data as { isOnboarded?: boolean }).isOnboarded ?? true;
-      // if (!isOnboarded && pathname !== '/onboarding') {
-      //   router.replace('/onboarding');
-      // } else if (isOnboarded && pathname === '/onboarding') {
-      //   router.replace('/');
-      // }
+      // 첫 진입 시 onboarding redirect — /me 의 isOnboarded false 면 /onboarding 으로.
+      // mock 환경(NEXT_PUBLIC_USE_MSW=true) 에서 onboardedState 초기값 false 라
+      // 새로 방문한 사용자가 자동으로 온보딩부터 보게 됨.
+      const isOnboarded =
+        (data as { isOnboarded?: boolean }).isOnboarded ?? true;
+      if (!isOnboarded && pathname !== '/onboarding') {
+        router.replace('/onboarding');
+      } else if (isOnboarded && pathname === '/onboarding') {
+        router.replace('/');
+      }
     } else if (isError) {
       clearAuth();
     }

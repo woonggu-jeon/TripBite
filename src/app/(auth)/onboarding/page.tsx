@@ -30,7 +30,7 @@ export default function OnboardingPage() {
   return (
     <main
       style={{
-        minHeight: '100dvh',
+        minHeight: '100svh',
         display: 'flex',
         flexDirection: 'column',
         padding: '2rem 1rem',

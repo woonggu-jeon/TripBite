@@ -5,36 +5,43 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { ConceptStep } from '@/features/onboarding/components/ConceptStep';
 import { LocationStep } from '@/features/onboarding/components/LocationStep';
-import { NicknameStep } from '@/features/onboarding/components/NicknameStep';
 import { useCompleteOnboarding } from '@/features/onboarding/hooks/use-onboarding';
 import { useLocationStore } from '@/stores/location-store';
 import styles from './OnboardingFlow.module.scss';
 
 /**
- * 3-step 온보딩 상태머신
+ * 2-step 온보딩 상태머신 (닉네임 step 미노출)
  *
  * URL은 /onboarding 하나로 유지 (뒤로가기 = step--; 첫 step에서 router.back)
  *
+ * 변경 이력:
+ *   - 닉네임 단계는 일단 미노출 — 서버가 기본 닉네임을 자동 부여 가정.
+ *     `NicknameStep` 컴포넌트 / `nicknameSchema` 자체는 보존되어 추후 재노출 가능.
+ *   - step 2 (LocationStep) 완료/건너뛰기 시 즉시 finishOnboarding 호출.
+ *   - nickname 은 빈 문자열로 전송 — mock handler / 실 백엔드가 누락 시 기본값 사용.
+ *
  * 성능:
  *   - Step 컴포넌트는 각각 features/onboarding/components 에서 import
- *   - 무거운 로직 X — 일러스트 + 약간의 폼
+ *   - 무거운 로직 X — 일러스트 + 위치 권한
  */
-type Step = 1 | 2 | 3;
+type Step = 1 | 2;
+const TOTAL_STEPS = 2;
 
 export function OnboardingFlow() {
   const t = useTranslations('onboarding');
   const router = useRouter();
   const [step, setStep] = useState<Step>(1);
-  const { mutateAsync: complete } = useCompleteOnboarding();
+  const { mutateAsync: complete, isPending } = useCompleteOnboarding();
   const resolvedLocation = useLocationStore((s) => s.resolved);
 
-  const goNext = () => setStep((s) => (s < 3 ? ((s + 1) as Step) : s));
+  const goNext = () =>
+    setStep((s) => (s < TOTAL_STEPS ? ((s + 1) as Step) : s));
   const goPrev = () => setStep((s) => (s > 1 ? ((s - 1) as Step) : s));
 
-  async function finishOnboarding(nickname: string) {
-    // location step에서 resolve된 위치가 있으면 regionCode 함께 전달
+  async function finishOnboarding() {
+    if (isPending) return;
+    // 닉네임 단계 미노출 — nickname 자체를 omit. 서버(mock 포함)가 기본 닉네임 부여.
     await complete({
-      nickname,
       regionCode: resolvedLocation?.regionCode,
     });
     router.replace('/');
@@ -43,27 +50,33 @@ export function OnboardingFlow() {
   return (
     <div className={styles.wrap}>
       {/* 진행도 */}
-      <div className={styles.progress} aria-label={`Step ${step}/3`}>
-        {[1, 2, 3].map((n) => (
-          <span
-            key={n}
-            className={`${styles.dot} ${n <= step ? styles.dotActive : ''}`}
-            aria-hidden
-          />
-        ))}
+      <div
+        className={styles.progress}
+        aria-label={`Step ${step}/${TOTAL_STEPS}`}
+      >
+        {Array.from({ length: TOTAL_STEPS }).map((_, i) => {
+          const n = i + 1;
+          return (
+            <span
+              key={n}
+              className={`${styles.dot} ${n <= step ? styles.dotActive : ''}`}
+              aria-hidden
+            />
+          );
+        })}
       </div>
 
       <div className={styles.body}>
         {step === 1 && <ConceptStep onNext={goNext} />}
         {step === 2 && (
-          <LocationStep onNext={goNext} onSkip={goNext} onPrev={goPrev} />
-        )}
-        {step === 3 && (
-          <NicknameStep onSubmit={finishOnboarding} onPrev={goPrev} />
+          <LocationStep
+            onNext={finishOnboarding}
+            onSkip={finishOnboarding}
+            onPrev={goPrev}
+          />
         )}
       </div>
 
-      {/* TODO: t('skip') / t('next') 등 공통 라벨은 features/onboarding/components 내부에서 사용 */}
       <p style={{ fontSize: 0, position: 'absolute', opacity: 0 }}>
         {t('title')}
       </p>
