@@ -1,23 +1,21 @@
 'use client';
 
+import { useId } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   useUserSettings,
   useUpdateNotificationSettings,
 } from '@/features/settings/hooks/use-notification-settings';
 import { usePushNotification } from '@/features/notification/hooks/use-push-notification';
+import { Toggle } from '@/components/forms/Toggle';
 import styles from './SettingsRows.module.scss';
 
 /**
- * 알림 설정 섹션 (4개 토글)
+ * 알림 설정 섹션 — 4개 ARIA switch 토글.
  *
  * 푸시 토글:
  *   - on  → enablePush() (브라우저 권한 + subscribe) + 서버 settings 저장
  *   - off → disablePush() + 서버 settings 저장
- *
- * UX 권장:
- *   - 권한 거부 상태에선 푸시 토글 disabled + 안내 메시지
- *   - 실패 시 토글 원복 (optimistic update + onError rollback)
  */
 export function NotificationSettingsSection() {
   const t = useTranslations('settings.notifications');
@@ -69,17 +67,16 @@ function Row({
   checked: boolean;
   onChange: (next: boolean) => void;
 }) {
+  const labelId = useId();
   return (
-    <label className={styles.row}>
-      <div>
-        <div className={styles.rowLabel}>{label}</div>
+    <div className={styles.row}>
+      <div className={styles.rowText}>
+        <div id={labelId} className={styles.rowLabel}>
+          {label}
+        </div>
         {hint && <div className={styles.rowHint}>{hint}</div>}
       </div>
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-      />
-    </label>
+      <Toggle checked={checked} onChange={onChange} ariaLabelledBy={labelId} />
+    </div>
   );
 }

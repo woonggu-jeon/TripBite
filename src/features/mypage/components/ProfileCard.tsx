@@ -1,11 +1,94 @@
 'use client';
 
+import { useEffect, useRef, useState, type ChangeEvent } from 'react';
+import { useTranslations } from 'next-intl';
+import { Camera, User } from 'lucide-react';
+import { useMypage } from '@/features/mypage/hooks/use-mypage';
+import { haptic } from '@/lib/haptic';
+import styles from './ProfileCard.module.scss';
+
 /**
- * <ProfileCard />
+ * 프로필 카드 — 원형 아바타 + 닉네임 + 카메라 floating btn (이미지 변경).
  *
- * TODO: features/mypage/components.
- * 데이터는 hooks/use-mypage 또는 use-letters / use-tournament 에서.
+ * 이미지 업로드:
+ *   - 현재는 클라이언트 object URL preview 만 (mock 환경)
+ *   - 백엔드 붙은 후 multipart 업로드 + profile.avatarUrl 동기화
  */
 export function ProfileCard() {
-  return null;
+  const t = useTranslations('mypage.profile');
+  const { data, isLoading } = useMypage();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [localPreview, setLocalPreview] = useState<string | null>(null);
+
+  // object URL revoke (메모리 누수 방지)
+  useEffect(() => {
+    return () => {
+      if (localPreview) URL.revokeObjectURL(localPreview);
+    };
+  }, [localPreview]);
+
+  const onPick = () => {
+    haptic.tap();
+    fileRef.current?.click();
+  };
+
+  const onFile = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) return;
+    if (localPreview) URL.revokeObjectURL(localPreview);
+    const url = URL.createObjectURL(file);
+    setLocalPreview(url);
+    // TODO(backend): mypageApi.updateAvatar(file) mutation 호출.
+    e.target.value = '';
+  };
+
+  const nickname = data?.profile.nickname ?? (isLoading ? '' : t('anonymous'));
+  const avatarSrc = localPreview;
+
+  return (
+    <article className={styles.card}>
+      <div className={styles.avatarWrap}>
+        <div className={styles.avatar}>
+          {avatarSrc ? (
+            // object URL 은 next/image 사용 부적합 → 일반 img.
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={avatarSrc}
+              alt={t('avatarAlt', { nickname })}
+              className={styles.avatarImg}
+            />
+          ) : (
+            <span className={styles.avatarFallback} aria-hidden>
+              <User size={36} />
+            </span>
+          )}
+        </div>
+        <button
+          type="button"
+          className={styles.cameraBtn}
+          onClick={onPick}
+          aria-label={t('changeAvatar')}
+        >
+          <Camera size={16} />
+        </button>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          className={styles.fileInput}
+          onChange={onFile}
+          aria-hidden
+          tabIndex={-1}
+        />
+      </div>
+
+      <h2 className={styles.nickname}>
+        {nickname || <span className={styles.nicknameSkeleton} aria-hidden />}
+      </h2>
+      {data?.travelType?.title && (
+        <span className={styles.badge}>{data.travelType.title}</span>
+      )}
+    </article>
+  );
 }

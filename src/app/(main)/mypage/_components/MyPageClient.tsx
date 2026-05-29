@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ROUTES } from '@/constants/routes';
+import { ProfileCard } from '@/features/mypage/components/ProfileCard';
 
 /**
  * 마이페이지 컴포지션
@@ -24,8 +25,7 @@ export function MyPageClient() {
     <div style={{ display: 'grid', gap: '1.5rem' }}>
       {/* 1) 프로필 */}
       <Section title={t('profile')}>
-        {/* TODO: <ProfileCard /> */}
-        <Placeholder height={120} />
+        <ProfileCard />
       </Section>
 
       {/* 2) 도장깨기 */}
@@ -74,10 +74,18 @@ export function MyPageClient() {
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <section>
-      <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.75rem' }}>
+      <h2
+        style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.75rem' }}
+      >
         {title}
       </h2>
       {children}

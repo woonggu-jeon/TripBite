@@ -462,6 +462,11 @@
       "tournamentHistory": "Bracket history",
       "letterbox": "Letterbox",
       "goToSettings": "Go to settings"
+    },
+    "profile": {
+      "anonymous": "Guest",
+      "avatarAlt": "Profile image of {nickname}",
+      "changeAvatar": "Change profile image"
     }
   },
   "settings": {

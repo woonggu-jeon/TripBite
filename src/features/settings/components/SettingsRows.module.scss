@@ -1,6 +1,6 @@
 .list {
   display: grid;
-  gap: var(--space-1);
+  gap: var(--space-2);
 }
 
 .row {
@@ -9,24 +9,32 @@
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-border);
   border-radius: var(--radius-md);
-  cursor: pointer;
+  transition: border-color 0.15s ease;
 
   &:hover {
-    background: var(--color-border);
+    border-color: color-mix(in srgb, var(--color-fg) 18%, var(--color-border));
   }
 }
 
+.rowText {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
 .rowLabel {
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-fg);
+  letter-spacing: -0.01em;
 }
 
 .rowHint {
   font-size: 0.75rem;
   color: var(--color-muted);
-  margin-top: 2px;
 }
 
 .button {
@@ -34,17 +42,30 @@
   width: 100%;
   padding: var(--space-3) var(--space-4);
   text-align: left;
-  border: 1px solid var(--color-border);
+  border: 1.5px solid var(--color-border);
   border-radius: var(--radius-md);
-  background: transparent;
-  font-size: 0.875rem;
-  font-weight: 500;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  transition: border-color 0.15s ease;
 
   &:hover {
-    background: var(--color-border);
+    border-color: color-mix(in srgb, var(--color-fg) 18%, var(--color-border));
+  }
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
   }
 }
 
 .danger {
   color: var(--color-danger);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row,
+  .button {
+    transition: none;
+  }
 }

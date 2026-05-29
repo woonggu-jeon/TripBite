@@ -462,6 +462,11 @@
       "tournamentHistory": "토너먼트 기록",
       "letterbox": "편지함",
       "goToSettings": "설정으로 이동"
+    },
+    "profile": {
+      "anonymous": "익명",
+      "avatarAlt": "{nickname} 프로필 이미지",
+      "changeAvatar": "프로필 이미지 변경"
     }
   },
   "settings": {

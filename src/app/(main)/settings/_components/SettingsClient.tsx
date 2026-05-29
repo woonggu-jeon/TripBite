@@ -1,7 +1,8 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { LanguageSwitcher } from '@/features/i18n/components/LanguageSwitcher';
+// 언어 섹션 일단 미노출 (사용자 요청) — LanguageSwitcher 자체는 추후 복원용으로 유지.
+// import { LanguageSwitcher } from '@/features/i18n/components/LanguageSwitcher';
 import { NotificationSettingsSection } from '@/features/settings/components/NotificationSettingsSection';
 import { AccountSettingsSection } from '@/features/settings/components/AccountSettingsSection';
 import { PolicySection } from '@/features/settings/components/PolicySection';
@@ -32,9 +33,11 @@ export function SettingsClient() {
         <AccountSettingsSection />
       </Section>
 
+      {/* 언어 섹션 — 미노출 (사용자 요청). 추후 복원 시 주석 해제.
       <Section title={t('language')}>
         <LanguageSwitcher />
       </Section>
+      */}
 
       <Section title={t('policy.section')}>
         <PolicySection />
