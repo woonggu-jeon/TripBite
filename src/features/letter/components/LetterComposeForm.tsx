@@ -5,7 +5,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { MapPin, Info } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import {
   letterSchema,
   graphemeLength,
@@ -45,7 +45,6 @@ export function LetterComposeForm() {
   const { resolve, isLoading: isResolving } = useResolveLocation();
   const resolved = useLocationStore((s) => s.resolved);
   const setResolved = useLocationStore((s) => s.setResolved);
-  const clearResolved = useLocationStore((s) => s.clear);
   const autoTriggered = useRef(false);
 
   // 1차 자동 resolve — granted 일 때 즉시, prompt/unsupported 도 시도(브라우저 native prompt 띄움)
@@ -112,19 +111,11 @@ export function LetterComposeForm() {
 
   return (
     <form onSubmit={onSubmit} className={styles.form}>
-      {/* 1) 상단 알림 */}
-      <div className={styles.notice} role="note">
-        <Info size={16} aria-hidden />
-        <p>{t('notice')}</p>
-      </div>
-
-      {/* 2) PIN 5칸 입력 */}
+      {/* 1) 편지 내용 라벨 + PIN 5칸 입력 + 우측 하단 카운터 */}
       <div className={styles.inputSection}>
-        <div className={styles.labelRow}>
-          <label htmlFor="body" className={styles.label}>
-            {t('label', { count })}
-          </label>
-        </div>
+        <label htmlFor="body" className={styles.label}>
+          {t('label')}
+        </label>
         <Controller
           name="body"
           control={control}
@@ -140,6 +131,11 @@ export function LetterComposeForm() {
             />
           )}
         />
+        <div className={styles.countRow}>
+          <span className={styles.count} aria-live="polite">
+            {count} / 5
+          </span>
+        </div>
         {errors.body && (
           <p className={styles.error} role="alert">
             {tErr(errors.body.message as Parameters<typeof tErr>[0])}
@@ -147,45 +143,37 @@ export function LetterComposeForm() {
         )}
       </div>
 
-      {/* 3) 하단 위치 — 항상 1줄 인라인 상태 */}
+      {/* 3) 하단 위치 — 2줄 안내 (자동 첨부 + 지역) */}
       <div className={styles.locationSection}>
-        <MapPin size={14} aria-hidden className={styles.locationIcon} />
-        {resolved ? (
-          <>
-            <span className={styles.locationText}>
-              <strong>{tLoc('current')}</strong>: {resolved.label}
-            </span>
-            <button
-              type="button"
-              className={styles.changeBtn}
-              onClick={() => {
-                clearResolved();
-                autoTriggered.current = false;
-              }}
-            >
-              {tLoc('change')}
-            </button>
-          </>
-        ) : isResolving ? (
-          <span className={styles.locationText}>{tLoc('resolving')}</span>
-        ) : permission === 'denied' ? (
-          <span className={styles.locationText}>
-            {tLoc('permission.denied')}
-          </span>
-        ) : (
-          <>
-            <span className={styles.locationText}>
-              {tLoc('permission.needed')}
-            </span>
-            <button
-              type="button"
-              className={styles.changeBtn}
-              onClick={handleRequestLocation}
-            >
-              {tLoc('permission.request')}
-            </button>
-          </>
-        )}
+        <MapPin size={16} aria-hidden className={styles.locationIcon} />
+        <div className={styles.locationBody}>
+          {resolved ? (
+            <>
+              <p className={styles.locationLine1}>{tLoc('autoAttached')}</p>
+              <p className={styles.locationLine2}>
+                {resolved.label}{' '}
+                <span className={styles.locationTag}>{tLoc('autoSet')}</span>
+              </p>
+            </>
+          ) : isResolving ? (
+            <p className={styles.locationLine1}>{tLoc('resolving')}</p>
+          ) : permission === 'denied' ? (
+            <p className={styles.locationLine1}>{tLoc('permission.denied')}</p>
+          ) : (
+            <>
+              <p className={styles.locationLine1}>
+                {tLoc('permission.needed')}
+              </p>
+              <button
+                type="button"
+                className={styles.allowBtn}
+                onClick={handleRequestLocation}
+              >
+                {tLoc('permission.request')}
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       {/* 4) 액션 */}

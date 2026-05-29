@@ -118,22 +118,36 @@ export function LetterSentClient() {
           </div>
         </section>
 
-        {/* Message */}
+        {/* Message — 5칸 박스 + 좌측 하단 날짜 */}
         <section className={styles.message}>
-          <p className={styles.body}>{lastSent.body}</p>
+          <div className={styles.pinBoxes} aria-label={lastSent.body}>
+            {Array.from({ length: 5 }).map((_, i) => {
+              const ch = Array.from(lastSent.body)[i] ?? '';
+              return (
+                <div
+                  key={i}
+                  className={`${styles.pinCell} ${ch ? styles.pinFilled : ''}`}
+                >
+                  {ch && <span className={styles.pinChar}>{ch}</span>}
+                </div>
+              );
+            })}
+          </div>
           <p className={styles.date}>{formatKoreanDate(lastSent.sentAt)}</p>
         </section>
 
-        {/* To */}
+        {/* To — 2줄 + 전송완료 배지 */}
         <section className={styles.to}>
           <p className={styles.label}>{t('to')}</p>
           <div className={styles.toRow}>
-            <p className={styles.toLine}>
-              {t('toMessage', {
-                recipient,
-                minutes: arrivalMinutes,
-              })}
-            </p>
+            <div className={styles.toLines}>
+              <p className={styles.toLine1}>
+                {t('toRecipient', { recipient })}
+              </p>
+              <p className={styles.toLine2}>
+                {t('toArrival', { minutes: arrivalMinutes })}
+              </p>
+            </div>
             <span className={styles.status} aria-label={t('sentBadge')}>
               <Check size={14} aria-hidden />
               {t('sentBadge')}

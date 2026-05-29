@@ -365,8 +365,7 @@
     },
     "compose": {
       "title": "편지 쓰기",
-      "notice": "1~5자, 띄어쓰기와 특수문자도 보낼 수 있어요. 위치 정보가 함께 전송됩니다.",
-      "label": "내용 ({count}/5)",
+      "label": "편지 내용",
       "placeholder": "다섯 글자 이내",
       "reset": "또 쓰기",
       "submit": "편지 보내기",
@@ -408,7 +407,8 @@
       "letterAria": "보낸 편지 카드",
       "from": "From",
       "to": "To",
-      "toMessage": "{recipient} 님에게 약 {minutes}분 후 도착해요",
+      "toRecipient": "{recipient} 님에게",
+      "toArrival": "약 {minutes}분 후 도착해요",
       "sentBadge": "전송됨",
       "again": "또 쓰기",
       "home": "홈으로",
@@ -498,6 +498,8 @@
   },
   "location": {
     "current": "현재 위치",
+    "autoAttached": "현재 위치가 자동으로 첨부돼요",
+    "autoSet": "자동 설정됨",
     "resolving": "위치를 가져오는 중...",
     "retry": "다시 시도",
     "back": "이전",

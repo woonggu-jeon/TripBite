@@ -58,11 +58,34 @@ const mockUser = {
  */
 let onboardedState = false;
 
+// dev mock — 단일 좌표라도 사용자에게 다양해 보이도록 좌표 hash 기반 11시군 매핑.
+// 좌표가 같으면 같은 시군 반환(deterministic). 실제 backend 는 정확한 reverse geocoding.
+const MOCK_REGIONS = [
+  { label: '충북 청주시', regionCode: 'cheongju' },
+  { label: '충북 충주시', regionCode: 'chungju' },
+  { label: '충북 제천시', regionCode: 'jecheon' },
+  { label: '충북 단양군', regionCode: 'danyang' },
+  { label: '충북 보은군', regionCode: 'boeun' },
+  { label: '충북 옥천군', regionCode: 'okcheon' },
+  { label: '충북 영동군', regionCode: 'yeongdong' },
+  { label: '충북 진천군', regionCode: 'jincheon' },
+  { label: '충북 괴산군', regionCode: 'goesan' },
+  { label: '충북 음성군', regionCode: 'eumseong' },
+  { label: '충북 증평군', regionCode: 'jeungpyeong' },
+];
+
+function mockRegionFromCoords(latitude: number, longitude: number) {
+  // 0.0001 단위까지 반영 → 같은 위치에서 항상 같은 결과
+  const seed =
+    Math.abs(Math.round(latitude * 10000) + Math.round(longitude * 10000)) >>>
+    0;
+  return MOCK_REGIONS[seed % MOCK_REGIONS.length] ?? MOCK_REGIONS[0]!;
+}
+
 const mockResolvedLocation = {
   latitude: 36.6424,
   longitude: 127.489,
-  label: '충북 청주시',
-  regionCode: 'cheongju',
+  ...mockRegionFromCoords(36.6424, 127.489),
 };
 
 const mockWeather = {
@@ -122,16 +145,17 @@ export const handlers = [
   }),
 
   // ===== Location =====
-  // 좌표 → 라벨 (reverse geocode)
+  // 좌표 → 라벨 (reverse geocode) — 좌표 hash 기반 11시군 분산
   http.post(`${apiUrl}/location/reverse`, async ({ request }) => {
     const coords = (await request.json()) as {
       latitude: number;
       longitude: number;
     };
+    const region = mockRegionFromCoords(coords.latitude, coords.longitude);
     return HttpResponse.json({
       ...coords,
-      label: mockResolvedLocation.label,
-      regionCode: mockResolvedLocation.regionCode,
+      label: region.label,
+      regionCode: region.regionCode,
     });
   }),
   // IP 기반 대략적 위치

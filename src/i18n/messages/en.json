@@ -365,8 +365,7 @@
     },
     "compose": {
       "title": "Write a letter",
-      "notice": "1–5 chars. Spaces and symbols allowed. Your location will be attached.",
-      "label": "Body ({count}/5)",
+      "label": "Letter body",
       "placeholder": "Up to 5 characters",
       "reset": "Rewrite",
       "submit": "Send letter",
@@ -408,7 +407,8 @@
       "letterAria": "Sent letter card",
       "from": "From",
       "to": "To",
-      "toMessage": "Arriving to {recipient} in about {minutes} minutes",
+      "toRecipient": "To {recipient}",
+      "toArrival": "Arrives in about {minutes} minutes",
       "sentBadge": "Sent",
       "again": "Write again",
       "home": "Home",
@@ -498,6 +498,8 @@
   },
   "location": {
     "current": "Current location",
+    "autoAttached": "Your current location will be attached",
+    "autoSet": "Auto",
     "resolving": "Getting your location...",
     "retry": "Try again",
     "back": "Back",
