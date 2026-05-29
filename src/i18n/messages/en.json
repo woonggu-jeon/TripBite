@@ -378,8 +378,25 @@
       }
     },
     "detail": {
+      "title": "Arrived letter",
+      "arrivedTitle": "A letter arrived",
+      "arrivedBody": "Where is it from? Read the message of 5 letters",
+      "letterAria": "Received letter card",
+      "from": "From",
+      "to": "To",
+      "toYou": "Arrived to you",
       "like": "Like",
-      "save": "Save"
+      "save": "Save",
+      "delete": "Delete",
+      "actionsAria": "Letter actions",
+      "deleteConfirmTitle": "Delete this letter?",
+      "deleteConfirmBody": "Deleted letters cannot be restored",
+      "deleteConfirmYes": "Delete",
+      "deleteConfirmNo": "Cancel",
+      "autoDeleteNotice": "Will be auto-deleted in 3 days unless saved",
+      "loadError": "Couldn't load the letter",
+      "retry": "Try again",
+      "backToList": "Back to inbox"
     },
     "author": {
       "anonymous": "Anonymous traveler"

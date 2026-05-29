@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { LetterDetailClient } from './_components/LetterDetailClient';
 
@@ -30,9 +31,10 @@ type Props = {
 
 export default async function LetterDetailPage({ params }: Props) {
   const { id } = await params;
+  const t = await getTranslations('letter.detail');
   return (
     <>
-      <SubHeader title="편지" />
+      <SubHeader title={t('title')} />
       <LetterDetailClient letterId={id} />
     </>
   );

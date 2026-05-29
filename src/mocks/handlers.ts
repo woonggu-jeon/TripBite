@@ -165,6 +165,20 @@ export const handlers = [
     if (!seed) return new HttpResponse(null, { status: 404 });
     return HttpResponse.json(seed);
   }),
+  http.delete(
+    `${apiUrl}/letters/:id`,
+    () => new HttpResponse(null, { status: 204 }),
+  ),
+  http.post(`${apiUrl}/letters/:id/like`, ({ params }) => {
+    const seed = letterSeeds.find((l) => l.id === params.id);
+    if (!seed) return new HttpResponse(null, { status: 404 });
+    return HttpResponse.json({ ...seed, liked: !seed.liked });
+  }),
+  http.post(`${apiUrl}/letters/:id/save`, ({ params }) => {
+    const seed = letterSeeds.find((l) => l.id === params.id);
+    if (!seed) return new HttpResponse(null, { status: 404 });
+    return HttpResponse.json({ ...seed, saved: !seed.saved });
+  }),
 
   // ===== Region =====
   http.get(`${apiUrl}/regions/:code/contents`, ({ params, request }) => {

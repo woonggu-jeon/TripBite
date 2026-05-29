@@ -84,3 +84,15 @@ export function useToggleSaveLetter() {
     },
   });
 }
+
+export function useDeleteLetter() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: letterApi.remove,
+    onSuccess: (_, id) => {
+      qc.removeQueries({ queryKey: letterKeys.detail(id) });
+      qc.invalidateQueries({ queryKey: letterKeys.list('received') });
+      qc.invalidateQueries({ queryKey: letterKeys.list('liked') });
+    },
+  });
+}

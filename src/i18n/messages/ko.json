@@ -378,8 +378,25 @@
       }
     },
     "detail": {
+      "title": "도착한 편지",
+      "arrivedTitle": "편지가 도착했어요",
+      "arrivedBody": "어디에서 왔을까요? 5글자에 담긴 마음을 확인해보세요",
+      "letterAria": "받은 편지 카드",
+      "from": "From",
+      "to": "To",
+      "toYou": "당신에게 도착했어요",
       "like": "좋아요",
-      "save": "저장"
+      "save": "저장",
+      "delete": "삭제",
+      "actionsAria": "편지 액션",
+      "deleteConfirmTitle": "편지를 삭제할까요?",
+      "deleteConfirmBody": "삭제한 편지는 되돌릴 수 없어요",
+      "deleteConfirmYes": "삭제",
+      "deleteConfirmNo": "취소",
+      "autoDeleteNotice": "저장하지 않으면 3일 후 자동 삭제돼요",
+      "loadError": "편지를 불러오지 못했어요",
+      "retry": "다시 시도",
+      "backToList": "편지함으로"
     },
     "author": {
       "anonymous": "익명의 여행자"
