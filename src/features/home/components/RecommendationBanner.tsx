@@ -69,6 +69,8 @@ export function RecommendationBanner() {
       keyExtractor={(item) => item.id}
       options={{ loop: true, autoplayMs: 4500 }}
       showDots
+      // dynamic import 동안 자리잡이 — CLS 방지 (slide height 220 + dots 약 28)
+      fallbackHeight={248}
       ariaLabel={t('label')}
     />
   );

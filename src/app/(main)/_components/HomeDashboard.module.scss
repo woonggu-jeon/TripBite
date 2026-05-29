@@ -3,6 +3,21 @@
   gap: var(--space-6);
 }
 
+// 각 위젯 영역의 min-height — fetch 가 늦어도 layout shift 안 일어나도록.
+// 카카오/Naver 인앱 webview 에서 위젯 도착 시 화면 떨림 방지.
+.grid [data-widget='weather-recommendation'] {
+  min-height: calc(248px + 2.5rem); // banner 220 + dots 28 + title margin
+}
+.grid [data-widget='ongoing-festivals'] {
+  min-height: calc(180px + 2.5rem);
+}
+.grid [data-widget='latest-letter'] {
+  min-height: calc(100px + 2.5rem);
+}
+.grid [data-widget='my-winners'] {
+  min-height: calc(140px + 1rem);
+}
+
 .sectionTitle {
   font-size: var(--font-body);
   font-weight: 800;

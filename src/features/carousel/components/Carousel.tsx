@@ -2,7 +2,6 @@
 
 import { type ReactNode } from 'react';
 import { clientOnly } from '@/lib/dynamic';
-import { Skeleton } from '@/components/feedback/Skeleton';
 import type { CarouselOptions } from '@/features/carousel/types';
 
 export type CarouselProps<T> = {
@@ -13,7 +12,11 @@ export type CarouselProps<T> = {
   showDots?: boolean;
   showArrows?: boolean;
   ariaLabel?: string;
-  /** 로딩 중 skeleton 높이 */
+  /**
+   * dynamic import 동안 자리잡이용 min-height (CLS 0).
+   * carousel impl 청크가 도착하기 전 부모 div 가 이 높이를 보장 →
+   * 아래 콘텐츠 밀림 없음. 카카오/Naver 인앱 등 느린 webview 에서 떨림 방지.
+   */
   fallbackHeight?: number;
 };
 
@@ -38,12 +41,9 @@ export type CarouselProps<T> = {
  *   - transform 기반 60fps 슬라이드
  *   - 자동재생 사용 시 사용자 인터랙션으로 자동 일시정지
  */
-const CarouselLazy = clientOnly(
-  () => import('./CarouselImpl'),
-  {
-    loading: () => null, // 아래 함수형 wrapper 에서 skeleton 처리
-  },
-);
+const CarouselLazy = clientOnly(() => import('./CarouselImpl'), {
+  loading: () => null, // 아래 함수형 wrapper 에서 skeleton 처리
+});
 
 export function Carousel<T>(props: CarouselProps<T>) {
   // type 호환을 위해 unknown으로 강제 캐스팅 — CarouselImpl 은 제네릭이지만
@@ -51,16 +51,12 @@ export function Carousel<T>(props: CarouselProps<T>) {
   const Impl = CarouselLazy as unknown as React.ComponentType<CarouselProps<T>>;
 
   return (
-    <div style={{ position: 'relative' }}>
-      {/* 초기 로드 동안 자리 잡이 — fallbackHeight 지정 시 사용 */}
-      {props.fallbackHeight && (
-        <Skeleton
-          width="100%"
-          height={props.fallbackHeight}
-          radius="lg"
-          className="carousel-skeleton-fallback"
-        />
-      )}
+    <div
+      style={{
+        position: 'relative',
+        minHeight: props.fallbackHeight,
+      }}
+    >
       <Impl {...props} />
     </div>
   );

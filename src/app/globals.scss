@@ -241,6 +241,15 @@
 /* Breakpoints — SCSS module 에서 미디어 쿼리 작성 시 참고 (mixin 사용 권장) */
 /* xs: 360, sm: 600, md: 768, lg: 1024 */
 
+/* 360px 미만 (구 iPhone SE 1세대, 갤럭시 Fold 닫은 상태 등) — content 영역이 비좁아
+   기본 padding 1rem 그대로면 카드/grid 가 답답하거나 overflow.
+   --content-pad 만 축소하면 layout 전반에 자동 반영 (contentInner / SubHeader inner). */
+@media (max-width: 359.98px) {
+  :root {
+    --content-pad: 0.75rem;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --color-bg: #0a0a0a;
@@ -279,9 +288,13 @@
 html,
 body {
   height: 100%;
-  /* iOS Safari 주소창 변동 대응 — 100vh 는 주소창 닫힌 기준이라 실제보다 큼.
-     100dvh 는 현재 뷰포트 기준으로 동적 계산. 미지원 브라우저는 height:100% fallback. */
-  min-height: 100dvh;
+  /* viewport 단위 — 카카오 인앱/Naver 인앱 브라우저에서 100dvh 는 toolbar 토글마다
+     동적으로 변동해 화면이 떨림. 100svh (small viewport, toolbar 표시 기준 작은 값)
+     로 안정화. PWA / iOS Safari 에선 toolbar 닫힌 상태에서 약간 비어보일 수 있지만
+     .shell 의 min-height 라 콘텐츠는 자유롭게 늘어남.
+     미지원 브라우저는 height:100% fallback. */
+  min-height: 100vh; /* fallback */
+  min-height: 100svh;
 }
 
 body {

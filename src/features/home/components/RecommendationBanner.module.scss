@@ -129,6 +129,21 @@
   );
 }
 
+// 360px 미만 (iPhone SE 1세대 등) — emoji 영역 축소
+@media (max-width: 359.98px) {
+  .slide {
+    grid-template-columns: 72px 1fr;
+    height: 200px;
+    padding: var(--space-4);
+  }
+  .emoji {
+    font-size: 3rem;
+  }
+  .destination {
+    font-size: var(--text-lg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .slide {
     transition: none;
