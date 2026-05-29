@@ -13,38 +13,38 @@ const CATEGORIES: { value: DestinationCategory; emoji: string }[] = [
 ];
 
 export interface CategoryFilterProps {
-  values: DestinationCategory[];
-  onChange: (values: DestinationCategory[]) => void;
+  value: DestinationCategory | null;
+  onChange: (value: DestinationCategory) => void;
 }
 
 /**
- * 여행 유형 4종 — 세로 1열 4행 카드. 다중 선택.
+ * 여행 유형 4종 — 세로 1열 4행 카드. 단일 선택.
+ * 선택 즉시 부모로 onChange — 부모(TournamentSetup)에서 다음 step 자동 진행.
  */
-export function CategoryFilter({ values, onChange }: CategoryFilterProps) {
+export function CategoryFilter({ value, onChange }: CategoryFilterProps) {
   const t = useTranslations('tournament');
 
-  const toggle = (c: DestinationCategory) => {
+  const pick = (c: DestinationCategory) => {
     haptic.tap();
-    onChange(
-      values.includes(c) ? values.filter((v) => v !== c) : [...values, c],
-    );
+    onChange(c);
   };
 
   return (
     <div
       className={styles.list}
-      role="group"
+      role="radiogroup"
       aria-label={t('setup.steps.category.title')}
     >
       {CATEGORIES.map((c) => {
-        const active = values.includes(c.value);
+        const active = value === c.value;
         return (
           <button
             key={c.value}
             type="button"
-            aria-pressed={active}
+            role="radio"
+            aria-checked={active}
             className={`${styles.row} ${active ? styles.active : ''}`}
-            onClick={() => toggle(c.value)}
+            onClick={() => pick(c.value)}
           >
             <span className={styles.emoji} aria-hidden>
               {c.emoji}

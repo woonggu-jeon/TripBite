@@ -140,22 +140,53 @@ export function ChungbukMap({
     };
   }, []);
 
-  // path.region 에 click 이벤트 부착
+  // path.region 에 click + 시군 그룹 hover 동기화
+  //
+  // 충북 SVG 는 청주시가 4 개 path("청주시 상당구/서원구/청원구/흥덕구") 로 쪼개져 있어
+  // 개별 path :hover 만 쓰면 하나의 시군이 4 조각으로 hover 됨.
+  // path id 의 첫 단어(예: '청주시', '괴산군')를 그룹 키로 묶어 mouseenter/leave 시
+  // 같은 그룹의 모든 path 에 .is-region-hovered 클래스를 토글 → 하나로 hover 보임.
+  //
+  // click 도 시군 단위로 통합 — onRegionClick 에는 그룹 키(예: '청주시') 전달.
   useEffect(() => {
     if (!svgWrapRef.current || !svg) return;
     const root = svgWrapRef.current;
-    const paths = root.querySelectorAll<SVGPathElement>('path.region');
+    const paths = Array.from(
+      root.querySelectorAll<SVGPathElement>('path.region'),
+    );
     if (paths.length === 0) return;
+
+    const groupKey = (p: SVGPathElement) => p.id.split(/\s+/)[0] ?? p.id;
+    const groupMap = new Map<string, SVGPathElement[]>();
+    paths.forEach((p) => {
+      const key = groupKey(p);
+      const arr = groupMap.get(key) ?? [];
+      arr.push(p);
+      groupMap.set(key, arr);
+    });
+
     const cleanups: Array<() => void> = [];
     paths.forEach((p) => {
-      const handler = () => {
+      const key = groupKey(p);
+      const siblings = groupMap.get(key) ?? [p];
+      const enter = () =>
+        siblings.forEach((s) => s.classList.add('is-region-hovered'));
+      const leave = () =>
+        siblings.forEach((s) => s.classList.remove('is-region-hovered'));
+      const click = () => {
         if (!onRegionClick) return;
         haptic.tap();
-        onRegionClick(p.id);
+        onRegionClick(key);
       };
-      p.addEventListener('click', handler);
+      p.addEventListener('mouseenter', enter);
+      p.addEventListener('mouseleave', leave);
+      p.addEventListener('click', click);
       p.style.cursor = onRegionClick ? 'pointer' : 'default';
-      cleanups.push(() => p.removeEventListener('click', handler));
+      cleanups.push(() => {
+        p.removeEventListener('mouseenter', enter);
+        p.removeEventListener('mouseleave', leave);
+        p.removeEventListener('click', click);
+      });
     });
     return () => {
       cleanups.forEach((fn) => fn());

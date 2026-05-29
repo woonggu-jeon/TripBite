@@ -36,11 +36,16 @@
     fill: var(--map-region-fill);
     stroke: var(--map-region-stroke);
     stroke-width: 2;
-    transition: fill 0.15s ease;
+    transition:
+      fill 0.15s ease,
+      stroke 0.15s ease;
   }
 
-  :global(svg path.region:hover) {
+  // 시군 그룹 hover — 같은 시군의 모든 path 에 클래스 부여 (JS 에서 토글).
+  // stroke 도 hover fill 과 동일 색 → 행정구 사이 분리선 사라져 시군이 한 덩어리로 보임.
+  :global(svg path.region.is-region-hovered) {
     fill: var(--map-region-hover);
+    stroke: var(--map-region-hover);
   }
 
   :global(svg text.label) {

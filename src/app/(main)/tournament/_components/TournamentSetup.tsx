@@ -28,18 +28,18 @@ import styles from './TournamentSetup.module.scss';
  *
  *   1) 테마 종류    : 계절 / 특별한 날
  *   2) 항목         : (계절) 봄·여름·가을·겨울 / (특별한 날) 생일·결혼기념일
- *   3) 여행 유형    : 지역·축제·관광지·체험관광 (다중) — 세로 4 카드
+ *   3) 여행 유형    : 지역·축제·관광지·체험관광 (단일) — 세로 4 카드, 선택 즉시 다음
  *   4) 여행지 갯수  : 2 / 4 / 6 / 8  (N)
  *
- * 단일 선택 스텝(1·2·4)은 선택 즉시 next.
- * 다중 선택 스텝(3)은 "다음" 버튼.
+ * 모든 스텝(1·2·3)은 선택 즉시 next.
  * 마지막 스텝(4)은 선택 후 "시작하기" — /tournament/play 로 이동.
  *
  * 토너먼트 개수(M ≤ N)는 Play 페이지의 별도 phase 에서 결정.
  *
- * 뒤로: step > 1 → step--, step === 1 → router.back()
+ * store.config.categories 는 백엔드 호환을 위해 배열 유지 — UI 는 단일 선택이지만
+ * `[category]` 한 원소 배열로 저장.
  *
- * 진행 표시(progress bar/text)는 사용자 요청으로 일단 비노출 — 주석 처리.
+ * 뒤로: step > 1 → step--, step === 1 → router.back()
  */
 
 type Step = 1 | 2 | 3 | 4;
@@ -53,7 +53,7 @@ export function TournamentSetup() {
   const [themeKind, setThemeKind] = useState<ThemeKind | null>(null);
   const [season, setSeason] = useState<Season | null>(null);
   const [specialDay, setSpecialDay] = useState<SpecialDay | null>(null);
-  const [categories, setCategories] = useState<DestinationCategory[]>([]);
+  const [category, setCategory] = useState<DestinationCategory | null>(null);
   const [count, setCount] = useState<TournamentCount | null>(null);
 
   const handleKind = (k: ThemeKind) => {
@@ -72,6 +72,11 @@ export function TournamentSetup() {
   const handleSpecialDay = (d: SpecialDay) => {
     setSpecialDay(d);
     setStep(3);
+  };
+
+  const handleCategory = (c: DestinationCategory) => {
+    setCategory(c);
+    setStep(4);
   };
 
   const handleCount = (c: TournamentCount) => {
@@ -100,13 +105,14 @@ export function TournamentSetup() {
     step === 4 &&
     count !== null &&
     resolveTheme() !== null &&
-    categories.length > 0;
+    category !== null;
 
   const handleStart = () => {
     const theme = resolveTheme();
-    if (!theme || count === null || categories.length === 0) return;
+    if (!theme || count === null || category === null) return;
     haptic.success();
-    setConfig({ theme, categories, count });
+    // store 호환: categories 는 배열 — 단일 선택이지만 [category] 로 저장
+    setConfig({ theme, categories: [category], count });
     router.push('/tournament/play');
   };
 
@@ -149,7 +155,7 @@ export function TournamentSetup() {
             />
           )}
           {step === 3 && (
-            <CategoryFilter values={categories} onChange={setCategories} />
+            <CategoryFilter value={category} onChange={handleCategory} />
           )}
           {step === 4 && (
             <CountSelector
@@ -159,17 +165,6 @@ export function TournamentSetup() {
             />
           )}
         </div>
-
-        {step === 3 && (
-          <button
-            type="button"
-            className={styles.next}
-            onClick={() => setStep(4)}
-            disabled={categories.length === 0}
-          >
-            {t('next')}
-          </button>
-        )}
 
         {step === 4 && (
           <button
@@ -182,7 +177,7 @@ export function TournamentSetup() {
           </button>
         )}
 
-        {(step === 1 || step === 2) && (
+        {(step === 1 || step === 2 || step === 3) && (
           <p className={styles.autoHint}>{t('selectToContinue')}</p>
         )}
       </div>
