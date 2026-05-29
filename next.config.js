@@ -25,6 +25,13 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
  * CSP는 요청별 nonce가 필요해 정적 헤더로 둘 수 없음 →
  * middleware.ts + src/lib/csp.ts 에서 발급 (Content-Security-Policy-Report-Only).
  */
+// 검색엔진 색인 차단 토글 — mock 모드(NEXT_PUBLIC_USE_MSW=true) 또는 명시
+// NEXT_PUBLIC_BLOCK_INDEXING=true 일 때 X-Robots-Tag 부여.
+// 실 운영(env 둘 다 OFF) 시 헤더 미추가 → 정상 색인 허용.
+const BLOCK_INDEXING =
+  process.env.NEXT_PUBLIC_USE_MSW === 'true' ||
+  process.env.NEXT_PUBLIC_BLOCK_INDEXING === 'true';
+
 const SECURITY_HEADERS = [
   {
     key: 'Strict-Transport-Security',
@@ -33,6 +40,9 @@ const SECURITY_HEADERS = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'X-Frame-Options', value: 'DENY' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  ...(BLOCK_INDEXING
+    ? [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' }]
+    : []),
   {
     key: 'Permissions-Policy',
     value: [

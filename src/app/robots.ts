@@ -5,11 +5,28 @@ const SITE_URL =
 
 /**
  * /robots.txt
- * - 인증/개인 페이지·API는 색인 제외
- * - 공개 페이지(홈/랭킹/지역/정책 등)는 허용
- * - sitemap 위치 명시
+ *
+ * 두 가지 모드:
+ *   1) 차단 모드 (default 또는 NEXT_PUBLIC_USE_MSW=true / NEXT_PUBLIC_BLOCK_INDEXING=true):
+ *      - 모든 경로 disallow
+ *      - 데모/스테이징/QA 노출이지만 검색엔진 색인 X
+ *   2) 공개 모드 (env 둘 다 'false' 또는 미설정 + 추후 실 백엔드 운영 시):
+ *      - 공개 페이지만 허용, 인증/개인 페이지 disallow
+ *
+ * 보강:
+ *   - layout.tsx metadata.robots 도 noindex 부여 (HTML meta 차원)
+ *   - next.config.js 의 X-Robots-Tag 헤더도 함께 차단 (robots.txt 무시 봇 대응)
  */
+const BLOCK_INDEXING =
+  process.env.NEXT_PUBLIC_USE_MSW === 'true' ||
+  process.env.NEXT_PUBLIC_BLOCK_INDEXING === 'true';
+
 export default function robots(): MetadataRoute.Robots {
+  if (BLOCK_INDEXING) {
+    return {
+      rules: [{ userAgent: '*', disallow: '/' }],
+    };
+  }
   return {
     rules: [
       {

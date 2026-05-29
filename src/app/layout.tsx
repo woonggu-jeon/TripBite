@@ -7,6 +7,21 @@ import './globals.scss';
 /**
  * 다국어 메타데이터 — generateMetadata 에서 getTranslations 사용
  */
+/**
+ * 검색엔진 색인 차단 토글.
+ *   - mock 데이터 모드 (NEXT_PUBLIC_USE_MSW=true) 또는
+ *     명시적 NEXT_PUBLIC_BLOCK_INDEXING=true 면 noindex/nofollow.
+ *   - 실 운영 시 두 env 모두 끄면 정상 색인 허용.
+ *
+ * 다층 방어:
+ *   1) robots.ts 가 robots.txt 에서 disallow
+ *   2) 본 metadata 가 HTML <meta name="robots"> 부여
+ *   3) next.config.js 의 X-Robots-Tag 헤더 (robots.txt 무시 봇 대응)
+ */
+const BLOCK_INDEXING =
+  process.env.NEXT_PUBLIC_USE_MSW === 'true' ||
+  process.env.NEXT_PUBLIC_BLOCK_INDEXING === 'true';
+
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('header');
 
@@ -17,6 +32,14 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: 'Next.js 15 + PWA + JWT Cookie Auth',
     manifest: '/manifest.json',
+    ...(BLOCK_INDEXING && {
+      robots: {
+        index: false,
+        follow: false,
+        nocache: true,
+        googleBot: { index: false, follow: false, noimageindex: true },
+      },
+    }),
     appleWebApp: {
       capable: true,
       statusBarStyle: 'black-translucent',
@@ -93,7 +116,11 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://tong.visitkorea.or.kr" />
         {apiUrl && (
           <>
-            <link rel="preconnect" href={apiUrl} crossOrigin="use-credentials" />
+            <link
+              rel="preconnect"
+              href={apiUrl}
+              crossOrigin="use-credentials"
+            />
             <link rel="dns-prefetch" href={apiUrl} />
           </>
         )}

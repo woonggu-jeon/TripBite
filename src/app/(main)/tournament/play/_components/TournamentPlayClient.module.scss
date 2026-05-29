@@ -104,12 +104,14 @@
   }
 }
 
+// contentInner 가 이미 좌우 padding 을 담당하므로 sizePhase 는 좌우 padding 0.
+// 이중 padding 으로 카드 영역이 좁아져 깨지던 문제 해결.
 .sizePhase {
   position: relative;
   z-index: 2;
   display: grid;
-  gap: 1rem;
-  padding: 1rem;
+  gap: var(--space-4);
+  padding: var(--space-2) 0;
 }
 
 .sizeTitle {
