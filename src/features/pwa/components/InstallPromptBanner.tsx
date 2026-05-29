@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { X } from 'lucide-react';
 import { useInstallPrompt } from '@/features/pwa/hooks/use-install-prompt';
 import { track } from '@/features/analytics';
 import { isIOS, isStandalone } from '@/lib/platform';
@@ -56,10 +57,10 @@ export function InstallPromptBanner() {
         <button
           type="button"
           aria-label={t('later')}
+          className={styles.close}
           onClick={dismiss}
-          style={{ color: 'inherit', padding: '0 6px', opacity: 0.7 }}
         >
-          ✕
+          <X size={18} aria-hidden />
         </button>
       </div>
     );
@@ -73,13 +74,13 @@ export function InstallPromptBanner() {
         <button
           type="button"
           aria-label={t('later')}
+          className={styles.close}
           onClick={() => {
             sessionStorage.setItem(IOS_DISMISS_KEY, '1');
             setIosState((s) => ({ ...s, dismissed: true }));
           }}
-          style={{ color: 'inherit', padding: '0 6px', opacity: 0.7 }}
         >
-          ✕
+          <X size={18} aria-hidden />
         </button>
       </div>
     );

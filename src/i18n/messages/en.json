@@ -21,7 +21,8 @@
   "pwa": {
     "update": {
       "message": "A new version is available",
-      "apply": "Reload"
+      "apply": "Reload",
+      "dismiss": "Dismiss"
     },
     "offline": {
       "title": "Offline",

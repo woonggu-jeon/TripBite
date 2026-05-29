@@ -21,7 +21,8 @@
   "pwa": {
     "update": {
       "message": "새 버전이 있어요",
-      "apply": "새로고침"
+      "apply": "새로고침",
+      "dismiss": "닫기"
     },
     "offline": {
       "title": "오프라인",

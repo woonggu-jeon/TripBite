@@ -39,6 +39,31 @@
   white-space: nowrap;
 }
 
+// 닫기 버튼 — 명확한 hit target. banner 가 좁아 36px (44 권장이지만 banner 높이 한계)
+.close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: inherit;
+  opacity: 0.8;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+  transition:
+    opacity var(--motion-base) ease,
+    background var(--motion-base) ease;
+
+  &:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.1);
+  }
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 1px;
+  }
+}
+
 @keyframes slide-down {
   from {
     opacity: 0;
