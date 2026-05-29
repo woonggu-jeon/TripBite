@@ -76,6 +76,18 @@ function PageViewTracker() {
  */
 const MSW_ENABLED = process.env.NEXT_PUBLIC_USE_MSW === 'true';
 
+// 빌드 시점에 inline 된 env 상태를 클라이언트 콘솔에 한 줄로 노출 (트러블슈팅용).
+// Next.js 가 NEXT_PUBLIC_* 를 빌드 시 치환 → 런타임에 `process.env` 직접 접근 불가.
+// 콘솔에서 이 줄을 확인해 Vercel env 가 실제 빌드에 들어갔는지 즉시 판별.
+if (typeof window !== 'undefined') {
+  // eslint-disable-next-line no-console
+  console.info(
+    `[boot] MSW_ENABLED=${MSW_ENABLED} ` +
+      `NEXT_PUBLIC_USE_MSW=${JSON.stringify(process.env.NEXT_PUBLIC_USE_MSW)} ` +
+      `NEXT_PUBLIC_API_URL=${JSON.stringify(process.env.NEXT_PUBLIC_API_URL)}`,
+  );
+}
+
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
     () =>

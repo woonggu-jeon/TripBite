@@ -59,14 +59,16 @@ Vercel 배포 직후 `/me` `/letters/...` 등 모든 API 가 404 라면 다음 �
 
 ### 5-1. env 가 실제 빌드에 inline 됐는지
 
-Vercel 배포 로그에서 `[env]` 경고가 없어야 함. 브라우저 콘솔에 다음 입력:
+브라우저 콘솔에서 페이지 새로고침 후 다음 한 줄을 확인:
 
-```js
-// 빌드에 inline 되어 있으면 'true' 출력
-console.log(process.env.NEXT_PUBLIC_USE_MSW);
+```
+[boot] MSW_ENABLED=true NEXT_PUBLIC_USE_MSW="true" NEXT_PUBLIC_API_URL="http://placeholder"
 ```
 
-`undefined` 가 출력되면 env 가 빌드에 안 들어간 것 — **재빌드 필요**.
+- `MSW_ENABLED=false` 또는 `NEXT_PUBLIC_USE_MSW=undefined` → env 가 빌드에 안 들어감. **재빌드 필요**.
+- `MSW_ENABLED=true` 인데도 API 가 404 라면 5-2 / 5-4 항목으로.
+
+> 콘솔에서 `process.env.NEXT_PUBLIC_USE_MSW` 직접 입력은 `ReferenceError: process is not defined` 가 정상 — Next.js 가 `NEXT_PUBLIC_*` 을 **빌드 시점에 리터럴로 치환**하므로 런타임에 `process` 객체가 없다. `[boot]` 로그가 빌드에 박힌 실제 값.
 
 ### 5-2. service worker 가 등록됐는지
 
