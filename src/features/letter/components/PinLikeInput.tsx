@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, useCallback, useRef } from 'react';
+import { forwardRef, useCallback, useRef, type ChangeEvent } from 'react';
 import styles from './PinLikeInput.module.scss';
 
 /**
@@ -49,6 +49,17 @@ export const PinLikeInput = forwardRef<HTMLInputElement, PinLikeInputProps>(
       localRef.current?.focus();
     };
 
+    // length 초과 입력 강제 차단 — grapheme(NFC/이모지 surrogate) 단위로 자름.
+    // codepoint 기반 maxLength 만으로는 이모지가 surrogate pair 라 5자 검증이 부정확.
+    // controlled input 이라 다음 render 에서 clamped value 가 input 에 반영됨.
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+      const next = Array.from(e.target.value);
+      if (next.length > length) {
+        e.target.value = next.slice(0, length).join('');
+      }
+      onChange?.(e);
+    };
+
     return (
       <div
         className={styles.wrap}
@@ -90,10 +101,10 @@ export const PinLikeInput = forwardRef<HTMLInputElement, PinLikeInputProps>(
           autoCorrect="off"
           spellCheck={false}
           // 한글 NFC + 띄어쓰기 + 특수문자 + 이모지(surrogate pair) 대비 여유.
-          // 실제 길이 제한은 zod schema 의 grapheme 5자.
+          // grapheme 단위 5자 clamp 는 handleChange 가 담당.
           maxLength={20}
           value={value}
-          onChange={onChange}
+          onChange={handleChange}
           onBlur={onBlur}
           className={styles.input}
           {...rest}

@@ -42,6 +42,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   text-align: center;
+  min-width: 0; // grid track 안 ellipsis 동작 보장
 
   &:hover {
     background: var(--color-border);
@@ -51,15 +52,45 @@
 .quickActionIcon {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  border-radius: var(--radius-full);
+  background: var(--color-primary-tint);
   color: var(--color-primary);
   display: grid;
   place-items: center;
+  flex-shrink: 0;
 }
 
 .quickActionLabel {
   font-size: var(--font-caption);
   font-weight: 600;
   letter-spacing: var(--tracking-tight);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+// 메인 화면 작은 모바일 (≤ 380px) — gap / padding 축소로 카드 잘림 방지
+@media (max-width: 380px) {
+  .grid {
+    gap: var(--space-5);
+  }
+  .sectionTitle {
+    margin-bottom: var(--space-2);
+  }
+  .quickActions {
+    gap: var(--space-1);
+  }
+  .quickAction {
+    padding: var(--space-3) 4px;
+    gap: 4px;
+  }
+  .quickActionIcon {
+    width: 32px;
+    height: 32px;
+  }
+  // 위젯 min-height 도 emoji 축소된 만큼 좁힘 (떨림 보장은 유지)
+  .grid [data-widget='weather-recommendation'] {
+    min-height: calc(220px + 2rem);
+  }
 }

@@ -129,15 +129,13 @@
   );
 }
 
-// 360px 미만 (iPhone SE 1세대 등) — emoji 영역 축소
-@media (max-width: 359.98px) {
+// 작은 모바일 (≤ 380px, S8 / SE 2-3 / SE 1) — emoji 영역 축소.
+// emoji 크기는 globals 의 --emoji-xl 가 380 이하에서 3rem 으로 자동 축소되므로 여기선 layout 만.
+@media (max-width: 380px) {
   .slide {
     grid-template-columns: 72px 1fr;
     height: 200px;
     padding: var(--space-4);
-  }
-  .emoji {
-    font-size: 3rem;
   }
   .destination {
     font-size: var(--text-lg);
