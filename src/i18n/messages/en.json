@@ -369,6 +369,16 @@
         "region": "Region",
         "category": "Category",
         "runnerUp": "Runner-up"
+      },
+      "ladder": {
+        "subtitle": "Pick a line and see the chance at its endpoint",
+        "hintIdle": "Pick a line to start",
+        "hintRolling": "Tracing the ladder…",
+        "hintRevealed": "Arrived!",
+        "resultLabel": "Chance of a fated encounter on this trip",
+        "retry": "Roll again",
+        "svgLabel": "Ladder game",
+        "lineLabel": "Line {n}"
       }
     }
   },

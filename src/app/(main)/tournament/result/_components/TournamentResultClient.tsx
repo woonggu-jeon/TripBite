@@ -80,7 +80,13 @@ export function TournamentResultClient() {
       <LuckyColor seed={winner.id} />
 
       <section className={styles.ladderSection} aria-label={t('meetChance')}>
-        <h3 className={styles.ladderTitle}>🎲 {t('meetChance')}</h3>
+        <header className={styles.ladderHeader}>
+          <h3 className={styles.ladderTitle}>
+            <span aria-hidden>🎲</span>
+            {t('meetChance')}
+          </h3>
+          <p className={styles.ladderSubtitle}>{t('ladder.subtitle')}</p>
+        </header>
         <LuckyLadder />
       </section>
 

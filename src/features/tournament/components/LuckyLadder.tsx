@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { haptic } from '@/lib/haptic';
 import styles from './LuckyLadder.module.scss';
 
@@ -9,7 +10,12 @@ const REVEAL_MS = 1500;
 
 /**
  * 사다리타기 — N개 라인 중 하나를 선택하면 사다리를 따라 내려가
- * 끝점에 적힌 랜덤 %를 결과로 보여줌. 항목 입력 없이 시작점 원 클릭만으로 시작.
+ * 끝점에 적힌 랜덤 %를 결과로 보여줌.
+ *
+ * 흐름:
+ *   idle      : 라인 선택 안내 ↓
+ *   rolling   : 사다리 path 그려지는 중 (1.4s)
+ *   revealed  : 도착점 % 강조 + 다시 시도
  *
  * 모드:
  *   - independent: 각 끝점이 독립 랜덤 0~100%
@@ -103,24 +109,38 @@ export function LuckyLadder({
   rows = 8,
   initialMode = 'independent',
 }: LuckyLadderProps) {
-  // 모드는 prop 으로만 받고 내부 변경 UI 없음 (로직은 두 모드 모두 유지).
-  // 새 사다리/% 가 필요하면 외부에서 컴포넌트 key 를 바꿔 unmount/remount.
+  const t = useTranslations('tournament.result.ladder');
   const mode = initialMode;
   const [selected, setSelected] = useState<number | null>(null);
   const [revealed, setRevealed] = useState(false);
+  // 다시 시도 시 사다리·% 재생성 트리거
+  const [resetKey, setResetKey] = useState(0);
 
   const { rungs, percents } = useMemo(
     () => ({
       rungs: generateRungs(count, rows),
       percents: generatePercents(count, mode),
     }),
-    [count, rows, mode],
+    // resetKey 는 다시 시도 시 사다리·% 재생성용 — exhaustive-deps 의도적 회피
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [count, rows, mode, resetKey],
   );
 
-  const handlePick = useCallback((col: number) => {
+  const handlePick = useCallback(
+    (col: number) => {
+      if (selected !== null) return; // 이미 선택됨 — 다시 시도 버튼으로만 재선택
+      haptic.tap();
+      setSelected(col);
+      setRevealed(false);
+    },
+    [selected],
+  );
+
+  const handleRetry = useCallback(() => {
     haptic.tap();
-    setSelected(col);
+    setSelected(null);
     setRevealed(false);
+    setResetKey((k) => k + 1);
   }, []);
 
   // 선택 후 경로 애니메이션이 끝나면 % 공개
@@ -133,7 +153,10 @@ export function LuckyLadder({
       typeof window !== 'undefined' &&
       window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     const id = window.setTimeout(
-      () => setRevealed(true),
+      () => {
+        setRevealed(true);
+        haptic.success();
+      },
       reduced ? 50 : REVEAL_MS,
     );
     return () => window.clearTimeout(id);
@@ -153,14 +176,35 @@ export function LuckyLadder({
     selected !== null && path.length > 0
       ? (path[path.length - 1]?.col ?? selected)
       : null;
+  const resultPercent =
+    revealed && endCol !== null ? (percents[endCol] ?? null) : null;
 
   return (
     <div className={styles.wrap}>
+      <p
+        className={styles.hint}
+        aria-live="polite"
+        data-state={
+          selected === null ? 'idle' : revealed ? 'revealed' : 'rolling'
+        }
+      >
+        {selected === null && (
+          <>
+            <span aria-hidden className={styles.hintArrow}>
+              ↓
+            </span>
+            {t('hintIdle')}
+          </>
+        )}
+        {selected !== null && !revealed && t('hintRolling')}
+        {revealed && t('hintRevealed')}
+      </p>
+
       <svg
         viewBox={`0 0 ${W} ${H}`}
         className={styles.svg}
         role="img"
-        aria-label="사다리타기"
+        aria-label={t('svgLabel')}
       >
         {/* 세로선 */}
         {Array.from({ length: count }).map((_, i) => (
@@ -190,46 +234,55 @@ export function LuckyLadder({
           />
         ))}
 
-        {/* 시작점 — 클릭 가능 */}
-        {Array.from({ length: count }).map((_, i) => (
-          <g
-            key={`s${i}`}
-            onClick={() => handlePick(i)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                handlePick(i);
-              }
-            }}
-            role="button"
-            tabIndex={0}
-            aria-label={`${i + 1}번 라인 선택`}
-            className={styles.startPoint}
-          >
-            <circle
-              cx={colX(i)}
-              cy={rowY(0) - 18}
-              r={14}
-              fill={selected === i ? 'var(--color-primary)' : 'var(--color-bg)'}
-              stroke="var(--color-primary)"
-              strokeWidth={2}
-            />
-            <text
-              x={colX(i)}
-              y={rowY(0) - 14}
-              textAnchor="middle"
-              fontSize={12}
-              fontWeight={600}
-              fill={
-                selected === i
-                  ? 'var(--color-primary-fg)'
-                  : 'var(--color-primary)'
+        {/* 시작점 — 클릭 가능 (선택 전에만) */}
+        {Array.from({ length: count }).map((_, i) => {
+          const isPicked = selected === i;
+          const isLocked = selected !== null && !isPicked;
+          return (
+            <g
+              key={`s${i}`}
+              onClick={() => handlePick(i)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handlePick(i);
+                }
+              }}
+              role="button"
+              tabIndex={selected === null ? 0 : -1}
+              aria-label={t('lineLabel', { n: i + 1 })}
+              aria-pressed={isPicked}
+              className={
+                isPicked
+                  ? `${styles.startPoint} ${styles.startPointPicked}`
+                  : isLocked
+                    ? `${styles.startPoint} ${styles.startPointLocked}`
+                    : styles.startPoint
               }
             >
-              {i + 1}
-            </text>
-          </g>
-        ))}
+              <circle
+                cx={colX(i)}
+                cy={rowY(0) - 18}
+                r={14}
+                fill={isPicked ? 'var(--color-primary)' : 'var(--color-bg)'}
+                stroke="var(--color-primary)"
+                strokeWidth={2}
+              />
+              <text
+                x={colX(i)}
+                y={rowY(0) - 14}
+                textAnchor="middle"
+                fontSize={12}
+                fontWeight={600}
+                fill={
+                  isPicked ? 'var(--color-primary-fg)' : 'var(--color-primary)'
+                }
+              >
+                {i + 1}
+              </text>
+            </g>
+          );
+        })}
 
         {/* 끝점 — 도착 라인의 % 만 revealed 시 공개. 나머지는 항상 '?'. */}
         {percents.map((p, i) => {
@@ -237,7 +290,10 @@ export function LuckyLadder({
           const showPercent = revealed && isEnd;
           const dimmed = selected !== null && !isEnd;
           return (
-            <g key={`e${i}`}>
+            <g
+              key={`e${i}`}
+              className={showPercent ? styles.endRevealed : undefined}
+            >
               <rect
                 x={colX(i) - 22}
                 y={rowY(rows) + 8}
@@ -247,7 +303,7 @@ export function LuckyLadder({
                 fill={
                   showPercent ? 'var(--color-primary)' : 'var(--color-muted)'
                 }
-                opacity={dimmed ? 0.55 : 1}
+                opacity={dimmed ? 0.4 : 1}
               />
               <text
                 x={colX(i)}
@@ -256,6 +312,7 @@ export function LuckyLadder({
                 fontSize={12}
                 fontWeight={700}
                 fill="var(--color-primary-fg)"
+                opacity={dimmed ? 0.6 : 1}
               >
                 {showPercent ? `${p}%` : '?'}
               </text>
@@ -266,7 +323,7 @@ export function LuckyLadder({
         {/* 선택 경로 — stroke-dashoffset 애니메이션 */}
         {selected !== null && (
           <polyline
-            key={`path-${selected}-${mode}`}
+            key={`path-${selected}-${mode}-${resetKey}`}
             points={path.map((p) => `${colX(p.col)},${rowY(p.row)}`).join(' ')}
             fill="none"
             stroke="var(--color-primary)"
@@ -277,6 +334,21 @@ export function LuckyLadder({
           />
         )}
       </svg>
+
+      {/* 결과 강조 패널 — revealed 시 등장 */}
+      {revealed && resultPercent !== null && (
+        <div className={styles.result} role="status" aria-live="polite">
+          <span className={styles.resultLabel}>{t('resultLabel')}</span>
+          <span className={styles.resultValue}>
+            <span className={styles.resultNumber}>{resultPercent}</span>
+            <span className={styles.resultUnit}>%</span>
+          </span>
+          <button type="button" className={styles.retry} onClick={handleRetry}>
+            <span aria-hidden>🎲</span>
+            {t('retry')}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
