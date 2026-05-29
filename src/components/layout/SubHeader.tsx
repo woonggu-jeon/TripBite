@@ -28,13 +28,23 @@ export function SubHeader({
 }) {
   const router = useRouter();
 
+  const handleBack = () => {
+    // 직접 진입(history 1) 시 router.back 은 새 탭/외부에서 들어왔을 때 동작 안 함.
+    // 안전하게 홈으로 fallback.
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      router.back();
+    } else {
+      router.replace('/');
+    }
+  };
+
   return (
     <div className={styles.bar}>
       <button
         type="button"
         aria-label="뒤로가기"
         className={styles.back}
-        onClick={() => router.back()}
+        onClick={handleBack}
       >
         <ChevronLeft size={22} />
       </button>

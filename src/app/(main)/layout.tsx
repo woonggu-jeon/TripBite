@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { AppHeader } from '@/components/layout/AppHeader';
+import { HeaderSwitch } from '@/components/layout/HeaderSwitch';
 import { BottomNav } from '@/components/layout/BottomNav';
 import styles from './layout.module.scss';
 
@@ -31,7 +31,7 @@ import styles from './layout.module.scss';
 export default function MainLayout({ children }: { children: ReactNode }) {
   return (
     <div className={styles.shell}>
-      <AppHeader />
+      <HeaderSwitch />
       <main className={styles.content}>{children}</main>
       <BottomNav />
     </div>
