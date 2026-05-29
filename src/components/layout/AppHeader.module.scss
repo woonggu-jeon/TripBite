@@ -64,7 +64,7 @@
   right: 7px;
   width: 7px;
   height: 7px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   background: var(--color-danger);
   /* dot 안쪽 그림자로 헤더 배경과 부드러운 분리 */
   box-shadow: 0 0 0 2px var(--color-bg);

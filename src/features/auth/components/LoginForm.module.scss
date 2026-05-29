@@ -48,16 +48,27 @@
   color: var(--color-danger);
 }
 
-.submit {
-  margin-top: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-primary);
-  color: var(--color-primary-fg);
-  border-radius: var(--radius-md);
-  font-weight: 500;
+// .submit 은 Button primitive 로 마이그레이션됨 (제거)
 
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
+// 하단 링크 영역 — 회원가입 / 아이디찾기 / 비번찾기
+.foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.footRight {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.footLinkPrimary {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.footLinkMuted {
+  color: var(--color-muted);
 }

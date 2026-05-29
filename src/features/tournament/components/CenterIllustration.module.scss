@@ -4,7 +4,7 @@
   place-items: center;
   width: 200px;
   height: 200px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   border: none;
   background: radial-gradient(
     circle at 30% 30%,
@@ -21,7 +21,7 @@
     content: '';
     position: absolute;
     inset: 12%;
-    border-radius: 50%;
+    border-radius: var(--radius-full);
     background: color-mix(
       in srgb,
       var(--tone, var(--color-primary)) 18%,

@@ -46,7 +46,7 @@
   font-size: var(--emoji-md);
   background: var(--color-bg);
   border: 1px solid var(--color-primary-border);
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   line-height: 1;
 }
 

@@ -11,6 +11,7 @@ import {
   type LoginFormValues,
 } from '@/features/auth/schemas/login';
 import { isAxiosError } from '@/services/interceptors/auth';
+import { Button } from '@/components/ui';
 import styles from './LoginForm.module.scss';
 
 /**
@@ -106,26 +107,26 @@ export function LoginForm() {
         </p>
       )}
 
-      <button type="submit" disabled={isSubmitting} className={styles.submit}>
-        {isSubmitting ? t('submitting') : t('submit')}
-      </button>
-
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginTop: '1rem',
-          fontSize: '0.875rem',
-        }}
+      <Button
+        type="submit"
+        variant="primary"
+        size="lg"
+        fullWidth
+        loading={isSubmitting}
+        disabled={isSubmitting}
       >
-        <Link href="/signup" style={{ color: 'var(--color-primary)' }}>
+        {isSubmitting ? t('submitting') : t('submit')}
+      </Button>
+
+      <div className={styles.foot}>
+        <Link href="/signup" className={styles.footLinkPrimary}>
           {t('toSignup')}
         </Link>
-        <span style={{ display: 'flex', gap: '0.75rem' }}>
-          <Link href="/find-id" style={{ color: 'var(--color-muted)' }}>
+        <span className={styles.footRight}>
+          <Link href="/find-id" className={styles.footLinkMuted}>
             {t('toFindId')}
           </Link>
-          <Link href="/forgot-password" style={{ color: 'var(--color-muted)' }}>
+          <Link href="/forgot-password" className={styles.footLinkMuted}>
             {t('toForgot')}
           </Link>
         </span>
