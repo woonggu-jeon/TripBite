@@ -70,7 +70,6 @@ export function RecommendationBanner() {
       options={{ loop: true, autoplayMs: 4500 }}
       showDots
       ariaLabel={t('label')}
-      fallbackHeight={220}
     />
   );
 }

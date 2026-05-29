@@ -81,10 +81,10 @@ export function FestivalCarousel() {
       slides={[...FESTIVALS]}
       renderSlide={(f) => <Card festival={f} />}
       keyExtractor={(f) => f.id}
-      options={{ slidesPerView: 1.15, gap: 12, dragFree: true }}
+      // 한 화면에 3개 정확히 보이고 prev/next 가 한 칸씩 (embla 기본 slidesToScroll=1)
+      options={{ slidesPerView: 3, gap: 8 }}
       showDots={false}
       ariaLabel={t('label')}
-      fallbackHeight={180}
     />
   );
 }
