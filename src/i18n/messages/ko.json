@@ -246,7 +246,8 @@
       "loading": "차트를 불러오는 중...",
       "error": "차트를 불러오지 못했어요",
       "retry": "다시 시도",
-      "empty": "데이터가 없어요"
+      "empty": "데이터가 없어요",
+      "rowAriaLabel": "{region} {wins}회 우승, 상세 보기"
     }
   },
   "tournament": {

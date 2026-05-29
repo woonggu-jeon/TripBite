@@ -246,7 +246,8 @@
       "loading": "Loading chart...",
       "error": "Couldn't load chart",
       "retry": "Try again",
-      "empty": "No data"
+      "empty": "No data",
+      "rowAriaLabel": "{region}, {wins} wins, view details"
     }
   },
   "tournament": {

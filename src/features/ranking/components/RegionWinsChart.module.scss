@@ -1,12 +1,130 @@
+.list {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+// 1행 = rank | 시군명 | 막대 트랙 | 우승수 | chevron
+// 카드/그리드 비율은 모바일 360 ~ 720 안에서 자연스럽게 보이도록 고정 + 1fr.
+.row {
+  display: grid;
+  grid-template-columns: 22px 44px 1fr 56px 16px;
+  align-items: center;
+  gap: 0.625rem;
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-fg);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    transform 0.1s ease,
+    background 0.15s ease;
+
+  &:hover {
+    border-color: var(--color-primary-border);
+    background: var(--color-surface-soft);
+  }
+  &:active {
+    transform: scale(0.99);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.rank {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--color-muted);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.regionName {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barTrack {
+  position: relative;
+  height: 8px;
+  width: 100%;
+  background: var(--color-surface-soft);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.barFill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--color-primary),
+    var(--color-primary-muted)
+  );
+  border-radius: inherit;
+  // mount 시 width 가 inline style 로 즉시 들어가지만,
+  // 동일 width 재할당 시 안정적인 transition 을 위해 ease-out.
+  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: barIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: left center;
+}
+
+@keyframes barIn {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.wins {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.winsNumber {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--color-fg);
+  letter-spacing: -0.02em;
+}
+
+.winsUnit {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+.chevron {
+  color: var(--color-muted);
+  justify-self: end;
+}
+
 .fallback {
   display: grid;
   gap: 0.5rem;
   place-items: center;
-  padding: 3rem 1rem;
+  padding: 2.5rem 1rem;
   color: var(--color-muted);
   text-align: center;
   font-size: 0.875rem;
-  background: color-mix(in srgb, var(--color-fg) 3%, transparent);
+  background: var(--color-surface-soft);
   border-radius: var(--radius-md);
 }
 
@@ -18,4 +136,22 @@
   color: var(--color-fg);
   font-size: 0.8125rem;
   font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--color-primary-border);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row {
+    transition: none;
+    &:active {
+      transform: none;
+    }
+  }
+  .barFill {
+    transition: none;
+    animation: none;
+  }
 }
