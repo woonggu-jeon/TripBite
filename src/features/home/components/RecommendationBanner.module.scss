@@ -129,16 +129,27 @@
   );
 }
 
-// 작은 모바일 (≤ 380px, S8 / SE 2-3 / SE 1) — emoji 영역 축소.
-// emoji 크기는 globals 의 --emoji-xl 가 380 이하에서 3rem 으로 자동 축소되므로 여기선 layout 만.
+// 작은 모바일 (≤ 380px) — slide 전체 축소 + emoji 영역 축소
 @media (max-width: 380px) {
   .slide {
-    grid-template-columns: 72px 1fr;
-    height: 200px;
-    padding: var(--space-4);
+    grid-template-columns: 64px 1fr;
+    height: 168px;
+    padding: var(--space-3) var(--space-4);
+    gap: var(--space-2);
+    border-radius: var(--radius-lg);
   }
   .destination {
     font-size: var(--text-lg);
+  }
+  .description {
+    font-size: var(--font-caption);
+  }
+  .headline {
+    font-size: var(--font-caption);
+  }
+  .cta {
+    font-size: var(--font-caption);
+    margin-top: 0.25rem;
   }
 }
 

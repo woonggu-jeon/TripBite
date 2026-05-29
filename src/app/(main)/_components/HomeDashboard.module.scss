@@ -89,8 +89,17 @@
     width: 32px;
     height: 32px;
   }
-  // 위젯 min-height 도 emoji 축소된 만큼 좁힘 (떨림 보장은 유지)
+  // 위젯 min-height 도 모바일 축소된 크기에 맞춰 좁힘 (CLS 보장은 유지)
   .grid [data-widget='weather-recommendation'] {
-    min-height: calc(220px + 2rem);
+    min-height: calc(168px + 2rem); // slide 168 + dots
+  }
+  .grid [data-widget='ongoing-festivals'] {
+    min-height: calc(150px + 2rem);
+  }
+  .grid [data-widget='latest-letter'] {
+    min-height: calc(88px + 2rem);
+  }
+  .grid [data-widget='my-winners'] {
+    min-height: calc(120px + 0.5rem);
   }
 }
