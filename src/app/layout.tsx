@@ -3,11 +3,6 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 import { Providers } from './providers';
 import './globals.scss';
-// Swiper base CSS — Carousel 이 dynamic chunk (ssr:false) 라 그 안에서 import
-// 하면 css 도 lazy. first paint 시 슬라이드가 stacked → 카드 1장이 viewport
-// 가득. root layout 에서 즉시 로드해 mount 전부터 layout 잡힘.
-import 'swiper/css';
-import 'swiper/css/free-mode';
 
 /**
  * 다국어 메타데이터 — generateMetadata 에서 getTranslations 사용

@@ -1,9 +1,8 @@
 'use client';
 
-import { useCallback, useRef, useState, type ReactNode } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, FreeMode } from 'swiper/modules';
-import type { Swiper as SwiperType } from 'swiper/types';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import useEmblaCarousel from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
 import { useTranslations } from 'next-intl';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { CarouselOptions } from '@/features/carousel/types';
@@ -20,16 +19,17 @@ export type CarouselImplProps<T> = {
 };
 
 /**
- * Carousel 구현 — Swiper.js v12 (React component).
+ * Carousel 실제 구현 (Embla)
  *
- * embla/keen-slider 에서 옮긴 이유:
- *   두 lib 모두 base CSS .slide { width: 100% } + lib mount 후 inline width
- *   주입 패턴. iOS Safari + dynamic import 환경에서 첫 ResizeObserver miss
- *   시 stuck. Swiper 는 mount 시 inline style 로 width 처리 + ResizeObserver
- *   + window.resize + RAF 다중 fallback 으로 검증됨.
+ * 성능 노트:
+ *   - Embla는 transform 기반 (60fps, GPU 가속)
+ *   - 슬라이드 수가 많아도 virtualize 없이 잘 동작 (~수십 개)
+ *   - 자동재생은 사용자 인터랙션 시 일시정지 (Autoplay 플러그인 기본 동작)
  *
- * 자체 dots/arrows 유지 (디자인 일관성). Pagination/Navigation 모듈 미사용 —
- * onSwiper 로 instance 받아 직접 slidePrev/slideNext/slideTo.
+ * 접근성:
+ *   - aria-roledescription="carousel"
+ *   - 슬라이드별 aria-label "n/total"
+ *   - 키보드: ←/→ 화살표 지원 (focus 상태에서)
  */
 export default function CarouselImpl<T>({
   slides,
@@ -42,42 +42,41 @@ export default function CarouselImpl<T>({
 }: CarouselImplProps<T>) {
   const t = useTranslations('carousel');
 
+  const plugins = options?.autoplayMs
+    ? [Autoplay({ delay: options.autoplayMs, stopOnInteraction: true })]
+    : [];
+
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    {
+      loop: options?.loop ?? false,
+      dragFree: options?.dragFree ?? false,
+      startIndex: options?.startIndex ?? 0,
+      align: 'start',
+    },
+    plugins,
+  );
+
+  const [selectedIndex, setSelectedIndex] = useState(options?.startIndex ?? 0);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    const onSelect = () => setSelectedIndex(emblaApi.selectedScrollSnap());
+    emblaApi.on('select', onSelect);
+    onSelect();
+    return () => {
+      emblaApi.off('select', onSelect);
+    };
+  }, [emblaApi]);
+
+  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+  const scrollTo = useCallback(
+    (i: number) => emblaApi?.scrollTo(i),
+    [emblaApi],
+  );
+
   const slidesPerView = options?.slidesPerView ?? 1;
   const gap = options?.gap ?? 12;
-  const loop = options?.loop ?? false;
-  const autoplayMs = options?.autoplayMs;
-  const dragFree = options?.dragFree ?? false;
-  const startIndex = options?.startIndex ?? 0;
-
-  const [selectedIndex, setSelectedIndex] = useState(startIndex);
-  const swiperRef = useRef<SwiperType | null>(null);
-  const slidesCount = slides.length;
-
-  const handleSwiper = useCallback((s: SwiperType) => {
-    swiperRef.current = s;
-  }, []);
-
-  const handleSlideChange = useCallback((s: SwiperType) => {
-    setSelectedIndex(s.realIndex);
-  }, []);
-
-  const scrollPrev = useCallback(() => swiperRef.current?.slidePrev(), []);
-  const scrollNext = useCallback(() => swiperRef.current?.slideNext(), []);
-  const scrollTo = useCallback((i: number) => {
-    const s = swiperRef.current;
-    if (!s) return;
-    // loop 모드에선 slideToLoop 가 자연스러운 wrap 이동, 아니면 slideTo
-    if (s.params.loop) s.slideToLoop(i);
-    else s.slideTo(i);
-  }, []);
-
-  const modules = autoplayMs
-    ? dragFree
-      ? [Autoplay, FreeMode]
-      : [Autoplay]
-    : dragFree
-      ? [FreeMode]
-      : [];
 
   return (
     <div
@@ -86,40 +85,23 @@ export default function CarouselImpl<T>({
       aria-roledescription="carousel"
       aria-label={ariaLabel}
     >
-      <Swiper
-        modules={modules}
-        slidesPerView={slidesPerView}
-        spaceBetween={gap}
-        loop={loop}
-        initialSlide={startIndex}
-        freeMode={dragFree}
-        autoplay={
-          autoplayMs
-            ? {
-                delay: autoplayMs,
-                disableOnInteraction: true,
-                pauseOnMouseEnter: true,
-              }
-            : false
-        }
-        onSwiper={handleSwiper}
-        onSlideChange={handleSlideChange}
-        className={styles.swiperRoot}
-        // 마우스 휠/터치 둘 다 동작 — swiper 의 기본 grab 커서
-        grabCursor
-        // 사용자 인터랙션 안 막음 (a11y)
-        a11y={{ enabled: true }}
-      >
-        {slides.map((item, i) => (
-          <SwiperSlide
-            key={keyExtractor?.(item, i) ?? i}
-            className={styles.slide}
-            aria-label={t('slide', { n: i + 1, total: slidesCount })}
-          >
-            {renderSlide(item, i)}
-          </SwiperSlide>
-        ))}
-      </Swiper>
+      <div className={styles.viewport} ref={emblaRef}>
+        <div className={styles.container} style={{ gap }}>
+          {slides.map((item, i) => (
+            <div
+              key={keyExtractor?.(item, i) ?? i}
+              className={styles.slide}
+              style={{
+                flex: `0 0 calc((100% - ${gap * (slidesPerView - 1)}px) / ${slidesPerView})`,
+              }}
+              aria-roledescription="slide"
+              aria-label={t('slide', { n: i + 1, total: slides.length })}
+            >
+              {renderSlide(item, i)}
+            </div>
+          ))}
+        </div>
+      </div>
 
       {showArrows && (
         <>
@@ -142,7 +124,7 @@ export default function CarouselImpl<T>({
         </>
       )}
 
-      {showDots && slidesCount > 1 && (
+      {showDots && slides.length > 1 && (
         <div className={styles.dots} role="tablist">
           {slides.map((_, i) => (
             <button
@@ -150,7 +132,7 @@ export default function CarouselImpl<T>({
               type="button"
               role="tab"
               aria-selected={i === selectedIndex}
-              aria-label={t('slide', { n: i + 1, total: slidesCount })}
+              aria-label={t('slide', { n: i + 1, total: slides.length })}
               className={`${styles.dot} ${i === selectedIndex ? styles.dotActive : ''}`}
               onClick={() => scrollTo(i)}
             />

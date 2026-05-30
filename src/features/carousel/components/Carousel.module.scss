@@ -2,21 +2,17 @@
   position: relative;
 }
 
-/* Swiper container — width 누수 안전망. swiper 자체가 inline width 를 직접
-   주입하지만, mount 전/실패 시에도 viewport 폭 초과 못 하도록 명시. */
-.swiperRoot {
-  width: 100%;
-  max-width: 100%;
+.viewport {
   overflow: hidden;
 }
 
+.container {
+  display: flex;
+  // gap는 인라인 스타일로 주입 (옵션 기반)
+}
+
 .slide {
-  /* slide 별 own compositing layer — iOS paint 안정 */
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  /* swiper 가 inline width 주입 — 부모 따라 자동 계산.
-     mount 전 stuck 방지로 height 자동, width 는 swiper 가 갱신. */
-  height: auto;
+  min-width: 0;
 }
 
 .arrow {
