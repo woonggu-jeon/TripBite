@@ -11,9 +11,12 @@ import {
 import { useKeenSlider, type KeenSliderInstance } from 'keen-slider/react';
 import { useTranslations } from 'next-intl';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import 'keen-slider/keen-slider.min.css';
 import type { CarouselOptions } from '@/features/carousel/types';
 import styles from './Carousel.module.scss';
+
+// keen-slider 의 base CSS 는 root layout 에서 import (./layout.tsx).
+// 여기서 import 하면 dynamic chunk 로 묶여 첫 paint 시 슬라이드가 stacked 됐다가
+// 늦게 layout 잡혀 화면이 깨져 보이는 깜박임 발생.
 
 export type CarouselImplProps<T> = {
   slides: T[];

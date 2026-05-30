@@ -3,6 +3,9 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 import { Providers } from './providers';
 import './globals.scss';
+// keen-slider base CSS — dynamic chunk 로 늦게 로드되면 슬라이드가 stacked 됐다가
+// CSS 적용 시점에 layout 점프. root layout 에서 즉시 로드.
+import 'keen-slider/keen-slider.min.css';
 
 /**
  * 다국어 메타데이터 — generateMetadata 에서 getTranslations 사용
