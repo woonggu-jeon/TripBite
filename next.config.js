@@ -83,7 +83,7 @@ const nextConfig = {
     optimizePackageImports: [
       'lucide-react',
       'recharts',
-      'embla-carousel-react',
+      'keen-slider',
       'next-intl',
     ],
   },
