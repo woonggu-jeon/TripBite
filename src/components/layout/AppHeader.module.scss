@@ -1,4 +1,8 @@
-/* outer — 풀폭 sticky (배경/blur/border). max-width 제한 없음. */
+/* outer — 풀폭 sticky (배경/blur/border). max-width 제한 없음.
+   iOS Safari sticky + backdrop-filter 깜박임 회피:
+   transform/will-change 로 own compositing layer 분리 → 스크롤 시 매 프레임
+   blur 재계산 비용을 GPU layer 캐시로 흡수. isolation 으로 stacking context
+   고정. */
 .header {
   position: sticky;
   top: 0;
@@ -7,6 +11,9 @@
   backdrop-filter: var(--blur-glass);
   -webkit-backdrop-filter: var(--blur-glass);
   border-bottom: 1px solid var(--color-divider);
+  transform: translateZ(0);
+  will-change: transform;
+  isolation: isolate;
 }
 
 /* inner — content 와 동일하게 720px 정렬 + 좌우 40px 고정 슬롯. */
