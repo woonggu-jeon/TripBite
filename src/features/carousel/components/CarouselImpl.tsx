@@ -68,6 +68,14 @@ export default function CarouselImpl<T>({
     };
   }, [emblaApi]);
 
+  // slidesPerView / gap 변경 시 embla 내부 측정값(snap point, slideSizes) 갱신.
+  // flex-basis inline style 만 바뀌면 컨테이너 width 가 그대로라 ResizeObserver
+  // 가 못 잡음 → 스와이프 시 옛 폭 기준으로 스냅돼 어긋남/깜빡임 발생.
+  useEffect(() => {
+    if (!emblaApi) return;
+    emblaApi.reInit();
+  }, [emblaApi, options?.slidesPerView, options?.gap]);
+
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
   const scrollTo = useCallback(

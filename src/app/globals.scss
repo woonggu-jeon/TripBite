@@ -315,6 +315,10 @@ body {
      미지원 브라우저는 height:100% fallback. */
   min-height: 100vh; /* fallback */
   min-height: 100svh;
+  /* 가로 누수 백업 — SubHeader 의 100vw 트릭이나 캐러셀의 음수 마진 등에서
+     1px 누수가 발생하면 모바일 화면 폭이 viewport 보다 살짝 커져 보임.
+     .shell 에 이미 overflow-x:hidden 가 있지만 body 단계에 한 번 더. */
+  overflow-x: clip; /* clip = scroll 안 만들면서 자식 overflow 자름 */
 }
 
 body {
