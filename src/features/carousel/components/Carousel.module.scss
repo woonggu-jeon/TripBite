@@ -16,6 +16,18 @@
   transform: translateZ(0);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
+
+  /* first paint 부터 슬라이드 폭을 정확히 잡음.
+     keen-slider 의 base CSS 가 .keen-slider__slide { width: 100% } 를 적용하므로
+     lib 가 measure 못 한 상태에선 카드 1장이 viewport 폭 차지. CSS variable 로
+     주입된 slidesPerView/gap 기반으로 폭을 계산.
+     base CSS specificity = .keen-slider:not([...]) .keen-slider__slide (0,2,0)
+     vs 우리 = .slide (0,1,0). selector 단독으론 base 가 이김 → !important 로
+     override (lib mount 후 lib 가 inline width 로 다시 우리를 이김 — OK). */
+  width: calc(
+    (100% - var(--carousel-gap, 0px) * (var(--carousel-spv, 1) - 1)) /
+      var(--carousel-spv, 1)
+  ) !important;
 }
 
 .arrow {

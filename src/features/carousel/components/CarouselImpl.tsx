@@ -111,6 +111,25 @@ export default function CarouselImpl<T>({
     });
   }, [instanceRef, slidesPerView, gap, loop, dragFree, startIndex]);
 
+  // mount 직후 강제 update — iOS Safari 의 dynamic import + 첫 ResizeObserver
+  // miss 시 lib 가 width 측정을 못 해 .keen-slider__slide { width: 100% } 가
+  // 그대로 남아 카드 1장이 화면 폭 100% 로 stuck. RAF 한 프레임 뒤 update.
+  useEffect(() => {
+    const id = requestAnimationFrame(() => {
+      instanceRef.current?.update();
+    });
+    return () => cancelAnimationFrame(id);
+  }, [instanceRef]);
+
+  // first paint 부터 슬라이드 폭이 정확하도록 CSS variable 로 inject.
+  // keen-slider 의 base CSS 가 .keen-slider__slide { width: 100% } 라 lib
+  // mount 전엔 카드 1장이 viewport 가득 차지 → mount 가 실패하면 stuck.
+  // 모듈 .slide 클래스가 source order 상 base CSS 보다 뒤라 override 가능.
+  const slideInlineStyle = {
+    '--carousel-spv': slidesPerView,
+    '--carousel-gap': `${gap}px`,
+  } as React.CSSProperties;
+
   const scrollPrev = useCallback(
     () => instanceRef.current?.prev(),
     [instanceRef],
@@ -136,7 +155,11 @@ export default function CarouselImpl<T>({
       aria-roledescription="carousel"
       aria-label={ariaLabel}
     >
-      <div ref={sliderRef} className={`keen-slider ${styles.viewport}`}>
+      <div
+        ref={sliderRef}
+        className={`keen-slider ${styles.viewport}`}
+        style={slideInlineStyle}
+      >
         {slides.map((item, i) => (
           <div
             key={keyExtractor?.(item, i) ?? i}
