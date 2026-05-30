@@ -108,20 +108,22 @@ function useResponsiveSlidesPerView() {
 }
 
 export function FestivalCarousel() {
-  const t = useTranslations('home.festivals');
-  const slidesPerView = useResponsiveSlidesPerView();
-
+  // DEBUG: width 누수 격리 — 캐러셀 자체를 빈 색 div 로 교체.
   return (
-    <Carousel
-      slides={[...FESTIVALS]}
-      renderSlide={(f) => <Card festival={f} />}
-      keyExtractor={(f) => f.id}
-      options={{ slidesPerView, gap: 8 }}
-      showDots={false}
-      // dynamic import 동안 자리잡이 — CLS 방지
-      fallbackHeight={180}
-      ariaLabel={t('label')}
-    />
+    <div
+      style={{
+        height: 180,
+        background: '#cfe8d2',
+        borderRadius: 12,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#1f5132',
+        fontWeight: 700,
+      }}
+    >
+      [DEBUG] Festival 영역
+    </div>
   );
 }
 

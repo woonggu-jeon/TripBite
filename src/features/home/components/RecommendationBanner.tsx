@@ -60,19 +60,23 @@ const RECOMMENDATIONS: readonly Recommendation[] = [
 ] as const;
 
 export function RecommendationBanner() {
-  const t = useTranslations('home.recommendation');
-
+  // DEBUG: width 누수 격리 — 캐러셀 자체를 빈 색 div 로 교체. 이 상태에서도
+  // 메인 width 가 이상하면 원인은 캐러셀 외부. 정상이면 캐러셀이 원인.
   return (
-    <Carousel
-      slides={[...RECOMMENDATIONS]}
-      renderSlide={(item) => <Slide item={item} ctaLabel={t('cta')} />}
-      keyExtractor={(item) => item.id}
-      options={{ loop: true, autoplayMs: 4500 }}
-      showDots
-      // dynamic import 동안 자리잡이 — CLS 방지 (slide height 220 + dots 약 28)
-      fallbackHeight={248}
-      ariaLabel={t('label')}
-    />
+    <div
+      style={{
+        height: 220,
+        background: '#fde6c2',
+        borderRadius: 16,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#8a5a00',
+        fontWeight: 700,
+      }}
+    >
+      [DEBUG] Recommendation 영역
+    </div>
   );
 }
 
