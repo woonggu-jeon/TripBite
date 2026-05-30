@@ -1,9 +1,20 @@
 .root {
   position: relative;
+  // is-ready 패턴 — embla mount 완료 전까지 가려둠. mount 직후 inline flex
+  // 폭 적용 ~ embla transform 적용 사이의 짧은 reflow 떨림(iOS Safari) 차단.
+  opacity: 0;
+  transition: opacity var(--motion-fast) ease;
+}
+
+.ready {
+  opacity: 1;
 }
 
 .viewport {
   overflow: hidden;
+  // iOS Safari — 수직 스크롤은 OS 단으로, 수평 swipe 만 embla 가 잡도록 명시.
+  // 손가락 제스처의 떨림/충돌 감소.
+  touch-action: pan-y;
 }
 
 .container {

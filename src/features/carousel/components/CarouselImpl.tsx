@@ -58,6 +58,14 @@ export default function CarouselImpl<T>({
 
   const [selectedIndex, setSelectedIndex] = useState(options?.startIndex ?? 0);
 
+  // is-ready 패턴 — embla 가 measure/transform 적용 완료 전까지 opacity 0 으로
+  // 가려둠. mount 직후 inline flex 폭 적용 → embla transform 적용 사이의 짧은
+  // reflow 떨림(특히 iOS Safari)을 시각적으로 차단.
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    if (emblaApi) setReady(true);
+  }, [emblaApi]);
+
   useEffect(() => {
     if (!emblaApi) return;
     const onSelect = () => setSelectedIndex(emblaApi.selectedScrollSnap());
@@ -80,7 +88,7 @@ export default function CarouselImpl<T>({
 
   return (
     <div
-      className={styles.root}
+      className={`${styles.root} ${ready ? styles.ready : ''}`}
       role="region"
       aria-roledescription="carousel"
       aria-label={ariaLabel}
