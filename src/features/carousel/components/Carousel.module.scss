@@ -2,32 +2,38 @@
   position: relative;
 }
 
-/* keen-slider 는 슬라이드 width/transform 을 inline 으로 직접 주입한다.
-   우리 모듈 클래스는 keen-slider 의 `.keen-slider` / `.keen-slider__slide`
-   와 함께 합성되며, layout 은 lib 가 담당하므로 여기서는 시각 효과만. */
-.viewport {
-  /* keen-slider 자체가 overflow:hidden 을 적용하지만 명시적으로 한 번 더 */
-  overflow: hidden;
+/* track — 네이티브 horizontal scroll + scroll-snap.
+   iOS Safari 의 OS 단 momentum 이 가장 부드럽고 깜박임 0. */
+.track {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  /* iOS 의 momentum scroll 활성화 (구버전 호환) */
+  -webkit-overflow-scrolling: touch;
+  /* 스크롤바 숨김 — 모바일 친화 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  /* GPU layer — track 자체를 own compositing layer 로 (iOS paint 안정) */
+  transform: translateZ(0);
 }
 
 .slide {
-  /* slide 별 own compositing layer — iOS Safari paint-on-scroll tile eviction
-     완화. embla 시절보다 keen-slider 는 슬라이드별 DOM 이 독립적이라 효과적. */
-  transform: translateZ(0);
+  /* CSS variable 기반 슬라이드 폭 — first paint 부터 정확.
+     스크롤 컨테이너 자식이라 width 가 아닌 flex-basis 사용.
+     flex-shrink: 0 으로 스크롤 컨테이너 안에서 절대 줄어들지 않게. */
+  flex: 0 0
+    calc(
+      (100% - var(--carousel-gap, 0px) * (var(--carousel-spv, 1) - 1)) /
+        var(--carousel-spv, 1)
+    );
+  scroll-snap-align: start;
+  /* paint 안정 — iOS Safari tile eviction 완화 */
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-
-  /* first paint 부터 슬라이드 폭을 정확히 잡음.
-     keen-slider 의 base CSS 가 .keen-slider__slide { width: 100% } 를 적용하므로
-     lib 가 measure 못 한 상태에선 카드 1장이 viewport 폭 차지. CSS variable 로
-     주입된 slidesPerView/gap 기반으로 폭을 계산.
-     base CSS specificity = .keen-slider:not([...]) .keen-slider__slide (0,2,0)
-     vs 우리 = .slide (0,1,0). selector 단독으론 base 가 이김 → !important 로
-     override (lib mount 후 lib 가 inline width 로 다시 우리를 이김 — OK). */
-  width: calc(
-    (100% - var(--carousel-gap, 0px) * (var(--carousel-spv, 1) - 1)) /
-      var(--carousel-spv, 1)
-  ) !important;
 }
 
 .arrow {

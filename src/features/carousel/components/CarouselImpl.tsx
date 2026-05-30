@@ -3,20 +3,14 @@
 import {
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
   type ReactNode,
 } from 'react';
-import { useKeenSlider, type KeenSliderInstance } from 'keen-slider/react';
 import { useTranslations } from 'next-intl';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { CarouselOptions } from '@/features/carousel/types';
 import styles from './Carousel.module.scss';
-
-// keen-slider 의 base CSS 는 root layout 에서 import (./layout.tsx).
-// 여기서 import 하면 dynamic chunk 로 묶여 첫 paint 시 슬라이드가 stacked 됐다가
-// 늦게 layout 잡혀 화면이 깨져 보이는 깜박임 발생.
 
 export type CarouselImplProps<T> = {
   slides: T[];
@@ -29,12 +23,18 @@ export type CarouselImplProps<T> = {
 };
 
 /**
- * Carousel 실제 구현 (keen-slider)
+ * Carousel 구현 — 네이티브 overflow-x:auto + scroll-snap-type.
  *
- * embla 에서 교체 — iOS Safari 스크롤 중 카드 텍스트/이미지 layer tile
- * eviction 깜박임. keen-slider 는 슬라이드별 own DOM + lighter compositing.
+ * 왜 라이브러리(embla/keen-slider)를 뺐나:
+ *   두 lib 모두 base CSS 의 .slide { width: 100% } + lib mount 후 inline
+ *   width 주입 패턴. iOS Safari + dynamic import 환경에서 첫 ResizeObserver
+ *   miss 시 slide 폭이 100% 로 stuck → 카드 1장이 viewport 가득 차지하는
+ *   증상 반복. 네이티브 스크롤은 lib mount 개념 자체가 없어 stuck 불가능.
  *
- * 자동재생은 keen-slider plugin 패턴으로 inline 구현 (사용자 인터랙션 시 정지).
+ * 잃는 것:
+ *   - 무거운 drag 휠 효과 (네이티브 momentum 으로 충분)
+ *   - 무한 loop (autoplay 마지막에서 첫 카드로 jump 으로 대체)
+ *   - free-snap 모드 (mandatory snap 만 — 사용처에 맞음)
  */
 export default function CarouselImpl<T>({
   slides,
@@ -50,103 +50,99 @@ export default function CarouselImpl<T>({
   const slidesPerView = options?.slidesPerView ?? 1;
   const gap = options?.gap ?? 12;
   const loop = options?.loop ?? false;
-  const dragFree = options?.dragFree ?? false;
-  const startIndex = options?.startIndex ?? 0;
   const autoplayMs = options?.autoplayMs;
+  const startIndex = options?.startIndex ?? 0;
 
+  const trackRef = useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = useState(startIndex);
   const slidesCount = slides.length;
 
-  // autoplay 를 ref 로 두어 옵션 변경 시 hook 의 deps 가 안 흔들리도록 격리
-  const autoplayMsRef = useRef(autoplayMs);
-  useEffect(() => {
-    autoplayMsRef.current = autoplayMs;
-  }, [autoplayMs]);
+  // stride = 슬라이드 폭 + gap. handleScroll/autoplay/scrollTo 공용 계산.
+  const getStride = useCallback(() => {
+    const el = trackRef.current;
+    if (!el) return 0;
+    return (el.clientWidth - gap * (slidesPerView - 1)) / slidesPerView + gap;
+  }, [gap, slidesPerView]);
 
-  const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>(
-    {
-      loop,
-      mode: dragFree ? 'free-snap' : 'snap',
-      initial: startIndex,
-      slides: { perView: slidesPerView, spacing: gap },
-      slideChanged(s) {
-        setSelectedIndex(s.track.details.rel);
-      },
+  // 시작 index 로 즉시 이동 (mount 후 한 번만)
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el || startIndex === 0) return;
+    el.scrollLeft = getStride() * startIndex;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // scroll 시 active dot 계산 (rAF throttle)
+  const rafRef = useRef<number | null>(null);
+  const handleScroll = useCallback(() => {
+    if (rafRef.current != null) return;
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null;
+      const el = trackRef.current;
+      if (!el) return;
+      const stride = getStride();
+      if (stride <= 0) return;
+      const idx = Math.round(el.scrollLeft / stride);
+      setSelectedIndex(Math.max(0, Math.min(slidesCount - 1, idx)));
+    });
+  }, [getStride, slidesCount]);
+
+  // autoplay — 사용자 포인터 인터랙션 시 일시정지
+  useEffect(() => {
+    if (!autoplayMs) return;
+    const el = trackRef.current;
+    if (!el) return;
+
+    let paused = false;
+    const onPointerDown = () => {
+      paused = true;
+    };
+    el.addEventListener('pointerdown', onPointerDown, { passive: true });
+
+    const id = window.setInterval(() => {
+      if (paused) return;
+      const stride = getStride();
+      if (stride <= 0) return;
+      const max = el.scrollWidth - el.clientWidth;
+      if (loop && el.scrollLeft + stride > max - 1) {
+        el.scrollTo({ left: 0, behavior: 'smooth' });
+      } else if (el.scrollLeft + stride > max) {
+        return; // loop 아니면 끝에서 정지
+      } else {
+        el.scrollBy({ left: stride, behavior: 'smooth' });
+      }
+    }, autoplayMs);
+
+    return () => {
+      window.clearInterval(id);
+      el.removeEventListener('pointerdown', onPointerDown);
+    };
+  }, [autoplayMs, loop, getStride]);
+
+  const scrollPrev = useCallback(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    el.scrollBy({ left: -getStride(), behavior: 'smooth' });
+  }, [getStride]);
+  const scrollNext = useCallback(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    el.scrollBy({ left: getStride(), behavior: 'smooth' });
+  }, [getStride]);
+  const scrollTo = useCallback(
+    (i: number) => {
+      const el = trackRef.current;
+      if (!el) return;
+      el.scrollTo({ left: getStride() * i, behavior: 'smooth' });
     },
-    [
-      // autoplay plugin
-      (slider) => {
-        let timeout: ReturnType<typeof setTimeout> | undefined;
-        let stopped = false;
-        const clear = () => {
-          if (timeout) clearTimeout(timeout);
-          timeout = undefined;
-        };
-        const next = () => {
-          clear();
-          const ms = autoplayMsRef.current;
-          if (!ms || stopped) return;
-          if (slider.track.details.slides.length < 2) return;
-          timeout = setTimeout(() => slider.next(), ms);
-        };
-        slider.on('created', next);
-        slider.on('animationEnded', next);
-        slider.on('updated', next);
-        slider.on('dragStarted', () => {
-          stopped = true;
-          clear();
-        });
-        slider.on('detailsChanged', next);
-      },
-    ],
+    [getStride],
   );
 
-  // slidesPerView / gap / loop 변경 시 keen-slider 측정값 갱신
-  useEffect(() => {
-    instanceRef.current?.update({
-      loop,
-      mode: dragFree ? 'free-snap' : 'snap',
-      initial: startIndex,
-      slides: { perView: slidesPerView, spacing: gap },
-    });
-  }, [instanceRef, slidesPerView, gap, loop, dragFree, startIndex]);
-
-  // mount 직후 강제 update — iOS Safari 의 dynamic import + 첫 ResizeObserver
-  // miss 시 lib 가 width 측정을 못 해 .keen-slider__slide { width: 100% } 가
-  // 그대로 남아 카드 1장이 화면 폭 100% 로 stuck. RAF 한 프레임 뒤 update.
-  useEffect(() => {
-    const id = requestAnimationFrame(() => {
-      instanceRef.current?.update();
-    });
-    return () => cancelAnimationFrame(id);
-  }, [instanceRef]);
-
-  // first paint 부터 슬라이드 폭이 정확하도록 CSS variable 로 inject.
-  // keen-slider 의 base CSS 가 .keen-slider__slide { width: 100% } 라 lib
-  // mount 전엔 카드 1장이 viewport 가득 차지 → mount 가 실패하면 stuck.
-  // 모듈 .slide 클래스가 source order 상 base CSS 보다 뒤라 override 가능.
-  const slideInlineStyle = {
+  const trackStyle = {
     '--carousel-spv': slidesPerView,
     '--carousel-gap': `${gap}px`,
+    gap: `${gap}px`,
   } as React.CSSProperties;
-
-  const scrollPrev = useCallback(
-    () => instanceRef.current?.prev(),
-    [instanceRef],
-  );
-  const scrollNext = useCallback(
-    () => instanceRef.current?.next(),
-    [instanceRef],
-  );
-  const scrollTo = useCallback(
-    (i: number) => instanceRef.current?.moveToIdx(i),
-    [instanceRef],
-  );
-
-  const dots = useMemo(
-    () => Array.from({ length: slidesCount }, (_, i) => i),
-    [slidesCount],
-  );
 
   return (
     <div
@@ -156,14 +152,15 @@ export default function CarouselImpl<T>({
       aria-label={ariaLabel}
     >
       <div
-        ref={sliderRef}
-        className={`keen-slider ${styles.viewport}`}
-        style={slideInlineStyle}
+        ref={trackRef}
+        className={styles.track}
+        style={trackStyle}
+        onScroll={handleScroll}
       >
         {slides.map((item, i) => (
           <div
             key={keyExtractor?.(item, i) ?? i}
-            className={`keen-slider__slide ${styles.slide}`}
+            className={styles.slide}
             aria-roledescription="slide"
             aria-label={t('slide', { n: i + 1, total: slidesCount })}
           >
@@ -195,7 +192,7 @@ export default function CarouselImpl<T>({
 
       {showDots && slidesCount > 1 && (
         <div className={styles.dots} role="tablist">
-          {dots.map((i) => (
+          {slides.map((_, i) => (
             <button
               key={i}
               type="button"
@@ -211,6 +208,3 @@ export default function CarouselImpl<T>({
     </div>
   );
 }
-
-// 일부 keen-slider 타입은 lib 자체에서 export 되지만, 사용 안 함을 명시.
-export type { KeenSliderInstance };

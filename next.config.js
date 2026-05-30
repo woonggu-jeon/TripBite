@@ -80,12 +80,7 @@ const nextConfig = {
     staleTimes: { dynamic: 30, static: 180 },
     // <Link href>/router.push() 경로를 컴파일 시점에 검증 (오타로 깨진 링크 차단)
     typedRoutes: true,
-    optimizePackageImports: [
-      'lucide-react',
-      'recharts',
-      'keen-slider',
-      'next-intl',
-    ],
+    optimizePackageImports: ['lucide-react', 'recharts', 'next-intl'],
   },
 
   async headers() {
