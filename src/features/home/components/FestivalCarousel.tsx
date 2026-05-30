@@ -80,24 +80,30 @@ const FESTIVALS: readonly Festival[] = [
  *   ≤ 480px : 2.2 (iPhone 일반 / 갤럭시 S 시리즈)
  *   그 외   : 3 (태블릿 / 데스크탑)
  *
- * iOS 깜빡임 해결:
- *   - SSR 은 window 없음 → default 를 모바일 우선(2.2) 으로 두면 hydrate 후
- *     모바일에서 동일 값 → re-render 없음, embla remount 없음
- *   - setV 도 같은 값이면 setState skip
- *   - key prop 제거 — slidesPerView 가 거의 안 바뀌므로 강제 remount 불필요
+ * 핵심 — useState lazy initializer 로 mount 직전 window.innerWidth 를 동기
+ * 측정해 첫 render 부터 정확한 값 사용. mount 후 useEffect 가 별도로 setV
+ * 호출하면 inline flex calc 값이 바뀌면서 카드 폭 점프 → iOS Safari 에서
+ * 떨림으로 보임. lazy init 으로 첫 render = mount 후 render 동일하게 만들면
+ * 떨림 발생 단계 자체가 사라짐.
+ *
+ * SSR 안전: 이 hook 사용처(CarouselImpl)가 'use client' + clientOnly dynamic
+ * (ssr:false) 라 server 에선 안 그려짐. typeof window 분기는 안전망.
  */
+function pickSlidesPerView(w: number) {
+  return w <= 360 ? 1.8 : w <= 480 ? 2.2 : 3;
+}
+
 function useResponsiveSlidesPerView() {
-  // SSR 안전 default — 모바일 우선 (대부분 사용자가 모바일)
-  const [v, setV] = useState(2.2);
+  const [v, setV] = useState(() =>
+    typeof window === 'undefined' ? 2.2 : pickSlidesPerView(window.innerWidth),
+  );
   useEffect(() => {
-    const update = () => {
-      const w = window.innerWidth;
-      const next = w <= 360 ? 1.8 : w <= 480 ? 2.2 : 3;
+    const onResize = () => {
+      const next = pickSlidesPerView(window.innerWidth);
       setV((prev) => (prev === next ? prev : next));
     };
-    update();
-    window.addEventListener('resize', update);
-    return () => window.removeEventListener('resize', update);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
   }, []);
   return v;
 }
