@@ -119,8 +119,11 @@ export function FestivalCarousel() {
       keyExtractor={(f) => f.id}
       options={{ slidesPerView, gap: 8 }}
       showDots={false}
-      // dynamic import 동안 자리잡이 — CLS 방지
-      fallbackHeight={180}
+      // dynamic import 동안 자리잡이 — 실제 카드 height (image aspect 1.5/1
+      // + body + padding) 에 맞춤. 모바일 ≤480 기준 약 200px (image 128 +
+      // body 50 + padding 16 + 여유). 데스크탑은 더 크지만 mount 시 늘어나는
+      // 방향이라 layout shift 만 줄어듦.
+      fallbackHeight={200}
       ariaLabel={t('label')}
     />
   );

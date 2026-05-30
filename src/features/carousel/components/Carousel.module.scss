@@ -1,13 +1,13 @@
 .root {
   position: relative;
-  // is-ready 패턴 — embla mount 완료 전까지 가려둠. mount 직후 inline flex
-  // 폭 적용 ~ embla transform 적용 사이의 짧은 reflow 떨림(iOS Safari) 차단.
-  opacity: 0;
-  transition: opacity var(--motion-fast) ease;
+  // is-ready 패턴 — embla mount 완료 전까지 가려둠.
+  // visibility 가 opacity 보다 GPU 비용 낮음 + iOS Safari 의 opacity transition
+  // 중 sub-pixel 재계산 떨림 회피. layout 은 그대로 점유 (CLS 없음).
+  visibility: hidden;
 }
 
 .ready {
-  opacity: 1;
+  visibility: visible;
 }
 
 .viewport {
