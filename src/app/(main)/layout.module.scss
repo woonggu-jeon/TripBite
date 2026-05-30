@@ -3,7 +3,13 @@
   min-height: 100vh;
   min-height: 100svh;
   display: grid;
+  // column 폭을 viewport 폭으로 고정 — 자식 max-content 가 grid track 을
+  // 늘리지 못하게. (minmax(0, 1fr) 가 grid 의 default min-content track 을
+  // 0 으로 잠그는 idiom)
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto 1fr auto;
+  width: 100%;
+  max-width: 100vw;
   // 100vw 트릭(헤더 풀폭 확장) 사용 시 미세 가로 스크롤 방지
   overflow-x: hidden;
 }
@@ -12,6 +18,7 @@
 // 페이지 콘텐츠 wrapper(.contentInner) 가 720px 정렬 + 좌우 padding 담당.
 .content {
   width: 100%;
+  min-width: 0; // grid item default min-width:auto 를 0 으로 (overflow 방지)
 }
 
 .contentInner {
@@ -20,4 +27,5 @@
   margin: 0 auto;
   padding: var(--content-pad);
   padding-bottom: calc(var(--space-8) + var(--bottom-nav-h));
+  min-width: 0; // 자식 max-content 가 폭을 늘리지 못하게
 }
