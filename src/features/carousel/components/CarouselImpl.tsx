@@ -4,13 +4,14 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
-import useEmblaCarousel from 'embla-carousel-react';
-import Autoplay from 'embla-carousel-autoplay';
+import { useKeenSlider, type KeenSliderInstance } from 'keen-slider/react';
 import { useTranslations } from 'next-intl';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import 'keen-slider/keen-slider.min.css';
 import type { CarouselOptions } from '@/features/carousel/types';
 import styles from './Carousel.module.scss';
 
@@ -25,17 +26,12 @@ export type CarouselImplProps<T> = {
 };
 
 /**
- * Carousel 실제 구현 (Embla)
+ * Carousel 실제 구현 (keen-slider)
  *
- * 성능 노트:
- *   - Embla는 transform 기반 (60fps, GPU 가속)
- *   - 슬라이드 수가 많아도 virtualize 없이 잘 동작 (~수십 개)
- *   - 자동재생은 사용자 인터랙션 시 일시정지 (Autoplay 플러그인 기본 동작)
+ * embla 에서 교체 — iOS Safari 스크롤 중 카드 텍스트/이미지 layer tile
+ * eviction 깜박임. keen-slider 는 슬라이드별 own DOM + lighter compositing.
  *
- * 접근성:
- *   - aria-roledescription="carousel"
- *   - 슬라이드별 aria-label "n/total"
- *   - 키보드: ←/→ 화살표 지원 (focus 상태에서)
+ * 자동재생은 keen-slider plugin 패턴으로 inline 구현 (사용자 인터랙션 시 정지).
  */
 export default function CarouselImpl<T>({
   slides,
@@ -48,57 +44,87 @@ export default function CarouselImpl<T>({
 }: CarouselImplProps<T>) {
   const t = useTranslations('carousel');
 
-  // embla 옵션/plugins 안정화 — 매 render 새 객체면 embla 가 내부 reInit 을
-  // 빈번 실행해 iOS Safari 에서 카드 깜박임 유발. primitive deps 로 잠금.
-  const emblaOptions = useMemo(
-    () => ({
-      loop: options?.loop ?? false,
-      dragFree: options?.dragFree ?? false,
-      startIndex: options?.startIndex ?? 0,
-      align: 'start' as const,
-    }),
-    [options?.loop, options?.dragFree, options?.startIndex],
-  );
-
-  const plugins = useMemo(
-    () =>
-      options?.autoplayMs
-        ? [Autoplay({ delay: options.autoplayMs, stopOnInteraction: true })]
-        : [],
-    [options?.autoplayMs],
-  );
-
-  const [emblaRef, emblaApi] = useEmblaCarousel(emblaOptions, plugins);
-
-  const [selectedIndex, setSelectedIndex] = useState(options?.startIndex ?? 0);
-
-  useEffect(() => {
-    if (!emblaApi) return;
-    const onSelect = () => setSelectedIndex(emblaApi.selectedScrollSnap());
-    emblaApi.on('select', onSelect);
-    onSelect();
-    return () => {
-      emblaApi.off('select', onSelect);
-    };
-  }, [emblaApi]);
-
-  // slidesPerView / gap 변경 시 embla 내부 측정값(snap point, slideSizes) 갱신.
-  // flex-basis inline style 만 바뀌면 컨테이너 width 가 그대로라 ResizeObserver
-  // 가 못 잡음 → 스와이프 시 옛 폭 기준으로 스냅돼 어긋남/깜빡임 발생.
-  useEffect(() => {
-    if (!emblaApi) return;
-    emblaApi.reInit();
-  }, [emblaApi, options?.slidesPerView, options?.gap]);
-
-  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
-  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
-  const scrollTo = useCallback(
-    (i: number) => emblaApi?.scrollTo(i),
-    [emblaApi],
-  );
-
   const slidesPerView = options?.slidesPerView ?? 1;
   const gap = options?.gap ?? 12;
+  const loop = options?.loop ?? false;
+  const dragFree = options?.dragFree ?? false;
+  const startIndex = options?.startIndex ?? 0;
+  const autoplayMs = options?.autoplayMs;
+
+  const [selectedIndex, setSelectedIndex] = useState(startIndex);
+  const slidesCount = slides.length;
+
+  // autoplay 를 ref 로 두어 옵션 변경 시 hook 의 deps 가 안 흔들리도록 격리
+  const autoplayMsRef = useRef(autoplayMs);
+  useEffect(() => {
+    autoplayMsRef.current = autoplayMs;
+  }, [autoplayMs]);
+
+  const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>(
+    {
+      loop,
+      mode: dragFree ? 'free-snap' : 'snap',
+      initial: startIndex,
+      slides: { perView: slidesPerView, spacing: gap },
+      slideChanged(s) {
+        setSelectedIndex(s.track.details.rel);
+      },
+    },
+    [
+      // autoplay plugin
+      (slider) => {
+        let timeout: ReturnType<typeof setTimeout> | undefined;
+        let stopped = false;
+        const clear = () => {
+          if (timeout) clearTimeout(timeout);
+          timeout = undefined;
+        };
+        const next = () => {
+          clear();
+          const ms = autoplayMsRef.current;
+          if (!ms || stopped) return;
+          if (slider.track.details.slides.length < 2) return;
+          timeout = setTimeout(() => slider.next(), ms);
+        };
+        slider.on('created', next);
+        slider.on('animationEnded', next);
+        slider.on('updated', next);
+        slider.on('dragStarted', () => {
+          stopped = true;
+          clear();
+        });
+        slider.on('detailsChanged', next);
+      },
+    ],
+  );
+
+  // slidesPerView / gap / loop 변경 시 keen-slider 측정값 갱신
+  useEffect(() => {
+    instanceRef.current?.update({
+      loop,
+      mode: dragFree ? 'free-snap' : 'snap',
+      initial: startIndex,
+      slides: { perView: slidesPerView, spacing: gap },
+    });
+  }, [instanceRef, slidesPerView, gap, loop, dragFree, startIndex]);
+
+  const scrollPrev = useCallback(
+    () => instanceRef.current?.prev(),
+    [instanceRef],
+  );
+  const scrollNext = useCallback(
+    () => instanceRef.current?.next(),
+    [instanceRef],
+  );
+  const scrollTo = useCallback(
+    (i: number) => instanceRef.current?.moveToIdx(i),
+    [instanceRef],
+  );
+
+  const dots = useMemo(
+    () => Array.from({ length: slidesCount }, (_, i) => i),
+    [slidesCount],
+  );
 
   return (
     <div
@@ -107,22 +133,17 @@ export default function CarouselImpl<T>({
       aria-roledescription="carousel"
       aria-label={ariaLabel}
     >
-      <div className={styles.viewport} ref={emblaRef}>
-        <div className={styles.container} style={{ gap }}>
-          {slides.map((item, i) => (
-            <div
-              key={keyExtractor?.(item, i) ?? i}
-              className={styles.slide}
-              style={{
-                flex: `0 0 calc((100% - ${gap * (slidesPerView - 1)}px) / ${slidesPerView})`,
-              }}
-              aria-roledescription="slide"
-              aria-label={t('slide', { n: i + 1, total: slides.length })}
-            >
-              {renderSlide(item, i)}
-            </div>
-          ))}
-        </div>
+      <div ref={sliderRef} className={`keen-slider ${styles.viewport}`}>
+        {slides.map((item, i) => (
+          <div
+            key={keyExtractor?.(item, i) ?? i}
+            className={`keen-slider__slide ${styles.slide}`}
+            aria-roledescription="slide"
+            aria-label={t('slide', { n: i + 1, total: slidesCount })}
+          >
+            {renderSlide(item, i)}
+          </div>
+        ))}
       </div>
 
       {showArrows && (
@@ -146,15 +167,15 @@ export default function CarouselImpl<T>({
         </>
       )}
 
-      {showDots && slides.length > 1 && (
+      {showDots && slidesCount > 1 && (
         <div className={styles.dots} role="tablist">
-          {slides.map((_, i) => (
+          {dots.map((i) => (
             <button
               key={i}
               type="button"
               role="tab"
               aria-selected={i === selectedIndex}
-              aria-label={t('slide', { n: i + 1, total: slides.length })}
+              aria-label={t('slide', { n: i + 1, total: slidesCount })}
               className={`${styles.dot} ${i === selectedIndex ? styles.dotActive : ''}`}
               onClick={() => scrollTo(i)}
             />
@@ -164,3 +185,6 @@ export default function CarouselImpl<T>({
     </div>
   );
 }
+
+// 일부 keen-slider 타입은 lib 자체에서 export 되지만, 사용 안 함을 명시.
+export type { KeenSliderInstance };

@@ -2,27 +2,17 @@
   position: relative;
 }
 
+/* keen-slider 는 슬라이드 width/transform 을 inline 으로 직접 주입한다.
+   우리 모듈 클래스는 keen-slider 의 `.keen-slider` / `.keen-slider__slide`
+   와 함께 합성되며, layout 은 lib 가 담당하므로 여기서는 시각 효과만. */
 .viewport {
+  /* keen-slider 자체가 overflow:hidden 을 적용하지만 명시적으로 한 번 더 */
   overflow: hidden;
-  // iOS WebKit — viewport 를 own compositing layer 로 분리.
-  // 슬라이드 transform 이 부모 layout 의 repaint 와 분리돼 깜박임 회피.
-  transform: translateZ(0);
-  // 합성 자식의 back face 렌더 생략 (iOS Safari sub-pixel 떨림 감소)
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-}
-
-.container {
-  display: flex;
-  // gap는 인라인 스타일로 주입 (옵션 기반)
-  // embla transform 컨테이너 자체에 GPU layer hint
-  will-change: transform;
 }
 
 .slide {
-  min-width: 0;
-  // 슬라이드 flex-basis 가 calc 소수점이라 sub-pixel rounding 발생 →
-  // iOS Safari 에서 카드 경계 깜박. 각 슬라이드를 own layer 로 분리.
+  /* slide 별 own compositing layer — iOS Safari paint-on-scroll tile eviction
+     완화. embla 시절보다 keen-slider 는 슬라이드별 DOM 이 독립적이라 효과적. */
   transform: translateZ(0);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
