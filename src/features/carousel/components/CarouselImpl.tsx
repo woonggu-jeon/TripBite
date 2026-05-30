@@ -1,6 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import { useTranslations } from 'next-intl';
@@ -42,19 +48,27 @@ export default function CarouselImpl<T>({
 }: CarouselImplProps<T>) {
   const t = useTranslations('carousel');
 
-  const plugins = options?.autoplayMs
-    ? [Autoplay({ delay: options.autoplayMs, stopOnInteraction: true })]
-    : [];
-
-  const [emblaRef, emblaApi] = useEmblaCarousel(
-    {
+  // embla 옵션/plugins 안정화 — 매 render 새 객체면 embla 가 내부 reInit 을
+  // 빈번 실행해 iOS Safari 에서 카드 깜박임 유발. primitive deps 로 잠금.
+  const emblaOptions = useMemo(
+    () => ({
       loop: options?.loop ?? false,
       dragFree: options?.dragFree ?? false,
       startIndex: options?.startIndex ?? 0,
-      align: 'start',
-    },
-    plugins,
+      align: 'start' as const,
+    }),
+    [options?.loop, options?.dragFree, options?.startIndex],
   );
+
+  const plugins = useMemo(
+    () =>
+      options?.autoplayMs
+        ? [Autoplay({ delay: options.autoplayMs, stopOnInteraction: true })]
+        : [],
+    [options?.autoplayMs],
+  );
+
+  const [emblaRef, emblaApi] = useEmblaCarousel(emblaOptions, plugins);
 
   const [selectedIndex, setSelectedIndex] = useState(options?.startIndex ?? 0);
 

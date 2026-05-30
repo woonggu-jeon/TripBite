@@ -90,8 +90,13 @@ function useResponsiveSlidesPerView() {
   // SSR 안전 default — 모바일 우선 (대부분 사용자가 모바일)
   const [v, setV] = useState(2.2);
   useEffect(() => {
+    let lastWidth = -1;
     const update = () => {
       const w = window.innerWidth;
+      // iOS Safari 의 toolbar 토글은 innerHeight 만 바꾸고 width 는 보존.
+      // 그래도 resize 가 매번 발화하므로, width 가 실제로 달라졌을 때만 처리.
+      if (w === lastWidth) return;
+      lastWidth = w;
       const next = w <= 360 ? 1.8 : w <= 480 ? 2.2 : 3;
       setV((prev) => (prev === next ? prev : next));
     };
