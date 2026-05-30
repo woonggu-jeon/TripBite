@@ -1,12 +1,9 @@
 'use client';
 
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react';
+import { useCallback, useRef, useState, type ReactNode } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, FreeMode } from 'swiper/modules';
+import type { Swiper as SwiperType } from 'swiper/types';
 import { useTranslations } from 'next-intl';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { CarouselOptions } from '@/features/carousel/types';
@@ -23,18 +20,16 @@ export type CarouselImplProps<T> = {
 };
 
 /**
- * Carousel 구현 — 네이티브 overflow-x:auto + scroll-snap-type.
+ * Carousel 구현 — Swiper.js v12 (React component).
  *
- * 왜 라이브러리(embla/keen-slider)를 뺐나:
- *   두 lib 모두 base CSS 의 .slide { width: 100% } + lib mount 후 inline
- *   width 주입 패턴. iOS Safari + dynamic import 환경에서 첫 ResizeObserver
- *   miss 시 slide 폭이 100% 로 stuck → 카드 1장이 viewport 가득 차지하는
- *   증상 반복. 네이티브 스크롤은 lib mount 개념 자체가 없어 stuck 불가능.
+ * embla/keen-slider 에서 옮긴 이유:
+ *   두 lib 모두 base CSS .slide { width: 100% } + lib mount 후 inline width
+ *   주입 패턴. iOS Safari + dynamic import 환경에서 첫 ResizeObserver miss
+ *   시 stuck. Swiper 는 mount 시 inline style 로 width 처리 + ResizeObserver
+ *   + window.resize + RAF 다중 fallback 으로 검증됨.
  *
- * 잃는 것:
- *   - 무거운 drag 휠 효과 (네이티브 momentum 으로 충분)
- *   - 무한 loop (autoplay 마지막에서 첫 카드로 jump 으로 대체)
- *   - free-snap 모드 (mandatory snap 만 — 사용처에 맞음)
+ * 자체 dots/arrows 유지 (디자인 일관성). Pagination/Navigation 모듈 미사용 —
+ * onSwiper 로 instance 받아 직접 slidePrev/slideNext/slideTo.
  */
 export default function CarouselImpl<T>({
   slides,
@@ -51,98 +46,38 @@ export default function CarouselImpl<T>({
   const gap = options?.gap ?? 12;
   const loop = options?.loop ?? false;
   const autoplayMs = options?.autoplayMs;
+  const dragFree = options?.dragFree ?? false;
   const startIndex = options?.startIndex ?? 0;
 
-  const trackRef = useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = useState(startIndex);
+  const swiperRef = useRef<SwiperType | null>(null);
   const slidesCount = slides.length;
 
-  // stride = 슬라이드 폭 + gap. handleScroll/autoplay/scrollTo 공용 계산.
-  const getStride = useCallback(() => {
-    const el = trackRef.current;
-    if (!el) return 0;
-    return (el.clientWidth - gap * (slidesPerView - 1)) / slidesPerView + gap;
-  }, [gap, slidesPerView]);
-
-  // 시작 index 로 즉시 이동 (mount 후 한 번만)
-  useEffect(() => {
-    const el = trackRef.current;
-    if (!el || startIndex === 0) return;
-    el.scrollLeft = getStride() * startIndex;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleSwiper = useCallback((s: SwiperType) => {
+    swiperRef.current = s;
   }, []);
 
-  // scroll 시 active dot 계산 (rAF throttle)
-  const rafRef = useRef<number | null>(null);
-  const handleScroll = useCallback(() => {
-    if (rafRef.current != null) return;
-    rafRef.current = requestAnimationFrame(() => {
-      rafRef.current = null;
-      const el = trackRef.current;
-      if (!el) return;
-      const stride = getStride();
-      if (stride <= 0) return;
-      const idx = Math.round(el.scrollLeft / stride);
-      setSelectedIndex(Math.max(0, Math.min(slidesCount - 1, idx)));
-    });
-  }, [getStride, slidesCount]);
+  const handleSlideChange = useCallback((s: SwiperType) => {
+    setSelectedIndex(s.realIndex);
+  }, []);
 
-  // autoplay — 사용자 포인터 인터랙션 시 일시정지
-  useEffect(() => {
-    if (!autoplayMs) return;
-    const el = trackRef.current;
-    if (!el) return;
+  const scrollPrev = useCallback(() => swiperRef.current?.slidePrev(), []);
+  const scrollNext = useCallback(() => swiperRef.current?.slideNext(), []);
+  const scrollTo = useCallback((i: number) => {
+    const s = swiperRef.current;
+    if (!s) return;
+    // loop 모드에선 slideToLoop 가 자연스러운 wrap 이동, 아니면 slideTo
+    if (s.params.loop) s.slideToLoop(i);
+    else s.slideTo(i);
+  }, []);
 
-    let paused = false;
-    const onPointerDown = () => {
-      paused = true;
-    };
-    el.addEventListener('pointerdown', onPointerDown, { passive: true });
-
-    const id = window.setInterval(() => {
-      if (paused) return;
-      const stride = getStride();
-      if (stride <= 0) return;
-      const max = el.scrollWidth - el.clientWidth;
-      if (loop && el.scrollLeft + stride > max - 1) {
-        el.scrollTo({ left: 0, behavior: 'smooth' });
-      } else if (el.scrollLeft + stride > max) {
-        return; // loop 아니면 끝에서 정지
-      } else {
-        el.scrollBy({ left: stride, behavior: 'smooth' });
-      }
-    }, autoplayMs);
-
-    return () => {
-      window.clearInterval(id);
-      el.removeEventListener('pointerdown', onPointerDown);
-    };
-  }, [autoplayMs, loop, getStride]);
-
-  const scrollPrev = useCallback(() => {
-    const el = trackRef.current;
-    if (!el) return;
-    el.scrollBy({ left: -getStride(), behavior: 'smooth' });
-  }, [getStride]);
-  const scrollNext = useCallback(() => {
-    const el = trackRef.current;
-    if (!el) return;
-    el.scrollBy({ left: getStride(), behavior: 'smooth' });
-  }, [getStride]);
-  const scrollTo = useCallback(
-    (i: number) => {
-      const el = trackRef.current;
-      if (!el) return;
-      el.scrollTo({ left: getStride() * i, behavior: 'smooth' });
-    },
-    [getStride],
-  );
-
-  const trackStyle = {
-    '--carousel-spv': slidesPerView,
-    '--carousel-gap': `${gap}px`,
-    gap: `${gap}px`,
-  } as React.CSSProperties;
+  const modules = autoplayMs
+    ? dragFree
+      ? [Autoplay, FreeMode]
+      : [Autoplay]
+    : dragFree
+      ? [FreeMode]
+      : [];
 
   return (
     <div
@@ -151,23 +86,40 @@ export default function CarouselImpl<T>({
       aria-roledescription="carousel"
       aria-label={ariaLabel}
     >
-      <div
-        ref={trackRef}
-        className={styles.track}
-        style={trackStyle}
-        onScroll={handleScroll}
+      <Swiper
+        modules={modules}
+        slidesPerView={slidesPerView}
+        spaceBetween={gap}
+        loop={loop}
+        initialSlide={startIndex}
+        freeMode={dragFree}
+        autoplay={
+          autoplayMs
+            ? {
+                delay: autoplayMs,
+                disableOnInteraction: true,
+                pauseOnMouseEnter: true,
+              }
+            : false
+        }
+        onSwiper={handleSwiper}
+        onSlideChange={handleSlideChange}
+        className={styles.swiperRoot}
+        // 마우스 휠/터치 둘 다 동작 — swiper 의 기본 grab 커서
+        grabCursor
+        // 사용자 인터랙션 안 막음 (a11y)
+        a11y={{ enabled: true }}
       >
         {slides.map((item, i) => (
-          <div
+          <SwiperSlide
             key={keyExtractor?.(item, i) ?? i}
             className={styles.slide}
-            aria-roledescription="slide"
             aria-label={t('slide', { n: i + 1, total: slidesCount })}
           >
             {renderSlide(item, i)}
-          </div>
+          </SwiperSlide>
         ))}
-      </div>
+      </Swiper>
 
       {showArrows && (
         <>

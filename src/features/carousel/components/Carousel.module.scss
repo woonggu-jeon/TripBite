@@ -2,38 +2,21 @@
   position: relative;
 }
 
-/* track — 네이티브 horizontal scroll + scroll-snap.
-   iOS Safari 의 OS 단 momentum 이 가장 부드럽고 깜박임 0. */
-.track {
-  display: flex;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-snap-type: x mandatory;
-  /* iOS 의 momentum scroll 활성화 (구버전 호환) */
-  -webkit-overflow-scrolling: touch;
-  /* 스크롤바 숨김 — 모바일 친화 */
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  /* GPU layer — track 자체를 own compositing layer 로 (iOS paint 안정) */
-  transform: translateZ(0);
+/* Swiper container — width 누수 안전망. swiper 자체가 inline width 를 직접
+   주입하지만, mount 전/실패 시에도 viewport 폭 초과 못 하도록 명시. */
+.swiperRoot {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .slide {
-  /* CSS variable 기반 슬라이드 폭 — first paint 부터 정확.
-     스크롤 컨테이너 자식이라 width 가 아닌 flex-basis 사용.
-     flex-shrink: 0 으로 스크롤 컨테이너 안에서 절대 줄어들지 않게. */
-  flex: 0 0
-    calc(
-      (100% - var(--carousel-gap, 0px) * (var(--carousel-spv, 1) - 1)) /
-        var(--carousel-spv, 1)
-    );
-  scroll-snap-align: start;
-  /* paint 안정 — iOS Safari tile eviction 완화 */
+  /* slide 별 own compositing layer — iOS paint 안정 */
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
+  /* swiper 가 inline width 주입 — 부모 따라 자동 계산.
+     mount 전 stuck 방지로 height 자동, width 는 swiper 가 갱신. */
+  height: auto;
 }
 
 .arrow {
