@@ -52,21 +52,49 @@ export default function GlobalError({
           >
             잠시 후 다시 시도해주세요. 문제가 계속되면 도움이 필요해요.
           </p>
-          <button
-            type="button"
-            onClick={() => reset()}
+          <div
             style={{
-              padding: '0.75rem 1.25rem',
-              background: '#0a0a0a',
-              color: '#fff',
-              border: 0,
-              borderRadius: 8,
-              fontWeight: 600,
-              cursor: 'pointer',
+              display: 'flex',
+              gap: 8,
+              justifyContent: 'center',
+              flexWrap: 'wrap',
             }}
           >
-            다시 시도
-          </button>
+            <button
+              type="button"
+              onClick={() => reset()}
+              style={{
+                padding: '0.75rem 1.25rem',
+                background: '#0a0a0a',
+                color: '#fff',
+                border: 0,
+                borderRadius: 8,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              다시 시도
+            </button>
+            {/* global-error 는 root layout 파괴 상태 — next/link 동작 보장 X.
+                hard navigation 으로 / 이동 (전체 재초기화 의도). */}
+            <button
+              type="button"
+              onClick={() => {
+                window.location.href = '/';
+              }}
+              style={{
+                padding: '0.75rem 1.25rem',
+                background: '#fff',
+                color: '#0a0a0a',
+                border: '1px solid #e5e7eb',
+                borderRadius: 8,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              홈으로
+            </button>
+          </div>
           {error.digest && (
             <p
               style={{

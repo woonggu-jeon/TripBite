@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import Link from 'next/link';
 
 /**
  * App Router Error Boundary
@@ -38,18 +39,35 @@ export default function GlobalError({
       <p style={{ color: 'var(--color-muted)', maxWidth: 480 }}>
         잠시 후 다시 시도해주세요. 문제가 계속되면 관리자에게 문의해주세요.
       </p>
-      <button
-        onClick={reset}
-        style={{
-          padding: '0.75rem 1.5rem',
-          background: 'var(--color-primary)',
-          color: 'var(--color-primary-fg)',
-          borderRadius: 'var(--radius-md)',
-          fontWeight: 500,
-        }}
-      >
-        다시 시도
-      </button>
+      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+        <button
+          onClick={reset}
+          style={{
+            padding: '0.75rem 1.5rem',
+            background: 'var(--color-primary)',
+            color: 'var(--color-primary-fg)',
+            borderRadius: 'var(--radius-md)',
+            fontWeight: 500,
+          }}
+        >
+          다시 시도
+        </button>
+        <Link
+          href="/"
+          style={{
+            padding: '0.75rem 1.5rem',
+            background: 'transparent',
+            color: 'var(--color-fg)',
+            border: '1px solid var(--color-border)',
+            borderRadius: 'var(--radius-md)',
+            fontWeight: 500,
+            textDecoration: 'none',
+            display: 'inline-block',
+          }}
+        >
+          홈으로
+        </Link>
+      </div>
     </main>
   );
 }
