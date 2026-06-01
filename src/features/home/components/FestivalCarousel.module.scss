@@ -30,7 +30,7 @@
 .image {
   display: grid;
   place-items: center;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: var(--aspect-square);
   border-radius: var(--radius-sm);
   background: linear-gradient(
     135deg,
@@ -53,14 +53,14 @@
 
 .region {
   font-size: var(--font-eyebrow);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: var(--accent, var(--color-muted));
   letter-spacing: var(--tracking-snug);
 }
 
 .name {
   font-size: var(--font-label);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   letter-spacing: var(--tracking-tight);
   line-height: var(--line-tight);
   overflow: hidden;
@@ -103,7 +103,7 @@
     gap: 0.375rem;
   }
   .image {
-    aspect-ratio: 1.5 / 1;
+    aspect-ratio: var(--aspect-card-wide);
   }
   .name {
     font-size: var(--font-caption);
@@ -113,7 +113,7 @@
 // 작은 모바일 (≤ 380px) — 더 축소
 @media (max-width: 380px) {
   .image {
-    aspect-ratio: 1.4 / 1;
+    aspect-ratio: var(--aspect-card-narrow);
   }
   .emoji {
     font-size: var(--emoji-sm);

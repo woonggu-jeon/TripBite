@@ -37,7 +37,7 @@
   border: 1.5px solid var(--color-border);
   border-radius: var(--radius-md);
   color: var(--color-fg);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
 }
 
@@ -58,7 +58,7 @@
 
 .counter {
   font-size: var(--font-body);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: var(--color-fg);
   letter-spacing: var(--tracking-wide);
 }
@@ -81,7 +81,7 @@
   background: var(--color-primary);
   color: var(--color-primary-fg);
   border-radius: var(--radius-md);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   font-size: var(--font-body);
   cursor: pointer;
   transition:
@@ -89,7 +89,7 @@
     transform var(--motion-fast) ease;
 
   &:hover:not(:disabled) {
-    opacity: 0.92;
+    opacity: var(--opacity-hover-dim);
   }
   &:active:not(:disabled) {
     transform: scale(0.98);
@@ -99,7 +99,7 @@
     outline-offset: 2px;
   }
   &:disabled {
-    opacity: 0.45;
+    opacity: var(--opacity-disabled);
     cursor: not-allowed;
   }
 }
@@ -116,7 +116,7 @@
 
 .sizeTitle {
   font-size: var(--font-h2);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: var(--color-fg);
   line-height: var(--line-snug);
 }
@@ -169,7 +169,7 @@
 
 .celebTitle {
   font-size: var(--font-body);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: var(--color-primary-text-bold);
   letter-spacing: var(--tracking-uppercase);
   animation: celebRise 0.6s 0.25s var(--ease-out) both;
@@ -179,7 +179,7 @@
 
 .celebName {
   font-size: var(--emoji-md);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   color: var(--color-fg);
   letter-spacing: var(--tracking-tight);
   line-height: var(--line-tight);
@@ -247,7 +247,7 @@
     transform: scale(1.1);
   }
   100% {
-    opacity: 0.7;
+    opacity: var(--opacity-muted);
     transform: scale(1);
   }
 }

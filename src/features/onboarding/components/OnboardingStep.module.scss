@@ -15,7 +15,7 @@
 
 .title {
   font-size: var(--font-h1);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
 }

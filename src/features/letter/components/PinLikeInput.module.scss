@@ -14,12 +14,12 @@
 .cell {
   display: grid;
   place-items: center;
-  aspect-ratio: 1 / 1.1;
+  aspect-ratio: var(--aspect-pin-cell);
   border: 2px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-bg);
   font-size: var(--emoji-md);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   color: var(--color-fg);
   transition:
     border-color var(--motion-base) ease,

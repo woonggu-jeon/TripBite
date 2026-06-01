@@ -61,7 +61,7 @@
 
 .nickname {
   font-size: var(--text-lg);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   color: var(--color-fg);
   letter-spacing: var(--tracking-tight);
   min-height: 1.4em;

@@ -33,7 +33,7 @@
 
 .image {
   width: 100%;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: var(--aspect-square);
   border-radius: var(--radius-md);
   background: linear-gradient(
     135deg,
@@ -57,7 +57,7 @@
 
 .name {
   font-size: var(--font-body-sm);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: var(--color-fg);
   line-height: var(--line-tight);
   overflow: hidden;
@@ -73,11 +73,11 @@
 }
 
 .region {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .category {
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 @media (prefers-reduced-motion: reduce) {

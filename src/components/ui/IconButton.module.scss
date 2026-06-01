@@ -19,7 +19,7 @@
     outline-offset: 2px;
   }
   &:disabled {
-    opacity: 0.45;
+    opacity: var(--opacity-disabled);
     cursor: not-allowed;
   }
 }
@@ -53,7 +53,7 @@
   color: var(--color-primary-fg);
 
   &:hover:not(:disabled) {
-    opacity: 0.92;
+    opacity: var(--opacity-hover-dim);
   }
 }
 

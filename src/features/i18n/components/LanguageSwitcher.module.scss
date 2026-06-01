@@ -11,7 +11,7 @@
 .sectionTitle {
   padding: 0 var(--space-4) var(--space-2);
   font-size: var(--font-caption);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-muted);
   text-transform: uppercase;
   letter-spacing: var(--tracking-uppercase);
@@ -39,5 +39,5 @@
 }
 
 .selected {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }

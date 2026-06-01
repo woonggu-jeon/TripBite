@@ -18,7 +18,7 @@
 .heading {
   text-align: center;
   font-size: var(--font-body);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   color: var(--color-fg);
   letter-spacing: var(--tracking-snug);
 }
@@ -28,7 +28,7 @@
   display: grid;
   place-items: center;
   gap: 0.75rem;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: var(--aspect-square);
   width: 100%;
   max-width: 360px;
   margin: 0 auto;
@@ -51,7 +51,7 @@
 
 .cardTitle {
   font-size: var(--font-h1);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
   word-break: keep-all;
@@ -84,7 +84,7 @@
   color: var(--color-primary-fg);
   border: 0;
   border-radius: var(--radius-md);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   font-size: var(--font-body-sm);
   cursor: pointer;
   transition:
@@ -92,7 +92,7 @@
     transform var(--motion-fast) ease;
 
   &:hover {
-    opacity: 0.92;
+    opacity: var(--opacity-hover-dim);
   }
   &:active {
     transform: scale(0.98);
@@ -124,7 +124,7 @@
   color: var(--color-primary-fg);
   border-radius: var(--radius-md);
   font-size: var(--text-sm);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   border: 0;
   cursor: pointer;
 }

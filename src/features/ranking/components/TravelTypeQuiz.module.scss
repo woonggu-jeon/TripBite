@@ -63,27 +63,27 @@
   gap: 0.5rem;
   font-size: var(--font-eyebrow);
   color: var(--color-muted);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   letter-spacing: var(--tracking-wide);
 }
 
 .progressIndex {
   font-variant-numeric: tabular-nums;
   color: var(--color-primary);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
 }
 
 .progressHint {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   letter-spacing: var(--tracking-snug);
 }
 
 .question {
   font-size: var(--font-h2);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
   line-height: var(--line-snug);
@@ -106,7 +106,7 @@
   padding: 1rem 1.125rem;
   text-align: left;
   font-size: var(--font-body-sm);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   letter-spacing: var(--tracking-snug);
   color: var(--color-fg);
   background: var(--color-bg);
@@ -164,7 +164,7 @@
   border-radius: var(--radius-md);
   color: var(--color-fg);
   font-size: var(--font-label);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
 
   &:hover {
@@ -207,7 +207,7 @@
 
 .finishingTitle {
   font-size: var(--text-lg);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   color: var(--color-fg);
   letter-spacing: var(--tracking-tight);
   animation: finishingRise 0.6s var(--motion-base) var(--ease-out) both;
@@ -242,7 +242,7 @@
     transform: scale(1.1);
   }
   100% {
-    opacity: 0.7;
+    opacity: var(--opacity-muted);
     transform: scale(1);
   }
 }

@@ -110,6 +110,33 @@ primitive: `--text-xs/sm/base/lg/xl/2xl/3xl` (크기만)
 
 line-height: `var(--line-display/tight/snug/normal/relaxed)` (1.1/1.2/1.35/1.5/1.65)
 letter-spacing: `var(--tracking-tight/snug/normal/wide/uppercase/emphasis/pin/pin-fill)` (-0.02 / -0.01 / 0 / 0.02 / 0.06 / 0.12 / 0.25 / 1em)
+font-weight: `var(--font-weight-normal/medium/semibold/bold/extrabold)` (400/500/600/700/800)
+
+### Aspect Ratio
+
+| 용도                         | 토큰                                |
+| ---------------------------- | ----------------------------------- |
+| 정사각형 (festival/share 등) | `var(--aspect-square)` (1/1)        |
+| PIN cell                     | `var(--aspect-pin-cell)` (1/1.1)    |
+| 카드 narrow (≤380 / season)  | `var(--aspect-card-narrow)` (1.4/1) |
+| 카드 wide (festival ≤480)    | `var(--aspect-card-wide)` (1.5/1)   |
+| 지도 placeholder             | `var(--aspect-map)` (4/3)           |
+
+### Opacity (명확한 의미만 토큰화 — 컴포넌트 unique 미세 조정은 raw 유지)
+
+| 용도                             | 토큰                              |
+| -------------------------------- | --------------------------------- |
+| disabled / loading               | `var(--opacity-disabled)` (0.45)  |
+| secondary text / muted 보조      | `var(--opacity-muted)` (0.7)      |
+| hover 미세 dim (banner / button) | `var(--opacity-hover-dim)` (0.92) |
+
+### Border Width
+
+| 용도             | 토큰                         |
+| ---------------- | ---------------------------- |
+| 카드 기본 border | `var(--border-thin)` (1px)   |
+| 강조 카드 border | `var(--border-base)` (1.5px) |
+| 우표 / PIN cell  | `var(--border-thick)` (2px)  |
 
 ## 2. Primitive 컴포넌트
 

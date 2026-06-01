@@ -277,6 +277,30 @@
   --tracking-pin: 0.25em; /* LetterDetail body 의 PIN style */
   --tracking-pin-fill: 1em; /* PinLikeInput 의 5칸 강제 */
 
+  /* Font weight scale — 디자이너가 typography hierarchy 일괄 조정 가능. */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* Aspect ratio — 카드/이미지/지도의 비율 도메인 토큰. */
+  --aspect-square: 1 / 1;
+  --aspect-pin-cell: 1 / 1.1;
+  --aspect-card-narrow: 1.4 / 1; /* festival ≤380 / season selector */
+  --aspect-card-wide: 1.5 / 1; /* festival ≤480 */
+  --aspect-map: 4 / 3; /* region map placeholder */
+
+  /* Opacity scale — 명확한 의미만. 컴포넌트 미세 조정은 raw 유지. */
+  --opacity-disabled: 0.45; /* :disabled / loading state */
+  --opacity-muted: 0.7; /* secondary text / dim 보조 */
+  --opacity-hover-dim: 0.92; /* hover 미세 dim (banner / button) */
+
+  /* Border width scale — 신규 코드 권장. 기존 raw 는 정리 시 점진 흡수. */
+  --border-thin: 1px;
+  --border-base: 1.5px;
+  --border-thick: 2px;
+
   /* 큰 글씨 줄간격 — 1.2 (tight) 보다 더 좁게. CountSelector 카드 큰 숫자 */
   --line-display: 1.1;
 

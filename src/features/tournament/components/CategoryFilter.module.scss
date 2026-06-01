@@ -47,12 +47,12 @@
 
 .label {
   font-size: var(--font-body);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 .check {
   font-size: var(--font-body);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   color: var(--color-primary);
   text-align: right;
 }

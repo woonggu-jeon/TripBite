@@ -19,7 +19,7 @@
 }
 
 .round {
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: var(--color-primary);
   font-size: var(--font-body);
 }
@@ -29,7 +29,7 @@
 }
 
 .matchCount {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 // 점선(segment) progress — 매치 수만큼 dash 가 채워짐
@@ -70,7 +70,7 @@
   align-self: center;
   justify-self: center;
   font-size: var(--text-lg);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   color: var(--color-primary);
   letter-spacing: var(--tracking-uppercase);
   padding: 0.25rem 0.625rem;

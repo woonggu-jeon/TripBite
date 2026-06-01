@@ -9,7 +9,7 @@
   border-radius: var(--radius-md);
   text-align: center;
   font-size: var(--font-body-sm);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   color: var(--color-fg);
   transition:
     border-color var(--motion-base) ease,

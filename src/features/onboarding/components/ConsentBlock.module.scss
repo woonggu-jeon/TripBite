@@ -21,7 +21,7 @@
 }
 
 .allRow {
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 .divider {
@@ -36,7 +36,7 @@
 
 .required {
   color: var(--color-primary);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   font-size: var(--font-caption);
 }
 

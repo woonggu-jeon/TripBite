@@ -27,7 +27,7 @@
 
 .rowLabel {
   font-size: var(--font-body-sm);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-fg);
   letter-spacing: var(--tracking-snug);
 }
@@ -47,7 +47,7 @@
   background: var(--color-bg);
   color: var(--color-fg);
   font-size: var(--font-body-sm);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   transition: border-color var(--motion-base) ease;
 
   &:hover {

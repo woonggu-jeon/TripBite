@@ -44,7 +44,7 @@
 
 .noticeTitle {
   font-size: var(--font-body);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   color: var(--color-fg);
   letter-spacing: var(--tracking-snug);
 }
@@ -73,7 +73,7 @@
 
 .label {
   font-size: var(--font-eyebrow);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: color-mix(in srgb, var(--color-letter-accent) 70%, var(--color-muted));
   letter-spacing: var(--tracking-emphasis);
   text-transform: uppercase;
@@ -96,7 +96,7 @@
 
 .author {
   font-size: var(--font-body);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   color: var(--color-fg);
 }
 
@@ -127,7 +127,7 @@
 
 .stampTag {
   font-size: var(--font-letter-stamp-tag);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   letter-spacing: var(--tracking-emphasis);
 }
 
@@ -142,7 +142,7 @@
 
 .body {
   font-size: var(--font-letter-body);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   letter-spacing: var(--tracking-pin);
   color: var(--color-fg);
   line-height: var(--line-snug);

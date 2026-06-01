@@ -37,7 +37,7 @@
 
 .noticeTitle {
   font-size: var(--font-body);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: var(--color-fg);
 }
 
@@ -65,7 +65,7 @@
 
 .label {
   font-size: var(--font-eyebrow);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: color-mix(in srgb, var(--color-letter-accent) 70%, var(--color-muted));
   letter-spacing: var(--tracking-emphasis);
   text-transform: uppercase;
@@ -89,7 +89,7 @@
 
 .author {
   font-size: var(--font-body);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   color: var(--color-fg);
 }
 
@@ -126,7 +126,7 @@
   position: absolute;
   bottom: 4px;
   font-size: var(--font-letter-stamp-tag);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   color: color-mix(in srgb, var(--color-letter-accent) 80%, var(--color-fg));
   letter-spacing: var(--tracking-emphasis);
 }
@@ -152,13 +152,13 @@
 .pinCell {
   display: grid;
   place-items: center;
-  aspect-ratio: 1 / 1.1;
+  aspect-ratio: var(--aspect-pin-cell);
   background: var(--color-letter-paper);
   border: 2px solid
     color-mix(in srgb, var(--color-letter-accent) 28%, var(--color-border));
   border-radius: var(--radius-md);
   font-size: var(--font-h1);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   color: var(--color-fg);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
@@ -205,7 +205,7 @@
 
 .toLine1 {
   font-size: var(--font-body-sm);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: var(--color-fg);
   letter-spacing: var(--tracking-snug);
 }
@@ -224,7 +224,7 @@
   color: var(--color-on-strong);
   border-radius: var(--radius-full);
   font-size: var(--font-caption);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   white-space: nowrap;
 }
 

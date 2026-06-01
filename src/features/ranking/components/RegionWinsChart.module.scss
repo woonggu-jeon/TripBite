@@ -41,7 +41,7 @@
 
 .rank {
   font-size: var(--font-caption);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   color: var(--color-muted);
   text-align: center;
   font-variant-numeric: tabular-nums;
@@ -49,7 +49,7 @@
 
 .regionName {
   font-size: var(--font-body-sm);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-tight);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -100,14 +100,14 @@
 
 .winsNumber {
   font-size: var(--font-body);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   color: var(--color-fg);
   letter-spacing: var(--tracking-tight);
 }
 
 .winsUnit {
   font-size: var(--font-eyebrow);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-muted);
 }
 
@@ -135,7 +135,7 @@
   border-radius: var(--radius-md);
   color: var(--color-fg);
   font-size: var(--font-label);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
 
   &:hover {

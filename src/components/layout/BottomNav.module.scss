@@ -22,7 +22,7 @@
   padding: var(--space-2) 0;
   color: var(--color-muted);
   font-size: var(--font-eyebrow);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   transition: color var(--motion-base) ease;
 
   &:hover {

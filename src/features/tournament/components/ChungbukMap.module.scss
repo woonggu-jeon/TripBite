@@ -51,7 +51,7 @@
   :global(svg text.label) {
     font-family: 'Pretendard', ui-sans-serif, system-ui, sans-serif;
     font-size: 24px;
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     fill: var(--map-label-fill);
     text-anchor: middle;
     paint-order: stroke;

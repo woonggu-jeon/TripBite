@@ -17,7 +17,7 @@
 
 .title {
   font-size: var(--font-h1);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-tight);
   margin-bottom: var(--space-2);
 }
@@ -35,7 +35,7 @@
 
 .label {
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   color: var(--color-fg);
 }
 
@@ -92,7 +92,7 @@
 
 .footLinkPrimary {
   color: var(--color-primary);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .footLinkMuted {
@@ -115,7 +115,7 @@
 // 결과로 표시되는 아이디 강조
 .resultId {
   font-size: var(--text-xl);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-snug);
   color: var(--color-fg);
 }

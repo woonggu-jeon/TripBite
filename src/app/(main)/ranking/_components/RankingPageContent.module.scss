@@ -5,7 +5,7 @@
 
 .sectionTitle {
   font-size: var(--font-body);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   color: var(--color-fg);
   letter-spacing: var(--tracking-tight);
   margin-bottom: var(--space-3);
@@ -34,7 +34,7 @@
   border-radius: var(--radius-md);
   color: var(--color-fg);
   font-size: var(--font-label);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .chartHint {

@@ -23,7 +23,7 @@
 }
 
 .title {
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   font-size: var(--text-sm);
 }
 
@@ -76,7 +76,7 @@
 
 .itemTitle {
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .itemBody {

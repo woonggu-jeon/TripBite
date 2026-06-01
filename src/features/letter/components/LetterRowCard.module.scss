@@ -38,7 +38,7 @@
 
 .body {
   font-size: var(--font-body);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   color: var(--color-on-strong);
   letter-spacing: var(--tracking-wide);
   text-shadow: var(--text-shadow-soft);
@@ -55,7 +55,7 @@
 
 .author {
   font-size: var(--font-body-sm);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: var(--color-fg);
   overflow: hidden;
   text-overflow: ellipsis;

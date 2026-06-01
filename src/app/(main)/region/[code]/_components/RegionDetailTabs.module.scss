@@ -16,7 +16,7 @@
   padding: 0.5rem 0.75rem;
   border-radius: calc(var(--radius-md) - 2px);
   font-size: var(--text-sm);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: var(--color-muted);
   background: transparent;
   transition:
@@ -52,7 +52,7 @@
   border-radius: var(--radius-md);
   color: var(--color-fg);
   font-size: var(--font-label);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .empty {

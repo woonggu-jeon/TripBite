@@ -74,7 +74,7 @@
   display: inline-flex;
   align-items: center;
   justify-self: center;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   font-size: var(--font-h3);
   letter-spacing: var(--tracking-snug);
   color: var(--color-fg);
@@ -83,7 +83,7 @@
   transition: opacity var(--motion-base) ease;
 
   &:hover {
-    opacity: 0.7;
+    opacity: var(--opacity-muted);
   }
   &:focus-visible {
     outline: 2px solid var(--color-primary);

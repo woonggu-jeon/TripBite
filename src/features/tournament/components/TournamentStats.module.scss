@@ -23,14 +23,14 @@
 
 .cellLabel {
   font-size: var(--font-caption);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-muted);
   letter-spacing: var(--tracking-wide);
 }
 
 .cellValue {
   font-size: var(--font-body);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: var(--color-fg);
   letter-spacing: var(--tracking-snug);
   word-break: keep-all;
@@ -60,13 +60,13 @@
 
 .runnerUpLabel {
   font-size: var(--font-caption);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-muted);
 }
 
 .runnerUpName {
   font-size: var(--font-body-sm);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: var(--color-fg);
   word-break: keep-all;
 }
