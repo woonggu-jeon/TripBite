@@ -66,4 +66,16 @@ export const tournamentApi = {
   removeSaved: async (id: string) => {
     await api.delete(`/mypage/tournaments/${id}`);
   },
+
+  /**
+   * 토너먼트 기록 — 사용자의 누적 토너먼트 결과 (각 토너먼트의 winner / 진행
+   * 횟수 등 메타). mypage 의 "토너먼트 기록" 섹션에서 사용.
+   *
+   * 응답 형태: `{ items: TournamentHistoryItem[]; nextCursor?: string | null }`.
+   * mock 은 단일 페이지 — BE 도입 시 InfiniteList 패턴으로 확장.
+   */
+  listHistory: async () => {
+    const res = await api.get('/mypage/tournament-history');
+    return res.data as { items: unknown[]; nextCursor?: string | null };
+  },
 };

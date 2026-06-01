@@ -27,6 +27,7 @@ const FETCHERS: Record<
   received: letterApi.listReceived,
   sent: letterApi.listSent,
   liked: letterApi.listLiked,
+  saved: letterApi.listSaved,
 };
 
 /**

@@ -17,6 +17,7 @@ export const tournamentKeys = {
   candidates: (config: CandidateKeyShape) =>
     [...tournamentKeys.all, 'candidates', config] as const,
   saved: () => [...tournamentKeys.all, 'saved'] as const,
+  history: () => [...tournamentKeys.all, 'history'] as const,
   destinationDetail: (id: string) =>
     [...tournamentKeys.all, 'destination', id] as const,
 };
@@ -87,5 +88,20 @@ export function useRemoveSavedTournament() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: tournamentKeys.saved() });
     },
+  });
+}
+
+/**
+ * 토너먼트 기록 — 사용자의 누적 토너먼트 결과 목록.
+ *
+ * mypage 의 "토너먼트 기록" 섹션에서 사용 (InfiniteList).
+ * 백엔드: GET /mypage/tournament-history → `{ items, nextCursor }`.
+ * 현재 mock 은 단일 페이지 반환 (cursor 미지원) — BE 도입 시 InfiniteList 로 확장.
+ */
+export function useTournamentHistory() {
+  return useQuery({
+    queryKey: tournamentKeys.history(),
+    queryFn: tournamentApi.listHistory,
+    ...CACHE.user,
   });
 }

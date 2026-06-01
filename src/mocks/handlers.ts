@@ -335,6 +335,64 @@ export const handlers = [
     return HttpResponse.json([]);
   }),
 
+  // ===== MyPage =====
+  // 마이페이지 요약 — 프로필 / 저장된 우승지 / 저장·좋아요 편지 / 여행 유형.
+  // 클라이언트 mypageApi.getSummary() 가 호출. 누락 시 e2e 시나리오에서
+  // /mypage 진입 시 ECONNREFUSED proxy 회귀.
+  http.get(`${apiUrl}/mypage`, () =>
+    HttpResponse.json({
+      profile: { nickname: mockUser.nickname, isDefault: false },
+      savedTournaments: [],
+      savedLetters: letterSeeds.filter((l) => l.saved).slice(0, 5),
+      likedLetters: letterSeeds.filter((l) => l.liked).slice(0, 5),
+      travelType: myTravelType,
+    }),
+  ),
+  // 닉네임 변경 (PATCH /mypage/profile)
+  http.patch(`${apiUrl}/mypage/profile`, async ({ request }) => {
+    const body = (await request.json().catch(() => ({}))) as {
+      nickname?: string;
+    };
+    return HttpResponse.json({
+      nickname: body.nickname ?? mockUser.nickname,
+      isDefault: false,
+    });
+  }),
+  // 저장된 토너먼트 우승지 — 목록 (e2e proxy 회귀 회피)
+  http.get(`${apiUrl}/mypage/tournaments`, () => HttpResponse.json([])),
+  // 저장된 우승지 삭제
+  http.delete(
+    `${apiUrl}/mypage/tournaments/:id`,
+    () => new HttpResponse(null, { status: 204 }),
+  ),
+
+  // ===== Settings =====
+  // 사용자 설정 — 알림 toggle 등. 누락 시 /settings proxy 회귀.
+  http.get(`${apiUrl}/settings`, () =>
+    HttpResponse.json({
+      notifications: {
+        pushEnabled: false,
+        inAppEnabled: true,
+        letterReceived: true,
+        letterLiked: true,
+      },
+    }),
+  ),
+  http.patch(`${apiUrl}/settings/notifications`, async ({ request }) => {
+    const patch = (await request.json().catch(() => ({}))) as Record<
+      string,
+      boolean
+    >;
+    return HttpResponse.json({
+      notifications: {
+        pushEnabled: patch.pushEnabled ?? false,
+        inAppEnabled: patch.inAppEnabled ?? true,
+        letterReceived: patch.letterReceived ?? true,
+        letterLiked: patch.letterLiked ?? true,
+      },
+    });
+  }),
+
   // ===== Tournament =====
   http.get(`${apiUrl}/mypage/tournament-history`, () =>
     HttpResponse.json({ items: tournamentHistorySeeds, nextCursor: null }),

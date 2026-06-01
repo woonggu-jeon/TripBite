@@ -38,6 +38,7 @@ const FETCHERS = {
   received: letterApi.listReceived,
   sent: letterApi.listSent,
   liked: letterApi.listLiked,
+  saved: letterApi.listSaved,
 } as const;
 
 export function LetterIndex() {

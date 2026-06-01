@@ -24,8 +24,8 @@ export type LetterPage = {
   nextCursor: number | null;
 };
 
-/** 편지 목록 종류 — 받은 / 보낸 / 좋아요(하트) */
-export type LetterListKind = 'received' | 'sent' | 'liked';
+/** 편지 목록 종류 — 받은 / 보낸 / 좋아요 / 저장 (북마크) */
+export type LetterListKind = 'received' | 'sent' | 'liked' | 'saved';
 
 export type SendLetterRequest = {
   body: string; // 1~5자

@@ -426,12 +426,14 @@
       "section": "Letters",
       "received": "Received",
       "sent": "Sent",
-      "liked": "Hearts"
+      "liked": "Hearts",
+      "saved": "Saved"
     },
     "empty": {
       "received": "No letters yet",
       "sent": "No letters sent yet",
-      "liked": "No hearts yet"
+      "liked": "No hearts yet",
+      "saved": "No saved letters yet"
     },
     "listError": "Couldn't load letters",
     "listRetry": "Try again",

@@ -43,6 +43,7 @@ export const letterApi = {
   listReceived: (cursor = 0) => fetchLetterPage('/letters/received', cursor),
   listSent: (cursor = 0) => fetchLetterPage('/letters/sent', cursor),
   listLiked: (cursor = 0) => fetchLetterPage('/letters/liked', cursor),
+  listSaved: (cursor = 0) => fetchLetterPage('/letters/saved', cursor),
 
   get: async (id: string): Promise<Letter> => {
     const res = await api.get<Letter>(`/letters/${id}`);
