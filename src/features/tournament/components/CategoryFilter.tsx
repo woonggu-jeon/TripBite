@@ -5,8 +5,10 @@ import { haptic } from '@/lib/haptic';
 import type { DestinationCategory } from '@/features/tournament/types';
 import styles from './CategoryFilter.module.scss';
 
+// 'local'(지역 명소) 은 UI 미노출 — 정책상 토너먼트 카테고리 선택은 축제 /
+// 관광지 / 체험관광 3 종으로 제한 (DestinationCategory 타입은 'local' 유지 —
+// 다른 영역에서 데이터 표시는 가능).
 const CATEGORIES: { value: DestinationCategory; emoji: string }[] = [
-  { value: 'local', emoji: '🏘️' },
   { value: 'festival', emoji: '🎪' },
   { value: 'attraction', emoji: '📍' },
   { value: 'experience', emoji: '🎨' },
