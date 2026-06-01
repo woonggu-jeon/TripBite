@@ -138,7 +138,7 @@ export function TournamentPlayClient() {
 
   return (
     <div className={styles.wrap}>
-      {theme.kind === 'season' && phase !== 'bracket' && (
+      {theme.kind === 'season' && (phase === 'intro' || phase === 'map') && (
         <FallingPetals season={theme.value} active />
       )}
 

@@ -57,27 +57,37 @@ export function TournamentSetup() {
   const [category, setCategory] = useState<DestinationCategory | null>(null);
   const [count, setCount] = useState<TournamentCount | null>(null);
 
+  // step 전환 시 이전 step 의 클릭된 button focus 가 unmount 되며 브라우저가
+  // fallback 으로 새 step 의 동일 위치 button 에 focus 자동 이동시키는 케이스.
+  // 명시 blur 로 차단 — 새 step 첫 진입 시 어느 카드에도 focus 안 남음.
+  const advanceTo = (next: Step) => {
+    if (typeof document !== 'undefined') {
+      (document.activeElement as HTMLElement | null)?.blur?.();
+    }
+    setStep(next);
+  };
+
   const handleKind = (k: ThemeKind) => {
     setThemeKind(k);
     // 분기 바뀌면 다른 분기 선택 초기화
     if (k === 'season') setSpecialDay(null);
     else setSeason(null);
-    setStep(2);
+    advanceTo(2);
   };
 
   const handleSeason = (s: Season) => {
     setSeason(s);
-    setStep(3);
+    advanceTo(3);
   };
 
   const handleSpecialDay = (d: SpecialDay) => {
     setSpecialDay(d);
-    setStep(3);
+    advanceTo(3);
   };
 
   const handleCategory = (c: DestinationCategory) => {
     setCategory(c);
-    setStep(4);
+    advanceTo(4);
   };
 
   const handleCount = (c: TournamentCount) => {
