@@ -17,60 +17,57 @@ import styles from './FestivalCarousel.module.scss';
  */
 
 interface Festival {
+  /** destinationSeeds 와 매칭되는 id — 클릭 시 /destination/{id} 로 진입. */
   id: string;
   name: string;
   region: string;
   period: string;
   emoji: string;
   tone: 'red' | 'amber' | 'green' | 'blue' | 'violet';
-  href: `/region/${string}`;
 }
 
+// id 는 mocks/seeds/destinations.ts 의 destinationSeeds id 와 일치
+// (보은 대추축제 = boeun-festival-1 등) — /api/destinations/:id mock 응답 정상.
 const FESTIVALS: readonly Festival[] = [
   {
-    id: 'f-1',
+    id: 'boeun-festival-1',
     name: '보은 대추축제',
     region: '보은군',
     period: '10.10 — 10.16',
     emoji: '🌰',
     tone: 'amber',
-    href: '/region/boeun',
   },
   {
-    id: 'f-2',
+    id: 'danyang-festival-1',
     name: '단양 마늘축제',
     region: '단양군',
     period: '10.05 — 10.08',
     emoji: '🧄',
     tone: 'green',
-    href: '/region/danyang',
   },
   {
-    id: 'f-3',
+    id: 'goesan-festival-1',
     name: '괴산 고추축제',
     region: '괴산군',
     period: '08.30 — 09.03',
     emoji: '🌶️',
     tone: 'red',
-    href: '/region/goesan',
   },
   {
-    id: 'f-4',
+    id: 'cheongju-festival-1',
     name: '청주 공예비엔날레',
     region: '청주시',
     period: '09.01 — 10.15',
     emoji: '🎨',
     tone: 'violet',
-    href: '/region/cheongju',
   },
   {
-    id: 'f-5',
+    id: 'jecheon-festival-1',
     name: '제천 국제음악영화제',
     region: '제천시',
     period: '08.10 — 08.15',
     emoji: '🎬',
     tone: 'blue',
-    href: '/region/jecheon',
   },
 ] as const;
 
@@ -132,7 +129,7 @@ export function FestivalCarousel() {
 function Card({ festival }: { festival: Festival }) {
   return (
     <Link
-      href={festival.href}
+      href={{ pathname: `/destination/${festival.id}` }}
       className={`${styles.card} ${styles[festival.tone]}`}
       aria-label={`${festival.name} ${festival.period}`}
     >

@@ -1,10 +1,38 @@
 // Card primitive variant="surface" 가 bg/border/radius 담당. 본 SCSS 는 grid + 인 padding 만.
+// Link 로 wrap 되어 detail 페이지로 진입 — 인터랙션도 함께.
 .card {
   display: grid;
   grid-template-columns: 44px 1fr auto;
   gap: 0.875rem;
   align-items: center;
   padding: 0.875rem 1rem;
+  color: var(--color-fg);
+  text-decoration: none;
+  transition:
+    border-color var(--motion-base) ease,
+    transform var(--motion-fast) ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--color-primary-border);
+    }
+  }
+  &:active {
+    transform: scale(0.99);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+    &:active {
+      transform: none;
+    }
+  }
 }
 
 .rank {

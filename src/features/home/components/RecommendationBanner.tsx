@@ -20,42 +20,45 @@ import styles from './RecommendationBanner.module.scss';
 type Tone = 'spring' | 'summer' | 'autumn' | 'winter' | 'festival';
 
 interface Recommendation {
+  /** 카드 식별자 (key 용) */
   id: string;
+  /** destinationSeeds 와 매칭되는 id — 클릭 시 /destination/{id} 로 진입. */
+  destinationId: string;
   emoji: string;
   headline: string;
   destination: string;
   description: string;
   tone: Tone;
-  href: '/tournament' | `/region/${string}` | '/letter/compose';
 }
 
+// destinationId 는 mocks/seeds/destinations.ts 와 매칭.
 const RECOMMENDATIONS: readonly Recommendation[] = [
   {
     id: 'r-1',
+    destinationId: 'cheongju-attraction-1', // 청남대
     emoji: '🌤️',
     headline: '맑은 날 산책',
-    destination: '청남대 호반길',
+    destination: '청남대',
     description: '호반의 산책로에서 가을 햇살을',
     tone: 'autumn',
-    href: '/region/cheongju',
   },
   {
     id: 'r-2',
+    destinationId: 'danyang-attraction-1', // 도담삼봉
     emoji: '🍂',
     headline: '이번 주 풍경',
     destination: '단양 도담삼봉',
     description: '단풍이 물든 강변 절경',
     tone: 'autumn',
-    href: '/region/danyang',
   },
   {
     id: 'r-3',
+    destinationId: 'boeun-festival-1', // 보은대추축제
     emoji: '🎪',
     headline: '지금 열리는 축제',
     destination: '보은 대추축제',
     description: '가을의 단맛, 지역의 정',
     tone: 'festival',
-    href: '/tournament',
   },
 ] as const;
 
@@ -79,7 +82,7 @@ export function RecommendationBanner() {
 function Slide({ item, ctaLabel }: { item: Recommendation; ctaLabel: string }) {
   return (
     <Link
-      href={item.href}
+      href={{ pathname: `/destination/${item.destinationId}` }}
       className={`${styles.slide} ${styles[item.tone]}`}
       aria-label={`${item.headline} ${item.destination}`}
     >
