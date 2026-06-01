@@ -205,56 +205,7 @@ import { cardClasses } from '@/components/ui';
 
 shadow 강도 조정 시 `--shadow-card-strong` 한 곳. dark/light 분기는 자동.
 
-## 4. 마이그레이션 상태
-
-| 항목                                                                                  | 상태 |
-| ------------------------------------------------------------------------------------- | ---- |
-| Typography 시멘틱 토큰 (`--font-display/h1/h2/h3/body/body-sm/label/caption/eyebrow`) | ✅   |
-| `font-size: 0.6875/0.75/0.8125/0.875/0.9375/1/1.0625/1.125/1.25/1.5/2.5 rem` → 시멘틱 | ✅   |
-| Primary mix 변형 토큰화 (`--color-primary-fade/ring-soft/glow/text-bold`)             | ✅   |
-| fg alpha 토큰 (`--color-hover-soft`, `--color-divider`, `--color-overlay`)            | ✅   |
-| multi-line `color-mix` perl 일괄 토큰화 (15+ 컴포넌트)                                | ✅   |
-| `<PageSection>` primitive + RankingPageContent 적용                                   | ✅   |
-| Card 마이그레이션: WinnerCard / ProfileCard / TravelTypeResult / Share / Top5Card     | ✅   |
-| Chip 마이그레이션: WinnerCard / Profile / Result / Share keywords·code                | ✅   |
-| IconButton 마이그레이션: Profile camera / Share back                                  | ✅   |
-| LetterRowCard / NotificationDropdown 토큰화                                           | ✅   |
-| `cardClasses` 헬퍼 + LetterRowCard Link 에 Card 스타일 적용                           | ✅   |
-| `letter-spacing` 일괄 토큰화 (-0.01/-0.02/0.02/0.06em → tracking-\*)                  | ✅   |
-| `line-height` 일괄 토큰화 (1.2/1.3/1.4/1.5 → line-\*)                                 | ✅   |
-| Emoji 스케일 토큰 + 컴포넌트별 1.375/1.75/2.25/4/4.5rem 매핑                          | ✅   |
-| 색 변형 추가 (`--color-primary-tint-strong/dimmed`) + 3/5/6/14/20/50/80% 통합 매핑    | ✅   |
-| Button primitive 광역 마이그레이션 (Tournament setup/play, Quiz, Confirm, Letter 등)  | ✅   |
-| Card `cardClasses` `padding` option 미명시 시 `.p-*` 클래스 미부여 (충돌 회피)        | ✅   |
-| Card primitive base `.card` → `.root` rename + `:where(.root)` specificity 0          | ✅   |
-| Auth 6 페이지 → `AuthLayout` primitive 적용 (변형: center/column)                     | ✅   |
-| Policy 3 페이지 → `PolicyArticle` / `PolicySection` / `PolicyFooter` 적용             | ✅   |
-| Letter 도메인 amber hex → `--color-letter-accent` / `--color-letter-paper` 토큰화     | ✅   |
-| MyPage / Region inline → SCSS module 분리                                             | ✅   |
-| `border-radius: 9999px` → `var(--radius-full)` 통일 (3곳)                             | ✅   |
-| 중복 Section 컴포넌트 (MyPage / Settings) → `PageSection` primitive 통합              | ✅   |
-| ESLint warning 0 (ConfirmDialog 의 dialog backdrop 패턴 명시 disable)                 | ✅   |
-| dark mode 누락 sweep — 의도된 hex 외 누락 없음                                        | ✅   |
-| `FestivalCarousel` 의 `0.625rem` → `--font-eyebrow` 흡수                              | ✅   |
-| `#fff8e7` → `--color-letter-cream` 토큰화 + light/dark 분기                           | ✅   |
-| dead CSS 정리 (LetterCompose/Sent/Detail 의 .primary/.secondary/.error)               | ✅   |
-| accessibility (aria/alt/label) sweep — 누락 없음                                      | ✅   |
-| `scripts/dead-css.mjs` dead CSS 검출기 추가 (CI 통합 가능)                            | ✅   |
-| `--color-on-strong` 신설 + #fff badge text 5곳 토큰화                                 | ✅   |
-| `--accent-{season}` × 5 + grad-start/end × 5 (RecommendationBanner)                   | ✅   |
-| `--accent-{color}` × 5 (FestivalCarousel red/amber/green/blue/violet)                 | ✅   |
-| `--drop-shadow-sm/-md` + `--text-shadow-soft` 신설 + 4곳 토큰화                       | ✅   |
-| `--chart-1` ~ `--chart-8` + colors.ts 갱신 (recharts 팔레트 토큰화)                   | ✅   |
-| `--emoji-3xl/-4xl` 신설 + 5rem/6rem 흡수 (celebration/illustration)                   | ✅   |
-| `--font-letter-body/-stamp-tag` 도메인 토큰 + 1.625rem/0.5rem 흡수 (3곳)              | ✅   |
-| box-shadow rgba 4곳 → 기존 shadow 토큰 흡수 (sm/md/pop)                               | ✅   |
-| raw transition 2곳 → motion-base/motion-emphasis 토큰 흡수                            | ✅   |
-| `--font-letter-envelope/-tournament-trophy/-winner` 도메인 토큰 + 3곳 흡수            | ✅   |
-| line-height 1.25/1.55 → tight/normal 흡수 (3곳)                                       | ✅   |
-| letter-spacing 0.05em→uppercase, -0.04em→tight, 0.1/0.12em → 새 emphasis (6곳)        | ✅   |
-| `--drop-shadow-xs/-lg` 신설 + ChungbukMap/FallingPetals 흡수                          | ✅   |
-
-## 5. 남은 후속 정비 (점진)
+## 4. 남은 후속 정비 (점진)
 
 토큰화 광역 sweep 완료. 잔존은 모두 **시각 변경 위험 / 컴포넌트 unique 의도값**.
 
