@@ -37,8 +37,25 @@
   }
 }
 
+// 탭 panel 영역 — skeleton ↔ data 전환 시 CLS 0.
+// LetterRowCard ≈ 107px (padding 24 + image 80 + border 3) + gap 12.
+// 3 row + sentinel 가 안정적으로 들어갈 높이.
+//
+// display: block — 자식 InfiniteList 가 자체 grid 를 가지므로 wrapper 는 block.
 .list {
-  min-height: 200px;
+  position: relative;
+  min-height: 360px;
+}
+
+// 비활성 panel 만 숨김. [hidden] specificity 가 .panel 보다 높아 안전.
+.panel[hidden] {
+  display: none;
+}
+
+@media (max-width: 380px) {
+  .list {
+    min-height: 320px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
