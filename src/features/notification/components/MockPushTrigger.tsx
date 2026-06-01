@@ -40,7 +40,9 @@ export function MockPushTrigger() {
         title: '편지가 도착했어요',
         body: '익명의 여행자가 보낸 다섯 글자',
         link: res.data?.link,
-        tag: 'mock-letter',
+        // 매번 unique tag — 같은 tag 면 OS 가 "update" 로 처리해 새 토스트를
+        // 안 띄우는 케이스가 있어 dev 검증 시는 매 호출 다르게.
+        tag: `mock-letter-${Date.now()}`,
       });
       await queryClient.invalidateQueries({
         queryKey: notificationKeys.inbox(),
