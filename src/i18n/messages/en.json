@@ -186,7 +186,13 @@
       "quick": {
         "tournament": "Bracket",
         "letter": "Write letter",
-        "quiz": "Type test"
+        "quiz": "Type test",
+        "tournamentBySeason": {
+          "spring": "Start spring bracket 🌸",
+          "summer": "Start summer bracket ☀",
+          "autumn": "Start autumn bracket 🍂",
+          "winter": "Start winter bracket ❄"
+        }
       }
     },
     "recommendation": {

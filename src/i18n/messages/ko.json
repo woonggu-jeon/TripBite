@@ -186,7 +186,13 @@
       "quick": {
         "tournament": "토너먼트",
         "letter": "편지 쓰기",
-        "quiz": "유형 테스트"
+        "quiz": "유형 테스트",
+        "tournamentBySeason": {
+          "spring": "이번 봄 토너먼트 시작하기 🌸",
+          "summer": "이번 여름 토너먼트 시작하기 ☀",
+          "autumn": "이번 가을 토너먼트 시작하기 🍂",
+          "winter": "이번 겨울 토너먼트 시작하기 ❄"
+        }
       }
     },
     "recommendation": {

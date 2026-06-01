@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import {
   ThemeKindSelector,
@@ -23,6 +23,14 @@ import type {
 import { haptic } from '@/lib/haptic';
 import { Button } from '@/components/ui';
 import styles from './TournamentSetup.module.scss';
+
+const VALID_SEASONS: readonly Season[] = [
+  'spring',
+  'summer',
+  'autumn',
+  'winter',
+];
+const VALID_SPECIAL_DAYS: readonly SpecialDay[] = ['birthday', 'anniversary'];
 
 /**
  * 토너먼트 설정 — 스텝별 진행 (4 steps)
@@ -47,13 +55,44 @@ type Step = 1 | 2 | 3 | 4;
 
 export function TournamentSetup() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const t = useTranslations('tournament.setup');
   const setConfig = useTournamentStore((s) => s.setConfig);
 
-  const [step, setStep] = useState<Step>(1);
-  const [themeKind, setThemeKind] = useState<ThemeKind | null>(null);
-  const [season, setSeason] = useState<Season | null>(null);
-  const [specialDay, setSpecialDay] = useState<SpecialDay | null>(null);
+  // 홈 "이번 {계절} 토너먼트 시작하기" 진입 시 query 로 theme + season 사전 선택.
+  // theme=season&season=spring → themeKind/season 채우고 step 3 (여행 유형) 부터.
+  // theme=special&special=birthday → 동일 방식 (확장 여지).
+  // 미지정 / 잘못된 값 → 일반 흐름 (step 1 부터).
+  const initialTheme = searchParams.get('theme');
+  const initialSeasonParam = searchParams.get('season');
+  const initialSpecialParam = searchParams.get('special');
+  const initialSeason: Season | null =
+    initialTheme === 'season' &&
+    initialSeasonParam !== null &&
+    (VALID_SEASONS as readonly string[]).includes(initialSeasonParam)
+      ? (initialSeasonParam as Season)
+      : null;
+  const initialSpecial: SpecialDay | null =
+    initialTheme === 'special' &&
+    initialSpecialParam !== null &&
+    (VALID_SPECIAL_DAYS as readonly string[]).includes(initialSpecialParam)
+      ? (initialSpecialParam as SpecialDay)
+      : null;
+  const initialThemeKind: ThemeKind | null = initialSeason
+    ? 'season'
+    : initialSpecial
+      ? 'special'
+      : null;
+  const initialStep: Step = initialThemeKind ? 3 : 1;
+
+  const [step, setStep] = useState<Step>(initialStep);
+  const [themeKind, setThemeKind] = useState<ThemeKind | null>(
+    initialThemeKind,
+  );
+  const [season, setSeason] = useState<Season | null>(initialSeason);
+  const [specialDay, setSpecialDay] = useState<SpecialDay | null>(
+    initialSpecial,
+  );
   const [category, setCategory] = useState<DestinationCategory | null>(null);
   const [count, setCount] = useState<TournamentCount | null>(null);
 

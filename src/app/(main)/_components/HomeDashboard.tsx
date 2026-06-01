@@ -1,12 +1,15 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Trophy, Mail, Sparkles } from 'lucide-react';
+import { Trophy, Sparkles } from 'lucide-react';
 import { ROUTES } from '@/constants/routes';
 import { RecommendationBanner } from '@/features/home/components/RecommendationBanner';
 import { FestivalCarousel } from '@/features/home/components/FestivalCarousel';
 import { LatestReceivedLetter } from '@/features/home/components/LatestReceivedLetter';
+import { getCurrentSeason } from '@/features/tournament/utils/season';
+import type { Season } from '@/features/tournament/types';
 import styles from './HomeDashboard.module.scss';
 
 /**
@@ -15,7 +18,10 @@ import styles from './HomeDashboard.module.scss';
  * 위젯 (위 → 아래):
  *   1) 위치+날씨 기반 오늘의 추천 (WeatherWidget + 추천 1~3개)
  *   2) 진행 중인 충북 축제 슬라이드 (Carousel + useOngoingFestivals)
- *   3) 빠른 시작 3버튼 (토너먼트/편지/유형 테스트)
+ *   3) 빠른 시작 2버튼 (계절 토너먼트 / 유형 테스트)
+ *      - 토너먼트: 현재 월 → 계절 자동 → 라벨 동적, 클릭 시 theme=season +
+ *        season=현재계절 query 로 setup 의 step 3 (여행 유형) 부터 시작.
+ *      - 편지 쓰기는 홈에서 미노출 (편지 메뉴 / 알림함 경로로 진입).
  *   4) 새로 도착한 편지 미리보기 (가장 최근 1장 + 도트)
  *   5) 내 우승지 가로 슬라이드 (Carousel + slidesPerView 2~3)
  *
@@ -27,6 +33,13 @@ import styles from './HomeDashboard.module.scss';
  */
 export function HomeDashboard() {
   const t = useTranslations('home.widgets');
+
+  // 첫 SSR/hydration 에서 hydration mismatch 회피 — mount 후 클라이언트 시간으로
+  // 계절 결정. 잠깐의 fallback("spring") 은 시각상 거의 인지 불가.
+  const [season, setSeason] = useState<Season>('spring');
+  useEffect(() => {
+    setSeason(getCurrentSeason());
+  }, []);
 
   return (
     <div className={styles.grid}>
@@ -48,17 +61,15 @@ export function HomeDashboard() {
         <FestivalCarousel />
       </section>
 
-      {/* 3) 빠른 시작 3버튼 */}
+      {/* 3) 빠른 시작 2버튼 — 계절 토너먼트 / 유형 테스트 */}
       <section data-widget="quick-actions" className={styles.quickActions}>
         <QuickActionLink
-          href={ROUTES.TOURNAMENT}
+          href={{
+            pathname: ROUTES.TOURNAMENT,
+            query: { theme: 'season', season },
+          }}
           icon={<Trophy size={20} />}
-          label={t('quick.tournament')}
-        />
-        <QuickActionLink
-          href={ROUTES.LETTER_COMPOSE}
-          icon={<Mail size={20} />}
-          label={t('quick.letter')}
+          label={t(`quick.tournamentBySeason.${season}`)}
         />
         <QuickActionLink
           href={ROUTES.QUIZ}
