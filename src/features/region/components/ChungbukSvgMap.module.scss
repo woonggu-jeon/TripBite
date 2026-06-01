@@ -1,0 +1,66 @@
+.wrap {
+  width: 100%;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.cell {
+  cursor: default;
+
+  .tile {
+    fill: var(--color-surface-2);
+    stroke: var(--color-border);
+    stroke-width: 1.5;
+    transition: fill var(--motion-base) ease;
+  }
+
+  .label {
+    font-size: 12px;
+    fill: var(--color-muted);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--tracking-snug);
+    pointer-events: none;
+  }
+}
+
+.cell.visited {
+  .tile {
+    fill: var(--color-primary-fade);
+    stroke: var(--color-primary);
+  }
+  .label {
+    fill: var(--color-primary);
+    font-weight: var(--font-weight-bold);
+  }
+}
+
+.stamp {
+  font-size: 13px;
+  font-weight: var(--font-weight-extrabold);
+  fill: var(--color-primary);
+  pointer-events: none;
+}
+
+.srList {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 380px) {
+  .label {
+    font-size: 10px;
+  }
+}

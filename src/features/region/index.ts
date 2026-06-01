@@ -9,14 +9,11 @@
  *   - 토너먼트 필터: 지역 선택
  */
 export { regionApi } from './api/region';
+export { RegionStampMap } from './components/RegionStampMap';
 export {
   useRegionSummary,
   useRegionContents,
   useOngoingFestivals,
   regionKeys,
 } from './hooks/use-region';
-export type {
-  RegionContent,
-  RegionContentType,
-  RegionSummary,
-} from './types';
+export type { RegionContent, RegionContentType, RegionSummary } from './types';
