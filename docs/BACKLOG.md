@@ -93,6 +93,29 @@
 
 **의존성**: 백엔드. **각 M**.
 
+### 2-1-1. 이미지 카드 공유 (Phase 3 묶음) — next/og
+
+토너먼트 결과 / 여행 유형 결과를 SNS 카드 (카톡/트위터/슬랙 미리보기) 로 공유. deep-link 가 도입된 후에야 받는 쪽이 결과를 볼 수 있어 **Phase 3 와 묶음**.
+
+| 작업                                                                                            | 비고                                                                          |
+| ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `src/app/api/og/[type]/[id]/route.tsx` route 1개 (type=tournament\|quiz)                        | Next.js `ImageResponse` (Satori). 번들 영향 0 KB                              |
+| Pretendard Bold subset (~50KB) server-side 호스팅                                               | `public/fonts/pretendard-bold-subset.woff` — Edge runtime fetch               |
+| 단일 카드 템플릿 JSX — type 인자로 토너먼트/퀴즈 분기                                           | 외부 이미지 fetch X. 카테고리 이모지 + 그라데이션 + 텍스트만. 콜드스타트 빠름 |
+| `generateMetadata.openGraph.images` 동적 (result page 의 `?id=` 기반)                           | 카톡/슬랙/트위터 미리보기 자동                                                |
+| TournamentResultClient + TravelTypeResult 에 share Button + IconButton                          | `lib/share.ts` 의 `shareUrl({ url, title, text })` 호출                       |
+| (선택) Web Share API + File — `fetch(/api/og/...)` → Blob → `navigator.share({ files: [...] })` | 사용자가 사진 저장 / 인스타 직접 첨부 원할 때                                 |
+
+**의존성**: deep-link 도입 (Phase 3 의 result deep-link), 카드 디자인 시안 (없으면 미니멀 기본 카드).
+
+**작업량**: M (1-3시간).
+
+### 2-1-2. 여행지 상세 — URL 공유 ✅ 완료
+
+`DestinationDetailClient` 의 SubHeader 우측에 share IconButton 추가. `lib/share.ts` (Web Share API + clipboard fallback) 호출. 받는 쪽 미리보기는 사이트 공통 OG (이미 `layout.tsx` 의 metadataBase 가 제공).
+
+추후 enhancement: `generateMetadata.openGraph.images` 에 `detail.photos[0]` (있으면) 또는 카테고리별 정적 OG 이미지.
+
 ### 2-2. TODO 주석 (페이지 placeholder)
 
 | 위치                                       | 작업                                                                                                               |

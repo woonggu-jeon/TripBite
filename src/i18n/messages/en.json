@@ -12,6 +12,8 @@
     "submitting": "Processing...",
     "tryAgain": "Try again",
     "share": "Share",
+    "shareLinkCopied": "Link copied to clipboard",
+    "shareFailed": "Share failed. Please try again.",
     "next": "Next",
     "previous": "Previous",
     "skip": "Skip",

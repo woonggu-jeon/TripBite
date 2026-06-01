@@ -12,6 +12,8 @@
     "submitting": "처리 중...",
     "tryAgain": "다시 시도",
     "share": "공유",
+    "shareLinkCopied": "링크가 복사되었어요",
+    "shareFailed": "공유에 실패했어요. 잠시 후 다시 시도해주세요.",
     "next": "다음",
     "previous": "이전",
     "skip": "건너뛰기",

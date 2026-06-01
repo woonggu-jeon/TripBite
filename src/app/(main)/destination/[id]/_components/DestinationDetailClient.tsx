@@ -1,14 +1,16 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Share2 } from 'lucide-react';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
-import { Button } from '@/components/ui';
+import { Button, IconButton } from '@/components/ui';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { useDestinationDetail } from '@/features/tournament/hooks/use-tournament';
 import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetailPanel';
+import { shareUrl } from '@/lib/share';
+import { toast } from '@/lib/toast';
 import styles from './DestinationDetailClient.module.scss';
 
 const CATEGORY_EMOJI: Record<string, string> = {
@@ -32,6 +34,7 @@ const CATEGORY_EMOJI: Record<string, string> = {
  */
 export function DestinationDetailClient({ id }: { id: string }) {
   const t = useTranslations('destination');
+  const tCommon = useTranslations('common');
   const tSeason = useTranslations('tournament.season');
   const tCategory = useTranslations('tournament.category');
   const {
@@ -41,8 +44,32 @@ export function DestinationDetailClient({ id }: { id: string }) {
     refetch,
   } = useDestinationDetail(id);
 
+  const handleShare = async () => {
+    if (!detail) return;
+    const result = await shareUrl({
+      url: `/destination/${id}`,
+      title: detail.name,
+      text: detail.summary ?? detail.description,
+    });
+    if (result === 'copied') toast.success(tCommon('shareLinkCopied'));
+    else if (result === 'failed') toast.error(tCommon('shareFailed'));
+    // 'shared' / 'cancelled' 은 silent — OS sheet 에서 사용자 자체 인지.
+  };
+
   // detail 없을 때도 안정적인 header 유지 (CLS 0).
   const title = detail?.name ?? '';
+
+  // share 버튼은 detail 있을 때만 활성화 (없으면 공유할 내용 자체 없음).
+  const shareSlot = detail ? (
+    <IconButton
+      aria-label={tCommon('share')}
+      variant="ghost"
+      size="md"
+      onClick={handleShare}
+    >
+      <Share2 size={20} aria-hidden />
+    </IconButton>
+  ) : undefined;
 
   if (isError) {
     return (
@@ -86,7 +113,7 @@ export function DestinationDetailClient({ id }: { id: string }) {
 
   return (
     <>
-      <SubHeader title={title} />
+      <SubHeader title={title} rightSlot={shareSlot} />
       <article className={styles.wrap} aria-labelledby="destination-name">
         <header className={styles.hero}>
           <span className={styles.heroEmoji} aria-hidden>
