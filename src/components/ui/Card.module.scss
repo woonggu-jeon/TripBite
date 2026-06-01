@@ -12,25 +12,27 @@
     box-shadow var(--motion-base) ease;
 }
 
-// variants — :where() 로 specificity 0. 호출처가 background/border 를
-// override 하고 싶으면 자유롭게 가능.
-:where(.v-surface) {
+// variants — 일반 클래스 (specificity 0,1,0). globals 의 button { border: 0 }
+// 같은 element selector reset 를 이기려면 specificity 0 의 :where() 로는 부족.
+// 호출처 module 의 .card 는 보통 background/border 를 직접 정의하지 않으므로
+// 충돌 위험 없음 (.card layout 만 정의).
+.v-surface {
   background: var(--color-bg);
   border: 1px solid var(--color-border);
 }
 
-:where(.v-soft) {
+.v-soft {
   background: var(--color-surface-soft);
   border: 1px solid var(--color-border);
 }
 
-:where(.v-elevated) {
+.v-elevated {
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-card-strong);
 }
 
-:where(.v-highlighted) {
+.v-highlighted {
   background: linear-gradient(
     180deg,
     var(--color-primary-surface-grad-start),
@@ -40,17 +42,19 @@
   box-shadow: var(--shadow-card-strong);
 }
 
-// padding scale (var(--space-*) 토큰 활용) — :where() 로 specificity 0
-:where(.p-none) {
+// padding scale — padding option 명시 시에만 cardClasses 가 클래스 추가.
+// 일반 클래스 specificity 로 둠 (충돌 위험 없음 — module .card 가 padding
+// 처리하면 padding option 미사용 권장).
+.p-none {
   padding: 0;
 }
-:where(.p-sm) {
+.p-sm {
   padding: var(--space-3);
 }
-:where(.p-md) {
+.p-md {
   padding: var(--space-4);
 }
-:where(.p-lg) {
+.p-lg {
   padding: var(--space-6) var(--space-5);
 }
 
