@@ -15,6 +15,8 @@ import {
   isIOS,
   isPushSupported,
 } from '@/features/notification/utils/subscription';
+import { useAuthStore } from '@/stores/auth-store';
+import { ROUTES } from '@/constants/routes';
 import type {
   AppNotification,
   NotificationType,
@@ -50,6 +52,9 @@ const TYPE_ICON: Record<NotificationType, typeof Mail> = {
 export function NotificationDropdown({ onClose }: { onClose: () => void }) {
   const t = useTranslations('notification');
   const tCommon = useTranslations('common');
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  // 비로그인 사용자에게는 inbox/mark mutation 자체를 사용하지 않음 (401 회피).
+  // useNotificationInbox 는 내부에서 enabled=false 로 fetch 안 함.
   const { data, isLoading } = useNotificationInbox();
   const { mutate: markRead } = useMarkNotificationRead();
   const { mutate: markAllRead } = useMarkAllNotificationsRead();
@@ -82,7 +87,7 @@ export function NotificationDropdown({ onClose }: { onClose: () => void }) {
     >
       <div className={styles.header}>
         <span className={styles.title}>{t('title')}</span>
-        {items.some((n) => !n.read) && (
+        {isAuthenticated && items.some((n) => !n.read) && (
           <button
             type="button"
             className={styles.allRead}
@@ -93,40 +98,58 @@ export function NotificationDropdown({ onClose }: { onClose: () => void }) {
         )}
       </div>
 
-      <PushPrompt />
+      {!isAuthenticated && (
+        <div className={styles.signInPrompt}>
+          <p className={styles.signInText}>{t('signInToView')}</p>
+          <Link
+            href={ROUTES.LOGIN}
+            className={styles.signInCta}
+            onClick={onClose}
+          >
+            {t('signInCta')}
+          </Link>
+        </div>
+      )}
 
-      <div className={styles.list}>
-        {isLoading && (
-          // 3 row skeleton — 알림 항목 layout 과 동일 dimension 으로 자리잡이
-          <div className={styles.skeletonList} aria-label={tCommon('loading')}>
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className={styles.skeletonItem}>
-                <Skeleton width={28} height={28} radius="full" />
-                <div className={styles.skeletonLines}>
-                  <Skeleton width="80%" height={14} radius="sm" />
-                  <Skeleton width="55%" height={12} radius="sm" />
+      {isAuthenticated && <PushPrompt />}
+
+      {isAuthenticated && (
+        <div className={styles.list}>
+          {isLoading && (
+            // 3 row skeleton — 알림 항목 layout 과 동일 dimension 으로 자리잡이
+            <div
+              className={styles.skeletonList}
+              aria-label={tCommon('loading')}
+            >
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className={styles.skeletonItem}>
+                  <Skeleton width={28} height={28} radius="full" />
+                  <div className={styles.skeletonLines}>
+                    <Skeleton width="80%" height={14} radius="sm" />
+                    <Skeleton width="55%" height={12} radius="sm" />
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
-        {!isLoading && items.length === 0 && (
-          <EmptyState
-            icon={<Mail size={28} aria-hidden />}
-            title={t('empty')}
-          />
-        )}
-        {items.map((n) => (
-          <Item
-            key={n.id}
-            n={n}
-            onSelect={() => {
-              if (!n.read) markRead(n.id);
-              onClose();
-            }}
-          />
-        ))}
-      </div>
+              ))}
+            </div>
+          )}
+          {!isLoading && items.length === 0 && (
+            <EmptyState
+              icon={<Mail size={28} aria-hidden />}
+              title={t('empty')}
+            />
+          )}
+          {items.map((n) => (
+            <Item
+              key={n.id}
+              n={n}
+              onSelect={() => {
+                if (!n.read) markRead(n.id);
+                onClose();
+              }}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -606,6 +606,8 @@
     "title": "Notifications",
     "empty": "No notifications yet",
     "markAllRead": "Mark all read",
+    "signInToView": "Sign in to see your notifications.",
+    "signInCta": "Sign in",
     "push": {
       "text": "Want to be notified when a letter arrives?",
       "iosInstallHint": "On iPhone, add to Home Screen first to enable notifications.",

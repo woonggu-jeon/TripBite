@@ -159,3 +159,27 @@
   font-size: var(--font-label);
   color: var(--color-muted);
 }
+
+/* 비로그인 안내 — 알림함 진입 시 로그인 유도 */
+.signInPrompt {
+  display: grid;
+  gap: var(--space-3);
+  place-items: center;
+  padding: var(--space-6) var(--space-4);
+  text-align: center;
+}
+
+.signInText {
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+}
+
+.signInCta {
+  display: inline-flex;
+  padding: 8px 16px;
+  background: var(--color-primary);
+  color: var(--color-primary-fg);
+  border-radius: var(--radius-md);
+  font-size: var(--font-label);
+  font-weight: var(--font-weight-bold);
+}
