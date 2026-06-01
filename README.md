@@ -500,6 +500,99 @@ DevTools Network에서 `mockServiceWorker.js` "intercepted" 로그 확인.
 
 ---
 
+## 푸시 알림 설정 (Web Push)
+
+iOS 16.4+ Safari PWA standalone + Android Chrome (일반/PWA) 둘 다 동일하게 표준 Web Push 로 동작. FCM 별도 SDK / Firebase 프로젝트 **불필요**.
+
+### 1) VAPID 키 1회 생성
+
+```bash
+npx web-push generate-vapid-keys
+```
+
+결과로 `Public Key` (88자 base64url) / `Private Key` (43자 base64url) 한 쌍 출력.
+
+> ⚠️ 한 번 생성하면 절대 rotate 하지 말 것. 바꾸면 기존 모든 사용자의 endpoint 가 무효 → 전체 재구독 강제. 안전한 곳(패스워드 매니저)에 보관.
+
+### 2) 환경변수 채우기
+
+| 키          | 어디                                                      | 비고                                                                   |
+| ----------- | --------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **public**  | 클라이언트 `.env.local` 의 `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | `NEXT_PUBLIC_` 이라 클라이언트 번들에 그대로 들어감 (공개 OK)          |
+| **private** | 서버(NestJS) `.env` 의 `VAPID_PRIVATE_KEY`                | 절대 클라이언트 / git 노출 X. NestJS 들어올 때까지는 패스워드 매니저에 |
+
+### 3) 클라이언트 구조 (이미 구현됨)
+
+| 위치                                                                   | 역할                                                                                        |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `src/features/notification/utils/subscription.ts`                      | `getOrCreatePushSubscription` / `isPushSupported` / `canUsePushOnIOS`                       |
+| `src/features/notification/hooks/use-push-notification.ts`             | `enable` / `disable` — `PushManager.subscribe` + 백엔드 등록                                |
+| `src/features/notification/components/NotificationDropdown.tsx`        | 상단 `PushPrompt` — 권한 default 일 때 노출, iOS standalone 미진입 시 "홈에 추가" 안내 분기 |
+| `src/app/sw.ts`                                                        | `push` / `notificationclick` / `MOCK_PUSH` (mock) message handler                           |
+| `src/features/notification/components/ServiceWorkerNavigateBridge.tsx` | SW 의 `NAVIGATE` 메시지를 `router.push` 로                                                  |
+| `src/features/notification/components/MockPushTrigger.tsx`             | mock 모드 전용 📬 dev 버튼 — 새 편지 도착 시뮬레이션                                        |
+
+### 4) end-to-end 테스트 (mock 환경)
+
+> ⚠️ `npm run dev` 에서는 Serwist SW 가 비활성 (`next.config.js` 의 `disable: NODE_ENV === 'development'`). 푸시 테스트는 **`npm run build && npm start`** 의 production build 에서.
+
+```bash
+npm run build && npm start
+```
+
+1. 헤더 🔔 클릭 → 알림함 상단 "푸시 알림 켜기" prompt
+2. "켜기" 클릭 → 브라우저 권한 다이얼로그 → 허용
+3. 우상단 **📬** 버튼 클릭 (mock 모드 전용)
+4. → OS 알림 토스트 + 알림함에 항목 prepend
+5. 알림 클릭 → 편지 페이지로 SPA 전환
+
+### 5) iOS PWA 실기기 테스트
+
+- Safari 로 사이트 접속 → 공유 → **"홈 화면에 추가"**
+- 홈 아이콘으로 진입 (standalone 모드) → 같은 흐름
+- 일반 Safari 탭은 권한 요청 silent fail → `PushPrompt` 가 "홈에 추가 안내" 로 자동 분기
+
+### 6) NestJS 백엔드 연동 시 (BE 작업)
+
+```bash
+npm i web-push @types/web-push
+```
+
+```ts
+import webpush from 'web-push';
+
+webpush.setVapidDetails(
+  'mailto:admin@tripbite.kr', // contact 메일 (VAPID 규약 필수)
+  process.env.VAPID_PUBLIC_KEY!,
+  process.env.VAPID_PRIVATE_KEY!,
+);
+
+// 새 편지 도착 hook
+await webpush.sendNotification(
+  subscription, // DB 의 {endpoint, keys: {p256dh, auth}}
+  JSON.stringify({
+    title: '편지가 도착했어요',
+    body: '익명의 여행자가 보낸 다섯 글자',
+    link: `/letter/${letterId}`,
+    tag: 'letter-new', // 같은 tag → OS 가 중복 알림 합침
+  }),
+);
+```
+
+payload 형태는 `src/app/sw.ts` 의 `push` handler 와 동일. 클라이언트 추가 작업 X.
+
+### 트러블슈팅
+
+| 증상                                    | 확인                                                                                                 |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| 권한 prompt 가 아예 안 보임             | `Notification.permission` 이 default 아님 / `localStorage.tripbite.push-prompt.dismissed === 'true'` |
+| "켜기" 눌러도 OS 토스트 X               | Windows 알림 센터에서 브라우저 알림 꺼짐 / 집중 지원(방해 금지) ON                                   |
+| 📬 눌러도 OS 알림 X (inbox 만 추가됨)   | 알림 권한 미허용 — `chrome://settings/content/notifications` 에서 site permission 확인               |
+| dev 서버에서 SW 자체가 등록 안 됨       | 정상 — Serwist 가 dev 비활성. production build (`npm run build && npm start`) 로 테스트              |
+| iOS Safari 탭에서 "켜기" 가 silent fail | 정상 — iOS 16.4+ 는 standalone PWA 모드에서만 push 가능. 홈 추가 후 재시도                           |
+
+---
+
 ## Vercel 배포 가이드
 
 ### 환경 변수 설정 (Project → Settings → Environment Variables)
@@ -507,7 +600,8 @@ DevTools Network에서 `mockServiceWorker.js` "intercepted" 로그 확인.
 | 변수                           | 값                            | 비고                                                          |
 | ------------------------------ | ----------------------------- | ------------------------------------------------------------- |
 | `NEXT_PUBLIC_API_URL`          | `https://api.your-domain.com` | 필수 — CSP `connect-src` 에 자동 포함                         |
-| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | VAPID 공개키                  | Web Push 사용 시만                                            |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | VAPID 공개키 (88자 base64url) | Web Push 사용 시만 — 아래 **푸시 알림 설정** 섹션 참고        |
+| `VAPID_PRIVATE_KEY`            | VAPID 비밀키 (43자 base64url) | Server-only — Web Push 발송 서버에서만 사용                   |
 | `NEXT_PUBLIC_APP_VERSION`      | `$VERCEL_GIT_COMMIT_SHA`      | 시스템 변수 참조 가능. `/api/health`, `/settings` 하단에 노출 |
 | `NEXT_PUBLIC_SENTRY_DSN`       | Sentry DSN                    | Sentry 도입 시만                                              |
 | `SENTRY_AUTH_TOKEN`            | (Secret)                      | 빌드 시 source map 업로드용                                   |
