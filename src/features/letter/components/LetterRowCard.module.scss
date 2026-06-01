@@ -39,7 +39,7 @@
 .body {
   font-size: var(--font-body);
   font-weight: 800;
-  color: #fff;
+  color: var(--color-on-strong);
   letter-spacing: var(--tracking-wide);
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   text-align: center;

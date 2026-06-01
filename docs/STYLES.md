@@ -29,6 +29,7 @@
 | 편지 accent (amber)         | `var(--color-letter-accent)` (light/dark 분기)              |
 | 편지 종이 배경              | `var(--color-letter-paper)` (light/dark 분기)               |
 | 편지 종이 cream tint        | `var(--color-letter-cream)` (gradient base용, 분기)         |
+| colored bg 위 흰 텍스트     | `var(--color-on-strong)` (success/danger/banner badge 등)   |
 
 ### Radius
 

@@ -131,18 +131,18 @@
 - RegionWinsChart `width 0.6s var(--ease-out)` (slow 300 ~ emphasis 550 의 사이)
 - 둘 다 unique 의도값. 새 motion 토큰 만들 가치 낮음.
 
-### 7. `#fff` badge text — 2곳
+### 7. `#fff` badge text — `--color-on-strong` 토큰화 완료
 
-- `background: var(--color-success); color: #fff;` 패턴
-- `on-success`/`on-danger` 토큰 도입 시 정리 가능. 현재 정상.
+- `--color-on-strong: #ffffff` (light/dark 공통) 신설.
+- 5곳 (`LetterSentClient` noticeIcon/status, `ConfirmDialog`, `LetterRowCard`, `Banner`) 모두 토큰 적용.
+- 의미: colored bg (success/danger/banner) 위 흰 텍스트. dark 모드에서도 동일 (강한 색 위 흰 글자 가독성 표준). 디자이너가 brand 변경 시 한 곳 조정.
 
 ---
 
 ## 🟢 권장 다음 작업 — 모두 미정 (디자인 결정 필요)
 
-1. **추천 카드 톤별 색 → `--accent-{season}` 토큰화** (디자인 시스템 결정 후)
-2. **`drop-shadow` / `text-shadow` 토큰 추가** (현재 box-shadow 토큰만)
-3. **`on-{role}` 토큰 시리즈** (badge 위 흰/검 텍스트)
-4. **차트 (recharts) 색상 토큰 매핑** — 현재 컴포넌트별 hardcode
+1. **추천 카드 톤별 색** — 이미 컴포넌트 local CSS variable `--accent` 로 추상화 완료. 디자이너가 컴포넌트 SCSS 한 곳에서 조정 가능. globals 토큰화는 의미 다중성 (시즌/카테고리) 으로 보존이 합리적.
+2. **`drop-shadow` / `text-shadow` 토큰 추가** (현재 box-shadow 토큰만) — 컴포넌트별 미세 차이가 많아 일괄화 비용 큼. 디자인 시스템 확정 시 결정.
+3. **차트 (recharts) 색상 토큰 매핑** — 현재 컴포넌트별 hardcode. recharts API 와 토큰 시스템 매핑 결정 필요.
 
-위 4가지는 모두 **사용자/디자이너 결정 필요한 brand-level 확정** 단계. 결정되면 일괄 sed 또는 컴포넌트별 마이그레이션.
+남은 작업 3건 모두 **사용자/디자이너 결정 필요한 brand-level 확정** 단계.
