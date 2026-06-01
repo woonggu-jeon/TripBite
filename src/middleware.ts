@@ -16,6 +16,7 @@ import { buildCsp } from '@/lib/csp';
  *   onboarding 완료 분기는 AuthBootstrap에서 (user.isOnboarded 필요)
  */
 
+// 인증 흐름용 — 인증된 사용자가 진입 시 / 로 보냄 ("로그인된 사람이 로그인 페이지 보면 안 됨")
 const PUBLIC_ONLY_PATHS = [
   '/login',
   '/signup',
@@ -23,6 +24,16 @@ const PUBLIC_ONLY_PATHS = [
   '/reset-password',
   '/find-id',
 ];
+
+// 비인증 사용자도 접근 가능 — auth flow + onboarding + 정책 + offline.
+// 이외 모든 경로는 access_token 쿠키 필수 (없으면 /login 으로).
+const PUBLIC_ACCESS_PATHS = [
+  ...PUBLIC_ONLY_PATHS,
+  '/onboarding',
+  '/policy',
+  '/offline',
+];
+
 const ACCESS_TOKEN_COOKIE = 'access_token';
 const STATE_CHANGING = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
@@ -47,21 +58,21 @@ export function middleware(request: NextRequest) {
   requestHeaders.set('x-nonce', nonce);
   requestHeaders.set('content-security-policy-report-only', csp);
 
-  // ⚠️ 인증 redirect 임시 비활성 — 백엔드 API 붙기 전 모든 페이지 확인용.
-  //    백엔드 연동 후 아래 블록 주석 해제 (PUBLIC_ONLY_PATHS / ACCESS_TOKEN_COOKIE 상수도 살아있음).
-  //
-  // const { pathname } = request.nextUrl;
-  // const hasAccessToken = request.cookies.has(ACCESS_TOKEN_COOKIE);
-  // const isPublicOnly = PUBLIC_ONLY_PATHS.some((p) => pathname.startsWith(p));
-  //
-  // if (isPublicOnly && hasAccessToken) {
-  //   return withCsp(NextResponse.redirect(new URL('/', request.url)), csp);
-  // }
-  // if (!isPublicOnly && !hasAccessToken) {
-  //   const loginUrl = new URL('/login', request.url);
-  //   loginUrl.searchParams.set('redirect', pathname);
-  //   return withCsp(NextResponse.redirect(loginUrl), csp);
-  // }
+  const { pathname } = request.nextUrl;
+  const hasAccessToken = request.cookies.has(ACCESS_TOKEN_COOKIE);
+  const isPublicOnly = PUBLIC_ONLY_PATHS.some((p) => pathname.startsWith(p));
+  const isPublicAccess = PUBLIC_ACCESS_PATHS.some((p) =>
+    pathname.startsWith(p),
+  );
+
+  if (isPublicOnly && hasAccessToken) {
+    return withCsp(NextResponse.redirect(new URL('/', request.url)), csp);
+  }
+  if (!isPublicAccess && !hasAccessToken) {
+    const loginUrl = new URL('/login', request.url);
+    loginUrl.searchParams.set('redirect', pathname);
+    return withCsp(NextResponse.redirect(loginUrl), csp);
+  }
 
   const response = NextResponse.next({ request: { headers: requestHeaders } });
   response.headers.set('Content-Security-Policy-Report-Only', csp);
