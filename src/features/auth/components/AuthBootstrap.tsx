@@ -56,14 +56,26 @@ export function AuthBootstrap() {
     if (isSuccess && data) {
       setAuth(data);
 
-      // 인증 사용자: 백엔드 isOnboarded 우선
-      const isOnboarded =
+      // onboarded 판정 — backend 와 localStorage 의 OR.
+      //
+      // 이유: mock SW 메모리(onboardedState) 가 페이지 reload 마다 false 로
+      // 리셋되어 매번 onboarding 으로 redirect 되는 회귀 발생. 실 백엔드 환경에서도
+      // 일시 장애 / DB 롤백 등으로 isOnboarded 가 false 로 와도 디바이스에서 한번
+      // 완료한 사용자에게 다시 노출하지 않는 게 UX 일관.
+      // - localStorage true (디바이스 신호) ─ 한번 완료 → 다시 노출 X
+      // - backend true                     ─ 정상 완료 상태
+      // - 둘 다 false                       ─ redirect 대상
+      // 명시 reset 이 필요한 경우 localStorage 도 함께 비워야 함 (개발 도구 등).
+      const backendOnboarded =
         (data as { isOnboarded?: boolean }).isOnboarded ?? true;
+      const localOnboarded = localOnboarding.read();
+      const isOnboarded = backendOnboarded || localOnboarded;
+
       if (!isOnboarded && pathname !== '/onboarding') {
         router.replace('/onboarding');
       } else if (isOnboarded && pathname === '/onboarding') {
-        // 인증 + 완료 상태는 localStorage 도 sync (다음 방문 시 비인증 검사 통과)
-        localOnboarding.write(true);
+        // 다음 방문/디바이스 신호 일관 위해 localStorage 도 sync.
+        if (!localOnboarded) localOnboarding.write(true);
         router.replace('/');
       }
       return;
