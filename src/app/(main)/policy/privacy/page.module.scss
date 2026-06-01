@@ -1,0 +1,7 @@
+/* privacy 페이지 전용 — bullet list */
+.list {
+  padding-left: var(--space-5);
+  display: grid;
+  gap: var(--space-1);
+  font-size: var(--font-body-sm);
+}

@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ROUTES } from '@/constants/routes';
 import { ProfileCard } from '@/features/mypage/components/ProfileCard';
+import styles from './MyPageClient.module.scss';
 
 /**
  * 마이페이지 컴포지션
@@ -22,7 +23,7 @@ export function MyPageClient() {
   const t = useTranslations('mypage.sections');
 
   return (
-    <div style={{ display: 'grid', gap: '1.5rem' }}>
+    <div className={styles.grid}>
       {/* 1) 프로필 */}
       <Section title={t('profile')}>
         <ProfileCard />
@@ -57,17 +58,7 @@ export function MyPageClient() {
       </Section>
 
       {/* 계정 관리는 /settings 페이지로 */}
-      <Link
-        href={ROUTES.SETTINGS}
-        style={{
-          padding: '0.875rem 1rem',
-          border: '1px solid var(--color-border)',
-          borderRadius: 'var(--radius-md)',
-          textAlign: 'center',
-          fontSize: '0.875rem',
-          fontWeight: 500,
-        }}
-      >
+      <Link href={ROUTES.SETTINGS} className={styles.settingsLink}>
         {t('goToSettings')}
       </Link>
     </div>
@@ -83,42 +74,17 @@ function Section({
 }) {
   return (
     <section>
-      <h2
-        style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.75rem' }}
-      >
-        {title}
-      </h2>
+      <h2 className={styles.sectionTitle}>{title}</h2>
       {children}
     </section>
   );
 }
 
 function Placeholder({ height, note }: { height: number; note?: string }) {
+  // height 만 동적이므로 inline. 나머지 시각 속성은 module 로.
   return (
-    <div
-      style={{
-        height,
-        border: '1px dashed var(--color-border)',
-        borderRadius: 'var(--radius-lg)',
-        display: 'grid',
-        placeItems: 'center',
-        color: 'var(--color-muted)',
-        fontSize: '0.8125rem',
-        gap: 4,
-      }}
-    >
-      {note && (
-        <span
-          style={{
-            padding: '2px 6px',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius-sm)',
-            fontSize: '0.6875rem',
-          }}
-        >
-          {note}
-        </span>
-      )}
+    <div className={styles.placeholder} style={{ height }}>
+      {note && <span className={styles.placeholderNote}>{note}</span>}
     </div>
   );
 }

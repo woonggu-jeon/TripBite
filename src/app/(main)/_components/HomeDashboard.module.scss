@@ -3,6 +3,24 @@
   gap: var(--space-6);
 }
 
+.placeholder {
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  color: var(--color-muted);
+  font-size: var(--font-body-sm);
+}
+
+.placeholderNote {
+  padding: 2px var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-eyebrow);
+}
+
 // 각 위젯 영역의 min-height — fetch 가 늦어도 layout shift 안 일어나도록.
 // 카카오/Naver 인앱 webview 에서 위젯 도착 시 화면 떨림 방지.
 .grid [data-widget='weather-recommendation'] {

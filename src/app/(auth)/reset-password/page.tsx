@@ -2,6 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { ResetPasswordForm } from '@/features/auth/components/ResetPasswordForm';
+import { AuthLayout } from '@/components/layout/AuthLayout';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('auth.resetPassword');
@@ -10,19 +11,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function ResetPasswordPage() {
   return (
-    <main
-      style={{
-        minHeight: '100dvh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2rem 1rem',
-      }}
-    >
+    <AuthLayout>
       {/* useSearchParams 사용 → Suspense 경계 필요 */}
       <Suspense>
         <ResetPasswordForm />
       </Suspense>
-    </main>
+    </AuthLayout>
   );
 }

@@ -1,0 +1,30 @@
+/* policy 페이지 (terms / privacy / licenses) 공통 article wrapper.
+   한 곳에서 typography 조정하면 3 페이지 일괄 반영. */
+.article {
+  display: grid;
+  gap: var(--space-5);
+  line-height: var(--line-relaxed);
+}
+
+.section {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.heading {
+  font-size: var(--font-label);
+  font-weight: 700;
+  color: var(--color-fg);
+  letter-spacing: var(--tracking-snug);
+}
+
+.body {
+  font-size: var(--font-body-sm);
+  color: var(--color-fg);
+}
+
+.footer {
+  color: var(--color-muted);
+  font-size: var(--font-caption);
+  margin-top: var(--space-2);
+}

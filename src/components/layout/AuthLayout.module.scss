@@ -1,0 +1,34 @@
+/* auth 페이지 공통 wrapper — login/signup/find-id/forgot-password/
+   reset-password/onboarding 6곳에서 동일한 main 인라인 style 을 통합.
+   디자이너가 여기 한 곳만 수정하면 일괄 반영.
+
+   variant:
+     - center : form 류 (5개) — 화면 중앙 정렬
+     - column : 멀티 step 류 (onboarding) — 상단부터 세로 배치 */
+.main {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  padding: var(--space-6) var(--space-4);
+}
+
+.center {
+  align-items: center;
+  justify-content: center;
+}
+
+.column {
+  flex-direction: column;
+}
+
+@media (max-width: 480px) {
+  .main {
+    padding: var(--space-5) var(--space-3);
+  }
+}
+
+@media (max-width: 380px) {
+  .main {
+    padding: var(--space-4) var(--space-3);
+  }
+}

@@ -56,7 +56,8 @@
     color-mix(in srgb, #fff8e7 22%, var(--color-bg)),
     color-mix(in srgb, #fff8e7 8%, var(--color-bg))
   );
-  border: 1.5px solid color-mix(in srgb, #d97706 24%, var(--color-border));
+  border: 1.5px solid
+    color-mix(in srgb, var(--color-letter-accent) 24%, var(--color-border));
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-card-strong);
@@ -65,7 +66,7 @@
 .label {
   font-size: var(--font-eyebrow);
   font-weight: 700;
-  color: color-mix(in srgb, #d97706 70%, var(--color-muted));
+  color: color-mix(in srgb, var(--color-letter-accent) 70%, var(--color-muted));
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -75,7 +76,8 @@
   display: grid;
   gap: 0.375rem;
   padding: 1rem 1.25rem;
-  border-bottom: 1px dashed color-mix(in srgb, #d97706 30%, transparent);
+  border-bottom: 1px dashed
+    color-mix(in srgb, var(--color-letter-accent) 30%, transparent);
 }
 
 .fromRow {
@@ -102,12 +104,13 @@
   place-items: center;
   width: 60px;
   height: 72px;
-  border: 2px dashed color-mix(in srgb, #d97706 50%, var(--color-border));
+  border: 2px dashed
+    color-mix(in srgb, var(--color-letter-accent) 50%, var(--color-border));
   border-radius: var(--radius-sm);
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #d97706 18%, var(--color-bg)),
-    color-mix(in srgb, #d97706 6%, var(--color-bg))
+    color-mix(in srgb, var(--color-letter-accent) 18%, var(--color-bg)),
+    color-mix(in srgb, var(--color-letter-accent) 6%, var(--color-bg))
   );
   position: relative;
   rotate: -3deg;
@@ -124,7 +127,7 @@
   bottom: 4px;
   font-size: 0.5rem;
   font-weight: 800;
-  color: color-mix(in srgb, #d97706 80%, var(--color-fg));
+  color: color-mix(in srgb, var(--color-letter-accent) 80%, var(--color-fg));
   letter-spacing: 0.1em;
 }
 
@@ -133,7 +136,8 @@
   display: grid;
   gap: 0.875rem;
   padding: 1.5rem 1.25rem 1rem;
-  border-bottom: 1px dashed color-mix(in srgb, #d97706 30%, transparent);
+  border-bottom: 1px dashed
+    color-mix(in srgb, var(--color-letter-accent) 30%, transparent);
 }
 
 .pinBoxes {
@@ -149,8 +153,9 @@
   display: grid;
   place-items: center;
   aspect-ratio: 1 / 1.1;
-  background: #fff;
-  border: 2px solid color-mix(in srgb, #d97706 28%, var(--color-border));
+  background: var(--color-letter-paper);
+  border: 2px solid
+    color-mix(in srgb, var(--color-letter-accent) 28%, var(--color-border));
   border-radius: var(--radius-md);
   font-size: var(--font-h1);
   font-weight: 800;
@@ -159,7 +164,11 @@
 }
 
 .pinFilled {
-  border-color: color-mix(in srgb, #d97706 55%, var(--color-border));
+  border-color: color-mix(
+    in srgb,
+    var(--color-letter-accent) 55%,
+    var(--color-border)
+  );
 }
 
 .pinChar {

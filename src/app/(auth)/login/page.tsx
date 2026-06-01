@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { LoginForm } from '@/features/auth/components/LoginForm';
+import { AuthLayout } from '@/components/layout/AuthLayout';
 
 /**
  * 로그인 페이지 (/login)
@@ -13,16 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function LoginPage() {
   return (
-    <main
-      style={{
-        minHeight: '100dvh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2rem 1rem',
-      }}
-    >
+    <AuthLayout>
       <LoginForm />
-    </main>
+    </AuthLayout>
   );
 }

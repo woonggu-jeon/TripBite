@@ -1,6 +1,8 @@
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { SubHeader } from '@/components/layout/SubHeader';
+import { PolicyArticle } from '@/components/layout/PolicyArticle';
+import styles from './page.module.scss';
 
 /**
  * 오픈소스 라이선스 (/policy/licenses)
@@ -24,13 +26,13 @@ export default async function LicensesPage() {
   return (
     <>
       <SubHeader title={t('licenses')} />
-      <article style={{ lineHeight: 1.7 }}>
-        <p style={{ fontSize: '0.875rem', marginBottom: '1rem' }}>
+      <PolicyArticle>
+        <p className={styles.intro}>
           본 서비스는 다음 오픈소스 라이브러리를 사용합니다.
         </p>
         {/* TODO: 빌드 시점 license-checker 결과를 여기에 출력
             또는 public/licenses.json 을 fetch */}
-        <ul style={{ fontSize: '0.875rem', paddingLeft: '1.25rem', display: 'grid', gap: 4 }}>
+        <ul className={styles.list}>
           <li>Next.js (MIT)</li>
           <li>React (MIT)</li>
           <li>TanStack Query (MIT)</li>
@@ -41,7 +43,7 @@ export default async function LicensesPage() {
           <li>Zod (MIT)</li>
           <li>...</li>
         </ul>
-      </article>
+      </PolicyArticle>
     </>
   );
 }

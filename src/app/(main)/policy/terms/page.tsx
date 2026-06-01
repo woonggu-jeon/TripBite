@@ -1,6 +1,11 @@
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { SubHeader } from '@/components/layout/SubHeader';
+import {
+  PolicyArticle,
+  PolicySection,
+  PolicyFooter,
+} from '@/components/layout/PolicyArticle';
 
 /**
  * 이용약관 (/policy/terms)
@@ -24,39 +29,26 @@ export default async function TermsPage() {
   return (
     <>
       <SubHeader title={t('terms')} />
-      <article style={{ display: 'grid', gap: '1.25rem', lineHeight: 1.7 }}>
+      <PolicyArticle>
         {/* TODO: 법무 검토를 거친 실제 약관 본문으로 교체.
             아래는 자리잡이 — 운영 배포 전 반드시 교체. */}
-        <Section heading="제1조 (목적)">
+        <PolicySection heading="제1조 (목적)">
           본 약관은 서비스 이용에 관한 권리·의무·책임사항을 규정합니다.
-        </Section>
-        <Section heading="제2조 (서비스 내용)">
+        </PolicySection>
+        <PolicySection heading="제2조 (서비스 내용)">
           여행지 토너먼트, 다섯글자 편지, 여행 유형 테스트 등.
-        </Section>
-        <Section heading="제3조 (회원 가입)">
+        </PolicySection>
+        <PolicySection heading="제3조 (회원 가입)">
           만 14세 이상이어야 하며, 약관 동의 후 가입할 수 있습니다.
-        </Section>
-        <Section heading="제4조 (개인정보 처리)">
+        </PolicySection>
+        <PolicySection heading="제4조 (개인정보 처리)">
           개인정보처리방침에 따릅니다.
-        </Section>
-        <Section heading="제5조 (이용 제한)">
+        </PolicySection>
+        <PolicySection heading="제5조 (이용 제한)">
           타인 사칭, 비속어, 스팸 행위 시 이용이 제한될 수 있습니다.
-        </Section>
-        <p style={{ color: 'var(--color-muted)', fontSize: '0.8125rem' }}>
-          시행일자: 2024-01-01 · 버전 1.0
-        </p>
-      </article>
+        </PolicySection>
+        <PolicyFooter>시행일자: 2024-01-01 · 버전 1.0</PolicyFooter>
+      </PolicyArticle>
     </>
-  );
-}
-
-function Section({ heading, children }: { heading: string; children: React.ReactNode }) {
-  return (
-    <section>
-      <h2 style={{ fontSize: '0.9375rem', fontWeight: 700, marginBottom: 8 }}>
-        {heading}
-      </h2>
-      <p style={{ fontSize: '0.875rem' }}>{children}</p>
-    </section>
   );
 }

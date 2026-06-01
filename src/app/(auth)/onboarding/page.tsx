@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { OnboardingFlow } from './_components/OnboardingFlow';
+import { AuthLayout } from '@/components/layout/AuthLayout';
 
 /**
  * 온보딩 페이지 (/onboarding)
@@ -28,15 +29,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function OnboardingPage() {
   return (
-    <main
-      style={{
-        minHeight: '100svh',
-        display: 'flex',
-        flexDirection: 'column',
-        padding: '2rem 1rem',
-      }}
-    >
+    <AuthLayout variant="column">
       <OnboardingFlow />
-    </main>
+    </AuthLayout>
   );
 }

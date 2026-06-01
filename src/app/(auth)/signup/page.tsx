@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { SignupForm } from '@/features/auth/components/SignupForm';
+import { AuthLayout } from '@/components/layout/AuthLayout';
 
 /**
  * 회원가입 (/signup) — 비인증 전용 (middleware).
@@ -12,16 +13,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function SignupPage() {
   return (
-    <main
-      style={{
-        minHeight: '100dvh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2rem 1rem',
-      }}
-    >
+    <AuthLayout>
       <SignupForm />
-    </main>
+    </AuthLayout>
   );
 }

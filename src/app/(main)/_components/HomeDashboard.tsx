@@ -117,33 +117,11 @@ function Placeholder({
   title: string;
   note?: string;
 }) {
+  // height 만 동적 → inline. 나머지 시각 속성은 module.
   return (
-    <div
-      style={{
-        height,
-        border: '1px dashed var(--color-border)',
-        borderRadius: 'var(--radius-lg)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '0.5rem',
-        color: 'var(--color-muted)',
-        fontSize: '0.875rem',
-      }}
-    >
+    <div className={styles.placeholder} style={{ height }}>
       {title}
-      {note && (
-        <span
-          style={{
-            padding: '2px 6px',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius-sm)',
-            fontSize: '0.6875rem',
-          }}
-        >
-          {note}
-        </span>
-      )}
+      {note && <span className={styles.placeholderNote}>{note}</span>}
     </div>
   );
 }

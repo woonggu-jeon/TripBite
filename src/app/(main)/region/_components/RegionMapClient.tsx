@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
+import styles from './RegionMapClient.module.scss';
 
 /**
  * 충북 지도 클라이언트
@@ -24,43 +25,20 @@ export function RegionMapClient() {
   const tRegion = useTranslations('region.names');
 
   return (
-    <div style={{ display: 'grid', gap: '1.5rem' }}>
+    <div className={styles.wrap}>
       {/* TODO: <ChungbukSvgMap onSelect={(code) => router.push(`/region/${code}`)} /> */}
-      <div
-        style={{
-          aspectRatio: '4 / 3',
-          border: '1px dashed var(--color-border)',
-          borderRadius: 'var(--radius-lg)',
-          display: 'grid',
-          placeItems: 'center',
-          color: 'var(--color-muted)',
-        }}
-      >
+      <div className={styles.mapPlaceholder}>
         충북 SVG 지도 (11개 시군 path)
       </div>
 
       {/* 보조 그리드 */}
-      <ul
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(96px, 1fr))',
-          gap: '0.5rem',
-          listStyle: 'none',
-        }}
-      >
+      <ul className={styles.list}>
         {CHUNGBUK_REGIONS.map((r) => (
           <li key={r.code}>
             <button
               type="button"
               onClick={() => router.push(`/region/${r.code}`)}
-              style={{
-                width: '100%',
-                padding: '0.875rem 0.5rem',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius-md)',
-                fontSize: '0.875rem',
-                background: 'var(--color-bg)',
-              }}
+              className={styles.item}
             >
               {/* i18n: region.names.<code> 키로 매핑 */}
               {tRegion(r.code as Parameters<typeof tRegion>[0])}

@@ -1,0 +1,12 @@
+.intro {
+  font-size: var(--font-body-sm);
+  margin-bottom: var(--space-4);
+  color: var(--color-fg);
+}
+
+.list {
+  font-size: var(--font-body-sm);
+  padding-left: var(--space-5);
+  display: grid;
+  gap: var(--space-1);
+}
