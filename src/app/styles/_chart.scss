@@ -1,0 +1,13 @@
+/* Chart series 팔레트 — recharts series 색.
+   1번은 primary 와 동기화 (브랜드 변경 시 자동 적용). 2~8 은 별도.
+   src/features/chart/utils/colors.ts 의 CHART_PALETTE 가 이 토큰 참조. */
+:root {
+  --chart-1: var(--color-primary);
+  --chart-2: #3b82f6; /* blue-500 */
+  --chart-3: #10b981; /* emerald-500 */
+  --chart-4: #f59e0b; /* amber-500 */
+  --chart-5: #ef4444; /* red-500 */
+  --chart-6: #8b5cf6; /* violet-500 */
+  --chart-7: #ec4899; /* pink-500 */
+  --chart-8: #14b8a6; /* teal-500 */
+}

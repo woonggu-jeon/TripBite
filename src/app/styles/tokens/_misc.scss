@@ -1,0 +1,20 @@
+/* Misc tokens — radius + opacity + border-width.
+   분리할 만큼 크지 않은 토큰 그룹. */
+:root {
+  /* Radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+
+  /* Opacity scale — 명확한 의미만. 컴포넌트 unique 미세 조정은 raw 유지. */
+  --opacity-disabled: 0.45;
+  --opacity-muted: 0.7;
+  --opacity-hover-dim: 0.92;
+
+  /* Border width scale — 신규 코드 권장 */
+  --border-thin: 1px;
+  --border-base: 1.5px;
+  --border-thick: 2px;
+}

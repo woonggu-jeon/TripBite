@@ -1,0 +1,27 @@
+/* Shadow tokens — box-shadow + drop-shadow + text-shadow.
+   dark 모드 분기는 _dark.scss 에서 alpha 강도만 자동 override. */
+:root {
+  /* Elevation box-shadow */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 32px rgba(0, 0, 0, 0.1);
+
+  /* 의미별 shadow alias */
+  --shadow-card: var(--shadow-md);
+  --shadow-card-strong: 0 8px 24px rgba(0, 0, 0, 0.06);
+  --shadow-pop: 0 6px 16px rgba(0, 0, 0, 0.12);
+  --shadow-emphasis: 0 16px 40px rgba(0, 0, 0, 0.08);
+
+  /* Drop-shadow — icon / emoji / 일러스트 */
+  --drop-shadow-icon: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+  --drop-shadow-icon-strong: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.18));
+  --drop-shadow-xs: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.08));
+  --drop-shadow-sm: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+  --drop-shadow-md: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+  --drop-shadow-lg: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.25));
+  /* 도메인 색 (꽃잎 등) */
+  --drop-shadow-petal: drop-shadow(0 1px 2px rgba(60, 110, 180, 0.25));
+
+  /* text-shadow — 흰 글자 가독성 보강 */
+  --text-shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.25);
+}

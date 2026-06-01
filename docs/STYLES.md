@@ -2,6 +2,30 @@
 
 퍼블리싱/디자인 교체 시 손대야 할 곳을 최소화하기 위한 규칙. 새 컴포넌트는 이 가이드를 따르고, 기존 컴포넌트는 손댈 때 점진 마이그레이션.
 
+## 파일 구조
+
+```
+src/app/
+├── globals.scss              ← 얇은 entry (@use 만)
+└── styles/
+    ├── tokens/
+    │   ├── _color.scss       base color + primary scale + surface + glass + letter color + on-strong
+    │   ├── _typography.scss  font-size + 시멘틱 + 도메인 + line + tracking + weight + emoji
+    │   ├── _layout.scss      spacing + content + header-h + bottom-nav-h + aspect + z-index + icon
+    │   ├── _shadow.scss      box + drop + text shadow
+    │   ├── _motion.scss      duration + ease
+    │   └── _misc.scss        radius + opacity + border-width
+    ├── _accents.scss         시즌별 + 카테고리 accent
+    ├── _chart.scss           chart series 1~8
+    ├── _dark.scss            dark mode override
+    ├── _responsive.scss      mobile viewport @media 토큰 축소
+    ├── _fonts.scss           Pretendard fallback @font-face
+    ├── _reset.scss           html/body/img/button/a + safe-area
+    └── _mixins.scss          @mixin (respond-to / text-truncate / focus-ring 등)
+```
+
+새 토큰 추가 시 해당 카테고리 파일만 수정. 새 mixin 은 `_mixins.scss`.
+
 ## 1. 토큰 사용 우선순위
 
 색/그림자/모션은 **항상 토큰** 으로 참조. raw 값(hex, rgba, 시간, cubic-bezier) 직접 작성 금지.

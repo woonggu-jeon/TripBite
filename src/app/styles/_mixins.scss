@@ -1,0 +1,57 @@
+/* 공용 SCSS @mixin / breakpoint mixin.
+   사용:
+     @use 'src/app/styles/mixins' as m;
+     .foo { @include m.respond-to(mobile-md) { padding: var(--space-3); } }
+
+   현재는 자리잡이 — 컴포넌트에서 직접 @media 사용 중. 필요 시 추출. */
+
+/* Breakpoint mixin — viewport 별 @media 쿼리.
+   - mobile-sm : 320 이하 (iPhone SE 1)
+   - mobile-md : 380 이하 (S8 / SE 2/3)
+   - mobile-lg : 480 이하 (iPhone 일반 / 갤럭시 S)
+   - tablet    : 768 이하 */
+@mixin respond-to($name) {
+  @if $name == mobile-sm {
+    @media (max-width: 320px) {
+      @content;
+    }
+  } @else if $name == mobile-md {
+    @media (max-width: 380px) {
+      @content;
+    }
+  } @else if $name == mobile-lg {
+    @media (max-width: 480px) {
+      @content;
+    }
+  } @else if $name == tablet {
+    @media (max-width: 768px) {
+      @content;
+    }
+  } @else {
+    @error "respond-to: unknown breakpoint `#{$name}`";
+  }
+}
+
+/* 일반 utility mixin — 컴포넌트에서 반복되는 패턴 (추후 사용처 발생 시 활용) */
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin focus-ring {
+  outline: var(--border-base) solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

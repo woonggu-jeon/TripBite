@@ -1,0 +1,28 @@
+/* Accent tokens — 추천 카드 시즌별 (RecommendationBanner) + 축제 카테고리 색 (FestivalCarousel).
+   디자이너가 시즌/카테고리 색을 한 곳에서 일괄 조정 가능. */
+:root {
+  /* 추천 카드 시즌별 — 각 시즌별로 accent + gradient 시작/끝 색 3개씩.
+     (light 기준; dark 분기는 _dark.scss 에서 — 현재 동일) */
+  --accent-spring: #ff6f91;
+  --accent-spring-grad-start: #ff9eb5;
+  --accent-spring-grad-end: #ffd6e0;
+  --accent-summer: #2e7df6;
+  --accent-summer-grad-start: #5db4ff;
+  --accent-summer-grad-end: #b9defe;
+  --accent-autumn: #d97706;
+  --accent-autumn-grad-start: #ff9a4d;
+  --accent-autumn-grad-end: #ffd9b3;
+  --accent-winter: #2563eb;
+  --accent-winter-grad-start: #9ec5ff;
+  --accent-winter-grad-end: #e0ecff;
+  --accent-festival: #b45309;
+  --accent-festival-grad-start: #ffcf5b;
+  --accent-festival-grad-end: #ffe9b3;
+
+  /* 축제 카테고리 색 — 시즌과 별개 의미 차원 */
+  --accent-red: #ef4444;
+  --accent-amber: #d97706;
+  --accent-green: #16a34a;
+  --accent-blue: #2563eb;
+  --accent-violet: #7c3aed;
+}

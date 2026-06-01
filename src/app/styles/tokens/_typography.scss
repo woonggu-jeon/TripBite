@@ -1,0 +1,69 @@
+/* Typography tokens — font size scale + 시멘틱 + 도메인 + line/tracking/weight + emoji.
+   디자이너가 typography hierarchy 조정 시 한 파일만 수정. */
+:root {
+  /* primitive scale (크기만) */
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.875rem; /* 14 */
+  --text-base: 1rem; /* 16 */
+  --text-lg: 1.125rem; /* 18 */
+  --text-xl: 1.25rem; /* 20 */
+  --text-2xl: 1.5rem; /* 24 */
+  --text-3xl: 1.875rem; /* 30 */
+
+  /* 의미별 시멘틱 — 컴포넌트는 가급적 이쪽 사용 */
+  --font-display: 2.5rem; /* 결과 숫자 등 큰 임팩트 */
+  --font-h1: 1.5rem;
+  --font-h2: 1.25rem;
+  --font-h3: 1.0625rem;
+  --font-body: 1rem;
+  --font-body-sm: 0.9375rem;
+  --font-label: 0.8125rem;
+  --font-caption: 0.75rem;
+  --font-eyebrow: 0.6875rem;
+
+  /* 도메인 font — letter / tournament */
+  --font-letter-body: 1.625rem; /* 26px — 편지 본문 5글자 큰 글씨 */
+  --font-letter-stamp-tag: 0.5rem; /* 8px — 우표 라벨 */
+  --font-letter-envelope: 3.5rem; /* 56px — ComposeEntryCard 봉투 emoji */
+  --font-tournament-trophy: 2rem; /* 32px — WinnerCard trophy */
+  --font-tournament-winner: 2.75rem; /* 44px — WinnerCard winner emoji */
+
+  /* Emoji 스케일 — 디자인 교체 시 emoji 전반 비율 한 곳에서 조정 */
+  --emoji-sm: 1.375rem; /* 추천 카드 내 emoji (22px) */
+  --emoji-md: 1.75rem; /* 일반 emoji 아이콘 (28px) */
+  --emoji-lg: 2.25rem; /* 선택 카드 emoji (36px) */
+  --emoji-xl: 4rem; /* hero 카드 emoji (64px) */
+  --emoji-2xl: 4.5rem; /* finishing/공유 카드 (72px) */
+  --emoji-3xl: 5rem; /* celebration emoji (80px) */
+  --emoji-4xl: 6rem; /* hero illustration glyph (96px) */
+
+  /* line-height */
+  --line-display: 1.1; /* 큰 글씨 (CountSelector) */
+  --line-tight: 1.2;
+  --line-snug: 1.35;
+  --line-normal: 1.5;
+  --line-relaxed: 1.65;
+
+  /* letter-spacing */
+  --tracking-tight: -0.02em;
+  --tracking-snug: -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.02em;
+  --tracking-uppercase: 0.06em;
+  --tracking-emphasis: 0.12em; /* letter / banner label 강조 */
+  --tracking-pin: 0.25em; /* LetterDetail body PIN style */
+  --tracking-pin-fill: 1em; /* PinLikeInput 5칸 강제 */
+
+  /* font-weight */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* Font stack — Pretendard 우선 + Pretendard-fallback (메트릭 매칭) + 시스템 */
+  --font-sans:
+    'Pretendard Variable', Pretendard, 'Pretendard-fallback', -apple-system,
+    BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, sans-serif;
+}

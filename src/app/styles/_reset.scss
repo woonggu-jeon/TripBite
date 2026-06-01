@@ -1,0 +1,70 @@
+/* Global reset — box-sizing 통일 + margin/padding 초기화 + 의미별 element 기본값.
+   safe-area for PWA 포함. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  /* viewport 단위 — 카카오 인앱/Naver 인앱 브라우저에서 100dvh 는 toolbar 토글마다
+     동적으로 변동해 화면이 떨림. 100svh (small viewport, toolbar 표시 기준 작은 값)
+     로 안정화. PWA / iOS Safari 에선 toolbar 닫힌 상태에서 약간 비어보일 수 있지만
+     .shell 의 min-height 라 콘텐츠는 자유롭게 늘어남.
+     미지원 브라우저는 height:100% fallback. */
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--line-normal);
+  color: var(--color-fg);
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Safe area for PWA — iOS standalone 의 notch / home indicator */
+@supports (padding: env(safe-area-inset-top)) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}

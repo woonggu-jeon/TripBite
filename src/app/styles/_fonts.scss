@@ -1,0 +1,17 @@
+/* Pretendard fallback 메트릭 오버라이드 — font-display:swap 교체 시 레이아웃 점프(CLS) 완화.
+   Pretendard 로딩 전 시스템 폰트를 Pretendard 와 비슷한 줄 높이로 렌더 → 교체 순간 변동 최소화.
+   값은 Pretendard 메트릭 근사 (line-gap 0). 정밀값은 capsize 측정 권장.
+
+   self-host 미채택 사유:
+     단일 PretendardVariable.woff2 는 전체 한글 ~1.3MB 로
+     dynamic-subset(~80KB) 보다 무거워 렌더링 속도에 역행. */
+@font-face {
+  font-family: 'Pretendard-fallback';
+  src:
+    local('Apple SD Gothic Neo'), local('AppleSDGothicNeo-Regular'),
+    local('Malgun Gothic'), local('Noto Sans KR'), local('sans-serif');
+  font-display: swap;
+  ascent-override: 92%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}

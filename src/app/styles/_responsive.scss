@@ -1,0 +1,29 @@
+/* 모바일 viewport 별 토큰 축소.
+   content padding 과 hero emoji 를 작게 — 360 (S8) / 320 (SE1) 까지 안전. */
+
+/* 일반 모바일 (≤ 480px) — iPhone 15/16/17 (393~430), 갤럭시 S 시리즈 (360~412) */
+@media (max-width: 480px) {
+  :root {
+    --content-pad: 0.875rem;
+    --emoji-xl: 3.25rem; /* 4rem → 3.25rem */
+    --emoji-2xl: 3.75rem; /* 4.5rem → 3.75rem */
+  }
+}
+
+/* 작은 모바일 (≤ 380px) — 갤럭시 S8(360), iPhone SE 2/3(375) */
+@media (max-width: 380px) {
+  :root {
+    --content-pad: 0.75rem;
+    --emoji-xl: 3rem;
+    --emoji-2xl: 3.5rem;
+  }
+}
+
+/* 더 작은 (≤ 320px) — iPhone SE 1, Fold 닫힘 */
+@media (max-width: 320px) {
+  :root {
+    --content-pad: 0.625rem;
+    --emoji-lg: 1.875rem;
+    --emoji-md: 1.5rem;
+  }
+}
