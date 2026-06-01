@@ -8,7 +8,6 @@ import {
   type ThemeKind,
 } from '@/features/tournament/components/ThemeKindSelector';
 import { SeasonSelector } from '@/features/tournament/components/SeasonSelector';
-import { SpecialDaySelector } from '@/features/tournament/components/SpecialDaySelector';
 import { CategoryFilter } from '@/features/tournament/components/CategoryFilter';
 import { CountSelector } from '@/features/tournament/components/CountSelector';
 import { SubHeader } from '@/components/layout/SubHeader';
@@ -16,7 +15,6 @@ import { useTournamentStore } from '@/features/tournament/store/tournament-store
 import type {
   DestinationCategory,
   Season,
-  SpecialDay,
   TournamentCount,
   TournamentTheme,
 } from '@/features/tournament/types';
@@ -24,34 +22,47 @@ import { haptic } from '@/lib/haptic';
 import { Button } from '@/components/ui';
 import styles from './TournamentSetup.module.scss';
 
+/**
+ * 토너먼트 설정 — 스텝별 진행 (4 steps)
+ *
+ *   1) 테마 종류    : 계절 직접선택 / 랜덤테마
+ *   2) 계절         : 봄·여름·가을·겨울 (1 step 에서 'season' 선택 시만)
+ *   3) 여행 유형    : 지역·축제·관광지·체험관광 (단일)
+ *   4) 여행지 갯수  : 2 / 4 / 6 / 8
+ *
+ * 흐름:
+ *   - season  : step 1 → 2 (계절) → 3 (유형) → 4 (갯수)
+ *   - random  : step 1 → (계절/유형 즉시 랜덤 선택) → 4 (갯수) 로 점프
+ *
+ * 모든 step (1/2/3)은 선택 즉시 next. step 4 만 "시작하기" 버튼.
+ * 토너먼트 매치업 사이즈(M ≤ N)는 Play 페이지의 별도 phase 에서 결정.
+ *
+ * 홈 → /tournament?theme=season&season=spring 으로 진입 시 1·2 단계 자동
+ * prefill, step 3 (유형) 부터 시작.
+ *
+ * 뒤로: step > 1 → step--, step === 1 → router.back()
+ */
+
+type Step = 1 | 2 | 3 | 4;
+
 const VALID_SEASONS: readonly Season[] = [
   'spring',
   'summer',
   'autumn',
   'winter',
 ];
-const VALID_SPECIAL_DAYS: readonly SpecialDay[] = ['birthday', 'anniversary'];
 
-/**
- * 토너먼트 설정 — 스텝별 진행 (4 steps)
- *
- *   1) 테마 종류    : 계절 / 특별한 날
- *   2) 항목         : (계절) 봄·여름·가을·겨울 / (특별한 날) 생일·결혼기념일
- *   3) 여행 유형    : 지역·축제·관광지·체험관광 (단일) — 세로 4 카드, 선택 즉시 다음
- *   4) 여행지 갯수  : 2 / 4 / 6 / 8  (N)
- *
- * 모든 스텝(1·2·3)은 선택 즉시 next.
- * 마지막 스텝(4)은 선택 후 "시작하기" — /tournament/play 로 이동.
- *
- * 토너먼트 개수(M ≤ N)는 Play 페이지의 별도 phase 에서 결정.
- *
- * store.config.categories 는 백엔드 호환을 위해 배열 유지 — UI 는 단일 선택이지만
- * `[category]` 한 원소 배열로 저장.
- *
- * 뒤로: step > 1 → step--, step === 1 → router.back()
- */
+const CATEGORIES: readonly DestinationCategory[] = [
+  'local',
+  'festival',
+  'attraction',
+  'experience',
+];
 
-type Step = 1 | 2 | 3 | 4;
+function pickRandom<T>(arr: readonly T[]): T {
+  // 빈 배열은 호출자가 보장 — 본 함수는 비-undefined 단언.
+  return arr[Math.floor(Math.random() * arr.length)] as T;
+}
 
 export function TournamentSetup() {
   const router = useRouter();
@@ -61,28 +72,15 @@ export function TournamentSetup() {
 
   // 홈 "이번 {계절} 토너먼트 시작하기" 진입 시 query 로 theme + season 사전 선택.
   // theme=season&season=spring → themeKind/season 채우고 step 3 (여행 유형) 부터.
-  // theme=special&special=birthday → 동일 방식 (확장 여지).
-  // 미지정 / 잘못된 값 → 일반 흐름 (step 1 부터).
   const initialTheme = searchParams.get('theme');
   const initialSeasonParam = searchParams.get('season');
-  const initialSpecialParam = searchParams.get('special');
   const initialSeason: Season | null =
     initialTheme === 'season' &&
     initialSeasonParam !== null &&
     (VALID_SEASONS as readonly string[]).includes(initialSeasonParam)
       ? (initialSeasonParam as Season)
       : null;
-  const initialSpecial: SpecialDay | null =
-    initialTheme === 'special' &&
-    initialSpecialParam !== null &&
-    (VALID_SPECIAL_DAYS as readonly string[]).includes(initialSpecialParam)
-      ? (initialSpecialParam as SpecialDay)
-      : null;
-  const initialThemeKind: ThemeKind | null = initialSeason
-    ? 'season'
-    : initialSpecial
-      ? 'special'
-      : null;
+  const initialThemeKind: ThemeKind | null = initialSeason ? 'season' : null;
   const initialStep: Step = initialThemeKind ? 3 : 1;
 
   const [step, setStep] = useState<Step>(initialStep);
@@ -90,9 +88,6 @@ export function TournamentSetup() {
     initialThemeKind,
   );
   const [season, setSeason] = useState<Season | null>(initialSeason);
-  const [specialDay, setSpecialDay] = useState<SpecialDay | null>(
-    initialSpecial,
-  );
   const [category, setCategory] = useState<DestinationCategory | null>(null);
   const [count, setCount] = useState<TournamentCount | null>(null);
 
@@ -108,19 +103,20 @@ export function TournamentSetup() {
 
   const handleKind = (k: ThemeKind) => {
     setThemeKind(k);
-    // 분기 바뀌면 다른 분기 선택 초기화
-    if (k === 'season') setSpecialDay(null);
-    else setSeason(null);
-    advanceTo(2);
+    if (k === 'season') {
+      advanceTo(2);
+      return;
+    }
+    // random 테마 — 계절 + 카테고리 즉시 랜덤 채우고 바로 갯수 step 으로.
+    const randomSeason = pickRandom(VALID_SEASONS);
+    const randomCategory = pickRandom(CATEGORIES);
+    setSeason(randomSeason);
+    setCategory(randomCategory);
+    advanceTo(4);
   };
 
   const handleSeason = (s: Season) => {
     setSeason(s);
-    advanceTo(3);
-  };
-
-  const handleSpecialDay = (d: SpecialDay) => {
-    setSpecialDay(d);
     advanceTo(3);
   };
 
@@ -138,30 +134,23 @@ export function TournamentSetup() {
       router.back();
       return;
     }
+    // random 흐름 (themeKind === 'random') 에서 step 4 인 경우 → 1 로 복귀.
+    // (계절/유형이 자동 선택이라 step 2/3 으로 돌아갈 의미 X)
+    if (themeKind === 'random' && step === 4) {
+      setStep(1);
+      return;
+    }
     setStep((step - 1) as Step);
   };
 
-  const resolveTheme = (): TournamentTheme | null => {
-    if (themeKind === 'season' && season !== null) {
-      return { kind: 'season', value: season };
-    }
-    if (themeKind === 'special' && specialDay !== null) {
-      return { kind: 'special', value: specialDay };
-    }
-    return null;
-  };
-
   const canStart =
-    step === 4 &&
-    count !== null &&
-    resolveTheme() !== null &&
-    category !== null;
+    step === 4 && count !== null && season !== null && category !== null;
 
   const handleStart = () => {
-    const theme = resolveTheme();
-    if (!theme || count === null || category === null) return;
+    if (count === null || season === null || category === null) return;
     haptic.success();
-    // store 호환: categories 는 배열 — 단일 선택이지만 [category] 로 저장
+    // random 흐름이라도 store 에는 동일 형태 — kind='season' + 랜덤 선택된 value.
+    const theme: TournamentTheme = { kind: 'season', value: season };
     setConfig({ theme, categories: [category], count });
     router.push('/tournament/play');
   };
@@ -172,11 +161,8 @@ export function TournamentSetup() {
         title: t('steps.themeKind.title'),
         hint: t('steps.themeKind.hint'),
       };
-    if (step === 2) {
-      return themeKind === 'season'
-        ? { title: t('steps.season.title'), hint: t('steps.season.hint') }
-        : { title: t('steps.special.title'), hint: t('steps.special.hint') };
-    }
+    if (step === 2)
+      return { title: t('steps.season.title'), hint: t('steps.season.hint') };
     if (step === 3)
       return {
         title: t('steps.category.title'),
@@ -195,14 +181,8 @@ export function TournamentSetup() {
           {step === 1 && (
             <ThemeKindSelector value={themeKind} onChange={handleKind} />
           )}
-          {step === 2 && themeKind === 'season' && (
+          {step === 2 && (
             <SeasonSelector value={season} onChange={handleSeason} />
-          )}
-          {step === 2 && themeKind === 'special' && (
-            <SpecialDaySelector
-              value={specialDay}
-              onChange={handleSpecialDay}
-            />
           )}
           {step === 3 && (
             <CategoryFilter value={category} onChange={handleCategory} />

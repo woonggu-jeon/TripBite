@@ -5,7 +5,7 @@ import { haptic } from '@/lib/haptic';
 import { cardClasses } from '@/components/ui';
 import styles from './ThemeKindSelector.module.scss';
 
-export type ThemeKind = 'season' | 'special';
+export type ThemeKind = 'season' | 'random';
 
 export interface ThemeKindSelectorProps {
   value: ThemeKind | null;
@@ -13,8 +13,11 @@ export interface ThemeKindSelectorProps {
 }
 
 /**
- * 토너먼트 1단계 — 계절 / 특별한 날 2지선택.
- * 선택 즉시 2단계로 자동 전환되도록 상위에서 처리.
+ * 토너먼트 1단계 — 계절 직접선택 / 랜덤테마 2지선택.
+ *
+ * 동작 (TournamentSetup 측):
+ *   - season: 다음 step 으로 → 계절 선택 → 유형 선택 → 갯수
+ *   - random: 계절 + 유형을 즉시 랜덤 선택 → 바로 갯수 step
  */
 export function ThemeKindSelector({ value, onChange }: ThemeKindSelectorProps) {
   const t = useTranslations('tournament.setup.steps.themeKind');
@@ -27,15 +30,15 @@ export function ThemeKindSelector({ value, onChange }: ThemeKindSelectorProps) {
   const KINDS: {
     value: ThemeKind;
     emoji: string;
-    labelKey: 'season' | 'special';
-    descKey: 'seasonDesc' | 'specialDesc';
+    labelKey: 'season' | 'random';
+    descKey: 'seasonDesc' | 'randomDesc';
   }[] = [
     { value: 'season', emoji: '🌿', labelKey: 'season', descKey: 'seasonDesc' },
     {
-      value: 'special',
-      emoji: '🎉',
-      labelKey: 'special',
-      descKey: 'specialDesc',
+      value: 'random',
+      emoji: '🎲',
+      labelKey: 'random',
+      descKey: 'randomDesc',
     },
   ];
 

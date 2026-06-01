@@ -5,11 +5,18 @@
  */
 
 export type Season = 'spring' | 'summer' | 'autumn' | 'winter';
-export type SpecialDay = 'birthday' | 'anniversary';
 
-export type TournamentTheme =
-  | { kind: 'season'; value: Season }
-  | { kind: 'special'; value: SpecialDay };
+/**
+ * 토너먼트 테마 — 항상 계절 기반.
+ *
+ * UI 진입 흐름은 2 가지:
+ *   - season(직접 선택): 사용자가 계절 4 중 하나 직접 선택
+ *   - random        : 계절 + 카테고리 자동 랜덤 — 흐름만 다르고 저장값은 동일
+ *     (이 경우에도 kind='season' 으로 통일, value 에 랜덤 선택된 계절 저장).
+ *
+ * 백엔드 호환 위해 kind 는 'season' 단일로 유지 (special 분기는 폐기).
+ */
+export type TournamentTheme = { kind: 'season'; value: Season };
 
 export type DestinationCategory =
   | 'local' // 지역 — 시군 대표/일반 명소

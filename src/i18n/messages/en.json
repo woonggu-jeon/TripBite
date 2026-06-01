@@ -273,19 +273,15 @@
       "steps": {
         "themeKind": {
           "title": "What's the theme?",
-          "hint": "Pick a season or a special day",
-          "season": "Season",
-          "seasonDesc": "Spring · Summer · Autumn · Winter",
-          "special": "Special day",
-          "specialDesc": "Birthday · Wedding anniversary"
+          "hint": "Pick a season yourself or roll the dice",
+          "season": "Pick a season",
+          "seasonDesc": "Choose Spring · Summer · Autumn · Winter",
+          "random": "Random theme",
+          "randomDesc": "Season and type chosen for you"
         },
         "season": {
           "title": "Which season?",
           "hint": "Choose the season that fits the mood"
-        },
-        "special": {
-          "title": "Which day?",
-          "hint": "Choose the day you want to celebrate"
         },
         "category": {
           "title": "What type interests you?",
@@ -314,10 +310,6 @@
       "summer": "Summer",
       "autumn": "Autumn",
       "winter": "Winter"
-    },
-    "specialDay": {
-      "birthday": "Birthday",
-      "anniversary": "Wedding anniversary"
     },
     "category": {
       "local": "Local",

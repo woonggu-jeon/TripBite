@@ -47,15 +47,8 @@ const SEASON_GLYPH = {
   winter: '❄️',
 } as const;
 
-const SPECIAL_GLYPH = {
-  birthday: '🎁',
-  anniversary: '💝',
-} as const;
-
 function getGlyph(theme: TournamentTheme): string {
-  return theme.kind === 'season'
-    ? SEASON_GLYPH[theme.value]
-    : SPECIAL_GLYPH[theme.value];
+  return SEASON_GLYPH[theme.value];
 }
 
 interface Placed {

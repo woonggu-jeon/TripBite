@@ -6,7 +6,6 @@ export type {
   Destination,
   DestinationCategory,
   Season,
-  SpecialDay,
   TournamentTheme,
   TournamentConfig,
   TournamentCount,

@@ -8,12 +8,10 @@ import styles from './CenterIllustration.module.scss';
 /**
  * 토너먼트 시작 페이지(/play) 중앙 일러스트.
  *
- *   season.spring   → 🌸 벚꽃
- *   season.summer   → ☂️ 우산
- *   season.autumn   → 🍁 단풍
- *   season.winter   → ⛄ 눈사람
- *   special.birthday    → 🎂 생일 케이크
- *   special.anniversary → 💍 결혼기념일
+ *   season.spring  → 🌸 벚꽃
+ *   season.summer  → ☂️ 우산
+ *   season.autumn  → 🍁 단풍
+ *   season.winter  → ⛄ 눈사람
  *
  * 탭하면 onTap 호출. 부드러운 부유 애니메이션 + 탭 시 펄스.
  * SVG 일러스트 대신 emoji 사용(빠른 구현). 추후 SVG 일러스트로 교체 가능.
@@ -26,19 +24,12 @@ const SEASON_GLYPH = {
   winter: '⛄',
 } as const;
 
-const SPECIAL_GLYPH = {
-  birthday: '🎂',
-  anniversary: '💍',
-} as const;
-
 function getGlyph(theme: TournamentTheme): string {
-  return theme.kind === 'season'
-    ? SEASON_GLYPH[theme.value]
-    : SPECIAL_GLYPH[theme.value];
+  return SEASON_GLYPH[theme.value];
 }
 
 function getToneClass(theme: TournamentTheme): string {
-  return theme.kind === 'season' ? theme.value : 'special';
+  return theme.value;
 }
 
 export interface CenterIllustrationProps {
@@ -57,10 +48,7 @@ export function CenterIllustration({
   disabled = false,
 }: CenterIllustrationProps) {
   const t = useTranslations('tournament');
-  const label =
-    theme.kind === 'season'
-      ? t(`season.${theme.value}`)
-      : t(`specialDay.${theme.value}`);
+  const label = t(`season.${theme.value}`);
 
   return (
     <button
