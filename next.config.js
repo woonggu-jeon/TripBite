@@ -2,12 +2,21 @@ const createNextIntlPlugin = require('next-intl/plugin');
 
 /**
  * Serwist PWA (next-pwa 대체 — 유지보수 중단/workbox6 → serwist workbox 최신)
- * SW 소스: src/app/sw.ts (runtimeCaching은 거기서 정의). dev에선 비활성.
+ * SW 소스: src/app/sw.ts (runtimeCaching은 거기서 정의).
+ *
+ * dev 토글:
+ *   - 기본: dev 에선 비활성 (hot reload 와 SW 캐시 충돌 회피).
+ *   - NEXT_PUBLIC_USE_MSW=true 또는 NEXT_PUBLIC_SW_DEV=true 일 때는 dev 에서도
+ *     활성화 — Web Push (subscribe / push event / notificationclick) 흐름을
+ *     dev 서버에서 end-to-end 확인하기 위함. mock 데모 모드와 일관.
  */
+const SW_FORCE_DEV =
+  process.env.NEXT_PUBLIC_USE_MSW === 'true' ||
+  process.env.NEXT_PUBLIC_SW_DEV === 'true';
 const withSerwist = require('@serwist/next').default({
   swSrc: 'src/app/sw.ts',
   swDest: 'public/sw.js',
-  disable: process.env.NODE_ENV === 'development',
+  disable: !SW_FORCE_DEV && process.env.NODE_ENV === 'development',
   reloadOnOnline: true,
 });
 

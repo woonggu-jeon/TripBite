@@ -100,15 +100,47 @@ export function canUsePushOnIOS(): boolean {
 /**
  * mock 환경 — Service Worker 에 MOCK_PUSH 메시지 보내 push 이벤트를 시뮬레이션.
  * 실 서버의 VAPID + web-push 없이도 dev 에서 알림 끝까지 테스트.
+ *
+ * SW 가 없는 환경 (Serwist dev 비활성 등) 에서는 main thread Notification API
+ * 로 fallback. 페이지가 열려있을 때만 동작 (background 알림 X) 하지만 dev 흐름
+ * 검증엔 충분.
  */
 export async function triggerMockPush(payload: {
   title?: string;
   body?: string;
   link?: string;
   tag?: string;
+  icon?: string;
 }): Promise<void> {
-  if (typeof navigator === 'undefined' || !('serviceWorker' in navigator))
-    return;
-  const reg = await navigator.serviceWorker.ready;
-  reg.active?.postMessage({ type: 'MOCK_PUSH', payload });
+  if (typeof navigator === 'undefined') return;
+
+  // 1) Service Worker 경로 — registration 있고 active 일 때.
+  if ('serviceWorker' in navigator) {
+    const reg = await navigator.serviceWorker
+      .getRegistration()
+      .catch(() => null);
+    if (reg?.active) {
+      reg.active.postMessage({ type: 'MOCK_PUSH', payload });
+      return;
+    }
+  }
+
+  // 2) Fallback — main thread Notification API. dev (Serwist 비활성) 보강.
+  if (
+    typeof Notification !== 'undefined' &&
+    Notification.permission === 'granted'
+  ) {
+    const n = new Notification(payload.title ?? '편지가 도착했어요', {
+      body: payload.body,
+      icon: payload.icon ?? '/icons/icon-192x192.png',
+      tag: payload.tag,
+    });
+    if (payload.link) {
+      n.onclick = () => {
+        window.focus();
+        window.location.href = payload.link!;
+        n.close();
+      };
+    }
+  }
 }
