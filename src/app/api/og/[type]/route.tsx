@@ -11,25 +11,38 @@ import { ImageResponse } from 'next/og';
  *
  * deep-link 와 무관 — 받는 쪽은 이미지 파일만 받음. BE / DB 영구 저장 불필요.
  *
- * 디자인 노트:
- *   - Satori 는 CSS 의 부분 집합만 지원 (flex 안전 / grid 일부 / shadow 일부).
- *   - 외부 이미지 fetch X (콜드스타트 단축). 이모지 + 그라데이션 + 텍스트만.
- *   - 한글 폰트 — Pretendard Bold woff 를 jsdelivr 에서 fetch (Edge instance 재사용 캐시).
- *   - 이모지 — Satori 가 Twemoji SVG 자동 fetch.
+ * Satori 규칙:
+ *   - 모든 div 에 `display` 명시 (block 미지원). 자식이 단일 string 이라도 flex.
+ *   - text 는 inline span 으로 감싸는 게 가장 안전.
+ *   - padding/margin short notation 도 지원하지만 호환성 위해 개별 속성으로.
+ *   - 이모지는 Satori 가 Twemoji SVG 자동 fetch.
+ *
+ * 폰트:
+ *   - Pretendard Bold woff 를 jsdelivr 에서 fetch (Edge instance 재사용 캐시).
+ *   - 실패 시 sans-serif fallback (한글 일부 깨질 수 있지만 라우트 500 보다는 우선).
  *
  * 카드 디자인은 미니멀 기본형. 추후 디자이너 시안 받으면 JSX 만 교체.
  */
 export const runtime = 'edge';
 
-// 같은 Edge instance 가 살아있는 동안 폰트 재사용.
-let cachedFont: ArrayBuffer | null = null;
-async function getPretendard(): Promise<ArrayBuffer> {
-  if (cachedFont) return cachedFont;
-  const res = await fetch(
-    'https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/woff/Pretendard-Bold.woff',
-  );
-  cachedFont = await res.arrayBuffer();
-  return cachedFont;
+let cachedFont: ArrayBuffer | null | undefined;
+async function getPretendard(): Promise<ArrayBuffer | null> {
+  if (cachedFont !== undefined) return cachedFont;
+  try {
+    const res = await fetch(
+      'https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/woff/Pretendard-Bold.woff',
+      { cache: 'force-cache' },
+    );
+    if (!res.ok) {
+      cachedFont = null;
+      return null;
+    }
+    cachedFont = await res.arrayBuffer();
+    return cachedFont;
+  } catch {
+    cachedFont = null;
+    return null;
+  }
 }
 
 const REGION_KO: Record<string, string> = {
@@ -68,6 +81,9 @@ const TYPE_EMOJI: Record<string, string> = {
 };
 
 const SIZE = 1080;
+const CACHE_HEADERS = {
+  'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=43200',
+};
 
 type Params = { params: Promise<{ type: string }> };
 
@@ -77,20 +93,52 @@ export async function GET(
 ): Promise<Response> {
   const { type } = await params;
   const { searchParams } = new URL(request.url);
+
+  if (type !== 'tournament' && type !== 'quiz') {
+    return new Response('Not found', { status: 404 });
+  }
+
   const fontData = await getPretendard();
 
-  if (type === 'tournament') {
-    return renderTournament(searchParams, fontData);
+  try {
+    return type === 'tournament'
+      ? renderTournament(searchParams, fontData)
+      : renderQuiz(searchParams, fontData);
+  } catch (err) {
+    // Satori 가 unsupported CSS / 누락 element 만나면 throw.
+    // 500 대신 명확한 메시지로 — dev console 디버깅 용이.
+    const message = err instanceof Error ? err.message : 'render failed';
+    return new Response(`og render error: ${message}`, {
+      status: 500,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+    });
   }
-  if (type === 'quiz') {
-    return renderQuiz(searchParams, fontData);
+}
+
+type ImageInit = ConstructorParameters<typeof ImageResponse>[1];
+
+function makeInit(fontData: ArrayBuffer | null): ImageInit {
+  const init: ImageInit = {
+    width: SIZE,
+    height: SIZE,
+    headers: CACHE_HEADERS,
+  };
+  if (fontData) {
+    init.fonts = [
+      {
+        name: 'Pretendard',
+        data: fontData,
+        weight: 700,
+        style: 'normal',
+      },
+    ];
   }
-  return new Response('Not found', { status: 404 });
+  return init;
 }
 
 function renderTournament(
   q: URLSearchParams,
-  fontData: ArrayBuffer,
+  fontData: ArrayBuffer | null,
 ): ImageResponse {
   const winner = q.get('winner') ?? '여행지';
   const regionCode = q.get('region') ?? '';
@@ -99,6 +147,14 @@ function renderTournament(
   const categoryLabel = CATEGORY_KO[category] ?? '';
   const emoji = CATEGORY_EMOJI[category] ?? '🏆';
   const matches = q.get('matches');
+  const footerText = matches
+    ? `총 ${matches}매치 끝의 우승`
+    : '나의 여행지 우승';
+  const metaText =
+    region && categoryLabel
+      ? `${region} · ${categoryLabel}`
+      : region || categoryLabel;
+  const fontFamily = fontData ? 'Pretendard' : 'sans-serif';
 
   return new ImageResponse(
     <div
@@ -108,8 +164,11 @@ function renderTournament(
         display: 'flex',
         flexDirection: 'column',
         background: 'linear-gradient(180deg, #fff7ed 0%, #fdf2f8 100%)',
-        padding: 80,
-        fontFamily: 'Pretendard',
+        paddingTop: 80,
+        paddingRight: 80,
+        paddingBottom: 80,
+        paddingLeft: 80,
+        fontFamily,
       }}
     >
       <div
@@ -132,40 +191,41 @@ function renderTournament(
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: 24,
-          textAlign: 'center',
         }}
       >
-        <div style={{ fontSize: 220, lineHeight: 1 }}>{emoji}</div>
         <div
           style={{
+            display: 'flex',
+            fontSize: 220,
+            lineHeight: 1,
+            marginBottom: 24,
+          }}
+        >
+          {emoji}
+        </div>
+        <div
+          style={{
+            display: 'flex',
             fontSize: 80,
             fontWeight: 700,
             color: '#18181b',
             letterSpacing: '-0.02em',
             lineHeight: 1.15,
-            padding: '0 40px',
-            display: 'flex',
             textAlign: 'center',
           }}
         >
           {winner}
         </div>
-        {(region || categoryLabel) && (
+        {metaText && (
           <div
             style={{
               display: 'flex',
-              gap: 16,
               fontSize: 36,
               color: '#52525b',
-              marginTop: 8,
+              marginTop: 24,
             }}
           >
-            {region && <span>{region}</span>}
-            {region && categoryLabel && (
-              <span style={{ color: '#a1a1aa' }}>·</span>
-            )}
-            {categoryLabel && <span>{categoryLabel}</span>}
+            {metaText}
           </div>
         )}
       </div>
@@ -178,32 +238,22 @@ function renderTournament(
           color: '#a1a1aa',
         }}
       >
-        {matches ? `총 ${matches}매치 끝의 우승` : '나의 여행지 우승'}
+        {footerText}
       </div>
     </div>,
-    {
-      width: SIZE,
-      height: SIZE,
-      fonts: [
-        {
-          name: 'Pretendard',
-          data: fontData,
-          weight: 700,
-          style: 'normal',
-        },
-      ],
-      headers: {
-        'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=43200',
-      },
-    },
+    makeInit(fontData),
   );
 }
 
-function renderQuiz(q: URLSearchParams, fontData: ArrayBuffer): ImageResponse {
+function renderQuiz(
+  q: URLSearchParams,
+  fontData: ArrayBuffer | null,
+): ImageResponse {
   const typeCode = q.get('type') ?? '';
   const typeName = q.get('name') ?? '여행 유형';
   const tagline = q.get('tagline') ?? '';
   const emoji = TYPE_EMOJI[typeCode] ?? '✨';
+  const fontFamily = fontData ? 'Pretendard' : 'sans-serif';
 
   return new ImageResponse(
     <div
@@ -213,8 +263,11 @@ function renderQuiz(q: URLSearchParams, fontData: ArrayBuffer): ImageResponse {
         display: 'flex',
         flexDirection: 'column',
         background: 'linear-gradient(180deg, #eff6ff 0%, #f0f9ff 100%)',
-        padding: 80,
-        fontFamily: 'Pretendard',
+        paddingTop: 80,
+        paddingRight: 80,
+        paddingBottom: 80,
+        paddingLeft: 80,
+        fontFamily,
       }}
     >
       <div
@@ -237,20 +290,26 @@ function renderQuiz(q: URLSearchParams, fontData: ArrayBuffer): ImageResponse {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: 24,
-          textAlign: 'center',
         }}
       >
-        <div style={{ fontSize: 220, lineHeight: 1 }}>{emoji}</div>
         <div
           style={{
+            display: 'flex',
+            fontSize: 220,
+            lineHeight: 1,
+            marginBottom: 24,
+          }}
+        >
+          {emoji}
+        </div>
+        <div
+          style={{
+            display: 'flex',
             fontSize: 88,
             fontWeight: 700,
             color: '#18181b',
             letterSpacing: '-0.02em',
             lineHeight: 1.15,
-            padding: '0 40px',
-            display: 'flex',
             textAlign: 'center',
           }}
         >
@@ -262,8 +321,7 @@ function renderQuiz(q: URLSearchParams, fontData: ArrayBuffer): ImageResponse {
               display: 'flex',
               fontSize: 36,
               color: '#52525b',
-              marginTop: 8,
-              padding: '0 60px',
+              marginTop: 24,
               textAlign: 'center',
             }}
           >
@@ -283,20 +341,6 @@ function renderQuiz(q: URLSearchParams, fontData: ArrayBuffer): ImageResponse {
         나의 여행 유형 테스트 결과
       </div>
     </div>,
-    {
-      width: SIZE,
-      height: SIZE,
-      fonts: [
-        {
-          name: 'Pretendard',
-          data: fontData,
-          weight: 700,
-          style: 'normal',
-        },
-      ],
-      headers: {
-        'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=43200',
-      },
-    },
+    makeInit(fontData),
   );
 }

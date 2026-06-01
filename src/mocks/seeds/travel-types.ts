@@ -145,13 +145,16 @@ export const travelTypeMetaSeed: Record<
 /**
  * mock 전용: 유형별 추천 destination 카테고리 매핑.
  * handler 가 destinationSeeds 를 이 카테고리로 필터 + 셔플 → top 3 반환.
+ *
+ * 'local'(지역 명소) 은 유형별 추천에서 제외 — 정책상 quiz 결과는 축제 / 관광지
+ * / 체험관광 3 카테고리 안에서만 추천.
  */
 export const travelTypeRecommendCategoriesSeed: Record<
   TravelTypeMockCode,
-  Array<'local' | 'festival' | 'attraction' | 'experience'>
+  Array<'festival' | 'attraction' | 'experience'>
 > = {
   adventurer: ['experience', 'attraction'],
   explorer: ['attraction', 'festival'],
-  relaxer: ['local', 'attraction'],
-  foodie: ['festival', 'local'],
+  relaxer: ['attraction', 'experience'],
+  foodie: ['festival', 'experience'],
 };
