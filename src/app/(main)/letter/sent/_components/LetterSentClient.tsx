@@ -8,6 +8,23 @@ import { Button } from '@/components/ui';
 import styles from './LetterSentClient.module.scss';
 
 /**
+ * [FUTURE: BE(NestJS) 연동 시 처리 포인트]
+ *
+ * 현재 lastSent 는 letter-store 의 in-memory state. reload 시 사라지면
+ * `/letter/sent` 직접 진입은 `noLastSent` 안내로 떨어짐.
+ *
+ * BE 연동 시:
+ *   - 보낼 때 `POST /letters` 응답으로 `letterId / recipientNickname /
+ *     deliveredAt / receivedAt` 받아옴 → store 에 넣지 말고 `?id=` 로 전달.
+ *   - `useLetter(id)` 로 결과 페이지에서 다시 fetch (reload/공유 대비).
+ *   - 닉네임 해시 / formatKoreanDate / etaText 는 서버 응답값으로 대체.
+ *   - store 의 lastSent 자체를 제거하고 mutation onSuccess → router.replace 패턴.
+ *
+ * 정책 [[rendering-speed-first]]: sent 페이지 진입 시 추가 prefetch 없이,
+ *   isLoading → Skeleton 으로 letter card 자리만 잡아두고 fetch 완료 시 채움.
+ */
+
+/**
  * /letter/sent — 보낸 편지 결과 화면
  *
  *   ┌──────────────────────────────────────┐

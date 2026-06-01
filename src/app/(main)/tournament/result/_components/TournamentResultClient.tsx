@@ -29,6 +29,30 @@ import styles from './TournamentResultClient.module.scss';
  *   - 실패 시 다시 시도 가능
  *
  * 설정/우승자 없이 진입 시: redirect 대신 안내(백엔드 미연결 정책).
+ *
+ * ─────────────────────────────────────────────────────────────
+ * [FUTURE: BE(NestJS) 연동 시 처리 포인트]
+ *
+ * 현재 winner/runnerUp/matchesPlayed/tournamentSize 는 전부 store-only.
+ * 즉 같은 SPA 세션 안에서 setup → play → result 흐름 안에서만 보존됨.
+ *
+ * 새로고침/공유 링크/마이페이지에서 다시 보기 등 deep-link 진입을 지원하려면:
+ *   - URL: /tournament/result?id={tournamentId}  또는  /mypage/tournaments/[id]
+ *   - useQuery(['tournament', id], () => api.getTournament(id))
+ *     로 winner/runnerUp/matchesPlayed/tournamentSize 까지 fetch.
+ *   - 이때 wrap 영역(`styles.wrap`)에 min-height 박아두고
+ *     WinnerCard / TournamentStats 도 isLoading → Skeleton 분기 추가.
+ *   - 현재 `if (!winner) → noWinner 안내` 는 _진행 중 store 가 비었을 때_ 와
+ *     _서버에서 못 찾았을 때_ 가 합쳐지므로, isError vs notFound 분기로 갈라야 함.
+ *
+ * 또한 저장 흐름:
+ *   - 지금은 mutation 결과만 사용. BE 후에는 onSuccess → router.replace 로
+ *     `/mypage/tournaments/{id}` 로 보내 store 가 사라져도 결과를 다시 볼 수 있게.
+ *   - queryClient.invalidateQueries(mypageKeys.tournaments) 도 추가.
+ *
+ * 정책 [[rendering-speed-first]] 유지: 결과 페이지 진입 시 본문/통계 전부
+ * skeleton-first. 미리 prefetch 하지 않음.
+ * ─────────────────────────────────────────────────────────────
  */
 export function TournamentResultClient() {
   const router = useRouter();
@@ -41,6 +65,8 @@ export function TournamentResultClient() {
   const save = useSaveTournament();
   // 우승자 풍부 정보 — winner.id 기준 별도 fetch.
   // winner/stats 는 store 만으로 즉시 렌더 → 상세는 비동기로 채워짐 (렌더 속도 우선).
+  // [FUTURE BE] deep-link 진입 시 winner 자체가 없을 수 있음 →
+  //   useQuery(['tournament', id]) 로 winner/stats 까지 받아오는 분기 추가 필요.
   const detailQuery = useDestinationDetail(winner?.id);
 
   if (!winner) {

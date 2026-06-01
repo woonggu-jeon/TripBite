@@ -37,6 +37,28 @@ const CELEBRATION_MS = 1800;
  *   - 토너먼트 데이터(여행유형 + 여행지 + 토너먼트 수)는 API 호출 파라미터로 전달
  *   - tournamentSize 는 Play 의 별도 phase 에서 결정 (Setup 에서는 결정 X)
  *   - 지도 꽃잎은 자동(선택 X 필수)
+ *
+ * ─────────────────────────────────────────────────────────────
+ * [FUTURE: BE(NestJS) 연동 시 처리 포인트]
+ *
+ * 현재 토너먼트는 100% 클라이언트 상태:
+ *   - config 만 useTournamentCandidates(config) 로 후보 N개 fetch
+ *   - 매치 결과(setBracketResult), 우승자(setWinner) 모두 store-only
+ *   - reload 하면 모든 진행 상태가 사라짐
+ *
+ * BE 연동 시:
+ *   1) Play 진입 → `POST /tournaments` (config 전송) → tournamentId 반환
+ *      → tournamentId 를 URL `?tid=` 또는 store 에 보관
+ *   2) 각 match 종료마다 `PATCH /tournaments/:tid/matches`
+ *      또는 마지막에 한 번 `PATCH /tournaments/:tid/complete { bracketResult }`
+ *      (네트워크 비용/UX 트레이드오프 — 후자 추천)
+ *   3) celebration 단계 후 `router.replace('/tournament/result?tid={id}')`
+ *      → 결과 페이지가 deep-link 진입을 지원하게 됨 (위 결과 페이지 메모 참조)
+ *
+ * 정책 [[rendering-speed-first]]: bracket 진행 중에는 추가 fetch 금지 —
+ *   서버 동기화는 fire-and-forget 으로, UI 는 store 기준으로 즉시 진행.
+ *   (네트워크 실패 시 토너먼트 완주 자체를 막지 않음. retry queue 권장.)
+ * ─────────────────────────────────────────────────────────────
  */
 export function TournamentPlayClient() {
   const router = useRouter();
