@@ -21,7 +21,7 @@ src/app/
     ├── _responsive.scss      mobile viewport @media 토큰 축소
     ├── _fonts.scss           Pretendard fallback @font-face
     ├── _reset.scss           html/body/img/button/a + safe-area
-    └── _mixins.scss          @mixin (respond-to / text-truncate / focus-ring 등)
+    └── _mixins.scss          @mixin (respond-to / text-truncate / focus-ring / visually-hidden / settings-row / banner-action / banner-close)
 ```
 
 새 토큰 추가 시 해당 카테고리 파일만 수정. 새 mixin 은 `_mixins.scss`.

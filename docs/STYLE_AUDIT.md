@@ -53,11 +53,12 @@ primitive 신설 대신 자체 module 로 디자인 시스템화 — 시각 효�
 
 ---
 
-## 🟢 추후 작업 — brand-level 결정 후
+## 🟢 추후 작업 — 모두 완료
 
-토큰 / Primitive 인프라는 완비. 다음은 디자이너 결정 필요.
+토큰 / Primitive / SCSS 분리 / mixin / dark 분기 / mobile-360 토큰 / 추가 마이그레이션 검토 — 인프라 완비.
 
-1. **dark mode 의 accent/letter-cream 색** — 현재 light 와 동일. 디자인 결정 후 별도 분기.
-2. **차트 (recharts) 시리즈 색** — `--chart-2 ~ -8` 현재 default 톤. 브랜드 색 시리즈 결정 후 재배치.
-3. ~~mobile-360 / 320 추가 토큰~~ — ✅ font-display / 도메인 font / emoji / space / header-h 모두 viewport 단계별 축소 토큰 추가. `_responsive.scss` 참조.
-4. ~~`<button>` 38곳 primitive 화~~ — 자체 module 로 이미 토큰 기반 디자인 시스템화 완료. primitive 추가는 추상화만 늘고 시각 효과 X (결정 사유 위 카테고리에 명시).
+1. ~~dark mode 의 accent/letter-cream~~ — ✅ `_dark.scss` 에 시즌 5개 + grad-start/end + 카테고리 5개 + chart-2~8 dark override 추가. light 500 톤 → dark 400 톤 (가독성 ↑).
+2. ~~차트 (recharts) 시리즈 색~~ — ✅ `--chart-2 ~ -8` dark 분기 (tailwind 400 톤).
+3. ~~mobile-360 / 320 추가 토큰~~ — ✅ font-display / 도메인 font / emoji / space / header-h 모두 viewport 단계별 축소 토큰 추가.
+4. ~~`<button>` 38곳 primitive 화~~ — 자체 module 토큰 기반 디자인 시스템화. mixin 으로 추출:
+   - `_mixins.scss` 에 `settings-row`, `banner-action`, `banner-close` mixin 신설. 새 화면에서 `@include` 로 동일 패턴 자동 적용.

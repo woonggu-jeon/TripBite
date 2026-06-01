@@ -37,5 +37,39 @@
     --drop-shadow-lg: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.6));
     --drop-shadow-petal: drop-shadow(0 1px 2px rgba(60, 110, 180, 0.5));
     --text-shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.6);
+
+    /* 추천 카드 시즌별 — dark 에서 채도 ↑ + 명도 ↑ (어두운 배경 가독성).
+       gradient 도 base 색 밝게 (light 의 #ff9eb5 → #ff8aa6 등). */
+    --accent-spring: #ff8aab;
+    --accent-spring-grad-start: #ffaec3;
+    --accent-spring-grad-end: #ffd3df;
+    --accent-summer: #5aa0ff;
+    --accent-summer-grad-start: #7fbcff;
+    --accent-summer-grad-end: #b9d8ff;
+    --accent-autumn: #fbbf24; /* warning 과 동기 — amber 가독성 */
+    --accent-autumn-grad-start: #fcb654;
+    --accent-autumn-grad-end: #f7d6a6;
+    --accent-winter: #5fa3ff;
+    --accent-winter-grad-start: #8fbeff;
+    --accent-winter-grad-end: #c4daff;
+    --accent-festival: #f59e0b;
+    --accent-festival-grad-start: #fcd64f;
+    --accent-festival-grad-end: #fae7a8;
+
+    /* 축제 카테고리 — light 500 톤 → dark 400 톤 (대비 ↑) */
+    --accent-red: #f87171;
+    --accent-amber: #fbbf24;
+    --accent-green: #4ade80;
+    --accent-blue: #60a5fa;
+    --accent-violet: #a78bfa;
+
+    /* 차트 — dark 에서 시리즈 색 밝게 (tailwind 500 → 400) */
+    --chart-2: #60a5fa; /* blue */
+    --chart-3: #34d399; /* emerald */
+    --chart-4: #fbbf24; /* amber */
+    --chart-5: #f87171; /* red */
+    --chart-6: #a78bfa; /* violet */
+    --chart-7: #f472b6; /* pink */
+    --chart-8: #2dd4bf; /* teal */
   }
 }
