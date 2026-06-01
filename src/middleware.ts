@@ -58,20 +58,27 @@ export function middleware(request: NextRequest) {
   requestHeaders.set('x-nonce', nonce);
   requestHeaders.set('content-security-policy-report-only', csp);
 
-  const { pathname } = request.nextUrl;
-  const hasAccessToken = request.cookies.has(ACCESS_TOKEN_COOKIE);
-  const isPublicOnly = PUBLIC_ONLY_PATHS.some((p) => pathname.startsWith(p));
-  const isPublicAccess = PUBLIC_ACCESS_PATHS.some((p) =>
-    pathname.startsWith(p),
-  );
+  // mock 환경 (NEXT_PUBLIC_USE_MSW=true) 에서는 백엔드가 없어 access_token 발급 불가.
+  // 인증 redirect 를 skip 해 모든 페이지를 둘러볼 수 있게 함. E2E 는 별도 cookie 주입.
+  // 운영 빌드 (USE_MSW=false) 에서는 그대로 redirect 동작.
+  const isMockMode = process.env.NEXT_PUBLIC_USE_MSW === 'true';
 
-  if (isPublicOnly && hasAccessToken) {
-    return withCsp(NextResponse.redirect(new URL('/', request.url)), csp);
-  }
-  if (!isPublicAccess && !hasAccessToken) {
-    const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('redirect', pathname);
-    return withCsp(NextResponse.redirect(loginUrl), csp);
+  if (!isMockMode) {
+    const { pathname } = request.nextUrl;
+    const hasAccessToken = request.cookies.has(ACCESS_TOKEN_COOKIE);
+    const isPublicOnly = PUBLIC_ONLY_PATHS.some((p) => pathname.startsWith(p));
+    const isPublicAccess = PUBLIC_ACCESS_PATHS.some((p) =>
+      pathname.startsWith(p),
+    );
+
+    if (isPublicOnly && hasAccessToken) {
+      return withCsp(NextResponse.redirect(new URL('/', request.url)), csp);
+    }
+    if (!isPublicAccess && !hasAccessToken) {
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('redirect', pathname);
+      return withCsp(NextResponse.redirect(loginUrl), csp);
+    }
   }
 
   const response = NextResponse.next({ request: { headers: requestHeaders } });

@@ -27,9 +27,13 @@ test.describe('온보딩 — 3-step 흐름', () => {
     await context.setGeolocation({ latitude: 36.6424, longitude: 127.489 });
   });
 
-  test('미인증 / 진입 → /login (middleware redirect)', async ({ page }) => {
+  test('미인증 / 진입 → /login 또는 /onboarding 으로 redirect', async ({
+    page,
+  }) => {
+    // mock(USE_MSW=true): middleware skip → AuthBootstrap 이 /onboarding 으로.
+    // 운영(USE_MSW=false): middleware 가 /login 으로. 환경 무관 둘 다 허용.
     await page.goto('/');
-    await expect(page).toHaveURL(/\/login/);
+    await expect(page).toHaveURL(/\/(login|onboarding)/);
   });
 
   test('/onboarding 은 비인증도 접근 가능 (PUBLIC_ACCESS)', async ({

@@ -8,12 +8,15 @@ import { test, expect } from '@playwright/test';
  *   e2e/auth.spec.ts, e2e/tournament.spec.ts, e2e/letter.spec.ts 등
  */
 test.describe('smoke', () => {
-  test('미인증 사용자는 /login 으로 리다이렉트', async ({ page }) => {
-    // middleware 가 access_token 쿠키 없는 요청을 /login 으로 보냄.
-    // /onboarding 은 PUBLIC_ACCESS_PATHS 에 있어 middleware 통과 가능하지만,
-    // / 경로는 PUBLIC_ACCESS 가 아니므로 cookie 없이 진입 시 무조건 /login.
+  test('미인증 사용자는 /login 또는 /onboarding 으로 리다이렉트', async ({
+    page,
+  }) => {
+    // 운영(USE_MSW=false): middleware 가 access_token 없음 → /login.
+    // mock(USE_MSW=true): middleware skip, AuthBootstrap 의 localStorage 기반 →
+    //   localStorage 없으면 /onboarding.
+    // 두 시나리오 모두 허용 — 환경별 동작 검증.
     await page.goto('/');
-    await expect(page).toHaveURL(/\/login/);
+    await expect(page).toHaveURL(/\/(login|onboarding)/);
   });
 
   test('/login 페이지가 정상 로드', async ({ page }) => {
