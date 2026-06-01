@@ -207,6 +207,8 @@
   --emoji-lg: 2.25rem; /* 선택 카드 emoji */
   --emoji-xl: 4rem; /* hero 카드 emoji (결과 화면) */
   --emoji-2xl: 4.5rem; /* finishing/공유 카드 emoji */
+  --emoji-3xl: 5rem; /* celebration emoji (트로피 등) */
+  --emoji-4xl: 6rem; /* hero illustration glyph */
 
   /* Line-height 시멘틱 */
   --line-tight: 1.2;
@@ -256,6 +258,11 @@
 
   /* text-shadow — 흰 글자가 colored 배경 위에 있을 때 가독성 보강 */
   --text-shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.25);
+
+  /* 편지 도메인 typography — letter 디자인 일관성. 디자이너가 편지 화면
+     글자 크기 일괄 조정 가능. */
+  --font-letter-body: 1.625rem; /* 26px — 편지 본문 5글자 큰 글씨 */
+  --font-letter-stamp-tag: 0.5rem; /* 8px — 우표 라벨 */
 
   /* Motion — duration / easing 토큰화.
      컴포넌트는 가급적 raw 시간값/cubic-bezier 대신 이쪽을 참조. */

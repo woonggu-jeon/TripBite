@@ -46,7 +46,7 @@
 }
 
 .glyph {
-  font-size: 6rem;
+  font-size: var(--emoji-4xl);
   line-height: 1;
   filter: var(--drop-shadow-md);
 }

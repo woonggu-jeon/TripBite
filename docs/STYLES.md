@@ -76,17 +76,19 @@ primitive: `--text-xs/sm/base/lg/xl/2xl/3xl` (크기만)
 
 시멘틱 (선호):
 
-| 용도                    | 토큰                         |
-| ----------------------- | ---------------------------- |
-| 큰 결과 숫자/디스플레이 | `var(--font-display)` (40px) |
-| 페이지/카드 메인 타이틀 | `var(--font-h1)` (24px)      |
-| 섹션 헤더               | `var(--font-h2)` (20px)      |
-| 카드 헤더               | `var(--font-h3)` (17px)      |
-| 본문                    | `var(--font-body)` (16px)    |
-| 보조 본문               | `var(--font-body-sm)` (15px) |
-| 폼 라벨 / 작은 강조     | `var(--font-label)` (13px)   |
-| 메타 정보               | `var(--font-caption)` (12px) |
-| 머리 라벨 / chip        | `var(--font-eyebrow)` (11px) |
+| 용도                      | 토큰                                 |
+| ------------------------- | ------------------------------------ |
+| 큰 결과 숫자/디스플레이   | `var(--font-display)` (40px)         |
+| 페이지/카드 메인 타이틀   | `var(--font-h1)` (24px)              |
+| 섹션 헤더                 | `var(--font-h2)` (20px)              |
+| 카드 헤더                 | `var(--font-h3)` (17px)              |
+| 본문                      | `var(--font-body)` (16px)            |
+| 보조 본문                 | `var(--font-body-sm)` (15px)         |
+| 폼 라벨 / 작은 강조       | `var(--font-label)` (13px)           |
+| 메타 정보                 | `var(--font-caption)` (12px)         |
+| 머리 라벨 / chip          | `var(--font-eyebrow)` (11px)         |
+| 편지 본문 (5글자 큰 글씨) | `var(--font-letter-body)` (26px)     |
+| 우표 라벨                 | `var(--font-letter-stamp-tag)` (8px) |
 
 ### Emoji 스케일
 
@@ -97,6 +99,8 @@ primitive: `--text-xs/sm/base/lg/xl/2xl/3xl` (크기만)
 | 선택 카드 emoji             | `var(--emoji-lg)` (36px)  |
 | hero 카드 emoji (결과 화면) | `var(--emoji-xl)` (64px)  |
 | finishing / 공유 카드 emoji | `var(--emoji-2xl)` (72px) |
+| celebration emoji (트로피)  | `var(--emoji-3xl)` (80px) |
+| hero illustration glyph     | `var(--emoji-4xl)` (96px) |
 
 line-height: `var(--line-tight/snug/normal/relaxed)` (1.2/1.35/1.5/1.65)
 letter-spacing: `var(--tracking-tight/snug/normal/wide/uppercase)` (-0.02 / -0.01 / 0 / 0.02 / 0.06em)
@@ -236,15 +240,17 @@ shadow 강도 조정 시 `--shadow-card-strong` 한 곳. dark/light 분기는 �
 | `--accent-{color}` × 5 (FestivalCarousel red/amber/green/blue/violet)                 | ✅   |
 | `--drop-shadow-sm/-md` + `--text-shadow-soft` 신설 + 4곳 토큰화                       | ✅   |
 | `--chart-1` ~ `--chart-8` + colors.ts 갱신 (recharts 팔레트 토큰화)                   | ✅   |
+| `--emoji-3xl/-4xl` 신설 + 5rem/6rem 흡수 (celebration/illustration)                   | ✅   |
+| `--font-letter-body/-stamp-tag` 도메인 토큰 + 1.625rem/0.5rem 흡수 (3곳)              | ✅   |
+| box-shadow rgba 4곳 → 기존 shadow 토큰 흡수 (sm/md/pop)                               | ✅   |
+| raw transition 2곳 → motion-base/motion-emphasis 토큰 흡수                            | ✅   |
 
 ## 5. 남은 후속 정비 (점진)
 
-대부분 컴포넌트 고유 미세 조정값 — 디자인 시스템 안정화되면 손댈 때 자연스럽게 토큰화.
+토큰화 광역 sweep 완료 후 잔존 — 시각 변경 위험이 있어 보존, 디자인 시스템 결정 후 점진 조정.
 
-- **컴포넌트 단발성 큰 글씨** (1.625 / 2.75 / 3.5 / 5 / 6 rem) — 사용처 1곳뿐이라 emoji-\* 스케일에 통합 X
-- **두 번째 인자가 외부 hex / border 인 mix** — 디자인 시스템 색 스케일 결정 후 토큰화
-- **컴포넌트별 line-height** (1.1 / 1.25 / 1.55) — 의도된 미세값
-- **letter-spacing** (0.05 / 0.1 / 0.12 / 0.25 / 1em / -0.04em) — 강조 / 일러스트성 일회 사용
-- **raw transition 시간 2곳** — Toggle `0.18s` (motion-fast 100 ~ base 150 사이), RegionWinsChart width `0.6s` (slow 300 ~ emphasis 550 사이). 둘 다 unique 의도값.
-- **raw box-shadow `rgba(0,0,0,X)` ~30곳** — 컴포넌트별 미세 elevation. shadow 토큰화는 디자인 시스템 결정 후.
-- **`#fff` (badge text on success/danger 배경)** — `on-{role}` 토큰 도입 시 정리 가능. 현재는 명시 흰색이 의도.
+- **컴포넌트 단발성 중간 글씨 (3건)** — ComposeEntryCard `3.5rem` (봉투 emoji), WinnerCard `2rem` (trophy emoji) + `2.75rem` (winner emoji). 기존 emoji-lg(36)/-xl(64) 와 4~12px 차이로 흡수 시 시각 변경. 컴포넌트 unique 의도값.
+- **두 번째 인자가 외부 hex / border 인 color-mix** — 디자인 시스템 색 스케일 결정 후 토큰화.
+- **컴포넌트별 line-height** (1.1 / 1.25 / 1.55) — 의도된 미세값.
+- **letter-spacing** (0.05 / 0.1 / 0.12 / 0.25 / 1em / -0.04em) — 강조 / 일러스트성 일회 사용.
+- **남은 drop-shadow rgba** — ChungbukMap 다른 사이즈 (0 2px 3px / 0 4px 6px), FallingPetals 의 blue rgba, LuckyLadder `--color-primary-ring` 사용 등 — 컴포넌트 unique 의도값.

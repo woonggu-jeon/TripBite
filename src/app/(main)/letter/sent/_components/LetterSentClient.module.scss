@@ -125,7 +125,7 @@
 .stampTag {
   position: absolute;
   bottom: 4px;
-  font-size: 0.5rem;
+  font-size: var(--font-letter-stamp-tag);
   font-weight: 800;
   color: color-mix(in srgb, var(--color-letter-accent) 80%, var(--color-fg));
   letter-spacing: 0.1em;

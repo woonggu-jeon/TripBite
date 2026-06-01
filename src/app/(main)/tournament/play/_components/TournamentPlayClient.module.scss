@@ -160,7 +160,7 @@
 }
 
 .celebTrophy {
-  font-size: 5rem;
+  font-size: var(--emoji-3xl);
   line-height: 1;
   filter: var(--drop-shadow-icon-strong);
   animation: celebTrophyPop 0.7s var(--ease-spring) both;
