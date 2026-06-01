@@ -98,12 +98,16 @@ export function canUsePushOnIOS(): boolean {
 }
 
 /**
- * mock 환경 — Service Worker 에 MOCK_PUSH 메시지 보내 push 이벤트를 시뮬레이션.
- * 실 서버의 VAPID + web-push 없이도 dev 에서 알림 끝까지 테스트.
+ * mock 환경 — dev 도구로 새 편지 도착 알림을 시뮬레이션.
  *
- * SW 가 없는 환경 (Serwist dev 비활성 등) 에서는 main thread Notification API
- * 로 fallback. 페이지가 열려있을 때만 동작 (background 알림 X) 하지만 dev 흐름
- * 검증엔 충분.
+ * 구현: main thread `new Notification(...)` 만 사용 (dev 단순화).
+ *   - SW 의 MOCK_PUSH message 경로는 옛 캐시된 SW 가 handler 없을 때 silent
+ *     fail 하는 회귀가 있어 제외.
+ *   - 실 운영의 서버 push (web-push 발송) 는 sw.ts 의 `push` event handler 가
+ *     별도 경로로 처리 — mock 도구와 분리.
+ *   - 페이지가 열려있을 때만 OS 토스트 (background 알림 X) — dev 검증엔 충분.
+ *
+ * 권한 / 미지원 시 콘솔에 명확한 사유 로그 — 디버깅 친화.
  */
 export async function triggerMockPush(payload: {
   title?: string;
@@ -112,24 +116,17 @@ export async function triggerMockPush(payload: {
   tag?: string;
   icon?: string;
 }): Promise<void> {
-  if (typeof navigator === 'undefined') return;
-
-  // 1) Service Worker 경로 — registration 있고 active 일 때.
-  if ('serviceWorker' in navigator) {
-    const reg = await navigator.serviceWorker
-      .getRegistration()
-      .catch(() => null);
-    if (reg?.active) {
-      reg.active.postMessage({ type: 'MOCK_PUSH', payload });
-      return;
-    }
+  if (typeof Notification === 'undefined') {
+    console.warn('[mock-push] Notification API 미지원 환경');
+    return;
   }
-
-  // 2) Fallback — main thread Notification API. dev (Serwist 비활성) 보강.
-  if (
-    typeof Notification !== 'undefined' &&
-    Notification.permission === 'granted'
-  ) {
+  if (Notification.permission !== 'granted') {
+    console.warn(
+      `[mock-push] 권한 미허용 — Notification.permission=${Notification.permission}`,
+    );
+    return;
+  }
+  try {
     const n = new Notification(payload.title ?? '편지가 도착했어요', {
       body: payload.body,
       icon: payload.icon ?? '/icons/icon-192x192.png',
@@ -142,5 +139,8 @@ export async function triggerMockPush(payload: {
         n.close();
       };
     }
+    console.info('[mock-push] Notification dispatched:', payload.title);
+  } catch (err) {
+    console.error('[mock-push] Notification 생성 실패:', err);
   }
 }
