@@ -26,6 +26,15 @@
   width: 100%;
   margin: 0 auto;
   padding: var(--content-pad);
-  padding-bottom: calc(var(--space-8) + var(--bottom-nav-h));
+  // padding-bottom = 여유(space-8) + nav 자체(--bottom-nav-h)
+  //   + safe-area-inset-bottom (iPhone home indicator)
+  //   + emphasized circle 의 -22px overlap 보정 (BottomNav.module.scss 참조)
+  //
+  // 이 합계 누락분이 ranking 등 길이 긴 페이지의 마지막 row 가 fixed nav 에
+  // 가려지던 회귀 원인. safe-area / emphasized overlap 둘 다 누락되어 있었음.
+  padding-bottom: calc(
+    var(--space-8) + var(--bottom-nav-h) + env(safe-area-inset-bottom, 0px) +
+      24px
+  );
   min-width: 0; // 자식 max-content 가 폭을 늘리지 못하게
 }
