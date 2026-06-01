@@ -261,6 +261,7 @@ function Item({ n, onSelect }: { n: AppNotification; onSelect: () => void }) {
       // n.link는 백엔드에서 오는 임의 경로 — typedRoutes 정적 분석 외라 cast
       <Link
         href={n.link as React.ComponentProps<typeof Link>['href']}
+        prefetch={false}
         onClick={onSelect}
         className={styles.link}
       >

@@ -4,88 +4,62 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Carousel } from '@/features/carousel';
+import { Skeleton } from '@/components/feedback/Skeleton';
+import { useOngoingFestivals } from '@/features/region';
+import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
+import type { RegionContent } from '@/features/region/types';
 import styles from './FestivalCarousel.module.scss';
 
 /**
  * 지금 열리는 충북 축제 — 카드형 가로 스와이퍼.
  *
- * slidesPerView 1.2 + dragFree — 한 화면에 1장 + 다음 카드 살짝 보이는 모바일 패턴.
- * 카드: 큰 이모지 + 제목 + 시군·기간.
+ * 데이터: `useOngoingFestivals()` → MSW handler `/regions/ongoing-festivals`.
  *
- * 데이터:
- *   - 현재는 mock. 추후 useOngoingFestivals() hook 으로 교체.
+ * emoji / tone 은 시군 코드 기준 deterministic 매핑 — 디자인 시안 확정 시
+ * BE 응답에 포함시키거나 별도 매핑 테이블 분리.
+ *
+ * 분기: isLoading → Skeleton row / 빈 응답 → null (홈 다른 위젯이 채움).
  */
 
-interface Festival {
-  /** destinationSeeds 와 매칭되는 id — 클릭 시 /destination/{id} 로 진입. */
-  id: string;
-  name: string;
-  region: string;
-  period: string;
+type CarouselSlide = {
+  content: RegionContent;
   emoji: string;
   tone: 'red' | 'amber' | 'green' | 'blue' | 'violet';
+  regionLabel: string;
+};
+
+// 시군 → 톤 매핑 (디자인 시안 시 별 PR).
+const REGION_TONE: Record<RegionCode, CarouselSlide['tone']> = {
+  cheongju: 'violet',
+  chungju: 'red',
+  jecheon: 'blue',
+  boeun: 'amber',
+  okcheon: 'green',
+  yeongdong: 'violet',
+  jincheon: 'blue',
+  goesan: 'red',
+  eumseong: 'amber',
+  danyang: 'green',
+  jeungpyeong: 'blue',
+};
+
+// destination id 기반 emoji — 보은 대추 / 단양 마늘 / 괴산 고추 등 기존 라벨 유지.
+const ID_EMOJI: Record<string, string> = {
+  'boeun-festival-1': '🌰',
+  'danyang-festival-1': '🧄',
+  'goesan-festival-1': '🌶️',
+  'cheongju-festival-1': '🎨',
+  'jecheon-festival-1': '🎬',
+};
+
+function emojiFor(content: RegionContent): string {
+  return ID_EMOJI[content.id] ?? '🎉';
 }
 
-// id 는 mocks/seeds/destinations.ts 의 destinationSeeds id 와 일치
-// (보은 대추축제 = boeun-festival-1 등) — /api/destinations/:id mock 응답 정상.
-const FESTIVALS: readonly Festival[] = [
-  {
-    id: 'boeun-festival-1',
-    name: '보은 대추축제',
-    region: '보은군',
-    period: '10.10 — 10.16',
-    emoji: '🌰',
-    tone: 'amber',
-  },
-  {
-    id: 'danyang-festival-1',
-    name: '단양 마늘축제',
-    region: '단양군',
-    period: '10.05 — 10.08',
-    emoji: '🧄',
-    tone: 'green',
-  },
-  {
-    id: 'goesan-festival-1',
-    name: '괴산 고추축제',
-    region: '괴산군',
-    period: '08.30 — 09.03',
-    emoji: '🌶️',
-    tone: 'red',
-  },
-  {
-    id: 'cheongju-festival-1',
-    name: '청주 공예비엔날레',
-    region: '청주시',
-    period: '09.01 — 10.15',
-    emoji: '🎨',
-    tone: 'violet',
-  },
-  {
-    id: 'jecheon-festival-1',
-    name: '제천 국제음악영화제',
-    region: '제천시',
-    period: '08.10 — 08.15',
-    emoji: '🎬',
-    tone: 'blue',
-  },
-] as const;
+function regionLabelFor(code: RegionCode): string {
+  return CHUNGBUK_REGIONS.find((r) => r.code === code)?.ko ?? code;
+}
 
-/**
- * 화면 너비별 slidesPerView — 작은 화면 카드 잘림 방지.
- *   ≤ 360px : 1.8 (한 장 + 다음 카드 미리보기)
- *   ≤ 480px : 2.2 (iPhone 일반 / 갤럭시 S 시리즈)
- *   그 외   : 3 (태블릿 / 데스크탑)
- *
- * 핵심 — useState lazy initializer 로 mount 직전 window.innerWidth 를 동기
- * 측정해 첫 render 부터 정확한 값 사용. mount 후 useEffect 가 별도로 setV
- * 호출하면 inline flex calc 값이 바뀌면서 카드 폭 점프 → iOS Safari 에서
- * 떨림으로 보임. lazy init 으로 첫 render = mount 후 render 동일하게 만들면
- * 떨림 발생 단계 자체가 사라짐.
- *
- * SSR 안전: 이 hook 사용처(CarouselImpl)가 'use client' + clientOnly dynamic
- * (ssr:false) 라 server 에선 안 그려짐. typeof window 분기는 안전망.
- */
 function pickSlidesPerView(w: number) {
   return w <= 360 ? 1.8 : w <= 480 ? 2.2 : 3;
 }
@@ -108,38 +82,56 @@ function useResponsiveSlidesPerView() {
 export function FestivalCarousel() {
   const t = useTranslations('home.festivals');
   const slidesPerView = useResponsiveSlidesPerView();
+  const { data, isLoading } = useOngoingFestivals();
+
+  if (isLoading) {
+    return <Skeleton width="100%" height={200} radius="lg" />;
+  }
+  if (!data || data.length === 0) {
+    return null;
+  }
+
+  const slides: CarouselSlide[] = data.map((content) => ({
+    content,
+    emoji: emojiFor(content),
+    tone: REGION_TONE[content.region] ?? 'amber',
+    regionLabel: regionLabelFor(content.region),
+  }));
 
   return (
     <Carousel
-      slides={[...FESTIVALS]}
-      renderSlide={(f) => <Card festival={f} />}
-      keyExtractor={(f) => f.id}
+      slides={slides}
+      renderSlide={(s) => <Card slide={s} />}
+      keyExtractor={(s) => s.content.id}
       options={{ slidesPerView, gap: 8 }}
       showDots={false}
-      // dynamic import 동안 자리잡이 — 실제 카드 height (image aspect 1.5/1
-      // + body + padding) 에 맞춤. 모바일 ≤480 기준 약 200px (image 128 +
-      // body 50 + padding 16 + 여유). 데스크탑은 더 크지만 mount 시 늘어나는
-      // 방향이라 layout shift 만 줄어듦.
       fallbackHeight={200}
       ariaLabel={t('label')}
     />
   );
 }
 
-function Card({ festival }: { festival: Festival }) {
+function Card({ slide }: { slide: CarouselSlide }) {
+  const { content, emoji, tone, regionLabel } = slide;
   return (
     <Link
-      href={{ pathname: `/destination/${festival.id}` }}
-      className={`${styles.card} ${styles[festival.tone]}`}
-      aria-label={`${festival.name} ${festival.period}`}
+      href={{ pathname: `/destination/${content.id}` }}
+      prefetch={false}
+      className={`${styles.card} ${styles[tone]}`}
+      aria-label={`${content.title} · ${regionLabel}`}
     >
       <div className={styles.image} aria-hidden>
-        <span className={styles.emoji}>{festival.emoji}</span>
+        <span className={styles.emoji}>{emoji}</span>
       </div>
       <div className={styles.body}>
-        <p className={styles.region}>{festival.region}</p>
-        <h3 className={styles.name}>{festival.name}</h3>
-        <p className={styles.period}>{festival.period}</p>
+        <p className={styles.region}>{regionLabel}</p>
+        <h3 className={styles.name}>{content.title}</h3>
+        {(content.eventStart || content.eventEnd) && (
+          <p className={styles.period}>
+            {content.eventStart}
+            {content.eventEnd ? ` — ${content.eventEnd}` : ''}
+          </p>
+        )}
       </div>
     </Link>
   );

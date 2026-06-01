@@ -21,6 +21,7 @@ export function RegionContentRow({ content }: { content: RegionContent }) {
   return (
     <Link
       href={{ pathname: `/destination/${content.id}` }}
+      prefetch={false}
       className={`${styles.row} ${styles[content.type]}`}
       aria-label={content.title}
     >

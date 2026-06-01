@@ -1,75 +1,91 @@
 /* Dark mode override — color + letter 도메인 색 + shadow alpha 강도.
-   토큰 정의 (tokens/_color.scss 등) 와 동일 토큰명 재할당. */
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Base color */
-    --color-bg: #0a0a0a;
-    --color-fg: #fafafa;
-    --color-muted: #9ca3af;
-    --color-border: #1f2937;
-    --color-primary: #fafafa;
-    --color-primary-fg: #0a0a0a;
-    /* dark 배경에서 가독성 — light 의 500 톤 → 400 톤 */
-    --color-danger: #f87171;
-    --color-success: #4ade80;
-    --color-warning: #fbbf24;
-    /* 편지 — dark 에서 accent 밝게, 종이는 어두운 흙톤 */
-    --color-letter-accent: #fbbf24;
-    --color-letter-paper: #1f1610;
-    --color-letter-cream: #2a1f12;
-    /* overlay 는 흰색 mix 아닌 검정 alpha (대비) */
-    --color-overlay: rgba(0, 0, 0, 0.6);
+   토큰 정의 (tokens/_color.scss 등) 와 동일 토큰명 재할당.
 
-    /* Shadow alpha — dark 배경에서 더 강하게 */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-    --shadow-lg: 0 10px 32px rgba(0, 0, 0, 0.6);
-    --shadow-card-strong: 0 8px 24px rgba(0, 0, 0, 0.45);
-    --shadow-pop: 0 6px 16px rgba(0, 0, 0, 0.55);
-    --shadow-emphasis: 0 16px 40px rgba(0, 0, 0, 0.5);
+   적용 조건:
+     - [data-theme="dark"] : 사용자 명시 선택 (ui-store.theme = 'dark')
+     - prefers-color-scheme : 사용자 system 선호 (ui-store.theme = 'system' 기본값)
+     - [data-theme="light"] 가 명시되면 system 다크여도 light 강제 (override 가능하도록 specificity 동일).
+*/
+@mixin dark-tokens {
+  /* Base color */
+  --color-bg: #0a0a0a;
+  --color-fg: #fafafa;
+  --color-muted: #9ca3af;
+  --color-border: #1f2937;
+  --color-primary: #fafafa;
+  --color-primary-fg: #0a0a0a;
+  /* dark 배경에서 가독성 — light 의 500 톤 → 400 톤 */
+  --color-danger: #f87171;
+  --color-success: #4ade80;
+  --color-warning: #fbbf24;
+  /* 편지 — dark 에서 accent 밝게, 종이는 어두운 흙톤 */
+  --color-letter-accent: #fbbf24;
+  --color-letter-paper: #1f1610;
+  --color-letter-cream: #2a1f12;
+  /* overlay 는 흰색 mix 아닌 검정 alpha (대비) */
+  --color-overlay: rgba(0, 0, 0, 0.6);
 
-    /* Drop-shadow alpha */
-    --drop-shadow-icon: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.55));
-    --drop-shadow-icon-strong: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.55));
-    --drop-shadow-xs: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
-    --drop-shadow-sm: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
-    --drop-shadow-md: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
-    --drop-shadow-lg: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.6));
-    --drop-shadow-petal: drop-shadow(0 1px 2px rgba(60, 110, 180, 0.5));
-    --text-shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.6);
+  /* Shadow alpha — dark 배경에서 더 강하게 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 32px rgba(0, 0, 0, 0.6);
+  --shadow-card-strong: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-pop: 0 6px 16px rgba(0, 0, 0, 0.55);
+  --shadow-emphasis: 0 16px 40px rgba(0, 0, 0, 0.5);
 
-    /* 추천 카드 시즌별 — dark 에서 채도 ↑ + 명도 ↑ (어두운 배경 가독성).
+  /* Drop-shadow alpha */
+  --drop-shadow-icon: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.55));
+  --drop-shadow-icon-strong: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.55));
+  --drop-shadow-xs: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+  --drop-shadow-sm: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+  --drop-shadow-md: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+  --drop-shadow-lg: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.6));
+  --drop-shadow-petal: drop-shadow(0 1px 2px rgba(60, 110, 180, 0.5));
+  --text-shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.6);
+
+  /* 추천 카드 시즌별 — dark 에서 채도 ↑ + 명도 ↑ (어두운 배경 가독성).
        gradient 도 base 색 밝게 (light 의 #ff9eb5 → #ff8aa6 등). */
-    --accent-spring: #ff8aab;
-    --accent-spring-grad-start: #ffaec3;
-    --accent-spring-grad-end: #ffd3df;
-    --accent-summer: #5aa0ff;
-    --accent-summer-grad-start: #7fbcff;
-    --accent-summer-grad-end: #b9d8ff;
-    --accent-autumn: #fbbf24; /* warning 과 동기 — amber 가독성 */
-    --accent-autumn-grad-start: #fcb654;
-    --accent-autumn-grad-end: #f7d6a6;
-    --accent-winter: #5fa3ff;
-    --accent-winter-grad-start: #8fbeff;
-    --accent-winter-grad-end: #c4daff;
-    --accent-festival: #f59e0b;
-    --accent-festival-grad-start: #fcd64f;
-    --accent-festival-grad-end: #fae7a8;
+  --accent-spring: #ff8aab;
+  --accent-spring-grad-start: #ffaec3;
+  --accent-spring-grad-end: #ffd3df;
+  --accent-summer: #5aa0ff;
+  --accent-summer-grad-start: #7fbcff;
+  --accent-summer-grad-end: #b9d8ff;
+  --accent-autumn: #fbbf24; /* warning 과 동기 — amber 가독성 */
+  --accent-autumn-grad-start: #fcb654;
+  --accent-autumn-grad-end: #f7d6a6;
+  --accent-winter: #5fa3ff;
+  --accent-winter-grad-start: #8fbeff;
+  --accent-winter-grad-end: #c4daff;
+  --accent-festival: #f59e0b;
+  --accent-festival-grad-start: #fcd64f;
+  --accent-festival-grad-end: #fae7a8;
 
-    /* 축제 카테고리 — light 500 톤 → dark 400 톤 (대비 ↑) */
-    --accent-red: #f87171;
-    --accent-amber: #fbbf24;
-    --accent-green: #4ade80;
-    --accent-blue: #60a5fa;
-    --accent-violet: #a78bfa;
+  /* 축제 카테고리 — light 500 톤 → dark 400 톤 (대비 ↑) */
+  --accent-red: #f87171;
+  --accent-amber: #fbbf24;
+  --accent-green: #4ade80;
+  --accent-blue: #60a5fa;
+  --accent-violet: #a78bfa;
 
-    /* 차트 — dark 에서 시리즈 색 밝게 (tailwind 500 → 400) */
-    --chart-2: #60a5fa; /* blue */
-    --chart-3: #34d399; /* emerald */
-    --chart-4: #fbbf24; /* amber */
-    --chart-5: #f87171; /* red */
-    --chart-6: #a78bfa; /* violet */
-    --chart-7: #f472b6; /* pink */
-    --chart-8: #2dd4bf; /* teal */
+  /* 차트 — dark 에서 시리즈 색 밝게 (tailwind 500 → 400) */
+  --chart-2: #60a5fa; /* blue */
+  --chart-3: #34d399; /* emerald */
+  --chart-4: #fbbf24; /* amber */
+  --chart-5: #f87171; /* red */
+  --chart-6: #a78bfa; /* violet */
+  --chart-7: #f472b6; /* pink */
+  --chart-8: #2dd4bf; /* teal */
+}
+
+/* 사용자 system 선호 다크 — 명시 light 선택이 아니면 적용. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    @include dark-tokens;
   }
+}
+
+/* 사용자 명시 다크 — system 선호와 무관 적용. */
+:root[data-theme='dark'] {
+  @include dark-tokens;
 }

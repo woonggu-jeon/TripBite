@@ -31,6 +31,7 @@ export function Top5Card({ item }: { item: RankedDestination }) {
   return (
     <Link
       href={{ pathname: `/destination/${item.destination.id}` }}
+      prefetch={false}
       className={cardClasses({
         variant: 'surface',
         padding: 'none',

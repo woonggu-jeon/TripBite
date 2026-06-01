@@ -85,6 +85,7 @@ export function LetterRowCard({ letter }: { letter: Letter }) {
   return (
     <Link
       href={{ pathname: `/letter/${letter.id}` }}
+      prefetch={false}
       className={cardClasses({
         variant: 'surface',
         className: styles.card,

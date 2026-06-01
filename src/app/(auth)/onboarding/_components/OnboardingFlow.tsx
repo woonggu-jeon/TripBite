@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { ConceptStep } from '@/features/onboarding/components/ConceptStep';
+import { AgeConfirmStep } from '@/features/onboarding/components/AgeConfirmStep';
 import { LocationStep } from '@/features/onboarding/components/LocationStep';
 import { useCompleteOnboarding } from '@/features/onboarding/hooks/use-onboarding';
 import { useLocalOnboarding } from '@/features/onboarding/hooks/use-local-onboarding';
@@ -12,22 +13,21 @@ import { useLocationStore } from '@/stores/location-store';
 import styles from './OnboardingFlow.module.scss';
 
 /**
- * 2-step 온보딩 상태머신 (닉네임 step 미노출)
+ * 3-step 온보딩 상태머신 (닉네임 step 미노출)
  *
  * URL은 /onboarding 하나로 유지 (뒤로가기 = step--; 첫 step에서 router.back)
+ *
+ * 흐름: ConceptStep(1) → AgeConfirmStep(2, 만 14세 확인) → LocationStep(3)
  *
  * 변경 이력:
  *   - 닉네임 단계는 일단 미노출 — 서버가 기본 닉네임을 자동 부여 가정.
  *     `NicknameStep` 컴포넌트 / `nicknameSchema` 자체는 보존되어 추후 재노출 가능.
- *   - step 2 (LocationStep) 완료/건너뛰기 시 즉시 finishOnboarding 호출.
+ *   - 만 14세 확인 step 추가 (정보통신망법 / 개인정보보호법) — 미체크 시 다음 disabled.
+ *   - step 3 (LocationStep) 완료/건너뛰기 시 즉시 finishOnboarding 호출.
  *   - nickname 은 빈 문자열로 전송 — mock handler / 실 백엔드가 누락 시 기본값 사용.
- *
- * 성능:
- *   - Step 컴포넌트는 각각 features/onboarding/components 에서 import
- *   - 무거운 로직 X — 일러스트 + 위치 권한
  */
-type Step = 1 | 2;
-const TOTAL_STEPS = 2;
+type Step = 1 | 2 | 3;
+const TOTAL_STEPS = 3;
 
 export function OnboardingFlow() {
   const t = useTranslations('onboarding');
@@ -76,7 +76,8 @@ export function OnboardingFlow() {
 
       <div className={styles.body}>
         {step === 1 && <ConceptStep onNext={goNext} />}
-        {step === 2 && (
+        {step === 2 && <AgeConfirmStep onNext={goNext} onPrev={goPrev} />}
+        {step === 3 && (
           <LocationStep
             onNext={finishOnboarding}
             onSkip={finishOnboarding}

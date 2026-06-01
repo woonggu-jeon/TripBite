@@ -35,6 +35,7 @@ export function LatestReceivedLetter() {
   return (
     <Link
       href={{ pathname: `/letter/${latest.id}` }}
+      prefetch={false}
       className={styles.card}
       aria-label={`${t('badge')} ${latest.body}`}
     >

@@ -12,9 +12,7 @@
 export { onboardingApi } from './api/onboarding';
 export { useCompleteOnboarding } from './hooks/use-onboarding';
 export { ConceptStep } from './components/ConceptStep';
+export { AgeConfirmStep } from './components/AgeConfirmStep';
 export { LocationStep } from './components/LocationStep';
 export { NicknameStep } from './components/NicknameStep';
-export type {
-  OnboardingState,
-  CompleteOnboardingRequest,
-} from './types';
+export type { OnboardingState, CompleteOnboardingRequest } from './types';

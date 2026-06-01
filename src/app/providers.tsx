@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
 import { AuthBootstrap } from '@/features/auth/components/AuthBootstrap';
+import { ThemeApplier } from '@/features/theme/ThemeApplier';
 import { ServiceWorkerNavigateBridge } from '@/features/notification/components/ServiceWorkerNavigateBridge';
 import { MockPushTrigger } from '@/features/notification/components/MockPushTrigger';
 import { Toaster } from '@/components/feedback/Toaster';
@@ -146,6 +147,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <ThemeApplier />
       <AuthBootstrap />
       <ServiceWorkerNavigateBridge />
       <PageViewTracker />
