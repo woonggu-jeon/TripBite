@@ -15,12 +15,15 @@
 
 ### `<button>` 직접 사용 (38곳, 의도)
 
-primitive 부적합 컨텍스트 — 추가 마이그레이션 가치 없음:
+primitive 신설 대신 자체 module 로 디자인 시스템화 — 시각 효과 동일.
 
-- `LetterActions` — `aria-pressed` toggle 액션.
-- `Install/PwaUpdateBanner` — banner action+close (자체 module).
-- `AccountSettings/Actions` — settings row 패턴.
-- `Carousel` dot / arrow, dropdown trigger, card 형태 selector.
+- `LetterActions` (3) — `.action / .liked / .saved / .danger` 자체 SCSS, toggle aria-pressed.
+- `Install/PwaUpdateBanner` (5) — `Banner.module.scss` 의 `.action / .close` 통합.
+- `AccountSettings/Actions` (6) — `SettingsRows.module.scss` 의 `.button / .row / .danger` 토큰 기반.
+- `Carousel` dot/arrow (5) — 내부 미니멀 UI, primitive 부적합.
+- 그 외 — 자체 module 또는 `cardClasses` 합성.
+
+새 화면에서 동일 패턴이 필요해지면 `_mixins.scss` 에 추출 권장 (현재는 단일 사용처라 보류).
 
 ### i18n 미적용 (운영 결정 대기, 4건)
 
@@ -56,5 +59,5 @@ primitive 부적합 컨텍스트 — 추가 마이그레이션 가치 없음:
 
 1. **dark mode 의 accent/letter-cream 색** — 현재 light 와 동일. 디자인 결정 후 별도 분기.
 2. **차트 (recharts) 시리즈 색** — `--chart-2 ~ -8` 현재 default 톤. 브랜드 색 시리즈 결정 후 재배치.
-3. **mobile-360 / 320 추가 토큰** — 매우 작은 viewport 의 별도 토큰 조정.
-4. **`<button>` 38곳의 primitive 화 (ToggleButton / BannerAction / SettingsRow / DotButton)** — primitive 추가는 디자인 시스템 안정화 후 결정.
+3. ~~mobile-360 / 320 추가 토큰~~ — ✅ font-display / 도메인 font / emoji / space / header-h 모두 viewport 단계별 축소 토큰 추가. `_responsive.scss` 참조.
+4. ~~`<button>` 38곳 primitive 화~~ — 자체 module 로 이미 토큰 기반 디자인 시스템화 완료. primitive 추가는 추상화만 늘고 시각 효과 X (결정 사유 위 카테고리에 명시).

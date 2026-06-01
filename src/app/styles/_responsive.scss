@@ -1,29 +1,73 @@
 /* 모바일 viewport 별 토큰 축소.
-   content padding 과 hero emoji 를 작게 — 360 (S8) / 320 (SE1) 까지 안전. */
+   각 단계는 누적 적용 — ≤480 의 값이 baseline, ≤380 / ≤320 에서 추가 축소.
+   디자이너가 매우 작은 화면 대응 시 한 곳에서 typography + emoji + space 조정. */
 
-/* 일반 모바일 (≤ 480px) — iPhone 15/16/17 (393~430), 갤럭시 S 시리즈 (360~412) */
+/* 일반 모바일 (≤ 480px) — iPhone 15/16/17 (393~430), 갤럭시 S 시리즈 (360~412).
+   대부분의 사용자가 여기. 큰 글씨 / hero emoji 축소. */
 @media (max-width: 480px) {
   :root {
     --content-pad: 0.875rem;
+    /* hero emoji 축소 */
     --emoji-xl: 3.25rem; /* 4rem → 3.25rem */
     --emoji-2xl: 3.75rem; /* 4.5rem → 3.75rem */
+    --emoji-3xl: 4rem; /* 5rem → 4rem (celebration) */
+    --emoji-4xl: 4.5rem; /* 6rem → 4.5rem (illustration) */
+    /* 큰 display 글씨 축소 (페이지 메인 숫자 등) */
+    --font-display: 2rem; /* 2.5rem → 2rem (40 → 32) */
+    /* 도메인 font 큰 글씨 축소 */
+    --font-letter-envelope: 3rem; /* 3.5rem → 3rem (56 → 48) */
+    --font-tournament-trophy: 1.75rem; /* 2rem → 1.75rem (32 → 28) */
+    --font-tournament-winner: 2.25rem; /* 2.75rem → 2.25rem (44 → 36) */
   }
 }
 
-/* 작은 모바일 (≤ 380px) — 갤럭시 S8(360), iPhone SE 2/3(375) */
+/* 작은 모바일 (≤ 380px) — 갤럭시 S8(360), iPhone SE 2/3(375), Fold 펼침. */
 @media (max-width: 380px) {
   :root {
     --content-pad: 0.75rem;
     --emoji-xl: 3rem;
     --emoji-2xl: 3.5rem;
+    --emoji-3xl: 3.5rem;
+    --emoji-4xl: 4rem;
+    /* h1 / h2 약간 축소 */
+    --font-display: 1.75rem; /* 28 */
+    --font-h1: 1.375rem; /* 24 → 22 */
+    --font-h2: 1.125rem; /* 20 → 18 */
+    /* 도메인 font 추가 축소 */
+    --font-letter-body: 1.5rem; /* 1.625 → 1.5 (26 → 24) */
+    --font-letter-envelope: 2.75rem; /* 44 */
+    --font-tournament-trophy: 1.625rem; /* 26 */
+    --font-tournament-winner: 2rem; /* 32 */
+    /* spacing 축소 — 카드 사이 간격 좁힘 */
+    --space-6: 1.25rem; /* 24 → 20 */
+    --space-8: 1.75rem; /* 32 → 28 */
   }
 }
 
-/* 더 작은 (≤ 320px) — iPhone SE 1, Fold 닫힘 */
+/* 더 작은 화면 (≤ 320px) — iPhone SE 1세대, 갤럭시 Fold 닫힘. */
 @media (max-width: 320px) {
   :root {
     --content-pad: 0.625rem;
-    --emoji-lg: 1.875rem;
     --emoji-md: 1.5rem;
+    --emoji-lg: 1.875rem;
+    --emoji-xl: 2.5rem;
+    --emoji-2xl: 3rem;
+    --emoji-3xl: 3rem;
+    --emoji-4xl: 3.5rem;
+    /* h1 / h2 / display 추가 축소 */
+    --font-display: 1.5rem;
+    --font-h1: 1.25rem;
+    --font-h2: 1rem;
+    /* 편지/토너 본문 추가 축소 */
+    --font-letter-body: 1.375rem; /* 22 */
+    --font-letter-envelope: 2.25rem; /* 36 */
+    --font-tournament-trophy: 1.5rem;
+    --font-tournament-winner: 1.75rem;
+    /* spacing 추가 축소 */
+    --space-5: 1rem; /* 20 → 16 */
+    --space-6: 1.125rem; /* 20 → 18 */
+    --space-8: 1.5rem; /* 28 → 24 */
+    /* header-h 축소 — 작은 화면에서 컨텐츠 공간 확보 */
+    --header-h: 48px; /* 56 → 48 */
   }
 }
