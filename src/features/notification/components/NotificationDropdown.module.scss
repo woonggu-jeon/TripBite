@@ -47,6 +47,27 @@
   font-size: var(--text-sm);
 }
 
+/* loading skeleton — 알림 item 의 dimension 유지 */
+.skeletonList {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.skeletonItem {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-2);
+}
+
+.skeletonLines {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
 .link {
   display: block;
   width: 100%;

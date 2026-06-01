@@ -116,6 +116,11 @@
   justify-self: end;
 }
 
+.skeletonList {
+  display: grid;
+  gap: var(--space-2);
+}
+
 .fallback {
   display: grid;
   gap: 0.5rem;

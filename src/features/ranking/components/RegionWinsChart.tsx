@@ -8,6 +8,9 @@ import { Button } from '@/components/ui';
 import { useRanking } from '@/features/ranking/hooks/use-ranking';
 import { isRegionCode, type RegionCode } from '@/constants/regions';
 import { haptic } from '@/lib/haptic';
+import { Skeleton } from '@/components/feedback/Skeleton';
+import { EmptyState } from '@/components/feedback/EmptyState';
+import { BarChart3 } from 'lucide-react';
 import styles from './RegionWinsChart.module.scss';
 
 /**
@@ -54,7 +57,14 @@ export function RegionWinsChart() {
   }, [data, tRegion]);
 
   if (isLoading) {
-    return <div className={styles.fallback}>{t('chart.loading')}</div>;
+    // 5 row skeleton — 시각적 자리잡이 (CLS 0)
+    return (
+      <div className={styles.skeletonList} aria-label={t('chart.loading')}>
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Skeleton key={i} width="100%" height={32} radius="md" />
+        ))}
+      </div>
+    );
   }
   if (isError || !data) {
     return (
@@ -67,7 +77,12 @@ export function RegionWinsChart() {
     );
   }
   if (rows.length === 0) {
-    return <div className={styles.fallback}>{t('chart.empty')}</div>;
+    return (
+      <EmptyState
+        icon={<BarChart3 size={28} aria-hidden />}
+        title={t('chart.empty')}
+      />
+    );
   }
 
   return (

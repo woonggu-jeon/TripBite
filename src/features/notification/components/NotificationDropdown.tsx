@@ -13,6 +13,8 @@ import type {
   AppNotification,
   NotificationType,
 } from '@/features/notification/types';
+import { Skeleton } from '@/components/feedback/Skeleton';
+import { EmptyState } from '@/components/feedback/EmptyState';
 import styles from './NotificationDropdown.module.scss';
 
 /**
@@ -84,9 +86,25 @@ export function NotificationDropdown({ onClose }: { onClose: () => void }) {
       </div>
 
       <div className={styles.list}>
-        {isLoading && <div className={styles.empty}>{tCommon('loading')}</div>}
+        {isLoading && (
+          // 3 row skeleton — 알림 항목 layout 과 동일 dimension 으로 자리잡이
+          <div className={styles.skeletonList} aria-label={tCommon('loading')}>
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className={styles.skeletonItem}>
+                <Skeleton width={28} height={28} radius="full" />
+                <div className={styles.skeletonLines}>
+                  <Skeleton width="80%" height={14} radius="sm" />
+                  <Skeleton width="55%" height={12} radius="sm" />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         {!isLoading && items.length === 0 && (
-          <div className={styles.empty}>{t('empty')}</div>
+          <EmptyState
+            icon={<Mail size={28} aria-hidden />}
+            title={t('empty')}
+          />
         )}
         {items.map((n) => (
           <Item
