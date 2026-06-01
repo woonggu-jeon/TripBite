@@ -40,7 +40,6 @@ export function MatchupCard({
       type="button"
       className={cardClasses({
         variant: 'surface',
-        padding: 'none',
         className: styles.card,
       })}
       onClick={() => {

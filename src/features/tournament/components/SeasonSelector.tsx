@@ -46,7 +46,6 @@ export function SeasonSelector({ value, onChange }: SeasonSelectorProps) {
             aria-checked={active}
             className={cardClasses({
               variant: 'surface',
-              padding: 'none',
               className: `${styles.card} ${active ? styles.active : ''} ${styles[s.value] ?? ''}`,
             })}
             onClick={() => pick(s.value)}

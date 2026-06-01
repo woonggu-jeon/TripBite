@@ -21,7 +21,6 @@ export function TravelTypeTestEntry() {
 
   const cardCls = cardClasses({
     variant: 'surface',
-    padding: 'none',
     className: styles.card,
   });
 

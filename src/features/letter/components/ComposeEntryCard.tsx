@@ -19,7 +19,6 @@ export function ComposeEntryCard() {
       href={ROUTES.LETTER_COMPOSE}
       className={cardClasses({
         variant: 'surface',
-        padding: 'none',
         className: styles.card,
       })}
     >

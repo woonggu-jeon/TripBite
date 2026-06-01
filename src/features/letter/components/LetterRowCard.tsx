@@ -87,7 +87,6 @@ export function LetterRowCard({ letter }: { letter: Letter }) {
       href={{ pathname: `/letter/${letter.id}` }}
       className={cardClasses({
         variant: 'surface',
-        padding: 'none',
         className: styles.card,
       })}
       aria-label={`${letter.body} ${letter.author.nickname}`}

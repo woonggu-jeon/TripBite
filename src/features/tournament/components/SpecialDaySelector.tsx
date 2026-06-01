@@ -49,7 +49,6 @@ export function SpecialDaySelector({
             aria-checked={active}
             className={cardClasses({
               variant: 'surface',
-              padding: 'none',
               className: `${styles.card} ${active ? styles.active : ''}`,
             })}
             onClick={() => pick(it.value)}

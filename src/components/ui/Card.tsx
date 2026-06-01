@@ -56,17 +56,22 @@ export function Card({
  */
 export function cardClasses({
   variant = 'surface',
-  padding = 'md',
+  padding,
   className,
 }: {
   variant?: CardVariant;
   padding?: CardPadding;
   className?: string;
 } = {}): string {
+  // padding 미명시 시 .p-* 클래스 미추가 — module 의 .card 가 padding 을
+  // 직접 명시하는 패턴에서 conflict 회피. 두 .card 클래스가 다른 module 의
+  // SCSS chunk 로 로드될 때 source order 가 뒤집히면 padding 이 0 으로
+  // 떨어져 카드가 찌그러지던 증상 (tournament → tournament/play → 뒤로가기
+  // → tournament) 의 근본 원인.
   return [
     styles.card,
     styles[`v-${variant}`],
-    styles[`p-${padding}`],
+    padding ? styles[`p-${padding}`] : null,
     className,
   ]
     .filter(Boolean)

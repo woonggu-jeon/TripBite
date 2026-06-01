@@ -51,7 +51,8 @@ export function ThemeKindSelector({ value, onChange }: ThemeKindSelectorProps) {
             aria-checked={active}
             className={cardClasses({
               variant: 'surface',
-              padding: 'none',
+              // padding 은 module .card 가 직접 명시 — Card primitive 의 .p-*
+              // 와 source order 충돌 방지 (cardClasses padding 옵션 미사용)
               className: `${styles.card} ${active ? styles.active : ''}`,
             })}
             onClick={() => pick(k.value)}
