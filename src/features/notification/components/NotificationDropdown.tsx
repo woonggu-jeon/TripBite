@@ -23,6 +23,7 @@ import type {
 } from '@/features/notification/types';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
+import { Button } from '@/components/ui';
 import styles from './NotificationDropdown.module.scss';
 
 const PUSH_PROMPT_DISMISS_KEY = 'tripbite.push-prompt.dismissed';
@@ -220,21 +221,23 @@ function PushPrompt() {
         <p className={styles.pushPromptHint}>{t('iosInstallHint')}</p>
       )}
       <div className={styles.pushPromptActions}>
-        <button
-          type="button"
-          className={styles.pushEnable}
+        <Button
+          variant="primary"
+          size="sm"
+          fullWidth
           onClick={handleEnable}
-          disabled={iosNeedsInstall || status === 'requesting'}
+          disabled={iosNeedsInstall}
+          loading={status === 'requesting'}
         >
           {iosNeedsInstall
             ? t('iosCta')
             : status === 'requesting'
               ? t('requesting')
               : t('enable')}
-        </button>
-        <button type="button" className={styles.pushDismiss} onClick={dismiss}>
+        </Button>
+        <Button variant="secondary" size="sm" onClick={dismiss}>
           {t('dismiss')}
-        </button>
+        </Button>
       </div>
     </div>
   );

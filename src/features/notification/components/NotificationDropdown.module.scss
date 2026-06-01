@@ -134,33 +134,11 @@
   line-height: var(--line-snug);
 }
 
+// Button primitive 사용 — variant/size/loading 모두 토큰화된 스타일.
+// (이전 .pushEnable / .pushDismiss 직접 스타일은 제거 — Button 으로 일관)
 .pushPromptActions {
   display: flex;
   gap: var(--space-2);
-}
-
-.pushEnable {
-  flex: 1;
-  padding: 6px 10px;
-  background: var(--color-primary);
-  color: var(--color-primary-fg);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-label);
-  font-weight: var(--font-weight-bold);
-
-  &:disabled {
-    opacity: var(--opacity-disabled);
-    cursor: not-allowed;
-  }
-}
-
-.pushDismiss {
-  padding: 6px 10px;
-  background: transparent;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-label);
-  color: var(--color-muted);
 }
 
 /* 비로그인 안내 — 알림함 진입 시 로그인 유도 */
