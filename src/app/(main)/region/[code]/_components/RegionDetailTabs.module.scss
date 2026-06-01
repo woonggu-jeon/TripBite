@@ -36,6 +36,29 @@
   }
 }
 
+// 탭 panel 영역 — skeleton ↔ data 전환 시 CLS 0 보장.
+// RegionContentRow ≈ 83px (padding 24 + image 56 + border 3) + gap 12.
+// 3 row skeleton + 1 sentinel 가 안정적으로 들어갈 높이.
+.panelArea {
+  display: grid;
+  position: relative;
+  min-height: 360px;
+}
+
+.panel {
+  display: grid;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .panelArea {
+    min-height: 320px;
+  }
+}
+
 .fallback {
   display: grid;
   gap: 0.5rem;
