@@ -215,6 +215,9 @@ shadow 강도 조정 시 `--shadow-card-strong` 한 곳. dark/light 분기는 �
 | Letter 도메인 amber hex → `--color-letter-accent` / `--color-letter-paper` 토큰화     | ✅   |
 | MyPage / Region inline → SCSS module 분리                                             | ✅   |
 | `border-radius: 9999px` → `var(--radius-full)` 통일 (3곳)                             | ✅   |
+| 중복 Section 컴포넌트 (MyPage / Settings) → `PageSection` primitive 통합              | ✅   |
+| ESLint warning 0 (ConfirmDialog 의 dialog backdrop 패턴 명시 disable)                 | ✅   |
+| dark mode 누락 sweep — 의도된 hex 외 누락 없음                                        | ✅   |
 
 ## 5. 남은 후속 정비 (점진)
 

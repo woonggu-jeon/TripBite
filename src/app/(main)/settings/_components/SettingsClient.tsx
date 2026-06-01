@@ -7,6 +7,7 @@ import { NotificationSettingsSection } from '@/features/settings/components/Noti
 import { AccountSettingsSection } from '@/features/settings/components/AccountSettingsSection';
 import { PolicySection } from '@/features/settings/components/PolicySection';
 import { AccountActionsSection } from '@/features/settings/components/AccountActionsSection';
+import { PageSection } from '@/components/ui';
 import styles from './SettingsClient.module.scss';
 
 /**
@@ -25,42 +26,27 @@ export function SettingsClient() {
 
   return (
     <div className={styles.wrap}>
-      <Section title={t('notifications.section')}>
+      <PageSection title={t('notifications.section')}>
         <NotificationSettingsSection />
-      </Section>
+      </PageSection>
 
-      <Section title={t('account.section')}>
+      <PageSection title={t('account.section')}>
         <AccountSettingsSection />
-      </Section>
+      </PageSection>
 
       {/* 언어 섹션 — 미노출 (사용자 요청). 추후 복원 시 주석 해제.
-      <Section title={t('language')}>
+      <PageSection title={t('language')}>
         <LanguageSwitcher />
-      </Section>
+      </PageSection>
       */}
 
-      <Section title={t('policy.section')}>
+      <PageSection title={t('policy.section')}>
         <PolicySection />
-      </Section>
+      </PageSection>
 
-      <Section title={t('account.section')}>
+      <PageSection title={t('account.section')}>
         <AccountActionsSection />
-      </Section>
+      </PageSection>
     </div>
-  );
-}
-
-function Section({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className={styles.section}>
-      <h2 className={styles.sectionTitle}>{title}</h2>
-      {children}
-    </section>
   );
 }

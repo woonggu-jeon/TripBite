@@ -2,6 +2,8 @@
 
 토큰/primitive 추가 + 핵심 사용처 마이그레이션은 대부분 완료. 남은 작업은 **점진/일회성 잔존 패턴**.
 
+> 반복 sweep 결과 — 의도된 unique 패턴은 잔존 시키고, 실질적 충돌·중복만 정리.
+
 ## ✅ 완료 (이전 → 현재)
 
 ### 1. Auth form 인라인 style — 완료
@@ -34,6 +36,35 @@
 ### 6. `border-radius` 통일 — 완료
 
 - `border-radius: 9999px` 3곳(OnboardingFlow / Skeleton / Carousel dot) → `var(--radius-full)` 일괄.
+
+### 7. 중복 Section 컴포넌트 → PageSection primitive 통합
+
+- `MyPageClient.tsx` 와 `SettingsClient.tsx` 가 각자 inline 정의하던 동일한 `Section({title, children})` 컴포넌트 제거.
+- 둘 다 기존 `PageSection` primitive (`@/components/ui`) 사용으로 통합.
+- 미사용 `.sectionTitle` / `.section` SCSS 정리.
+
+### 8. ESLint warnings 정리 — 완료
+
+- `ConfirmDialog` backdrop 에 `role="presentation"` 명시 (보조 영역 의도).
+- 내부 dialog `<div>` 의 stopPropagation onClick — 표준 dialog 패턴이고 `role="dialog"` 가 있음 + Esc/내부 Button 키보드 인터랙션 제공 → `eslint-disable-next-line` 으로 의도 명시.
+- 전 프로젝트 ESLint warning 0.
+
+### 9. dark mode 누락 점검 — 누락 없음
+
+- `color: #fff` 5곳 — 모두 colored background (success/danger/banner) 위 텍스트. dark 에서도 가독성 의도. 유지.
+- `Top5Card` 의 raw hex (금/은/동 메달 색) — 의미적 색상. dark/light 양쪽 OK.
+- `Toggle` thumb 의 `#fff` — toggle 동작 (반전) 정상.
+- 컴포넌트별 `@media (prefers-color-scheme: dark)` override 가 있는 곳은 `globals.scss` + `ChungbukMap` 둘뿐. 나머지는 모두 토큰 사용으로 자동 대응 — 정상.
+
+### 10. `<button>` 직접 사용 — 모두 의도된 형태로 분류 완료
+
+38곳 잔존:
+
+- `LetterActions` — toggle (aria-pressed) 액션. variant 와 안 맞음.
+- `Install/PwaUpdateBanner` — banner action+close. 자체 module 잘 구조화.
+- `AccountSettings/Actions` — settings row. 자체 module 패턴.
+- `Carousel` dot/arrow, dropdown trigger, card 형태 selector 등 — 모두 Button primitive 부적합.
+- 추가 마이그레이션 가치 없음.
 
 ---
 

@@ -2,16 +2,3 @@
   display: grid;
   gap: var(--space-6);
 }
-
-.section {
-  display: grid;
-  gap: var(--space-3);
-}
-
-.sectionTitle {
-  font-size: var(--font-label);
-  font-weight: 700;
-  color: var(--color-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}

@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ROUTES } from '@/constants/routes';
 import { ProfileCard } from '@/features/mypage/components/ProfileCard';
+import { PageSection } from '@/components/ui';
 import styles from './MyPageClient.module.scss';
 
 /**
@@ -25,58 +26,43 @@ export function MyPageClient() {
   return (
     <div className={styles.grid}>
       {/* 1) 프로필 */}
-      <Section title={t('profile')}>
+      <PageSection title={t('profile')}>
         <ProfileCard />
-      </Section>
+      </PageSection>
 
       {/* 2) 도장깨기 */}
-      <Section title={t('stampMap')}>
+      <PageSection title={t('stampMap')}>
         {/* TODO: <RegionStampMap /> from @/features/region */}
         <Placeholder height={280} note="ChungbukSvgMap + stamps" />
-      </Section>
+      </PageSection>
 
       {/* 3) 저장된 우승지 */}
-      <Section title={t('savedTournaments')}>
+      <PageSection title={t('savedTournaments')}>
         {/* TODO: <SavedTournamentsSection />
                   - 최대 10개
                   - 가로 캐러셀 권장 (slidesPerView 2.2) */}
         <Placeholder height={180} />
-      </Section>
+      </PageSection>
 
       {/* 4) 토너먼트 기록 (InfiniteList) */}
-      <Section title={t('tournamentHistory')}>
+      <PageSection title={t('tournamentHistory')}>
         {/* TODO: <TournamentHistorySection /> — useInfiniteList */}
         <Placeholder height={200} note="InfiniteList" />
-      </Section>
+      </PageSection>
 
       {/* 5) 편지함 4탭 */}
-      <Section title={t('letterbox')}>
+      <PageSection title={t('letterbox')}>
         {/* TODO: <LetterboxTabs />
                   - 탭: received / liked / saved / sent
                   - 각각 useInfiniteList + InfiniteList */}
         <Placeholder height={240} note="InfiniteList × 4 tabs" />
-      </Section>
+      </PageSection>
 
       {/* 계정 관리는 /settings 페이지로 */}
       <Link href={ROUTES.SETTINGS} className={styles.settingsLink}>
         {t('goToSettings')}
       </Link>
     </div>
-  );
-}
-
-function Section({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section>
-      <h2 className={styles.sectionTitle}>{title}</h2>
-      {children}
-    </section>
   );
 }
 

@@ -43,7 +43,16 @@ export function ConfirmDialog() {
   } = current;
 
   return (
-    <div className={styles.backdrop} onClick={() => resolve(id, false)}>
+    // backdrop click = cancel. 키보드 인터랙션은 Esc 가 useKeyboard 로 이미 처리.
+    // role="presentation" 으로 backdrop 이 의미상 dialog 의 보조 영역임을 명시.
+    <div
+      className={styles.backdrop}
+      role="presentation"
+      onClick={() => resolve(id, false)}
+    >
+      {/* dialog 내부 click 의 backdrop 으로의 bubbling 차단. 키보드 인터랙션은
+          내부 Button 들이 제공. role="dialog" + aria-modal 로 의도 명시. */}
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions */}
       <div
         ref={ref}
         role="dialog"
