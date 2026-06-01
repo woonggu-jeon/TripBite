@@ -3,13 +3,20 @@
  *
  * 헤더의 알림 버튼 클릭 시 노출되는 NotificationDropdown 에서 사용.
  *
- * 알림 종류 (메뉴 요구사항):
- *   1) 받은 편지 도착 — letter.received
+ * 알림 종류:
+ *   1) 받은 편지 도착   — letter.received
  *   2) 내 편지에 좋아요 — letter.liked
+ *   3) 토너먼트 공유    — tournament.shared
+ *   4) 일반 이벤트/공지 — event
  *
- * 향후 확장 시 type 유니온에 추가.
+ * 향후 확장 시 type 유니온에 추가하고 NotificationDropdown.TYPE_ICON 도 함께.
+ * UI 에서는 unknown type 도 Bell fallback 으로 안전 처리.
  */
-export type NotificationType = 'letter.received' | 'letter.liked';
+export type NotificationType =
+  | 'letter.received'
+  | 'letter.liked'
+  | 'tournament.shared'
+  | 'event';
 
 export type AppNotification = {
   id: string;

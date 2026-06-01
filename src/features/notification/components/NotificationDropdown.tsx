@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Mail, Heart } from 'lucide-react';
+import { Mail, Heart, Trophy, Bell } from 'lucide-react';
 import {
   useNotificationInbox,
   useMarkAllNotificationsRead,
@@ -44,9 +44,14 @@ const PUSH_PROMPT_DISMISS_KEY = 'tripbite.push-prompt.dismissed';
  *   - 외부 클릭/ESC로 닫기
  */
 
+// type 별 아이콘 매핑. 새 type 추가 시 여기와 NotificationType 둘 다 갱신.
+// 매핑이 누락된 type 은 Bell fallback (Item 안에서 `?? Bell`) — undefined 로
+// Icon 컴포넌트를 렌더해 "Element type is invalid" React 에러가 나는 회귀 차단.
 const TYPE_ICON: Record<NotificationType, typeof Mail> = {
   'letter.received': Mail,
   'letter.liked': Heart,
+  'tournament.shared': Trophy,
+  event: Bell,
 };
 
 // mock 모드에선 비로그인이라도 알림함 / push prompt / list 모두 노출 — 데모/QA
@@ -236,7 +241,8 @@ function PushPrompt() {
 }
 
 function Item({ n, onSelect }: { n: AppNotification; onSelect: () => void }) {
-  const Icon = TYPE_ICON[n.type];
+  // unknown type (스키마 확장 전 백엔드 응답) 도 안전하게 Bell 로 fallback.
+  const Icon = TYPE_ICON[n.type] ?? Bell;
   const body = (
     <div className={`${styles.item} ${!n.read ? styles.unread : ''}`}>
       <Icon size={18} className={styles.icon} />
