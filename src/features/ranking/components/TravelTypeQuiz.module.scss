@@ -182,7 +182,7 @@
   min-height: 50dvh;
   text-align: center;
   overflow: hidden;
-  animation: finishingIn 0.45s ease-out both;
+  animation: finishingIn 0.45s var(--ease-out) both;
 }
 
 .finishingGlow {
@@ -194,7 +194,7 @@
     transparent 70%
   );
   pointer-events: none;
-  animation: finishingGlow 1.4s ease-out both;
+  animation: finishingGlow 1.4s var(--ease-out) both;
 }
 
 .finishingEmoji {
@@ -210,7 +210,7 @@
   font-weight: 800;
   color: var(--color-fg);
   letter-spacing: var(--tracking-tight);
-  animation: finishingRise 0.6s var(--motion-base) ease-out both;
+  animation: finishingRise 0.6s var(--motion-base) var(--ease-out) both;
   opacity: 0;
   z-index: 1;
 }
@@ -218,7 +218,7 @@
 .finishingHint {
   font-size: var(--font-label);
   color: var(--color-muted);
-  animation: finishingRise 0.6s 0.35s ease-out both;
+  animation: finishingRise 0.6s 0.35s var(--ease-out) both;
   opacity: 0;
   z-index: 1;
 }

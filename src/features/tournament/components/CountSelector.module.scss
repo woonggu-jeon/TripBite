@@ -51,7 +51,7 @@
   font-size: var(--text-xl);
   font-weight: 800;
   letter-spacing: var(--tracking-tight);
-  line-height: 1.1;
+  line-height: var(--line-display);
 }
 
 @media (min-width: 480px) {

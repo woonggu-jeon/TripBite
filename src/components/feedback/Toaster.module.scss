@@ -23,7 +23,7 @@
   box-shadow: var(--shadow-lg);
   font-size: var(--text-sm);
   pointer-events: auto;
-  animation: slide-up 0.18s ease-out;
+  animation: slide-up 0.18s var(--ease-out);
 }
 
 @keyframes slide-up {

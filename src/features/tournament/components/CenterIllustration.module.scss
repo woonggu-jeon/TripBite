@@ -81,7 +81,7 @@
 
 /* 탭 직후 펄스 */
 .tapped {
-  animation: pulse 0.8s ease-out;
+  animation: pulse 0.8s var(--ease-out);
 }
 
 @keyframes pulse {

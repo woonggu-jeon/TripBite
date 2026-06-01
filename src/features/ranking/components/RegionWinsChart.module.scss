@@ -75,9 +75,9 @@
   );
   border-radius: inherit;
   // mount 시 width 가 inline style 로 즉시 들어가지만,
-  // 동일 width 재할당 시 안정적인 transition 을 위해 ease-out.
-  transition: width var(--motion-emphasis) var(--ease-out);
-  animation: barIn var(--motion-emphasis) var(--ease-out) both;
+  // 동일 width 재할당 시 안정적인 transition 을 위해 var(--ease-out).
+  transition: width var(--motion-emphasis) var(--var(--ease-out));
+  animation: barIn var(--motion-emphasis) var(--var(--ease-out)) both;
   transform-origin: left center;
 }
 

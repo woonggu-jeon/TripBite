@@ -144,7 +144,7 @@
   min-height: 60dvh;
   text-align: center;
   overflow: hidden;
-  animation: celebFadeIn 0.45s ease-out both;
+  animation: celebFadeIn 0.45s var(--ease-out) both;
 }
 
 .celebGlow {
@@ -156,7 +156,7 @@
     transparent 70%
   );
   pointer-events: none;
-  animation: celebGlow 1.8s ease-out both;
+  animation: celebGlow 1.8s var(--ease-out) both;
 }
 
 .celebTrophy {
@@ -172,7 +172,7 @@
   font-weight: 700;
   color: var(--color-primary-text-bold);
   letter-spacing: var(--tracking-uppercase);
-  animation: celebRise 0.6s 0.25s ease-out both;
+  animation: celebRise 0.6s 0.25s var(--ease-out) both;
   opacity: 0;
   z-index: 1;
 }
@@ -184,7 +184,7 @@
   letter-spacing: var(--tracking-tight);
   line-height: var(--line-tight);
   word-break: keep-all;
-  animation: celebRise 0.6s 0.4s ease-out both;
+  animation: celebRise 0.6s 0.4s var(--ease-out) both;
   opacity: 0;
   z-index: 1;
 }
@@ -192,7 +192,7 @@
 .celebRegion {
   font-size: var(--font-body-sm);
   color: var(--color-muted);
-  animation: celebRise 0.6s 0.55s ease-out both;
+  animation: celebRise 0.6s 0.55s var(--ease-out) both;
   opacity: 0;
   z-index: 1;
 }
@@ -205,7 +205,7 @@
   font-size: var(--font-h2);
   color: color-mix(in srgb, var(--color-primary) 70%, #ffcf5b);
   pointer-events: none;
-  animation: sparkleFloat 1.6s ease-out infinite;
+  animation: sparkleFloat 1.6s var(--ease-out) infinite;
 }
 
 .celebSparkle1 {

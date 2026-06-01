@@ -143,7 +143,7 @@
 .body {
   font-size: var(--font-letter-body);
   font-weight: 800;
-  letter-spacing: 0.25em;
+  letter-spacing: var(--tracking-pin);
   color: var(--color-fg);
   line-height: var(--line-snug);
   word-break: keep-all;

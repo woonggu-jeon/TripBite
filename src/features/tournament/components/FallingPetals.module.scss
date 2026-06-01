@@ -27,7 +27,7 @@
 .summer .particle {
   animation-name: fall-straight;
   animation-timing-function: ease-in;
-  filter: drop-shadow(0 1px 2px rgba(60, 110, 180, 0.25));
+  filter: var(--drop-shadow-petal);
 }
 
 /* 겨울: 천천히 흔들리며 회전 적음 */

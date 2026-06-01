@@ -273,6 +273,16 @@
   --font-tournament-trophy: 2rem; /* 32px — WinnerCard trophy */
   --font-tournament-winner: 2.75rem; /* 44px — WinnerCard winner emoji */
 
+  /* PIN 입력 도메인 spacing — 편지 5칸 PIN 강제 spacing. */
+  --tracking-pin: 0.25em; /* LetterDetail body 의 PIN style */
+  --tracking-pin-fill: 1em; /* PinLikeInput 의 5칸 강제 */
+
+  /* 큰 글씨 줄간격 — 1.2 (tight) 보다 더 좁게. CountSelector 카드 큰 숫자 */
+  --line-display: 1.1;
+
+  /* 꽃잎 등 도메인 색이 있는 drop-shadow */
+  --drop-shadow-petal: drop-shadow(0 1px 2px rgba(60, 110, 180, 0.25));
+
   /* Motion — duration / easing 토큰화.
      컴포넌트는 가급적 raw 시간값/cubic-bezier 대신 이쪽을 참조. */
   --motion-fast: 100ms;
@@ -374,6 +384,7 @@
     --drop-shadow-sm: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
     --drop-shadow-md: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
     --drop-shadow-lg: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.6));
+    --drop-shadow-petal: drop-shadow(0 1px 2px rgba(60, 110, 180, 0.5));
     --text-shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.6);
     /* dark 에서 overlay/divider 는 흰색 mix → 더 잘 보이도록 */
     --color-overlay: rgba(0, 0, 0, 0.6);

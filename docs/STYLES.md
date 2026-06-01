@@ -52,6 +52,7 @@
 | 일반 drop-shadow 작은                 | `filter: var(--drop-shadow-sm)`          |
 | 일반 drop-shadow 중간 (emoji 카드 등) | `filter: var(--drop-shadow-md)`          |
 | 일반 drop-shadow 큰 (지도 hover 등)   | `filter: var(--drop-shadow-lg)`          |
+| 꽃잎 등 도메인 색 drop-shadow         | `filter: var(--drop-shadow-petal)`       |
 | text-shadow (흰 글자 가독성 보강)     | `text-shadow: var(--text-shadow-soft)`   |
 
 > dark 모드 자동 대응. `rgba(0,0,0,X)` 컴포넌트별 작성 금지.
@@ -107,8 +108,8 @@ primitive: `--text-xs/sm/base/lg/xl/2xl/3xl` (크기만)
 | celebration emoji (트로피)  | `var(--emoji-3xl)` (80px) |
 | hero illustration glyph     | `var(--emoji-4xl)` (96px) |
 
-line-height: `var(--line-tight/snug/normal/relaxed)` (1.2/1.35/1.5/1.65)
-letter-spacing: `var(--tracking-tight/snug/normal/wide/uppercase/emphasis)` (-0.02 / -0.01 / 0 / 0.02 / 0.06 / 0.12em)
+line-height: `var(--line-display/tight/snug/normal/relaxed)` (1.1/1.2/1.35/1.5/1.65)
+letter-spacing: `var(--tracking-tight/snug/normal/wide/uppercase/emphasis/pin/pin-fill)` (-0.02 / -0.01 / 0 / 0.02 / 0.06 / 0.12 / 0.25 / 1em)
 
 ## 2. Primitive 컴포넌트
 
@@ -205,11 +206,6 @@ import { cardClasses } from '@/components/ui';
 
 shadow 강도 조정 시 `--shadow-card-strong` 한 곳. dark/light 분기는 자동.
 
-## 4. 남은 후속 정비 (점진)
+## 4. 남은 후속 정비
 
-토큰화 광역 sweep 완료. 잔존은 모두 **시각 변경 위험 / 컴포넌트 unique 의도값**.
-
-- **`line-height: 1.1`** (CountSelector) — tight (1.2) 와 0.1 차이로 큰 글씨에서 줄간격 시각 변경. 보존.
-- **`letter-spacing: 0.25em`** (LetterDetail 본문) / **`1em`** (PinLikeInput) — PIN 5칸 letter style 강제 spacing. 컴포넌트 unique.
-- **`color-mix` 의 외부 hex** — 잔존 0건.
-- **남은 drop-shadow rgba** — ChungbukMap `0 2px 3px` (보존), FallingPetals 의 blue rgba (꽃잎의 우주적 그림자, 색상이 다른 unique), LuckyLadder `--color-primary-ring` (이미 토큰 사용).
+거의 모든 raw 값 잔존 0. 남은 의도 unique 는 도메인 토큰으로 분리됨 (`--line-display`, `--tracking-pin/-pin-fill`, `--drop-shadow-petal` 등). 새 컴포넌트 작업 시 위 1~3 의 토큰/Primitive 사용 + 새 도메인 값 발생 시 도메인 토큰 신설을 우선.
