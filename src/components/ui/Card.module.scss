@@ -1,8 +1,9 @@
-/* base class — 의도적으로 .card 가 아닌 .root 사용.
-   호출처 module 의 .card 와 합성될 때 specificity (0,1,0) 동일 + CSS
-   source order 의존으로 display/padding 충돌 발생 (뒤로가기 시 chunk
-   순서가 바뀌면 카드 찌그러짐). 이름 자체 분리로 충돌 가능성 제거. */
-.root {
+/* base class — :where() 로 specificity 를 0 으로 만들어 호출처 module
+   의 .card (specificity 0,1,0) 가 항상 이기게 함.
+   클래스 이름만 다르게 해도 display 같은 동일 속성이 두 selector 에
+   정의되면 source order 의존 충돌. specificity 0 으로 호출처가 무조건
+   override 가능 → 뒤로가기 시 chunk 순서 변동에 무관. */
+:where(.root) {
   display: block;
   border-radius: var(--radius-lg);
   transition:
@@ -11,24 +12,25 @@
     box-shadow var(--motion-base) ease;
 }
 
-// variants
-.v-surface {
+// variants — :where() 로 specificity 0. 호출처가 background/border 를
+// override 하고 싶으면 자유롭게 가능.
+:where(.v-surface) {
   background: var(--color-bg);
   border: 1px solid var(--color-border);
 }
 
-.v-soft {
+:where(.v-soft) {
   background: var(--color-surface-soft);
   border: 1px solid var(--color-border);
 }
 
-.v-elevated {
+:where(.v-elevated) {
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-card-strong);
 }
 
-.v-highlighted {
+:where(.v-highlighted) {
   background: linear-gradient(
     180deg,
     var(--color-primary-surface-grad-start),
@@ -38,22 +40,22 @@
   box-shadow: var(--shadow-card-strong);
 }
 
-// padding scale (var(--space-*) 토큰 활용)
-.p-none {
+// padding scale (var(--space-*) 토큰 활용) — :where() 로 specificity 0
+:where(.p-none) {
   padding: 0;
 }
-.p-sm {
+:where(.p-sm) {
   padding: var(--space-3);
 }
-.p-md {
+:where(.p-md) {
   padding: var(--space-4);
 }
-.p-lg {
+:where(.p-lg) {
   padding: var(--space-6) var(--space-5);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .root {
+  :where(.root) {
     transition: none;
   }
 }
