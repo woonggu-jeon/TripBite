@@ -13,6 +13,7 @@
     "tryAgain": "다시 시도",
     "share": "공유",
     "shareLinkCopied": "링크가 복사되었어요",
+    "shareDownloaded": "이미지가 저장되었어요",
     "shareFailed": "공유에 실패했어요. 잠시 후 다시 시도해주세요.",
     "next": "다음",
     "previous": "이전",
@@ -369,6 +370,7 @@
       "savedToast": "저장되었어요",
       "noWinner": "토너먼트 결과가 없어요",
       "goSetup": "토너먼트 시작하기",
+      "shareText": "TripBite 에서 {name} 가(이) 우승했어요!",
       "color": {
         "label": "행운의 색",
         "red": "빨강",

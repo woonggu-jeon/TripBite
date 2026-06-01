@@ -13,6 +13,7 @@
     "tryAgain": "Try again",
     "share": "Share",
     "shareLinkCopied": "Link copied to clipboard",
+    "shareDownloaded": "Image saved",
     "shareFailed": "Share failed. Please try again.",
     "next": "Next",
     "previous": "Previous",
@@ -369,6 +370,7 @@
       "savedToast": "Saved",
       "noWinner": "No tournament result yet",
       "goSetup": "Start a bracket",
+      "shareText": "{name} won my TripBite bracket!",
       "color": {
         "label": "Lucky color",
         "red": "Red",

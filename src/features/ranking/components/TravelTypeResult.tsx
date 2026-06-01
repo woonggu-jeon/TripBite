@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Share2, RotateCcw } from 'lucide-react';
@@ -10,6 +9,8 @@ import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button, Card, Chip } from '@/components/ui';
 import { useMyTravelType } from '@/features/ranking/hooks/use-ranking';
 import type { TravelType } from '@/features/ranking/types';
+import { shareWithImage } from '@/lib/share';
+import { toast } from '@/lib/toast';
 import styles from './TravelTypeResult.module.scss';
 
 const CATEGORY_EMOJI = {
@@ -38,8 +39,27 @@ const CATEGORY_EMOJI = {
  */
 export function TravelTypeResult() {
   const t = useTranslations('travelType.result');
+  const tCommon = useTranslations('common');
   const router = useRouter();
   const { data, isLoading } = useMyTravelType();
+
+  const handleShare = async (result: TravelType) => {
+    haptic.tap();
+    const params = new URLSearchParams({
+      type: result.code,
+      name: result.title,
+      ...(result.description ? { tagline: result.description } : {}),
+    });
+    const imageUrl = `/api/og/quiz?${params.toString()}`;
+    const status = await shareWithImage({
+      imageUrl,
+      filename: `tripbite-traveltype-${result.code}.png`,
+      title: result.title,
+      text: result.description ?? result.title,
+    });
+    if (status === 'downloaded') toast.success(tCommon('shareDownloaded'));
+    else if (status === 'failed') toast.error(tCommon('shareFailed'));
+  };
 
   if (isLoading) {
     return <div className={styles.fallback}>{t('loading')}</div>;
@@ -124,14 +144,13 @@ export function TravelTypeResult() {
       )}
 
       <div className={styles.actions}>
-        <Link
-          href="/quiz/share"
-          className={styles.primary}
-          onClick={() => haptic.tap()}
+        <Button
+          variant="primary"
+          onClick={() => handleShare(result)}
+          leadingIcon={<Share2 size={16} aria-hidden />}
         >
-          <Share2 size={18} aria-hidden />
-          <span>{t('share')}</span>
-        </Link>
+          {t('share')}
+        </Button>
         <Button
           variant="secondary"
           onClick={() => {

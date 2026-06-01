@@ -29,6 +29,8 @@ export type ShareResult =
   | 'shared'
   /** Clipboard 로 URL 복사 성공 — 호출부가 toast "복사되었어요" 표시 */
   | 'copied'
+  /** Web Share API 미지원 환경에서 이미지 파일 다운로드로 fallback */
+  | 'downloaded'
   /** 사용자가 OS sheet 에서 취소 (AbortError) — silent 처리 권장 */
   | 'cancelled'
   /** share / clipboard 모두 실패 — 호출부가 toast "공유 실패" 표시 */
@@ -75,6 +77,82 @@ export async function shareUrl(input: ShareInput): Promise<ShareResult> {
     }
     await navigator.clipboard.writeText(absoluteUrl);
     return 'copied';
+  } catch {
+    return 'failed';
+  }
+}
+
+/**
+ * 이미지 파일 공유 — 결과 이미지 카드 (`/api/og/...`) 를 OS share sheet 으로.
+ *
+ * 흐름:
+ *   1) imageUrl fetch → Blob → File
+ *   2) navigator.canShare({ files: [...] }) 검증 (iOS Safari 16+, Android Chrome)
+ *      → navigator.share({ files, title, text })
+ *   3) 미지원 시 fallback — Blob URL 로 자동 다운로드 (`<a download>` 트릭)
+ *
+ * deep-link 불필요 — 받는 쪽은 이미지 파일만 받음 (URL 클릭 X).
+ * 사용자 결과 데이터는 imageUrl 의 query 로 인코딩 (server route 가 그대로 렌더).
+ */
+export type ShareWithImageInput = {
+  imageUrl: string;
+  filename?: string;
+  title?: string;
+  text?: string;
+};
+
+export async function shareWithImage(
+  input: ShareWithImageInput,
+): Promise<ShareResult> {
+  if (typeof navigator === 'undefined') return 'failed';
+
+  let blob: Blob;
+  try {
+    const res = await fetch(input.imageUrl);
+    if (!res.ok) return 'failed';
+    blob = await res.blob();
+  } catch {
+    return 'failed';
+  }
+
+  const filename = input.filename ?? 'tripbite-share.png';
+  const file = new File([blob], filename, {
+    type: blob.type || 'image/png',
+  });
+
+  // 1) Web Share API (files) — iOS Safari 16+ / Android Chrome
+  if (
+    typeof navigator.share === 'function' &&
+    typeof navigator.canShare === 'function' &&
+    navigator.canShare({ files: [file] })
+  ) {
+    try {
+      const payload: ShareData = { files: [file] };
+      if (input.title) payload.title = input.title;
+      if (input.text) payload.text = input.text;
+      await navigator.share(payload);
+      return 'shared';
+    } catch (err) {
+      if ((err as DOMException | undefined)?.name === 'AbortError') {
+        return 'cancelled';
+      }
+      // fall through to download
+    }
+  }
+
+  // 2) Fallback — 다운로드 트릭
+  try {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    // GC — Blob URL 회수
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    return 'downloaded';
   } catch {
     return 'failed';
   }

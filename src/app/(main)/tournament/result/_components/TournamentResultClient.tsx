@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { Share2 } from 'lucide-react';
 import { useTournamentStore } from '@/features/tournament/store/tournament-store';
 import {
   useDestinationDetail,
@@ -13,6 +14,8 @@ import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetail
 import { TournamentStats } from '@/features/tournament/components/TournamentStats';
 import { LuckyColor } from '@/features/tournament/components/LuckyColor';
 import { LuckyLadder } from '@/features/tournament/components/LuckyLadder';
+import { shareWithImage } from '@/lib/share';
+import { toast } from '@/lib/toast';
 import styles from './TournamentResultClient.module.scss';
 
 /**
@@ -57,6 +60,7 @@ import styles from './TournamentResultClient.module.scss';
 export function TournamentResultClient() {
   const router = useRouter();
   const t = useTranslations('tournament.result');
+  const tCommon = useTranslations('common');
   const winner = useTournamentStore((s) => s.winner);
   const runnerUp = useTournamentStore((s) => s.runnerUp);
   const matchesPlayed = useTournamentStore((s) => s.matchesPlayed);
@@ -88,6 +92,30 @@ export function TournamentResultClient() {
   const handleRetry = () => {
     reset();
     router.replace('/tournament');
+  };
+
+  /**
+   * 결과 카드 이미지 공유 — `/api/og/tournament` 가 query → 이미지 PNG 생성.
+   * deep-link 불필요 — 받는 쪽은 이미지 파일만 받음.
+   * 결과 데이터는 URL query 로 인코딩 (winner name / region / category / matches).
+   */
+  const handleShare = async () => {
+    const params = new URLSearchParams({
+      winner: winner.name,
+      region: winner.region,
+      category: winner.category,
+      ...(matchesPlayed > 0 ? { matches: String(matchesPlayed) } : {}),
+    });
+    const imageUrl = `/api/og/tournament?${params.toString()}`;
+    const result = await shareWithImage({
+      imageUrl,
+      filename: `tripbite-tournament-${winner.id}.png`,
+      title: `🏆 ${winner.name}`,
+      text: t('shareText', { name: winner.name }),
+    });
+    if (result === 'downloaded') toast.success(tCommon('shareDownloaded'));
+    else if (result === 'failed') toast.error(tCommon('shareFailed'));
+    // 'shared' / 'cancelled' 는 silent
   };
 
   const saveLabel = save.isPending
@@ -134,7 +162,15 @@ export function TournamentResultClient() {
         >
           {saveLabel}
         </Button>
-        <Button variant="secondary" fullWidth onClick={handleRetry}>
+        <Button
+          variant="secondary"
+          fullWidth
+          onClick={handleShare}
+          leadingIcon={<Share2 size={16} aria-hidden />}
+        >
+          {tCommon('share')}
+        </Button>
+        <Button variant="ghost" fullWidth onClick={handleRetry}>
           {t('retry')}
         </Button>
       </div>
