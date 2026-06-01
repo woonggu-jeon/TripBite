@@ -116,20 +116,11 @@ function QuickActionLink({
   );
 }
 
-function Placeholder({
-  height,
-  title,
-  note,
-}: {
-  height: number;
-  title: string;
-  note?: string;
-}) {
-  // height 만 동적 → inline. 나머지 시각 속성은 module.
-  return (
-    <div className={styles.placeholder} style={{ height }}>
-      {title}
-      {note && <span className={styles.placeholderNote}>{note}</span>}
-    </div>
-  );
-}
+// latestLetter / myWinners 위젯 재오픈 시 Placeholder 컴포넌트 복원:
+//   function Placeholder({ height, title, note }) {
+//     return (
+//       <div className={styles.placeholder} style={{ height }}>
+//         {title}{note && <span className={styles.placeholderNote}>{note}</span>}
+//       </div>
+//     );
+//   }

@@ -1,4 +1,7 @@
 import { ImageResponse } from 'next/og';
+import { destinationSeeds } from '@/mocks/seeds/destinations';
+import { regionContentSeeds } from '@/mocks/seeds/regions';
+import { CHUNGBUK_REGIONS } from '@/constants/regions';
 
 /**
  * 결과 이미지 카드 — Next.js ImageResponse(Satori) 기반.
@@ -94,16 +97,25 @@ export async function GET(
   const { type } = await params;
   const { searchParams } = new URL(request.url);
 
-  if (type !== 'tournament' && type !== 'quiz') {
+  const validTypes = ['tournament', 'quiz', 'destination', 'region'] as const;
+  type OgType = (typeof validTypes)[number];
+  if (!(validTypes as readonly string[]).includes(type)) {
     return new Response('Not found', { status: 404 });
   }
 
   const fontData = await getPretendard();
 
   try {
-    return type === 'tournament'
-      ? renderTournament(searchParams, fontData)
-      : renderQuiz(searchParams, fontData);
+    switch (type as OgType) {
+      case 'tournament':
+        return renderTournament(searchParams, fontData);
+      case 'quiz':
+        return renderQuiz(searchParams, fontData);
+      case 'destination':
+        return renderDestination(searchParams, fontData);
+      case 'region':
+        return renderRegion(searchParams, fontData);
+    }
   } catch (err) {
     // Satori 가 unsupported CSS / 누락 element 만나면 throw.
     // 500 대신 명확한 메시지로 — dev console 디버깅 용이.
@@ -339,6 +351,221 @@ function renderQuiz(
         }}
       >
         나의 여행 유형 테스트 결과
+      </div>
+    </div>,
+    makeInit(fontData),
+  );
+}
+
+/**
+ * 여행지 상세 카드 — id 로 seed 에서 직접 정보 가져옴.
+ * destinationSeeds 우선, 없으면 regionContentSeeds fallback (mock /destinations
+ * 와 동일 정책). 둘 다 없으면 generic 카드.
+ *
+ * server-side import 라 mock service worker 거치지 않음 → deterministic.
+ */
+function renderDestination(
+  q: URLSearchParams,
+  fontData: ArrayBuffer | null,
+): ImageResponse {
+  const id = q.get('id') ?? '';
+  const seed = destinationSeeds.find((d) => d.id === id);
+  const rc = !seed ? regionContentSeeds.find((r) => r.id === id) : null;
+
+  const name = seed?.name ?? rc?.title ?? '여행지';
+  const regionCode = seed?.region ?? rc?.region ?? '';
+  const region = REGION_KO[regionCode] ?? regionCode;
+  const category = (seed?.category ?? rc?.type ?? '') as string;
+  const categoryLabel = CATEGORY_KO[category] ?? '';
+  const emoji = CATEGORY_EMOJI[category] ?? '📍';
+  const metaText =
+    region && categoryLabel
+      ? `${region} · ${categoryLabel}`
+      : region || categoryLabel;
+  const fontFamily = fontData ? 'Pretendard' : 'sans-serif';
+
+  return new ImageResponse(
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        background: 'linear-gradient(180deg, #ecfdf5 0%, #ecfeff 100%)',
+        paddingTop: 80,
+        paddingRight: 80,
+        paddingBottom: 80,
+        paddingLeft: 80,
+        fontFamily,
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          fontSize: 32,
+          color: '#71717a',
+        }}
+      >
+        <span>📍 여행지</span>
+        <span style={{ color: '#a1a1aa' }}>TripBite</span>
+      </div>
+
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            fontSize: 220,
+            lineHeight: 1,
+            marginBottom: 24,
+          }}
+        >
+          {emoji}
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            fontSize: 80,
+            fontWeight: 700,
+            color: '#18181b',
+            letterSpacing: '-0.02em',
+            lineHeight: 1.15,
+            textAlign: 'center',
+          }}
+        >
+          {name}
+        </div>
+        {metaText && (
+          <div
+            style={{
+              display: 'flex',
+              fontSize: 36,
+              color: '#52525b',
+              marginTop: 24,
+            }}
+          >
+            {metaText}
+          </div>
+        )}
+      </div>
+
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          fontSize: 28,
+          color: '#a1a1aa',
+        }}
+      >
+        충북 여행지 한 곳을 둘러보세요
+      </div>
+    </div>,
+    makeInit(fontData),
+  );
+}
+
+/**
+ * 시군 상세 카드 — RegionCode 로 시군명 표시. 알 수 없는 code 면 generic.
+ */
+function renderRegion(
+  q: URLSearchParams,
+  fontData: ArrayBuffer | null,
+): ImageResponse {
+  const code = q.get('code') ?? '';
+  const meta = CHUNGBUK_REGIONS.find((r) => r.code === code);
+  const name = meta?.ko ?? REGION_KO[code] ?? code ?? '충북';
+  const fontFamily = fontData ? 'Pretendard' : 'sans-serif';
+
+  return new ImageResponse(
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        background: 'linear-gradient(180deg, #fef3c7 0%, #fff7ed 100%)',
+        paddingTop: 80,
+        paddingRight: 80,
+        paddingBottom: 80,
+        paddingLeft: 80,
+        fontFamily,
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          fontSize: 32,
+          color: '#71717a',
+        }}
+      >
+        <span>🗺️ 시군 가이드</span>
+        <span style={{ color: '#a1a1aa' }}>TripBite</span>
+      </div>
+
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            fontSize: 220,
+            lineHeight: 1,
+            marginBottom: 24,
+          }}
+        >
+          🏞️
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            fontSize: 96,
+            fontWeight: 700,
+            color: '#18181b',
+            letterSpacing: '-0.02em',
+            lineHeight: 1.15,
+            textAlign: 'center',
+          }}
+        >
+          {name}
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            fontSize: 36,
+            color: '#52525b',
+            marginTop: 24,
+          }}
+        >
+          충청북도
+        </div>
+      </div>
+
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          fontSize: 28,
+          color: '#a1a1aa',
+        }}
+      >
+        관광지 · 축제 · 체험 한눈에
       </div>
     </div>,
     makeInit(fontData),

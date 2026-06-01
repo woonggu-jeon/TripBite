@@ -30,7 +30,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { code } = await params;
   if (!isRegionCode(code)) return {};
   const t = await getTranslations('region.names');
-  return { title: t(code as Parameters<typeof t>[0]) };
+  const name = t(code as Parameters<typeof t>[0]);
+  const description = `${name} · 관광지 · 축제 · 체험 가이드`;
+  const ogImage = `/api/og/region?code=${encodeURIComponent(code)}`;
+
+  return {
+    title: name,
+    description,
+    openGraph: {
+      title: name,
+      description,
+      images: [{ url: ogImage, width: 1080, height: 1080 }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: name,
+      description,
+      images: [ogImage],
+    },
+  };
 }
 
 export default async function RegionDetailPage({ params }: Props) {

@@ -94,6 +94,9 @@ const nextConfig = {
       'recharts',
       'embla-carousel-react',
       'next-intl',
+      // TanStack Query — Provider 외 hook 별 import tree-shake 보강.
+      '@tanstack/react-query',
+      // date-fns / react-hook-form / @hey-api/* 는 향후 도입 시 같이 추가.
     ],
   },
 

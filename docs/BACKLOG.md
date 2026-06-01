@@ -110,11 +110,47 @@
 
 **작업량**: M (1-3시간).
 
-### 2-1-2. 여행지 상세 — URL 공유 ✅ 완료
+### 2-1-2. 이미지 카드 공유 + OG 메타 ✅ 완료
 
-`DestinationDetailClient` 의 SubHeader 우측에 share IconButton 추가. `lib/share.ts` (Web Share API + clipboard fallback) 호출. 받는 쪽 미리보기는 사이트 공통 OG (이미 `layout.tsx` 의 metadataBase 가 제공).
+- `/api/og/[type]` Edge route — type: `tournament` / `quiz` / `destination` / `region`
+- Pretendard Bold woff fetch + Edge instance 재사용 캐시 + fail 시 sans-serif fallback (route 500 회피)
+- 1080×1080 PNG. Cache-Control 1일.
+- **토너먼트 결과 / 퀴즈 결과**: share button → query 인코딩 → `shareWithImage` → OS share sheet (Web Share API File) + 다운로드 fallback.
+- **여행지 상세 / 시군 상세**: `generateMetadata.openGraph.images` 동적 — SNS 미리보기 카드 자동.
 
-추후 enhancement: `generateMetadata.openGraph.images` 에 `detail.photos[0]` (있으면) 또는 카테고리별 정적 OG 이미지.
+추후 enhancement: 디자이너 시안 받으면 카드 JSX 만 교체 (route 구조 그대로).
+
+### 2-1-3. 번들 / 렌더링 모니터링
+
+**현재 상태** (build 결과):
+
+| 항목                   | 값                | 판정                                               |
+| ---------------------- | ----------------- | -------------------------------------------------- |
+| First Load JS (shared) | 213 KB            | acceptable (Lighthouse good < 200, moderate < 300) |
+| Largest shared chunk   | 59.2 KB           | react-dom                                          |
+| /tournament/result     | +8.85 KB → 227 KB | OK                                                 |
+| MSW chunk (lazy)       | 80 KB gzipped     | NEXT_PUBLIC_USE_MSW=false 시 download X            |
+
+**적용된 최적화**:
+
+- 무거운 모듈 모두 dynamic import: recharts (~100KB) / embla / MSW worker
+- `optimizePackageImports`: lucide-react / recharts / embla / next-intl / @tanstack/react-query
+- `experimental.staleTimes`: dynamic 30s / static 180s
+- Server Component 기본, 인터랙션 부분만 client
+- 위젯별 useQuery (waterfall 회피) + min-height (CLS 0)
+
+**추가 절감 여지 X** — 핵심 chunk 들이 react-dom / TanStack Query / next-intl 등 필수. 213 KB 는 production-grade 상한.
+
+**경계 신호 (1주 1회 점검 권장)**:
+
+- shared First Load 가 230 KB 넘으면 alert
+- 새 위젯 도입 시 dynamic import 강제
+- `npm run analyze` 로 chunk 별 시각화
+
+**향후 작업**:
+
+- `size-limit` config 추가 — 임계 자동 검증 (package.json 의 `"size-limit": [...]` + `@size-limit/preset-app` plugin)
+- Lighthouse CI baseline warn → error 전환
 
 ### 2-2. TODO 주석 (페이지 placeholder)
 
