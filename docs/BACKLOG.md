@@ -1,9 +1,23 @@
 # TripBite 후속 작업 백로그
 
 > 코드베이스 전수조사 후 정리한 미완성 / 개선 항목. 분기점마다 갱신.
-> 마지막 갱신: 2026-06-01 (브랜치 `dev`).
+> 마지막 갱신: 2026-06-01 (브랜치 `dev`, commit `e5c06d8`).
 >
 > 작업량 표기: **S** (≤30분) · **M** (1-3시간) · **L** (반나절+)
+
+---
+
+## 최근 완료 (이번 분기 — 2026-06-01)
+
+- ✅ **이미지 카드 공유 + OG 메타** — `/api/og/[type]` Edge route 4 종 (tournament / quiz / destination / region). Web Share API File + OG 메타 동적.
+- ✅ **여행지 상세 페이지** `/destination/[id]` 신설 — Hero + WinnerDetailPanel + bestSeasons. `lib/share.ts` URL 공유.
+- ✅ **위젯 라우팅 정리** — 홈/랭킹/시군 상세의 위젯 클릭이 도메인에 맞게 분기 (여행지 → `/destination`, 지역 → `/region`).
+- ✅ **푸시 알림 기초** — `sw.ts` push/notificationclick handler, `lib/share.ts`, mock 시뮬레이션 도구 (`MockPushTrigger`), iOS standalone 분기.
+- ✅ **계절 토너먼트 진입** — 홈 빠른시작이 현재 월 → 계절 자동 추천. random 테마 흐름 (step 1 → step 4 점프) + 'special' → 'random' 으로 의미 변경 + `SpecialDaySelector` 폴더 제거.
+- ✅ **카테고리 'local' 미노출 정책** — CategoryFilter / TournamentSetup 의 random / quiz 추천 모두 'local' 제외 (축제 / 관광지 / 체험관광 3종).
+- ✅ **홈 위젯 정리** — '새 편지' / '내 우승지' 미노출 (주석 처리, 복원 가이드).
+- ✅ **알림함 mock 처리** — mock 모드에선 비로그인이라도 노출, type 매핑 누락 회귀 fix.
+- ✅ **번들 모니터링 메모** — First Load 213 KB, 추가 절감 여지 없음, 1주 1회 분석 권장.
 
 ---
 
@@ -93,24 +107,7 @@
 
 **의존성**: 백엔드. **각 M**.
 
-### 2-1-1. 이미지 카드 공유 (Phase 3 묶음) — next/og
-
-토너먼트 결과 / 여행 유형 결과를 SNS 카드 (카톡/트위터/슬랙 미리보기) 로 공유. deep-link 가 도입된 후에야 받는 쪽이 결과를 볼 수 있어 **Phase 3 와 묶음**.
-
-| 작업                                                                                            | 비고                                                                          |
-| ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `src/app/api/og/[type]/[id]/route.tsx` route 1개 (type=tournament\|quiz)                        | Next.js `ImageResponse` (Satori). 번들 영향 0 KB                              |
-| Pretendard Bold subset (~50KB) server-side 호스팅                                               | `public/fonts/pretendard-bold-subset.woff` — Edge runtime fetch               |
-| 단일 카드 템플릿 JSX — type 인자로 토너먼트/퀴즈 분기                                           | 외부 이미지 fetch X. 카테고리 이모지 + 그라데이션 + 텍스트만. 콜드스타트 빠름 |
-| `generateMetadata.openGraph.images` 동적 (result page 의 `?id=` 기반)                           | 카톡/슬랙/트위터 미리보기 자동                                                |
-| TournamentResultClient + TravelTypeResult 에 share Button + IconButton                          | `lib/share.ts` 의 `shareUrl({ url, title, text })` 호출                       |
-| (선택) Web Share API + File — `fetch(/api/og/...)` → Blob → `navigator.share({ files: [...] })` | 사용자가 사진 저장 / 인스타 직접 첨부 원할 때                                 |
-
-**의존성**: deep-link 도입 (Phase 3 의 result deep-link), 카드 디자인 시안 (없으면 미니멀 기본 카드).
-
-**작업량**: M (1-3시간).
-
-### 2-1-2. 이미지 카드 공유 + OG 메타 ✅ 완료
+### 2-1-1. 이미지 카드 공유 + OG 메타 ✅ 완료
 
 - `/api/og/[type]` Edge route — type: `tournament` / `quiz` / `destination` / `region`
 - Pretendard Bold woff fetch + Edge instance 재사용 캐시 + fail 시 sans-serif fallback (route 500 회피)
@@ -120,7 +117,7 @@
 
 추후 enhancement: 디자이너 시안 받으면 카드 JSX 만 교체 (route 구조 그대로).
 
-### 2-1-3. 번들 / 렌더링 모니터링
+### 2-1-2. 번들 / 렌더링 모니터링
 
 **현재 상태** (build 결과):
 
