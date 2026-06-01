@@ -69,7 +69,7 @@ export function cardClasses({
   // 떨어져 카드가 찌그러지던 증상 (tournament → tournament/play → 뒤로가기
   // → tournament) 의 근본 원인.
   return [
-    styles.card,
+    styles.root,
     styles[`v-${variant}`],
     padding ? styles[`p-${padding}`] : null,
     className,

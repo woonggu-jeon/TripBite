@@ -1,4 +1,8 @@
-.card {
+/* base class — 의도적으로 .card 가 아닌 .root 사용.
+   호출처 module 의 .card 와 합성될 때 specificity (0,1,0) 동일 + CSS
+   source order 의존으로 display/padding 충돌 발생 (뒤로가기 시 chunk
+   순서가 바뀌면 카드 찌그러짐). 이름 자체 분리로 충돌 가능성 제거. */
+.root {
   display: block;
   border-radius: var(--radius-lg);
   transition:
@@ -49,7 +53,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card {
+  .root {
     transition: none;
   }
 }
