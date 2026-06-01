@@ -24,8 +24,10 @@
     background var(--motion-base) ease,
     transform var(--motion-fast) ease;
 
-  &:hover:not(:disabled) {
-    border-color: var(--color-primary);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      border-color: var(--color-primary);
+    }
   }
   &:active:not(:disabled) {
     transform: scale(0.96);

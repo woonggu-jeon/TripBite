@@ -147,8 +147,10 @@
   color: var(--color-primary-fg);
   border: 1.5px solid var(--color-primary);
 
-  &:hover {
-    opacity: 0.9;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      opacity: 0.9;
+    }
   }
 }
 
@@ -157,8 +159,10 @@
   color: var(--color-fg);
   border: 1.5px solid var(--color-border);
 
-  &:hover {
-    border-color: var(--color-primary-border);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--color-primary-border);
+    }
   }
 }
 

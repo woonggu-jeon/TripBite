@@ -26,9 +26,11 @@
     transform var(--motion-fast) ease,
     background var(--motion-base) ease;
 
-  &:hover {
-    border-color: var(--color-primary-border);
-    background: var(--color-surface-soft);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--color-primary-border);
+      background: var(--color-surface-soft);
+    }
   }
   &:active {
     transform: scale(0.99);
@@ -143,8 +145,10 @@
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
 
-  &:hover {
-    border-color: var(--color-primary-border);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--color-primary-border);
+    }
   }
 }
 

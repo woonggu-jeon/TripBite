@@ -24,9 +24,15 @@
     color var(--motion-base) ease,
     transform var(--motion-fast) ease;
 
-  &:hover:not(:disabled) {
-    border-color: color-mix(in srgb, var(--color-fg) 25%, var(--color-border));
-    background: var(--color-surface-soft);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      border-color: color-mix(
+        in srgb,
+        var(--color-fg) 25%,
+        var(--color-border)
+      );
+      background: var(--color-surface-soft);
+    }
   }
   &:active:not(:disabled) {
     transform: scale(0.96);

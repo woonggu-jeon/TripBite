@@ -15,8 +15,10 @@
   border-radius: var(--radius-sm);
   cursor: pointer;
 
-  &:hover {
-    background: color-mix(in srgb, var(--color-border) 50%, transparent);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: color-mix(in srgb, var(--color-border) 50%, transparent);
+    }
   }
 }
 
@@ -50,7 +52,9 @@
   color: var(--color-muted);
   text-decoration: underline;
 
-  &:hover {
-    color: var(--color-fg);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--color-fg);
+    }
   }
 }

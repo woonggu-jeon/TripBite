@@ -91,8 +91,10 @@
     opacity var(--motion-base) ease,
     transform var(--motion-fast) ease;
 
-  &:hover {
-    opacity: var(--opacity-hover-dim);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      opacity: var(--opacity-hover-dim);
+    }
   }
   &:active {
     transform: scale(0.98);

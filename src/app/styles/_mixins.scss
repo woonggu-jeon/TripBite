@@ -32,6 +32,27 @@
   }
 }
 
+/* hover-only — touch 디바이스의 sticky hover 회귀 방지.
+   iOS Safari / Android Chrome 은 tap 후 :hover 가 다음 곳 tap 전까지 유지됨
+   → 같은 자리의 다음 콘텐츠가 "이미 선택된 듯" 보이는 회귀 발생.
+   :hover 시각 효과는 마우스/펜 환경에만 적용.
+
+   사용:
+     .card {
+       @include m.hover-only {
+         border-color: var(--color-primary);
+         background: var(--color-primary-fade);
+       }
+     }
+   조건부 selector 가 필요하면 @content 안에 `&:not(:disabled) { ... }` 식 중첩. */
+@mixin hover-only {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @content;
+    }
+  }
+}
+
 /* 일반 utility mixin — 컴포넌트에서 반복되는 패턴 (추후 사용처 발생 시 활용) */
 @mixin text-truncate {
   overflow: hidden;
@@ -76,8 +97,14 @@
   font-weight: var(--font-weight-semibold);
   transition: border-color var(--motion-base) ease;
 
-  &:hover {
-    border-color: color-mix(in srgb, var(--color-fg) 18%, var(--color-border));
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: color-mix(
+        in srgb,
+        var(--color-fg) 18%,
+        var(--color-border)
+      );
+    }
   }
   &:focus-visible {
     @include focus-ring;
@@ -101,8 +128,10 @@
   white-space: nowrap;
   transition: opacity var(--motion-base) ease;
 
-  &:hover {
-    opacity: var(--opacity-hover-dim);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      opacity: var(--opacity-hover-dim);
+    }
   }
   &:focus-visible {
     @include focus-ring;
@@ -125,9 +154,11 @@
     opacity var(--motion-base) ease,
     background var(--motion-base) ease;
 
-  &:hover {
-    opacity: 1;
-    background: rgba(255, 255, 255, 0.1);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.1);
+    }
   }
   &:focus-visible {
     outline: var(--border-base) solid currentColor;

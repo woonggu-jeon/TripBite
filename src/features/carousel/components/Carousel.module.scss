@@ -70,8 +70,10 @@
   border-radius: var(--radius-full);
   z-index: 2;
 
-  &:hover {
-    background: var(--color-bg);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: var(--color-bg);
+    }
   }
 }
 

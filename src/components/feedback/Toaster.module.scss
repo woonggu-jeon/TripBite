@@ -46,9 +46,11 @@
   color: var(--color-muted);
   border-radius: var(--radius-sm);
 
-  &:hover {
-    color: var(--color-fg);
-    background: var(--color-border);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--color-fg);
+      background: var(--color-border);
+    }
   }
 }
 

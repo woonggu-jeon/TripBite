@@ -62,8 +62,10 @@
   color: var(--color-primary-fg);
   border-color: var(--color-primary);
 
-  &:hover:not(:disabled) {
-    opacity: var(--opacity-hover-dim);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      opacity: var(--opacity-hover-dim);
+    }
   }
 }
 
@@ -72,9 +74,11 @@
   color: var(--color-fg);
   border-color: var(--color-border);
 
-  &:hover:not(:disabled) {
-    border-color: var(--color-primary-border);
-    background: var(--color-surface-soft);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      border-color: var(--color-primary-border);
+      background: var(--color-surface-soft);
+    }
   }
 }
 
@@ -83,8 +87,10 @@
   color: var(--color-fg);
   border-color: transparent;
 
-  &:hover:not(:disabled) {
-    background: var(--color-hover);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      background: var(--color-hover);
+    }
   }
 }
 
@@ -93,8 +99,10 @@
   color: var(--color-primary-fg);
   border-color: var(--color-danger);
 
-  &:hover:not(:disabled) {
-    opacity: var(--opacity-hover-dim);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      opacity: var(--opacity-hover-dim);
+    }
   }
 }
 

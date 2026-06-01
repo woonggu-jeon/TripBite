@@ -32,9 +32,11 @@
     border-color var(--motion-base) ease,
     background var(--motion-base) ease;
 
-  &:hover {
-    border-color: var(--color-primary);
-    background: var(--color-primary-fade);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--color-primary);
+      background: var(--color-primary-fade);
+    }
   }
   &:focus-visible {
     outline: 2px solid var(--color-primary);

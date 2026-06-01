@@ -93,8 +93,10 @@
     box-shadow var(--motion-base) ease,
     filter var(--motion-base) ease;
 
-  &:hover:not(.dimmed) {
-    background: var(--color-primary-ring-soft);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(.dimmed) {
+      background: var(--color-primary-ring-soft);
+    }
   }
   &:focus-visible {
     outline: 2px solid var(--color-primary);

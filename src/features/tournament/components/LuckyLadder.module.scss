@@ -69,8 +69,10 @@
     filter: drop-shadow(0 0 4px var(--color-primary-ring));
   }
 
-  &:hover circle {
-    filter: var(--drop-shadow-sm);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover circle {
+      filter: var(--drop-shadow-sm);
+    }
   }
 }
 
@@ -85,8 +87,10 @@
   cursor: default;
   opacity: 0.5;
 
-  &:hover circle {
-    filter: none;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover circle {
+      filter: none;
+    }
   }
 }
 
@@ -221,8 +225,10 @@
     border-color var(--motion-base) ease,
     transform var(--motion-fast) ease;
 
-  &:hover {
-    border-color: var(--color-primary-border);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--color-primary-border);
+    }
   }
   &:active {
     transform: scale(0.96);

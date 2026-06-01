@@ -53,8 +53,10 @@
   border: 1px solid var(--color-border);
   color: var(--color-fg);
 
-  &:hover {
-    background: var(--color-border);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: var(--color-border);
+    }
   }
 }
 

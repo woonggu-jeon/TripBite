@@ -124,8 +124,10 @@
   text-decoration: underline;
   text-underline-offset: 2px;
 
-  &:hover {
-    color: var(--color-primary);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--color-primary);
+    }
   }
 }
 

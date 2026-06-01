@@ -194,7 +194,12 @@ export function TravelTypeQuiz() {
                 role="radio"
                 aria-checked={active}
                 className={`${styles.option} ${active ? styles.optionActive : ''}`}
-                onClick={() => handlePick(opt.id)}
+                onClick={(e) => {
+                  // ios safari 안전망 — tap 후 focus 가 button 에 남으면 다음
+                  // question 의 같은 위치 옵션이 강조된 듯 보임. Bracket fix 와 동일.
+                  e.currentTarget.blur();
+                  handlePick(opt.id);
+                }}
               >
                 {opt.text}
               </button>

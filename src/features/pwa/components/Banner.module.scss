@@ -54,9 +54,11 @@
     opacity var(--motion-base) ease,
     background var(--motion-base) ease;
 
-  &:hover {
-    opacity: 1;
-    background: rgba(255, 255, 255, 0.1);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.1);
+    }
   }
   &:focus-visible {
     outline: 2px solid currentColor;

@@ -54,11 +54,15 @@ button {
   cursor: pointer;
   border: 0;
   background: transparent;
+  // iOS 의 회색 tap 잔상 제거 — 우리는 :active 로 직접 피드백.
+  // sticky hover 와는 별개로 모든 button 일관 적용.
+  -webkit-tap-highlight-color: transparent;
 }
 
 a {
   color: inherit;
   text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Safe area for PWA — iOS standalone 의 notch / home indicator */

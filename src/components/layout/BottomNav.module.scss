@@ -25,8 +25,10 @@
   font-weight: var(--font-weight-medium);
   transition: color var(--motion-base) ease;
 
-  &:hover {
-    color: var(--color-fg);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--color-fg);
+    }
   }
 }
 

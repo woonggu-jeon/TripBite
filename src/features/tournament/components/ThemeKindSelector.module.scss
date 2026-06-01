@@ -19,8 +19,10 @@
     background var(--motion-base) ease,
     transform var(--motion-fast) ease;
 
-  &:hover {
-    border-color: var(--color-primary);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--color-primary);
+    }
   }
   &:active {
     transform: scale(0.97);
