@@ -600,6 +600,13 @@
       "contact": "Contact us"
     }
   },
+  "destination": {
+    "title": "Destination",
+    "bestSeasonsLabel": "Best seasons",
+    "errorTitle": "Couldn't load destination",
+    "errorDescription": "Please try again in a moment.",
+    "retry": "Retry"
+  },
   "notification": {
     "title": "Notifications",
     "empty": "No notifications yet",

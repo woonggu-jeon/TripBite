@@ -7,6 +7,33 @@
   background: var(--color-bg);
   border: 1.5px solid var(--color-border);
   border-radius: var(--radius-lg);
+  color: var(--color-fg);
+  text-decoration: none;
+  transition:
+    border-color var(--motion-base) ease,
+    transform var(--motion-fast) ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--accent, var(--color-primary));
+    }
+  }
+  &:active {
+    transform: scale(0.99);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row {
+    transition: none;
+    &:active {
+      transform: none;
+    }
+  }
 }
 
 .image {

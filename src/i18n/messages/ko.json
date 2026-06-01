@@ -600,6 +600,13 @@
       "contact": "문의하기"
     }
   },
+  "destination": {
+    "title": "여행지",
+    "bestSeasonsLabel": "추천 계절",
+    "errorTitle": "여행지 정보를 불러오지 못했어요",
+    "errorDescription": "잠시 후 다시 시도해주세요.",
+    "retry": "다시 시도"
+  },
   "notification": {
     "title": "알림",
     "empty": "새로운 알림이 없어요",

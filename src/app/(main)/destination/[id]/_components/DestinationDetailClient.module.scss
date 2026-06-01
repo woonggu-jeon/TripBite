@@ -1,0 +1,105 @@
+.wrap {
+  display: grid;
+  gap: var(--space-4);
+  // SubHeader 와 페이지 padding 외에 자체 좌우 여백 X — (main) layout 의
+  // contentInner 가 담당.
+}
+
+// Hero — 카테고리 이모지 + 시군·카테고리 메타.
+.hero {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--color-surface-soft);
+  border-radius: var(--radius-lg);
+}
+
+.heroEmoji {
+  width: 80px;
+  height: 80px;
+  display: grid;
+  place-items: center;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--emoji-2xl);
+  line-height: 1;
+}
+
+.heroMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-caption);
+  color: var(--color-muted);
+}
+
+.heroRegion {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-fg);
+}
+
+.dot {
+  color: var(--color-muted);
+}
+
+.heroCategory {
+  font-weight: var(--font-weight-semibold);
+}
+
+.name {
+  font-size: var(--font-h1);
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--line-tight);
+  color: var(--color-fg);
+  // h1 기본 margin 제거 — 부모 grid gap 으로 간격 통일.
+  margin: 0;
+}
+
+.seasons {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.sectionTitle {
+  font-size: var(--font-label);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-muted);
+  letter-spacing: var(--tracking-snug);
+  margin: 0;
+}
+
+.seasonChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.seasonChip {
+  padding: 4px 12px;
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
+  border-radius: var(--radius-full);
+  font-size: var(--font-caption);
+  font-weight: var(--font-weight-semibold);
+}
+
+// 모바일 — hero emoji 살짝 축소
+@media (max-width: 380px) {
+  .hero {
+    grid-template-columns: 64px 1fr;
+    gap: var(--space-3);
+    padding: var(--space-3);
+  }
+  .heroEmoji {
+    width: 64px;
+    height: 64px;
+    font-size: var(--emoji-xl);
+  }
+}

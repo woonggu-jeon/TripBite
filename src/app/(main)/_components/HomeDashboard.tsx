@@ -7,7 +7,8 @@ import { Trophy, Sparkles } from 'lucide-react';
 import { ROUTES } from '@/constants/routes';
 import { RecommendationBanner } from '@/features/home/components/RecommendationBanner';
 import { FestivalCarousel } from '@/features/home/components/FestivalCarousel';
-import { LatestReceivedLetter } from '@/features/home/components/LatestReceivedLetter';
+// LatestReceivedLetter 위젯 미노출 — 추후 재오픈 시 import 복원.
+// import { LatestReceivedLetter } from '@/features/home/components/LatestReceivedLetter';
 import { getCurrentSeason } from '@/features/tournament/utils/season';
 import type { Season } from '@/features/tournament/types';
 import styles from './HomeDashboard.module.scss';
@@ -78,25 +79,21 @@ export function HomeDashboard() {
         />
       </section>
 
-      {/* 4) 새로 도착한 편지 미리보기 */}
-      <section data-widget="latest-letter" aria-label={t('latestLetter')}>
-        <h2 className={styles.sectionTitle}>{t('latestLetter')}</h2>
-        <LatestReceivedLetter />
-      </section>
+      {/*
+        4) 새로 도착한 편지 미리보기 — 미노출 (사용자 요청).
+        5) 내 우승지 가로 슬라이드 — 미노출 (사용자 요청).
+        둘 다 추후 재오픈 시 아래 코드 블록 복원:
 
-      {/* 5) 내 우승지 가로 슬라이드 */}
-      <section data-widget="my-winners">
-        {/* TODO:
-              const { data: winners } = useSavedTournaments();
-              <Carousel
-                slides={winners ?? []}
-                renderSlide={(w) => <WinnerMiniCard winner={w} />}
-                keyExtractor={(w) => w.id}
-                options={{ slidesPerView: 2.2, gap: 12, dragFree: true }}
-                showDots={false}
-              /> */}
-        <Placeholder height={140} title={t('myWinners')} note="Carousel" />
-      </section>
+        <section data-widget="latest-letter" aria-label={t('latestLetter')}>
+          <h2 className={styles.sectionTitle}>{t('latestLetter')}</h2>
+          <LatestReceivedLetter />
+        </section>
+
+        <section data-widget="my-winners">
+          <Placeholder height={140} title={t('myWinners')} note="Carousel" />
+          // TODO: useSavedTournaments → Carousel + WinnerMiniCard
+        </section>
+      */}
     </div>
   );
 }

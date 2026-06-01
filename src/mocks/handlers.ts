@@ -32,6 +32,7 @@ import {
 } from './seeds/travel-types';
 import type { TravelType, TravelTypeAnswer } from '@/features/ranking/types';
 import type { AppNotification } from '@/features/notification/types';
+import type { Destination } from '@/features/tournament/types';
 
 /**
  * URL 매칭 base.
@@ -399,9 +400,27 @@ export const handlers = [
   // 여행지 상세 — id 기반 deterministic mock 메타 합성.
   // 실 백엔드는 외부 데이터/큐레이션 DB 와 결합해 다양한 필드 제공.
   // 응답 필드는 모두 optional 이라 누락되어도 UI 가 자연스럽게 처리.
+  //
+  // ⚠️ 두 id space 모두 받음:
+  //   - destination id 형태 (예: 'boeun-attraction-1') — 토너먼트 우승지
+  //   - region content id 형태 (예: 'boeun-1')         — 시군 상세 row 클릭
+  // 후자의 경우 regionContentSeeds 에서 찾아 Destination 형태로 정규화.
   http.get(`${apiUrl}/destinations/:id`, ({ params }) => {
     const id = String(params.id);
-    const seed = destinationSeeds.find((d) => d.id === id);
+    let seed = destinationSeeds.find((d) => d.id === id);
+    if (!seed) {
+      const rc = regionContentSeeds.find((r) => r.id === id);
+      if (rc) {
+        seed = {
+          id: rc.id,
+          name: rc.title,
+          category: rc.type as Destination['category'],
+          region: rc.region,
+          description: rc.summary,
+          imageUrl: rc.imageUrl,
+        };
+      }
+    }
     if (!seed) return new HttpResponse(null, { status: 404 });
 
     // id 기반 deterministic hash → 같은 id 면 항상 같은 mock 메타
