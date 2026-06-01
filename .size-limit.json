@@ -8,5 +8,26 @@
     ],
     "limit": "500 kB",
     "gzip": true
+  },
+  {
+    "name": "shared First Load chunk (framework / react-dom / app-pages) — 230 KB warn baseline",
+    "path": [
+      ".next/static/chunks/framework-*.js",
+      ".next/static/chunks/main-app-*.js"
+    ],
+    "limit": "230 kB",
+    "gzip": true
+  },
+  {
+    "name": "recharts (lazy chunk) — RegionWinsChart / Ranking 차트에서만 load",
+    "path": [".next/static/chunks/*recharts*.js"],
+    "limit": "120 kB",
+    "gzip": true
+  },
+  {
+    "name": "MSW worker (lazy) — NEXT_PUBLIC_USE_MSW=true 시에만 download",
+    "path": [".next/static/chunks/*msw*.js"],
+    "limit": "100 kB",
+    "gzip": true
   }
 ]

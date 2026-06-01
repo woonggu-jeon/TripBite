@@ -175,17 +175,17 @@
 
 ## 3. 인프라 있지만 UI 미연결
 
-| 인프라                                               | 상태    | 미연결 사용처                       |
-| ---------------------------------------------------- | ------- | ----------------------------------- |
-| `useSavedTournaments`                                | ✅      | mypage / 홈 캐러셀 (홈은 보류)      |
-| `useRemoveSavedTournament`                           | ✅      | `SavedTournamentCard` 삭제 버튼     |
-| `useOngoingFestivals`                                | ✅      | `FestivalCarousel` 이 mock 사용 중  |
-| `useCurrentWeather`                                  | ✅      | `WeatherWidget` stub                |
-| `useUpdateNickname`                                  | ✅      | `NicknameEditDialog` stub           |
-| `useQuizQuestions / useMyQuizResult / useSubmitQuiz` | ❌ dead | **삭제** (Phase 0)                  |
-| `letterApi.listSaved` / `FETCHERS.saved`             | ❌ 누락 | LetterboxTabs 'saved' 탭            |
-| `useTournamentHistory`                               | ❌ 부재 | `TournamentHistorySection`          |
-| `getBlurDataURL` (LCP placeholder)                   | ✅      | LCP 후보(시군 hero / 우승지) 미적용 |
+| 인프라                                               | 상태    | 미연결 사용처                                                     |
+| ---------------------------------------------------- | ------- | ----------------------------------------------------------------- |
+| `useSavedTournaments`                                | ✅      | mypage / 홈 캐러셀 (홈은 보류)                                    |
+| `useRemoveSavedTournament`                           | ✅      | `SavedTournamentCard` 삭제 버튼                                   |
+| `useOngoingFestivals`                                | ✅      | `FestivalCarousel` 이 mock 사용 중                                |
+| `useCurrentWeather`                                  | ✅      | `WeatherWidget` stub                                              |
+| `useUpdateNickname`                                  | ✅      | `NicknameEditDialog` stub                                         |
+| `useQuizQuestions / useMyQuizResult / useSubmitQuiz` | ❌ dead | **삭제** (Phase 0)                                                |
+| `letterApi.listSaved` / `FETCHERS.saved`             | ❌ 누락 | LetterboxTabs 'saved' 탭                                          |
+| `useTournamentHistory`                               | ❌ 부재 | `TournamentHistorySection`                                        |
+| `getBlurDataURL` (LCP placeholder)                   | ✅      | LCP 후보 (BE imageUrl 연동 시점) — 현재 코드는 emoji/colorChip 만 |
 
 ---
 

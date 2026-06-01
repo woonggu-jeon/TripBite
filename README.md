@@ -90,27 +90,33 @@ export const handlers = [
 
 ## 현재 구현 상태 (v0.1)
 
-> ⚠️ 이 README의 기능 서술 상당수는 **목표 설계**입니다. 라우팅·인프라·설정·인증은 갖춰졌고, 페이지별 UI 위젯은 단계적으로 구현 중. 아래가 **실제 동작 범위**입니다.
+> 갱신: 2026-06-01 — Phase 0-2 완료, Phase 5 일부 (a11y / 시각 회귀 / middleware 복원) 완료.
 
 ### ✅ 완전 동작
 
-- **인증**: `/login` → `/onboarding` (3-step: 컨셉 / 위치 권한 / 닉네임)
-- **편지 작성**: `/letter/compose` (위치 자동 채우기 + 5글자 zod 검증 + 전송)
-- **설정**: `/settings` (알림 / 계정 / 정책 / 로그아웃)
+- **인증**: `/login` → `/onboarding` (3-step: 컨셉 / 위치 권한 / 닉네임). middleware 가 cookie 없는 요청을 `/login` 으로 redirect.
+- **편지 작성·목록·상세**: `/letter/compose`, `/letter` (received/sent/liked/saved 4탭 + 무한 스크롤), `/letter/[id]` (원고지 + like/save toggle).
+- **토너먼트**: `/tournament` setup (계절/카테고리/갯수) → `/tournament/play` (Bracket 매치 진행 + dedup) → `/tournament/result` (winner + LuckyColor + 저장).
+- **랭킹**: Top5 + 시군별 + 카테고리별 (mock 데이터).
+- **시군 상세**: `/region/[code]` 관광지/축제/체험 탭 (InfiniteList + RegionContentRow).
+- **마이페이지**: ProfileCard + 닉네임 편집 + 도장깨기 (5×3 grid SVG) + 저장된 우승지 + 토너먼트 기록 + 편지함 4탭.
+- **여행지 상세**: `/destination/[id]` Hero + WinnerDetailPanel + Web Share API + OG 메타.
+- **이미지 카드 공유**: `/api/og/[type]` Edge route 4 종 (tournament/quiz/destination/region).
+- **설정**: `/settings` (알림 / 계정 / 정책 / 로그아웃).
 
-### 🟡 부분 동작 (라우팅·레이아웃 ○ / 내부 위젯 stub)
+### 🟡 부분 동작 (mock 한정, BE 연동 시 완성)
 
-- `/` 홈 — 빠른 시작 3버튼만 동작, 위젯 5종(날씨추천/축제/최신편지/우승지/...) stub
-- `/region` — 시군 11개 그리드·라우팅 동작, 상세(`/region/[code]`) 탭 stub
-- `/ranking` · `/tournament` + `/play` + `/result` · `/letter`(목록) · `/letter/[id]` · `/quiz` · `/mypage` — 레이아웃만, 내부 컴포넌트 stub
+- `/` 홈 — 빠른 시작 (계절 토너먼트 + 유형 테스트) + FestivalCarousel (mock) + 알림함.
+- 토너먼트 BE 연동 — `POST /tournaments` 미연결, reload 시 winner 손실 (store-only).
+- 편지 전송 — `?id=` deep-link 미연동.
 
-### 🔧 준비됨 (호출 대기 — 렌더링만 추가하면 동작)
+### 🔧 준비됨 (호출 대기)
 
-- **인프라**: api client + interceptor(auth 401-refresh / timing), feature별 데이터 hooks, Zustand stores, 캐시 프로파일 7종
-- **공용 컴포넌트**: `InfiniteList`(무한스크롤), 차트·캐러셀 동적 래퍼, `OptimizedImage`, `ConfirmDialog`, 피드백/PWA 배너
-- **검증/유틸**: Zod(login/letter/nickname) + `lib/validation` · `use-format` · `clipboard`/`async`
+- **인프라**: api client + interceptor (auth 401-refresh / timing), feature별 데이터 hooks (TanStack Query), Zustand stores, 캐시 프로파일 7종.
+- **공용 컴포넌트**: `InfiniteList` (무한스크롤), 차트·캐러셀 동적 래퍼, `OptimizedImage`, `ConfirmDialog`, 피드백/PWA 배너.
+- **테스트**: Playwright 4-project 매트릭스 (desktop / mobile-chrome / mobile-safari / mobile-pwa) + axe-core a11y + toHaveScreenshot 시각 회귀.
 
-> **stub** = `return null`인 프레젠테이션 컴포넌트 약 53개. 데이터 훅·라우팅·설계는 준비돼 있어 **렌더링 코드만 채우면 동작**. 위젯 구현 시 RSC+Suspense / `getBlurDataURL` / `prefetch={false}` 등을 함께 적용 (후속 로드맵 참고).
+> **stub**: Phase 0 청소 후 ~16개. 디자인/백엔드 의존 항목 (정밀 ChungbukSvgMap path, WeatherWidget, ranking 추가 섹션, ProfileCard updateAvatar 등) 만 잔존. [`docs/BACKLOG.md`](docs/BACKLOG.md) 참고.
 
 ---
 
@@ -174,13 +180,12 @@ src/features/
  ├─ onboarding/        3-step 온보딩                            [✅ 동작]
  ├─ location/          Geolocation + Permissions API + IP fallback [✅ 동작]
  ├─ user/              사용자 프로필                            [🔧 hook 준비]
- ├─ letter/            다섯글자 편지 (작성 ✅ / 목록·상세 컴포넌트 ⏳ stub)
- ├─ tournament/        토너먼트 store ✅ / UI 컴포넌트 ⏳ stub (9개)
- ├─ ranking/           hook ✅ / 리스트·차트 컴포넌트 ⏳ stub (11개)
- ├─ quiz/              hook ✅ / intro·질문·결과 ⏳ stub (4개)
- ├─ region/            시군 그리드 ✅ / hero·탭·도장맵 ⏳ stub
- ├─ weather/           hook ✅ / WeatherWidget ⏳ stub
- ├─ mypage/            hook ✅ / 프로필·도장·우승지·편지함 ⏳ stub (8개)
+ ├─ letter/            다섯글자 편지 (작성·목록·상세·4탭 ✅)
+ ├─ tournament/        토너먼트 setup·play·result ✅ (BE 연동 시 deep-link 추가)
+ ├─ ranking/           Top5·시군·카테고리 ✅ / 추가 섹션 ⏳ (사양 대기)
+ ├─ region/            시군 그리드 ✅ / 상세 탭 ✅ / ChungbukSvgMap ✅ (grid 도식, 정밀 path ⏳)
+ ├─ weather/           hook ✅ / WeatherWidget ⏳ (홈 배치 결정 후)
+ ├─ mypage/            프로필·닉네임·도장·우승지·토너먼트 기록·편지함 ✅
  ├─ notification/      Web Push + 인앱 알림함 (hook ✅ / 일부 UI ⏳)
  ├─ settings/          알림/계정/정책 섹션                      [✅ 동작]
  ├─ i18n/              LanguageSwitcher                         [✅ 동작]

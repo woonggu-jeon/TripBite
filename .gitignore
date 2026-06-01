@@ -4,6 +4,9 @@ node_modules/
 .pnp.js
 .yarn/install-state.gz
 
+# Claude Code local state
+.claude/
+
 # testing
 coverage/
 playwright-report/

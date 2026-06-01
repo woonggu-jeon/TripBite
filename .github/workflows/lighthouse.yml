@@ -57,6 +57,7 @@ jobs:
         with:
           urls: |
             http://localhost:3000/login
+            http://localhost:3000/onboarding
           configPath: ./lighthouserc.json
           uploadArtifacts: true
           temporaryPublicStorage: true
