@@ -218,7 +218,12 @@ export function Bracket({ destinations, onComplete }: BracketProps) {
       </header>
 
       <div className={styles.matchup}>
+        {/* key 에 match.a.id / match.b.id — 매치 변경 시 button DOM 자체가
+            unmount/remount 되어 focus + (touch 환경의) sticky 상태가 강제
+            리셋. 같은 DOM 재사용 시 ios safari 에서 이전 선택지가 다음 매치에
+            도 강조 유지되던 회귀 차단. */}
         <MatchupCard
+          key={match.a.id}
           destination={match.a}
           onPick={() => dispatch({ type: 'pick', winner: match.a })}
         />
@@ -226,6 +231,7 @@ export function Bracket({ destinations, onComplete }: BracketProps) {
           VS
         </div>
         <MatchupCard
+          key={match.b.id}
           destination={match.b}
           onPick={() => dispatch({ type: 'pick', winner: match.b })}
         />

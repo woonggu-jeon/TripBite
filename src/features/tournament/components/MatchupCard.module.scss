@@ -12,11 +12,18 @@
     background var(--motion-base) ease,
     transform var(--motion-fast) ease,
     box-shadow var(--motion-base) ease;
+  // iOS Safari 의 tap 후 회색 highlight 제거 — 우리는 :active 로 직접 처리.
+  -webkit-tap-highlight-color: transparent;
 
-  &:hover:not(:disabled) {
-    border-color: var(--color-primary);
-    background: var(--color-primary-fade);
-    box-shadow: var(--shadow-md);
+  // :hover 는 마우스/펜 환경에서만. touch (iOS Safari, Android Chrome) 는
+  // tap 후 :hover 가 sticky 가 되어 다음 매치까지 이전 카드가 강조된 채로
+  // 남는 회귀의 원인 → @media (hover: hover) and (pointer: fine) 로 격리.
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      border-color: var(--color-primary);
+      background: var(--color-primary-fade);
+      box-shadow: var(--shadow-md);
+    }
   }
   &:active:not(:disabled) {
     transform: scale(0.97);

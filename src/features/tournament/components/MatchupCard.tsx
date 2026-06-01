@@ -42,9 +42,13 @@ export function MatchupCard({
         variant: 'surface',
         className: styles.card,
       })}
-      onClick={() => {
+      onClick={(e) => {
         if (disabled) return;
         haptic.tap();
+        // iOS Safari / PWA — tap 후 focus 가 button 에 남고, React 가 같은
+        // DOM 을 다음 매치에서 재사용하면 "이전 선택지가 다시 강조된 것처럼"
+        // 보임. blur() 로 focus 명시 해제 (Bracket.tsx 의 key 교체와 이중 안전망).
+        e.currentTarget.blur();
         onPick();
       }}
       disabled={disabled}
