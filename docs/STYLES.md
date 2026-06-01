@@ -250,6 +250,116 @@ import { cardClasses } from '@/components/ui';
 <Button variant="secondary" leadingIcon={<RotateCcw size={16} />}>다시</Button>
 ```
 
+### Skeleton — 로딩 자리잡이
+
+API 응답 대기 / dynamic import 청크 로딩 / Suspense fallback. CSS 애니메이션
+(JS 부담 0) + `prefers-reduced-motion` 존중. 같은 자리에 실제 콘텐츠가 들어올 때
+CLS 가 0 이 되도록 **실제 dimension 과 일치**시키는 게 핵심.
+
+```tsx
+import { Skeleton } from '@/components/feedback/Skeleton';
+
+// 단일 자리잡이
+<Skeleton width="100%" height={72} radius="lg" />;
+
+// 리스트 자리잡이 — 실제 item dimension 으로
+{
+  isLoading && (
+    <div className={styles.skeletonList} aria-label={tCommon('loading')}>
+      {Array.from({ length: 3 }).map((_, i) => (
+        <div key={i} className={styles.skeletonItem}>
+          <Skeleton width={28} height={28} radius="full" />
+          <div className={styles.skeletonLines}>
+            <Skeleton width="80%" height={14} radius="sm" />
+            <Skeleton width="55%" height={12} radius="sm" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+Props: `width / height` (number | string) / `radius` (`sm` / `md` (default) / `lg` / `full`) / `className`.
+
+`aria-hidden="true"` 자동 — 스크린리더는 부모의 `aria-label` 또는 `aria-busy` 로 안내.
+
+### EmptyState — 빈 데이터 표준 안내
+
+데이터 0개 / 권한 미부여 / 일치 결과 없음 등. 단순 text 가 아닌 일관된 layout
+(icon + title + description + action) 으로.
+
+```tsx
+import { EmptyState } from '@/components/feedback/EmptyState';
+import { Mail, BarChart3 } from 'lucide-react';
+import { Button } from '@/components/ui';
+
+// 알림함 빈 상태
+<EmptyState
+  icon={<Mail size={28} aria-hidden />}
+  title={t('empty')}
+/>
+
+// CTA 포함 (편지함 첫 진입)
+<EmptyState
+  icon={<Mail size={32} aria-hidden />}
+  title="아직 도착한 편지가 없어요"
+  description="다섯글자로 첫 편지를 보내보세요"
+  action={
+    <Button variant="primary" onClick={() => router.push('/letter/compose')}>
+      편지 쓰기
+    </Button>
+  }
+/>
+```
+
+Props: `icon` (선택) / `title` (필수) / `description` (선택) / `action` (선택) / `className`.
+
+### Skeleton vs EmptyState — 언제 어느 쪽?
+
+| 상황                                  | 사용                                                                                                       |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `isLoading=true` (네트워크 응답 대기) | **Skeleton**                                                                                               |
+| `data?.items.length === 0`            | **EmptyState**                                                                                             |
+| `isError` + retry 가능                | EmptyState (action 으로 retry Button) 또는 `<Button variant="secondary" size="sm" onClick={refetch}>` 단독 |
+| Button 자체의 mutation pending        | `<Button loading>` — Skeleton 불필요                                                                       |
+| `return null` 권장                    | 홈 위젯 등 "첫 렌더 부담 회피" 가 우선인 곳 (LatestReceivedLetter) — 메모리 정책 "렌더링 속도 최우선"      |
+
+### 새 위젯 작성 가이드라인 (loading/empty 표준)
+
+```tsx
+function MyWidget() {
+  const { data, isLoading, isError, refetch } = useFoo();
+
+  if (isLoading) {
+    return (
+      <div className={styles.skeletonWrap}>
+        <Skeleton width="100%" height={64} radius="md" />
+      </div>
+    );
+  }
+  if (isError) {
+    return (
+      <EmptyState
+        icon={<AlertCircle size={28} />}
+        title={t('error')}
+        action={
+          <Button variant="secondary" size="sm" onClick={() => refetch()}>
+            {t('retry')}
+          </Button>
+        }
+      />
+    );
+  }
+  if (!data || data.length === 0) {
+    return <EmptyState icon={<Inbox size={28} />} title={t('empty')} />;
+  }
+  return <List items={data} />;
+}
+```
+
+부모 영역에 **min-height** 명시 — 로딩 → 데이터 / 에러 / 빈 전환 시 CLS 0.
+
 ## 3. 디자인 교체 시나리오
 
 브랜드 색을 핑크(#ec4899) 로 바꾼다면 — `globals.scss` 의 `--color-primary` 한 줄만 수정.
