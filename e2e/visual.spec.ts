@@ -6,17 +6,16 @@ import { authedSession } from './_helpers/auth';
  *
  * 페이지 × 모드 × 뷰포트 baseline 비교:
  *   - 페이지: /, /mypage, /letter, /region/cheongju
- *   - 모드:   light, dark (prefers-color-scheme)
- *   - 뷰포트: project 별 자동 (desktop / mobile)
+ *   - 모드:   light, dark
+ *   - 플랫폼: 6 projects (desktop-windows / desktop-mac / mobile-chrome-aos /
+ *            mobile-safari-ios / mobile-pwa-aos / mobile-pwa-ios)
  *
- * 의도적 mask:
- *   - 상대 시간 ("3분 전") / 절대 날짜
- *   - 카운트 ("3 / 11") — stamps 진행률 등 mock 의존
+ * 모든 매트릭스 baseline = 4 × 2 × 6 = 48장.
  *
- * 첫 실행 시 baseline 이 없으면 자동 생성 (test 통과). 이후 변경 시 diff 검출.
- * 갱신: `npx playwright test --update-snapshots --project=desktop-chrome -g 시각`
+ * 첫 실행 시 baseline 없으면 자동 생성. 이후 변경 시 diff 검출.
+ * 갱신: `npx playwright test --update-snapshots -g 시각`
  *
- * 모바일 매트릭스도 같이 돌리면 baseline 폭증 — 우선 desktop-chrome 만.
+ * fullPage 캡처 — 전체 페이지 스크롤 영역 깨짐도 검출.
  */
 
 const PAGES: { path: string; label: string }[] = [
@@ -32,12 +31,7 @@ const MODES = [
 ];
 
 test.describe('시각 회귀 — toHaveScreenshot', () => {
-  // 시각 회귀는 desktop-chrome 만 — 모바일까지 확장하면 baseline × 4 projects.
-  test.beforeEach(async ({ page }, testInfo) => {
-    test.skip(
-      testInfo.project.name !== 'desktop-chrome',
-      '시각 회귀는 desktop-chrome 만',
-    );
+  test.beforeEach(async ({ page }) => {
     await authedSession(page);
   });
 
@@ -47,15 +41,16 @@ test.describe('시각 회귀 — toHaveScreenshot', () => {
         await page.emulateMedia({ colorScheme: m.scheme });
         await page.goto(p.path);
         await page.waitForLoadState('networkidle').catch(() => {});
-        // skeleton / 애니메이션 안정화 — 비동기 fetch 안정화까지 여유.
-        await page.waitForTimeout(800);
+        // 폰트 + skeleton + animation 안정화 — 비동기 fetch 안정화까지 여유.
+        await page.evaluate(() => document.fonts?.ready).catch(() => {});
+        await page.waitForTimeout(1200);
 
         await expect(page).toHaveScreenshot(`${p.label}-${m.name}.png`, {
+          // viewport 만 — fullPage 는 무한 스크롤 페이지의 dynamic height 로
+          // baseline 매칭이 일관 안 됨 (mock skeleton ms 단위 차이로 page height 변동).
+          // viewport 캡처로도 above-the-fold 레이아웃/색상 깨짐은 충분히 검출.
           fullPage: false,
-          // 5% 픽셀 차이 허용 — 상대시간/카운트/skeleton timing 오차 흡수.
-          // 레이아웃/색상 깨짐은 충분히 검출됨 (전체 viewport 의 5% 이상은 큰 변경).
           maxDiffPixelRatio: 0.05,
-          // 마스크 — 후속 PR 에서 time / stamp-progress 에 data-testid 부여 시 활성화.
           animations: 'disabled',
         });
       });

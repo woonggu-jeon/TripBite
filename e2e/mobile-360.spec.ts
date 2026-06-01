@@ -17,9 +17,10 @@ import { authedSession } from './_helpers/auth';
  */
 test.describe('360 viewport — overflow + 핵심 element 노출', () => {
   test.beforeEach(async ({ page }, testInfo) => {
+    // desktop 계열만 viewport override 가능 (mobile 은 device emulation 강제).
     test.skip(
-      testInfo.project.name !== 'desktop-chrome',
-      '360 회귀는 desktop-chrome 만 (viewport override)',
+      !testInfo.project.name.startsWith('desktop'),
+      '360 회귀는 desktop 계열만 (viewport override)',
     );
     await page.setViewportSize({ width: 360, height: 720 });
     await authedSession(page);

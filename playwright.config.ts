@@ -30,29 +30,46 @@ export default defineConfig({
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
+  // 플랫폼 매트릭스 (6종) — 같은 chromium binary 라 OS 별 차이는 font subpixel 수준.
+  // userAgent 와 viewport 만 다르므로 desktop-windows / desktop-mac 는 형식적 분리.
+  // 운영 검증은 실기기 (iOS Safari 17+, Galaxy S 시리즈) 별도.
   projects: [
-    // 데스크탑 — 1280x720
+    // 데스크탑 Windows
     {
-      name: 'desktop-chrome',
+      name: 'desktop-windows',
       use: {
         ...devices['Desktop Chrome'],
         viewport: { width: 1280, height: 720 },
       },
     },
-    // 모바일 웹 — Android Chrome / iOS Safari
-    { name: 'mobile-chrome', use: { ...devices['Pixel 7'] } },
-    { name: 'mobile-safari', use: { ...devices['iPhone 14'] } },
-    // PWA standalone 모드 시뮬레이션 — iPhone 14 + display-mode emulation
-    // (Playwright 의 emulateMedia 로 display-mode standalone 강제)
+    // 데스크탑 Mac
     {
-      name: 'mobile-pwa',
+      name: 'desktop-mac',
+      use: {
+        ...devices['Desktop Chrome'],
+        userAgent:
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+        viewport: { width: 1440, height: 900 },
+      },
+    },
+    // 모바일 웹 (AOS) — Android Chrome
+    { name: 'mobile-chrome-aos', use: { ...devices['Pixel 7'] } },
+    // 모바일 웹 (iOS) — iOS Safari
+    { name: 'mobile-safari-ios', use: { ...devices['iPhone 14'] } },
+    // 모바일 앱 (AOS PWA) — Pixel 7 standalone 시뮬
+    {
+      name: 'mobile-pwa-aos',
+      use: {
+        ...devices['Pixel 7'],
+        contextOptions: { reducedMotion: 'no-preference' },
+      },
+    },
+    // 모바일 앱 (iOS PWA) — iPhone 14 standalone 시뮬
+    {
+      name: 'mobile-pwa-ios',
       use: {
         ...devices['iPhone 14'],
-        // PWA 진입 시 push 분기 + standalone 전용 UI 검증.
-        // displayMode 는 testInfo 의 page.emulateMedia 로 spec 별 설정.
-        contextOptions: {
-          reducedMotion: 'no-preference',
-        },
+        contextOptions: { reducedMotion: 'no-preference' },
       },
     },
   ],
