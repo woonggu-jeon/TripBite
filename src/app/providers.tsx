@@ -13,6 +13,8 @@ import { useEffect, useState } from 'react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
 import { AuthBootstrap } from '@/features/auth/components/AuthBootstrap';
+import { ServiceWorkerNavigateBridge } from '@/features/notification/components/ServiceWorkerNavigateBridge';
+import { MockPushTrigger } from '@/features/notification/components/MockPushTrigger';
 import { Toaster } from '@/components/feedback/Toaster';
 import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
 import {
@@ -145,6 +147,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthBootstrap />
+      <ServiceWorkerNavigateBridge />
       <PageViewTracker />
       {/* dev 디버그용 콘솔 로깅만. 운영 Web Vitals 수집은 SpeedInsights 담당(중복 방지) */}
       {process.env.NODE_ENV === 'development' && <WebVitalsTracker />}
@@ -164,6 +167,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
       {/* 운영에서 mock 활성화 시 사용자에게 DEMO 모드임을 알리는 작은 chip */}
       {MSW_ENABLED && <MockModeBanner />}
+      {/* mock 모드 전용 — 새 편지 도착 시뮬레이션 dev 버튼. */}
+      {MSW_ENABLED && <MockPushTrigger />}
 
       {process.env.NODE_ENV === 'development' && (
         <ReactQueryDevtools initialIsOpen={false} />

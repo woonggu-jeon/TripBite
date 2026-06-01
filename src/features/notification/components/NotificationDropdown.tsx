@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Mail, Heart } from 'lucide-react';
@@ -9,6 +9,12 @@ import {
   useMarkAllNotificationsRead,
   useMarkNotificationRead,
 } from '@/features/notification/hooks/use-notification-inbox';
+import { usePushNotification } from '@/features/notification/hooks/use-push-notification';
+import {
+  canUsePushOnIOS,
+  isIOS,
+  isPushSupported,
+} from '@/features/notification/utils/subscription';
 import type {
   AppNotification,
   NotificationType,
@@ -16,6 +22,8 @@ import type {
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import styles from './NotificationDropdown.module.scss';
+
+const PUSH_PROMPT_DISMISS_KEY = 'tripbite.push-prompt.dismissed';
 
 /**
  * 헤더 알림 버튼 클릭 시 노출되는 드롭다운
@@ -85,6 +93,8 @@ export function NotificationDropdown({ onClose }: { onClose: () => void }) {
         )}
       </div>
 
+      <PushPrompt />
+
       <div className={styles.list}>
         {isLoading && (
           // 3 row skeleton — 알림 항목 layout 과 동일 dimension 으로 자리잡이
@@ -116,6 +126,82 @@ export function NotificationDropdown({ onClose }: { onClose: () => void }) {
             }}
           />
         ))}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * 알림함 진입 시 한 번만 노출되는 푸시 권한 prompt.
+ *
+ * 노출 조건:
+ *   - Notification.permission === 'default' (아직 요청 안 함)
+ *   - 사용자가 X 로 닫지 않음 (localStorage 기록)
+ *   - 브라우저가 push 지원
+ *
+ * iOS 안내 분기:
+ *   - iOS 인데 standalone(홈 추가) 아니면 "홈에 추가 후 알림" 안내만 노출 — 권한
+ *     요청 자체가 silent fail 이라 enable 버튼 비활성.
+ *   - iOS + standalone 이면 일반 흐름.
+ */
+function PushPrompt() {
+  const t = useTranslations('notification.push');
+  const { enable, status } = usePushNotification();
+  const [show, setShow] = useState(false);
+  const [iosNeedsInstall, setIosNeedsInstall] = useState(false);
+
+  useEffect(() => {
+    void (async () => {
+      if (!(await isPushSupported())) return;
+      if (typeof window === 'undefined') return;
+      if (Notification.permission !== 'default') return;
+      if (window.localStorage.getItem(PUSH_PROMPT_DISMISS_KEY) === 'true')
+        return;
+      setIosNeedsInstall(isIOS() && !canUsePushOnIOS());
+      setShow(true);
+    })();
+  }, []);
+
+  if (!show) return null;
+
+  const dismiss = () => {
+    try {
+      window.localStorage.setItem(PUSH_PROMPT_DISMISS_KEY, 'true');
+    } catch {
+      // ignore
+    }
+    setShow(false);
+  };
+
+  const handleEnable = async () => {
+    if (iosNeedsInstall) return; // iOS 일반 탭 — 권한 요청 silent fail
+    await enable();
+    // status 가 enabled / denied 어느 쪽이든 prompt 는 닫기
+    dismiss();
+  };
+
+  return (
+    <div className={styles.pushPrompt}>
+      <p className={styles.pushPromptText}>{t('text')}</p>
+      {iosNeedsInstall && (
+        <p className={styles.pushPromptHint}>{t('iosInstallHint')}</p>
+      )}
+      <div className={styles.pushPromptActions}>
+        <button
+          type="button"
+          className={styles.pushEnable}
+          onClick={handleEnable}
+          disabled={iosNeedsInstall || status === 'requesting'}
+        >
+          {iosNeedsInstall
+            ? t('iosCta')
+            : status === 'requesting'
+              ? t('requesting')
+              : t('enable')}
+        </button>
+        <button type="button" className={styles.pushDismiss} onClick={dismiss}>
+          {t('dismiss')}
+        </button>
       </div>
     </div>
   );

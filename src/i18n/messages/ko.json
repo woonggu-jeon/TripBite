@@ -605,7 +605,15 @@
   "notification": {
     "title": "알림",
     "empty": "새로운 알림이 없어요",
-    "markAllRead": "모두 읽음"
+    "markAllRead": "모두 읽음",
+    "push": {
+      "text": "편지가 도착하면 알림으로 알려드릴까요?",
+      "iosInstallHint": "아이폰은 홈 화면에 추가한 뒤 알림을 켤 수 있어요.",
+      "enable": "켜기",
+      "iosCta": "홈에 추가 안내",
+      "requesting": "권한 확인 중…",
+      "dismiss": "나중에"
+    }
   },
   "errors": {
     "generic": "문제가 발생했습니다",

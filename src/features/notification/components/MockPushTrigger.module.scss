@@ -1,0 +1,37 @@
+.btn {
+  position: fixed;
+  // MockModeBanner(DEMO chip) 아래로 약간 띄움.
+  top: calc(env(safe-area-inset-top, 0px) + var(--space-2) + 36px);
+  right: var(--space-3);
+  z-index: var(--z-elevated);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  font-size: 18px;
+  line-height: 1;
+  opacity: 0.85;
+  cursor: pointer;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      opacity: 1;
+      border-color: var(--color-primary-border);
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.94);
+  }
+
+  &:disabled {
+    opacity: var(--opacity-disabled);
+    cursor: progress;
+  }
+}

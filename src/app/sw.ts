@@ -90,10 +90,86 @@ const serwist = new Serwist({
 });
 
 // PwaUpdateBanner → SKIP_WAITING (use-service-worker-update.ts 연동)
+// MOCK_PUSH — mock 환경에서 클라이언트가 push 이벤트를 시뮬레이션할 때 사용.
+//   실 서버 push 인프라(VAPID + web-push 라이브러리) 없이도 dev 에서 알림 흐름을
+//   끝까지 테스트할 수 있도록 — 클라이언트가 postMessage 로 trigger →
+//   SW 가 showNotification 직접 호출.
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
+  if (!event.data) return;
+  if (event.data.type === 'SKIP_WAITING') {
     void self.skipWaiting();
+    return;
   }
+  if (event.data.type === 'MOCK_PUSH') {
+    const p = event.data.payload ?? {};
+    event.waitUntil(
+      self.registration.showNotification(p.title ?? '편지가 도착했어요', {
+        body: p.body,
+        icon: p.icon ?? '/icons/icon-192x192.png',
+        badge: p.badge ?? '/icons/icon-72x72.png',
+        tag: p.tag, // 같은 tag → OS 가 중복 알림 합침
+        data: { link: p.link },
+      }),
+    );
+  }
+});
+
+/**
+ * Web Push — 실 서버가 web-push 로 보낸 푸시 이벤트.
+ * payload (JSON): { title, body, link, tag, icon, badge }
+ * 본 핸들러는 mock 시뮬레이션 (MOCK_PUSH) 과 동일 표시 로직.
+ */
+self.addEventListener('push', (event) => {
+  let payload: {
+    title?: string;
+    body?: string;
+    link?: string;
+    tag?: string;
+    icon?: string;
+    badge?: string;
+  } = {};
+  try {
+    payload = event.data?.json() ?? {};
+  } catch {
+    // 서버가 raw text 로 보낸 경우 — 최소 fallback
+    payload = { title: event.data?.text() || '새 알림' };
+  }
+  event.waitUntil(
+    self.registration.showNotification(payload.title ?? '편지가 도착했어요', {
+      body: payload.body,
+      icon: payload.icon ?? '/icons/icon-192x192.png',
+      badge: payload.badge ?? '/icons/icon-72x72.png',
+      tag: payload.tag,
+      data: { link: payload.link },
+    }),
+  );
+});
+
+/**
+ * 알림 클릭 — 이미 열린 우리 origin 탭이 있으면 focus + 메시지로 navigate.
+ * 없으면 link 로 새 창 open.
+ */
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const link = (event.notification.data?.link as string | undefined) ?? '/';
+  event.waitUntil(
+    (async () => {
+      const all = await self.clients.matchAll({
+        type: 'window',
+        includeUncontrolled: true,
+      });
+      const own = all.filter(
+        (c) => new URL(c.url).origin === self.location.origin,
+      );
+      const first = own[0];
+      if (first) {
+        await first.focus();
+        first.postMessage({ type: 'NAVIGATE', link });
+        return;
+      }
+      await self.clients.openWindow(link);
+    })(),
+  );
 });
 
 serwist.addEventListeners();

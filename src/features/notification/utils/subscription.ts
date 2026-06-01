@@ -64,3 +64,51 @@ export async function unsubscribePush(): Promise<boolean> {
   if (!subscription) return true;
   return subscription.unsubscribe();
 }
+
+/**
+ * iOS Safari Web Push 는 PWA standalone 모드에서만 동작 (iOS 16.4+).
+ * 일반 Safari 탭에서 enable 시도는 silent fail. UX 상 미리 안내 필요.
+ */
+export function isStandalone(): boolean {
+  if (typeof window === 'undefined') return false;
+  // iOS legacy + 표준 둘 다 검사
+  const nav = window.navigator as Navigator & { standalone?: boolean };
+  return (
+    nav.standalone === true ||
+    window.matchMedia?.('(display-mode: standalone)').matches === true
+  );
+}
+
+export function isIOS(): boolean {
+  if (typeof window === 'undefined') return false;
+  // iPadOS 13+ 의 desktop UA 모드도 포함 (touch + Mac)
+  const ua = window.navigator.userAgent;
+  return (
+    /iPad|iPhone|iPod/.test(ua) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  );
+}
+
+/**
+ * iOS 에서 push 사용 가능 여부 — Safari + standalone 모드 + iOS 16.4+ 의 조건.
+ * `isPushSupported()` 가 true 라도 iOS 일반 탭이면 권한 요청은 silent fail.
+ */
+export function canUsePushOnIOS(): boolean {
+  return !isIOS() || isStandalone();
+}
+
+/**
+ * mock 환경 — Service Worker 에 MOCK_PUSH 메시지 보내 push 이벤트를 시뮬레이션.
+ * 실 서버의 VAPID + web-push 없이도 dev 에서 알림 끝까지 테스트.
+ */
+export async function triggerMockPush(payload: {
+  title?: string;
+  body?: string;
+  link?: string;
+  tag?: string;
+}): Promise<void> {
+  if (typeof navigator === 'undefined' || !('serviceWorker' in navigator))
+    return;
+  const reg = await navigator.serviceWorker.ready;
+  reg.active?.postMessage({ type: 'MOCK_PUSH', payload });
+}

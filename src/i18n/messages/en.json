@@ -605,7 +605,15 @@
   "notification": {
     "title": "Notifications",
     "empty": "No notifications yet",
-    "markAllRead": "Mark all read"
+    "markAllRead": "Mark all read",
+    "push": {
+      "text": "Want to be notified when a letter arrives?",
+      "iosInstallHint": "On iPhone, add to Home Screen first to enable notifications.",
+      "enable": "Enable",
+      "iosCta": "How to install",
+      "requesting": "Requesting…",
+      "dismiss": "Later"
+    }
   },
   "errors": {
     "generic": "Something went wrong",

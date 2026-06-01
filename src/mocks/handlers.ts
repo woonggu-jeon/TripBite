@@ -31,6 +31,7 @@ import {
   type TravelTypeMockCode,
 } from './seeds/travel-types';
 import type { TravelType, TravelTypeAnswer } from '@/features/ranking/types';
+import type { AppNotification } from '@/features/notification/types';
 
 /**
  * URL 매칭 base.
@@ -71,6 +72,27 @@ let onboardedState = false;
  * dev 서버 재시작 시 null 로 리셋.
  */
 let myTravelType: TravelType | null = null;
+
+/**
+ * 알림 인박스 (mutable) — seed 복사. push 시뮬레이션 / markRead 가 mutate.
+ * dev 서버 재시작 시 seed 로 reset.
+ *
+ * seed 는 type / read / createdAt 만 가지지만 AppNotification 은 title 필수
+ * (그 외 body/link 는 옵션). title/body 는 type 에서 derive 해 채워둠.
+ */
+const TITLE_BY_TYPE: Record<string, string> = {
+  'letter.received': '새 편지가 도착했어요',
+  'letter.liked': '내 편지에 좋아요',
+  event: '새 소식',
+  'tournament.shared': '토너먼트 공유',
+};
+const notificationItems: AppNotification[] = notificationSeeds.map((n) => ({
+  id: n.id,
+  type: n.type as AppNotification['type'],
+  title: TITLE_BY_TYPE[n.type] ?? '알림',
+  read: n.read,
+  createdAt: n.createdAt,
+}));
 
 /** 셔플 후 N 개 — Fisher–Yates 부분 */
 function pickRandom<T>(arr: readonly T[], n: number): T[] {
@@ -437,12 +459,57 @@ export const handlers = [
   }),
 
   // ===== Notifications =====
+  // 인박스 + mutable read 상태. 새 알림은 push 시뮬레이션 endpoint 가 prepend.
   http.get(`${apiUrl}/notifications`, () =>
     HttpResponse.json({
-      items: notificationSeeds,
-      unreadCount: notificationSeeds.filter((n) => !n.read).length,
+      items: notificationItems,
+      unreadCount: notificationItems.filter((n) => !n.read).length,
     }),
   ),
+  http.post(`${apiUrl}/notifications/:id/read`, ({ params }) => {
+    const id = String(params.id);
+    const target = notificationItems.find((n) => n.id === id);
+    if (target) target.read = true;
+    return new HttpResponse(null, { status: 204 });
+  }),
+  http.post(`${apiUrl}/notifications/read-all`, () => {
+    notificationItems.forEach((n) => {
+      n.read = true;
+    });
+    return new HttpResponse(null, { status: 204 });
+  }),
+  // Push 구독 등록/해제 — 실 서버는 endpoint + p256dh + auth 를 사용자별로 저장.
+  // mock 은 단순 ack.
+  http.post(`${apiUrl}/notifications/subscribe`, async ({ request }) => {
+    await request.json().catch(() => null); // 본문 검증 생략
+    return new HttpResponse(null, { status: 204 });
+  }),
+  http.post(`${apiUrl}/notifications/unsubscribe`, async ({ request }) => {
+    await request.json().catch(() => null);
+    return new HttpResponse(null, { status: 204 });
+  }),
+  // mock 전용 — 새 편지 도착 시뮬레이션.
+  // 클라이언트 dev tool 이 호출 → 알림함에 항목 prepend.
+  // (Service Worker 의 push 이벤트는 별도 postMessage(MOCK_PUSH) 로 trigger.)
+  http.post(`${apiUrl}/__mock/letter-arrive`, async ({ request }) => {
+    const body = (await request.json().catch(() => ({}))) as {
+      from?: string;
+      preview?: string;
+      letterId?: string;
+    };
+    const id = `mock-${Date.now()}`;
+    const letterId = body.letterId ?? `letter-${id}`;
+    notificationItems.unshift({
+      id,
+      type: 'letter.received',
+      title: '새 편지가 도착했어요',
+      body: body.preview ?? `${body.from ?? '익명의 여행자'} 가 보낸 편지`,
+      link: `/letter/${letterId}`,
+      read: false,
+      createdAt: new Date().toISOString(),
+    });
+    return HttpResponse.json({ id, link: `/letter/${letterId}` });
+  }),
 
   // ===== Travel type test =====
   // 옵션은 단순 id+text만 반환 — 클라이언트는 점수 매핑 미인식
