@@ -31,5 +31,10 @@ export default defineConfig({
       // 우리 axios 인스턴스를 주입할 거라 baseUrl/runtime 등 기본값은 빈 상태로 둠
       // (실제 설정은 src/services/api/openapi-client.ts 의 setConfig)
     },
+    {
+      // TanStack Query hook 자동 생성 — useFooQuery / useFooMutation.
+      // features/*/hooks 가 generated hook 을 wrapping (queryKey/queryFn 동기화 자동).
+      name: '@tanstack/react-query',
+    },
   ],
 });

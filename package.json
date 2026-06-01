@@ -74,6 +74,7 @@
     "husky": "^9.1.6",
     "lucide-static": "^1.16.0",
     "msw": "^2.14.6",
+    "openapi-msw": "^2.0.0",
     "plaiceholder": "^3.0.0",
     "postcss": "^8.5.10",
     "prettier": "^3.3.3",
