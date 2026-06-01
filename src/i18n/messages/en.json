@@ -444,7 +444,8 @@
       "errors": {
         "empty": "Please enter content.",
         "maxLength": "Up to 5 characters allowed.",
-        "invalidChar": "Disallowed characters detected."
+        "invalidChar": "Disallowed characters detected.",
+        "locationRequired": "Location permission is required to send a letter."
       }
     },
     "detail": {

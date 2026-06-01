@@ -6,6 +6,8 @@ import { useTranslations } from 'next-intl';
 import { ConceptStep } from '@/features/onboarding/components/ConceptStep';
 import { LocationStep } from '@/features/onboarding/components/LocationStep';
 import { useCompleteOnboarding } from '@/features/onboarding/hooks/use-onboarding';
+import { useLocalOnboarding } from '@/features/onboarding/hooks/use-local-onboarding';
+import { useAuthStore } from '@/stores/auth-store';
 import { useLocationStore } from '@/stores/location-store';
 import styles from './OnboardingFlow.module.scss';
 
@@ -33,6 +35,8 @@ export function OnboardingFlow() {
   const [step, setStep] = useState<Step>(1);
   const { mutateAsync: complete, isPending } = useCompleteOnboarding();
   const resolvedLocation = useLocationStore((s) => s.resolved);
+  const { markCompleted } = useLocalOnboarding();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   const goNext = () =>
     setStep((s) => (s < TOTAL_STEPS ? ((s + 1) as Step) : s));
@@ -40,10 +44,14 @@ export function OnboardingFlow() {
 
   async function finishOnboarding() {
     if (isPending) return;
-    // 닉네임 단계 미노출 — nickname 자체를 omit. 서버(mock 포함)가 기본 닉네임 부여.
-    await complete({
-      regionCode: resolvedLocation?.regionCode,
-    });
+    // localStorage 마킹은 인증/비인증 양쪽 모두 — 디바이스 단위로 다음 진입 시 skip.
+    markCompleted();
+    // 인증 사용자만 백엔드 onboarding API 호출 (비인증 사용자는 로그인 후 별도).
+    if (isAuthenticated) {
+      await complete({
+        regionCode: resolvedLocation?.regionCode,
+      });
+    }
     router.replace('/');
   }
 

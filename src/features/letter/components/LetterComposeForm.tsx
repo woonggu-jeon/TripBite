@@ -85,23 +85,30 @@ export function LetterComposeForm() {
 
   const onSubmit = handleSubmit(
     async (values) => {
+      // 위치 권한 필수 — onboarding 에선 skip 가능하지만 편지 보낼 땐 필수.
+      // disabled 가 막지만 DevTools 우회 안전망으로 한 번 더 검증.
+      if (!resolved) {
+        haptic.tap();
+        pushToast({
+          type: 'warning',
+          message: tErr('locationRequired'),
+          duration: 2500,
+        });
+        return;
+      }
       haptic.success();
       await send({
         ...values,
-        location: resolved
-          ? {
-              label: resolved.label,
-              regionCode: resolved.regionCode,
-              latitude: resolved.latitude,
-              longitude: resolved.longitude,
-            }
-          : undefined,
+        location: {
+          label: resolved.label,
+          regionCode: resolved.regionCode,
+          latitude: resolved.latitude,
+          longitude: resolved.longitude,
+        },
       });
       setLastSent({
         body: values.body,
-        location: resolved
-          ? { label: resolved.label, regionCode: resolved.regionCode }
-          : undefined,
+        location: { label: resolved.label, regionCode: resolved.regionCode },
         sentAt: new Date().toISOString(),
       });
       router.push('/letter/sent');
@@ -125,10 +132,11 @@ export function LetterComposeForm() {
     reset({ body: '' });
   };
 
-  // 정상 UX: 빈 입력 시 보내기 버튼 disabled. graphemeLength 로 1~5자 검증.
-  // 동시에 onSubmit 의 invalid 콜백이 toast 안내 — DevTools 등으로 disabled
-  // 를 우회해 클릭한 경우(또는 폼 외부 submit) 의 안전망.
-  const canSubmit = count > 0 && count <= 5;
+  // 정상 UX: 빈 입력 또는 위치 미허용 시 보내기 버튼 disabled.
+  //   - graphemeLength 로 1~5자 검증
+  //   - resolved !== null (위치 허용 또는 IP fallback)
+  // onSubmit 의 invalid 콜백 / 위치 가드는 DevTools 우회 안전망.
+  const canSubmit = count > 0 && count <= 5 && resolved !== null;
 
   return (
     <form onSubmit={onSubmit} className={styles.form}>
