@@ -1,0 +1,103 @@
+// Card primitive variant="surface" 가 bg/border/radius 담당.
+.card {
+  position: relative;
+  // 카드 안 link + 우상단 remove button 동시 배치 — overflow hidden 으로 image
+  // 의 radius 가 카드 경계 따라가게.
+  overflow: hidden;
+}
+
+.link {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3);
+  // remove button 영역 확보 (24 + 8)
+  padding-right: calc(var(--space-3) + 32px);
+  color: var(--color-fg);
+  text-decoration: none;
+  transition:
+    background var(--motion-base) ease,
+    transform var(--motion-fast) ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: var(--color-hover);
+    }
+  }
+  &:active {
+    transform: scale(0.99);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+  }
+}
+
+.image {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  background: var(--color-surface-soft);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+// 행운의 색 mini 칩 — 좌하단
+.colorChip {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 0 2px var(--color-bg);
+}
+
+.emoji {
+  font-size: var(--emoji-md);
+  line-height: 1;
+}
+
+.body {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.name {
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-fg);
+  letter-spacing: var(--tracking-snug);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0;
+}
+
+.meta {
+  font-size: var(--font-caption);
+  color: var(--color-muted);
+  margin: 0;
+}
+
+// 우상단 삭제 — Link 안에 nested 라 absolute 로 위에 띄움.
+.remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  color: var(--color-muted);
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link {
+    transition: none;
+    &:active {
+      transform: none;
+    }
+  }
+}

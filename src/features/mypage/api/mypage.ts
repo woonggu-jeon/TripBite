@@ -1,9 +1,15 @@
 import { api } from '@/services/api/client';
+import type { RegionCode } from '@/constants/regions';
 import type {
   MyPageSummary,
   MyProfile,
   UpdateNicknameRequest,
 } from '@/features/mypage/types';
+
+export type StampsResponse = {
+  visited: RegionCode[];
+  total: number;
+};
 
 /**
  * 마이페이지 API
@@ -27,6 +33,11 @@ export const mypageApi = {
 
   updateNickname: async (data: UpdateNicknameRequest): Promise<MyProfile> => {
     const res = await api.patch<MyProfile>('/mypage/profile', data);
+    return res.data;
+  },
+
+  getStamps: async (): Promise<StampsResponse> => {
+    const res = await api.get<StampsResponse>('/mypage/stamps');
     return res.data;
   },
 };

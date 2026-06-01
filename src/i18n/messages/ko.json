@@ -162,6 +162,12 @@
       "title": "충북을 새롭게 발견해요",
       "description": "토너먼트로 여행지를 고르고, 다섯 글자로 마음을 전하세요."
     },
+    "age": {
+      "title": "만 14세 이상이신가요?",
+      "description": "정보통신망법에 따라 만 14세 미만은 가입할 수 없어요.",
+      "confirmLabel": "만 14세 이상입니다",
+      "hint": "허위 체크 시 본인 책임이며, 추후 검증 시 계정이 제한될 수 있어요."
+    },
     "location": {
       "title": "위치를 알려주세요",
       "description": "근처 추천 여행지와 편지에 보낸 위치를 표시할 수 있어요."
@@ -558,6 +564,7 @@
     "title": "마이페이지",
     "sections": {
       "profile": "프로필",
+      "nickname": "닉네임",
       "stampMap": "충북 도장깨기",
       "savedTournaments": "저장한 우승 여행지",
       "tournamentHistory": "토너먼트 기록",
@@ -568,6 +575,38 @@
       "anonymous": "익명",
       "avatarAlt": "{nickname} 프로필 이미지",
       "changeAvatar": "프로필 이미지 변경"
+    },
+    "nickname": {
+      "label": "닉네임",
+      "edit": "변경",
+      "editTitle": "닉네임 변경",
+      "loading": "불러오는 중...",
+      "invalid": "사용할 수 없는 닉네임이에요.",
+      "saved": "닉네임이 저장됐어요.",
+      "saveFailed": "닉네임 저장에 실패했어요."
+    },
+    "savedTournaments": {
+      "empty": "저장한 우승 여행지가 없어요",
+      "emptyHint": "토너먼트로 마음에 드는 여행지를 골라보세요.",
+      "startTournament": "토너먼트 시작",
+      "error": "저장 목록을 불러오지 못했어요",
+      "retry": "다시 시도",
+      "remove": "삭제",
+      "removed": "삭제됐어요.",
+      "removeFailed": "삭제에 실패했어요.",
+      "removeConfirmTitle": "저장 목록에서 삭제할까요?",
+      "removeConfirmDescription": "삭제하면 다시 토너먼트를 진행해야 해요."
+    },
+    "tournamentHistory": {
+      "empty": "아직 진행한 토너먼트가 없어요",
+      "error": "기록을 불러오지 못했어요",
+      "retry": "다시 시도",
+      "countUnit": "강"
+    },
+    "stampMap": {
+      "error": "도장 정보를 불러오지 못했어요",
+      "retry": "다시 시도",
+      "progressAria": "도장 진행률 {percent}퍼센트"
     }
   },
   "settings": {
@@ -581,6 +620,13 @@
       "inAppHint": "앱 내 알림함을 사용합니다",
       "letterReceived": "편지 도착",
       "letterLiked": "내 편지에 좋아요"
+    },
+    "theme": {
+      "section": "테마",
+      "label": "테마 선택",
+      "system": "시스템",
+      "light": "라이트",
+      "dark": "다크"
     },
     "account": {
       "section": "계정",

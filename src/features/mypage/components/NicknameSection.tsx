@@ -1,21 +1,52 @@
 'use client';
 
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { Pencil } from 'lucide-react';
+import { Button } from '@/components/ui';
+import { useMypage } from '@/features/mypage/hooks/use-mypage';
+import { NicknameEditDialog } from './NicknameEditDialog';
+import styles from './NicknameSection.module.scss';
+
 /**
- * <NicknameSection />
- *
  * 닉네임 표시 + 편집 진입점.
  *
- * 사양:
- *   - 현재 닉네임 표시 (서버가 자동 할당한 default라면 약한 색상으로 구분)
- *   - "변경" 버튼 클릭 → <NicknameEditDialog /> 오픈
- *   - 첫 진입 사용자에게는 한 번 onboarding 모달 노출 추천
- *     (예: profile.isDefault === true && 다섯글자편지 첫 사용 직전)
- *
- * 닉네임 정책 (서버와 합의 필요):
- *   - 1~10자, 한글/영문/숫자
- *   - 비속어 필터링
- *   - 중복 허용 여부
+ * - 현재 닉네임 + "변경" Button → NicknameEditDialog 오픈.
+ * - 서버가 자동 할당한 default 닉네임이면 isDefault hint (muted).
  */
 export function NicknameSection() {
-  return null;
+  const t = useTranslations('mypage.nickname');
+  const { data } = useMypage();
+  const [editing, setEditing] = useState(false);
+
+  const nickname = data?.profile.nickname ?? '';
+  const isDefault = data?.profile.isDefault === true;
+
+  return (
+    <>
+      <div className={styles.row}>
+        <div className={styles.text}>
+          <p className={styles.label}>{t('label')}</p>
+          <p className={`${styles.value} ${isDefault ? styles.muted : ''}`}>
+            {nickname || t('loading')}
+          </p>
+        </div>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => setEditing(true)}
+          leadingIcon={<Pencil size={14} aria-hidden />}
+          disabled={!nickname}
+        >
+          {t('edit')}
+        </Button>
+      </div>
+      {editing && (
+        <NicknameEditDialog
+          initialValue={nickname}
+          onClose={() => setEditing(false)}
+        />
+      )}
+    </>
+  );
 }

@@ -1,11 +1,125 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { X } from 'lucide-react';
+import { Button, IconButton } from '@/components/ui';
+import { useUpdateNickname } from '@/features/mypage/hooks/use-mypage';
+import { nicknameSchema } from '@/features/onboarding/schemas/nickname';
+import { toast } from '@/lib/toast';
+import styles from './NicknameEditDialog.module.scss';
+
 /**
- * <NicknameEditDialog />
+ * 닉네임 편집 dialog — 작은 modal 형태.
  *
- * TODO: 마이페이지 기능 구현 시 작성.
- * features/mypage 의 components 폴더에 위치하는 프레젠테이션 컴포넌트.
+ * 검증: `nicknameSchema` (zod) 재사용 — onboarding 과 동일 규칙.
+ * 외부 클릭 / ESC 로 close. submit 후 onClose 호출.
  */
-export function NicknameEditDialog() {
-  return null;
+export function NicknameEditDialog({
+  initialValue,
+  onClose,
+}: {
+  initialValue: string;
+  onClose: () => void;
+}) {
+  const t = useTranslations('mypage.nickname');
+  const tCommon = useTranslations('common');
+  const update = useUpdateNickname();
+  const [value, setValue] = useState(initialValue);
+  const [error, setError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [onClose]);
+
+  const submit = () => {
+    const parsed = nicknameSchema.safeParse({ nickname: value });
+    if (!parsed.success) {
+      const first = parsed.error.issues[0]?.message ?? t('invalid');
+      setError(first);
+      return;
+    }
+    setError(null);
+    update.mutate(
+      { nickname: value },
+      {
+        onSuccess: () => {
+          toast.success(t('saved'));
+          onClose();
+        },
+        onError: () => {
+          toast.error(t('saveFailed'));
+        },
+      },
+    );
+  };
+
+  return (
+    <div className={styles.backdrop} role="presentation" onClick={onClose}>
+      <div
+        className={styles.dialog}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="nickname-edit-title"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className={styles.header}>
+          <h2 id="nickname-edit-title" className={styles.title}>
+            {t('editTitle')}
+          </h2>
+          <IconButton
+            aria-label={tCommon('close')}
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+          >
+            <X size={16} aria-hidden />
+          </IconButton>
+        </div>
+
+        <label className={styles.field}>
+          <span className={styles.fieldLabel}>{t('label')}</span>
+          <input
+            ref={inputRef}
+            type="text"
+            className={styles.input}
+            value={value}
+            onChange={(e) => {
+              setValue(e.target.value);
+              if (error) setError(null);
+            }}
+            maxLength={20}
+            aria-invalid={!!error}
+          />
+          {error && (
+            <p className={styles.error} role="alert">
+              {error}
+            </p>
+          )}
+        </label>
+
+        <div className={styles.actions}>
+          <Button variant="ghost" onClick={onClose} disabled={update.isPending}>
+            {tCommon('cancel')}
+          </Button>
+          <Button
+            variant="primary"
+            onClick={submit}
+            loading={update.isPending}
+            disabled={!value.trim() || value === initialValue}
+          >
+            {tCommon('save')}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
 }

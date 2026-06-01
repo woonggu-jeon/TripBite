@@ -4,6 +4,11 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ROUTES } from '@/constants/routes';
 import { ProfileCard } from '@/features/mypage/components/ProfileCard';
+import { NicknameSection } from '@/features/mypage/components/NicknameSection';
+import { SavedTournamentsSection } from '@/features/mypage/components/SavedTournamentsSection';
+import { TournamentHistorySection } from '@/features/mypage/components/TournamentHistorySection';
+import { LetterboxTabs } from '@/features/mypage/components/LetterboxTabs';
+import { RegionStampMap } from '@/features/region';
 import { PageSection } from '@/components/ui';
 import styles from './MyPageClient.module.scss';
 
@@ -30,47 +35,35 @@ export function MyPageClient() {
         <ProfileCard />
       </PageSection>
 
-      {/* 2) 도장깨기 */}
+      {/* 2) 닉네임 편집 */}
+      <PageSection title={t('nickname')}>
+        <NicknameSection />
+      </PageSection>
+
+      {/* 3) 도장깨기 */}
       <PageSection title={t('stampMap')}>
-        {/* TODO: <RegionStampMap /> from @/features/region */}
-        <Placeholder height={280} note="ChungbukSvgMap + stamps" />
+        <RegionStampMap />
       </PageSection>
 
-      {/* 3) 저장된 우승지 */}
+      {/* 4) 저장된 우승지 */}
       <PageSection title={t('savedTournaments')}>
-        {/* TODO: <SavedTournamentsSection />
-                  - 최대 10개
-                  - 가로 캐러셀 권장 (slidesPerView 2.2) */}
-        <Placeholder height={180} />
+        <SavedTournamentsSection />
       </PageSection>
 
-      {/* 4) 토너먼트 기록 (InfiniteList) */}
+      {/* 5) 토너먼트 기록 */}
       <PageSection title={t('tournamentHistory')}>
-        {/* TODO: <TournamentHistorySection /> — useInfiniteList */}
-        <Placeholder height={200} note="InfiniteList" />
+        <TournamentHistorySection />
       </PageSection>
 
-      {/* 5) 편지함 4탭 */}
+      {/* 6) 편지함 4탭 */}
       <PageSection title={t('letterbox')}>
-        {/* TODO: <LetterboxTabs />
-                  - 탭: received / liked / saved / sent
-                  - 각각 useInfiniteList + InfiniteList */}
-        <Placeholder height={240} note="InfiniteList × 4 tabs" />
+        <LetterboxTabs />
       </PageSection>
 
       {/* 계정 관리는 /settings 페이지로 */}
       <Link href={ROUTES.SETTINGS} className={styles.settingsLink}>
         {t('goToSettings')}
       </Link>
-    </div>
-  );
-}
-
-function Placeholder({ height, note }: { height: number; note?: string }) {
-  // height 만 동적이므로 inline. 나머지 시각 속성은 module 로.
-  return (
-    <div className={styles.placeholder} style={{ height }}>
-      {note && <span className={styles.placeholderNote}>{note}</span>}
     </div>
   );
 }

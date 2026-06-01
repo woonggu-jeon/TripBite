@@ -162,6 +162,12 @@
       "title": "Discover Chungbuk anew",
       "description": "Pick a destination via bracket, share your heart in five letters."
     },
+    "age": {
+      "title": "Are you 14 or older?",
+      "description": "Korean law (정보통신망법) restricts sign-up to users 14 and older.",
+      "confirmLabel": "I am 14 years or older",
+      "hint": "False confirmation is at your own risk; the account may be limited if verified later."
+    },
     "location": {
       "title": "Where are you?",
       "description": "We'll show nearby recommendations and tag where your letters come from."
@@ -558,6 +564,7 @@
     "title": "My Page",
     "sections": {
       "profile": "Profile",
+      "nickname": "Nickname",
       "stampMap": "Chungbuk stamps",
       "savedTournaments": "Saved winners",
       "tournamentHistory": "Bracket history",
@@ -568,6 +575,38 @@
       "anonymous": "Guest",
       "avatarAlt": "Profile image of {nickname}",
       "changeAvatar": "Change profile image"
+    },
+    "nickname": {
+      "label": "Nickname",
+      "edit": "Edit",
+      "editTitle": "Edit nickname",
+      "loading": "Loading...",
+      "invalid": "This nickname is not allowed.",
+      "saved": "Nickname saved.",
+      "saveFailed": "Could not save nickname."
+    },
+    "savedTournaments": {
+      "empty": "No saved winners yet",
+      "emptyHint": "Run a tournament to pick favorites.",
+      "startTournament": "Start tournament",
+      "error": "Failed to load saved list",
+      "retry": "Retry",
+      "remove": "Remove",
+      "removed": "Removed.",
+      "removeFailed": "Could not remove.",
+      "removeConfirmTitle": "Remove from saved?",
+      "removeConfirmDescription": "You'll need to run another tournament to bring it back."
+    },
+    "tournamentHistory": {
+      "empty": "No tournaments yet",
+      "error": "Failed to load history",
+      "retry": "Retry",
+      "countUnit": "rounds"
+    },
+    "stampMap": {
+      "error": "Failed to load stamps",
+      "retry": "Retry",
+      "progressAria": "Stamp progress {percent} percent"
     }
   },
   "settings": {
@@ -581,6 +620,13 @@
       "inAppHint": "Use the in-app inbox",
       "letterReceived": "Letter arrived",
       "letterLiked": "Like on my letter"
+    },
+    "theme": {
+      "section": "Theme",
+      "label": "Choose theme",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
     },
     "account": {
       "section": "Account",

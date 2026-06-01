@@ -297,6 +297,30 @@ export const handlers = [
     return HttpResponse.json({ items, nextCursor: null });
   }),
 
+  // 진행 중 축제 — 홈 FestivalCarousel.
+  // 실 BE 는 eventStart/eventEnd 가 오늘 포함되는 row 만 반환. mock 은 시드의
+  // festival 카테고리 8개 (region 별 1-2개) 를 반환.
+  http.get(`${apiUrl}/regions/ongoing-festivals`, ({ request }) => {
+    const url = new URL(request.url);
+    const region = url.searchParams.get('region');
+    const filtered = destinationSeeds
+      .filter((d) => d.category === 'festival')
+      .filter((d) => !region || d.region === region)
+      .slice(0, 8)
+      .map((d) => ({
+        id: d.id,
+        contentId: d.id,
+        type: 'festival' as const,
+        region: d.region,
+        title: d.name,
+        summary: undefined,
+        imageUrl: undefined,
+        eventStart: undefined,
+        eventEnd: undefined,
+      }));
+    return HttpResponse.json(filtered);
+  }),
+
   // ===== Rankings =====
   http.get(`${apiUrl}/rankings`, ({ request }) => {
     const url = new URL(request.url);
@@ -392,6 +416,15 @@ export const handlers = [
       },
     });
   }),
+
+  // ===== Stamps (도장깨기) =====
+  // 충북 11 시군 중 5개 방문 — mock 은 deterministic. 실 BE 는 토너먼트 우승 시군 기준.
+  http.get(`${apiUrl}/mypage/stamps`, () =>
+    HttpResponse.json({
+      visited: ['cheongju', 'chungju', 'jecheon', 'boeun', 'danyang'],
+      total: 11,
+    }),
+  ),
 
   // ===== Tournament =====
   http.get(`${apiUrl}/mypage/tournament-history`, () =>

@@ -8,6 +8,7 @@ import type { UpdateNicknameRequest } from '@/features/mypage/types';
 export const mypageKeys = {
   all: ['mypage'] as const,
   summary: () => [...mypageKeys.all, 'summary'] as const,
+  stamps: () => [...mypageKeys.all, 'stamps'] as const,
 };
 
 export function useMypage() {
@@ -26,5 +27,13 @@ export function useUpdateNickname() {
       qc.invalidateQueries({ queryKey: mypageKeys.summary() });
       qc.invalidateQueries({ queryKey: ['auth', 'me'] }); // /me 응답도 닉네임 포함
     },
+  });
+}
+
+export function useStamps() {
+  return useQuery({
+    queryKey: mypageKeys.stamps(),
+    queryFn: mypageApi.getStamps,
+    ...CACHE.user,
   });
 }
