@@ -8,14 +8,12 @@ import { test, expect } from '@playwright/test';
  *   e2e/auth.spec.ts, e2e/tournament.spec.ts, e2e/letter.spec.ts 등
  */
 test.describe('smoke', () => {
-  test('미인증 사용자는 /login 또는 /onboarding 으로 리다이렉트', async ({
-    page,
-  }) => {
-    // middleware 의 인증 redirect 는 현재 운영 전이라 주석 처리됨 — AuthBootstrap
-    // 의 localStorage(tripbite.onboarded) 기반 redirect 만 동작.
-    // localStorage 없음 → /onboarding. 운영 전환(middleware 주석 해제) 후엔 /login.
+  test('미인증 사용자는 /login 으로 리다이렉트', async ({ page }) => {
+    // middleware 가 access_token 쿠키 없는 요청을 /login 으로 보냄.
+    // /onboarding 은 PUBLIC_ACCESS_PATHS 에 있어 middleware 통과 가능하지만,
+    // / 경로는 PUBLIC_ACCESS 가 아니므로 cookie 없이 진입 시 무조건 /login.
     await page.goto('/');
-    await expect(page).toHaveURL(/\/(login|onboarding)/);
+    await expect(page).toHaveURL(/\/login/);
   });
 
   test('/login 페이지가 정상 로드', async ({ page }) => {

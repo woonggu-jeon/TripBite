@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { authedSession } from './_helpers/auth';
 
 /**
  * 핵심 사용자 흐름 — 온보딩 / 편지 작성 / 토너먼트 random / 알림 inbox 진입.
@@ -18,17 +19,6 @@ async function freshSession(page: Page) {
   });
 }
 
-async function bypassOnboarding(page: Page) {
-  await page.addInitScript(() => {
-    try {
-      localStorage.setItem('tripbite.onboarded', 'true');
-      localStorage.setItem('tripbite.push-prompt.dismissed', 'true');
-    } catch {
-      // ignore
-    }
-  });
-}
-
 test.describe('온보딩 — 3-step 흐름', () => {
   test.beforeEach(async ({ page, context }) => {
     await freshSession(page);
@@ -37,8 +27,16 @@ test.describe('온보딩 — 3-step 흐름', () => {
     await context.setGeolocation({ latitude: 36.6424, longitude: 127.489 });
   });
 
-  test('미인증 진입 → /onboarding 으로 이동', async ({ page }) => {
+  test('미인증 / 진입 → /login (middleware redirect)', async ({ page }) => {
     await page.goto('/');
+    await expect(page).toHaveURL(/\/login/);
+  });
+
+  test('/onboarding 은 비인증도 접근 가능 (PUBLIC_ACCESS)', async ({
+    page,
+  }) => {
+    const res = await page.goto('/onboarding');
+    expect(res?.status() ?? 500).toBeLessThan(400);
     await expect(page).toHaveURL(/\/onboarding/);
   });
 
@@ -58,7 +56,7 @@ test.describe('온보딩 — 3-step 흐름', () => {
 
 test.describe('편지 작성 — /letter/compose', () => {
   test.beforeEach(async ({ page, context }) => {
-    await bypassOnboarding(page);
+    await authedSession(page);
     await context.grantPermissions(['geolocation']);
     await context.setGeolocation({ latitude: 36.6424, longitude: 127.489 });
   });
@@ -99,7 +97,7 @@ test.describe('편지 작성 — /letter/compose', () => {
 
 test.describe('토너먼트 전체 흐름 — random 테마', () => {
   test.beforeEach(async ({ page }) => {
-    await bypassOnboarding(page);
+    await authedSession(page);
   });
 
   test('홈 빠른시작 → 토너먼트 → 랜덤 선택 → 갯수 → 시작', async ({ page }) => {
@@ -133,7 +131,7 @@ test.describe('토너먼트 전체 흐름 — random 테마', () => {
 
 test.describe('알림함 → 알림 클릭 → 페이지 이동', () => {
   test.beforeEach(async ({ page }) => {
-    await bypassOnboarding(page);
+    await authedSession(page);
   });
 
   test('헤더 알림 button → dialog 열림 + 항목 존재', async ({ page }) => {

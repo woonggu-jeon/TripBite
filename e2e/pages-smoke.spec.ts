@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { authedSession } from './_helpers/auth';
 
 /**
  * 페이지 자동 QA — 주요 페이지 진입 + 핵심 콘텐츠 확인 + 가로 overflow 검증.
@@ -10,19 +11,6 @@ import { test, expect, type Page } from '@playwright/test';
  *
  * 프로젝트별 (desktop / mobile-chrome / mobile-safari / mobile-pwa) 모두 실행.
  */
-
-/** AuthBootstrap 의 /onboarding redirect 차단 — onboarded localStorage 사전 set */
-async function bypassOnboarding(page: Page) {
-  await page.addInitScript(() => {
-    try {
-      localStorage.setItem('tripbite.onboarded', 'true');
-      // push prompt 도 미리 dismiss (테스트 노이즈 회피)
-      localStorage.setItem('tripbite.push-prompt.dismissed', 'true');
-    } catch {
-      // ignore (Safari private 등)
-    }
-  });
-}
 
 /** 페이지 가로 overflow — body.scrollWidth <= viewport width 검증 */
 async function assertNoHorizontalOverflow(page: Page) {
@@ -54,7 +42,7 @@ const ROUTES: { path: string; mustContain?: RegExp }[] = [
 
 test.describe('페이지 smoke + 가로 overflow', () => {
   test.beforeEach(async ({ page }) => {
-    await bypassOnboarding(page);
+    await authedSession(page);
   });
 
   for (const route of ROUTES) {

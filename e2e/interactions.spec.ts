@@ -1,42 +1,13 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
+import { authedSession } from './_helpers/auth';
 
 /**
  * 핵심 인터랙션 자동 QA — 위젯 라우팅 / 카테고리 정책 / 알림함 / 토너먼트 흐름.
  */
 
-async function bypassOnboarding(page: Page) {
-  await page.addInitScript(() => {
-    try {
-      localStorage.setItem('tripbite.onboarded', 'true');
-      localStorage.setItem('tripbite.push-prompt.dismissed', 'true');
-    } catch {
-      // ignore
-    }
-  });
-}
-
-/**
- * 화면 상단/하단 banner (MockMode / Install / Update / Offline) 가 click 을
- * intercept 하는 경우 회피용 헬퍼. CSS 로 모든 banner pointer-events 차단.
- */
-async function dismissBanners(page: Page) {
-  await page.addStyleTag({
-    content: `
-      [class*="MockModeBanner"],
-      [class*="InstallPromptBanner"],
-      [class*="PwaUpdateBanner"],
-      [class*="OfflineBanner"],
-      [class*="Banner_banner"] {
-        pointer-events: none !important;
-        opacity: 0.1 !important;
-      }
-    `,
-  });
-}
-
 test.describe('위젯 라우팅 — 여행지 vs 지역', () => {
   test.beforeEach(async ({ page }) => {
-    await bypassOnboarding(page);
+    await authedSession(page);
   });
 
   test('홈 - 축제 카드 클릭 → /destination/{id}', async ({ page }) => {
@@ -83,7 +54,7 @@ test.describe('위젯 라우팅 — 여행지 vs 지역', () => {
 
 test.describe('카테고리 정책 — 토너먼트에 local 미노출', () => {
   test.beforeEach(async ({ page }) => {
-    await bypassOnboarding(page);
+    await authedSession(page);
   });
 
   test('CategoryFilter 에 지역(local) 카드 없음', async ({ page }) => {
@@ -104,7 +75,7 @@ test.describe('카테고리 정책 — 토너먼트에 local 미노출', () => {
 
 test.describe('알림함', () => {
   test.beforeEach(async ({ page }) => {
-    await bypassOnboarding(page);
+    await authedSession(page);
   });
 
   test('헤더 알림 버튼 → 드롭다운 열림 + 항목 노출', async ({ page }) => {
@@ -123,7 +94,7 @@ test.describe('알림함', () => {
 
 test.describe('토너먼트 — 랜덤 / 계절 흐름', () => {
   test.beforeEach(async ({ page }) => {
-    await bypassOnboarding(page);
+    await authedSession(page);
   });
 
   test('랜덤 테마 선택 → step 4 (갯수) 로 점프', async ({ page }) => {
@@ -159,7 +130,7 @@ test.describe('토너먼트 — 랜덤 / 계절 흐름', () => {
 
 test.describe('여행지 상세 share button', () => {
   test.beforeEach(async ({ page }) => {
-    await bypassOnboarding(page);
+    await authedSession(page);
   });
 
   test('SubHeader 우측 share IconButton 노출', async ({ page }) => {
@@ -173,7 +144,7 @@ test.describe('여행지 상세 share button', () => {
 
 test.describe('홈 빠른시작 — 2버튼 + 계절 라벨', () => {
   test.beforeEach(async ({ page }) => {
-    await bypassOnboarding(page);
+    await authedSession(page);
   });
 
   test('편지 쓰기 버튼 미노출 / 토너먼트 + 유형 테스트 2개만', async ({
