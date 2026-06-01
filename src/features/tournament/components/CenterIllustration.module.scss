@@ -48,7 +48,7 @@
 .glyph {
   font-size: 6rem;
   line-height: 1;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.18));
+  filter: var(--drop-shadow-md);
 }
 
 /* 톤 색상 (각 계절·특별한 날별 그라데이션 베이스) */

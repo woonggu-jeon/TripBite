@@ -122,6 +122,45 @@
      디자이너가 brand 변경 시 한 곳 조정 가능. */
   --color-on-strong: #ffffff;
 
+  /* 차트 시리즈 팔레트 — recharts 등의 series 색.
+     1번은 primary 와 동기화 (브랜드 변경 시 자동 적용). 2~8은 별도.
+     디자이너가 차트 색 전체를 한 곳에서 조정 가능. */
+  --chart-1: var(--color-primary);
+  --chart-2: #3b82f6; /* blue-500 */
+  --chart-3: #10b981; /* emerald-500 */
+  --chart-4: #f59e0b; /* amber-500 */
+  --chart-5: #ef4444; /* red-500 */
+  --chart-6: #8b5cf6; /* violet-500 */
+  --chart-7: #ec4899; /* pink-500 */
+  --chart-8: #14b8a6; /* teal-500 */
+
+  /* 추천 카드 시즌별 accent — RecommendationBanner 의 hero 배너 톤.
+     각 시즌별로 accent + gradient 시작/끝 색 3개씩. 디자이너가 시즌 색을
+     한 곳에서 조정 가능. (light 기준; dark 분기는 추후 결정 — 현재 동일) */
+  --accent-spring: #ff6f91;
+  --accent-spring-grad-start: #ff9eb5;
+  --accent-spring-grad-end: #ffd6e0;
+  --accent-summer: #2e7df6;
+  --accent-summer-grad-start: #5db4ff;
+  --accent-summer-grad-end: #b9defe;
+  --accent-autumn: #d97706;
+  --accent-autumn-grad-start: #ff9a4d;
+  --accent-autumn-grad-end: #ffd9b3;
+  --accent-winter: #2563eb;
+  --accent-winter-grad-start: #9ec5ff;
+  --accent-winter-grad-end: #e0ecff;
+  --accent-festival: #b45309;
+  --accent-festival-grad-start: #ffcf5b;
+  --accent-festival-grad-end: #ffe9b3;
+
+  /* 축제 카테고리 색 — FestivalCarousel 의 카드 톤별 accent.
+     일반 색상 시리즈 (시즌과 별개 의미 차원). */
+  --accent-red: #ef4444;
+  --accent-amber: #d97706;
+  --accent-green: #16a34a;
+  --accent-blue: #2563eb;
+  --accent-violet: #7c3aed;
+
   /* Spacing scale (4px grid) */
   --space-1: 0.25rem; /* 4px */
   --space-2: 0.5rem; /* 8 */
@@ -209,6 +248,14 @@
   --shadow-emphasis: 0 16px 40px rgba(0, 0, 0, 0.08);
   --drop-shadow-icon: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
   --drop-shadow-icon-strong: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.18));
+
+  /* 일반 drop-shadow scale — emoji/카드/일러스트의 미세 elevation.
+     dark 모드는 아래 @media 에서 alpha 강도 자동 분기. */
+  --drop-shadow-sm: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+  --drop-shadow-md: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+
+  /* text-shadow — 흰 글자가 colored 배경 위에 있을 때 가독성 보강 */
+  --text-shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.25);
 
   /* Motion — duration / easing 토큰화.
      컴포넌트는 가급적 raw 시간값/cubic-bezier 대신 이쪽을 참조. */
@@ -307,6 +354,9 @@
     --shadow-emphasis: 0 16px 40px rgba(0, 0, 0, 0.5);
     --drop-shadow-icon: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.55));
     --drop-shadow-icon-strong: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.55));
+    --drop-shadow-sm: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+    --drop-shadow-md: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+    --text-shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.6);
     /* dark 에서 overlay/divider 는 흰색 mix → 더 잘 보이도록 */
     --color-overlay: rgba(0, 0, 0, 0.6);
   }

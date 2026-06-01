@@ -78,21 +78,22 @@
   letter-spacing: var(--tracking-snug);
 }
 
-// 톤별 accent — light/dark 양쪽에서 잘 보이는 saturation 유지
+// 톤별 accent — globals.scss --accent-{color} 토큰 사용.
+// 디자이너가 색 한 곳에서 조정 가능.
 .red {
-  --accent: #ef4444;
+  --accent: var(--accent-red);
 }
 .amber {
-  --accent: #d97706;
+  --accent: var(--accent-amber);
 }
 .green {
-  --accent: #16a34a;
+  --accent: var(--accent-green);
 }
 .blue {
-  --accent: #2563eb;
+  --accent: var(--accent-blue);
 }
 .violet {
-  --accent: #7c3aed;
+  --accent: var(--accent-violet);
 }
 
 // 일반 모바일 (≤ 480px) — card 영역 축소, image 가로 비율로 (정사각형 시 너무 큼)

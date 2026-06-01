@@ -8,28 +8,31 @@
 
 ### Color
 
-| 용도                        | 토큰                                                        |
-| --------------------------- | ----------------------------------------------------------- |
-| 화면 배경                   | `var(--color-bg)`                                           |
-| 본문 텍스트                 | `var(--color-fg)`                                           |
-| 보조 텍스트                 | `var(--color-muted)`                                        |
-| 일반 border                 | `var(--color-border)`                                       |
-| 강조(primary) 텍스트/링     | `var(--color-primary)`                                      |
-| 카드 surface 배경 (8% tint) | `var(--color-primary-soft)`                                 |
-| 그라데이션 카드 상단 (10%)  | `var(--color-primary-surface-grad-start)`                   |
-| chip/badge 배경 (alpha 12%) | `var(--color-primary-tint)`                                 |
-| 강조 카드 border            | `var(--color-primary-border)`                               |
-| focus ring / outline        | `var(--color-primary-ring)`                                 |
-| secondary 텍스트 (60% mix)  | `var(--color-primary-muted)`                                |
-| 정보 박스 / skim 배경       | `var(--color-surface-soft)`                                 |
-| 분리선                      | `var(--color-divider)`                                      |
-| hover 위 ghost 배경         | `var(--color-hover)`                                        |
-| 모달 백드롭                 | `var(--color-overlay)`                                      |
-| sticky header glass         | `var(--color-glass)` + `backdrop-filter: var(--blur-glass)` |
-| 편지 accent (amber)         | `var(--color-letter-accent)` (light/dark 분기)              |
-| 편지 종이 배경              | `var(--color-letter-paper)` (light/dark 분기)               |
-| 편지 종이 cream tint        | `var(--color-letter-cream)` (gradient base용, 분기)         |
-| colored bg 위 흰 텍스트     | `var(--color-on-strong)` (success/danger/banner badge 등)   |
+| 용도                        | 토큰                                                                    |
+| --------------------------- | ----------------------------------------------------------------------- |
+| 화면 배경                   | `var(--color-bg)`                                                       |
+| 본문 텍스트                 | `var(--color-fg)`                                                       |
+| 보조 텍스트                 | `var(--color-muted)`                                                    |
+| 일반 border                 | `var(--color-border)`                                                   |
+| 강조(primary) 텍스트/링     | `var(--color-primary)`                                                  |
+| 카드 surface 배경 (8% tint) | `var(--color-primary-soft)`                                             |
+| 그라데이션 카드 상단 (10%)  | `var(--color-primary-surface-grad-start)`                               |
+| chip/badge 배경 (alpha 12%) | `var(--color-primary-tint)`                                             |
+| 강조 카드 border            | `var(--color-primary-border)`                                           |
+| focus ring / outline        | `var(--color-primary-ring)`                                             |
+| secondary 텍스트 (60% mix)  | `var(--color-primary-muted)`                                            |
+| 정보 박스 / skim 배경       | `var(--color-surface-soft)`                                             |
+| 분리선                      | `var(--color-divider)`                                                  |
+| hover 위 ghost 배경         | `var(--color-hover)`                                                    |
+| 모달 백드롭                 | `var(--color-overlay)`                                                  |
+| sticky header glass         | `var(--color-glass)` + `backdrop-filter: var(--blur-glass)`             |
+| 편지 accent (amber)         | `var(--color-letter-accent)` (light/dark 분기)                          |
+| 편지 종이 배경              | `var(--color-letter-paper)` (light/dark 분기)                           |
+| 편지 종이 cream tint        | `var(--color-letter-cream)` (gradient base용, 분기)                     |
+| colored bg 위 흰 텍스트     | `var(--color-on-strong)` (success/danger/banner badge 등)               |
+| 추천 시즌별 accent (5종)    | `var(--accent-spring/summer/autumn/winter/festival)` (+ grad-start/end) |
+| 축제 카테고리 색 (5종)      | `var(--accent-red/amber/green/blue/violet)`                             |
+| 차트 시리즈 (1~8)           | `var(--chart-1)` ~ `var(--chart-8)`                                     |
 
 ### Radius
 
@@ -37,14 +40,17 @@
 
 ### Shadow
 
-| 용도                                 | 토큰                                     |
-| ------------------------------------ | ---------------------------------------- |
-| 기본 카드                            | `var(--shadow-card)`                     |
-| 강조 카드 (트로피 카드 등)           | `var(--shadow-card-strong)`              |
-| 떠오르는 raised (BottomNav 원형 등)  | `var(--shadow-pop)`                      |
-| 공유카드/모달 큰 elevation           | `var(--shadow-emphasis)`                 |
-| 아이콘 drop-shadow 작은              | `filter: var(--drop-shadow-icon)`        |
-| 아이콘 drop-shadow 큰 (trophy/emoji) | `filter: var(--drop-shadow-icon-strong)` |
+| 용도                                  | 토큰                                     |
+| ------------------------------------- | ---------------------------------------- |
+| 기본 카드                             | `var(--shadow-card)`                     |
+| 강조 카드 (트로피 카드 등)            | `var(--shadow-card-strong)`              |
+| 떠오르는 raised (BottomNav 원형 등)   | `var(--shadow-pop)`                      |
+| 공유카드/모달 큰 elevation            | `var(--shadow-emphasis)`                 |
+| 아이콘 drop-shadow 작은               | `filter: var(--drop-shadow-icon)`        |
+| 아이콘 drop-shadow 큰 (trophy/emoji)  | `filter: var(--drop-shadow-icon-strong)` |
+| 일반 drop-shadow 작은                 | `filter: var(--drop-shadow-sm)`          |
+| 일반 drop-shadow 중간 (emoji 카드 등) | `filter: var(--drop-shadow-md)`          |
+| text-shadow (흰 글자 가독성 보강)     | `text-shadow: var(--text-shadow-soft)`   |
 
 > dark 모드 자동 대응. `rgba(0,0,0,X)` 컴포넌트별 작성 금지.
 
@@ -225,6 +231,11 @@ shadow 강도 조정 시 `--shadow-card-strong` 한 곳. dark/light 분기는 �
 | dead CSS 정리 (LetterCompose/Sent/Detail 의 .primary/.secondary/.error)               | ✅   |
 | accessibility (aria/alt/label) sweep — 누락 없음                                      | ✅   |
 | `scripts/dead-css.mjs` dead CSS 검출기 추가 (CI 통합 가능)                            | ✅   |
+| `--color-on-strong` 신설 + #fff badge text 5곳 토큰화                                 | ✅   |
+| `--accent-{season}` × 5 + grad-start/end × 5 (RecommendationBanner)                   | ✅   |
+| `--accent-{color}` × 5 (FestivalCarousel red/amber/green/blue/violet)                 | ✅   |
+| `--drop-shadow-sm/-md` + `--text-shadow-soft` 신설 + 4곳 토큰화                       | ✅   |
+| `--chart-1` ~ `--chart-8` + colors.ts 갱신 (recharts 팔레트 토큰화)                   | ✅   |
 
 ## 5. 남은 후속 정비 (점진)
 

@@ -139,10 +139,19 @@
 
 ---
 
-## 🟢 권장 다음 작업 — 모두 미정 (디자인 결정 필요)
+## 🟢 권장 다음 작업 — 모두 완료
 
-1. **추천 카드 톤별 색** — 이미 컴포넌트 local CSS variable `--accent` 로 추상화 완료. 디자이너가 컴포넌트 SCSS 한 곳에서 조정 가능. globals 토큰화는 의미 다중성 (시즌/카테고리) 으로 보존이 합리적.
-2. **`drop-shadow` / `text-shadow` 토큰 추가** (현재 box-shadow 토큰만) — 컴포넌트별 미세 차이가 많아 일괄화 비용 큼. 디자인 시스템 확정 시 결정.
-3. **차트 (recharts) 색상 토큰 매핑** — 현재 컴포넌트별 hardcode. recharts API 와 토큰 시스템 매핑 결정 필요.
+1. ~~추천 카드 톤별 색~~ → ✅ globals 토큰화 완료 (`--accent-{season}` + grad-start/end, `--accent-{color}` 각 5종).
+2. ~~`drop-shadow` / `text-shadow` 토큰~~ → ✅ `--drop-shadow-sm/-md`, `--text-shadow-soft` 신설. 4곳 흡수 (RecommendationBanner emoji / CenterIllustration trophy / ComposeEntryCard small / LetterRowCard text).
+3. ~~`on-{role}` 토큰 시리즈~~ → ✅ `--color-on-strong` 으로 통합 (5곳 토큰화).
+4. ~~차트 색상 토큰 매핑~~ → ✅ `--chart-1` ~ `--chart-8` 신설 + `src/features/chart/utils/colors.ts` 의 CHART_PALETTE 갱신. recharts series 색이 globals 토큰 기반.
 
-남은 작업 3건 모두 **사용자/디자이너 결정 필요한 brand-level 확정** 단계.
+이제 디자이너가 globals.scss 한 곳에서:
+
+- 브랜드 색 (`--color-primary`) → 모든 카드/버튼/칩/차트1 자동 반영
+- 시즌별 색 (`--accent-spring/...`) → RecommendationBanner 시즌 카드
+- 카테고리 색 (`--accent-red/...`) → FestivalCarousel 톤
+- 차트 색 (`--chart-2/.../-8`) → 모든 recharts 차트
+- shadow/text-shadow 강도 → 일괄 조정
+
+모든 brand-level 토큰화 진행 완료.

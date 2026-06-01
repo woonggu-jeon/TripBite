@@ -40,7 +40,7 @@
 .emoji {
   font-size: var(--emoji-xl);
   line-height: 1;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+  filter: var(--drop-shadow-md);
   z-index: 1;
 }
 
@@ -87,45 +87,46 @@
   color: var(--accent, var(--color-primary));
 }
 
-// 톤별 배경 그라데이션
+// 톤별 배경 그라데이션 — 시즌 토큰 사용 (globals.scss --accent-{season}).
+// 디자이너가 시즌 색 한 곳에서 조정 가능.
 .spring {
-  --accent: #ff6f91;
+  --accent: var(--accent-spring);
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #ff9eb5 22%, var(--color-bg)),
-    color-mix(in srgb, #ffd6e0 12%, var(--color-bg))
+    color-mix(in srgb, var(--accent-spring-grad-start) 22%, var(--color-bg)),
+    color-mix(in srgb, var(--accent-spring-grad-end) 12%, var(--color-bg))
   );
 }
 .summer {
-  --accent: #2e7df6;
+  --accent: var(--accent-summer);
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #5db4ff 22%, var(--color-bg)),
-    color-mix(in srgb, #b9defe 12%, var(--color-bg))
+    color-mix(in srgb, var(--accent-summer-grad-start) 22%, var(--color-bg)),
+    color-mix(in srgb, var(--accent-summer-grad-end) 12%, var(--color-bg))
   );
 }
 .autumn {
-  --accent: #d97706;
+  --accent: var(--accent-autumn);
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #ff9a4d 22%, var(--color-bg)),
-    color-mix(in srgb, #ffd9b3 12%, var(--color-bg))
+    color-mix(in srgb, var(--accent-autumn-grad-start) 22%, var(--color-bg)),
+    color-mix(in srgb, var(--accent-autumn-grad-end) 12%, var(--color-bg))
   );
 }
 .winter {
-  --accent: #2563eb;
+  --accent: var(--accent-winter);
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #9ec5ff 22%, var(--color-bg)),
-    color-mix(in srgb, #e0ecff 12%, var(--color-bg))
+    color-mix(in srgb, var(--accent-winter-grad-start) 22%, var(--color-bg)),
+    color-mix(in srgb, var(--accent-winter-grad-end) 12%, var(--color-bg))
   );
 }
 .festival {
-  --accent: #b45309;
+  --accent: var(--accent-festival);
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #ffcf5b 24%, var(--color-bg)),
-    color-mix(in srgb, #ffe9b3 12%, var(--color-bg))
+    color-mix(in srgb, var(--accent-festival-grad-start) 24%, var(--color-bg)),
+    color-mix(in srgb, var(--accent-festival-grad-end) 12%, var(--color-bg))
   );
 }
 

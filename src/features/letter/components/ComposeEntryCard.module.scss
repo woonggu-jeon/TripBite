@@ -50,7 +50,7 @@
   position: absolute;
   color: rgba(255, 255, 255, 0.7);
   font-size: var(--font-body);
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+  filter: var(--drop-shadow-sm);
 }
 
 .sparkle1 {
