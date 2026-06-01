@@ -31,8 +31,30 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   projects: [
+    // 데스크탑 — 1280x720
+    {
+      name: 'desktop-chrome',
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1280, height: 720 },
+      },
+    },
+    // 모바일 웹 — Android Chrome / iOS Safari
     { name: 'mobile-chrome', use: { ...devices['Pixel 7'] } },
     { name: 'mobile-safari', use: { ...devices['iPhone 14'] } },
+    // PWA standalone 모드 시뮬레이션 — iPhone 14 + display-mode emulation
+    // (Playwright 의 emulateMedia 로 display-mode standalone 강제)
+    {
+      name: 'mobile-pwa',
+      use: {
+        ...devices['iPhone 14'],
+        // PWA 진입 시 push 분기 + standalone 전용 UI 검증.
+        // displayMode 는 testInfo 의 page.emulateMedia 로 spec 별 설정.
+        contextOptions: {
+          reducedMotion: 'no-preference',
+        },
+      },
+    },
   ],
   webServer: {
     command: 'npm run build && npm start',

@@ -267,9 +267,14 @@ lib: async / clipboard / csp / sentry-scrub / validation.
 훅: use-format.
 스토어: location-store.
 
-### 6-2. E2E (Playwright 1개)
+### 6-2. E2E (Playwright)
 
-`e2e/smoke.spec.ts` — (1) 미인증 → /login (2) /login 로드 (3) /api/health.
+- `e2e/smoke.spec.ts` — (1) 미인증 → /login (2) /login 로드 (3) /api/health
+- ✅ `e2e/pages-smoke.spec.ts` — 13개 주요 경로 진입 + 가로 overflow 검증 + 핵심 element 노출
+- ✅ `e2e/og-routes.spec.ts` — `/api/og/*` 4 type (tournament/quiz/destination/region) PNG 응답
+- ✅ `e2e/interactions.spec.ts` — 위젯 라우팅 (여행지 vs 지역), 카테고리 'local' 미노출, 알림함, 홈 빠른시작
+
+Projects (4): desktop-chrome (1280×720) / mobile-chrome (Pixel 7) / mobile-safari (iPhone 14) / mobile-pwa (iPhone 14 standalone)
 
 ### 6-3. 미커버 핵심 도메인 — Phase 5
 

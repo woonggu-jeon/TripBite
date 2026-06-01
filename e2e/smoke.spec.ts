@@ -8,9 +8,14 @@ import { test, expect } from '@playwright/test';
  *   e2e/auth.spec.ts, e2e/tournament.spec.ts, e2e/letter.spec.ts 등
  */
 test.describe('smoke', () => {
-  test('미인증 사용자는 /login으로 리다이렉트', async ({ page }) => {
+  test('미인증 사용자는 /login 또는 /onboarding 으로 리다이렉트', async ({
+    page,
+  }) => {
+    // middleware 의 인증 redirect 는 현재 운영 전이라 주석 처리됨 — AuthBootstrap
+    // 의 localStorage(tripbite.onboarded) 기반 redirect 만 동작.
+    // localStorage 없음 → /onboarding. 운영 전환(middleware 주석 해제) 후엔 /login.
     await page.goto('/');
-    await expect(page).toHaveURL(/\/login/);
+    await expect(page).toHaveURL(/\/(login|onboarding)/);
   });
 
   test('/login 페이지가 정상 로드', async ({ page }) => {
