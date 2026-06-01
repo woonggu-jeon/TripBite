@@ -48,6 +48,11 @@
     "notification": "알림",
     "settings": "설정"
   },
+  "meta": {
+    "description": "충북 여행지 토너먼트, 다섯글자 편지, 여행 유형 테스트. 위치 기반 맞춤 추천으로 다음 여행지를 찾아보세요.",
+    "keywords": "충북 여행, 여행지 토너먼트, 다섯글자 편지, 여행 유형 테스트, 충청북도, TripBite",
+    "ogTitle": "TripBite — 충북 여행 토너먼트"
+  },
   "auth": {
     "login": {
       "title": "로그인",

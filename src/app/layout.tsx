@@ -24,14 +24,35 @@ const BLOCK_INDEXING =
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('header');
+  const tMeta = await getTranslations('meta');
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  const description = tMeta('description');
+  const keywords = tMeta('keywords');
+  const ogTitle = tMeta('ogTitle');
 
   return {
     title: {
       default: t('logo'),
       template: `%s | ${t('logo')}`,
     },
-    description: 'Next.js 15 + PWA + JWT Cookie Auth',
+    description,
+    keywords,
     manifest: '/manifest.json',
+    ...(siteUrl && { metadataBase: new URL(siteUrl) }),
+    openGraph: {
+      title: ogTitle,
+      description,
+      type: 'website',
+      siteName: t('logo'),
+      ...(siteUrl && { url: siteUrl }),
+      images: [{ url: '/icons/icon-512x512.png', width: 512, height: 512 }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: ogTitle,
+      description,
+      images: ['/icons/icon-512x512.png'],
+    },
     ...(BLOCK_INDEXING && {
       robots: {
         index: false,
@@ -53,12 +74,20 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+/**
+ * Viewport — 접근성(WCAG) 준수.
+ * Lighthouse 가 user-scalable=no / maximum-scale<5 를 a11y 위반으로 감지.
+ * 시각 약자가 핀치 줌으로 확대해야 하므로 5x 이상 + 사용자 확대 허용 필수.
+ *
+ * iOS Safari 의 input focus auto-zoom 은 별도 패턴 (input font-size ≥ 16px)
+ * 으로 해결 — Pretendard + --text-base (1rem = 16px) 라 안전.
+ */
 export const viewport: Viewport = {
   themeColor: '#0a0a0a',
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  maximumScale: 5,
+  userScalable: true,
   viewportFit: 'cover',
 };
 

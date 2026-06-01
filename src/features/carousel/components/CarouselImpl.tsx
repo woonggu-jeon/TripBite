@@ -96,12 +96,16 @@ export default function CarouselImpl<T>({
       <div className={styles.viewport} ref={emblaRef}>
         <div className={styles.container} style={{ gap }}>
           {slides.map((item, i) => (
+            // role="group" + aria-roledescription="slide" — ARIA 1.2 carousel
+            // 패턴. role 없이 aria-roledescription 만 두면 일부 a11y 검사기가
+            // prohibited 로 잡음 (aria-roledescription 은 role 과 함께 사용).
             <div
               key={keyExtractor?.(item, i) ?? i}
               className={styles.slide}
               style={{
                 flex: `0 0 calc((100% - ${gap * (slidesPerView - 1)}px) / ${slidesPerView})`,
               }}
+              role="group"
               aria-roledescription="slide"
               aria-label={t('slide', { n: i + 1, total: slides.length })}
             >

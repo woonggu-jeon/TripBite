@@ -48,6 +48,11 @@
     "notification": "Notifications",
     "settings": "Settings"
   },
+  "meta": {
+    "description": "Chungbuk travel destination tournament, five-letter messages, travel type test. Find your next destination with location-based personalized recommendations.",
+    "keywords": "Chungbuk travel, destination tournament, five-letter letter, travel type test, Chungcheongbuk-do, TripBite",
+    "ogTitle": "TripBite — Chungbuk Travel Tournament"
+  },
   "auth": {
     "login": {
       "title": "Sign in",
