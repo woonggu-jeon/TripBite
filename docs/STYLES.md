@@ -28,6 +28,7 @@
 | sticky header glass         | `var(--color-glass)` + `backdrop-filter: var(--blur-glass)` |
 | 편지 accent (amber)         | `var(--color-letter-accent)` (light/dark 분기)              |
 | 편지 종이 배경              | `var(--color-letter-paper)` (light/dark 분기)               |
+| 편지 종이 cream tint        | `var(--color-letter-cream)` (gradient base용, 분기)         |
 
 ### Radius
 
@@ -218,6 +219,11 @@ shadow 강도 조정 시 `--shadow-card-strong` 한 곳. dark/light 분기는 �
 | 중복 Section 컴포넌트 (MyPage / Settings) → `PageSection` primitive 통합              | ✅   |
 | ESLint warning 0 (ConfirmDialog 의 dialog backdrop 패턴 명시 disable)                 | ✅   |
 | dark mode 누락 sweep — 의도된 hex 외 누락 없음                                        | ✅   |
+| `FestivalCarousel` 의 `0.625rem` → `--font-eyebrow` 흡수                              | ✅   |
+| `#fff8e7` → `--color-letter-cream` 토큰화 + light/dark 분기                           | ✅   |
+| dead CSS 정리 (LetterCompose/Sent/Detail 의 .primary/.secondary/.error)               | ✅   |
+| accessibility (aria/alt/label) sweep — 누락 없음                                      | ✅   |
+| `scripts/dead-css.mjs` dead CSS 검출기 추가 (CI 통합 가능)                            | ✅   |
 
 ## 5. 남은 후속 정비 (점진)
 

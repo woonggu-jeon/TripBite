@@ -52,7 +52,7 @@
 }
 
 .region {
-  font-size: 0.625rem;
+  font-size: var(--font-eyebrow);
   font-weight: 700;
   color: var(--accent, var(--color-muted));
   letter-spacing: var(--tracking-snug);
@@ -72,7 +72,7 @@
 }
 
 .period {
-  font-size: 0.625rem;
+  font-size: var(--font-eyebrow);
   color: var(--color-muted);
   font-variant-numeric: tabular-nums;
   letter-spacing: var(--tracking-snug);

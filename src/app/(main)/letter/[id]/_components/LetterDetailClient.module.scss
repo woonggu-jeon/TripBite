@@ -17,25 +17,7 @@
   gap: 0.5rem;
 }
 
-.primary,
-.secondary {
-  padding: 0.625rem 1.25rem;
-  border-radius: var(--radius-md);
-  font-size: var(--text-sm);
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.primary {
-  background: var(--color-primary);
-  color: var(--color-primary-fg);
-}
-
-.secondary {
-  background: transparent;
-  border: 1.5px solid var(--color-border);
-  color: var(--color-fg);
-}
+/* .primary / .secondary 클래스는 Button primitive 마이그레이션 후 미사용 — 제거 */
 
 // 1) 도착 알림
 .notice {
@@ -79,8 +61,8 @@
   gap: 0;
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, #fff8e7 24%, var(--color-bg)),
-    color-mix(in srgb, #fff8e7 8%, var(--color-bg))
+    color-mix(in srgb, var(--color-letter-cream) 24%, var(--color-bg)),
+    color-mix(in srgb, var(--color-letter-cream) 8%, var(--color-bg))
   );
   border: 1.5px solid
     color-mix(in srgb, var(--color-letter-accent) 26%, var(--color-border));

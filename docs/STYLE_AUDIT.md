@@ -56,7 +56,35 @@
 - `Toggle` thumb 의 `#fff` — toggle 동작 (반전) 정상.
 - 컴포넌트별 `@media (prefers-color-scheme: dark)` override 가 있는 곳은 `globals.scss` + `ChungbukMap` 둘뿐. 나머지는 모두 토큰 사용으로 자동 대응 — 정상.
 
-### 10. `<button>` 직접 사용 — 모두 의도된 형태로 분류 완료
+### 10. 단발성 작은 라벨 — `--font-eyebrow` 흡수
+
+- `FestivalCarousel` 의 `font-size: 0.625rem` (10px) 2곳 → `var(--font-eyebrow)` (11px). 시각 차이 1px (무시 가능), 토큰 통일.
+
+### 11. Letter 종이 cream — `--color-letter-cream` 신설
+
+- `#fff8e7` (편지 종이 gradient base) 4곳 → `var(--color-letter-cream)`. light/dark 분기 토큰. globals.scss 의 letter 도메인 토큰 시리즈에 통합.
+
+### 12. dead CSS class 정리
+
+- `LetterComposeForm` `.primary` / `.secondary` / `.error` — Button primitive 마이그레이션 + 인라인 에러 제거 후 미사용. 제거.
+- `LetterSentClient` / `LetterDetailClient` 의 `.primary` / `.secondary` — 동일 이유. 제거.
+- `scripts/dead-css.mjs` 검출기 추가 (동일 폴더 모든 tsx 검색, `styles[]` 동적 케이스는 보수적으로 제외).
+
+### 13. accessibility (aria-label / img alt / input label) sweep — 누락 없음
+
+- icon-only button 의 aria-label 모두 적용됨.
+- `<img alt=...>` 없는 케이스 없음 (모든 이미지가 next/image 또는 alt 명시).
+- `<input>` 모두 label 매칭 또는 aria-label.
+- ESLint warning 0 상태와 일치.
+
+### 14. 하드코딩 i18n 문자열 sweep — 긴급 fix 없음
+
+- `dev/CatalogClient` — dev 도구 한정.
+- `policy/privacy <li>` 자리잡이 — 법무 검토 후 i18n.
+- `시행일자: 2024-01-01` — 한국 우선 운영, 영문 운영 결정 후.
+- `TripBite · 여행 유형 테스트` — 브랜드명 (고유) + 한국 운영 한정 텍스트.
+
+### 15. `<button>` 직접 사용 — 모두 의도된 형태로 분류 완료
 
 38곳 잔존:
 

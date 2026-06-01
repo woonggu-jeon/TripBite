@@ -53,8 +53,8 @@
   gap: 0;
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, #fff8e7 22%, var(--color-bg)),
-    color-mix(in srgb, #fff8e7 8%, var(--color-bg))
+    color-mix(in srgb, var(--color-letter-cream) 22%, var(--color-bg)),
+    color-mix(in srgb, var(--color-letter-cream) 8%, var(--color-bg))
   );
   border: 1.5px solid
     color-mix(in srgb, var(--color-letter-accent) 24%, var(--color-border));
@@ -235,46 +235,4 @@
   gap: 0.625rem;
 }
 
-.primary,
-.secondary {
-  padding: 0.875rem;
-  border-radius: var(--radius-md);
-  font-weight: 700;
-  font-size: var(--font-body-sm);
-  cursor: pointer;
-  transition:
-    opacity var(--motion-base) ease,
-    transform var(--motion-fast) ease;
-
-  &:hover:not(:disabled) {
-    opacity: 0.92;
-  }
-  &:active:not(:disabled) {
-    transform: scale(0.98);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
-  }
-}
-
-.primary {
-  background: var(--color-primary);
-  color: var(--color-primary-fg);
-}
-
-.secondary {
-  background: transparent;
-  border: 1.5px solid var(--color-border);
-  color: var(--color-fg);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .primary,
-  .secondary {
-    transition: none;
-    &:active:not(:disabled) {
-      transform: none;
-    }
-  }
-}
+/* .primary / .secondary 클래스는 Button primitive 마이그레이션 후 미사용 — 제거 */

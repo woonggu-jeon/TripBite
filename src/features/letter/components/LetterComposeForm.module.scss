@@ -28,12 +28,6 @@
   letter-spacing: var(--tracking-wide);
 }
 
-.error {
-  font-size: var(--font-label);
-  color: var(--color-danger);
-  margin-top: 0.25rem;
-}
-
 .locationSection {
   display: grid;
   grid-template-columns: 24px 1fr;
@@ -106,50 +100,4 @@
   margin-top: 0.25rem;
 }
 
-.primary,
-.secondary {
-  padding: 1rem;
-  border-radius: var(--radius-md);
-  font-weight: 700;
-  font-size: var(--font-body-sm);
-  cursor: pointer;
-  transition:
-    opacity var(--motion-base) ease,
-    transform var(--motion-fast) ease;
-
-  &:hover:not(:disabled) {
-    opacity: 0.92;
-  }
-  &:active:not(:disabled) {
-    transform: scale(0.98);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
-  }
-  &:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-  }
-}
-
-.primary {
-  background: var(--color-primary);
-  color: var(--color-primary-fg);
-}
-
-.secondary {
-  background: transparent;
-  border: 1.5px solid var(--color-border);
-  color: var(--color-fg);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .primary,
-  .secondary {
-    transition: none;
-    &:active:not(:disabled) {
-      transform: none;
-    }
-  }
-}
+/* .primary / .secondary 클래스는 Button primitive 마이그레이션 후 미사용 — 제거 */
