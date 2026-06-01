@@ -1,5 +1,7 @@
 .card {
   display: grid;
+  // grid-rows 명시 — image(auto), body(1fr) → 카드 간 body 높이 통일
+  grid-template-rows: auto 1fr;
   gap: 0.5rem;
   padding: 0.625rem;
   background: var(--color-bg);
@@ -8,7 +10,11 @@
   text-decoration: none;
   color: var(--color-fg);
   overflow: hidden;
-  height: 100%;
+  // height: 100% 제거 — embla slide(부모) 의 height 가 자식으로 결정되는데
+  // card 가 부모 height 100% 를 요구하면 순환 reference → ios safari 에서
+  // 0/NaN 으로 무너짐 (찌그러짐/거대화의 핵심 원인).
+  // slide 가 flex column 이라 card 가 자연스럽게 stretch 됨 (Carousel.module.scss).
+  width: 100%;
   transition:
     border-color var(--motion-base) ease,
     transform var(--motion-fast) ease,
@@ -27,9 +33,13 @@
   }
 }
 
+// width: 100% 명시 — aspect-ratio 는 width 기준으로 height 계산.
+// 부모(card) 가 grid 인데 image 자체에 width 명시 안 하면 ios safari 가 첫
+// frame 에 width 0 으로 evaluate → height 도 0 → 다음 frame 에 점프.
 .image {
   display: grid;
   place-items: center;
+  width: 100%;
   aspect-ratio: var(--aspect-square);
   border-radius: var(--radius-sm);
   background: linear-gradient(

@@ -52,6 +52,16 @@ export default function CarouselImpl<T>({
       dragFree: options?.dragFree ?? false,
       startIndex: options?.startIndex ?? 0,
       align: 'start',
+      // ios safari 안정화 옵션:
+      //   - axis: 'x' 명시 (기본값이지만 자동 감지 회피)
+      //   - slidesToScroll: 1 — 한 번에 1슬라이드씩 (fractional 일 때도 정확)
+      //   - containScroll: 'trimSnaps' — 끝 슬라이드의 빈 snap 제거, 마지막
+      //     슬라이드가 viewport 끝에 정확히 정렬되며 영역 비는 점프 방지
+      //   - watchDrag: true — 드래그 감지 안정 (기본값 명시)
+      axis: 'x',
+      slidesToScroll: 1,
+      containScroll: 'trimSnaps',
+      watchDrag: true,
     },
     plugins,
   );
@@ -86,15 +96,24 @@ export default function CarouselImpl<T>({
   const slidesPerView = options?.slidesPerView ?? 1;
   const gap = options?.gap ?? 12;
 
+  // CSS variable 로 전달 — inline `flex: calc(...)` 를 슬라이드마다 매 render
+  // string 으로 만드는 것보다 ios safari 의 reflow/repaint 안정.
+  // root 에 한 번만 들어가고, .slide 가 var() 로 읽음.
+  const rootStyle = {
+    '--carousel-gap': `${gap}px`,
+    '--carousel-per-view': String(slidesPerView),
+  } as React.CSSProperties;
+
   return (
     <div
       className={`${styles.root} ${ready ? styles.ready : ''}`}
       role="region"
       aria-roledescription="carousel"
       aria-label={ariaLabel}
+      style={rootStyle}
     >
       <div className={styles.viewport} ref={emblaRef}>
-        <div className={styles.container} style={{ gap }}>
+        <div className={styles.container}>
           {slides.map((item, i) => (
             // role="group" + aria-roledescription="slide" — ARIA 1.2 carousel
             // 패턴. role 없이 aria-roledescription 만 두면 일부 a11y 검사기가
@@ -102,9 +121,6 @@ export default function CarouselImpl<T>({
             <div
               key={keyExtractor?.(item, i) ?? i}
               className={styles.slide}
-              style={{
-                flex: `0 0 calc((100% - ${gap * (slidesPerView - 1)}px) / ${slidesPerView})`,
-              }}
               role="group"
               aria-roledescription="slide"
               aria-label={t('slide', { n: i + 1, total: slides.length })}

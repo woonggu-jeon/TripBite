@@ -4,6 +4,10 @@
   // visibility 가 opacity 보다 GPU 비용 낮음 + iOS Safari 의 opacity transition
   // 중 sub-pixel 재계산 떨림 회피. layout 은 그대로 점유 (CLS 없음).
   visibility: hidden;
+  // CSS variable 기본값 — JS 에서 inline style 로 override.
+  // root 단에 정의해 .slide 가 var() 로 읽음.
+  --carousel-gap: 12px;
+  --carousel-per-view: 1;
 }
 
 .ready {
@@ -15,15 +19,42 @@
   // iOS Safari — 수직 스크롤은 OS 단으로, 수평 swipe 만 embla 가 잡도록 명시.
   // 손가락 제스처의 떨림/충돌 감소.
   touch-action: pan-y;
+  // GPU 레이어 promote — ios safari 의 sub-pixel rounding jitter 안정화.
+  // embla 의 transform 이 매 frame 새로 적용되는데, 레이어가 promote 안 되면
+  // 매번 compositor 가 다시 paint → 떨림.
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .container {
   display: flex;
-  // gap는 인라인 스타일로 주입 (옵션 기반)
+  // gap 은 root CSS variable 사용 (JS 에서 inline 으로 주입).
+  gap: var(--carousel-gap);
+  // embla 의 translate3d 적용 대상. promote 로 안정성 보강.
+  will-change: transform;
+  // ios safari 에서 flex container 의 폭 계산 정확화.
+  width: 100%;
+  // safari 의 sub-pixel rounding 으로 자투리 누적 시 마지막 슬라이드가
+  // 살짝 잘리는 현상 방지 — embla 가 translate 로 보정해주지만, container
+  // 자체에 최소 너비 명시로 안정성 한 겹 더.
+  min-width: 0;
 }
 
+// slide 너비 = (100% - gap*(perView-1)) / perView
+// inline style 로 매 render 새 string 만들지 않고 CSS variable 로 계산.
+// calc 안에서 var() 두 번 참조 → ios safari 에서도 안정적.
 .slide {
+  flex: 0 0
+    calc(
+      (100% - (var(--carousel-gap) * (var(--carousel-per-view) - 1))) /
+        var(--carousel-per-view)
+    );
   min-width: 0;
+  // 슬라이드 내부 콘텐츠가 height: 100% 로 채울 때, 부모 height 가 결정 안
+  // 된 frame 에서도 자식이 0 으로 무너지지 않도록.
+  display: flex;
+  flex-direction: column;
 }
 
 .arrow {
