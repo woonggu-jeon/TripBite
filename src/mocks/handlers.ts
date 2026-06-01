@@ -498,12 +498,18 @@ export const handlers = [
       letterId?: string;
     };
     const id = `mock-${Date.now()}`;
-    const letterId = body.letterId ?? `letter-${id}`;
+    // 알림 클릭 시 정상 진입하도록 seed 의 받은 편지 중 random pick.
+    // 그러지 않으면 link 가 letter-mock-... 같은 형태로 가서 detail 404.
+    const receivedSeeds = letterSeeds.filter((l) => !l.isMine);
+    const picked =
+      receivedSeeds[Math.floor(Math.random() * receivedSeeds.length)];
+    const letterId = body.letterId ?? picked?.id ?? 'letter-1';
+    const fromLabel = body.from ?? picked?.author?.nickname ?? '익명의 여행자';
     notificationItems.unshift({
       id,
       type: 'letter.received',
       title: '새 편지가 도착했어요',
-      body: body.preview ?? `${body.from ?? '익명의 여행자'} 가 보낸 편지`,
+      body: body.preview ?? `${fromLabel} — ${picked?.body ?? '다섯 글자'}`,
       link: `/letter/${letterId}`,
       read: false,
       createdAt: new Date().toISOString(),

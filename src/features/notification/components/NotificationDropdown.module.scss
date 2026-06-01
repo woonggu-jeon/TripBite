@@ -99,15 +99,18 @@
   color: var(--color-muted);
 }
 
-.itemTitle {
+.itemMessage {
   font-size: var(--text-sm);
   font-weight: var(--font-weight-semibold);
-}
-
-.itemBody {
-  margin-top: 2px;
-  font-size: var(--font-caption);
-  color: var(--color-muted);
+  color: var(--color-fg);
+  // 1 줄 — 길면 ellipsis (모바일 너비에서 가독성)
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: var(--line-snug);
+  word-break: keep-all;
 }
 
 /* push prompt — 알림함 상단 안내 + enable 버튼 */

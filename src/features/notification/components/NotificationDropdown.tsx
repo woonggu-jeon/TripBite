@@ -243,13 +243,13 @@ function PushPrompt() {
 function Item({ n, onSelect }: { n: AppNotification; onSelect: () => void }) {
   // unknown type (스키마 확장 전 백엔드 응답) 도 안전하게 Bell 로 fallback.
   const Icon = TYPE_ICON[n.type] ?? Bell;
+  // 표시 텍스트 — body 우선, 없으면 title fallback.
+  // 같은 type 의 알림이 여러 개일 때 title 이 다 같으면 중복 정보라 body 강조.
+  const message = n.body ?? n.title;
   const body = (
     <div className={`${styles.item} ${!n.read ? styles.unread : ''}`}>
       <Icon size={18} className={styles.icon} />
-      <div>
-        <div className={styles.itemTitle}>{n.title}</div>
-        {n.body && <div className={styles.itemBody}>{n.body}</div>}
-      </div>
+      <div className={styles.itemMessage}>{message}</div>
     </div>
   );
 
