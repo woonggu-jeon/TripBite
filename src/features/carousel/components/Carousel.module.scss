@@ -62,7 +62,7 @@
 .dot {
   width: 6px;
   height: 6px;
-  border-radius: 9999px;
+  border-radius: var(--radius-full);
   background: var(--color-border);
   transition:
     width var(--motion-base) ease,

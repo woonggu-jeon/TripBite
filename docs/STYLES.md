@@ -26,6 +26,8 @@
 | hover 위 ghost 배경         | `var(--color-hover)`                                        |
 | 모달 백드롭                 | `var(--color-overlay)`                                      |
 | sticky header glass         | `var(--color-glass)` + `backdrop-filter: var(--blur-glass)` |
+| 편지 accent (amber)         | `var(--color-letter-accent)` (light/dark 분기)              |
+| 편지 종이 배경              | `var(--color-letter-paper)` (light/dark 분기)               |
 
 ### Radius
 
@@ -151,6 +153,21 @@ import { cardClasses } from '@/components/ui';
 - `title` / `hint` / `action` / `level` (h2/h3)
 - 페이지 안 섹션 헤더 + 본문 wrapper.
 
+### Layout primitives (page wrapper)
+
+- `AuthLayout` — 인증 페이지 6곳(login/signup/find-id/forgot-password/reset-password/onboarding) 의 공통 main wrapper. `variant`: `center`(default) / `column`(onboarding). 모바일 padding 반응형 내장.
+- `PolicyArticle` + `PolicySection` + `PolicyFooter` — terms/privacy/licenses 의 article + 섹션 + footer 패턴.
+
+```tsx
+<AuthLayout><LoginForm /></AuthLayout>
+<AuthLayout variant="column"><OnboardingFlow /></AuthLayout>
+
+<PolicyArticle>
+  <PolicySection heading="제1조">...</PolicySection>
+  <PolicyFooter>시행일자: ...</PolicyFooter>
+</PolicyArticle>
+```
+
 ### Button 변형
 
 - `variant`: `primary` (채움 / submit) / `secondary` (border) / `ghost` / `danger`
@@ -190,6 +207,14 @@ shadow 강도 조정 시 `--shadow-card-strong` 한 곳. dark/light 분기는 �
 | `line-height` 일괄 토큰화 (1.2/1.3/1.4/1.5 → line-\*)                                 | ✅   |
 | Emoji 스케일 토큰 + 컴포넌트별 1.375/1.75/2.25/4/4.5rem 매핑                          | ✅   |
 | 색 변형 추가 (`--color-primary-tint-strong/dimmed`) + 3/5/6/14/20/50/80% 통합 매핑    | ✅   |
+| Button primitive 광역 마이그레이션 (Tournament setup/play, Quiz, Confirm, Letter 등)  | ✅   |
+| Card `cardClasses` `padding` option 미명시 시 `.p-*` 클래스 미부여 (충돌 회피)        | ✅   |
+| Card primitive base `.card` → `.root` rename + `:where(.root)` specificity 0          | ✅   |
+| Auth 6 페이지 → `AuthLayout` primitive 적용 (변형: center/column)                     | ✅   |
+| Policy 3 페이지 → `PolicyArticle` / `PolicySection` / `PolicyFooter` 적용             | ✅   |
+| Letter 도메인 amber hex → `--color-letter-accent` / `--color-letter-paper` 토큰화     | ✅   |
+| MyPage / Region inline → SCSS module 분리                                             | ✅   |
+| `border-radius: 9999px` → `var(--radius-full)` 통일 (3곳)                             | ✅   |
 
 ## 5. 남은 후속 정비 (점진)
 
@@ -199,3 +224,6 @@ shadow 강도 조정 시 `--shadow-card-strong` 한 곳. dark/light 분기는 �
 - **두 번째 인자가 외부 hex / border 인 mix** — 디자인 시스템 색 스케일 결정 후 토큰화
 - **컴포넌트별 line-height** (1.1 / 1.25 / 1.55) — 의도된 미세값
 - **letter-spacing** (0.05 / 0.1 / 0.12 / 0.25 / 1em / -0.04em) — 강조 / 일러스트성 일회 사용
+- **raw transition 시간 2곳** — Toggle `0.18s` (motion-fast 100 ~ base 150 사이), RegionWinsChart width `0.6s` (slow 300 ~ emphasis 550 사이). 둘 다 unique 의도값.
+- **raw box-shadow `rgba(0,0,0,X)` ~30곳** — 컴포넌트별 미세 elevation. shadow 토큰화는 디자인 시스템 결정 후.
+- **`#fff` (badge text on success/danger 배경)** — `on-{role}` 토큰 도입 시 정리 가능. 현재는 명시 흰색이 의도.
