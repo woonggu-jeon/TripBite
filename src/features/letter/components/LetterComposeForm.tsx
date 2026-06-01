@@ -15,6 +15,7 @@ import { useSendLetter } from '@/features/letter/hooks/use-letters';
 import { useLetterStore } from '@/features/letter/store/letter-store';
 import { useResolveLocation, usePermissionState } from '@/features/location';
 import { useLocationStore } from '@/stores/location-store';
+import { useUIStore } from '@/stores/ui-store';
 import { Button } from '@/components/ui';
 import { haptic } from '@/lib/haptic';
 import { PinLikeInput } from './PinLikeInput';
@@ -46,6 +47,7 @@ export function LetterComposeForm() {
   const { resolve, isLoading: isResolving } = useResolveLocation();
   const resolved = useLocationStore((s) => s.resolved);
   const setResolved = useLocationStore((s) => s.setResolved);
+  const pushToast = useUIStore((s) => s.pushToast);
   const autoTriggered = useRef(false);
 
   // 1차 자동 resolve — granted 일 때 즉시, prompt/unsupported 도 시도(브라우저 native prompt 띄움)
@@ -70,45 +72,63 @@ export function LetterComposeForm() {
     handleSubmit,
     watch,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
   } = useForm<LetterFormValues>({
     resolver: zodResolver(letterSchema),
     defaultValues: { body: '' },
-    mode: 'onChange',
+    // 'onSubmit' — 입력 중 인라인 에러 미표시. submit 시점에 검증 + toast 안내.
+    mode: 'onSubmit',
   });
 
   const body = watch('body') ?? '';
   const count = graphemeLength(body);
 
-  const onSubmit = handleSubmit(async (values) => {
-    haptic.success();
-    await send({
-      ...values,
-      location: resolved
-        ? {
-            label: resolved.label,
-            regionCode: resolved.regionCode,
-            latitude: resolved.latitude,
-            longitude: resolved.longitude,
-          }
-        : undefined,
-    });
-    setLastSent({
-      body: values.body,
-      location: resolved
-        ? { label: resolved.label, regionCode: resolved.regionCode }
-        : undefined,
-      sentAt: new Date().toISOString(),
-    });
-    router.push('/letter/sent');
-  });
+  const onSubmit = handleSubmit(
+    async (values) => {
+      haptic.success();
+      await send({
+        ...values,
+        location: resolved
+          ? {
+              label: resolved.label,
+              regionCode: resolved.regionCode,
+              latitude: resolved.latitude,
+              longitude: resolved.longitude,
+            }
+          : undefined,
+      });
+      setLastSent({
+        body: values.body,
+        location: resolved
+          ? { label: resolved.label, regionCode: resolved.regionCode }
+          : undefined,
+        sentAt: new Date().toISOString(),
+      });
+      router.push('/letter/sent');
+    },
+    // invalid submit — 인라인 에러 대신 toast 로 안내. 첫 에러 메시지만 표시.
+    (formErrors) => {
+      haptic.tap();
+      const first = formErrors.body?.message;
+      if (first) {
+        pushToast({
+          type: 'warning',
+          message: tErr(first as Parameters<typeof tErr>[0]),
+          duration: 2500,
+        });
+      }
+    },
+  );
 
   const handleReset = () => {
     haptic.tap();
     reset({ body: '' });
   };
 
-  const canSubmit = count > 0 && count <= 5 && !errors.body;
+  // 정상 UX: 빈 입력 시 보내기 버튼 disabled. graphemeLength 로 1~5자 검증.
+  // 동시에 onSubmit 의 invalid 콜백이 toast 안내 — DevTools 등으로 disabled
+  // 를 우회해 클릭한 경우(또는 폼 외부 submit) 의 안전망.
+  const canSubmit = count > 0 && count <= 5;
 
   return (
     <form onSubmit={onSubmit} className={styles.form}>
@@ -137,11 +157,8 @@ export function LetterComposeForm() {
             {count} / 5
           </span>
         </div>
-        {errors.body && (
-          <p className={styles.error} role="alert">
-            {tErr(errors.body.message as Parameters<typeof tErr>[0])}
-          </p>
-        )}
+        {/* 인라인 에러 메시지 제거 — 보내기 버튼 클릭 시 toast 로 안내.
+            disabled 자체는 시각적으로 dim 처리해 빈 상태를 명확히 표시. */}
       </div>
 
       {/* 3) 하단 위치 — 2줄 안내 (자동 첨부 + 지역) */}
@@ -177,7 +194,9 @@ export function LetterComposeForm() {
         </div>
       </div>
 
-      {/* 4) 액션 */}
+      {/* 4) 액션 — 보내기 버튼은 빈 입력 시 disabled.
+              인라인 에러는 표시 안 함 (시각적 중복). DevTools 등으로 disabled
+              를 우회해 클릭한 경우는 onSubmit 의 invalid 콜백이 toast 로 안내. */}
       <div className={styles.actions}>
         <Button
           variant="secondary"
@@ -191,7 +210,7 @@ export function LetterComposeForm() {
           type="submit"
           variant="primary"
           fullWidth
-          disabled={!canSubmit}
+          disabled={isSubmitting || !canSubmit}
           loading={isSubmitting}
         >
           {isSubmitting ? t('submitting') : t('submit')}
