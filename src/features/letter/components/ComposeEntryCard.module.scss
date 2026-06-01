@@ -39,7 +39,7 @@
 }
 
 .envelope {
-  font-size: 3.5rem;
+  font-size: var(--font-letter-envelope);
   line-height: 1;
   filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.15));
   z-index: 1;

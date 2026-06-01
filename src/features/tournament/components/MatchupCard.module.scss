@@ -59,7 +59,7 @@
   font-size: var(--font-body-sm);
   font-weight: 700;
   color: var(--color-fg);
-  line-height: 1.25;
+  line-height: var(--line-tight);
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;

@@ -75,7 +75,7 @@
   font-size: var(--font-eyebrow);
   font-weight: 700;
   color: color-mix(in srgb, var(--color-letter-accent) 70%, var(--color-muted));
-  letter-spacing: 0.12em;
+  letter-spacing: var(--tracking-emphasis);
   text-transform: uppercase;
 }
 
@@ -128,7 +128,7 @@
 .stampTag {
   font-size: var(--font-letter-stamp-tag);
   font-weight: 800;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--tracking-emphasis);
 }
 
 .message {

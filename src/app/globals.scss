@@ -222,6 +222,8 @@
   --tracking-normal: 0;
   --tracking-wide: 0.02em;
   --tracking-uppercase: 0.06em;
+  /* letter / banner label 등 강한 강조 spacing */
+  --tracking-emphasis: 0.12em;
 
   /* Icon size tokens — 호환성 유지를 위해 의미별로 분리 */
   --icon-sm: 16px; /* 인라인 텍스트 옆 */
@@ -253,8 +255,10 @@
 
   /* 일반 drop-shadow scale — emoji/카드/일러스트의 미세 elevation.
      dark 모드는 아래 @media 에서 alpha 강도 자동 분기. */
+  --drop-shadow-xs: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.08));
   --drop-shadow-sm: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
   --drop-shadow-md: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+  --drop-shadow-lg: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.25));
 
   /* text-shadow — 흰 글자가 colored 배경 위에 있을 때 가독성 보강 */
   --text-shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.25);
@@ -263,6 +267,11 @@
      글자 크기 일괄 조정 가능. */
   --font-letter-body: 1.625rem; /* 26px — 편지 본문 5글자 큰 글씨 */
   --font-letter-stamp-tag: 0.5rem; /* 8px — 우표 라벨 */
+  --font-letter-envelope: 3.5rem; /* 56px — ComposeEntryCard 봉투 emoji */
+
+  /* 토너먼트 도메인 typography — 트로피/우승 emoji 크기. */
+  --font-tournament-trophy: 2rem; /* 32px — WinnerCard trophy */
+  --font-tournament-winner: 2.75rem; /* 44px — WinnerCard winner emoji */
 
   /* Motion — duration / easing 토큰화.
      컴포넌트는 가급적 raw 시간값/cubic-bezier 대신 이쪽을 참조. */
@@ -361,8 +370,10 @@
     --shadow-emphasis: 0 16px 40px rgba(0, 0, 0, 0.5);
     --drop-shadow-icon: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.55));
     --drop-shadow-icon-strong: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.55));
+    --drop-shadow-xs: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
     --drop-shadow-sm: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
     --drop-shadow-md: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+    --drop-shadow-lg: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.6));
     --text-shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.6);
     /* dark 에서 overlay/divider 는 흰색 mix → 더 잘 보이도록 */
     --color-overlay: rgba(0, 0, 0, 0.6);

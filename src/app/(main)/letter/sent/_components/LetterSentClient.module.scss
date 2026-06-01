@@ -67,7 +67,7 @@
   font-size: var(--font-eyebrow);
   font-weight: 700;
   color: color-mix(in srgb, var(--color-letter-accent) 70%, var(--color-muted));
-  letter-spacing: 0.12em;
+  letter-spacing: var(--tracking-emphasis);
   text-transform: uppercase;
 }
 
@@ -128,7 +128,7 @@
   font-size: var(--font-letter-stamp-tag);
   font-weight: 800;
   color: color-mix(in srgb, var(--color-letter-accent) 80%, var(--color-fg));
-  letter-spacing: 0.1em;
+  letter-spacing: var(--tracking-emphasis);
 }
 
 // Message — PIN 5칸 박스 + 좌측 하단 날짜

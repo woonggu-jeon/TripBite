@@ -9,7 +9,7 @@
 
 .summary {
   font-size: var(--font-body-sm);
-  line-height: 1.55;
+  line-height: var(--line-normal);
   color: var(--color-fg);
   letter-spacing: var(--tracking-snug);
   word-break: keep-all;

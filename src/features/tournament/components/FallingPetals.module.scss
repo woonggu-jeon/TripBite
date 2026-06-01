@@ -14,7 +14,7 @@
   animation-iteration-count: infinite;
   will-change: transform, top;
   user-select: none;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.08));
+  filter: var(--drop-shadow-xs);
 }
 
 /* 봄·가을: 부드럽게 회전 + 좌우 흔들 */

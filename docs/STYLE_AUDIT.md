@@ -98,11 +98,13 @@
 
 ## 🟡 남은 잔존 — 의도된 unique 만 (모두 흡수/토큰화 가능한 것은 완료)
 
-### 1. 단발성 중간 큰 글씨 — 3건만 남음
+### 1. ~~단발성 중간 큰 글씨~~ — ✅ 도메인 토큰화 완료
 
-- ComposeEntryCard `3.5rem` (봉투 emoji), WinnerCard `2rem` / `2.75rem` (trophy / winner emoji)
-- emoji-lg(36) / -xl(64) 와 4~12px 차이로 흡수 시 시각 변경. 컴포넌트 unique 의도값.
-- 5rem (celebration) / 6rem (illustration) / 1.625rem (편지 본문) / 0.5rem (우표 라벨) / 0.625rem (festival) 모두 토큰화 완료.
+- ComposeEntryCard `3.5rem` → `--font-letter-envelope` (편지 봉투)
+- WinnerCard `2rem` → `--font-tournament-trophy`
+- WinnerCard `2.75rem` → `--font-tournament-winner`
+- 도메인 토큰 (letter / tournament) 으로 의미 명확. 디자이너가 도메인별 typography 일괄 조정 가능.
+- 모든 raw font-size rem 잔존 0.
 
 ### 2. `<button>` 직접 사용 잔존 — 모두 분류 완료
 
@@ -116,10 +118,17 @@
 
 - `--accent-{season}` + `--accent-{color}` + `--color-letter-cream` 토큰화 완료.
 
-### 5. ~~rgba(0,0,0,X) shadow~~ — 4곳 흡수 완료
+### 5. ~~rgba(0,0,0,X) shadow~~ — ✅ 완료
 
 - box-shadow rgba 잔존 4곳 → `--shadow-sm/-md/-pop` 흡수 완료.
-- 남은 drop-shadow 는 컴포넌트 unique (ChungbukMap 다른 사이즈, FallingPetals 의 blue rgba, LuckyLadder `--color-primary-ring`).
+- drop-shadow `--drop-shadow-xs/-lg` 추가 신설 + ChungbukMap/FallingPetals 흡수.
+- 남은 drop-shadow 는 컴포넌트 unique (ChungbukMap 작은 `0 2px 3px`, FallingPetals 의 blue rgba 꽃잎, LuckyLadder `--color-primary-ring` 이미 토큰).
+
+### 8. ~~line-height / letter-spacing 잔존~~ — ✅ 흡수 완료
+
+- line-height 1.25 → `--line-tight`, 1.55 → `--line-normal` (3곳 흡수, 0.05 차이 미세).
+- letter-spacing 0.05em → `--tracking-uppercase`, -0.04em → `--tracking-tight`, 0.1em/0.12em → 새 `--tracking-emphasis` (6곳).
+- 잔존: line-height 1.1 (CountSelector, 큰 글씨에서 0.1 차이 시각 영향), letter-spacing 0.25em/1em (PIN style 강제) — 보존.
 
 ### 6. ~~raw transition 시간~~ — ✅ 완료
 
