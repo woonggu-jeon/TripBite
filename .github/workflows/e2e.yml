@@ -2,6 +2,10 @@ name: E2E
 
 # Playwright E2E — CI 비용이 큰 작업(빌드+브라우저)이라 별도 workflow로 분리.
 # MSW 모드로 백엔드 없이 핵심 흐름 검증.
+#
+# 매트릭스:
+#   - PR: desktop-chrome + mobile-chrome (chromium 만, 빠른 검증)
+#   - main push: 4 projects 전체 (desktop / mobile-chrome / mobile-safari / mobile-pwa)
 
 on:
   pull_request:
@@ -19,7 +23,7 @@ permissions:
 jobs:
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     env:
       NEXT_PUBLIC_API_URL: http://localhost:8080
       NEXT_PUBLIC_USE_MSW: 'true'
@@ -34,18 +38,34 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Playwright 브라우저 캐시 (chromium만 — CI 속도)
+      # Playwright 브라우저 캐시
       - name: Cache Playwright browsers
+        id: playwright-cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-v2
 
-      - name: Install Playwright (chromium)
+      # 브라우저 설치 — main 은 chromium + webkit, PR 은 chromium 만 (속도)
+      - name: Install Playwright browsers (PR — chromium)
+        if: github.event_name == 'pull_request'
         run: npx playwright install --with-deps chromium
 
-      - name: Run E2E (mobile-chrome)
-        run: npm run test:e2e -- --project=mobile-chrome
+      - name: Install Playwright browsers (main — chromium + webkit)
+        if: github.event_name == 'push'
+        run: npx playwright install --with-deps chromium webkit
+
+      # 테스트 실행 — PR 은 빠른 매트릭스 / main 은 4 projects 전체
+      - name: Run E2E (PR — desktop-chrome + mobile-chrome)
+        if: github.event_name == 'pull_request'
+        run: |
+          npm run test:e2e -- \
+            --project=desktop-chrome \
+            --project=mobile-chrome
+
+      - name: Run E2E (main — all 4 projects)
+        if: github.event_name == 'push'
+        run: npm run test:e2e
 
       - name: Upload report
         if: ${{ !cancelled() }}
