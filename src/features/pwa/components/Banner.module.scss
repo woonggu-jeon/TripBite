@@ -15,6 +15,14 @@
   font-weight: var(--font-weight-medium);
   box-shadow: var(--shadow-md);
   animation: slide-down var(--motion-base) var(--ease-out);
+  // banner 가 header (sticky top:0) 위에 fixed 로 떠 있어 header 의 알림/설정
+  // button click 을 막던 회귀 차단. banner 자체는 pass-through, 인터랙티브
+  // 자식 (.action / .close) 만 click 받음 (.message 는 정보 표시 전용).
+  pointer-events: none;
+}
+
+.banner > * {
+  pointer-events: auto;
 }
 
 .warning {

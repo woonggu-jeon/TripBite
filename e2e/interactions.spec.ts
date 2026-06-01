@@ -109,15 +109,65 @@ test.describe('알림함', () => {
 
   test('헤더 알림 버튼 → 드롭다운 열림 + 항목 노출', async ({ page }) => {
     await page.goto('/');
-    await dismissBanners(page);
+    // Banner.module.scss 의 pointer-events: none 정책으로 banner 가 click 막지
+    // 않음 — dismissBanners 헬퍼 없이도 동작 검증.
     const bell = page
       .getByRole('button', { name: /알림|Notification/i })
       .first();
     await bell.click();
-    // dropdown 의 dialog role 확인
     await expect(
       page.getByRole('dialog', { name: /알림|Notification/i }),
     ).toBeVisible({ timeout: 3000 });
+  });
+});
+
+test.describe('토너먼트 — 랜덤 / 계절 흐름', () => {
+  test.beforeEach(async ({ page }) => {
+    await bypassOnboarding(page);
+  });
+
+  test('랜덤 테마 선택 → step 4 (갯수) 로 점프', async ({ page }) => {
+    await page.goto('/tournament');
+    const randomCard = page.getByRole('radio', { name: /랜덤/ });
+    await randomCard.click();
+    await expect(page.getByRole('button', { name: /시작/i })).toBeVisible({
+      timeout: 3000,
+    });
+  });
+
+  test('계절 직접선택 → step 2 (계절) 노출', async ({ page }) => {
+    await page.goto('/tournament');
+    const seasonCard = page.getByRole('radio', { name: /계절 선택/ });
+    await seasonCard.click();
+    await expect(
+      page.getByRole('radio', { name: /봄|여름|가을|겨울/ }).first(),
+    ).toBeVisible({ timeout: 3000 });
+  });
+
+  test('?theme=season&season=spring query 진입 → step 3 (유형) 부터', async ({
+    page,
+  }) => {
+    await page.goto('/tournament?theme=season&season=spring');
+    // CategoryFilter 의 3 옵션 노출
+    await expect(page.getByRole('radio', { name: /축제/ })).toBeVisible({
+      timeout: 3000,
+    });
+    await expect(page.getByRole('radio', { name: /관광지/ })).toBeVisible();
+    await expect(page.getByRole('radio', { name: /체험/ })).toBeVisible();
+  });
+});
+
+test.describe('여행지 상세 share button', () => {
+  test.beforeEach(async ({ page }) => {
+    await bypassOnboarding(page);
+  });
+
+  test('SubHeader 우측 share IconButton 노출', async ({ page }) => {
+    await page.goto('/destination/cheongju-attraction-1');
+    // SubHeader 의 share button — aria-label "공유" / "Share"
+    await expect(
+      page.getByRole('button', { name: /공유|Share/i }).first(),
+    ).toBeVisible({ timeout: 5000 });
   });
 });
 
