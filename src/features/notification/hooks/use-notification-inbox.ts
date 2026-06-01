@@ -13,13 +13,17 @@ export const notificationKeys = {
 /**
  * 인박스 조회
  *
- * - 인증 상태에서만 fetch — 비로그인 시 enabled=false 로 query 정지.
- *   비로그인에서 fetch 시 401 → axios interceptor 의 /auth/refresh 시도 →
- *   실패 → clearAuth/toast/redirect 부작용. 그걸 원천 차단.
+ * - 실 운영(MSW 미사용)에선 인증 상태에서만 fetch — 비로그인 시 enabled=false
+ *   로 query 정지. 비로그인에서 fetch 시 401 → axios interceptor 의
+ *   /auth/refresh 시도 → 실패 → clearAuth/toast/redirect 부작용 차단.
+ * - mock 모드(NEXT_PUBLIC_USE_MSW=true)에선 인증 무관하게 fetch. 데모/QA 시
+ *   알림함 UI 흐름을 비로그인 상태로도 확인 가능하도록.
  * - 30초마다 자동 갱신 (윈도우 포커스 시에도)
  *   → 메뉴 사양 "정말 랜덤한 시간/장소에서 편지가 도착" 에 대응
  *   → 사용자 액티브 동안만 폴링 (background 탭은 React Query가 자동 정지)
  */
+const MSW_ENABLED = process.env.NEXT_PUBLIC_USE_MSW === 'true';
+
 export function useNotificationInbox() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   return useQuery({
@@ -27,7 +31,7 @@ export function useNotificationInbox() {
     queryFn: notificationInboxApi.get,
     ...CACHE.realtime, // 30s stale + 30s 폴링 (CACHE 일관)
     refetchOnWindowFocus: true,
-    enabled: isAuthenticated,
+    enabled: MSW_ENABLED || isAuthenticated,
   });
 }
 

@@ -49,12 +49,17 @@ const TYPE_ICON: Record<NotificationType, typeof Mail> = {
   'letter.liked': Heart,
 };
 
+// mock 모드에선 비로그인이라도 알림함 / push prompt / list 모두 노출 — 데모/QA
+// 흐름 일관. 실 운영(MSW 미사용)에선 인증 사용자만.
+const MSW_ENABLED = process.env.NEXT_PUBLIC_USE_MSW === 'true';
+
 export function NotificationDropdown({ onClose }: { onClose: () => void }) {
   const t = useTranslations('notification');
   const tCommon = useTranslations('common');
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  // 비로그인 사용자에게는 inbox/mark mutation 자체를 사용하지 않음 (401 회피).
-  // useNotificationInbox 는 내부에서 enabled=false 로 fetch 안 함.
+  // mock 모드에선 비로그인이라도 fetch / mark mutation 모두 시도 가능 (mock 이
+  // 401 안 떨어뜨림). 실 운영에선 인증 사용자만.
+  const canUseInbox = MSW_ENABLED || isAuthenticated;
   const { data, isLoading } = useNotificationInbox();
   const { mutate: markRead } = useMarkNotificationRead();
   const { mutate: markAllRead } = useMarkAllNotificationsRead();
@@ -87,7 +92,7 @@ export function NotificationDropdown({ onClose }: { onClose: () => void }) {
     >
       <div className={styles.header}>
         <span className={styles.title}>{t('title')}</span>
-        {isAuthenticated && items.some((n) => !n.read) && (
+        {canUseInbox && items.some((n) => !n.read) && (
           <button
             type="button"
             className={styles.allRead}
@@ -98,7 +103,7 @@ export function NotificationDropdown({ onClose }: { onClose: () => void }) {
         )}
       </div>
 
-      {!isAuthenticated && (
+      {!canUseInbox && (
         <div className={styles.signInPrompt}>
           <p className={styles.signInText}>{t('signInToView')}</p>
           <Link
@@ -111,9 +116,9 @@ export function NotificationDropdown({ onClose }: { onClose: () => void }) {
         </div>
       )}
 
-      {isAuthenticated && <PushPrompt />}
+      {canUseInbox && <PushPrompt />}
 
-      {isAuthenticated && (
+      {canUseInbox && (
         <div className={styles.list}>
           {isLoading && (
             // 3 row skeleton — 알림 항목 layout 과 동일 dimension 으로 자리잡이
