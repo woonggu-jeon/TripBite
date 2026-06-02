@@ -370,3 +370,62 @@ shadow 강도 조정 시 `--shadow-card-strong` 한 곳. dark/light 분기는 �
 ## 4. 남은 후속 정비
 
 거의 모든 raw 값 잔존 0. 남은 의도 unique 는 도메인 토큰으로 분리됨 (`--line-display`, `--tracking-pin/-pin-fill`, `--drop-shadow-petal` 등). 새 컴포넌트 작업 시 위 1~3 의 토큰/Primitive 사용 + 새 도메인 값 발생 시 도메인 토큰 신설을 우선.
+
+---
+
+## 5. 현재 적용 현황 (갱신 2026-06-02)
+
+대규모 sweep 완료 — raw 잔존 0. 의도된 unique 만 남음.
+
+### 의도된 unique (3건)
+
+- **ComposeEntryCard `0 6px 12px rgba(0,0,0,0.15)`** — drop-shadow-md / -lg 와 다른 unique size. 컴포넌트 1곳 한정.
+- **LuckyLadder `0 0 4px` / `0 2px 6px` / `0 1px 4px var(--color-primary-ring)`** — primary-ring 글로우. token 사용 + unique size.
+
+### `<button>` 직접 사용 (38곳, 의도)
+
+primitive 신설 대신 자체 module + mixin 으로 디자인 시스템화:
+
+- `LetterActions` (3) — `.action / .liked / .saved / .danger` toggle aria-pressed
+- `Install/PwaUpdateBanner` (5) — `Banner.module.scss` 의 `.action / .close`
+- `AccountSettings/Actions` (6) — `SettingsRows.module.scss` 의 `.button / .row / .danger`
+- `Carousel` dot/arrow (5) — 내부 미니멀 UI
+- 그 외 — 자체 module 또는 `cardClasses` 합성
+
+`_mixins.scss` 에 `settings-row` / `banner-action` / `banner-close` 추출됨. 새 화면 동일 패턴 시 `@include`.
+
+### iOS Safari button 처리 — 필수
+
+iOS Safari / PWA 의 native button rendering 이 일부 border 속성을 무시하는 회귀가 있어 `_reset.scss` 에 `-webkit-appearance: none` + `appearance: none` 강제. 모든 button 기반 card (ThemeKindSelector / SeasonSelector / CategoryFilter / MatchupCard 등) 의 `.v-surface` border 가 일관 노출됨.
+
+### i18n 미적용 (의도, 4건)
+
+- `dev/CatalogClient` — dev 도구 한정
+- `policy/privacy <li>` — 법무 검토 후
+- `시행일자: 2024-01-01` — 한국 운영 우선
+- `TripBite · 여행 유형 테스트` — 브랜드명 + 한국 운영
+
+### Dark / 반응형 / 도메인 토큰
+
+- ✅ `_dark.scss` — 시즌 5 + 카테고리 5 + chart-2~8 dark override (light 500 → dark 400)
+- ✅ `_dark.scss` — `[data-theme="dark"]` / `[data-theme="light"]` 명시 토글 지원 (`@mixin dark-tokens`)
+- ✅ `_responsive.scss` — mobile-360 / 320 단계별 font / emoji / space / header-h 축소
+- ✅ `_mixins.scss` — `respond-to / text-truncate / focus-ring / visually-hidden / settings-row / banner-action / banner-close`
+
+### 인프라
+
+| 영역               | 토큰 / Primitive                                                                                         |
+| ------------------ | -------------------------------------------------------------------------------------------------------- |
+| Color              | `--color-bg/-fg/-muted/-border/-primary*/-surface*/-divider/-hover*/-overlay/-glass`, `--color-letter-*` |
+| Accent             | `--accent-{spring/summer/autumn/winter/festival}` + grad, `--accent-{red/amber/green/blue/violet}`       |
+| Chart              | `--chart-1 ~ -8`                                                                                         |
+| Shadow             | `--shadow-{sm/md/lg/card/card-strong/pop/emphasis}`, `--drop-shadow-{icon/xs/sm/md/lg/petal}`            |
+| Motion             | `--motion-{fast/base/slow/emphasis}`, `--ease-{out/spring}`                                              |
+| Spacing            | `--space-1 ~ -12` (4px grid)                                                                             |
+| Radius             | `--radius-{sm/md/lg/xl/full}`                                                                            |
+| z-index            | `--z-{base/elevated/header/bottom-nav/dropdown/banner/modal/toast}`                                      |
+| Typography         | `--font-{display/h1/h2/h3/body/body-sm/label/caption/eyebrow}`, `--font-letter-*`, `--font-tournament-*` |
+| Emoji              | `--emoji-{sm/md/lg/xl/2xl/3xl/4xl}`                                                                      |
+| Primitive 컴포넌트 | `Card / Chip / IconButton / PageSection / Button` (`@/components/ui`)                                    |
+| Layout primitive   | `AuthLayout`, `PolicyArticle / PolicySection / PolicyFooter`                                             |
+| 검출기             | `scripts/dead-css.mjs` (CI 통합 가능)                                                                    |

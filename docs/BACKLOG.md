@@ -1,97 +1,76 @@
 # TripBite 후속 작업 백로그
 
-> 코드베이스 전수조사 후 정리한 미완성 / 개선 항목. 분기점마다 갱신.
-> 마지막 갱신: 2026-06-01 (브랜치 `dev`, commit `e5c06d8`).
+> 코드베이스 전수조사 후 정리한 잔존 / 개선 항목. 분기점마다 갱신.
+> 마지막 갱신: 2026-06-02 — Phase 0~2 완료, Phase 5/6 일부 완료, share Desktop fallback / iOS appearance fix 반영.
 >
 > 작업량 표기: **S** (≤30분) · **M** (1-3시간) · **L** (반나절+)
 
 ---
 
-## 최근 완료 (이번 분기 — 2026-06-01)
+## 최근 완료 (2026-06-01 ~ 06-02)
 
-- ✅ **이미지 카드 공유 + OG 메타** — `/api/og/[type]` Edge route 4 종 (tournament / quiz / destination / region). Web Share API File + OG 메타 동적.
-- ✅ **여행지 상세 페이지** `/destination/[id]` 신설 — Hero + WinnerDetailPanel + bestSeasons. `lib/share.ts` URL 공유.
-- ✅ **위젯 라우팅 정리** — 홈/랭킹/시군 상세의 위젯 클릭이 도메인에 맞게 분기 (여행지 → `/destination`, 지역 → `/region`).
-- ✅ **푸시 알림 기초** — `sw.ts` push/notificationclick handler, `lib/share.ts`, mock 시뮬레이션 도구 (`MockPushTrigger`), iOS standalone 분기.
-- ✅ **계절 토너먼트 진입** — 홈 빠른시작이 현재 월 → 계절 자동 추천. random 테마 흐름 (step 1 → step 4 점프) + 'special' → 'random' 으로 의미 변경 + `SpecialDaySelector` 폴더 제거.
-- ✅ **카테고리 'local' 미노출 정책** — CategoryFilter / TournamentSetup 의 random / quiz 추천 모두 'local' 제외 (축제 / 관광지 / 체험관광 3종).
-- ✅ **홈 위젯 정리** — '새 편지' / '내 우승지' 미노출 (주석 처리, 복원 가이드).
-- ✅ **알림함 mock 처리** — mock 모드에선 비로그인이라도 노출, type 매핑 누락 회귀 fix.
-- ✅ **번들 모니터링 메모** — First Load 213 KB, 추가 절감 여지 없음, 1주 1회 분석 권장.
+### 코드
+
+- ✅ **Phase 0 dead code 청소** — `features/quiz/` 폴더 + dead spec 7 파일 삭제, letter `'saved'` 일관성, `useTournamentHistory` 신설
+- ✅ **Phase 1 mypage 위젯 4종** — NicknameSection (zod + dialog), SavedTournaments + Card (confirm 삭제), TournamentHistorySection, LetterboxTabs (4탭 lazy + prefetch)
+- ✅ **Phase 2 도장깨기** — `ChungbukSvgMap` (5×3 grid SVG), `RegionStampMap` + `/mypage/stamps` mock, 진행률
+- ✅ **Phase 2 FestivalCarousel** — mock → `useOngoingFestivals` 교체, region 별 tone/emoji 매핑
+- ✅ **Phase 5 middleware 복원** — `src/middleware.ts` 이전 + `PUBLIC_ACCESS_PATHS`. mock 환경 (`USE_MSW=true`) 한정 redirect skip 추가
+- ✅ **Phase 5 axe-core a11y E2E** — 6 페이지 serious/critical 0건 (color-contrast 제외)
+- ✅ **Phase 5 toHaveScreenshot 시각 회귀** — 4 페이지 × 2 모드 × 6 플랫폼 = 48 baseline
+- ✅ **Phase 5 size-limit** — shared First Load 230kB / recharts 120kB / msw 100kB 임계
+- ✅ **Phase 5 Lighthouse CI** — a11y/CLS error 격상, seo warn
+- ✅ **Phase 5 vitest 단위 6 파일 (49 cases)** — bracket / tournament-store / Bracket.tsx / use-letters / AuthBootstrap / use-push-notification
+- ✅ **Phase 5 E2E 확장** — mobile-360 / 위치 권한 5종 / 토너먼트 풀 / push prompt
+- ✅ **Phase 6 명시 테마 토글** — light/dark/system + ui-store persist + Settings UI
+- ✅ **Phase 6 만 14세 onboarding step** — 정보통신망법 자기확인 체크박스
+- ✅ **iOS Safari/PWA 토너먼트 선택 테두리 사라짐 fix** — `_reset.scss` button 에 `appearance:none`
+- ✅ **이미지 카드 공유 카카오톡 채팅 첨부 흐름 fix** — `shareWithImage` payload file 단독
+- ✅ **이미지 카드 공유 Desktop fallback 강화** — file share 미지원 시 OG URL clipboard copy + PNG 다운로드 동시
+- ✅ **6 플랫폼 매트릭스 확장** — Windows / Mac / AOS web / iOS web / AOS PWA / iOS PWA
+
+### 인프라 / 문서
+
+- ✅ **README 현재 구현 상태 갱신** — stub 53 → 16, 토너먼트/letter/region ✅
+- ✅ **결과서 8차** — `docs/test-reports/2026-06-01-e2e.md` (244 → 404 passed, 0 failed)
+- ✅ **번들 모니터링** — First Load 213 KB acceptable, 1주 1회 분석 권장
 
 ---
 
 ## 우선 순위 한눈에
 
-| Phase | 영역                                | 의존성                     | 작업량        |
-| ----- | ----------------------------------- | -------------------------- | ------------- |
-| **0** | dead code / dead spec 청소          | 없음                       | S × 5         |
-| **1** | mypage 위젯 구현 (mock 만으로 동작) | 백엔드 계약 / 디자인       | M × 6         |
-| **2** | 홈 위젯 + 지도 SVG                  | 디자인 (SVG asset)         | M × 3 / L × 1 |
-| **3** | Future BE 포인트 일괄 연동          | NestJS                     | M × 5         |
-| **4** | 푸시 알림 운영 진입                 | NestJS web-push + DB       | L × 1         |
-| **5** | 보안 / 성능 / 테스트 마무리         | 백엔드 (rate limit / 메일) | M-L 다수      |
+| Phase      | 영역                                     | 의존성                            | 작업량   |
+| ---------- | ---------------------------------------- | --------------------------------- | -------- |
+| **2 잔여** | 정밀 ChungbukSvgMap path / WeatherWidget | 디자인 (SVG asset / 시안)         | M × 2    |
+| **3**      | Future BE 포인트 일괄 연동               | NestJS                            | M × 5    |
+| **4**      | 푸시 알림 운영 진입                      | NestJS web-push + DB              | L × 1    |
+| **5 잔여** | 인증 보안 / CSP enforce / 정책 본문      | 백엔드 (rate limit / 메일) + 법무 | M-L 다수 |
+| **6**      | UX 작은 개선 / 선택 작업                 | —                                 | S-M 다수 |
 
 ---
 
-## 1. Stub 컴포넌트 (27개)
+## 1. Stub 컴포넌트 잔존 (의도 보류)
 
-> README는 "53개"라 표기 — 그동안 절반 정도 구현되어 실제 stub은 **27개**.
-> 그중 **11개는 dead spec** (호출처 없음, 인라인으로 구현됨) — 즉시 삭제 후보.
+Phase 0~2 청소 후 stub 16개 중 의도 보류만 남음:
 
-### 1-1. 즉시 삭제 후보 (11개) — Phase 0
-
-| 컴포넌트               | 위치                              | 이유                                                                |
-| ---------------------- | --------------------------------- | ------------------------------------------------------------------- |
-| `RegionAttractionList` | `src/features/region/components/` | `RegionDetailTabs` 가 인라인 구현 (InfiniteList + RegionContentRow) |
-| `RegionFestivalList`   | 동상                              | 동상                                                                |
-| `RegionExperienceList` | 동상                              | 동상                                                                |
-| `ReceivedLetterList`   | `src/features/letter/components/` | `LetterListPanel(kind='received')` 가 실 구현                       |
-| `SentLetterList`       | 동상                              | 동상                                                                |
-| `ManuscriptCard`       | 동상                              | `LetterDetailClient` 가 인라인 원고지                               |
-| `AccountActions`       | `src/features/mypage/components/` | `MyPageClient` 가 settings link 만 사용                             |
-| `QuizIntro`            | `src/features/quiz/components/`   | **폴더 전체 dead** — quiz 흐름은 `features/ranking/` 에서 동작      |
-| `QuizQuestionStep`     | 동상                              | 동상                                                                |
-| `QuizResult`           | 동상                              | 동상                                                                |
-| `TravelTypeShareCard`  | 동상                              | `features/ranking/components/TravelTypeShareCard` 가 실 구현        |
-
-**작업**: `features/quiz/` 폴더 통째 삭제 + 위 7개 파일 삭제 + README "stub 53개" → "stub 16개" 갱신. **S × 1** (~30분).
-
-### 1-2. mypage 실 구현 필요 (8개) — Phase 1
-
-| 컴포넌트                   | 사용처                                 | 데이터 hook                                                          | 의존 mock handler                   |
-| -------------------------- | -------------------------------------- | -------------------------------------------------------------------- | ----------------------------------- |
-| `SavedTournamentsSection`  | `MyPageClient` "저장된 우승지"         | `useSavedTournaments` ✅                                             | `GET /mypage/tournaments` ✅        |
-| `SavedTournamentCard`      | 위 섹션 카드 1개 + 삭제                | `useRemoveSavedTournament` ✅                                        | `DELETE /mypage/tournaments/:id` ❌ |
-| `TournamentHistorySection` | "토너먼트 기록" InfiniteList           | **`useTournamentHistory` 신설 필요**                                 | `GET /mypage/tournament-history` ✅ |
-| `LetterboxTabs`            | "편지함 4탭" received/sent/liked/saved | `useLettersInfinite` ✅ — `'saved'` 누락                             | `GET /letters/saved` ✅             |
-| `LikedLettersSection`      | LetterboxTabs 의 'liked' panel         | `useLettersInfinite('liked')` ✅                                     | ✅                                  |
-| `SavedLettersSection`      | LetterboxTabs 의 'saved' panel         | **client 함수 누락** — `letterApi.listSaved` 추가 + `FETCHERS.saved` | ✅                                  |
-| `NicknameSection`          | 닉네임 표시 + 편집 진입점              | `useMypage` ✅ + `useUpdateNickname` ✅                              | `PATCH /mypage/profile` ❌          |
-| `NicknameEditDialog`       | NicknameSection 의 모달                | `useUpdateNickname` ✅                                               | 동상                                |
-
-**작업**: 각 M. 전체 L (4-6시간).
-
-### 1-3. region (2개) — Phase 2
-
-| 컴포넌트         | 사용처                                                              | 의존성                                                  |
-| ---------------- | ------------------------------------------------------------------- | ------------------------------------------------------- |
-| `ChungbukSvgMap` | `/region` 의 `mapPlaceholder` div 교체 + `RegionStampMap` 안 재사용 | 디자인 (SVG path 11개)                                  |
-| `RegionStampMap` | `/mypage` "도장깨기"                                                | `GET /mypage/stamps` ❌ + 디자인 + "방문" 정의          |
-| `RegionHero`     | `/region/[code]` 상단 hero (현재 SubHeader 만)                      | `useRegionSummary` ✅ + `GET /regions/:code/summary` ❌ |
-
-**작업**: `ChungbukSvgMap` M (SVG asset 받은 후), 나머지 M.
-
-### 1-4. ranking 추가 섹션 (8개) — Phase 6 (보류)
+### 1-1. ranking 추가 섹션 (8개) — 사양 대기
 
 `RankingList / WeeklyTopMini / CategoryRankingTabs / RankingByRegion / RankingByTravelType / HeroDestination / SeasonalRecommendation` — README "추가 섹션은 추후" 명시. **사양 확정 시 도입**.
 
-### 1-5. tournament / weather (2개)
+### 1-2. tournament / weather (2개) — 디자인 또는 사양 대기
 
 | 컴포넌트                     | 비고                                                                    |
 | ---------------------------- | ----------------------------------------------------------------------- |
 | `SeasonalCenterIllustration` | `CenterIllustration` 의 SVG 일러스트 교체용 — **디자인 의존**           |
 | `WeatherWidget`              | 홈 미배치. `useCurrentWeather` ✅ + handler ✅ — 홈에 위치 결정 후 도입 |
+
+### 1-3. region (1개) — 디자인 의존
+
+`RegionHero` — `/region/[code]` 상단 hero (현재 SubHeader 만). `useRegionSummary` ✅ + 디자인 시안 대기.
+
+### 1-4. ChungbukSvgMap 정밀 path — 디자인 의존
+
+현재 5×3 grid 도식 SVG (의도된 단순화). 운영 진입 전 디자이너 SVG asset (11 시군 path) 받으면 교체.
 
 ---
 
@@ -99,119 +78,57 @@
 
 ### 2-1. `[FUTURE BE]` (3 화면) — Phase 3
 
-| 위치                                                             | 작업                                                                                                                |
-| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `tournament/play/_components/TournamentPlayClient.tsx:42-61`     | `POST /tournaments` → tournamentId 받고, match 종료마다 또는 일괄 `PATCH /complete` 전송. fire-and-forget.          |
-| `tournament/result/_components/TournamentResultClient.tsx:34-72` | `?id=` 쿼리로 deep-link 진입 시 `useQuery(['tournament', id])` 분기. 현재 store-only 라 reload 시 winner 정보 손실. |
-| `letter/sent/_components/LetterSentClient.tsx:11-25`             | `?id=` 쿼리 + `useLetter(id)` 로 서버 응답 사용. NICKNAME 해시 / ETA / 날짜 포맷 모두 서버 응답으로 대체.           |
+| 위치                                                       | 작업                                                                                                                |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `tournament/play/_components/TournamentPlayClient.tsx`     | `POST /tournaments` → tournamentId 받고, match 종료마다 또는 일괄 `PATCH /complete` 전송. fire-and-forget.          |
+| `tournament/result/_components/TournamentResultClient.tsx` | `?id=` 쿼리로 deep-link 진입 시 `useQuery(['tournament', id])` 분기. 현재 store-only 라 reload 시 winner 정보 손실. |
+| `letter/sent/_components/LetterSentClient.tsx`             | `?id=` 쿼리 + `useLetter(id)` 로 서버 응답 사용. NICKNAME 해시 / ETA / 날짜 포맷 모두 서버 응답으로 대체.           |
 
 **의존성**: 백엔드. **각 M**.
-
-### 2-1-1. 이미지 카드 공유 + OG 메타 ✅ 완료
-
-- `/api/og/[type]` Edge route — type: `tournament` / `quiz` / `destination` / `region`
-- Pretendard Bold woff fetch + Edge instance 재사용 캐시 + fail 시 sans-serif fallback (route 500 회피)
-- 1080×1080 PNG. Cache-Control 1일.
-- **토너먼트 결과 / 퀴즈 결과**: share button → query 인코딩 → `shareWithImage` → OS share sheet (Web Share API File) + 다운로드 fallback.
-- **여행지 상세 / 시군 상세**: `generateMetadata.openGraph.images` 동적 — SNS 미리보기 카드 자동.
-
-추후 enhancement: 디자이너 시안 받으면 카드 JSX 만 교체 (route 구조 그대로).
-
-### 2-1-2. 번들 / 렌더링 모니터링
-
-**현재 상태** (build 결과):
-
-| 항목                   | 값                | 판정                                               |
-| ---------------------- | ----------------- | -------------------------------------------------- |
-| First Load JS (shared) | 213 KB            | acceptable (Lighthouse good < 200, moderate < 300) |
-| Largest shared chunk   | 59.2 KB           | react-dom                                          |
-| /tournament/result     | +8.85 KB → 227 KB | OK                                                 |
-| MSW chunk (lazy)       | 80 KB gzipped     | NEXT_PUBLIC_USE_MSW=false 시 download X            |
-
-**적용된 최적화**:
-
-- 무거운 모듈 모두 dynamic import: recharts (~100KB) / embla / MSW worker
-- `optimizePackageImports`: lucide-react / recharts / embla / next-intl / @tanstack/react-query
-- `experimental.staleTimes`: dynamic 30s / static 180s
-- Server Component 기본, 인터랙션 부분만 client
-- 위젯별 useQuery (waterfall 회피) + min-height (CLS 0)
-
-**추가 절감 여지 X** — 핵심 chunk 들이 react-dom / TanStack Query / next-intl 등 필수. 213 KB 는 production-grade 상한.
-
-**경계 신호 (1주 1회 점검 권장)**:
-
-- shared First Load 가 230 KB 넘으면 alert
-- 새 위젯 도입 시 dynamic import 강제
-- `npm run analyze` 로 chunk 별 시각화
-
-**향후 작업**:
-
-- `size-limit` config 추가 — 임계 자동 검증 (package.json 의 `"size-limit": [...]` + `@size-limit/preset-app` plugin)
-- Lighthouse CI baseline warn → error 전환
 
 ### 2-2. TODO 주석 (페이지 placeholder)
 
 | 위치                                       | 작업                                                                                                               |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
-| `HomeDashboard.tsx`                        | "내 우승지 캐러셀" — 현재 주석으로 비활성화 (사용자 요청). 재오픈 시 `useSavedTournaments` + Carousel.             |
-| `MyPageClient.tsx:35, 41, 49, 55`          | 4섹션 placeholder — Phase 1 에서 일괄                                                                              |
-| `RegionMapClient.tsx:29`                   | `ChungbukSvgMap` 신설 (Phase 2)                                                                                    |
-| `ProfileCard.tsx:43`                       | `mypageApi.updateAvatar(file)` mutation — multipart + 스토리지(Vercel Blob/S3) 결정 필요. **백엔드 + 인프라 의존** |
-| `AccountActionsSection.tsx:42`             | 회원 탈퇴 — `ConfirmDialog` + `DELETE /me`. soft delete 정책 백엔드와 합의                                         |
+| `HomeDashboard.tsx`                        | "내 우승지 캐러셀" 주석 비활성 (사용자 요청). 재오픈 시 `useSavedTournaments` + Carousel.                          |
+| `ProfileCard.tsx`                          | `mypageApi.updateAvatar(file)` mutation — multipart + 스토리지(Vercel Blob/S3) 결정 필요. **백엔드 + 인프라 의존** |
+| `AccountActionsSection.tsx`                | 회원 탈퇴 — `ConfirmDialog` + `DELETE /me`. soft delete 정책 백엔드와 합의                                         |
 | `policy/{terms,privacy,licenses}/page.tsx` | 본문은 법무 검토 후 교체. 라이선스는 빌드 시 `license-checker` 결과                                                |
 
 ### 2-3. "추후" / "미구현" 주석
 
-| 위치                       | 내용                                                               |
-| -------------------------- | ------------------------------------------------------------------ |
-| `SettingsClient.tsx:4, 37` | 언어 섹션 미노출 (사용자 요청). LanguageSwitcher 보존              |
-| `ConceptStep.tsx`          | 일러스트 디자인 확정 후 교체                                       |
-| `CenterIllustration.tsx`   | emoji → SVG 일러스트 교체 가능                                     |
-| `RecommendationBanner.tsx` | mock → `useRecommendations()` 교체 (추천 알고리즘 결정 필요)       |
-| `FestivalCarousel.tsx`     | mock → `useOngoingFestivals()` 교체. hook + handler 준비됨 — **S** |
-| `TravelTypeShareCard.tsx`  | 이미지 추출(`next/og` ImageResponse) 추후                          |
+| 위치                       | 내용                                                         |
+| -------------------------- | ------------------------------------------------------------ |
+| `SettingsClient.tsx`       | 언어 섹션 미노출 (사용자 요청). LanguageSwitcher 보존        |
+| `ConceptStep.tsx`          | 일러스트 디자인 확정 후 교체                                 |
+| `CenterIllustration.tsx`   | emoji → SVG 일러스트 교체 가능                               |
+| `RecommendationBanner.tsx` | mock → `useRecommendations()` 교체 (추천 알고리즘 결정 필요) |
+| `TravelTypeShareCard.tsx`  | 이미지 추출(`next/og` ImageResponse) 추후                    |
 
 ---
 
 ## 3. 인프라 있지만 UI 미연결
 
-| 인프라                                               | 상태    | 미연결 사용처                                                     |
-| ---------------------------------------------------- | ------- | ----------------------------------------------------------------- |
-| `useSavedTournaments`                                | ✅      | mypage / 홈 캐러셀 (홈은 보류)                                    |
-| `useRemoveSavedTournament`                           | ✅      | `SavedTournamentCard` 삭제 버튼                                   |
-| `useOngoingFestivals`                                | ✅      | `FestivalCarousel` 이 mock 사용 중                                |
-| `useCurrentWeather`                                  | ✅      | `WeatherWidget` stub                                              |
-| `useUpdateNickname`                                  | ✅      | `NicknameEditDialog` stub                                         |
-| `useQuizQuestions / useMyQuizResult / useSubmitQuiz` | ❌ dead | **삭제** (Phase 0)                                                |
-| `letterApi.listSaved` / `FETCHERS.saved`             | ❌ 누락 | LetterboxTabs 'saved' 탭                                          |
-| `useTournamentHistory`                               | ❌ 부재 | `TournamentHistorySection`                                        |
-| `getBlurDataURL` (LCP placeholder)                   | ✅      | LCP 후보 (BE imageUrl 연동 시점) — 현재 코드는 emoji/colorChip 만 |
+| 인프라                             | 상태 | 미연결 사용처                                          |
+| ---------------------------------- | ---- | ------------------------------------------------------ |
+| `useCurrentWeather`                | ✅   | `WeatherWidget` stub (배치 결정 대기)                  |
+| `getBlurDataURL` (LCP placeholder) | ✅   | BE imageUrl 연동 시점 — 현재 코드는 emoji/colorChip 만 |
 
 ---
 
 ## 4. 백엔드 의존 작업
 
-### 4-1. mock 에 없는 endpoint (실 백엔드 계약과 동시 정의 필요)
+### 4-1. mock 에 없는 endpoint (실 백엔드 계약 동시 정의)
 
-| Endpoint                                      | 호출 처                      | 우선                             |
-| --------------------------------------------- | ---------------------------- | -------------------------------- |
-| `GET /mypage` (요약)                          | `mypageApi.getSummary`       | **높음** — mypage 위젯 전체 의존 |
-| `PATCH /mypage/profile`                       | `useUpdateNickname`          | 높음                             |
-| `GET /mypage/stamps`                          | `RegionStampMap` (stub)      | 중간                             |
-| `GET /regions/:code/summary`                  | `useRegionSummary`           | 높음                             |
-| `GET /regions/ongoing-festivals`              | `useOngoingFestivals`        | 중간                             |
-| `GET /rankings?type=recommended\|hidden-gems` | `useRecommendedDestinations` | 낮음                             |
-| `DELETE /mypage/tournaments/:id`              | `useRemoveSavedTournament`   | 중간                             |
-| `DELETE /me`                                  | 회원 탈퇴                    | 운영 전 필수                     |
+| Endpoint                                      | 호출 처                      | 우선         |
+| --------------------------------------------- | ---------------------------- | ------------ |
+| `GET /regions/:code/summary`                  | `useRegionSummary`           | 높음         |
+| `GET /rankings?type=recommended\|hidden-gems` | `useRecommendedDestinations` | 낮음         |
+| `DELETE /me`                                  | 회원 탈퇴                    | 운영 전 필수 |
 
-**작업**: handler 6-7개 추가 — 총 **M** (mock seed 재활용).
+> Phase 5 에서 `/mypage/*`, `/letters/*`, `/regions/ongoing-festivals`, `/mypage/stamps`, `/mypage/profile`, `/mypage/tournaments` 등 mock 모두 신설됨.
 
-### 4-2. 인증 redirect 임시 비활성 (운영 전 필수)
-
-- **위치**: `middleware.ts:46-58` 의 주석 블록.
-- **작업**: 백엔드 붙는 시점에 주석 해제 + E2E 시나리오로 검증. **S + M**.
-
-### 4-3. 푸시 알림 NestJS 작업 — Phase 4
+### 4-2. 푸시 알림 NestJS 작업 — Phase 4
 
 | 작업                                                         | 비고                                                                   |
 | ------------------------------------------------------------ | ---------------------------------------------------------------------- |
@@ -224,15 +141,15 @@
 
 **작업량**: L.
 
-### 4-4. 인증 보안 (README 명시) — Phase 5
+### 4-3. 인증 보안 — Phase 5
 
 - 비밀번호 해싱 (argon2/bcrypt)
 - 중복 검사 (아이디/이메일/폰)
 - find-id / forgot-password 계정 열거 방지
 - 재설정 토큰 단명·1회용·DB 저장
 - 메일 발송 (Resend / SES / SMTP)
-- Rate limit (README 표대로: login 분당 5/IP, refresh, letters, location/reverse 등)
-- CSRF Layer 1 (SameSite=Lax) + Layer 2 (Origin 검증)
+- Rate limit (login 분당 5/IP, refresh, letters, location/reverse 등)
+- CSRF Layer 1 (SameSite=Lax) + Layer 2 (Origin 검증) ✅ middleware 에 일부 구현됨
 
 ---
 
@@ -259,170 +176,121 @@
 
 ## 6. 테스트 커버리지
 
-### 6-1. 현재 vitest (총 14개 — 주로 schema / lib / store)
+### 6-1. vitest 단위 (총 122개 — 21 files)
 
-스키마: auth (4) / letter / nickname / user.
-lib: async / clipboard / csp / sentry-scrub / validation.
-컴포넌트: LocationPermissionPrompt (1개만).
-훅: use-format.
-스토어: location-store.
+신규 49 cases 추가 후 합계 122. 핵심 도메인 모두 커버:
 
-### 6-2. E2E (Playwright)
+- `bracket.ts` (23) — Fisher-Yates / pairRound / nextPow2 / roundLabelKey
+- `tournament-store.ts` (7) — persist + partialize
+- `Bracket.tsx` (5) — 1/2/3/4 인 매치 시나리오
+- `use-letters.ts` (4) — like/save optimistic + 롤백
+- `AuthBootstrap.tsx` (5) — 4 redirect 분기
+- `use-push-notification.ts` (5) — 5 상태
+- 기존: schemas / lib / store / use-format / LocationPermissionPrompt
 
-- `e2e/smoke.spec.ts` — (1) 미인증 → /login (2) /login 로드 (3) /api/health
-- ✅ `e2e/pages-smoke.spec.ts` — 13개 주요 경로 진입 + 가로 overflow 검증 + 핵심 element 노출
-- ✅ `e2e/og-routes.spec.ts` — `/api/og/*` 4 type (tournament/quiz/destination/region) PNG 응답
-- ✅ `e2e/interactions.spec.ts` — 위젯 라우팅 (여행지 vs 지역), 카테고리 'local' 미노출, 알림함, 홈 빠른시작
+### 6-2. E2E Playwright (총 420 cases — 6 projects × 70 cases)
 
-Projects (4): desktop-chrome (1280×720) / mobile-chrome (Pixel 7) / mobile-safari (iPhone 14) / mobile-pwa (iPhone 14 standalone)
+- ✅ `e2e/pages-smoke.spec.ts` — 14 페이지 진입 + 가로 overflow + 핵심 element
+- ✅ `e2e/og-routes.spec.ts` — `/api/og/*` 4 type PNG 응답
+- ✅ `e2e/interactions.spec.ts` — 위젯 라우팅 / 'local' 미노출 / 알림함
+- ✅ `e2e/flows.spec.ts` — 온보딩 / 편지 작성 / 토너먼트 random / 알림
+- ✅ `e2e/smoke.spec.ts` — middleware redirect / health
+- ✅ `e2e/a11y.spec.ts` — axe-core 6 페이지 serious/critical 0
+- ✅ `e2e/visual.spec.ts` — toHaveScreenshot 4 페이지 × 2 모드 × 6 projects
+- ✅ `e2e/mobile-360.spec.ts` — 360 viewport 4 페이지 (desktop override)
+- ✅ `e2e/location-permission.spec.ts` — granted/prompt/denied/IP fallback/실패 5종
+- ✅ `e2e/tournament-full.spec.ts` — random/season 흐름 진입 + 시작 활성
+- ✅ `e2e/push-flow.spec.ts` — 알림 dropdown + MockPushTrigger trial
 
-### 6-3. 미커버 핵심 도메인 — Phase 5
+Projects (6): `desktop-windows` / `desktop-mac` / `mobile-chrome-aos` / `mobile-safari-ios` / `mobile-pwa-aos` / `mobile-pwa-ios`
 
-| 도메인                                                         | 우선 작성 | 작업량 |
-| -------------------------------------------------------------- | --------- | ------ |
-| `tournament-store` persist + sessionStorage 백업               | 높음      | M      |
-| `Bracket.tsx` (매치 진행 / dedup / 라운드 빌드)                | 높음      | M      |
-| `bracket.ts` 유틸 (Fisher-Yates / pairRound)                   | 높음      | S      |
-| `useLettersInfinite` optimistic toggle (like/save)             | 높음      | M      |
-| `useToggleLikeLetter` 롤백                                     | 중간      | M      |
-| `AuthBootstrap` 4가지 redirect 분기                            | 중간      | M      |
-| `usePushNotification` 모든 상태 (unsupported/denied/no-SW/...) | 중간      | M      |
-| `RegionDetailTabs` mount 유지 + prefetch                       | 중간      | M      |
+### 6-3. 향후 보강 후보
 
-### 6-4. E2E 시나리오 확장 — Phase 5
-
-- [ ] 온보딩 3-step
-- [ ] 편지 작성 → /letter/sent
-- [ ] 위치 권한 5종 매트릭스
-- [ ] 토너먼트 setup → play → result
-- [ ] Push prompt → mock trigger → 알림 클릭
-
-### 6-5. coverage include 확장
-
-현재 `vitest.config.ts` 의 `coverage.include` 가 schemas + lib + use-format + store 만 가리킴. Phase 1-2 신규 컴포넌트 / 핵심 도메인 hook 추가.
+- `RegionDetailTabs` mount 유지 + prefetch unit
+- `useToggleLikeLetter` 의 onSettled invalidation 검증
+- `MockPushTrigger` 운영 build 미노출 unit
+- 이미지 공유 환경별 분기 unit (canShare mock)
 
 ---
 
 ## 7. 디자인 / UI 후속
 
-### 7-1. STYLES.md 가이드 부합도
+### 7-1. STYLES 가이드 부합도
 
-`docs/STYLE_AUDIT.md` (갱신 2026-05-30) 기준: **raw 잔존 0**. 의도된 unique 3건만 (`ComposeEntryCard` drop-shadow / `LuckyLadder` glow). 대규모 sweep 완료.
-
-남은 정비:
-
-- `<button>` 38곳 → 단일 사용처 다수, 새 위젯 작성 시 mixin 추출 권장.
+`docs/STYLES.md` 5번 섹션 "현재 적용 현황" — 대규모 sweep 완료. raw 잔존 0.
 
 ### 7-2. dark mode
 
-- ✅ 모든 토큰 + 시즌 / 카테고리 / chart-2~8 dark 분기 완료.
-- ❌ **명시적 테마 토글 미구현** — 현재 `prefers-color-scheme` 자동만. 사용자 직접 토글 + localStorage 영속화. **M** (사용자 요청 시).
+- ✅ 모든 토큰 + 시즌 / 카테고리 / chart-2~8 dark 분기
+- ✅ **명시 테마 토글 구현 완료** (light/dark/system + localStorage persist)
 
-### 7-3. mobile 360 미검증
+### 7-3. mobile 360 검증
 
-- ✅ mobile-360 토큰 + `FestivalCarousel` responsive slidesPerView.
-- 위젯 구현 시 동시 검증 필요: `RegionStampMap` 11시군 라벨 / `SavedTournamentsSection` 그리드 / `LetterboxTabs` segmented control / `TournamentHistorySection` row.
+- ✅ E2E mobile-360.spec.ts 가 / /mypage /letter /region/cheongju /tournament 4 페이지 360 overflow 검증
+- ✅ FestivalCarousel responsive slidesPerView / RegionStampMap label 축소 / Letterbox segmented
+- 새 위젯 작성 시 360 검증 추가
 
----
+### 7-4. color-contrast a11y warn 해소 (디자인 sweep)
 
-## 8. README vs 실제 코드 차이 (Phase 0)
-
-README 의 "현재 구현 상태" 갱신 필요:
-
-- 토너먼트 전체 (setup/play/result): 🟡 → ✅ (BE 미연결 한정)
-- letter 목록/상세: 🟡 → ✅ (`saved` 탭 제외)
-- region 상세 탭: 🟡 → ✅
-- 홈 위젯: 3/5 → 2/3 (편지/우승지 미노출 정책 반영)
-- stub 개수: 53 → **16** (Phase 0 청소 후)
+`docs/test-reports/2026-06-01-e2e.md` 의 a11y 매트릭스 `color-contrast` 가 disabled. 운영 진입 전 디자인 시안 받아 시즌 accent / 카드 footer 색 대비 4.5:1+ 로 보강.
 
 ---
 
-## Phase 별 권장 작업 순서
-
-### Phase 0 — 청소 (반나절)
-
-1. `features/quiz/` 폴더 삭제 (4 파일 + hook + api)
-2. dead spec 7 파일 삭제 (1-1 표)
-3. README "현재 구현 상태" 갱신
-4. `letterApi.listSaved` + `FETCHERS.saved` 보강
-5. `useTournamentHistory` hook + `tournamentApi.listHistory` 추가
-
-### Phase 1 — mypage 위젯 (반나절 ~ 1일)
-
-6. mock handler 6개 보강 (`GET /mypage`, `PATCH /mypage/profile`, `GET /mypage/stamps`, `GET /regions/:code/summary`, `GET /regions/ongoing-festivals`, `DELETE /mypage/tournaments/:id`)
-7. `SavedTournamentsSection` + `SavedTournamentCard` + 삭제 ConfirmDialog
-8. `LetterboxTabs` (Letter index tabs 패턴 재사용)
-9. `TournamentHistorySection` InfiniteList
-10. `NicknameSection` + `NicknameEditDialog`
-
-### Phase 2 — 홈 위젯 + 지도 (1일)
-
-11. `ChungbukSvgMap` (디자인 SVG asset 필요)
-12. `RegionStampMap` (위 + `/mypage/stamps`)
-13. `WeatherWidget` 구현 + 홈 배치 결정
-14. `FestivalCarousel` 을 `useOngoingFestivals` 로 교체 (mock → 실 hook)
+## 8. Phase 별 권장 작업 순서
 
 ### Phase 3 — BE 연동 시 일괄 (백엔드 붙는 시점)
 
-15. middleware 인증 redirect 주석 해제
-16. TournamentPlayClient — `POST /tournaments`
-17. TournamentResultClient — `?id=` deep-link
-18. LetterSentClient — `?id=` + `useLetter`
-19. ProfileCard updateAvatar (multipart + 스토리지)
-20. 회원 탈퇴 (`DELETE /me` + confirm)
+1. TournamentPlayClient — `POST /tournaments`
+2. TournamentResultClient — `?id=` deep-link
+3. LetterSentClient — `?id=` + `useLetter`
+4. ProfileCard updateAvatar (multipart + 스토리지)
+5. 회원 탈퇴 (`DELETE /me` + confirm)
+6. `GET /regions/:code/summary` 연동 — RegionHero 도입
 
 ### Phase 4 — 푸시 운영 (NestJS)
 
-21. NestJS web-push 셋업 + subscription DB
-22. 새 편지 도착 hook → push 발송
-23. VAPID 키 발급 + 환경변수
+7. NestJS web-push 셋업 + subscription DB
+8. 새 편지 도착 hook → push 발송
+9. VAPID 키 발급 + 환경변수
 
-### Phase 5 — 보안 / 성능 / 테스트 마무리
+### Phase 5 — 보안 / 운영 진입
 
-24. CSP enforce 전환 (Report-Only 1-2주 모니터링 후)
-25. 인증 보안 백엔드 (해싱 / rate limit / CSRF / 메일)
-26. E2E 시나리오 확장
-27. vitest 핵심 도메인 테스트 작성
-28. iOS Safari 17+ 실기기 검증
-29. Lighthouse CI baseline warn → error
-30. LCP 이미지 `getBlurDataURL()` 적용
-31. 리스트 Link prefetch=false 정책 적용
+10. CSP enforce 전환 (Report-Only 1-2주 모니터링 후)
+11. 인증 보안 백엔드 (해싱 / rate limit / CSRF / 메일)
+12. iOS Safari 17+ 실기기 검증
+13. Lighthouse CI baseline warn → error 강화
+14. LCP 이미지 `getBlurDataURL()` 적용 (BE imageUrl 후)
+15. color-contrast a11y 디자인 sweep
 
 ### Phase 6 — 선택 작업 (필요 시점)
 
-- 명시적 테마 토글 (next-themes 또는 자체)
-- 만 14세 확인 step 추가
 - `@sentry/nextjs` client lazy-load
 - `@tanstack/react-virtual` (편지함 1000+ 시)
-- `config.count` step 폐기 결정
-- `features/ranking/` 의 travel-type 코드를 `features/quiz/` 로 이전 (반대 방향)
+- 단축 URL 서비스 (OG image URL 너무 길어짐)
+- 카카오링크 SDK 통합 (카톡 공유 UX 강화)
 
 ---
 
 ## 부록: 의존성 매트릭스
 
-| 작업                   | 백엔드                                       | 디자인                   | 다른 작업      |
-| ---------------------- | -------------------------------------------- | ------------------------ | -------------- |
-| Phase 0                | —                                            | —                        | —              |
-| Phase 1                | mock handler 추가 (실 백엔드 계약 동시 정의) | —                        | —              |
-| Phase 2 ChungbukSvgMap | —                                            | SVG asset (11 시군 path) | —              |
-| Phase 2 RegionStampMap | `/mypage/stamps` + "방문" 정의               | —                        | ChungbukSvgMap |
-| Phase 2 WeatherWidget  | `/weather/current` ✅ + 추천 알고리즘        | —                        | —              |
-| Phase 3 전체           | NestJS 라우트 다수                           | —                        | Phase 1        |
-| Phase 4                | NestJS web-push + DB                         | —                        | VAPID 키       |
-| Phase 5 보안           | rate limit / CSRF / 메일                     | —                        | Phase 3        |
-| 정책 페이지 본문       | 법무 검토                                    | —                        | —              |
-| 명시 테마 토글         | —                                            | 디자인 컬러 검증         | —              |
+| 작업                        | 백엔드                   | 디자인                   | 다른 작업 |
+| --------------------------- | ------------------------ | ------------------------ | --------- |
+| Phase 2 정밀 ChungbukSvgMap | —                        | SVG asset (11 시군 path) | —         |
+| Phase 2 WeatherWidget       | `/weather/current` ✅    | 시안                     | —         |
+| Phase 3 전체                | NestJS 라우트 다수       | —                        | —         |
+| Phase 4                     | NestJS web-push + DB     | —                        | VAPID 키  |
+| Phase 5 보안                | rate limit / CSRF / 메일 | —                        | Phase 3   |
+| 정책 페이지 본문            | —                        | —                        | 법무 검토 |
+| color-contrast sweep        | —                        | 색상 검증                | —         |
 
 ---
 
-## 핵심 발견 요약
+## 핵심 발견 요약 (2026-06-02 시점)
 
-1. **stub 27개** (README 53개는 부정확). 11개는 dead spec → 삭제 후보.
-2. **`features/quiz/` 폴더 dead** — 실 quiz 흐름은 `features/ranking/` 에서 동작.
-3. **README 정확도 낮음** — 토너먼트 / letter 목록·상세 / region 상세 탭이 실제론 ✅.
-4. **mypage mock 환경에서 깨질 위험** — `GET /mypage` 등 핵심 handler 부재.
-5. **letter `'saved'` 일관성 버그** — handler/seed 는 있는데 client 함수 누락.
-6. **운영 직전 필수**: `middleware.ts:46-58` 인증 redirect 주석 해제.
-7. **핵심 BE 작업**: `POST /tournaments` + `?id=` deep-link — 3 화면 (play/result/sent) 이 store-only 라 reload 시 데이터 손실.
-8. **테스트 미커버**: 토너먼트 store / Bracket / letter optimistic / AuthBootstrap / push 5종 — coverage include 도 분모에서 빠진 상태.
+1. **stub 16 → 11 (현재)** — Phase 0~2 청소 후 의도 보류만 남음 (ranking 추가 섹션 8 + WeatherWidget + SeasonalCenterIllustration + RegionHero).
+2. **`features/quiz/` 폴더 dead** — 실 quiz 흐름은 `features/ranking/` 에서 동작. (삭제 완료)
+3. **mock 환경 middleware skip** — `USE_MSW=true` 시 모든 페이지 접근 가능. 운영은 그대로.
+4. **6 플랫폼 E2E + 48 visual baseline** — 레이아웃/CSS 깨짐 자동 검출.
+5. **핵심 BE 작업**: `POST /tournaments` + `?id=` deep-link — 3 화면 (play/result/sent) 이 store-only 라 reload 시 데이터 손실.
+6. **iOS Safari button appearance** 회귀 fix 완료 — 모든 button 기반 card border 일관 노출.
+7. **이미지 공유** — 모바일 file share + Desktop URL+download fallback 자동 분기. 카톡 채팅 첨부 정상.

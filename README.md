@@ -90,7 +90,7 @@ export const handlers = [
 
 ## 현재 구현 상태 (v0.1)
 
-> 갱신: 2026-06-01 — Phase 0-2 완료, Phase 5 일부 (a11y / 시각 회귀 / middleware 복원) 완료.
+> 갱신: 2026-06-02 — Phase 0~2 완료, Phase 5 일부 (a11y / 시각 회귀 / 6 플랫폼 매트릭스 / middleware mock skip / size-limit / Lighthouse CI) + Phase 6 일부 (명시 테마 토글 / 14세 step) 완료. 이미지 공유 카톡 첨부 + Desktop fallback / iOS Safari appearance:none fix.
 
 ### ✅ 완전 동작
 
@@ -919,7 +919,7 @@ GitHub Secret Scanning (무료) 활성화 권장 — repo settings에서 토글.
 
 #### 회원가입 시 동의 항목 (`features/onboarding/components/ConsentBlock.tsx`)
 
-- [필수] 만 14세 이상 확인
+- [구현 완료] 만 14세 이상 확인 — onboarding `AgeConfirmStep` 자기확인 체크박스
 - [필수] 이용약관 동의 → `/policy/terms`
 - [필수] 개인정보처리방침 동의 → `/policy/privacy`
 - [선택] 위치정보 수집·이용 동의 (위치정보법 별도 동의)
@@ -1084,17 +1084,17 @@ Turborepo / Micro Frontend / Redux / GraphQL / Kubernetes / @tanstack/react-virt
 - [ ] **위젯 stub 구현** (48개) — 구현 시점에 일괄 적용:
   - RSC + `<Suspense>` 패턴 (또는 `useSuspenseQuery`) — 현재 위젯이 `'use client'`라 streaming 미작동
   - React Compiler (`babel-plugin-react-compiler`) — 리렌더 잦은 영역(토너먼트 store)
-  - `getBlurDataURL()` LCP 이미지 적용 (시군 hero / 우승지)
-  - 리스트성 `<Link prefetch={false}>` (시군 11개 카드 등)
+  - `getBlurDataURL()` LCP 이미지 적용 (BE imageUrl 연동 후)
+  - [x] 리스트성 `<Link prefetch={false}>` (RegionContentRow / Top5Card / LetterRowCard / SavedTournamentCard / LatestReceivedLetter / NotificationDropdown 적용 완료)
 - [ ] serwist SW **런타임 검증** (production 실기기: 오프라인/업데이트배너/푸시/설치)
 - [ ] Pretendard fallback 메트릭 capsize 정밀 측정 (현재 근사값)
-- [ ] Lighthouse CI assertion warn → error (baseline 후)
-- [ ] **명시적 테마 토글** — 현재 `prefers-color-scheme: dark` 자동 분기만 처리 (시스템 설정 의존). 사용자가 직접 light/dark 전환 + localStorage 영속화는 미구현. Settings 페이지에 토글 추가 시 `html[data-theme]` 분기 + ThemeProvider(자체 구현 또는 `next-themes`) 도입 필요
+- [ ] Lighthouse CI assertion warn → error (baseline 후) — a11y/CLS 는 이미 error 격상됨
+- [x] **명시적 테마 토글** — light/dark/system 3-옵션 segmented + `ui-store` persist + `ThemeApplier` 가 `html[data-theme]` 설정. `Settings → 테마` 섹션.
 
 ### 기능 연동
 
 - [ ] 백엔드 실 API 연동 (`NEXT_PUBLIC_USE_MSW=false`) — Location/Letter/Auth 등
-- [ ] **인증/온보딩 redirect 복원** (운영 배포 전 필수) — `middleware.ts`(인증 redirect 두 분기)와 `src/features/auth/components/AuthBootstrap.tsx`(onboarding redirect 분기)의 주석 해제. 백엔드 붙기 전 모든 페이지 확인용으로 임시 비활성된 상태
+- [x] **인증 redirect 복원** — `src/middleware.ts` 의 redirect 활성화. `USE_MSW=true` (mock) 환경에선 자동 skip (모든 페이지 접근 허용), 운영 빌드 (`USE_MSW=false`) 에선 cookie 없으면 `/login`.
 - [ ] `@sentry/nextjs` client 도입 검토 (lazy-load로 First Load 영향 최소화)
 
 ### 토너먼트

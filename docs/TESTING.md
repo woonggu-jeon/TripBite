@@ -1,4 +1,10 @@
-# 단위테스트 가이드
+# 테스트 가이드
+
+vitest 단위 (122 cases / 21 files) + Playwright E2E (6 플랫폼, 420 cases) + axe-core a11y + toHaveScreenshot 시각 회귀.
+
+> 운영 결과 추적: [`docs/test-reports/2026-06-01-e2e.md`](./test-reports/2026-06-01-e2e.md) — 1~8차 누적, 이슈 처리, 매트릭스.
+
+## 단위 — vitest
 
 vitest + @testing-library/react + MSW 2.x 기반. 실행 / 작성 패턴 / MSW handler 작성 / Generated SDK 테스트.
 
@@ -189,6 +195,134 @@ include: [
 ## E2E 와 분리
 
 Playwright (`e2e/**`) 는 vitest `exclude` — vitest 가 안 잡음. `.github/workflows/e2e.yml` 에서 별도 실행.
+
+---
+
+## E2E — Playwright
+
+6 플랫폼 매트릭스 + 70 cases × 6 = 420 cases.
+
+```bash
+npm run test:e2e                       # 헤드리스 전체
+npm run test:e2e:ui                    # UI 모드 (디버깅)
+npm run test:e2e -- --project=desktop-windows   # 단일 project
+npm run test:e2e -- --update-snapshots -g "시각 회귀"  # 시각 baseline 갱신
+```
+
+### Projects (`playwright.config.ts`)
+
+| Project             | 디바이스                | Viewport | 용도               |
+| ------------------- | ----------------------- | -------- | ------------------ |
+| `desktop-windows`   | Desktop Chrome          | 1280×720 | Windows PC         |
+| `desktop-mac`       | Desktop Chrome + Mac UA | 1440×900 | Mac PC             |
+| `mobile-chrome-aos` | Pixel 7                 | 393×852  | AOS 모바일웹       |
+| `mobile-safari-ios` | iPhone 14               | 390×844  | iOS 모바일웹       |
+| `mobile-pwa-aos`    | Pixel 7 standalone      | 393×852  | AOS PWA (모바일앱) |
+| `mobile-pwa-ios`    | iPhone 14 standalone    | 390×844  | iOS PWA (모바일앱) |
+
+### Spec 별 책임
+
+| Spec                          | 케이스 (Project 당) | 검증                                             |
+| ----------------------------- | ------------------- | ------------------------------------------------ |
+| `pages-smoke.spec.ts`         | 14                  | 14 페이지 진입 + 가로 overflow + 핵심 element    |
+| `og-routes.spec.ts`           | 5                   | `/api/og/{type}` 4 타입 PNG + unknown 404        |
+| `interactions.spec.ts`        | 7                   | 위젯 라우팅 / 'local' 미노출 / 알림함 / 빠른시작 |
+| `flows.spec.ts`               | 7                   | 온보딩 / 편지 작성 / 토너먼트 random / 알림      |
+| `smoke.spec.ts`               | 3                   | middleware redirect / `/login` / health          |
+| `a11y.spec.ts`                | 6 (desktop only)    | axe-core WCAG 2.0/2.1 A/AA serious+ 0            |
+| `visual.spec.ts`              | 8                   | toHaveScreenshot 4 페이지 × 2 모드 baseline      |
+| `mobile-360.spec.ts`          | 4 (desktop only)    | 360 viewport overflow                            |
+| `location-permission.spec.ts` | 6                   | granted/prompt/denied/IP fallback/실패/홈        |
+| `tournament-full.spec.ts`     | 2                   | random/season 흐름 진입 + 시작 활성              |
+| `push-flow.spec.ts`           | 2                   | 알림 dropdown + MockPushTrigger                  |
+
+### 인증 헬퍼 (`e2e/_helpers/auth.ts`)
+
+```ts
+import { authedSession } from './_helpers/auth';
+
+test.beforeEach(async ({ page }) => {
+  await authedSession(page); // mock access_token cookie + onboarding bypass
+});
+```
+
+middleware 가 `USE_MSW=true` 모드에선 redirect skip 하므로 cookie 주입 없어도 페이지 진입 가능. 운영 빌드에선 cookie 필수.
+
+### 헬퍼 (overflow 검증)
+
+```ts
+async function assertNoHorizontalOverflow(page: Page) {
+  const overflow = await page.evaluate(() => {
+    const w = document.documentElement.clientWidth;
+    const scroll = document.documentElement.scrollWidth;
+    return scroll - w;
+  });
+  expect(overflow).toBeLessThanOrEqual(1); // 1px subpixel rounding 허용
+}
+```
+
+---
+
+## a11y — axe-core (Playwright)
+
+```ts
+import AxeBuilder from '@axe-core/playwright';
+
+const result = await new AxeBuilder({ page })
+  .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+  .disableRules(['region', 'duplicate-id-aria', 'color-contrast'])
+  .analyze();
+
+const fatal = result.violations.filter(
+  (v) => v.impact === 'serious' || v.impact === 'critical',
+);
+expect(fatal).toEqual([]);
+```
+
+- `region` — 일부 PageSection 이 landmark 중첩 (개선 예정)
+- `duplicate-id-aria` — dev hot reload 잔재
+- `color-contrast` — 시즌 accent / 카드 footer 의 4.5:1 미달 (디자인 sweep 별 PR)
+
+---
+
+## 시각 회귀 — toHaveScreenshot
+
+48 baseline (4 페이지 × 2 모드 × 6 projects) = `e2e/visual.spec.ts-snapshots/*.png` (git 추적).
+
+```ts
+await page.emulateMedia({ colorScheme: 'light' });
+await page.goto('/mypage');
+await page.evaluate(() => document.fonts?.ready);
+await page.waitForTimeout(1200);
+
+await expect(page).toHaveScreenshot(`mypage-light.png`, {
+  fullPage: false, // viewport 캡처 (fullPage 는 dynamic height drift 문제)
+  maxDiffPixelRatio: 0.05,
+  animations: 'disabled',
+});
+```
+
+회귀 발생 시 `test-results/<spec>/<case>-<project>/{actual,expected,diff}.png` 자동 생성. PR diff 리뷰로 디자인 변경 확인.
+
+Baseline 갱신:
+
+```bash
+npm run test:e2e -- --update-snapshots -g "시각 회귀"
+```
+
+---
+
+## CI 매트릭스
+
+- `.github/workflows/e2e.yml`
+  - PR: desktop-chrome + mobile-chrome (chromium 만, 빠른 검증)
+  - main push: 4 projects 전체 (chromium + webkit)
+- `.github/workflows/lighthouse.yml` — `/login`, `/onboarding` perf/a11y/best-practices/SEO
+- `.github/workflows/ci.yml` — lint / type / vitest / size-limit
+
+### 운영 결과 추적
+
+매 turn 마다 `docs/test-reports/2026-06-01-e2e.md` 의 차수 섹션 (1~8차) 추가. baseline 갱신 / 회귀 발견 / 처리 모두 한 곳.
 
 ## 추후 — Lighthouse a11y/SEO 이슈 (별도 처리 필요)
 

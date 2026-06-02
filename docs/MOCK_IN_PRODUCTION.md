@@ -47,6 +47,7 @@ axios `baseURL` 이 `/api/backend` 로 자동 분기 (`src/services/api/client.t
 - **Service worker 충돌**: Serwist 의 `/sw.js` (PWA precache) 와 별도 파일이지만 같은 origin 의 fetch 를 두 sw 가 처리하지 않도록 MSW prefix(`/api/backend`)와 Serwist precache 영역이 겹치지 않게 유지.
 - **인증/세션**: mock 은 `mockUser` 단일. 실 사용자 흐름 검증엔 부적합.
 - **SEO / cache**: 정적 페이지(static export)는 빌드 시점에 fetch 안 함 → mock 데이터 미반영. 첫 hydration 후에야 mock 응답이 보인다.
+- **middleware 인증 redirect**: `USE_MSW=true` 모드에선 redirect skip — 백엔드 cookie 발급 불가하므로 모든 페이지 접근 허용. 운영 빌드 (`USE_MSW=false`) 에서는 `access_token` cookie 없으면 `/login` 으로 redirect (운영 정책 유지). `src/middleware.ts` 의 `isMockMode` 분기 참조.
 
 ## 4. 시각적 표시
 
