@@ -98,6 +98,10 @@ export function TournamentResultClient() {
    * 결과 카드 이미지 공유 — `/api/og/tournament` 가 query → 이미지 PNG 생성.
    * deep-link 불필요 — 받는 쪽은 이미지 파일만 받음.
    * 결과 데이터는 URL query 로 인코딩 (winner name / region / category / matches).
+   *
+   * payload 는 file 단독 — title/text 동반 시 일부 share target (예: 카카오톡) 이
+   * 텍스트만 클립보드로 분리 처리하고 file 첨부 흐름이 끊긴다. file 만 보내야
+   * OS 가 채팅 채널 선택 → 이미지 첨부의 정상 분기로 진행.
    */
   const handleShare = async () => {
     const params = new URLSearchParams({
@@ -110,8 +114,6 @@ export function TournamentResultClient() {
     const result = await shareWithImage({
       imageUrl,
       filename: `tripbite-tournament-${winner.id}.png`,
-      title: `🏆 ${winner.name}`,
-      text: t('shareText', { name: winner.name }),
     });
     if (result === 'downloaded') toast.success(tCommon('shareDownloaded'));
     else if (result === 'failed') toast.error(tCommon('shareFailed'));

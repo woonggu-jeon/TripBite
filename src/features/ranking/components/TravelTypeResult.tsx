@@ -43,6 +43,8 @@ export function TravelTypeResult() {
   const router = useRouter();
   const { data, isLoading } = useMyTravelType();
 
+  // file 단독 — title/text 동반 시 일부 share target (카카오톡 등) 이 텍스트만
+  // 클립보드로 분리 처리하고 file 첨부 흐름이 끊긴다.
   const handleShare = async (result: TravelType) => {
     haptic.tap();
     const params = new URLSearchParams({
@@ -54,8 +56,6 @@ export function TravelTypeResult() {
     const status = await shareWithImage({
       imageUrl,
       filename: `tripbite-traveltype-${result.code}.png`,
-      title: result.title,
-      text: result.description ?? result.title,
     });
     if (status === 'downloaded') toast.success(tCommon('shareDownloaded'));
     else if (status === 'failed') toast.error(tCommon('shareFailed'));
