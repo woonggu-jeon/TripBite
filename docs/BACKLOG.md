@@ -50,6 +50,15 @@
 - ✅ **비밀번호 변경 모달화** — `ChangePasswordDialog` 신설 (NicknameEditDialog 모달 패턴 재사용). 인라인 폼 expand 였던 동작이 모달로 통일
 - ✅ **i18n 이동** — `mypage.nickname.*` 제거 → `settings.account.nicknameDialog.*` + `settings.account.changePasswordDialog.*` 신설
 
+### 옵션 D (성능 점검 + 보안 + 모니터링 stale 정리)
+
+- ✅ **InfiniteList rootMargin** — `use-intersection.ts` default `200px` 이미 적용. README TODO stale 정리
+- ✅ **이미지 lazy loading** — 현재 실 이미지 호출처 없음 (emoji/colorChip 만). OptimizedImage 표준 wired
+- ✅ **npm audit CI** — `--audit-level=high` + `continue-on-error: false` 이미 활성. README TODO stale 정리
+- ✅ **Sentry client 의도 미도입** — server/edge 만 유지 (browser SDK ~80KB 페널티). README 명시
+- ✅ **Pretendard fallback 메트릭 정밀** — `_fonts.scss` ascent 92→110% / descent 24→30% + size-adjust 100% (Pretendard 공식 typoAscent/typoDescent 기반). 운영 LCP 측정 후 capsize 미세조정 가능
+- ⏳ **style-src `'unsafe-inline'` 제거** — inline style 15+ 파일 sweep 필요. 별 PR (운영 진입 전)
+
 ### 디자인 (시안 없이 임시 디자인 — 후속 교체 가능 구조)
 
 - ✅ **ConceptStep 일러스트** — 시즌 그라데이션 SVG (산/하늘/해) + 큰 emoji. 시안 받으면 SVG asset 만 교체

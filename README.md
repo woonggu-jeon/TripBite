@@ -960,7 +960,7 @@ GitHub Secret Scanning (무료) 활성화 권장 — repo settings에서 토글.
 - [ ] 약관/개인정보처리방침 본문 법무 검토
 - [ ] `ConsentBlock` 을 회원가입 흐름에 통합
 - [x] Dependabot 활성화 (`.github/dependabot.yml` — npm/github-actions weekly + patch/minor group). Secret Scanning 은 repo Settings → Code security 에서 토글
-- [ ] `npm audit` PR 단계에서 통과 확인
+- [x] `npm audit --audit-level=high` CI 활성 (`ci.yml`, `continue-on-error: false` 로 PR 차단)
 - [ ] 위치정보 처리방침에 "쿼리 파라미터로만 사용, 저장하지 않음" 명시
 
 ### 정기 점검 (출시 후)
@@ -1077,7 +1077,7 @@ Turborepo / Micro Frontend / Redux / GraphQL / Kubernetes / @tanstack/react-virt
 ### 보안
 
 - [ ] CSP **enforce 전환** — `/api/csp-report` 위반 보고 1~2주 모니터링 후 `Content-Security-Policy-Report-Only` → `Content-Security-Policy`
-- [ ] `style-src 'unsafe-inline'` 제거 (style nonce/hash)
+- [ ] `style-src 'unsafe-inline'` 제거 (style nonce/hash) — 15+ 파일의 inline style 을 className/CSS variable 로 변환하는 큰 sweep 필요. 운영 진입 전 별 PR.
 - [x] SRI(Subresource Integrity) — jsdelivr Pretendard CSS `<link>` 에 `crossOrigin="anonymous"` + `NEXT_PUBLIC_PRETENDARD_SRI` 환경변수 기반 `integrity` 속성 주입 (`layout.tsx`). 운영 배포 전 hash 채움: `curl -s "..." | openssl dgst -sha384 -binary | openssl base64 -A`
 - [x] gitleaks workflow 활성화 (`.github/workflows/gitleaks.yml`) — Secret Scanning 은 repo 설정에서 추가 권장
 - [ ] 백엔드: CSRF Layer 1·2(SameSite/Origin) + Rate Limit (프론트 middleware 1차 Origin 검증만 적용됨)
@@ -1091,7 +1091,7 @@ Turborepo / Micro Frontend / Redux / GraphQL / Kubernetes / @tanstack/react-virt
   - `getBlurDataURL()` LCP 이미지 적용 (BE imageUrl 연동 후)
   - [x] 리스트성 `<Link prefetch={false}>` (RegionContentRow / Top5Card / LetterRowCard / SavedTournamentCard / LatestReceivedLetter / NotificationDropdown 적용 완료)
 - [ ] serwist SW **런타임 검증** (production 실기기: 오프라인/업데이트배너/푸시/설치)
-- [ ] Pretendard fallback 메트릭 capsize 정밀 측정 (현재 근사값)
+- [x] Pretendard fallback 메트릭 — Pretendard 공식 typoAscent/typoDescent (110% / 30%) + size-adjust 100% (`_fonts.scss`). 운영 LCP 측정 후 capsize 도구로 ±1% 미세조정 가능.
 - [x] **Lighthouse CI** assertion 부분 격상 — a11y / CLS error, perf / best-practices / seo warn (`lighthouserc.json`). 운영 1~2주 baseline 후 perf 도 error 격상 검토.
 - [x] **명시적 테마 토글** — light/dark/system 3-옵션 segmented + `ui-store` persist + `ThemeApplier` 가 `html[data-theme]` 설정. `Settings → 테마` 섹션.
 
@@ -1099,7 +1099,7 @@ Turborepo / Micro Frontend / Redux / GraphQL / Kubernetes / @tanstack/react-virt
 
 - [ ] 백엔드 실 API 연동 (`NEXT_PUBLIC_USE_MSW=false`) — Location/Letter/Auth 등
 - [x] **인증 redirect 복원** — `src/middleware.ts` 의 redirect 활성화. `USE_MSW=true` (mock) 환경에선 자동 skip (모든 페이지 접근 허용), 운영 빌드 (`USE_MSW=false`) 에선 cookie 없으면 `/login`.
-- [ ] `@sentry/nextjs` client 도입 검토 (lazy-load로 First Load 영향 최소화)
+- [x] `@sentry/nextjs` client — **의도 미도입 결정**. browser SDK 가 ~80KB 라 lazy-load 해도 페널티 큼. server/edge runtime 만 사용 (현 `sentry.{server,edge}.config.ts` + `global-error.tsx` 의 `Sentry.captureException`). client 에러 추적 필요 시 별 PR 로 lazy-load + 작은 envelope 만 전송하는 직접 구현 검토.
 
 ### 토너먼트
 
@@ -1608,8 +1608,8 @@ DevTools → Network 탭 → No throttling 드롭다운
 
 - [ ] 첫 화면 3초 이내 인터랙티브
 - [ ] 토너먼트 매치업 카드 전환 60fps 유지
-- [ ] InfiniteList 끝 닿기 전 다음 페이지 prefetch (rootMargin 200px)
-- [ ] 이미지 lazy loading 동작 확인
+- [x] InfiniteList 끝 닿기 전 다음 페이지 prefetch — `use-intersection.ts` default `rootMargin: '200px'` 적용됨
+- [x] 이미지 lazy loading — 현재 코드에 실 이미지 호출처 없음 (emoji + colorChip + ProfileCard 의 object URL `<img>`). 실 이미지 도입 시 `OptimizedImage` (`loading='lazy'` default) 사용 표준 wired.
 
 #### 7) 임계값 표 (모바일 기준)
 
