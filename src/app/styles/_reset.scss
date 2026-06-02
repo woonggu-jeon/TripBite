@@ -54,6 +54,11 @@ button {
   cursor: pointer;
   border: 0;
   background: transparent;
+  // iOS Safari / PWA 의 native button rendering 비활성 —
+  // appearance:none 이 없으면 .card 류 클래스의 border 가 iOS 에서만
+  // 무시되어 토너먼트 선택 시 테두리가 사라지는 회귀 발생.
+  -webkit-appearance: none;
+  appearance: none;
   // iOS 의 회색 tap 잔상 제거 — 우리는 :active 로 직접 피드백.
   // sticky hover 와는 별개로 모든 button 일관 적용.
   -webkit-tap-highlight-color: transparent;
