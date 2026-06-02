@@ -124,25 +124,29 @@ export const handlers = [
 
 ```
 [비인증]
-  /login
+  /login, /signup, /find-id, /forgot-password, /reset-password
 
-[인증, 온보딩 미완료]
-  /onboarding              3-step (컨셉 / 위치 / 닉네임)
+[온보딩 미완료]
+  /onboarding              3-step (컨셉 / 만 14세 확인 / 위치)
+                            ↳ 닉네임 step 은 미노출 (서버 기본 부여)
 
-[인증 + 온보딩 완료]
+[온보딩 완료 + 인증 / mock 환경]
   /                        홈 (대시보드)
   /ranking                 여행지 랭킹
   /region                  충북 11개 시군 지도
-  /region/[code]           시군 상세 (관광지/축제/체험 탭)
+  /region/[code]           시군 상세 (RegionHero + 관광지/축제/체험 탭)
+  /destination/[id]        여행지 상세 (Hero + WinnerDetailPanel + share)
   /tournament              토너먼트 설정
   /tournament/play           ↳ 일러스트 → 지도 → 1:1 매치
   /tournament/result         ↳ 우승지 + 행운의 색 + 사다리타기
-  /letter                  편지 메인 (받은/보낸)
+  /letter                  편지 메인 (received / liked / saved / sent 4탭)
   /letter/compose            ↳ 5글자 작성
+  /letter/sent               ↳ 보내기 완료 화면
   /letter/[id]               ↳ 원고지 상세
   /quiz                    여행 유형 테스트
-  /mypage                  마이페이지 (도장깨기 포함)
-  /settings                설정 (4섹션)
+  /mypage                  마이페이지 (도장깨기 / 저장 우승지 / 토너먼트 기록 / 편지함)
+  /settings                설정 (알림 / 테마 / 계정 / 정책)
+  /policy/{terms,privacy,licenses}  정책 페이지
 ```
 
 **하단 네비 5탭**: 홈 / 랭킹 / **🏆 토너먼트 (가운데 강조)** / 편지 / 마이페이지
@@ -154,20 +158,27 @@ export const handlers = [
 ```
 src/app/
  ├─ layout.tsx                     Root (Providers + NextIntlClientProvider)
- ├─ error.tsx / not-found.tsx / loading.tsx
+ ├─ error.tsx / not-found.tsx / loading.tsx / global-error.tsx
+ ├─ api/                           Edge / Node route handlers
+ │   ├─ health/                    헬스 체크
+ │   ├─ csp-report/                CSP report-only 수신
+ │   ├─ og/[type]/                 OG 카드 이미지 (tournament / quiz / destination / region)
+ │   └─ backend/                   axios baseURL rewrite proxy (USE_MSW)
  ├─ (auth)/                        헤더/네비 없음
- │   ├─ login/page.tsx
- │   └─ onboarding/page.tsx
+ │   ├─ login/, signup/, find-id/, forgot-password/, reset-password/
+ │   └─ onboarding/                3-step (컨셉 + 14세 + 위치)
  └─ (main)/                        하단 네비 5탭 공통 그룹
      ├─ layout.tsx                 AppHeader + BottomNav
      ├─ page.tsx                   홈
      ├─ ranking/
      ├─ region/  +  [code]/
+     ├─ destination/[id]/
      ├─ tournament/  +  play/  +  result/
-     ├─ letter/     +  compose/  +  [id]/
+     ├─ letter/     +  compose/  +  sent/  +  [id]/
      ├─ quiz/
      ├─ mypage/
-     └─ settings/
+     ├─ settings/
+     └─ policy/{terms,privacy,licenses}/
 ```
 
 ---
@@ -176,22 +187,26 @@ src/app/
 
 ```
 src/features/
- ├─ auth/              로그인 / 로그아웃 / /me / AuthBootstrap   [✅ 동작]
- ├─ onboarding/        3-step 온보딩                            [✅ 동작]
- ├─ location/          Geolocation + Permissions API + IP fallback [✅ 동작]
- ├─ user/              사용자 프로필                            [🔧 hook 준비]
- ├─ letter/            다섯글자 편지 (작성·목록·상세·4탭 ✅)
- ├─ tournament/        토너먼트 setup·play·result ✅ (BE 연동 시 deep-link 추가)
- ├─ ranking/           Top5·시군·카테고리 ✅ / 추가 섹션 ⏳ (사양 대기)
- ├─ region/            시군 그리드 ✅ / 상세 탭 ✅ / ChungbukSvgMap ✅ (grid 도식, 정밀 path ⏳)
- ├─ weather/           hook ✅ / WeatherWidget ✅ (홈 배치 완료)
- ├─ mypage/            프로필·닉네임·도장·우승지·토너먼트 기록·편지함 ✅
- ├─ notification/      Web Push + 인앱 알림함 (hook ✅ / 일부 UI ⏳)
- ├─ settings/          알림/계정/정책 섹션                      [✅ 동작]
- ├─ i18n/              LanguageSwitcher                         [✅ 동작]
- ├─ chart/             Recharts wrapper (dynamic import)        [🔧 래퍼 준비]
- ├─ carousel/          Embla wrapper (dynamic import)           [🔧 래퍼 준비]
- └─ list/              InfiniteList (IntersectionObserver)      [🔧 준비, 사용처 stub]
+ ├─ auth/              로그인 / 로그아웃 / /me / AuthBootstrap          [✅]
+ ├─ onboarding/        3-step (Concept + AgeConfirm + Location)        [✅]
+ ├─ location/          Geolocation + Permissions API + IP fallback     [✅]
+ ├─ user/              사용자 프로필 hook                              [🔧]
+ ├─ home/              HomeDashboard 위젯 (RecommendationBanner / FestivalCarousel / LatestReceivedLetter) [✅]
+ ├─ letter/            다섯글자 편지 (작성·목록·상세·4탭)              [✅]
+ ├─ tournament/        토너먼트 setup·play·result (BE deep-link 대기)  [✅]
+ ├─ ranking/           Top5·시군·카테고리 / 추가 섹션 ⏳ (사양 대기)   [✅]
+ ├─ region/            시군 그리드·상세 탭·ChungbukSvgMap·RegionHero·StampMap [✅]
+ ├─ weather/           useCurrentWeather + WeatherWidget (홈 배치)     [✅]
+ ├─ mypage/            ProfileCard·도장·우승지·토너먼트 기록·편지함    [✅]
+ ├─ notification/      Web Push + 인앱 알림함 + MockPushTrigger        [✅]
+ ├─ settings/          알림·테마·계정(닉네임/비밀번호 모달)·정책       [✅]
+ ├─ theme/             ThemeApplier + ThemeSection (light/dark/system) [✅]
+ ├─ pwa/               Banner / Install / PwaUpdate / Offline / MockMode [✅]
+ ├─ analytics/         PageView tracker + WebVitals + Vercel Analytics [✅]
+ ├─ i18n/              LanguageSwitcher                                [✅]
+ ├─ chart/             Recharts wrapper (dynamic import)               [✅]
+ ├─ carousel/          Embla wrapper (dynamic import)                  [✅]
+ └─ list/              InfiniteList (IntersectionObserver rootMargin 200px) [✅]
 ```
 
 > ✅ 동작 · 🔧 인프라 준비(호출 대기) · ⏳ stub(`return null`, 렌더링 미구현). 상단 "현재 구현 상태" 참고.

@@ -126,4 +126,4 @@ Repo → Settings → Secrets and variables → Actions
 
 - `.github/workflows/ci.yml` — PR + dev/main push 시 lint/type/test/build/size (배포 X)
 - `.github/workflows/deploy.yml` — main push 시 승인 후 Vercel 배포
-- `.size-limit.json` — 번들 크기 회귀 가드 (500kB gzip)
+- `.size-limit.json` — 번들 크기 회귀 가드 4 항목 (전체 500kB / shared First Load 230kB / recharts 120kB / MSW 100kB, 모두 gzip)
