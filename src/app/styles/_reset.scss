@@ -21,6 +21,11 @@ body {
      미지원 브라우저는 height:100% fallback. */
   min-height: 100vh;
   min-height: 100svh;
+  /* 가로 스크롤 방지 — clip 사용:
+     - hidden 은 sticky 의 scrolling ancestor 를 만들어 헤더 sticky 가 깨짐
+     - clip 은 시각 차단만 (scroll container 생성 X) → sticky 정상 동작
+     iOS Safari 16+ / Chrome 90+ 지원 (TripBite 대상 환경 OK). */
+  overflow-x: clip;
 }
 
 body {
@@ -31,6 +36,7 @@ body {
   background: var(--color-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* overflow-x: hidden 는 html 에 적용됨 (위 html,body 블록). */
 }
 
 img,

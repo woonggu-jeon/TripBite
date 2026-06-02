@@ -66,6 +66,11 @@
 - ✅ **Banner message 명시 토큰** — `color: var(--color-bg)` + `font-weight: bold` + `animation-fill-mode: forwards`. axe color-contrast 위반 해소
 - ✅ **`--color-muted` 톤 보강** — `#6b7280` (4.43:1 미달) → `#5b6470` (surface-soft 4.5:1+). LetterIndex 비활성 탭 등 대비 확보
 
+### sticky 헤더 회귀 fix
+
+- ✅ **AppHeader / SubHeader sticky 동작 복원** — `.shell` 의 `overflow-x: hidden` 이 sticky 의 scrolling ancestor 를 .shell 로 잡아 body scroll 과 끊겼음. letter 등 긴 페이지 스크롤 시 헤더가 사라지던 회귀
+- ✅ **`overflow-x: clip` 으로 교체** — `_reset.scss` 의 `html, body` 에 적용. `hidden` 과 달리 `clip` 은 scroll container 생성하지 않아 sticky 정상 동작. iOS Safari 16+ / Chrome 90+ 지원
+
 ### 디자인 (시안 없이 임시 디자인 — 후속 교체 가능 구조)
 
 - ✅ **ConceptStep 일러스트** — 시즌 그라데이션 SVG (산/하늘/해) + 큰 emoji. 시안 받으면 SVG asset 만 교체

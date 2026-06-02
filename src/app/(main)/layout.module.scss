@@ -10,8 +10,9 @@
   grid-template-rows: auto 1fr auto;
   width: 100%;
   max-width: 100vw;
-  // 100vw 트릭(헤더 풀폭 확장) 사용 시 미세 가로 스크롤 방지
-  overflow-x: hidden;
+  // ⚠ overflow-x: hidden 를 여기 두면 position:sticky 의 scrolling ancestor 가
+  //   .shell 이 되어 body scroll 과 끊김 → 헤더 sticky 가 안 됨. body 에 적용함
+  //   (`_reset.scss` 의 body { overflow-x: hidden }).
 }
 
 // 풀폭 outer — SubHeader 가 100vw 풀폭 sticky 일 수 있도록 padding/max-width 제거.
