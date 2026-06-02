@@ -1,0 +1,35 @@
+.wrap {
+  position: relative;
+  width: 100%;
+  max-width: 240px;
+  aspect-ratio: 6 / 5;
+  margin: 0 auto;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-card-strong);
+}
+
+.svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.emoji {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: var(--emoji-2xl);
+  line-height: 1;
+  filter: var(--drop-shadow-icon-strong);
+}
+
+@media (max-width: 380px) {
+  .wrap {
+    max-width: 200px;
+  }
+  .emoji {
+    font-size: var(--emoji-xl);
+  }
+}

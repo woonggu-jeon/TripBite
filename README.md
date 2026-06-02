@@ -116,7 +116,7 @@ export const handlers = [
 - **공용 컴포넌트**: `InfiniteList` (무한스크롤), 차트·캐러셀 동적 래퍼, `OptimizedImage`, `ConfirmDialog`, 피드백/PWA 배너.
 - **테스트**: Playwright 4-project 매트릭스 (desktop / mobile-chrome / mobile-safari / mobile-pwa) + axe-core a11y + toHaveScreenshot 시각 회귀.
 
-> **stub**: Phase 0~2 청소 + 위젯 구현 후 **11개** 잔존 (모두 디자인/사양 의존). ranking 추가 섹션 8 + WeatherWidget + SeasonalCenterIllustration + RegionHero. [`docs/BACKLOG.md`](docs/BACKLOG.md) 참고.
+> **stub**: Phase 0~2 + 디자인 임시 구현 후 **8개** 잔존 (ranking 추가 섹션, 사양 대기). 그 외 WeatherWidget / RegionHero / SeasonalCenterIllustration / ConceptStep 일러스트 모두 임시 디자인 구현 완료 — 후속 디자인 시안 받으면 JSX/asset 만 교체. [`docs/BACKLOG.md`](docs/BACKLOG.md) 참고.
 
 ---
 
@@ -184,7 +184,7 @@ src/features/
  ├─ tournament/        토너먼트 setup·play·result ✅ (BE 연동 시 deep-link 추가)
  ├─ ranking/           Top5·시군·카테고리 ✅ / 추가 섹션 ⏳ (사양 대기)
  ├─ region/            시군 그리드 ✅ / 상세 탭 ✅ / ChungbukSvgMap ✅ (grid 도식, 정밀 path ⏳)
- ├─ weather/           hook ✅ / WeatherWidget ⏳ (홈 배치 결정 후)
+ ├─ weather/           hook ✅ / WeatherWidget ✅ (홈 배치 완료)
  ├─ mypage/            프로필·닉네임·도장·우승지·토너먼트 기록·편지함 ✅
  ├─ notification/      Web Push + 인앱 알림함 (hook ✅ / 일부 UI ⏳)
  ├─ settings/          알림/계정/정책 섹션                      [✅ 동작]
@@ -1084,7 +1084,7 @@ Turborepo / Micro Frontend / Redux / GraphQL / Kubernetes / @tanstack/react-virt
 
 ### 렌더링 / PWA
 
-- [x] **위젯 stub 구현 정리** — Phase 0~2 청소 후 stub 53 → 11 (ranking 추가 섹션 8 + WeatherWidget + SeasonalCenterIllustration + RegionHero, 모두 디자인/사양 의존)
+- [x] **위젯 stub 구현 정리** — stub 53 → 8 (ranking 추가 섹션만 잔존, 사양 대기). WeatherWidget / RegionHero / SeasonalCenterIllustration / ConceptStep 일러스트 모두 임시 디자인 구현 완료
 - [ ] **렌더링 최적화 후속**:
   - RSC + `<Suspense>` 패턴 (또는 `useSuspenseQuery`) — 현재 위젯이 `'use client'`라 streaming 미작동
   - React Compiler (`babel-plugin-react-compiler`) — 리렌더 잦은 영역(토너먼트 store)

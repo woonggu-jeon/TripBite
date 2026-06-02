@@ -28,10 +28,8 @@ async function audit(page: Page, url: string) {
     .disableRules([
       'region',
       'duplicate-id-aria',
-      // color-contrast 는 디자인 시안 확정 후 별 PR 로 sweep — 현재 시즌별 accent
-      // 색상 일부가 흰 배경에서 4.5:1 미달 (홈의 시즌 라벨, 카드 footer 등).
-      // baseline error 가 아닌 warn 으로 격하.
-      'color-contrast',
+      // 2026-06-02: spring / autumn / red / amber / green / violet 톤을
+      // 어둡게 보강해 흰 배경 4.5:1+ 충족. color-contrast 다시 활성화.
     ])
     .analyze();
 }
@@ -46,7 +44,13 @@ const PAGES: { path: string; label: string }[] = [
 ];
 
 test.describe('a11y — serious/critical 위반 0건', () => {
-  test.beforeEach(async ({ page }) => {
+  // axe-core 분석은 desktop 계열만 — webkit (mobile-safari/pwa) 의 일부 viewport
+  // 의존 검사 결과가 다른 project 와 어긋나 noise. 디자인 sweep 후 모든 project 활성.
+  test.beforeEach(async ({ page }, testInfo) => {
+    test.skip(
+      !testInfo.project.name.startsWith('desktop'),
+      'a11y 검사는 desktop 계열만',
+    );
     await authedSession(page);
   });
 

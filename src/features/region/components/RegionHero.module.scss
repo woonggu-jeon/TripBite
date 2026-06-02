@@ -1,0 +1,111 @@
+.wrap {
+  position: relative;
+  width: 100%;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+  padding: var(--space-4) var(--space-5);
+  isolation: isolate;
+}
+
+.bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      var(--color-primary-tint),
+      transparent 60%
+    ),
+    linear-gradient(
+      180deg,
+      var(--color-primary-surface-grad-start),
+      var(--color-bg)
+    );
+  z-index: -1;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.emojiWrap {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+}
+
+.emoji {
+  font-size: var(--emoji-lg);
+  line-height: 1;
+}
+
+.body {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.title {
+  font-size: var(--font-h1);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-fg);
+  letter-spacing: var(--tracking-tight);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: var(--font-caption);
+  color: var(--color-muted);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.description {
+  font-size: var(--font-body-sm);
+  color: var(--color-fg);
+  margin: var(--space-2) 0 0;
+  line-height: var(--line-relaxed);
+  word-break: keep-all;
+}
+
+.popularity {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px var(--space-2);
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
+  border-radius: var(--radius-full);
+  font-size: var(--font-caption);
+  font-weight: var(--font-weight-bold);
+}
+
+@media (max-width: 380px) {
+  .wrap {
+    padding: var(--space-3) var(--space-4);
+  }
+  .emojiWrap {
+    width: 52px;
+    height: 52px;
+  }
+  .emoji {
+    font-size: var(--emoji-md);
+  }
+  .title {
+    font-size: var(--font-h2);
+  }
+}

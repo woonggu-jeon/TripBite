@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { isRegionCode, type RegionCode } from '@/constants/regions';
+import { RegionHero } from '@/features/region';
 import { RegionDetailTabs } from './_components/RegionDetailTabs';
 
 /**
@@ -61,6 +62,7 @@ export default async function RegionDetailPage({ params }: Props) {
   return (
     <>
       <SubHeader title={tNames(validCode as Parameters<typeof tNames>[0])} />
+      <RegionHero code={validCode} />
       <RegionDetailTabs code={validCode} />
     </>
   );

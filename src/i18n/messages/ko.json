@@ -220,8 +220,23 @@
       "daysAgo": "{n}일 전"
     }
   },
+  "weather": {
+    "locationFallback": "현재 위치",
+    "condition": {
+      "clear": "맑음",
+      "cloudy": "흐림",
+      "rainy": "비",
+      "snowy": "눈",
+      "foggy": "안개",
+      "stormy": "뇌우"
+    }
+  },
   "region": {
     "title": "충북 둘러보기",
+    "hero": {
+      "fallbackDescription": "{name} 의 명소와 축제, 체험을 한눈에",
+      "popularity": "인기도"
+    },
     "names": {
       "cheongju": "청주시",
       "chungju": "충주시",

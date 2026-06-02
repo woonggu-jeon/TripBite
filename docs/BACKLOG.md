@@ -44,42 +44,40 @@
 - ✅ **`useFormat` 확장** — `dateLong` / `time` / `number` / `percent` 추가 (총 8 패턴)
 - ✅ **`config.count` 유지 결정** — 실 사용 중 (API param + 풀 사이즈 + 매치 수 계산)
 
+### 디자인 (시안 없이 임시 디자인 — 후속 교체 가능 구조)
+
+- ✅ **ConceptStep 일러스트** — 시즌 그라데이션 SVG (산/하늘/해) + 큰 emoji. 시안 받으면 SVG asset 만 교체
+- ✅ **RegionHero** — `/region/[code]` 상단 hero. emoji + 시군명 + 설명 + popularity chip
+- ✅ **WeatherWidget** — 미니멀 카드 (icon + 온도 + 시군 + 한 줄 코멘트) + 홈 배치 (WeatherRecommendation 섹션 상단)
+- ✅ **SeasonalCenterIllustration** — 시즌별 그라데이션 원형 SVG + 장식 (꽃잎/우산/잎/눈송이) + 글리프
+- ✅ **color-contrast sweep** — spring/autumn/red/green/violet 베이스 톤 진하게 (흰 배경 4.5:1+). axe-core color-contrast 활성화
+- ✅ **ChungbukSvgMap** — grid 도식 유지 + hover/focus-visible + visited 강조 (정밀 path 는 GeoJSON 자료 받으면 교체)
+
 ---
 
 ## 우선 순위 한눈에
 
-| Phase      | 영역                                     | 의존성                            | 작업량   |
-| ---------- | ---------------------------------------- | --------------------------------- | -------- |
-| **2 잔여** | 정밀 ChungbukSvgMap path / WeatherWidget | 디자인 (SVG asset / 시안)         | M × 2    |
-| **3**      | Future BE 포인트 일괄 연동               | NestJS                            | M × 5    |
-| **4**      | 푸시 알림 운영 진입                      | NestJS web-push + DB              | L × 1    |
-| **5 잔여** | 인증 보안 / CSP enforce / 정책 본문      | 백엔드 (rate limit / 메일) + 법무 | M-L 다수 |
-| **6**      | UX 작은 개선 / 선택 작업                 | —                                 | S-M 다수 |
+| Phase      | 영역                                | 의존성                            | 작업량   |
+| ---------- | ----------------------------------- | --------------------------------- | -------- |
+| **2 잔여** | 정밀 ChungbukSvgMap path            | 디자인 (GeoJSON / SVG asset)      | M × 1    |
+| **3**      | Future BE 포인트 일괄 연동          | NestJS                            | M × 5    |
+| **4**      | 푸시 알림 운영 진입                 | NestJS web-push + DB              | L × 1    |
+| **5 잔여** | 인증 보안 / CSP enforce / 정책 본문 | 백엔드 (rate limit / 메일) + 법무 | M-L 다수 |
+| **6**      | UX 작은 개선 / 선택 작업            | —                                 | S-M 다수 |
 
 ---
 
 ## 1. Stub 컴포넌트 잔존 (의도 보류)
 
-Phase 0~2 청소 후 stub 16개 중 의도 보류만 남음:
+Phase 0~2 + 디자인 임시 구현 후 잔존:
 
 ### 1-1. ranking 추가 섹션 (8개) — 사양 대기
 
 `RankingList / WeeklyTopMini / CategoryRankingTabs / RankingByRegion / RankingByTravelType / HeroDestination / SeasonalRecommendation` — README "추가 섹션은 추후" 명시. **사양 확정 시 도입**.
 
-### 1-2. tournament / weather (2개) — 디자인 또는 사양 대기
+### 1-2. ChungbukSvgMap 정밀 path — 디자인 자료 의존
 
-| 컴포넌트                     | 비고                                                                    |
-| ---------------------------- | ----------------------------------------------------------------------- |
-| `SeasonalCenterIllustration` | `CenterIllustration` 의 SVG 일러스트 교체용 — **디자인 의존**           |
-| `WeatherWidget`              | 홈 미배치. `useCurrentWeather` ✅ + handler ✅ — 홈에 위치 결정 후 도입 |
-
-### 1-3. region (1개) — 디자인 의존
-
-`RegionHero` — `/region/[code]` 상단 hero (현재 SubHeader 만). `useRegionSummary` ✅ + 디자인 시안 대기.
-
-### 1-4. ChungbukSvgMap 정밀 path — 디자인 의존
-
-현재 5×3 grid 도식 SVG (의도된 단순화). 운영 진입 전 디자이너 SVG asset (11 시군 path) 받으면 교체.
+현재 5×3 grid 도식 SVG (의도된 단순화) + hover/focus/visited 강조. 운영 진입 전 디자이너 GeoJSON / TopoJSON 자료 받으면 11 시군 정밀 path 로 교체. `ChungbukSvgMap.tsx` 의 POS map 만 path 데이터로 갈아끼움.
 
 ---
 
@@ -120,7 +118,6 @@ Phase 0~2 청소 후 stub 16개 중 의도 보류만 남음:
 
 | 인프라                             | 상태 | 미연결 사용처                                          |
 | ---------------------------------- | ---- | ------------------------------------------------------ |
-| `useCurrentWeather`                | ✅   | `WeatherWidget` stub (배치 결정 대기)                  |
 | `getBlurDataURL` (LCP placeholder) | ✅   | BE imageUrl 연동 시점 — 현재 코드는 emoji/colorChip 만 |
 
 ---
@@ -240,9 +237,9 @@ Projects (6): `desktop-windows` / `desktop-mac` / `mobile-chrome-aos` / `mobile-
 - ✅ FestivalCarousel responsive slidesPerView / RegionStampMap label 축소 / Letterbox segmented
 - 새 위젯 작성 시 360 검증 추가
 
-### 7-4. color-contrast a11y warn 해소 (디자인 sweep)
+### 7-4. color-contrast a11y — 완료
 
-`docs/test-reports/2026-06-01-e2e.md` 의 a11y 매트릭스 `color-contrast` 가 disabled. 운영 진입 전 디자인 시안 받아 시즌 accent / 카드 footer 색 대비 4.5:1+ 로 보강.
+✅ 2026-06-02 sweep — spring / autumn / red / amber / green / violet 베이스 톤 진하게 (흰 배경 4.5:1+). `_accents.scss` 갱신. axe-core `color-contrast` 룰 활성화 (desktop project).
 
 ---
 
@@ -255,7 +252,7 @@ Projects (6): `desktop-windows` / `desktop-mac` / `mobile-chrome-aos` / `mobile-
 3. LetterSentClient — `?id=` + `useLetter`
 4. ProfileCard updateAvatar (multipart + 스토리지)
 5. 회원 탈퇴 (`DELETE /me` + confirm)
-6. `GET /regions/:code/summary` 연동 — RegionHero 도입
+6. `GET /regions/:code/summary` 실 BE 연동 — `RegionHero` 이미 도입됨 (mock 사용 중)
 
 ### Phase 4 — 푸시 운영 (NestJS)
 
@@ -270,7 +267,7 @@ Projects (6): `desktop-windows` / `desktop-mac` / `mobile-chrome-aos` / `mobile-
 12. iOS Safari 17+ 실기기 검증
 13. Lighthouse CI baseline warn → error 강화
 14. LCP 이미지 `getBlurDataURL()` 적용 (BE imageUrl 후)
-15. color-contrast a11y 디자인 sweep
+15. ~~color-contrast a11y 디자인 sweep~~ — ✅ 완료
 
 ### Phase 6 — 선택 작업 (필요 시점)
 
@@ -286,18 +283,18 @@ Projects (6): `desktop-windows` / `desktop-mac` / `mobile-chrome-aos` / `mobile-
 | 작업                        | 백엔드                   | 디자인                   | 다른 작업 |
 | --------------------------- | ------------------------ | ------------------------ | --------- |
 | Phase 2 정밀 ChungbukSvgMap | —                        | SVG asset (11 시군 path) | —         |
-| Phase 2 WeatherWidget       | `/weather/current` ✅    | 시안                     | —         |
+| ~~Phase 2 WeatherWidget~~   | ✅ 임시 디자인 완료      | 후속 시안 시 교체        | —         |
 | Phase 3 전체                | NestJS 라우트 다수       | —                        | —         |
 | Phase 4                     | NestJS web-push + DB     | —                        | VAPID 키  |
 | Phase 5 보안                | rate limit / CSRF / 메일 | —                        | Phase 3   |
 | 정책 페이지 본문            | —                        | —                        | 법무 검토 |
-| color-contrast sweep        | —                        | 색상 검증                | —         |
+| ~~color-contrast sweep~~    | ✅ 완료                  | —                        | —         |
 
 ---
 
 ## 핵심 발견 요약 (2026-06-02 시점)
 
-1. **stub 53 → 11 (현재)** — Phase 0~2 청소 + 위젯 구현 완료. 잔존 11 = ranking 추가 섹션 8 + WeatherWidget + SeasonalCenterIllustration + RegionHero (모두 디자인/사양 의존).
+1. **stub 53 → 8 (현재)** — 잔존 8 = ranking 추가 섹션 (사양 대기). 그 외 모두 임시 또는 완성 구현.
 2. **`features/quiz/` 폴더 dead** — 실 quiz 흐름은 `features/ranking/` 에서 동작. (삭제 완료)
 3. **mock 환경 middleware skip** — `USE_MSW=true` 시 모든 페이지 접근 가능. 운영은 그대로.
 4. **6 플랫폼 E2E + 48 visual baseline** — 레이아웃/CSS 깨짐 자동 검출.

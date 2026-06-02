@@ -7,6 +7,7 @@ import { Trophy, Sparkles } from 'lucide-react';
 import { ROUTES } from '@/constants/routes';
 import { RecommendationBanner } from '@/features/home/components/RecommendationBanner';
 import { FestivalCarousel } from '@/features/home/components/FestivalCarousel';
+import { WeatherWidget } from '@/features/weather';
 // LatestReceivedLetter 위젯 미노출 — 추후 재오픈 시 import 복원.
 // import { LatestReceivedLetter } from '@/features/home/components/LatestReceivedLetter';
 import { getCurrentSeason } from '@/features/tournament/utils/season';
@@ -44,12 +45,13 @@ export function HomeDashboard() {
 
   return (
     <div className={styles.grid}>
-      {/* 1) 오늘의 추천 — 빌보드 배너 */}
+      {/* 1) 오늘의 추천 — 빌보드 배너 + 날씨 카드 */}
       <section
         data-widget="weather-recommendation"
         aria-label={t('weatherRecommendation')}
       >
         <h2 className={styles.sectionTitle}>{t('weatherRecommendation')}</h2>
+        <WeatherWidget />
         <RecommendationBanner />
       </section>
 

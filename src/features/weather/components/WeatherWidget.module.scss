@@ -1,0 +1,129 @@
+.card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-soft);
+  min-height: 88px;
+  isolation: isolate;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-surface-grad-start),
+      transparent 70%
+    );
+    z-index: -1;
+  }
+}
+
+.iconWrap {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.body {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.location {
+  font-size: var(--font-caption);
+  color: var(--color-muted);
+  margin: 0;
+}
+
+.summary {
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-fg);
+  letter-spacing: var(--tracking-snug);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.temp {
+  display: flex;
+  align-items: baseline;
+  color: var(--color-fg);
+  font-weight: var(--font-weight-extrabold);
+}
+
+.tempValue {
+  font-size: var(--font-h1);
+  line-height: 1;
+  letter-spacing: var(--tracking-tight);
+}
+
+.tempUnit {
+  font-size: var(--font-h3);
+  color: var(--color-muted);
+}
+
+// condition 별 그라데이션 톤
+.clear::before {
+  background: linear-gradient(
+    135deg,
+    var(--accent-autumn-grad-start),
+    transparent 70%
+  );
+}
+.cloudy::before {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-tint),
+    transparent 70%
+  );
+}
+.rainy::before {
+  background: linear-gradient(
+    135deg,
+    var(--accent-winter-grad-start),
+    transparent 70%
+  );
+}
+.snowy::before {
+  background: linear-gradient(
+    135deg,
+    var(--accent-winter-grad-end),
+    transparent 70%
+  );
+}
+.foggy::before {
+  background: linear-gradient(135deg, var(--color-hover), transparent 70%);
+}
+.stormy::before {
+  background: linear-gradient(135deg, var(--color-overlay), transparent 70%);
+}
+
+@media (max-width: 380px) {
+  .card {
+    padding: var(--space-3);
+    min-height: 76px;
+  }
+  .iconWrap {
+    width: 40px;
+    height: 40px;
+  }
+  .tempValue {
+    font-size: var(--font-h2);
+  }
+}

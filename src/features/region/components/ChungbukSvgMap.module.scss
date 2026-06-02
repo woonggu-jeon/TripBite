@@ -11,13 +11,16 @@
 }
 
 .cell {
-  cursor: default;
+  cursor: pointer;
 
   .tile {
     fill: var(--color-surface-2);
     stroke: var(--color-border);
     stroke-width: 1.5;
-    transition: fill var(--motion-base) ease;
+    transition:
+      fill var(--motion-base) ease,
+      stroke var(--motion-base) ease,
+      transform var(--motion-fast) ease;
   }
 
   .label {
@@ -27,12 +30,25 @@
     letter-spacing: var(--tracking-snug);
     pointer-events: none;
   }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover .tile {
+      fill: var(--color-hover);
+      stroke: var(--color-primary);
+    }
+  }
+
+  &:focus-visible .tile {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
 }
 
 .cell.visited {
   .tile {
-    fill: var(--color-primary-fade);
+    fill: var(--color-primary-tint);
     stroke: var(--color-primary);
+    stroke-width: 2;
   }
   .label {
     fill: var(--color-primary);
@@ -41,10 +57,11 @@
 }
 
 .stamp {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: var(--font-weight-extrabold);
   fill: var(--color-primary);
   pointer-events: none;
+  filter: var(--drop-shadow-xs);
 }
 
 .srList {

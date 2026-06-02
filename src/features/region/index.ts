@@ -10,6 +10,7 @@
  */
 export { regionApi } from './api/region';
 export { RegionStampMap } from './components/RegionStampMap';
+export { RegionHero } from './components/RegionHero';
 export {
   useRegionSummary,
   useRegionContents,

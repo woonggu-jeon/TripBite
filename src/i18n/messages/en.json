@@ -220,8 +220,23 @@
       "daysAgo": "{n}d ago"
     }
   },
+  "weather": {
+    "locationFallback": "Current location",
+    "condition": {
+      "clear": "Clear",
+      "cloudy": "Cloudy",
+      "rainy": "Rain",
+      "snowy": "Snow",
+      "foggy": "Fog",
+      "stormy": "Storm"
+    }
+  },
   "region": {
     "title": "Explore Chungbuk",
+    "hero": {
+      "fallbackDescription": "Sights, festivals, and experiences in {name}",
+      "popularity": "Popularity"
+    },
     "names": {
       "cheongju": "Cheongju",
       "chungju": "Chungju",

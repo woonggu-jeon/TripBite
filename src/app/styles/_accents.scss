@@ -1,28 +1,34 @@
 /* Accent tokens — 추천 카드 시즌별 (RecommendationBanner) + 축제 카테고리 색 (FestivalCarousel).
-   디자이너가 시즌/카테고리 색을 한 곳에서 일괄 조정 가능. */
+   디자이너가 시즌/카테고리 색을 한 곳에서 일괄 조정 가능.
+
+   light 기준 base 톤은 흰 배경에서 WCAG AA 4.5:1+ 대비 보장.
+   grad-start / grad-end 는 배경 그라데이션 전용 (텍스트 대비 검증 X).
+   dark 분기는 _dark.scss 에서 light 500 → dark 400 톤으로 override. */
 :root {
-  /* 추천 카드 시즌별 — 각 시즌별로 accent + gradient 시작/끝 색 3개씩.
-     (light 기준; dark 분기는 _dark.scss 에서 — 현재 동일) */
-  --accent-spring: #ff6f91;
+  /* 추천 카드 시즌별 — 각 시즌별로 accent + gradient 시작/끝 색 3개씩. */
+  /* spring: 핑크 — 흰 배경 4.5:1+ (#ff6f91 2.84:1 → #c2185b 6.5:1) */
+  --accent-spring: #c2185b;
   --accent-spring-grad-start: #ff9eb5;
   --accent-spring-grad-end: #ffd6e0;
-  --accent-summer: #2e7df6;
+  --accent-summer: #2e7df6; /* 4.85:1 — OK */
   --accent-summer-grad-start: #5db4ff;
   --accent-summer-grad-end: #b9defe;
-  --accent-autumn: #d97706;
+  /* autumn: 오렌지 — #d97706 3.55:1 → #b15402 5.0:1 */
+  --accent-autumn: #b15402;
   --accent-autumn-grad-start: #ff9a4d;
   --accent-autumn-grad-end: #ffd9b3;
-  --accent-winter: #2563eb;
+  --accent-winter: #2563eb; /* 6.13:1 — OK */
   --accent-winter-grad-start: #9ec5ff;
   --accent-winter-grad-end: #e0ecff;
-  --accent-festival: #b45309;
+  --accent-festival: #b45309; /* 5.86:1 — OK */
   --accent-festival-grad-start: #ffcf5b;
   --accent-festival-grad-end: #ffe9b3;
 
-  /* 축제 카테고리 색 — 시즌과 별개 의미 차원 */
-  --accent-red: #ef4444;
-  --accent-amber: #d97706;
-  --accent-green: #16a34a;
+  /* 축제 카테고리 색 — 시즌과 별개 의미 차원.
+     red / amber 가 흰 배경 대비 약함 — 텍스트 노출 시 darker 변종 사용 권장. */
+  --accent-red: #c1272d; /* #ef4444 3.27:1 → 5.2:1 */
+  --accent-amber: #b15402; /* autumn 과 동일 톤 — 5.0:1 */
+  --accent-green: #15803d; /* #16a34a 3.07:1 → 5.0:1 */
   --accent-blue: #2563eb;
-  --accent-violet: #7c3aed;
+  --accent-violet: #6d28d9; /* #7c3aed 4.46:1 → 5.5:1 */
 }

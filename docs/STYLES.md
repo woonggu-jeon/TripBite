@@ -32,31 +32,31 @@ src/app/
 
 ### Color
 
-| 용도                        | 토큰                                                                    |
-| --------------------------- | ----------------------------------------------------------------------- |
-| 화면 배경                   | `var(--color-bg)`                                                       |
-| 본문 텍스트                 | `var(--color-fg)`                                                       |
-| 보조 텍스트                 | `var(--color-muted)`                                                    |
-| 일반 border                 | `var(--color-border)`                                                   |
-| 강조(primary) 텍스트/링     | `var(--color-primary)`                                                  |
-| 카드 surface 배경 (8% tint) | `var(--color-primary-soft)`                                             |
-| 그라데이션 카드 상단 (10%)  | `var(--color-primary-surface-grad-start)`                               |
-| chip/badge 배경 (alpha 12%) | `var(--color-primary-tint)`                                             |
-| 강조 카드 border            | `var(--color-primary-border)`                                           |
-| focus ring / outline        | `var(--color-primary-ring)`                                             |
-| secondary 텍스트 (60% mix)  | `var(--color-primary-muted)`                                            |
-| 정보 박스 / skim 배경       | `var(--color-surface-soft)`                                             |
-| 분리선                      | `var(--color-divider)`                                                  |
-| hover 위 ghost 배경         | `var(--color-hover)`                                                    |
-| 모달 백드롭                 | `var(--color-overlay)`                                                  |
-| sticky header glass         | `var(--color-glass)` + `backdrop-filter: var(--blur-glass)`             |
-| 편지 accent (amber)         | `var(--color-letter-accent)` (light/dark 분기)                          |
-| 편지 종이 배경              | `var(--color-letter-paper)` (light/dark 분기)                           |
-| 편지 종이 cream tint        | `var(--color-letter-cream)` (gradient base용, 분기)                     |
-| colored bg 위 흰 텍스트     | `var(--color-on-strong)` (success/danger/banner badge 등)               |
-| 추천 시즌별 accent (5종)    | `var(--accent-spring/summer/autumn/winter/festival)` (+ grad-start/end) |
-| 축제 카테고리 색 (5종)      | `var(--accent-red/amber/green/blue/violet)`                             |
-| 차트 시리즈 (1~8)           | `var(--chart-1)` ~ `var(--chart-8)`                                     |
+| 용도                        | 토큰                                                                                                                                                      |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 화면 배경                   | `var(--color-bg)`                                                                                                                                         |
+| 본문 텍스트                 | `var(--color-fg)`                                                                                                                                         |
+| 보조 텍스트                 | `var(--color-muted)`                                                                                                                                      |
+| 일반 border                 | `var(--color-border)`                                                                                                                                     |
+| 강조(primary) 텍스트/링     | `var(--color-primary)`                                                                                                                                    |
+| 카드 surface 배경 (8% tint) | `var(--color-primary-soft)`                                                                                                                               |
+| 그라데이션 카드 상단 (10%)  | `var(--color-primary-surface-grad-start)`                                                                                                                 |
+| chip/badge 배경 (alpha 12%) | `var(--color-primary-tint)`                                                                                                                               |
+| 강조 카드 border            | `var(--color-primary-border)`                                                                                                                             |
+| focus ring / outline        | `var(--color-primary-ring)`                                                                                                                               |
+| secondary 텍스트 (60% mix)  | `var(--color-primary-muted)`                                                                                                                              |
+| 정보 박스 / skim 배경       | `var(--color-surface-soft)`                                                                                                                               |
+| 분리선                      | `var(--color-divider)`                                                                                                                                    |
+| hover 위 ghost 배경         | `var(--color-hover)`                                                                                                                                      |
+| 모달 백드롭                 | `var(--color-overlay)`                                                                                                                                    |
+| sticky header glass         | `var(--color-glass)` + `backdrop-filter: var(--blur-glass)`                                                                                               |
+| 편지 accent (amber)         | `var(--color-letter-accent)` (light/dark 분기)                                                                                                            |
+| 편지 종이 배경              | `var(--color-letter-paper)` (light/dark 분기)                                                                                                             |
+| 편지 종이 cream tint        | `var(--color-letter-cream)` (gradient base용, 분기)                                                                                                       |
+| colored bg 위 흰 텍스트     | `var(--color-on-strong)` (success/danger/banner badge 등)                                                                                                 |
+| 추천 시즌별 accent (5종)    | `var(--accent-spring/summer/autumn/winter/festival)` (+ grad-start/end). 베이스 톤은 흰 배경 WCAG AA 4.5:1+ 보장. grad-start/-end 는 배경 그라데이션 전용 |
+| 축제 카테고리 색 (5종)      | `var(--accent-red/amber/green/blue/violet)` — 텍스트로도 안전한 darker 톤 (4.5:1+)                                                                        |
+| 차트 시리즈 (1~8)           | `var(--chart-1)` ~ `var(--chart-8)`                                                                                                                       |
 
 ### Radius
 
