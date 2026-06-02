@@ -1,6 +1,6 @@
 # 테스트 가이드
 
-vitest 단위 (122 cases / 21 files) + Playwright E2E (6 플랫폼, 420 cases) + axe-core a11y + toHaveScreenshot 시각 회귀.
+vitest 단위 (123 cases / 21 files) + Playwright E2E (6 플랫폼, 420 cases) + axe-core a11y + toHaveScreenshot 시각 회귀.
 
 > 운영 결과 추적: [`docs/test-reports/2026-06-01-e2e.md`](./test-reports/2026-06-01-e2e.md) — 1~8차 누적, 이슈 처리, 매트릭스.
 

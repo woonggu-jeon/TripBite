@@ -31,9 +31,18 @@
 
 ### 인프라 / 문서
 
-- ✅ **README 현재 구현 상태 갱신** — stub 53 → 16, 토너먼트/letter/region ✅
+- ✅ **README 현재 구현 상태 갱신** — stub 53 → 11, 토너먼트/letter/region ✅
 - ✅ **결과서 8차** — `docs/test-reports/2026-06-01-e2e.md` (244 → 404 passed, 0 failed)
 - ✅ **번들 모니터링** — First Load 213 KB acceptable, 1주 1회 분석 권장
+
+### 옵션 A (소소한 코드 + 인프라)
+
+- ✅ **mock handler 2 추가** — `GET /regions/:code/summary` + `GET /rankings?type=recommended|hidden-gems`
+- ✅ **Dependabot 활성화** — `.github/dependabot.yml` (npm/github-actions weekly + patch/minor group)
+- ✅ **SRI** — Pretendard CSS link `crossOrigin="anonymous"` + `NEXT_PUBLIC_PRETENDARD_SRI` env 기반 integrity 주입
+- ✅ **`graphemeLength` 단일 출처** — letter.ts 의 re-export 제거, 모두 `@/lib/validation` 직접 import
+- ✅ **`useFormat` 확장** — `dateLong` / `time` / `number` / `percent` 추가 (총 8 패턴)
+- ✅ **`config.count` 유지 결정** — 실 사용 중 (API param + 풀 사이즈 + 매치 수 계산)
 
 ---
 
@@ -120,13 +129,14 @@ Phase 0~2 청소 후 stub 16개 중 의도 보류만 남음:
 
 ### 4-1. mock 에 없는 endpoint (실 백엔드 계약 동시 정의)
 
-| Endpoint                                      | 호출 처                      | 우선         |
-| --------------------------------------------- | ---------------------------- | ------------ |
-| `GET /regions/:code/summary`                  | `useRegionSummary`           | 높음         |
-| `GET /rankings?type=recommended\|hidden-gems` | `useRecommendedDestinations` | 낮음         |
-| `DELETE /me`                                  | 회원 탈퇴                    | 운영 전 필수 |
+| Endpoint     | 호출 처   | 우선         |
+| ------------ | --------- | ------------ |
+| `DELETE /me` | 회원 탈퇴 | 운영 전 필수 |
 
-> Phase 5 에서 `/mypage/*`, `/letters/*`, `/regions/ongoing-festivals`, `/mypage/stamps`, `/mypage/profile`, `/mypage/tournaments` 등 mock 모두 신설됨.
+> 다음 endpoint 는 mock 신설 완료:
+>
+> - Phase 5: `/mypage/*`, `/letters/*`, `/regions/ongoing-festivals`, `/mypage/stamps`, `/mypage/profile`, `/mypage/tournaments`
+> - 옵션 A: `/regions/:code/summary`, `/rankings?type=recommended|hidden-gems`
 
 ### 4-2. 푸시 알림 NestJS 작업 — Phase 4
 
@@ -176,7 +186,7 @@ Phase 0~2 청소 후 stub 16개 중 의도 보류만 남음:
 
 ## 6. 테스트 커버리지
 
-### 6-1. vitest 단위 (총 122개 — 21 files)
+### 6-1. vitest 단위 (총 123개 — 21 files)
 
 신규 49 cases 추가 후 합계 122. 핵심 도메인 모두 커버:
 

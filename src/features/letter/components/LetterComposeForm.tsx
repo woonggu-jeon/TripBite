@@ -8,9 +8,9 @@ import { useTranslations } from 'next-intl';
 import { MapPin } from 'lucide-react';
 import {
   letterSchema,
-  graphemeLength,
   type LetterFormValues,
 } from '@/features/letter/schemas/letter';
+import { graphemeLength } from '@/lib/validation';
 import { useSendLetter } from '@/features/letter/hooks/use-letters';
 import { useLetterStore } from '@/features/letter/store/letter-store';
 import { useResolveLocation, usePermissionState } from '@/features/location';

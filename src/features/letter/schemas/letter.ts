@@ -22,5 +22,3 @@ export const letterSchema = z.object({
 });
 
 export type LetterFormValues = z.infer<typeof letterSchema>;
-
-export { graphemeLength };

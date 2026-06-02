@@ -959,7 +959,7 @@ GitHub Secret Scanning (무료) 활성화 권장 — repo settings에서 토글.
 - [ ] Sentry 도입 시 `beforeSend` 스크러빙 적용
 - [ ] 약관/개인정보처리방침 본문 법무 검토
 - [ ] `ConsentBlock` 을 회원가입 흐름에 통합
-- [ ] Dependabot 활성화 + GitHub Secret Scanning 활성화
+- [x] Dependabot 활성화 (`.github/dependabot.yml` — npm/github-actions weekly + patch/minor group). Secret Scanning 은 repo Settings → Code security 에서 토글
 - [ ] `npm audit` PR 단계에서 통과 확인
 - [ ] 위치정보 처리방침에 "쿼리 파라미터로만 사용, 저장하지 않음" 명시
 
@@ -1078,7 +1078,7 @@ Turborepo / Micro Frontend / Redux / GraphQL / Kubernetes / @tanstack/react-virt
 
 - [ ] CSP **enforce 전환** — `/api/csp-report` 위반 보고 1~2주 모니터링 후 `Content-Security-Policy-Report-Only` → `Content-Security-Policy`
 - [ ] `style-src 'unsafe-inline'` 제거 (style nonce/hash)
-- [ ] SRI(Subresource Integrity) — jsdelivr 폰트 CSS `<link>`에 integrity
+- [x] SRI(Subresource Integrity) — jsdelivr Pretendard CSS `<link>` 에 `crossOrigin="anonymous"` + `NEXT_PUBLIC_PRETENDARD_SRI` 환경변수 기반 `integrity` 속성 주입 (`layout.tsx`). 운영 배포 전 hash 채움: `curl -s "..." | openssl dgst -sha384 -binary | openssl base64 -A`
 - [x] gitleaks workflow 활성화 (`.github/workflows/gitleaks.yml`) — Secret Scanning 은 repo 설정에서 추가 권장
 - [ ] 백엔드: CSRF Layer 1·2(SameSite/Origin) + Rate Limit (프론트 middleware 1차 Origin 검증만 적용됨)
 
@@ -1107,12 +1107,12 @@ Turborepo / Micro Frontend / Redux / GraphQL / Kubernetes / @tanstack/react-virt
 - [x] **시군별 path 클릭 인터랙션** — `ChungbukMap` 이 SVG 를 inline embed (fetch + 내장 `<style>` 제거 + `dangerouslySetInnerHTML`) 하고 ref + `addEventListener` 로 `path.region` 클릭/hover 이벤트 부착. `onRegionClick` prop 으로 시군 클릭 콜백 받음(현재 토너먼트 play 에선 미연결, 추후 시군 필터링 등에 활용 가능)
 - [x] **dark 톤 지도** — SVG inline + 외부 CSS variable (`--map-region-fill / -stroke / -hover / --map-label-fill / -stroke`) + `prefers-color-scheme: dark` 분기. 별도 dark SVG 파일 불필요
 - [x] **Result placeholder 마무리** — `WinnerCard` (트로피 + 카테고리 이모지 + 이름·시군·카테고리) / `LuckyColor` (`winner.id` deterministic hex + 한국어 색이름) 정식 구현. 마이페이지 저장(`POST /mypage/tournaments`) mock handler + `useSaveTournament` 연결
-- [ ] `config.count`(setup 의 4/8/16/32 step)는 현재 의미가 약함 — 지도 선택이 max 8 / min 1 자유 선택으로 바뀐 뒤로 직접 사용 안 됨. step 폐기 또는 다른 의미(예: 풀 사이즈 hint) 부여 결정 필요
+- [x] `config.count` (setup 4/8/16/32 step) — 실 사용 중 (`tournamentApi` 의 count param + 풀 사이즈 `Math.max(32, count*3)` + `TournamentPlayClient` 의 N 계산). 유지 결정.
 
 ### 공통 모듈 (아래 "공통 유틸리티" 참고)
 
-- [ ] 보안 정규식 + `graphemeLength` 중복 제거 (`lib/validation.ts`)
-- [ ] 날짜/숫자 포맷 (next-intl `useFormatter` 래핑) — 편지함/알림함 구현 시
+- [x] 보안 정규식 + `graphemeLength` 단일 출처 — `lib/validation.ts` 만 export, schema 들이 직접 import (letter.ts 의 re-export 제거).
+- [x] 날짜/숫자 포맷 — `useFormat` (`src/hooks/use-format.ts`) 가 `useFormatter` 래핑. `relativeTime` / `dateTime` / `date` / `dateLong` / `time` / `number` / `compactNumber` / `percent` 제공.
 
 ---
 

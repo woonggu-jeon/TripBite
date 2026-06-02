@@ -176,9 +176,18 @@ export default async function RootLayout({
           href="https://cdn.jsdelivr.net"
           crossOrigin="anonymous"
         />
+        {/* Pretendard CSS — jsdelivr CDN.
+            SRI: 운영 배포 전 NEXT_PUBLIC_PRETENDARD_SRI 환경변수에 SHA-384 해시
+            주입 (`curl -s "..." | openssl dgst -sha384 -binary | openssl base64 -A`).
+            미설정 시 integrity 속성 생략 — 호환 우선, 보안 약간 감소.
+            crossOrigin="anonymous" 는 SRI 동작에 필수. */}
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+          crossOrigin="anonymous"
+          {...(process.env.NEXT_PUBLIC_PRETENDARD_SRI
+            ? { integrity: process.env.NEXT_PUBLIC_PRETENDARD_SRI }
+            : {})}
         />
       </head>
       <body>

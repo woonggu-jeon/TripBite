@@ -32,6 +32,7 @@ import {
 } from './seeds/travel-types';
 import type { TravelType, TravelTypeAnswer } from '@/features/ranking/types';
 import type { AppNotification } from '@/features/notification/types';
+import { isRegionCode } from '@/constants/regions';
 import type { Destination } from '@/features/tournament/types';
 
 /**
@@ -297,6 +298,19 @@ export const handlers = [
     return HttpResponse.json({ items, nextCursor: null });
   }),
 
+  // 시군 summary — 헤더 이미지 / 설명 / 인기도. RegionHero 등에서 사용.
+  // mock 은 description 만 deterministic — 실 BE 는 TourAPI 또는 CMS.
+  http.get(`${apiUrl}/regions/:code/summary`, ({ params }) => {
+    const code = params.code as string;
+    if (!isRegionCode(code)) return new HttpResponse(null, { status: 404 });
+    return HttpResponse.json({
+      code,
+      heroImage: undefined,
+      description: `${code} 시군의 명소와 축제, 체험 정보를 한눈에.`,
+      popularity: 50,
+    });
+  }),
+
   // 진행 중 축제 — 홈 FestivalCarousel.
   // 실 BE 는 eventStart/eventEnd 가 오늘 포함되는 row 만 반환. mock 은 시드의
   // festival 카테고리 8개 (region 별 1-2개) 를 반환.
@@ -354,6 +368,25 @@ export const handlers = [
         .sort((a, b) => b.score - a.score)
         .map((r, i) => ({ ...r, rank: i + 1 }));
       return HttpResponse.json(ranks);
+    }
+
+    // 추천 destination — 시즌/카테고리 균형 분포 (mock 은 destinationSeeds shuffle).
+    if (type === 'recommended') {
+      const items = destinationSeeds.slice(0, Math.min(limit, 10)).map((d) => ({
+        rank: 0,
+        destination: d,
+        score: 0,
+      }));
+      return HttpResponse.json(items);
+    }
+
+    // 숨겨진 보석 — 우승 적은 destination (popularity 역순 시뮬). mock 은 뒤에서.
+    if (type === 'hidden-gems') {
+      const items = destinationSeeds
+        .slice(-Math.min(limit, 10))
+        .reverse()
+        .map((d) => ({ rank: 0, destination: d, score: 0 }));
+      return HttpResponse.json(items);
     }
 
     return HttpResponse.json([]);

@@ -37,4 +37,14 @@ describe('useFormat', () => {
       'string',
     );
   });
+
+  it('dateLong / time / number / percent — 모두 문자열 반환', () => {
+    const { result } = renderHook(() => useFormat(), { wrapper });
+    expect(typeof result.current.dateLong('2026-05-27T12:00:00Z')).toBe(
+      'string',
+    );
+    expect(typeof result.current.time('2026-05-27T12:00:00Z')).toBe('string');
+    expect(result.current.number(12345)).toContain('12');
+    expect(result.current.percent(0.842)).toContain('84');
+  });
 });
