@@ -287,7 +287,7 @@ Projects (6): `desktop-windows` / `desktop-mac` / `mobile-chrome-aos` / `mobile-
 
 ## 핵심 발견 요약 (2026-06-02 시점)
 
-1. **stub 16 → 11 (현재)** — Phase 0~2 청소 후 의도 보류만 남음 (ranking 추가 섹션 8 + WeatherWidget + SeasonalCenterIllustration + RegionHero).
+1. **stub 53 → 11 (현재)** — Phase 0~2 청소 + 위젯 구현 완료. 잔존 11 = ranking 추가 섹션 8 + WeatherWidget + SeasonalCenterIllustration + RegionHero (모두 디자인/사양 의존).
 2. **`features/quiz/` 폴더 dead** — 실 quiz 흐름은 `features/ranking/` 에서 동작. (삭제 완료)
 3. **mock 환경 middleware skip** — `USE_MSW=true` 시 모든 페이지 접근 가능. 운영은 그대로.
 4. **6 플랫폼 E2E + 48 visual baseline** — 레이아웃/CSS 깨짐 자동 검출.

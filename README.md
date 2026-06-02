@@ -116,7 +116,7 @@ export const handlers = [
 - **공용 컴포넌트**: `InfiniteList` (무한스크롤), 차트·캐러셀 동적 래퍼, `OptimizedImage`, `ConfirmDialog`, 피드백/PWA 배너.
 - **테스트**: Playwright 4-project 매트릭스 (desktop / mobile-chrome / mobile-safari / mobile-pwa) + axe-core a11y + toHaveScreenshot 시각 회귀.
 
-> **stub**: Phase 0 청소 후 ~16개. 디자인/백엔드 의존 항목 (정밀 ChungbukSvgMap path, WeatherWidget, ranking 추가 섹션, ProfileCard updateAvatar 등) 만 잔존. [`docs/BACKLOG.md`](docs/BACKLOG.md) 참고.
+> **stub**: Phase 0~2 청소 + 위젯 구현 후 **11개** 잔존 (모두 디자인/사양 의존). ranking 추가 섹션 8 + WeatherWidget + SeasonalCenterIllustration + RegionHero. [`docs/BACKLOG.md`](docs/BACKLOG.md) 참고.
 
 ---
 
@@ -1065,9 +1065,12 @@ Turborepo / Micro Frontend / Redux / GraphQL / Kubernetes / @tanstack/react-virt
 ### 테스트 / CI
 
 - [x] CI를 `test:run` → `test:coverage`로 전환 (coverage threshold를 PR에서 강제)
-- [x] Playwright E2E를 CI 별도 workflow(`e2e.yml`)로 — chromium + 브라우저 캐시 + MSW 모드
-- [ ] E2E 실제 시나리오 확장 (현재 smoke만 → 온보딩/편지/위치)
-- [ ] 위젯 구현 시 coverage `include` 확장 (현재 핵심 로직만 측정)
+- [x] Playwright E2E를 CI 별도 workflow(`e2e.yml`)로 — chromium + webkit + 브라우저 캐시 + MSW 모드
+- [x] **E2E 시나리오 6 플랫폼 매트릭스** — pages-smoke / og-routes / interactions / flows / smoke / a11y / visual / mobile-360 / location-permission / tournament-full / push-flow (420 cases, 404 passed)
+- [x] **vitest 핵심 도메인** 49 cases (bracket / tournament-store / Bracket / use-letters / AuthBootstrap / use-push-notification) — 합계 122
+- [x] **axe-core a11y** 자동화 (6 페이지, serious+ 0)
+- [x] **toHaveScreenshot 시각 회귀** 48 baseline (4 페이지 × 2 모드 × 6 projects)
+- [x] **size-limit** 4 항목 (shared 230kB / recharts 120kB / msw 100kB / 전체 500kB)
 
 > CI 워크플로우: `ci.yml`(lint/type-check/coverage/build/size/audit) · `e2e.yml`(Playwright) · `lighthouse.yml`(성능) · `codeql.yml`(보안 정적분석). 전부 `concurrency`(중복 run 취소) + 최소 `permissions` 적용.
 
@@ -1076,19 +1079,20 @@ Turborepo / Micro Frontend / Redux / GraphQL / Kubernetes / @tanstack/react-virt
 - [ ] CSP **enforce 전환** — `/api/csp-report` 위반 보고 1~2주 모니터링 후 `Content-Security-Policy-Report-Only` → `Content-Security-Policy`
 - [ ] `style-src 'unsafe-inline'` 제거 (style nonce/hash)
 - [ ] SRI(Subresource Integrity) — jsdelivr 폰트 CSS `<link>`에 integrity
-- [ ] gitleaks + GitHub Secret Scanning 활성화
-- [ ] 백엔드: CSRF Layer 1·2(SameSite/Origin) + Rate Limit (프론트 1차 방어만 적용됨)
+- [x] gitleaks workflow 활성화 (`.github/workflows/gitleaks.yml`) — Secret Scanning 은 repo 설정에서 추가 권장
+- [ ] 백엔드: CSRF Layer 1·2(SameSite/Origin) + Rate Limit (프론트 middleware 1차 Origin 검증만 적용됨)
 
 ### 렌더링 / PWA
 
-- [ ] **위젯 stub 구현** (48개) — 구현 시점에 일괄 적용:
+- [x] **위젯 stub 구현 정리** — Phase 0~2 청소 후 stub 53 → 11 (ranking 추가 섹션 8 + WeatherWidget + SeasonalCenterIllustration + RegionHero, 모두 디자인/사양 의존)
+- [ ] **렌더링 최적화 후속**:
   - RSC + `<Suspense>` 패턴 (또는 `useSuspenseQuery`) — 현재 위젯이 `'use client'`라 streaming 미작동
   - React Compiler (`babel-plugin-react-compiler`) — 리렌더 잦은 영역(토너먼트 store)
   - `getBlurDataURL()` LCP 이미지 적용 (BE imageUrl 연동 후)
   - [x] 리스트성 `<Link prefetch={false}>` (RegionContentRow / Top5Card / LetterRowCard / SavedTournamentCard / LatestReceivedLetter / NotificationDropdown 적용 완료)
 - [ ] serwist SW **런타임 검증** (production 실기기: 오프라인/업데이트배너/푸시/설치)
 - [ ] Pretendard fallback 메트릭 capsize 정밀 측정 (현재 근사값)
-- [ ] Lighthouse CI assertion warn → error (baseline 후) — a11y/CLS 는 이미 error 격상됨
+- [x] **Lighthouse CI** assertion 부분 격상 — a11y / CLS error, perf / best-practices / seo warn (`lighthouserc.json`). 운영 1~2주 baseline 후 perf 도 error 격상 검토.
 - [x] **명시적 테마 토글** — light/dark/system 3-옵션 segmented + `ui-store` persist + `ThemeApplier` 가 `html[data-theme]` 설정. `Settings → 테마` 섹션.
 
 ### 기능 연동
