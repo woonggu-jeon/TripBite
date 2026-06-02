@@ -14,7 +14,7 @@
   font-size: var(--text-sm);
   font-weight: var(--font-weight-medium);
   box-shadow: var(--shadow-md);
-  animation: slide-down var(--motion-base) var(--ease-out);
+  animation: slide-down var(--motion-base) var(--ease-out) forwards;
   // banner 가 header (sticky top:0) 위에 fixed 로 떠 있어 header 의 알림/설정
   // button click 을 막던 회귀 차단. banner 자체는 pass-through, 인터랙티브
   // 자식 (.action / .close) 만 click 받음 (.message 는 정보 표시 전용).
@@ -35,6 +35,10 @@
   text-align: center;
   max-width: 28ch;
   line-height: var(--line-snug);
+  /* color 상속만 의존하면 axe 가 alpha/inherit 처리에서 contrast 잘못 계산 —
+     명시 토큰으로 4.5:1+ 보장. banner 의 var(--color-fg) 배경에 흰 글씨. */
+  color: var(--color-bg);
+  font-weight: var(--font-weight-bold);
 }
 
 .action {

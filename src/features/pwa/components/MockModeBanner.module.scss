@@ -1,8 +1,7 @@
+/* DEMO chip — AppHeader 의 좌측 dev slot 에 inline 배치.
+   mock 환경 (NEXT_PUBLIC_USE_MSW=true) 빌드에서만 mount. */
 .wrap {
-  position: fixed;
-  top: calc(env(safe-area-inset-top, 0px) + var(--space-2));
-  right: var(--space-3);
-  z-index: var(--z-elevated);
-  pointer-events: none;
+  display: inline-flex;
+  align-items: center;
   opacity: 0.85;
 }

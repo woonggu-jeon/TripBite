@@ -23,6 +23,8 @@ const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'];
 async function audit(page: Page, url: string) {
   await page.goto(url);
   await page.waitForLoadState('networkidle').catch(() => {});
+  // animation 안정화 — banner slide-down 등이 끝나야 axe 가 정확한 색 계산
+  await page.waitForTimeout(800);
   return new AxeBuilder({ page })
     .withTags(TAGS)
     .disableRules([

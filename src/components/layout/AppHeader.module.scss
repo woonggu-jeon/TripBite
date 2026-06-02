@@ -9,10 +9,10 @@
   border-bottom: 1px solid var(--color-divider);
 }
 
-/* inner — content 와 동일하게 720px 정렬 + 좌우 40px 고정 슬롯. */
+/* inner — content 와 동일하게 720px 정렬 + 좌우 auto 슬롯 (mock 도구 들어갈 때 자동 확장). */
 .inner {
   display: grid;
-  grid-template-columns: 40px 1fr 40px;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: var(--space-2);
   max-width: var(--content-max);
@@ -27,6 +27,8 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  gap: var(--space-1);
+  min-width: 40px;
 }
 
 .slotEnd {

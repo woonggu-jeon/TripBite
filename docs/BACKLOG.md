@@ -59,6 +59,13 @@
 - ✅ **Pretendard fallback 메트릭 정밀** — `_fonts.scss` ascent 92→110% / descent 24→30% + size-adjust 100% (Pretendard 공식 typoAscent/typoDescent 기반). 운영 LCP 측정 후 capsize 미세조정 가능
 - ⏳ **style-src `'unsafe-inline'` 제거** — inline style 15+ 파일 sweep 필요. 별 PR (운영 진입 전)
 
+### mock 도구 헤더 통합 + 색 대비 보강
+
+- ✅ **MockModeBanner / MockPushTrigger 헤더 이동** — providers 의 fixed floating → AppHeader 좌측 dev slot 으로 통합. mock 환경 (`USE_MSW=true`) 빌드 한정 mount
+- ✅ **AppHeader inner grid** — `40px 1fr 40px` → `auto 1fr auto` 로 mock 도구 들어갈 때 자동 확장
+- ✅ **Banner message 명시 토큰** — `color: var(--color-bg)` + `font-weight: bold` + `animation-fill-mode: forwards`. axe color-contrast 위반 해소
+- ✅ **`--color-muted` 톤 보강** — `#6b7280` (4.43:1 미달) → `#5b6470` (surface-soft 4.5:1+). LetterIndex 비활성 탭 등 대비 확보
+
 ### 디자인 (시안 없이 임시 디자인 — 후속 교체 가능 구조)
 
 - ✅ **ConceptStep 일러스트** — 시즌 그라데이션 SVG (산/하늘/해) + 큰 emoji. 시안 받으면 SVG asset 만 교체

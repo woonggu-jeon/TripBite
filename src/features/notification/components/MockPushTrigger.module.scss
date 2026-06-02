@@ -1,23 +1,23 @@
+/* mock 편지 도착 트리거 — AppHeader 의 좌측 dev slot 에 inline 배치.
+   원래 fixed floating 이었지만 헤더 통합 후 정적 icon button.
+   mock 환경 (NEXT_PUBLIC_USE_MSW=true) 빌드에서만 mount. */
 .btn {
-  position: fixed;
-  // MockModeBanner(DEMO chip) 아래로 약간 띄움.
-  top: calc(env(safe-area-inset-top, 0px) + var(--space-2) + 36px);
-  right: var(--space-3);
-  z-index: var(--z-elevated);
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-full);
-  background: var(--color-bg);
+  background: transparent;
   border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-sm);
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1;
   opacity: 0.85;
   cursor: pointer;
+  transition:
+    border-color var(--motion-base) ease,
+    opacity var(--motion-base) ease,
+    transform var(--motion-fast) ease;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {

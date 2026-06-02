@@ -7,13 +7,22 @@ import { Icon } from '@/components/Icon';
 import { ROUTES } from '@/constants/routes';
 import { NotificationDropdown } from '@/features/notification/components/NotificationDropdown';
 import { useNotificationInbox } from '@/features/notification/hooks/use-notification-inbox';
+import { MockModeBanner } from '@/features/pwa/components/MockModeBanner';
+import { MockPushTrigger } from '@/features/notification/components/MockPushTrigger';
 import styles from './AppHeader.module.scss';
+
+const MSW_ENABLED = process.env.NEXT_PUBLIC_USE_MSW === 'true';
 
 /**
  * 메인 앱 공통 헤더
  *
- * 변경: 아이콘 → SVG sprite (<Icon />)
- * 좌 → 우: 알림 / 로고 / 설정
+ * 좌 → 우: [알림 + (mock 도구)] [로고] [설정]
+ *
+ * mock 도구 (NEXT_PUBLIC_USE_MSW=true 빌드 한정):
+ *   - 📬 mock 편지 도착 트리거 (MockPushTrigger)
+ *   - DEMO chip (MockModeBanner)
+ *
+ * 운영 빌드 (USE_MSW=false) 에서는 mock 도구 mount 안 됨.
  */
 export function AppHeader() {
   const t = useTranslations('header');
@@ -25,7 +34,7 @@ export function AppHeader() {
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
-        {/* 1) 알림 */}
+        {/* 1) 알림 + mock 도구 */}
         <div className={styles.slot}>
           <button
             type="button"
@@ -38,6 +47,12 @@ export function AppHeader() {
           </button>
           {openNotification && (
             <NotificationDropdown onClose={() => setOpenNotification(false)} />
+          )}
+          {MSW_ENABLED && (
+            <>
+              <MockPushTrigger />
+              <MockModeBanner />
+            </>
           )}
         </div>
 

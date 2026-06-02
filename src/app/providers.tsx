@@ -15,14 +15,12 @@ import { Analytics } from '@vercel/analytics/next';
 import { AuthBootstrap } from '@/features/auth/components/AuthBootstrap';
 import { ThemeApplier } from '@/features/theme/ThemeApplier';
 import { ServiceWorkerNavigateBridge } from '@/features/notification/components/ServiceWorkerNavigateBridge';
-import { MockPushTrigger } from '@/features/notification/components/MockPushTrigger';
 import { Toaster } from '@/components/feedback/Toaster';
 import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
 import {
   PwaUpdateBanner,
   OfflineBanner,
   InstallPromptBanner,
-  MockModeBanner,
 } from '@/features/pwa';
 import { usePageView } from '@/features/analytics/hooks/use-page-view';
 import { WebVitalsTracker } from '@/features/analytics/web-vitals';
@@ -167,10 +165,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <OfflineBanner />
       <InstallPromptBanner />
 
-      {/* 운영에서 mock 활성화 시 사용자에게 DEMO 모드임을 알리는 작은 chip */}
-      {MSW_ENABLED && <MockModeBanner />}
-      {/* mock 모드 전용 — 새 편지 도착 시뮬레이션 dev 버튼. */}
-      {MSW_ENABLED && <MockPushTrigger />}
+      {/* DEMO chip / mock push trigger 는 AppHeader 좌측 dev slot 으로 이동
+          (mock 환경 한정). providers 에서는 PWA 배너만 mount. */}
 
       {process.env.NODE_ENV === 'development' && (
         <ReactQueryDevtools initialIsOpen={false} />
