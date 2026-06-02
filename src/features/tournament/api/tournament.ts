@@ -27,6 +27,15 @@ export const tournamentApi = {
     return res.data;
   },
 
+  /**
+   * 관련 여행지 — 같은 시군의 다른 destination 6개.
+   * 실 BE 는 사용자 선호 / 카테고리 균형 등 고려.
+   */
+  getRelatedDestinations: async (id: string): Promise<Destination[]> => {
+    const res = await api.get<Destination[]>(`/destinations/${id}/related`);
+    return res.data;
+  },
+
   fetchCandidates: async (config: TournamentConfig): Promise<Destination[]> => {
     // pool 사이즈 — 매치업 진입 시 토너먼트 사이즈(M, 최대 32) 만큼 destinations 가
     // 필요하므로 최소 32 보장. 여행지 갯수(N) 대비 여유.

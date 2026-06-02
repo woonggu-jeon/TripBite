@@ -20,6 +20,8 @@ export const tournamentKeys = {
   history: () => [...tournamentKeys.all, 'history'] as const,
   destinationDetail: (id: string) =>
     [...tournamentKeys.all, 'destination', id] as const,
+  destinationRelated: (id: string) =>
+    [...tournamentKeys.all, 'destination', id, 'related'] as const,
 };
 
 /**
@@ -76,6 +78,21 @@ export function useDestinationDetail(id: string | undefined) {
       ? tournamentKeys.destinationDetail(id)
       : ['tournament', 'destination', 'idle'],
     queryFn: () => tournamentApi.getDestinationDetail(id!),
+    enabled: !!id,
+    ...CACHE.slow,
+  });
+}
+
+/**
+ * 관련 여행지 — 같은 시군의 다른 destination 6개.
+ * Destination 상세 페이지 하단 "이 시군의 다른 여행지" 섹션에서 사용.
+ */
+export function useRelatedDestinations(id: string | undefined) {
+  return useQuery({
+    queryKey: id
+      ? tournamentKeys.destinationRelated(id)
+      : ['tournament', 'destination', 'idle', 'related'],
+    queryFn: () => tournamentApi.getRelatedDestinations(id!),
     enabled: !!id,
     ...CACHE.slow,
   });

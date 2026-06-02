@@ -673,7 +673,16 @@
     "bestSeasonsLabel": "추천 계절",
     "errorTitle": "여행지 정보를 불러오지 못했어요",
     "errorDescription": "잠시 후 다시 시도해주세요.",
-    "retry": "다시 시도"
+    "retry": "다시 시도",
+    "actions": {
+      "groupAria": "여행지 액션",
+      "kakao": "카카오맵",
+      "naver": "네이버맵",
+      "share": "링크 공유"
+    },
+    "related": {
+      "label": "이 시군의 다른 여행지"
+    }
   },
   "notification": {
     "title": "알림",

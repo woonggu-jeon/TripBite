@@ -176,6 +176,7 @@ function RegionContentPanel({
       keyExtractor={(i) => i.id}
       renderItem={(i) => <RegionContentRow content={i} />}
       emptyState={<p className={styles.empty}>{t(emptyKey)}</p>}
+      columns={2}
     />
   );
 }

@@ -1,0 +1,80 @@
+.row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+  margin: var(--space-3) 0;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px; /* WCAG 2.1 target size */
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-fg);
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+  cursor: pointer;
+  transition:
+    border-color var(--motion-base) ease,
+    background var(--motion-base) ease,
+    transform var(--motion-fast) ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--color-primary);
+      background: var(--color-hover);
+    }
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+/* 길찾기 브랜드 톤 — 위반 없는 채도 (text 는 흰색이라 4.5:1+) */
+.kakao {
+  background: #fee500;
+  border-color: #fee500;
+  color: #3c1e1e;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: #fde100;
+      border-color: #fde100;
+    }
+  }
+}
+
+.naver {
+  background: #03c75a;
+  border-color: #03c75a;
+  color: #ffffff;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: #02b150;
+      border-color: #02b150;
+    }
+  }
+}
+
+.share {
+  /* 기본 surface 톤 */
+}
+
+@media (max-width: 380px) {
+  .row {
+    gap: var(--space-1);
+  }
+  .btn {
+    font-size: var(--font-caption);
+    padding: var(--space-2);
+    gap: 4px;
+  }
+}

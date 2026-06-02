@@ -1,16 +1,17 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { AlertCircle, Share2 } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
-import { Button, IconButton } from '@/components/ui';
+import { Button } from '@/components/ui';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { useDestinationDetail } from '@/features/tournament/hooks/use-tournament';
 import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetailPanel';
-import { shareUrl } from '@/lib/share';
-import { toast } from '@/lib/toast';
+import { DestinationPhotos } from './DestinationPhotos';
+import { DestinationActions } from './DestinationActions';
+import { RelatedDestinations } from './RelatedDestinations';
 import styles from './DestinationDetailClient.module.scss';
 
 const CATEGORY_EMOJI: Record<string, string> = {
@@ -34,7 +35,6 @@ const CATEGORY_EMOJI: Record<string, string> = {
  */
 export function DestinationDetailClient({ id }: { id: string }) {
   const t = useTranslations('destination');
-  const tCommon = useTranslations('common');
   const tSeason = useTranslations('tournament.season');
   const tCategory = useTranslations('tournament.category');
   const {
@@ -44,32 +44,9 @@ export function DestinationDetailClient({ id }: { id: string }) {
     refetch,
   } = useDestinationDetail(id);
 
-  const handleShare = async () => {
-    if (!detail) return;
-    const result = await shareUrl({
-      url: `/destination/${id}`,
-      title: detail.name,
-      text: detail.summary ?? detail.description,
-    });
-    if (result === 'copied') toast.success(tCommon('shareLinkCopied'));
-    else if (result === 'failed') toast.error(tCommon('shareFailed'));
-    // 'shared' / 'cancelled' 은 silent — OS sheet 에서 사용자 자체 인지.
-  };
-
   // detail 없을 때도 안정적인 header 유지 (CLS 0).
+  // 공유 버튼은 본문 DestinationActions 로 이동 — SubHeader rightSlot 제거.
   const title = detail?.name ?? '';
-
-  // share 버튼은 detail 있을 때만 활성화 (없으면 공유할 내용 자체 없음).
-  const shareSlot = detail ? (
-    <IconButton
-      aria-label={tCommon('share')}
-      variant="ghost"
-      size="md"
-      onClick={handleShare}
-    >
-      <Share2 size={20} aria-hidden />
-    </IconButton>
-  ) : undefined;
 
   if (isError) {
     return (
@@ -113,8 +90,12 @@ export function DestinationDetailClient({ id }: { id: string }) {
 
   return (
     <>
-      <SubHeader title={title} rightSlot={shareSlot} />
+      <SubHeader title={title} />
       <article className={styles.wrap} aria-labelledby="destination-name">
+        {/* 1) 사진 캐러셀 (photos 있을 때만) */}
+        <DestinationPhotos photos={detail.photos} alt={detail.name} />
+
+        {/* 2) Hero — 카테고리 emoji + 시군 · 카테고리 */}
         <header className={styles.hero}>
           <span className={styles.heroEmoji} aria-hidden>
             {emoji}
@@ -130,13 +111,23 @@ export function DestinationDetailClient({ id }: { id: string }) {
           </p>
         </header>
 
+        {/* 3) Name */}
         <h1 id="destination-name" className={styles.name}>
           {detail.name}
         </h1>
 
-        {/* 풍부한 detail (summary/rating/tags/address/시간/입장료/연락처/web) */}
+        {/* 4) Actions row — 카카오/네이버 길찾기 + 공유 */}
+        <DestinationActions
+          id={id}
+          name={detail.name}
+          coords={detail.coords}
+          shareText={detail.summary ?? detail.description}
+        />
+
+        {/* 5) 장소 정보 (summary / rating / tags / 주소 / 시간 / 입장료 / 연락처 / web) */}
         <WinnerDetailPanel detail={detail} isLoading={false} />
 
+        {/* 6) 추천 계절 chips */}
         {detail.bestSeasons && detail.bestSeasons.length > 0 && (
           <section
             className={styles.seasons}
@@ -152,6 +143,9 @@ export function DestinationDetailClient({ id }: { id: string }) {
             </ul>
           </section>
         )}
+
+        {/* 7) 이 시군의 다른 여행지 */}
+        <RelatedDestinations id={id} />
       </article>
     </>
   );

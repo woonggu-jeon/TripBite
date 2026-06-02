@@ -481,6 +481,31 @@ export const handlers = [
   //   - tournamentSize: 매치업 사이즈 (M ≤ N) — 현재 mock 은 무시, 백엔드 연동 후 활용
   //   - pool : 클라이언트에 노출할 풀 사이즈 (없으면 count와 같음)
   //
+  // 관련 여행지 — 같은 region 의 다른 destination 6개. seed 기반 deterministic.
+  // ⚠ /destinations/:id 보다 먼저 등록 — :id 가 'related' segment 도 매칭하므로
+  //   path 명시 (`/destinations/:id/related`) 가 더 길어 우선되지만 안전을 위해 앞에.
+  http.get(`${apiUrl}/destinations/:id/related`, ({ params }) => {
+    const id = String(params.id);
+    const target =
+      destinationSeeds.find((d) => d.id === id) ??
+      (() => {
+        const rc = regionContentSeeds.find((r) => r.id === id);
+        return rc
+          ? ({
+              id: rc.id,
+              name: rc.title,
+              category: rc.type,
+              region: rc.region,
+            } as const)
+          : null;
+      })();
+    if (!target) return HttpResponse.json([]);
+    const related = destinationSeeds
+      .filter((d) => d.region === target.region && d.id !== id)
+      .slice(0, 6);
+    return HttpResponse.json(related);
+  }),
+
   // ⚠ 반드시 `/destinations/:id` 보다 먼저 등록 — :id 가 'random' 도 매칭하므로.
   http.get(`${apiUrl}/destinations/random`, ({ request }) => {
     const url = new URL(request.url);
@@ -568,13 +593,29 @@ export const handlers = [
     };
     const tags = tagPool[seed.category] ?? [];
 
+    // mock photos — deterministic SVG data URL 3장 (id 기반 hue 변동).
+    // CSP `img-src: 'self' data: blob:` 에 data: 허용되어 있음.
+    // 실 BE 는 CDN URL.
+    const baseHue = Math.floor(u(70) * 360);
+    const photos = [0, 1, 2].map((i) => {
+      const hue = (baseHue + i * 60) % 360;
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice">` +
+        `<defs><linearGradient id="g${i}" x1="0" y1="0" x2="1" y2="1">` +
+        `<stop offset="0%" stop-color="hsl(${hue},70%,75%)"/>` +
+        `<stop offset="100%" stop-color="hsl(${(hue + 30) % 360},60%,55%)"/>` +
+        `</linearGradient></defs>` +
+        `<rect width="600" height="400" fill="url(#g${i})"/>` +
+        `<text x="50%" y="55%" text-anchor="middle" font-size="40" font-weight="700" fill="rgba(255,255,255,0.85)">${seed.name}</text>` +
+        `<text x="50%" y="72%" text-anchor="middle" font-size="20" fill="rgba(255,255,255,0.7)">${i + 1} / 3</text>` +
+        `</svg>`;
+      return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+    });
+
     const detail = {
       ...seed,
       summary: `${seed.name} — ${seed.region} 대표 ${seed.category}`,
-      photos: [
-        // 실제 백엔드는 CDN URL. mock 은 placeholder 또는 빈 배열.
-        // 클라이언트는 photos 없어도 카드만 보이도록 처리해야 함.
-      ],
+      photos,
       address: `충북 ${seed.region.replace(/[a-z]+/i, '')} ${seed.name} 일대`,
       phone:
         u(10) > 0.3

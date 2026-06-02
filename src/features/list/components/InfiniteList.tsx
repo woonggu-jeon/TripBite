@@ -37,6 +37,7 @@ export function InfiniteList<T>({
   className,
   itemGap = 12,
   skeletonCount = 3,
+  columns = 1,
 }: {
   items: T[];
   hasNext: boolean | undefined;
@@ -48,6 +49,9 @@ export function InfiniteList<T>({
   className?: string;
   itemGap?: number;
   skeletonCount?: number;
+  /** 그리드 열 수 — default 1 (단일 row). 2 이상이면 grid-template-columns 자동.
+   *  sentinel 은 columns 만큼 span 해 그리드 마지막 row 가독성 유지. */
+  columns?: number;
 }) {
   const { ref, isIntersecting } = useIntersection<HTMLDivElement>();
 
@@ -61,11 +65,15 @@ export function InfiniteList<T>({
     return <>{emptyState}</>;
   }
 
+  const gridStyle: React.CSSProperties = {
+    display: 'grid',
+    gap: itemGap,
+    gridTemplateColumns:
+      columns > 1 ? `repeat(${columns}, minmax(0, 1fr))` : undefined,
+  };
+
   return (
-    <div
-      className={className}
-      style={{ display: 'grid', gap: itemGap }}
-    >
+    <div className={className} style={gridStyle}>
       {items.map((item, i) => (
         <div key={keyExtractor(item, i)}>{renderItem(item, i)}</div>
       ))}
@@ -76,8 +84,18 @@ export function InfiniteList<T>({
           <Skeleton key={`s-${i}`} width="100%" height={80} radius="md" />
         ))}
 
-      {/* 마지막 페이지 후에는 sentinel 렌더 안 함 */}
-      {hasNext && <div ref={ref} aria-hidden style={{ height: 1 }} />}
+      {/* 마지막 페이지 후에는 sentinel 렌더 안 함.
+          columns > 1 일 때 sentinel 도 전체 폭 차지하도록 column span. */}
+      {hasNext && (
+        <div
+          ref={ref}
+          aria-hidden
+          style={{
+            height: 1,
+            gridColumn: columns > 1 ? `1 / -1` : undefined,
+          }}
+        />
+      )}
     </div>
   );
 }

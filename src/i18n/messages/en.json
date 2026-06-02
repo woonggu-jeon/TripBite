@@ -673,7 +673,16 @@
     "bestSeasonsLabel": "Best seasons",
     "errorTitle": "Couldn't load destination",
     "errorDescription": "Please try again in a moment.",
-    "retry": "Retry"
+    "retry": "Retry",
+    "actions": {
+      "groupAria": "Destination actions",
+      "kakao": "KakaoMap",
+      "naver": "NaverMap",
+      "share": "Share link"
+    },
+    "related": {
+      "label": "More in this district"
+    }
   },
   "notification": {
     "title": "Notifications",
