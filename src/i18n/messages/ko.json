@@ -580,7 +580,6 @@
     "title": "마이페이지",
     "sections": {
       "profile": "프로필",
-      "nickname": "닉네임",
       "stampMap": "충북 도장깨기",
       "savedTournaments": "저장한 우승 여행지",
       "tournamentHistory": "토너먼트 기록",
@@ -591,15 +590,6 @@
       "anonymous": "익명",
       "avatarAlt": "{nickname} 프로필 이미지",
       "changeAvatar": "프로필 이미지 변경"
-    },
-    "nickname": {
-      "label": "닉네임",
-      "edit": "변경",
-      "editTitle": "닉네임 변경",
-      "loading": "불러오는 중...",
-      "invalid": "사용할 수 없는 닉네임이에요.",
-      "saved": "닉네임이 저장됐어요.",
-      "saveFailed": "닉네임 저장에 실패했어요."
     },
     "savedTournaments": {
       "empty": "저장한 우승 여행지가 없어요",
@@ -653,7 +643,17 @@
       "locationDenied": "거부됨 — 기기 설정에서 변경",
       "locationPrompt": "아직 요청하지 않음",
       "locationUnsupported": "지원되지 않음",
-      "blockedUsers": "차단한 사용자 관리"
+      "blockedUsers": "차단한 사용자 관리",
+      "nicknameDialog": {
+        "title": "닉네임 변경",
+        "label": "닉네임",
+        "invalid": "사용할 수 없는 닉네임이에요.",
+        "saved": "닉네임이 저장됐어요.",
+        "saveFailed": "닉네임 저장에 실패했어요."
+      },
+      "changePasswordDialog": {
+        "title": "비밀번호 변경"
+      }
     },
     "policy": {
       "section": "약관 및 정책",

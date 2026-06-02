@@ -12,7 +12,7 @@
 ### 코드
 
 - ✅ **Phase 0 dead code 청소** — `features/quiz/` 폴더 + dead spec 7 파일 삭제, letter `'saved'` 일관성, `useTournamentHistory` 신설
-- ✅ **Phase 1 mypage 위젯 4종** — NicknameSection (zod + dialog), SavedTournaments + Card (confirm 삭제), TournamentHistorySection, LetterboxTabs (4탭 lazy + prefetch)
+- ✅ **Phase 1 mypage 위젯 4종** — SavedTournaments + Card (confirm 삭제), TournamentHistorySection, LetterboxTabs (4탭 lazy + prefetch). 닉네임 변경은 설정 페이지로 이동.
 - ✅ **Phase 2 도장깨기** — `ChungbukSvgMap` (5×3 grid SVG), `RegionStampMap` + `/mypage/stamps` mock, 진행률
 - ✅ **Phase 2 FestivalCarousel** — mock → `useOngoingFestivals` 교체, region 별 tone/emoji 매핑
 - ✅ **Phase 5 middleware 복원** — `src/middleware.ts` 이전 + `PUBLIC_ACCESS_PATHS`. mock 환경 (`USE_MSW=true`) 한정 redirect skip 추가
@@ -43,6 +43,12 @@
 - ✅ **`graphemeLength` 단일 출처** — letter.ts 의 re-export 제거, 모두 `@/lib/validation` 직접 import
 - ✅ **`useFormat` 확장** — `dateLong` / `time` / `number` / `percent` 추가 (총 8 패턴)
 - ✅ **`config.count` 유지 결정** — 실 사용 중 (API param + 풀 사이즈 + 매치 수 계산)
+
+### 설정 통합 (mypage → settings)
+
+- ✅ **닉네임 변경 이전** — mypage 의 닉네임 섹션 제거, `features/settings/components/NicknameEditDialog` 로 이동. `AccountSettingsSection` 의 "닉네임 변경" 버튼이 모달 토글
+- ✅ **비밀번호 변경 모달화** — `ChangePasswordDialog` 신설 (NicknameEditDialog 모달 패턴 재사용). 인라인 폼 expand 였던 동작이 모달로 통일
+- ✅ **i18n 이동** — `mypage.nickname.*` 제거 → `settings.account.nicknameDialog.*` + `settings.account.changePasswordDialog.*` 신설
 
 ### 디자인 (시안 없이 임시 디자인 — 후속 교체 가능 구조)
 

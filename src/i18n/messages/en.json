@@ -580,7 +580,6 @@
     "title": "My Page",
     "sections": {
       "profile": "Profile",
-      "nickname": "Nickname",
       "stampMap": "Chungbuk stamps",
       "savedTournaments": "Saved winners",
       "tournamentHistory": "Bracket history",
@@ -591,15 +590,6 @@
       "anonymous": "Guest",
       "avatarAlt": "Profile image of {nickname}",
       "changeAvatar": "Change profile image"
-    },
-    "nickname": {
-      "label": "Nickname",
-      "edit": "Edit",
-      "editTitle": "Edit nickname",
-      "loading": "Loading...",
-      "invalid": "This nickname is not allowed.",
-      "saved": "Nickname saved.",
-      "saveFailed": "Could not save nickname."
     },
     "savedTournaments": {
       "empty": "No saved winners yet",
@@ -653,7 +643,17 @@
       "locationDenied": "Denied — change in device settings",
       "locationPrompt": "Not requested yet",
       "locationUnsupported": "Not supported",
-      "blockedUsers": "Manage blocked users"
+      "blockedUsers": "Manage blocked users",
+      "nicknameDialog": {
+        "title": "Change nickname",
+        "label": "Nickname",
+        "invalid": "This nickname is not allowed.",
+        "saved": "Nickname saved.",
+        "saveFailed": "Could not save nickname."
+      },
+      "changePasswordDialog": {
+        "title": "Change password"
+      }
     },
     "policy": {
       "section": "Policy",

@@ -4,7 +4,6 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ROUTES } from '@/constants/routes';
 import { ProfileCard } from '@/features/mypage/components/ProfileCard';
-import { NicknameSection } from '@/features/mypage/components/NicknameSection';
 import { SavedTournamentsSection } from '@/features/mypage/components/SavedTournamentsSection';
 import { TournamentHistorySection } from '@/features/mypage/components/TournamentHistorySection';
 import { LetterboxTabs } from '@/features/mypage/components/LetterboxTabs';
@@ -35,10 +34,7 @@ export function MyPageClient() {
         <ProfileCard />
       </PageSection>
 
-      {/* 2) 닉네임 편집 */}
-      <PageSection title={t('nickname')}>
-        <NicknameSection />
-      </PageSection>
+      {/* 2) 닉네임 변경은 설정 페이지로 이동됨. */}
 
       {/* 3) 도장깨기 */}
       <PageSection title={t('stampMap')}>
