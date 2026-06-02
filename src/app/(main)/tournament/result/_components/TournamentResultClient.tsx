@@ -115,7 +115,10 @@ export function TournamentResultClient() {
       imageUrl,
       filename: `tripbite-tournament-${winner.id}.png`,
     });
-    if (result === 'downloaded') toast.success(tCommon('shareDownloaded'));
+    if (result === 'copied-and-downloaded') {
+      toast.success(tCommon('shareCopiedAndDownloaded'));
+    } else if (result === 'copied') toast.success(tCommon('shareLinkCopied'));
+    else if (result === 'downloaded') toast.success(tCommon('shareDownloaded'));
     else if (result === 'failed') toast.error(tCommon('shareFailed'));
     // 'shared' / 'cancelled' 는 silent
   };

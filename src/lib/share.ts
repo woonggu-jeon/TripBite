@@ -31,6 +31,8 @@ export type ShareResult =
   | 'copied'
   /** Web Share API 미지원 환경에서 이미지 파일 다운로드로 fallback */
   | 'downloaded'
+  /** Desktop 미지원 환경에서 URL clipboard copy + 이미지 다운로드 동시 (둘 다 성공) */
+  | 'copied-and-downloaded'
   /** 사용자가 OS sheet 에서 취소 (AbortError) — silent 처리 권장 */
   | 'cancelled'
   /** share / clipboard 모두 실패 — 호출부가 toast "공유 실패" 표시 */
@@ -83,15 +85,23 @@ export async function shareUrl(input: ShareInput): Promise<ShareResult> {
 }
 
 /**
- * 이미지 파일 공유 — 결과 이미지 카드 (`/api/og/...`) 를 OS share sheet 으로.
+ * 이미지 파일 공유 — 결과 이미지 카드 (`/api/og/...`) 를 OS share sheet 또는
+ * Desktop 환경별 fallback 으로.
  *
- * 흐름:
+ * 흐름 (mobile / file share 지원):
  *   1) imageUrl fetch → Blob → File
- *   2) navigator.canShare({ files: [...] }) 검증 (iOS Safari 16+, Android Chrome)
- *      → navigator.share({ files, title, text })
- *   3) 미지원 시 fallback — Blob URL 로 자동 다운로드 (`<a download>` 트릭)
+ *   2) navigator.canShare({ files: [...] }) 검증 (iOS Safari 16+, Android Chrome,
+ *      Mac Safari 13+)
+ *      → navigator.share({ files }) — OS sheet → 카톡 등 채팅 첨부
  *
- * deep-link 불필요 — 받는 쪽은 이미지 파일만 받음 (URL 클릭 X).
+ * 흐름 (Desktop file share 미지원 — Chrome/Edge/Firefox 일부):
+ *   - imageUrl 절대 URL 을 clipboard 에 copy +
+ *   - 이미지 PNG 도 함께 다운로드 (사용자가 둘 다 받음)
+ *   - 'copied-and-downloaded' 반환 → 호출부가 toast 둘 다 안내
+ *   - 받는 쪽이 URL 클릭하면 OG 카드 PNG 만 표시 (deep-link backend 불필요).
+ *     카톡/슬랙 등은 URL 미리보기 image preview 자동 노출.
+ *
+ * deep-link 불필요 — 받는 쪽은 이미지 파일 또는 OG image URL 만 받음.
  * 사용자 결과 데이터는 imageUrl 의 query 로 인코딩 (server route 가 그대로 렌더).
  */
 export type ShareWithImageInput = {
@@ -120,7 +130,7 @@ export async function shareWithImage(
     type: blob.type || 'image/png',
   });
 
-  // 1) Web Share API (files) — iOS Safari 16+ / Android Chrome
+  // 1) Web Share API (files) — iOS Safari 16+ / Android Chrome / Mac Safari 13+
   if (
     typeof navigator.share === 'function' &&
     typeof navigator.canShare === 'function' &&
@@ -136,11 +146,30 @@ export async function shareWithImage(
       if ((err as DOMException | undefined)?.name === 'AbortError') {
         return 'cancelled';
       }
-      // fall through to download
+      // fall through to desktop fallback
     }
   }
 
-  // 2) Fallback — 다운로드 트릭
+  // 2) Desktop fallback — OG image URL clipboard copy + 이미지 다운로드 동시.
+  //    file share 미지원 환경 (Desktop Chrome/Edge/Firefox 등) 에서 URL 만 복사하면
+  //    이미지 자체를 사용자가 못 받고, 다운로드만 하면 받는 쪽에 보낼 링크가 없다.
+  //    둘 다 실행 — 사용자가 채팅에 URL 붙여넣어도 카톡/슬랙 미리보기 자동 노출되고,
+  //    별도로 첨부할 PNG 도 손에 있다.
+  const absoluteUrl = toAbsoluteUrl(input.imageUrl);
+  let copied = false;
+  try {
+    if (
+      typeof navigator.clipboard?.writeText === 'function' &&
+      window.isSecureContext
+    ) {
+      await navigator.clipboard.writeText(absoluteUrl);
+      copied = true;
+    }
+  } catch {
+    // clipboard 실패는 silent — 다운로드만으로 fallback 충분
+  }
+
+  let downloaded = false;
   try {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -150,10 +179,14 @@ export async function shareWithImage(
     document.body.appendChild(a);
     a.click();
     a.remove();
-    // GC — Blob URL 회수
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    return 'downloaded';
+    downloaded = true;
   } catch {
-    return 'failed';
+    // 다운로드 실패
   }
+
+  if (copied && downloaded) return 'copied-and-downloaded';
+  if (downloaded) return 'downloaded';
+  if (copied) return 'copied';
+  return 'failed';
 }

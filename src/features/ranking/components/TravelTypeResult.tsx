@@ -57,7 +57,10 @@ export function TravelTypeResult() {
       imageUrl,
       filename: `tripbite-traveltype-${result.code}.png`,
     });
-    if (status === 'downloaded') toast.success(tCommon('shareDownloaded'));
+    if (status === 'copied-and-downloaded') {
+      toast.success(tCommon('shareCopiedAndDownloaded'));
+    } else if (status === 'copied') toast.success(tCommon('shareLinkCopied'));
+    else if (status === 'downloaded') toast.success(tCommon('shareDownloaded'));
     else if (status === 'failed') toast.error(tCommon('shareFailed'));
   };
 
