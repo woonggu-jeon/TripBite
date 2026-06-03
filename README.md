@@ -116,7 +116,7 @@ export const handlers = [
 - **공용 컴포넌트**: `InfiniteList` (무한스크롤), 차트·캐러셀 동적 래퍼, `OptimizedImage`, `ConfirmDialog`, 피드백/PWA 배너.
 - **테스트**: Playwright 4-project 매트릭스 (desktop / mobile-chrome / mobile-safari / mobile-pwa) + axe-core a11y + toHaveScreenshot 시각 회귀.
 
-> **stub**: Phase 0~2 + 디자인 임시 구현 후 **8개** 잔존 (ranking 추가 섹션, 사양 대기). 그 외 WeatherWidget / RegionHero / SeasonalCenterIllustration / ConceptStep 일러스트 모두 임시 디자인 구현 완료 — 후속 디자인 시안 받으면 JSX/asset 만 교체. [`docs/BACKLOG.md`](docs/BACKLOG.md) 참고.
+> **stub 0** (2026-06-03 사양 대기 / 편지 미사용 stub 일괄 삭제). 디자인 임시 구현 (WeatherWidget / RegionHero / SeasonalCenterIllustration / ConceptStep 일러스트) 은 시안 받으면 JSX/asset 만 교체. [`docs/BACKLOG.md`](docs/BACKLOG.md) 참고.
 
 ---
 
@@ -210,7 +210,7 @@ src/features/
  └─ list/              InfiniteList (IntersectionObserver rootMargin 200px) [✅]
 ```
 
-> ✅ 동작 · 🔧 인프라 준비(호출 대기) · ⏳ stub(`return null`, 렌더링 미구현). 상단 "현재 구현 상태" 참고.
+> ✅ 동작 · 🔧 인프라 준비(호출 대기). 상단 "현재 구현 상태" 참고.
 
 ---
 
@@ -314,7 +314,7 @@ const { items, fetchNext, hasNext, isFetchingNext } = useInfiniteList({
 
 홈/마이페이지의 각 위젯은 자체 `useQuery` → waterfall 회피. 위젯별 fixed height로 CLS 0.
 
-> ⏳ **설계 패턴** — 현재 홈/마이페이지 위젯은 stub(placeholder)이라 미적용. 데이터 hook은 준비됨, 위젯 구현 시 이 패턴으로 연결.
+홈 / 마이페이지 위젯 모두 자체 hook (useMypage / useSavedTournaments / useTournamentHistory / useStamps / useOngoingFestivals 등) 으로 위 패턴 적용 완료.
 
 ### 11. Client Router Cache (staleTimes)
 
@@ -325,13 +325,13 @@ const { items, fetchNext, hasNext, isFetchingNext } = useInfiniteList({
 
 App Router `<Link>`는 기본적으로 **viewport 진입 시 자동 prefetch**. 핵심 네비(BottomNav 5탭, 빠른시작 3버튼)는 그대로 두되, **다수가 한 화면에 깔리는 리스트성 링크**는 prefetch를 제한:
 
-| 대상                                                   | 정책                                                                           |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------ |
-| BottomNav / AppHeader / 빠른시작                       | `prefetch` 기본(auto) — 핵심 동선                                              |
-| 시군 11개 카드(`RegionList`), 랭킹 리스트, 편지함 목록 | `prefetch={false}` 또는 hover 시점 prefetch — viewport 일괄 prefetch 폭주 방지 |
-| 상세 진입(편지/우승지 카드)                            | 기본 auto (단건 진입 의도 명확)                                                |
+| 대상                                     | 정책                                                                           |
+| ---------------------------------------- | ------------------------------------------------------------------------------ |
+| BottomNav / AppHeader / 빠른시작         | `prefetch` 기본(auto) — 핵심 동선                                              |
+| 시군 11개 카드, 랭킹 리스트, 편지함 목록 | `prefetch={false}` 또는 hover 시점 prefetch — viewport 일괄 prefetch 폭주 방지 |
+| 상세 진입(편지/우승지 카드)              | 기본 auto (단건 진입 의도 명확)                                                |
 
-> 현재 리스트 컴포넌트는 stub이라 미적용. 구현 시 위 표대로 `prefetch={false}`를 카드 `<Link>`에 부여.
+리스트 카드 `<Link>` 에 `prefetch={false}` 적용 완료 — `SavedTournamentCard`, `RegionContentRow`, `LetterRowCard`, `Top5Card` 등.
 
 ---
 
@@ -1100,7 +1100,7 @@ Turborepo / Micro Frontend / Redux / GraphQL / Kubernetes / @tanstack/react-virt
 
 ### 렌더링 / PWA
 
-- [x] **위젯 stub 구현 정리** — stub 53 → 8 (ranking 추가 섹션만 잔존, 사양 대기). WeatherWidget / RegionHero / SeasonalCenterIllustration / ConceptStep 일러스트 모두 임시 디자인 구현 완료
+- [x] **위젯 stub 구현 정리** — stub 0 (2026-06-03 사양 대기 / 미사용 stub 일괄 삭제). WeatherWidget / RegionHero / SeasonalCenterIllustration / ConceptStep 일러스트 모두 임시 디자인 구현 완료. 사양 확정 시 ranking 추가 섹션 재도입
 - [ ] **렌더링 최적화 후속**:
   - RSC + `<Suspense>` 패턴 (또는 `useSuspenseQuery`) — 현재 위젯이 `'use client'`라 streaming 미작동
   - React Compiler (`babel-plugin-react-compiler`) — 리렌더 잦은 영역(토너먼트 store)

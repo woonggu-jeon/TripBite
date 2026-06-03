@@ -16,8 +16,8 @@ import styles from './RegionStampMap.module.scss';
  * 데이터: GET /mypage/stamps → { visited: RegionCode[], total: 11 }
  *
  * 시각화:
- *   - <ChungbukSvgMap visited={...} onRegionClick={navigate} />
- *   - 헤더: "5 / 11" 진행률 + 백분율
+ *   - <ChungbukStampMap visited={...} onRegionClick={navigate} /> (정밀 11 시군 SVG)
+ *   - 헤더: "찍은 도장 n / 11" (우측 정렬)
  *
  * isLoading → Skeleton / isError → EmptyState + retry / 정상 → 지도.
  */

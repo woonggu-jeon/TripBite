@@ -26,7 +26,6 @@
 
 | Phase      | 영역                                | 의존성                            | 작업량   |
 | ---------- | ----------------------------------- | --------------------------------- | -------- |
-| **2 잔여** | 정밀 ChungbukSvgMap path            | 디자인 (GeoJSON / SVG asset)      | M × 1    |
 | **3**      | Future BE 포인트 일괄 연동          | NestJS                            | M × 5    |
 | **4**      | 푸시 알림 운영 진입                 | NestJS web-push + DB              | L × 1    |
 | **5 잔여** | 인증 보안 / CSP enforce / 정책 본문 | 백엔드 (rate limit / 메일) + 법무 | M-L 다수 |
@@ -34,17 +33,16 @@
 
 ---
 
-## 1. Stub 컴포넌트 잔존 (의도 보류)
+## 1. Stub 컴포넌트 — 모두 제거됨
 
-Phase 0~2 + 디자인 임시 구현 후 잔존:
+2026-06-03 일괄 정리:
 
-### 1-1. ranking 추가 섹션 (8개) — 사양 대기
+- 미사용 ranking stub 7종 (`RankingList` / `WeeklyTopMini` / `CategoryRankingTabs` / `RankingByRegion` / `RankingByTravelType` / `HeroDestination` / `SeasonalRecommendation`) 삭제
+- 미사용 region stub 1종 (`RegionList`) 삭제
+- 미사용 mypage 편지 stub 4종 (`LikedLettersSection` / `SavedLettersSection` / `TravelTypeSection` / `LetterboxTabs`) 삭제
+- 구 `ChungbukSvgMap` (5×3 grid 도식) 삭제 — 정밀 `ChungbukStampMap` 으로 마이페이지 + /region 메인 모두 적용
 
-`RankingList / WeeklyTopMini / CategoryRankingTabs / RankingByRegion / RankingByTravelType / HeroDestination / SeasonalRecommendation` — README "추가 섹션은 추후" 명시. **사양 확정 시 도입**.
-
-### 1-2. ChungbukSvgMap 정밀 path — 디자인 자료 의존
-
-현재 5×3 grid 도식 SVG (의도된 단순화) + hover/focus/visited 강조. 운영 진입 전 디자이너 GeoJSON / TopoJSON 자료 받으면 11 시군 정밀 path 로 교체. `ChungbukSvgMap.tsx` 의 POS map 만 path 데이터로 갈아끼움.
+사양 확정 시 ranking 추가 섹션 재도입.
 
 ---
 
@@ -247,24 +245,24 @@ Projects (6): `desktop-windows` / `desktop-mac` / `mobile-chrome-aos` / `mobile-
 
 ## 부록: 의존성 매트릭스
 
-| 작업                        | 백엔드                   | 디자인                   | 다른 작업 |
-| --------------------------- | ------------------------ | ------------------------ | --------- |
-| Phase 2 정밀 ChungbukSvgMap | —                        | SVG asset (11 시군 path) | —         |
-| ~~Phase 2 WeatherWidget~~   | ✅ 임시 디자인 완료      | 후속 시안 시 교체        | —         |
-| Phase 3 전체                | NestJS 라우트 다수       | —                        | —         |
-| Phase 4                     | NestJS web-push + DB     | —                        | VAPID 키  |
-| Phase 5 보안                | rate limit / CSRF / 메일 | —                        | Phase 3   |
-| 정책 페이지 본문            | —                        | —                        | 법무 검토 |
-| ~~color-contrast sweep~~    | ✅ 완료                  | —                        | —         |
+| 작업                         | 백엔드                                                        | 디자인            | 다른 작업 |
+| ---------------------------- | ------------------------------------------------------------- | ----------------- | --------- |
+| ~~Phase 2 정밀 ChungbukMap~~ | ✅ 완료 — `ChungbukStampMap` (마이페이지 + /region 메인 적용) | —                 | —         |
+| ~~Phase 2 WeatherWidget~~    | ✅ 임시 디자인 완료                                           | 후속 시안 시 교체 | —         |
+| Phase 3 전체                 | NestJS 라우트 다수                                            | —                 | —         |
+| Phase 4                      | NestJS web-push + DB                                          | —                 | VAPID 키  |
+| Phase 5 보안                 | rate limit / CSRF / 메일                                      | —                 | Phase 3   |
+| 정책 페이지 본문             | —                                                             | —                 | 법무 검토 |
+| ~~color-contrast sweep~~     | ✅ 완료                                                       | —                 | —         |
 
 ---
 
-## 핵심 발견 요약 (2026-06-02 시점)
+## 핵심 발견 요약 (2026-06-03 시점)
 
-1. **stub 53 → 8 (현재)** — 잔존 8 = ranking 추가 섹션 (사양 대기). 그 외 모두 임시 또는 완성 구현.
-2. **`features/quiz/` 폴더 dead** — 실 quiz 흐름은 `features/ranking/` 에서 동작. (삭제 완료)
+1. **stub 0** — 미사용 stub 12종 + 구 grid `ChungbukSvgMap` 일괄 삭제. 사양 확정 시 ranking 추가 섹션 재도입.
+2. **정밀 SVG 지도** — `ChungbukStampMap` 이 마이페이지 도장책 + /region 메인 진입 양쪽에 적용. 청주 4 path 시각 통합 + 도장 음영 처리 + 라벨 좌표 정상화.
 3. **mock 환경 middleware skip** — `USE_MSW=true` 시 모든 페이지 접근 가능. 운영은 그대로.
 4. **6 플랫폼 E2E + 48 visual baseline** — 레이아웃/CSS 깨짐 자동 검출.
 5. **핵심 BE 작업**: `POST /tournaments` + `?id=` deep-link — 3 화면 (play/result/sent) 이 store-only 라 reload 시 데이터 손실.
-6. **iOS Safari button appearance** 회귀 fix 완료 — 모든 button 기반 card border 일관 노출.
-7. **이미지 공유** — 모바일 file share + Desktop URL+download fallback 자동 분기. 카톡 채팅 첨부 정상.
+6. **이미지 공유** — 모바일 file share + Desktop URL+download fallback 자동 분기. 카톡 채팅 첨부 정상.
+7. **mock 시드 풍부화** — 저장 우승지 7개, 토너먼트 기록 15개, 도장책은 winnerRegion union 으로 derive.

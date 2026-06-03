@@ -98,16 +98,6 @@ export function useRelatedDestinations(id: string | undefined) {
   });
 }
 
-export function useRemoveSavedTournament() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: tournamentApi.removeSaved,
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: tournamentKeys.saved() });
-    },
-  });
-}
-
 /**
  * 토너먼트 기록 — 사용자의 누적 토너먼트 결과 목록.
  *

@@ -422,11 +422,6 @@ export const handlers = [
   http.get(`${apiUrl}/mypage/tournaments`, () =>
     HttpResponse.json(savedTournamentSeeds),
   ),
-  // 저장된 우승지 삭제
-  http.delete(
-    `${apiUrl}/mypage/tournaments/:id`,
-    () => new HttpResponse(null, { status: 204 }),
-  ),
 
   // ===== Settings =====
   // 사용자 설정 — 알림 toggle 등. 누락 시 /settings proxy 회귀.

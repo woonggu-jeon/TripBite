@@ -1,37 +1,36 @@
 'use client';
 
+import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { CHUNGBUK_REGIONS } from '@/constants/regions';
+import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
+import { ChungbukStampMap } from '@/features/region/components/ChungbukStampMap';
 import styles from './RegionMapClient.module.scss';
 
 /**
  * 충북 지도 클라이언트
  *
- * 컴포넌트 분할 (features/region/components):
- *   - <ChungbukSvgMap onSelect={(code) => router.push(...)} />
- *     · SVG path 11개로 시군 영역 표현
- *     · path 에 data-region={code} + onClick
- *     · 활성 시 fill 컬러 변경
- *   - <RegionList />
- *     · 보조 — 지도 아래 그리드/리스트 표시
+ * 정밀 SVG 11 시군 (도장책에 쓰는 `ChungbukStampMap` 재사용) + 클릭 시
+ * 해당 시군 상세 라우팅. /region 페이지는 도장 진행률 의미가 없으므로
+ * visited 는 빈 Set — 모든 시군이 default fill.
  *
- * 성능:
- *   - SVG는 단일 React 컴포넌트로 인라인 (네트워크 요청 0)
- *   - 클릭 핸들러는 useCallback 으로 안정화 (path 11개 메모이즈)
+ * 보조 그리드는 a11y / fallback 용 — 키보드/스크린리더로 빠른 진입.
  */
 export function RegionMapClient() {
   const router = useRouter();
   const tRegion = useTranslations('region.names');
 
+  // referential stability — 매 렌더 새 Set 생성 시 ChungbukStampMap effect 재실행
+  const visited = useMemo(() => new Set<RegionCode>(), []);
+
   return (
     <div className={styles.wrap}>
-      {/* TODO: <ChungbukSvgMap onSelect={(code) => router.push(`/region/${code}`)} /> */}
-      <div className={styles.mapPlaceholder}>
-        충북 SVG 지도 (11개 시군 path)
-      </div>
+      <ChungbukStampMap
+        visited={visited}
+        onRegionClick={(code) => router.push(`/region/${code}`)}
+      />
 
-      {/* 보조 그리드 */}
+      {/* 보조 그리드 — 키보드/스크린리더 빠른 진입 */}
       <ul className={styles.list}>
         {CHUNGBUK_REGIONS.map((r) => (
           <li key={r.code}>
