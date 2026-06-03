@@ -1,19 +1,15 @@
 // Card primitive variant="surface" 가 bg/border/radius 담당.
+// 세로 카드 — 상단 emoji 영역 + 하단 이름/지역. 2 col grid 에서 잘 동작하는 폭.
 .card {
   position: relative;
-  // 카드 안 link + 우상단 remove button 동시 배치 — overflow hidden 으로 image
-  // 의 radius 가 카드 경계 따라가게.
   overflow: hidden;
 }
 
 .link {
   display: grid;
-  grid-template-columns: 64px 1fr;
-  gap: var(--space-3);
-  align-items: center;
+  grid-template-rows: 64px auto;
+  gap: var(--space-2);
   padding: var(--space-3);
-  // remove button 영역 확보 (24 + 8)
-  padding-right: calc(var(--space-3) + 32px);
   color: var(--color-fg);
   text-decoration: none;
   transition:
@@ -36,13 +32,12 @@
 
 .image {
   position: relative;
-  width: 64px;
+  width: 100%;
   height: 64px;
   display: grid;
   place-items: center;
   background: var(--color-surface-soft);
   border-radius: var(--radius-md);
-  flex-shrink: 0;
 }
 
 // 행운의 색 mini 칩 — 좌하단
