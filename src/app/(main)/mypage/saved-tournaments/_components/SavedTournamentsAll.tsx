@@ -6,13 +6,8 @@ import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
-import {
-  useSavedTournaments,
-  useRemoveSavedTournament,
-} from '@/features/tournament/hooks/use-tournament';
+import { useSavedTournaments } from '@/features/tournament/hooks/use-tournament';
 import { SavedTournamentCard } from '@/features/mypage/components/SavedTournamentCard';
-import { confirm } from '@/lib/confirm';
-import { toast } from '@/lib/toast';
 import styles from './SavedTournamentsAll.module.scss';
 
 /**
@@ -25,21 +20,6 @@ export function SavedTournamentsAll() {
   const t = useTranslations('mypage.savedTournaments');
   const router = useRouter();
   const { data, isLoading, isError, refetch } = useSavedTournaments();
-  const remove = useRemoveSavedTournament();
-
-  const handleRemove = async (id: string) => {
-    const ok = await confirm({
-      title: t('removeConfirmTitle'),
-      description: t('removeConfirmDescription'),
-      confirmLabel: t('remove'),
-      destructive: true,
-    });
-    if (!ok) return;
-    remove.mutate(id, {
-      onSuccess: () => toast.success(t('removed')),
-      onError: () => toast.error(t('removeFailed')),
-    });
-  };
 
   if (isLoading) {
     return (
@@ -98,7 +78,7 @@ export function SavedTournamentsAll() {
       <ul className={styles.list}>
         {data.map((saved) => (
           <li key={saved.id}>
-            <SavedTournamentCard saved={saved} onRemove={handleRemove} />
+            <SavedTournamentCard saved={saved} layout="row" />
           </li>
         ))}
       </ul>

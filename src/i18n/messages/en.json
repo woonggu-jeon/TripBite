@@ -602,11 +602,6 @@
       "startTournament": "Start tournament",
       "error": "Failed to load saved list",
       "retry": "Retry",
-      "remove": "Remove",
-      "removed": "Removed.",
-      "removeFailed": "Could not remove.",
-      "removeConfirmTitle": "Remove from saved?",
-      "removeConfirmDescription": "You'll need to run another tournament to bring it back.",
       "viewAll": "View all ({count})",
       "allTitle": "Saved winners",
       "totalCount": "Total {count}"

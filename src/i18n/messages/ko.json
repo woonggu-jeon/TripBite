@@ -602,12 +602,7 @@
       "startTournament": "토너먼트 시작",
       "error": "저장 목록을 불러오지 못했어요",
       "retry": "다시 시도",
-      "remove": "삭제",
-      "removed": "삭제됐어요.",
-      "removeFailed": "삭제에 실패했어요.",
-      "removeConfirmTitle": "저장 목록에서 삭제할까요?",
-      "removeConfirmDescription": "삭제하면 다시 토너먼트를 진행해야 해요.",
-      "viewAll": "전체 보기 ({count})",
+      "viewAll": "전체보기 ({count})",
       "allTitle": "저장한 우승 여행지",
       "totalCount": "총 {count}개"
     },

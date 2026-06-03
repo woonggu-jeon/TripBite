@@ -2,58 +2,36 @@
 
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Trophy, ChevronRight } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
-import {
-  useSavedTournaments,
-  useRemoveSavedTournament,
-} from '@/features/tournament/hooks/use-tournament';
-import { confirm } from '@/lib/confirm';
-import { toast } from '@/lib/toast';
+import { useSavedTournaments } from '@/features/tournament/hooks/use-tournament';
 import { SavedTournamentCard } from './SavedTournamentCard';
 import styles from './SavedTournamentsSection.module.scss';
 
 const PREVIEW_COUNT = 3;
 
 /**
- * 저장된 토너먼트 우승 여행지 — 최대 10개. 카드 클릭 시 destination 상세.
+ * 저장된 토너먼트 우승 여행지 — 최신 3개를 3 열 그리드로.
  *
- * 흐름:
- *   - useSavedTournaments() 로 fetch
- *   - 각 카드 우상단 X → ConfirmDialog → useRemoveSavedTournament
- *   - 0개: EmptyState + "토너먼트 시작" CTA
+ * "전체보기" 액션은 부모 (MyPageClient) 의 PageSection action 슬롯이 담당.
+ * 같은 `useSavedTournaments` 훅을 공유하므로 fetch 는 1회.
  *
- * 표준 분기 (STYLES.md): isLoading → Skeleton / isError → EmptyState + retry
- * / data 0 → EmptyState + CTA / data → grid.
+ * 표준 분기: isLoading → Skeleton / isError → EmptyState + retry
+ * / data 0 → EmptyState + CTA / data → grid 3 cols.
  */
 export function SavedTournamentsSection() {
   const t = useTranslations('mypage.savedTournaments');
   const router = useRouter();
   const { data, isLoading, isError, refetch } = useSavedTournaments();
-  const remove = useRemoveSavedTournament();
-
-  const handleRemove = async (id: string) => {
-    const ok = await confirm({
-      title: t('removeConfirmTitle'),
-      description: t('removeConfirmDescription'),
-      confirmLabel: t('remove'),
-      destructive: true,
-    });
-    if (!ok) return;
-    remove.mutate(id, {
-      onSuccess: () => toast.success(t('removed')),
-      onError: () => toast.error(t('removeFailed')),
-    });
-  };
 
   if (isLoading) {
     return (
       <div className={styles.skeletonList}>
-        {Array.from({ length: 3 }).map((_, i) => (
-          <Skeleton key={i} width="100%" height={88} radius="lg" />
+        {Array.from({ length: PREVIEW_COUNT }).map((_, i) => (
+          <Skeleton key={i} width="100%" height={120} radius="lg" />
         ))}
       </div>
     );
@@ -93,27 +71,34 @@ export function SavedTournamentsSection() {
   }
 
   const preview = data.slice(0, PREVIEW_COUNT);
-  const hasMore = data.length > PREVIEW_COUNT;
 
   return (
-    <div className={styles.wrap}>
-      <ul className={styles.list}>
-        {preview.map((saved) => (
-          <li key={saved.id}>
-            <SavedTournamentCard saved={saved} onRemove={handleRemove} />
-          </li>
-        ))}
-      </ul>
-      {hasMore && (
-        <Link
-          href="/mypage/saved-tournaments"
-          prefetch={false}
-          className={styles.viewAll}
-        >
-          {t('viewAll', { count: data.length })}
-          <ChevronRight size={16} aria-hidden />
-        </Link>
-      )}
-    </div>
+    <ul className={styles.list}>
+      {preview.map((saved) => (
+        <li key={saved.id}>
+          <SavedTournamentCard saved={saved} />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/**
+ * PageSection action 슬롯용 — 우측 "전체보기 (N)" Link.
+ * data 가 없으면 노출 X.
+ */
+export function SavedTournamentsViewAll() {
+  const t = useTranslations('mypage.savedTournaments');
+  const { data } = useSavedTournaments();
+  const count = data?.length ?? 0;
+  if (count === 0) return null;
+  return (
+    <Link
+      href="/mypage/saved-tournaments"
+      prefetch={false}
+      className={styles.viewAll}
+    >
+      {t('viewAll', { count })}
+    </Link>
   );
 }

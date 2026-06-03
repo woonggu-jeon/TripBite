@@ -4,7 +4,10 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ROUTES } from '@/constants/routes';
 import { ProfileCard } from '@/features/mypage/components/ProfileCard';
-import { SavedTournamentsSection } from '@/features/mypage/components/SavedTournamentsSection';
+import {
+  SavedTournamentsSection,
+  SavedTournamentsViewAll,
+} from '@/features/mypage/components/SavedTournamentsSection';
 import { TournamentHistorySection } from '@/features/mypage/components/TournamentHistorySection';
 import { RegionStampMap } from '@/features/region';
 import { PageSection } from '@/components/ui';
@@ -39,8 +42,11 @@ export function MyPageClient() {
         <RegionStampMap />
       </PageSection>
 
-      {/* 4) 저장된 우승지 */}
-      <PageSection title={t('savedTournaments')}>
+      {/* 4) 저장된 우승지 — 타이틀 우측 "전체보기 (N)" Link */}
+      <PageSection
+        title={t('savedTournaments')}
+        action={<SavedTournamentsViewAll />}
+      >
         <SavedTournamentsSection />
       </PageSection>
 

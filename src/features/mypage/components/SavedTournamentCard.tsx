@@ -1,9 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
-import { X } from 'lucide-react';
-import { Card, IconButton } from '@/components/ui';
+import { Card } from '@/components/ui';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import type { SavedTournament } from '@/features/tournament/types';
 import styles from './SavedTournamentCard.module.scss';
@@ -16,20 +14,19 @@ const CATEGORY_EMOJI: Record<string, string> = {
 };
 
 /**
- * 저장된 토너먼트 우승 여행지 카드.
+ * 저장된 토너먼트 우승 여행지 카드 — Link 단일. 삭제는 상세 페이지에서 처리.
  *
- * 카드 본체는 `Link` 로 destination 상세 진입. 우상단 삭제 (X) button 만
- * 별도 — Link 안의 button 은 nested interactive 라 stopPropagation 으로
- * Link 이동 차단.
+ * layout:
+ *   - 'tile' (default) : 세로 카드 — 상단 emoji 영역 + 하단 이름/지역. mypage 3 col grid 용
+ *   - 'row'            : 가로 카드 — 좌 emoji + 우 이름/지역. /saved-tournaments 리스트 용
  */
 export function SavedTournamentCard({
   saved,
-  onRemove,
+  layout = 'tile',
 }: {
   saved: SavedTournament;
-  onRemove: (id: string) => void;
+  layout?: 'tile' | 'row';
 }) {
-  const t = useTranslations('mypage.savedTournaments');
   const region = CHUNGBUK_REGIONS.find(
     (r) => r.code === saved.destination.region,
   );
@@ -41,7 +38,7 @@ export function SavedTournamentCard({
       <Link
         href={{ pathname: `/destination/${saved.destination.id}` }}
         prefetch={false}
-        className={styles.link}
+        className={layout === 'row' ? styles.linkRow : styles.link}
         aria-label={`${saved.destination.name} 상세`}
       >
         <div className={styles.image} aria-hidden>
@@ -56,18 +53,6 @@ export function SavedTournamentCard({
           <p className={styles.meta}>{regionLabel}</p>
         </div>
       </Link>
-      <IconButton
-        aria-label={t('remove')}
-        variant="ghost"
-        size="sm"
-        className={styles.remove}
-        onClick={(e) => {
-          e.stopPropagation();
-          onRemove(saved.id);
-        }}
-      >
-        <X size={16} aria-hidden />
-      </IconButton>
     </Card>
   );
 }
