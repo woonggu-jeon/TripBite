@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
 import { useStamps } from '@/features/mypage/hooks/use-mypage';
-import { ChungbukSvgMap } from './ChungbukSvgMap';
+import { ChungbukStampMap } from './ChungbukStampMap';
 import styles from './RegionStampMap.module.scss';
 
 /**
@@ -61,7 +61,7 @@ export function RegionStampMap() {
           {percent}%
         </span>
       </div>
-      <ChungbukSvgMap
+      <ChungbukStampMap
         visited={visited}
         onRegionClick={(code) => router.push(`/region/${code}`)}
       />

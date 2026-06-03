@@ -1,0 +1,47 @@
+.wrap {
+  width: 100%;
+  aspect-ratio: 800 / 903;
+  max-height: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* SVG 가 너비 100% 차지 */
+  :global(svg) {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* 시군 path 기본 — 외곽선만 보이는 흐릿한 톤. dark 자동 분기. */
+  :global(path.region) {
+    fill: var(--color-surface-2, var(--color-hover));
+    stroke: var(--color-border);
+    stroke-width: 1.5;
+    transition:
+      fill var(--motion-base) ease,
+      stroke var(--motion-base) ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    :global(path.region:hover) {
+      fill: var(--color-hover);
+      stroke: var(--color-primary);
+    }
+  }
+
+  /* visited 시군 — 도장 찍힌 톤 (primary tint + primary stroke). */
+  :global(path.region[data-visited='true']) {
+    fill: var(--color-primary-tint);
+    stroke: var(--color-primary);
+    stroke-width: 2;
+  }
+
+  /* 라벨 텍스트 (SVG 내장) — 가독성 위해 fg 톤. */
+  :global(text.label) {
+    fill: var(--color-fg);
+    font-size: 18px;
+    font-weight: var(--font-weight-bold);
+    pointer-events: none;
+  }
+}

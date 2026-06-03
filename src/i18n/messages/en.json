@@ -556,6 +556,9 @@
       "startTest": "Start the test",
       "keywordsAria": "Type keywords",
       "recommendTitle": "Destinations you'll love",
+      "apply": "Apply to my profile",
+      "appliedSuccess": "Applied to your profile",
+      "appliedFailed": "Could not apply",
       "share": "Create share card",
       "retake": "Retake"
     },
@@ -589,7 +592,11 @@
     "profile": {
       "anonymous": "Guest",
       "avatarAlt": "Profile image of {nickname}",
-      "changeAvatar": "Change profile image"
+      "changeAvatar": "Change profile image",
+      "travelType": {
+        "label": "Travel type",
+        "takeQuiz": "Take the quiz"
+      }
     },
     "savedTournaments": {
       "empty": "No saved winners yet",
@@ -601,7 +608,10 @@
       "removed": "Removed.",
       "removeFailed": "Could not remove.",
       "removeConfirmTitle": "Remove from saved?",
-      "removeConfirmDescription": "You'll need to run another tournament to bring it back."
+      "removeConfirmDescription": "You'll need to run another tournament to bring it back.",
+      "viewAll": "View all ({count})",
+      "allTitle": "Saved winners",
+      "totalCount": "Total {count}"
     },
     "tournamentHistory": {
       "empty": "No tournaments yet",

@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Camera, User } from 'lucide-react';
+import { Camera, User, Sparkles } from 'lucide-react';
 import { useMypage } from '@/features/mypage/hooks/use-mypage';
-import { Card, Chip, IconButton } from '@/components/ui';
+import { Card, IconButton } from '@/components/ui';
 import { haptic } from '@/lib/haptic';
 import styles from './ProfileCard.module.scss';
 
@@ -93,11 +94,49 @@ export function ProfileCard() {
       <h2 className={styles.nickname}>
         {nickname || <span className={styles.nicknameSkeleton} aria-hidden />}
       </h2>
-      {data?.travelType?.title && (
-        <Chip variant="primary" size="md">
-          {data.travelType.title}
-        </Chip>
-      )}
+
+      <TravelTypeField travelType={data?.travelType ?? undefined} />
     </Card>
+  );
+}
+
+/**
+ * 여행 유형 표시 영역 — 프로필 카드 하단.
+ *
+ * - 유형 있음: emoji + 라벨 + 한 줄 설명
+ * - 유형 없음 / loading 후 미설정: "유형 테스트 하기" CTA → /quiz
+ */
+function TravelTypeField({
+  travelType,
+}: {
+  travelType?: {
+    code?: string;
+    title?: string;
+    description?: string;
+    emoji?: string;
+  };
+}) {
+  const t = useTranslations('mypage.profile.travelType');
+  if (!travelType?.title) {
+    return (
+      <Link href="/quiz" prefetch={false} className={styles.travelTypeCta}>
+        <Sparkles size={14} aria-hidden />
+        <span>{t('takeQuiz')}</span>
+      </Link>
+    );
+  }
+  return (
+    <div className={styles.travelType} role="group" aria-label={t('label')}>
+      <span className={styles.travelTypeEmoji} aria-hidden>
+        {travelType.emoji ?? '✨'}
+      </span>
+      <div className={styles.travelTypeBody}>
+        <p className={styles.travelTypeLabel}>{t('label')}</p>
+        <p className={styles.travelTypeTitle}>{travelType.title}</p>
+        {travelType.description && (
+          <p className={styles.travelTypeDesc}>{travelType.description}</p>
+        )}
+      </div>
+    </div>
   );
 }

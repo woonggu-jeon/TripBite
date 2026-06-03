@@ -1,7 +1,8 @@
 'use client';
 
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Trophy } from 'lucide-react';
+import { Trophy, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
@@ -14,6 +15,8 @@ import { confirm } from '@/lib/confirm';
 import { toast } from '@/lib/toast';
 import { SavedTournamentCard } from './SavedTournamentCard';
 import styles from './SavedTournamentsSection.module.scss';
+
+const PREVIEW_COUNT = 3;
 
 /**
  * 저장된 토너먼트 우승 여행지 — 최대 10개. 카드 클릭 시 destination 상세.
@@ -89,13 +92,28 @@ export function SavedTournamentsSection() {
     );
   }
 
+  const preview = data.slice(0, PREVIEW_COUNT);
+  const hasMore = data.length > PREVIEW_COUNT;
+
   return (
-    <ul className={styles.list}>
-      {data.map((saved) => (
-        <li key={saved.id}>
-          <SavedTournamentCard saved={saved} onRemove={handleRemove} />
-        </li>
-      ))}
-    </ul>
+    <div className={styles.wrap}>
+      <ul className={styles.list}>
+        {preview.map((saved) => (
+          <li key={saved.id}>
+            <SavedTournamentCard saved={saved} onRemove={handleRemove} />
+          </li>
+        ))}
+      </ul>
+      {hasMore && (
+        <Link
+          href="/mypage/saved-tournaments"
+          prefetch={false}
+          className={styles.viewAll}
+        >
+          {t('viewAll', { count: data.length })}
+          <ChevronRight size={16} aria-hidden />
+        </Link>
+      )}
+    </div>
   );
 }

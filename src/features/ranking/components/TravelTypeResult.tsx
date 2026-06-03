@@ -2,12 +2,15 @@
 
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Share2, RotateCcw } from 'lucide-react';
+import { Share2, RotateCcw, BadgeCheck } from 'lucide-react';
 import { haptic } from '@/lib/haptic';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button, Card, Chip } from '@/components/ui';
-import { useMyTravelType } from '@/features/ranking/hooks/use-ranking';
+import {
+  useMyTravelType,
+  useSetMyTravelType,
+} from '@/features/ranking/hooks/use-ranking';
 import type { TravelType } from '@/features/ranking/types';
 import { shareWithImage } from '@/lib/share';
 import { toast } from '@/lib/toast';
@@ -42,6 +45,15 @@ export function TravelTypeResult() {
   const tCommon = useTranslations('common');
   const router = useRouter();
   const { data, isLoading } = useMyTravelType();
+  const applyMutation = useSetMyTravelType();
+
+  const handleApply = (result: TravelType) => {
+    haptic.tap();
+    applyMutation.mutate(result.code, {
+      onSuccess: () => toast.success(t('appliedSuccess')),
+      onError: () => toast.error(t('appliedFailed')),
+    });
+  };
 
   // file 단독 — title/text 동반 시 일부 share target (카카오톡 등) 이 텍스트만
   // 클립보드로 분리 처리하고 file 첨부 흐름이 끊긴다.
@@ -149,13 +161,21 @@ export function TravelTypeResult() {
       <div className={styles.actions}>
         <Button
           variant="primary"
+          onClick={() => handleApply(result)}
+          loading={applyMutation.isPending}
+          leadingIcon={<BadgeCheck size={16} aria-hidden />}
+        >
+          {t('apply')}
+        </Button>
+        <Button
+          variant="secondary"
           onClick={() => handleShare(result)}
           leadingIcon={<Share2 size={16} aria-hidden />}
         >
           {t('share')}
         </Button>
         <Button
-          variant="secondary"
+          variant="ghost"
           onClick={() => {
             haptic.tap();
             router.replace('/quiz');

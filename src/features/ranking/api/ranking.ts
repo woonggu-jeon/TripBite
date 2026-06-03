@@ -50,4 +50,13 @@ export const rankingApi = {
     const res = await api.get<TravelType | null>('/travel-types/me');
     return res.data;
   },
+
+  /**
+   * 내 유형 설정/변경 — quiz 결과 외에 사용자가 명시 선택해 프로필에 적용.
+   * PATCH /travel-types/me { code }
+   */
+  setMyTravelType: async (code: string): Promise<TravelType> => {
+    const res = await api.patch<TravelType>('/travel-types/me', { code });
+    return res.data;
+  },
 };

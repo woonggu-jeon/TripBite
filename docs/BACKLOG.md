@@ -71,6 +71,23 @@
 - ✅ **AppHeader / SubHeader sticky 동작 복원** — `.shell` 의 `overflow-x: hidden` 이 sticky 의 scrolling ancestor 를 .shell 로 잡아 body scroll 과 끊겼음. letter 등 긴 페이지 스크롤 시 헤더가 사라지던 회귀
 - ✅ **`overflow-x: clip` 으로 교체** — `_reset.scss` 의 `html, body` 에 적용. `hidden` 과 달리 `clip` 은 scroll container 생성하지 않아 sticky 정상 동작. iOS Safari 16+ / Chrome 90+ 지원
 
+### destination 상세 4 기능 + region 2열 그리드
+
+- ✅ **destination/[id] 상단 PhotoCarousel** — `DestinationDetail.photos` 활용. mock 은 id 기반 SVG data URL 3장
+- ✅ **DestinationActions** — 카카오/네이버 길찾기 (URL scheme 직접) + URL 공유. coords 있을 때만 길찾기 노출
+- ✅ **RelatedDestinations** — 같은 시군 다른 destination 6개. `GET /destinations/:id/related` mock + `useRelatedDestinations`
+- ✅ **장소 정보 정리** — 기존 `WinnerDetailPanel` 유지 (summary/rating/tags/주소/시간/입장료/연락처/web)
+- ✅ **region 탭 2열 그리드** — `InfiniteList` 에 `columns` prop 추가 (default 1, RegionDetailTabs 가 `columns={2}`)
+
+### 마이페이지 5 항목 (2026-06-03)
+
+- ✅ **편지 삭제 UI** — `LetterActions` 의 삭제 버튼 + `useConfirm` + `useDeleteLetter` 이미 wired (확인만)
+- ✅ **저장한 우승지 전체보기** — `/mypage/saved-tournaments` 신설. mypage section 은 최신 3개 + 전체보기 link. 전체 페이지는 total count + 정렬 controls 자리 잡음
+- ✅ **도장책 정밀 지도** — `ChungbukStampMap` 신설 (토너먼트 `ChungbukMap` 의 SVG asset + path.region 재사용). `RegionStampMap` 이 grid 도식 대신 사용. `data-visited` attr override 로 도장 fill
+- ✅ **도장 derive** — `/mypage/stamps` mock 이 `tournamentHistorySeeds` 의 `winnerRegion` union 으로 계산. 실 BE 도 동일 로직 ("한 시군 1회 이상 우승" = 도장)
+- ✅ **프로필 여행 유형 필드** — `ProfileCard` 의 `TravelTypeField` 신설. emoji + 라벨 + title + description 카드. 미설정 시 "유형 테스트 하기" CTA
+- ✅ **유형테스트 → 내 유형 적용 버튼** — `TravelTypeResult` 의 actions 에 "내 유형으로 적용" 추가. `useSetMyTravelType` mutation + `PATCH /travel-types/me` mock handler
+
 ### 디자인 (시안 없이 임시 디자인 — 후속 교체 가능 구조)
 
 - ✅ **ConceptStep 일러스트** — 시즌 그라데이션 SVG (산/하늘/해) + 큰 emoji. 시안 받으면 SVG asset 만 교체

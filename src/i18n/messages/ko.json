@@ -556,6 +556,9 @@
       "startTest": "테스트 시작하기",
       "keywordsAria": "유형 키워드",
       "recommendTitle": "이런 여행지가 어울려요",
+      "apply": "내 유형으로 적용",
+      "appliedSuccess": "프로필에 적용됐어요",
+      "appliedFailed": "적용에 실패했어요",
       "share": "공유 카드 만들기",
       "retake": "다시 테스트"
     },
@@ -589,7 +592,11 @@
     "profile": {
       "anonymous": "익명",
       "avatarAlt": "{nickname} 프로필 이미지",
-      "changeAvatar": "프로필 이미지 변경"
+      "changeAvatar": "프로필 이미지 변경",
+      "travelType": {
+        "label": "여행 유형",
+        "takeQuiz": "유형 테스트 하기"
+      }
     },
     "savedTournaments": {
       "empty": "저장한 우승 여행지가 없어요",
@@ -601,7 +608,10 @@
       "removed": "삭제됐어요.",
       "removeFailed": "삭제에 실패했어요.",
       "removeConfirmTitle": "저장 목록에서 삭제할까요?",
-      "removeConfirmDescription": "삭제하면 다시 토너먼트를 진행해야 해요."
+      "removeConfirmDescription": "삭제하면 다시 토너먼트를 진행해야 해요.",
+      "viewAll": "전체 보기 ({count})",
+      "allTitle": "저장한 우승 여행지",
+      "totalCount": "총 {count}개"
     },
     "tournamentHistory": {
       "empty": "아직 진행한 토너먼트가 없어요",

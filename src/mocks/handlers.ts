@@ -451,13 +451,14 @@ export const handlers = [
   }),
 
   // ===== Stamps (도장깨기) =====
-  // 충북 11 시군 중 5개 방문 — mock 은 deterministic. 실 BE 는 토너먼트 우승 시군 기준.
-  http.get(`${apiUrl}/mypage/stamps`, () =>
-    HttpResponse.json({
-      visited: ['cheongju', 'chungju', 'jecheon', 'boeun', 'danyang'],
-      total: 11,
-    }),
-  ),
+  // 토너먼트 우승 history 의 winnerRegion union 으로 derive.
+  // 실 BE 도 동일 로직 — "한 시군에서 1회 이상 우승" = 도장 찍힘.
+  http.get(`${apiUrl}/mypage/stamps`, () => {
+    const visited = Array.from(
+      new Set(tournamentHistorySeeds.map((t) => t.winnerRegion)),
+    );
+    return HttpResponse.json({ visited, total: 11 });
+  }),
 
   // ===== Tournament =====
   http.get(`${apiUrl}/mypage/tournament-history`, () =>
@@ -713,4 +714,14 @@ export const handlers = [
     return HttpResponse.json(result);
   }),
   http.get(`${apiUrl}/travel-types/me`, () => HttpResponse.json(myTravelType)),
+
+  // 명시 적용 — quiz 결과 페이지의 "내 유형으로 적용" 버튼. body { code } 로 타입 코드.
+  http.patch(`${apiUrl}/travel-types/me`, async ({ request }) => {
+    const { code } = (await request.json()) as { code: string };
+    const meta = (travelTypeMetaSeed as Record<string, TravelType>)[code];
+    if (!meta) return new HttpResponse(null, { status: 404 });
+    // recommended 는 quiz 흐름 의 resolveTravelType 가 build — 명시 set 은 meta 만.
+    myTravelType = { ...meta, recommended: [] };
+    return HttpResponse.json(myTravelType);
+  }),
 ];
