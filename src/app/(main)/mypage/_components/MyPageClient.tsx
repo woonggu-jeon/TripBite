@@ -6,7 +6,6 @@ import { ROUTES } from '@/constants/routes';
 import { ProfileCard } from '@/features/mypage/components/ProfileCard';
 import { SavedTournamentsSection } from '@/features/mypage/components/SavedTournamentsSection';
 import { TournamentHistorySection } from '@/features/mypage/components/TournamentHistorySection';
-import { LetterboxTabs } from '@/features/mypage/components/LetterboxTabs';
 import { RegionStampMap } from '@/features/region';
 import { PageSection } from '@/components/ui';
 import styles from './MyPageClient.module.scss';
@@ -19,10 +18,9 @@ import styles from './MyPageClient.module.scss';
  *   - <RegionStampMap />           도장깨기 (features/region 에서 import)
  *   - <SavedTournamentsSection />  저장된 우승지 (최대 10)
  *   - <TournamentHistorySection /> 토너먼트 기록 (InfiniteList)
- *   - <LetterboxTabs />            받은/좋아요/저장/보낸 (InfiniteList × 4)
  *
+ * 편지함 영역은 마이페이지에서 미노출 (요구사항). /letter 라우트는 유지.
  * 계정 액션 (로그아웃 등)은 /settings 페이지로 이동.
- * 마이페이지 우상단에 "설정" 아이콘 링크 추가 가능.
  */
 export function MyPageClient() {
   const t = useTranslations('mypage.sections');
@@ -49,11 +47,6 @@ export function MyPageClient() {
       {/* 5) 토너먼트 기록 */}
       <PageSection title={t('tournamentHistory')}>
         <TournamentHistorySection />
-      </PageSection>
-
-      {/* 6) 편지함 4탭 */}
-      <PageSection title={t('letterbox')}>
-        <LetterboxTabs />
       </PageSection>
 
       {/* 계정 관리는 /settings 페이지로 */}

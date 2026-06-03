@@ -6,10 +6,34 @@
   text-align: center;
 }
 
-.avatarWrap {
+// avatar 영역 전체를 button 으로 — 카메라 아이콘 없이 avatar 자체가 클릭 타깃.
+// 별도 absolute 띄우는 요소가 없어 primitive 와 spec 충돌이 발생할 구조 자체 없음.
+.avatarBtn {
   position: relative;
   width: 100px;
   height: 100px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  display: block;
+  transition:
+    transform var(--motion-fast) ease,
+    filter var(--motion-base) ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover .avatar {
+      filter: brightness(0.94);
+    }
+  }
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 4px;
+  }
 }
 
 .avatar {
@@ -22,6 +46,7 @@
   place-items: center;
   overflow: hidden;
   box-shadow: var(--shadow-md);
+  transition: filter var(--motion-base) ease;
 }
 
 .avatarImg {
@@ -37,15 +62,6 @@
   height: 100%;
   color: color-mix(in srgb, var(--color-fg) 40%, var(--color-muted));
   background: color-mix(in srgb, var(--color-fg) 4%, transparent);
-}
-
-// IconButton primitive 의 position 만 absolute 로 override
-.cameraBtn {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  border-radius: var(--radius-full);
-  border: 2px solid var(--color-bg);
 }
 
 .fileInput {
@@ -119,26 +135,4 @@
   color: var(--color-muted);
   margin: 0;
   line-height: var(--line-snug);
-}
-
-.travelTypeCta {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--font-body-sm);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
-  border: 1px solid var(--color-primary-border);
-  border-radius: var(--radius-full);
-  background: var(--color-bg);
-  transition:
-    background var(--motion-base) ease,
-    border-color var(--motion-base) ease;
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      background: var(--color-primary-tint);
-    }
-  }
 }

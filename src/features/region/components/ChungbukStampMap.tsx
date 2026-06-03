@@ -52,6 +52,7 @@ export function ChungbukStampMap({
   }, []);
 
   // 2) path.region 에 data-visited / data-region attr + click handler
+  //    도장 표현은 별도 마커 없이 fill 음영(primary tinted) 만으로 처리.
   useEffect(() => {
     if (!wrapRef.current || !svg) return;
     const root = wrapRef.current;
@@ -60,6 +61,7 @@ export function ChungbukStampMap({
     );
     if (paths.length === 0) return;
 
+    // 한글 id 첫 토큰 → 시군 ko. 청주시는 4 path (상당/서원/청원/흥덕) 같은 그룹.
     const groupKey = (p: SVGPathElement) => p.id.split(/\s+/)[0] ?? p.id;
     const cleanups: Array<() => void> = [];
 
@@ -68,11 +70,8 @@ export function ChungbukStampMap({
       const code = KO_TO_CODE[ko];
       if (!code) return;
       p.setAttribute('data-region', code);
-      if (visited.has(code)) {
-        p.setAttribute('data-visited', 'true');
-      } else {
-        p.removeAttribute('data-visited');
-      }
+      if (visited.has(code)) p.setAttribute('data-visited', 'true');
+      else p.removeAttribute('data-visited');
       p.style.cursor = onRegionClick ? 'pointer' : 'default';
 
       if (onRegionClick) {
@@ -80,6 +79,16 @@ export function ChungbukStampMap({
         p.addEventListener('click', onClick);
         cleanups.push(() => p.removeEventListener('click', onClick));
       }
+    });
+
+    // 라벨 text 에도 visited attr — visited 시 라벨도 강조
+    root.querySelectorAll<SVGTextElement>('text.label').forEach((t) => {
+      const ko = (t.textContent ?? '').trim().split(/\s+/)[0] ?? '';
+      const code = KO_TO_CODE[ko];
+      if (!code) return;
+      t.setAttribute('data-region', code);
+      if (visited.has(code)) t.setAttribute('data-visited', 'true');
+      else t.removeAttribute('data-visited');
     });
 
     return () => {

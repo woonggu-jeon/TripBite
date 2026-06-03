@@ -45,20 +45,20 @@ export function RegionStampMap() {
   }
 
   const visited = new Set(data.visited);
-  const percent =
-    data.total > 0 ? Math.round((visited.size / data.total) * 100) : 0;
 
   return (
     <div className={styles.wrap}>
       <div className={styles.progress}>
-        <span className={styles.count}>
-          {visited.size} / {data.total}
-        </span>
+        <span className={styles.label}>{t('label')}</span>
         <span
-          className={styles.percent}
-          aria-label={t('progressAria', { percent })}
+          className={styles.count}
+          aria-label={t('countAria', {
+            visited: visited.size,
+            total: data.total,
+          })}
         >
-          {percent}%
+          <strong>{visited.size}</strong>
+          <span aria-hidden> / {data.total}</span>
         </span>
       </div>
       <ChungbukStampMap

@@ -1,11 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Camera, User, Sparkles } from 'lucide-react';
+import { User } from 'lucide-react';
 import { useMypage } from '@/features/mypage/hooks/use-mypage';
-import { Card, IconButton } from '@/components/ui';
+import { Card } from '@/components/ui';
 import { haptic } from '@/lib/haptic';
 import styles from './ProfileCard.module.scss';
 
@@ -55,8 +54,13 @@ export function ProfileCard() {
       padding="md"
       className={styles.card}
     >
-      <div className={styles.avatarWrap}>
-        <div className={styles.avatar}>
+      <button
+        type="button"
+        className={styles.avatarBtn}
+        onClick={onPick}
+        aria-label={t('changeAvatar')}
+      >
+        <span className={styles.avatar}>
           {avatarSrc ? (
             // object URL 은 next/image 사용 부적합 → 일반 img.
             // eslint-disable-next-line @next/next/no-img-element
@@ -70,26 +74,17 @@ export function ProfileCard() {
               <User size={36} />
             </span>
           )}
-        </div>
-        <IconButton
-          variant="solid"
-          size="sm"
-          className={styles.cameraBtn}
-          onClick={onPick}
-          aria-label={t('changeAvatar')}
-        >
-          <Camera size={16} />
-        </IconButton>
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/*"
-          className={styles.fileInput}
-          onChange={onFile}
-          aria-hidden
-          tabIndex={-1}
-        />
-      </div>
+        </span>
+      </button>
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        className={styles.fileInput}
+        onChange={onFile}
+        aria-hidden
+        tabIndex={-1}
+      />
 
       <h2 className={styles.nickname}>
         {nickname || <span className={styles.nicknameSkeleton} aria-hidden />}
@@ -101,10 +96,10 @@ export function ProfileCard() {
 }
 
 /**
- * 여행 유형 표시 영역 — 프로필 카드 하단.
+ * 여행 유형 표시 영역 — 유형이 저장되어 있을 때만 렌더.
  *
- * - 유형 있음: emoji + 라벨 + 한 줄 설명
- * - 유형 없음 / loading 후 미설정: "유형 테스트 하기" CTA → /quiz
+ * 미설정 상태에서는 어떤 UI 도 노출하지 않는다 (CTA 도 X).
+ * 유형 적용은 /quiz 결과 페이지의 "내 유형으로 적용" 버튼으로만 수행.
  */
 function TravelTypeField({
   travelType,
@@ -117,14 +112,7 @@ function TravelTypeField({
   };
 }) {
   const t = useTranslations('mypage.profile.travelType');
-  if (!travelType?.title) {
-    return (
-      <Link href="/quiz" prefetch={false} className={styles.travelTypeCta}>
-        <Sparkles size={14} aria-hidden />
-        <span>{t('takeQuiz')}</span>
-      </Link>
-    );
-  }
+  if (!travelType?.title) return null;
   return (
     <div className={styles.travelType} role="group" aria-label={t('label')}>
       <span className={styles.travelTypeEmoji} aria-hidden>

@@ -586,7 +586,6 @@
       "stampMap": "충북 도장깨기",
       "savedTournaments": "저장한 우승 여행지",
       "tournamentHistory": "토너먼트 기록",
-      "letterbox": "편지함",
       "goToSettings": "설정으로 이동"
     },
     "profile": {
@@ -594,8 +593,7 @@
       "avatarAlt": "{nickname} 프로필 이미지",
       "changeAvatar": "프로필 이미지 변경",
       "travelType": {
-        "label": "여행 유형",
-        "takeQuiz": "유형 테스트 하기"
+        "label": "여행 유형"
       }
     },
     "savedTournaments": {
@@ -622,7 +620,8 @@
     "stampMap": {
       "error": "도장 정보를 불러오지 못했어요",
       "retry": "다시 시도",
-      "progressAria": "도장 진행률 {percent}퍼센트"
+      "label": "찍은 도장",
+      "countAria": "도장 {visited} / 총 {total}"
     }
   },
   "settings": {

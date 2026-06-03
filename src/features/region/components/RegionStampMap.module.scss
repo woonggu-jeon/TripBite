@@ -14,15 +14,22 @@
   border-radius: var(--radius-md);
 }
 
-.count {
-  font-size: var(--font-h3);
-  font-weight: var(--font-weight-extrabold);
-  color: var(--color-fg);
-  letter-spacing: var(--tracking-snug);
+.label {
+  font-size: var(--font-body-sm);
+  color: var(--color-fg-muted);
+  font-weight: var(--font-weight-medium);
 }
 
-.percent {
-  font-size: var(--font-body-sm);
-  color: var(--color-primary);
-  font-weight: var(--font-weight-bold);
+.count {
+  font-size: var(--font-body);
+  color: var(--color-fg-muted);
+  letter-spacing: var(--tracking-snug);
+  margin-left: auto;
+
+  strong {
+    font-size: var(--font-h3);
+    font-weight: var(--font-weight-extrabold);
+    color: var(--color-primary);
+    margin-right: 2px;
+  }
 }

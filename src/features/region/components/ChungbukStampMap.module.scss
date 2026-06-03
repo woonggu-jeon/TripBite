@@ -20,7 +20,16 @@
     stroke-width: 1.5;
     transition:
       fill var(--motion-base) ease,
+      fill-opacity var(--motion-base) ease,
       stroke var(--motion-base) ease;
+  }
+
+  /* 청주시 (4 path: 상당/서원/청원/흥덕) — 내부 구 경계선을 시각적으로 제거.
+     stroke 를 없애면 청주 사이 공유 변은 어느 쪽도 그리지 않아 한 덩어리로 보이고,
+     청주 ↔ 다른 시군 변은 상대 path 의 stroke 가 여전히 그려 외곽선이 유지됨. */
+  :global(path.region[data-region='cheongju']) {
+    stroke-width: 0;
+    stroke: transparent;
   }
 
   @media (hover: hover) and (pointer: fine) {
@@ -28,20 +37,34 @@
       fill: var(--color-hover);
       stroke: var(--color-primary);
     }
+    :global(path.region[data-region='cheongju']:hover) {
+      stroke-width: 0;
+    }
   }
 
-  /* visited 시군 — 도장 찍힌 톤 (primary tint + primary stroke). */
+  /* visited 시군 — 마커 없이 음영(primary tinted fill) 만으로 도장 표현. */
   :global(path.region[data-visited='true']) {
-    fill: var(--color-primary-tint);
-    stroke: var(--color-primary);
-    stroke-width: 2;
+    fill: var(--color-primary);
+    fill-opacity: 0.45;
   }
 
-  /* 라벨 텍스트 (SVG 내장) — 가독성 위해 fg 톤. */
+  /* 라벨 텍스트 (SVG 내장) — 원본 SVG 의 text-anchor:middle / 24px / 외곽선 복원.
+     내장 <style> 을 제거했기 때문에 명시적으로 다시 선언하지 않으면 좌측 정렬되어
+     `x="675"` 좌표가 텍스트 중앙이 아닌 좌상 기준이 됨. */
   :global(text.label) {
+    font-family: Pretendard, Arial, sans-serif;
+    font-size: 24px;
+    font-weight: 700;
     fill: var(--color-fg);
-    font-size: 18px;
-    font-weight: var(--font-weight-bold);
+    text-anchor: middle;
+    paint-order: stroke;
+    stroke: var(--color-bg);
+    stroke-width: 6;
+    stroke-linejoin: round;
     pointer-events: none;
+  }
+
+  :global(text.label[data-visited='true']) {
+    fill: var(--color-primary);
   }
 }

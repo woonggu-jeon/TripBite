@@ -79,13 +79,21 @@
 - ✅ **장소 정보 정리** — 기존 `WinnerDetailPanel` 유지 (summary/rating/tags/주소/시간/입장료/연락처/web)
 - ✅ **region 탭 2열 그리드** — `InfiniteList` 에 `columns` prop 추가 (default 1, RegionDetailTabs 가 `columns={2}`)
 
+### 마이페이지 후속 보정 (2026-06-03)
+
+- ✅ **도장책 진행률 — n/n 우측 정렬 + 퍼센트 제거** — "찍은 도장" 라벨 좌 + `n/11` 우. primary 강조 + 큰 숫자
+- ✅ **지도 도장 = 음영 처리** — ★ 마커 제거 → visited 시군은 primary fill 45% 음영 만으로 표현. visited 라벨도 primary
+- ✅ **청주시 4 path 시각 통합** — `path[data-region="cheongju"]` 의 stroke 제거 → 4 path 사이 공유 변은 어느 쪽도 그리지 않아 한 덩어리. 외곽선은 인접 시군이 그려 유지
+- ✅ **마이페이지 편지함 영역 미노출** — `MyPageClient` 에서 `LetterboxTabs` 제거 (/letter 라우트 + 컴포넌트 파일은 유지). i18n `mypage.sections.letterbox` 키 삭제
+- ✅ **프로필 avatar = 단일 button (카메라 아이콘 제거)** — 별도 카메라 IconButton 을 absolute 로 띄우던 구조 → avatar 영역 자체가 button. 카메라 힌트 아이콘 없이 avatar 클릭만으로 파일 선택. cursor pointer + focus-visible outline + hover brightness 로 클릭 가능 시각화. 결과: spec 충돌이 발생할 absolute 자식 요소 자체가 없어 뒤로가기 회귀 구조적 차단
+
 ### 마이페이지 5 항목 (2026-06-03)
 
 - ✅ **편지 삭제 UI** — `LetterActions` 의 삭제 버튼 + `useConfirm` + `useDeleteLetter` 이미 wired (확인만)
 - ✅ **저장한 우승지 전체보기** — `/mypage/saved-tournaments` 신설. mypage section 은 최신 3개 + 전체보기 link. 전체 페이지는 total count + 정렬 controls 자리 잡음
 - ✅ **도장책 정밀 지도** — `ChungbukStampMap` 신설 (토너먼트 `ChungbukMap` 의 SVG asset + path.region 재사용). `RegionStampMap` 이 grid 도식 대신 사용. `data-visited` attr override 로 도장 fill
 - ✅ **도장 derive** — `/mypage/stamps` mock 이 `tournamentHistorySeeds` 의 `winnerRegion` union 으로 계산. 실 BE 도 동일 로직 ("한 시군 1회 이상 우승" = 도장)
-- ✅ **프로필 여행 유형 필드** — `ProfileCard` 의 `TravelTypeField` 신설. emoji + 라벨 + title + description 카드. 미설정 시 "유형 테스트 하기" CTA
+- ✅ **프로필 여행 유형 필드** — `ProfileCard` 의 `TravelTypeField` 신설. emoji + 라벨 + title + description 카드. 유형 저장 시에만 노출 (미설정 시 어떤 UI 도 X). 유형 적용은 /quiz 결과의 "내 유형으로 적용" 버튼에서만 수행
 - ✅ **유형테스트 → 내 유형 적용 버튼** — `TravelTypeResult` 의 actions 에 "내 유형으로 적용" 추가. `useSetMyTravelType` mutation + `PATCH /travel-types/me` mock handler
 
 ### 디자인 (시안 없이 임시 디자인 — 후속 교체 가능 구조)

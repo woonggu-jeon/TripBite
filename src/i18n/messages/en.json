@@ -586,7 +586,6 @@
       "stampMap": "Chungbuk stamps",
       "savedTournaments": "Saved winners",
       "tournamentHistory": "Bracket history",
-      "letterbox": "Letterbox",
       "goToSettings": "Go to settings"
     },
     "profile": {
@@ -594,8 +593,7 @@
       "avatarAlt": "Profile image of {nickname}",
       "changeAvatar": "Change profile image",
       "travelType": {
-        "label": "Travel type",
-        "takeQuiz": "Take the quiz"
+        "label": "Travel type"
       }
     },
     "savedTournaments": {
@@ -622,7 +620,8 @@
     "stampMap": {
       "error": "Failed to load stamps",
       "retry": "Retry",
-      "progressAria": "Stamp progress {percent} percent"
+      "label": "Stamps",
+      "countAria": "{visited} of {total} stamps collected"
     }
   },
   "settings": {
