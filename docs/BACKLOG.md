@@ -1,109 +1,24 @@
 # TripBite 후속 작업 백로그
 
 > 코드베이스 전수조사 후 정리한 잔존 / 개선 항목. 분기점마다 갱신.
-> 마지막 갱신: 2026-06-02 — Phase 0~2 완료, Phase 5/6 일부 완료, share Desktop fallback / iOS appearance fix 반영.
+> 마지막 갱신: 2026-06-03
 >
 > 작업량 표기: **S** (≤30분) · **M** (1-3시간) · **L** (반나절+)
 
 ---
 
-## 최근 완료 (2026-06-01 ~ 06-02)
+## 최근 완료
 
-### 코드
+이미 dev 에 머지된 항목 이력은 `git log` 참조 (commit message 가 1차 source of truth).
+주요 마일스톤만 요약:
 
-- ✅ **Phase 0 dead code 청소** — `features/quiz/` 폴더 + dead spec 7 파일 삭제, letter `'saved'` 일관성, `useTournamentHistory` 신설
-- ✅ **Phase 1 mypage 위젯 4종** — SavedTournaments + Card (confirm 삭제), TournamentHistorySection, LetterboxTabs (4탭 lazy + prefetch). 닉네임 변경은 설정 페이지로 이동.
-- ✅ **Phase 2 도장깨기** — `ChungbukSvgMap` (5×3 grid SVG), `RegionStampMap` + `/mypage/stamps` mock, 진행률
-- ✅ **Phase 2 FestivalCarousel** — mock → `useOngoingFestivals` 교체, region 별 tone/emoji 매핑
-- ✅ **Phase 5 middleware 복원** — `src/middleware.ts` 이전 + `PUBLIC_ACCESS_PATHS`. mock 환경 (`USE_MSW=true`) 한정 redirect skip 추가
-- ✅ **Phase 5 axe-core a11y E2E** — 6 페이지 serious/critical 0건 (color-contrast 제외)
-- ✅ **Phase 5 toHaveScreenshot 시각 회귀** — 4 페이지 × 2 모드 × 6 플랫폼 = 48 baseline
-- ✅ **Phase 5 size-limit** — shared First Load 230kB / recharts 120kB / msw 100kB 임계
-- ✅ **Phase 5 Lighthouse CI** — a11y/CLS error 격상, seo warn
-- ✅ **Phase 5 vitest 단위 6 파일 (49 cases)** — bracket / tournament-store / Bracket.tsx / use-letters / AuthBootstrap / use-push-notification
-- ✅ **Phase 5 E2E 확장** — mobile-360 / 위치 권한 5종 / 토너먼트 풀 / push prompt
-- ✅ **Phase 6 명시 테마 토글** — light/dark/system + ui-store persist + Settings UI
-- ✅ **Phase 6 만 14세 onboarding step** — 정보통신망법 자기확인 체크박스
-- ✅ **iOS Safari/PWA 토너먼트 선택 테두리 사라짐 fix** — `_reset.scss` button 에 `appearance:none`
-- ✅ **이미지 카드 공유 카카오톡 채팅 첨부 흐름 fix** — `shareWithImage` payload file 단독
-- ✅ **이미지 카드 공유 Desktop fallback 강화** — file share 미지원 시 OG URL clipboard copy + PNG 다운로드 동시
-- ✅ **6 플랫폼 매트릭스 확장** — Windows / Mac / AOS web / iOS web / AOS PWA / iOS PWA
-
-### 인프라 / 문서
-
-- ✅ **README 현재 구현 상태 갱신** — stub 53 → 11, 토너먼트/letter/region ✅
-- ✅ **결과서 8차** — `docs/test-reports/2026-06-01-e2e.md` (244 → 404 passed, 0 failed)
-- ✅ **번들 모니터링** — First Load 213 KB acceptable, 1주 1회 분석 권장
-
-### 옵션 A (소소한 코드 + 인프라)
-
-- ✅ **mock handler 2 추가** — `GET /regions/:code/summary` + `GET /rankings?type=recommended|hidden-gems`
-- ✅ **Dependabot 활성화** — `.github/dependabot.yml` (npm/github-actions weekly + patch/minor group)
-- ✅ **SRI** — Pretendard CSS link `crossOrigin="anonymous"` + `NEXT_PUBLIC_PRETENDARD_SRI` env 기반 integrity 주입
-- ✅ **`graphemeLength` 단일 출처** — letter.ts 의 re-export 제거, 모두 `@/lib/validation` 직접 import
-- ✅ **`useFormat` 확장** — `dateLong` / `time` / `number` / `percent` 추가 (총 8 패턴)
-- ✅ **`config.count` 유지 결정** — 실 사용 중 (API param + 풀 사이즈 + 매치 수 계산)
-
-### 설정 통합 (mypage → settings)
-
-- ✅ **닉네임 변경 이전** — mypage 의 닉네임 섹션 제거, `features/settings/components/NicknameEditDialog` 로 이동. `AccountSettingsSection` 의 "닉네임 변경" 버튼이 모달 토글
-- ✅ **비밀번호 변경 모달화** — `ChangePasswordDialog` 신설 (NicknameEditDialog 모달 패턴 재사용). 인라인 폼 expand 였던 동작이 모달로 통일
-- ✅ **i18n 이동** — `mypage.nickname.*` 제거 → `settings.account.nicknameDialog.*` + `settings.account.changePasswordDialog.*` 신설
-
-### 옵션 D (성능 점검 + 보안 + 모니터링 stale 정리)
-
-- ✅ **InfiniteList rootMargin** — `use-intersection.ts` default `200px` 이미 적용. README TODO stale 정리
-- ✅ **이미지 lazy loading** — 현재 실 이미지 호출처 없음 (emoji/colorChip 만). OptimizedImage 표준 wired
-- ✅ **npm audit CI** — `--audit-level=high` + `continue-on-error: false` 이미 활성. README TODO stale 정리
-- ✅ **Sentry client 의도 미도입** — server/edge 만 유지 (browser SDK ~80KB 페널티). README 명시
-- ✅ **Pretendard fallback 메트릭 정밀** — `_fonts.scss` ascent 92→110% / descent 24→30% + size-adjust 100% (Pretendard 공식 typoAscent/typoDescent 기반). 운영 LCP 측정 후 capsize 미세조정 가능
-- ⏳ **style-src `'unsafe-inline'` 제거** — inline style 15+ 파일 sweep 필요. 별 PR (운영 진입 전)
-
-### mock 도구 헤더 통합 + 색 대비 보강
-
-- ✅ **MockModeBanner / MockPushTrigger 헤더 이동** — providers 의 fixed floating → AppHeader 좌측 dev slot 으로 통합. mock 환경 (`USE_MSW=true`) 빌드 한정 mount
-- ✅ **AppHeader inner grid** — `40px 1fr 40px` → `auto 1fr auto` 로 mock 도구 들어갈 때 자동 확장
-- ✅ **Banner message 명시 토큰** — `color: var(--color-bg)` + `font-weight: bold` + `animation-fill-mode: forwards`. axe color-contrast 위반 해소
-- ✅ **`--color-muted` 톤 보강** — `#6b7280` (4.43:1 미달) → `#5b6470` (surface-soft 4.5:1+). LetterIndex 비활성 탭 등 대비 확보
-
-### sticky 헤더 회귀 fix
-
-- ✅ **AppHeader / SubHeader sticky 동작 복원** — `.shell` 의 `overflow-x: hidden` 이 sticky 의 scrolling ancestor 를 .shell 로 잡아 body scroll 과 끊겼음. letter 등 긴 페이지 스크롤 시 헤더가 사라지던 회귀
-- ✅ **`overflow-x: clip` 으로 교체** — `_reset.scss` 의 `html, body` 에 적용. `hidden` 과 달리 `clip` 은 scroll container 생성하지 않아 sticky 정상 동작. iOS Safari 16+ / Chrome 90+ 지원
-
-### destination 상세 4 기능 + region 2열 그리드
-
-- ✅ **destination/[id] 상단 PhotoCarousel** — `DestinationDetail.photos` 활용. mock 은 id 기반 SVG data URL 3장
-- ✅ **DestinationActions** — 카카오/네이버 길찾기 (URL scheme 직접) + URL 공유. coords 있을 때만 길찾기 노출
-- ✅ **RelatedDestinations** — 같은 시군 다른 destination 6개. `GET /destinations/:id/related` mock + `useRelatedDestinations`
-- ✅ **장소 정보 정리** — 기존 `WinnerDetailPanel` 유지 (summary/rating/tags/주소/시간/입장료/연락처/web)
-- ✅ **region 탭 2열 그리드** — `InfiniteList` 에 `columns` prop 추가 (default 1, RegionDetailTabs 가 `columns={2}`)
-
-### 마이페이지 후속 보정 (2026-06-03)
-
-- ✅ **도장책 진행률 — n/n 우측 정렬 + 퍼센트 제거** — "찍은 도장" 라벨 좌 + `n/11` 우. primary 강조 + 큰 숫자
-- ✅ **지도 도장 = 음영 처리** — ★ 마커 제거 → visited 시군은 primary fill 45% 음영 만으로 표현. visited 라벨도 primary
-- ✅ **청주시 4 path 시각 통합** — `path[data-region="cheongju"]` 의 stroke 제거 → 4 path 사이 공유 변은 어느 쪽도 그리지 않아 한 덩어리. 외곽선은 인접 시군이 그려 유지
-- ✅ **마이페이지 편지함 영역 미노출** — `MyPageClient` 에서 `LetterboxTabs` 제거 (/letter 라우트 + 컴포넌트 파일은 유지). i18n `mypage.sections.letterbox` 키 삭제
-- ✅ **프로필 avatar = 단일 button (카메라 아이콘 제거)** — 별도 카메라 IconButton 을 absolute 로 띄우던 구조 → avatar 영역 자체가 button. 카메라 힌트 아이콘 없이 avatar 클릭만으로 파일 선택. cursor pointer + focus-visible outline + hover brightness 로 클릭 가능 시각화. 결과: spec 충돌이 발생할 absolute 자식 요소 자체가 없어 뒤로가기 회귀 구조적 차단
-
-### 마이페이지 5 항목 (2026-06-03)
-
-- ✅ **편지 삭제 UI** — `LetterActions` 의 삭제 버튼 + `useConfirm` + `useDeleteLetter` 이미 wired (확인만)
-- ✅ **저장한 우승지 전체보기** — `/mypage/saved-tournaments` 신설. mypage section 은 최신 3개 + 전체보기 link. 전체 페이지는 total count + 정렬 controls 자리 잡음
-- ✅ **도장책 정밀 지도** — `ChungbukStampMap` 신설 (토너먼트 `ChungbukMap` 의 SVG asset + path.region 재사용). `RegionStampMap` 이 grid 도식 대신 사용. `data-visited` attr override 로 도장 fill
-- ✅ **도장 derive** — `/mypage/stamps` mock 이 `tournamentHistorySeeds` 의 `winnerRegion` union 으로 계산. 실 BE 도 동일 로직 ("한 시군 1회 이상 우승" = 도장)
-- ✅ **프로필 여행 유형 필드** — `ProfileCard` 의 `TravelTypeField` 신설. emoji + 라벨 + title + description 카드. 유형 저장 시에만 노출 (미설정 시 어떤 UI 도 X). 유형 적용은 /quiz 결과의 "내 유형으로 적용" 버튼에서만 수행
-- ✅ **유형테스트 → 내 유형 적용 버튼** — `TravelTypeResult` 의 actions 에 "내 유형으로 적용" 추가. `useSetMyTravelType` mutation + `PATCH /travel-types/me` mock handler
-
-### 디자인 (시안 없이 임시 디자인 — 후속 교체 가능 구조)
-
-- ✅ **ConceptStep 일러스트** — 시즌 그라데이션 SVG (산/하늘/해) + 큰 emoji. 시안 받으면 SVG asset 만 교체
-- ✅ **RegionHero** — `/region/[code]` 상단 hero. emoji + 시군명 + 설명 + popularity chip
-- ✅ **WeatherWidget** — 미니멀 카드 (icon + 온도 + 시군 + 한 줄 코멘트) + 홈 배치 (WeatherRecommendation 섹션 상단)
-- ✅ **SeasonalCenterIllustration** — 시즌별 그라데이션 원형 SVG + 장식 (꽃잎/우산/잎/눈송이) + 글리프
-- ✅ **color-contrast sweep** — spring/autumn/red/green/violet 베이스 톤 진하게 (흰 배경 4.5:1+). axe-core color-contrast 활성화
-- ✅ **ChungbukSvgMap** — grid 도식 유지 + hover/focus-visible + visited 강조 (정밀 path 는 GeoJSON 자료 받으면 교체)
+- Phase 0~2 — dead code 청소, mypage 위젯, 도장책, region/destination 상세
+- Phase 5 — middleware 복원, axe a11y, 시각 회귀 48 baseline, vitest 123, size-limit, Lighthouse CI
+- Phase 6 일부 — 명시 테마 토글, 만 14세 step, sticky 헤더 fix
+- 6 플랫폼 매트릭스 — Windows / Mac / AOS web / iOS web / AOS PWA / iOS PWA
+- 이미지 공유 — 카톡 file 단독 + Desktop URL clipboard + PNG 다운로드 fallback
+- 마이페이지 — 프로필 avatar 단일 button, 도장책 정밀 지도 + 음영, 청주 4 path 통합, 저장 우승지 3 col + 전체보기 헤더
+- 설정 — 닉네임/비밀번호 모달 통합
 
 ---
 

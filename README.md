@@ -99,7 +99,7 @@ export const handlers = [
 - **토너먼트**: `/tournament` setup (계절/카테고리/갯수) → `/tournament/play` (Bracket 매치 진행 + dedup) → `/tournament/result` (winner + LuckyColor + 저장).
 - **랭킹**: Top5 + 시군별 + 카테고리별 (mock 데이터).
 - **시군 상세**: `/region/[code]` 관광지/축제/체험 탭 (InfiniteList + RegionContentRow).
-- **마이페이지**: ProfileCard + 닉네임 편집 + 도장깨기 (5×3 grid SVG) + 저장된 우승지 + 토너먼트 기록 + 편지함 4탭.
+- **마이페이지**: ProfileCard (avatar 클릭=이미지 변경, 여행유형 저장 시 노출) + 도장책 정밀 지도 + 저장된 우승지 (3 col + 헤더 전체보기 / 전체 페이지 list) + 토너먼트 기록. 닉네임은 /settings.
 - **여행지 상세**: `/destination/[id]` Hero + WinnerDetailPanel + Web Share API + OG 메타.
 - **이미지 카드 공유**: `/api/og/[type]` Edge route 4 종 (tournament/quiz/destination/region).
 - **설정**: `/settings` (알림 / 계정 / 정책 / 로그아웃).
@@ -144,7 +144,8 @@ export const handlers = [
   /letter/sent               ↳ 보내기 완료 화면
   /letter/[id]               ↳ 원고지 상세
   /quiz                    여행 유형 테스트
-  /mypage                  마이페이지 (도장깨기 / 저장 우승지 / 토너먼트 기록 / 편지함)
+  /mypage                  마이페이지 (프로필 / 도장책 / 저장 우승지 / 토너먼트 기록)
+  /mypage/saved-tournaments  저장한 우승지 전체 리스트
   /settings                설정 (알림 / 테마 / 계정 / 정책)
   /policy/{terms,privacy,licenses}  정책 페이지
 ```
@@ -195,9 +196,9 @@ src/features/
  ├─ letter/            다섯글자 편지 (작성·목록·상세·4탭)              [✅]
  ├─ tournament/        토너먼트 setup·play·result (BE deep-link 대기)  [✅]
  ├─ ranking/           Top5·시군·카테고리 / 추가 섹션 ⏳ (사양 대기)   [✅]
- ├─ region/            시군 그리드·상세 탭·ChungbukSvgMap·RegionHero·StampMap [✅]
+ ├─ region/            시군 그리드·상세 탭·ChungbukStampMap (정밀 11 시군 SVG)·RegionHero [✅]
  ├─ weather/           useCurrentWeather + WeatherWidget (홈 배치)     [✅]
- ├─ mypage/            ProfileCard·도장·우승지·토너먼트 기록·편지함    [✅]
+ ├─ mypage/            ProfileCard·도장책·저장 우승지·토너먼트 기록    [✅]
  ├─ notification/      Web Push + 인앱 알림함 + MockPushTrigger        [✅]
  ├─ settings/          알림·테마·계정(닉네임/비밀번호 모달)·정책       [✅]
  ├─ theme/             ThemeApplier + ThemeSection (light/dark/system) [✅]

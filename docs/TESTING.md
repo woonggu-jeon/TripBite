@@ -2,7 +2,7 @@
 
 vitest 단위 (123 cases / 21 files) + Playwright E2E (6 플랫폼, 420 cases) + axe-core a11y + toHaveScreenshot 시각 회귀.
 
-> 운영 결과 추적: [`docs/test-reports/2026-06-01-e2e.md`](./test-reports/2026-06-01-e2e.md) — 1~8차 누적, 이슈 처리, 매트릭스.
+> 실행 결과 / 갱신 이력은 `git log` 참조 (commit message 가 source of truth).
 
 ## 단위 — vitest
 
@@ -322,7 +322,8 @@ npm run test:e2e -- --update-snapshots -g "시각 회귀"
 
 ### 운영 결과 추적
 
-매 turn 마다 `docs/test-reports/2026-06-01-e2e.md` 의 차수 섹션 (1~8차) 추가. baseline 갱신 / 회귀 발견 / 처리 모두 한 곳.
+실행 결과 / 회귀 처리는 commit message 에 기록 (`git log` 가 source of truth).
+일회성 결과서 파일은 운영하지 않음.
 
 ## 추후 — Lighthouse a11y/SEO 이슈 (별도 처리 필요)
 
