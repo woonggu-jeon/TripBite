@@ -20,7 +20,10 @@
 import { http, HttpResponse } from 'msw';
 import { regionContentSeeds } from './seeds/regions';
 import { letterSeeds } from './seeds/letters';
-import { tournamentHistorySeeds } from './seeds/tournament';
+import {
+  savedTournamentSeeds,
+  tournamentHistorySeeds,
+} from './seeds/tournament';
 import { destinationSeeds } from './seeds/destinations';
 import { notificationSeeds } from './seeds/notifications';
 import {
@@ -399,7 +402,7 @@ export const handlers = [
   http.get(`${apiUrl}/mypage`, () =>
     HttpResponse.json({
       profile: { nickname: mockUser.nickname, isDefault: false },
-      savedTournaments: [],
+      savedTournaments: savedTournamentSeeds,
       savedLetters: letterSeeds.filter((l) => l.saved).slice(0, 5),
       likedLetters: letterSeeds.filter((l) => l.liked).slice(0, 5),
       travelType: myTravelType,
@@ -415,8 +418,10 @@ export const handlers = [
       isDefault: false,
     });
   }),
-  // 저장된 토너먼트 우승지 — 목록 (e2e proxy 회귀 회피)
-  http.get(`${apiUrl}/mypage/tournaments`, () => HttpResponse.json([])),
+  // 저장된 토너먼트 우승지 — 목록. summary 의 savedTournaments 와 같은 시드.
+  http.get(`${apiUrl}/mypage/tournaments`, () =>
+    HttpResponse.json(savedTournamentSeeds),
+  ),
   // 저장된 우승지 삭제
   http.delete(
     `${apiUrl}/mypage/tournaments/:id`,
