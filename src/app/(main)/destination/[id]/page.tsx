@@ -54,7 +54,50 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+const CATEGORY_TO_TYPE: Record<string, string> = {
+  attraction: 'TouristAttraction',
+  festival: 'Festival',
+  experience: 'TouristAttraction',
+  local: 'Place',
+};
+
+const BLOCK_INDEXING =
+  process.env.NEXT_PUBLIC_USE_MSW === 'true' ||
+  process.env.NEXT_PUBLIC_BLOCK_INDEXING === 'true';
+
 export default async function DestinationDetailPage({ params }: Props) {
   const { id } = await params;
-  return <DestinationDetailClient id={id} />;
+  const seed = destinationSeeds.find((d) => d.id === id);
+  const rc = !seed ? regionContentSeeds.find((r) => r.id === id) : null;
+  const name = seed?.name ?? rc?.title ?? '여행지';
+  const regionCode = seed?.region ?? rc?.region;
+  const region = CHUNGBUK_REGIONS.find((r) => r.code === regionCode);
+  const category = seed?.category ?? 'attraction';
+  const jsonLdType = CATEGORY_TO_TYPE[category] ?? 'TouristAttraction';
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': jsonLdType,
+    name,
+    ...(region && {
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: region.ko,
+        addressRegion: '충청북도',
+        addressCountry: 'KR',
+      },
+    }),
+  };
+
+  return (
+    <>
+      {!BLOCK_INDEXING && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      <DestinationDetailClient id={id} />
+    </>
+  );
 }

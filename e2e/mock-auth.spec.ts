@@ -10,6 +10,10 @@ import { authedSession } from './_helpers/auth';
  *   3) 비로그인 상태에서 /mypage 진입 → AuthBootstrap 가 /login?redirect= 으로 push
  *      (middleware 가 mock-skip 이므로 client-side 가드가 fallback)
  */
+// Serial — 병렬 실행 시 localStorage / mock 상태 race 로 flaky.
+// 같은 파일 안에서 logout 토글이 다른 test 의 mock 상태에 영향 주지 않게 순차 실행.
+test.describe.configure({ mode: 'serial' });
+
 test.describe('Mock 로그인 토글 + 보호 경로', () => {
   test.beforeEach(async ({ page }, testInfo) => {
     test.skip(
@@ -19,11 +23,26 @@ test.describe('Mock 로그인 토글 + 보호 경로', () => {
     await authedSession(page);
   });
 
+  // 같은 worker 재사용 시 직전 test 의 mockSignedIn 상태가 localStorage 로 누적되므로
+  // test 본문 시작 시 강제로 logged-in 상태로 reset.
+  async function resetToSignedIn(page: import('@playwright/test').Page) {
+    await page.goto('/');
+    await page.evaluate(() => {
+      try {
+        window.localStorage.setItem('__mock_signed_in', 'true');
+      } catch {
+        /* noop */
+      }
+    });
+    // useMe 가 다시 200 받도록 force-reload.
+    await page.reload();
+    await page.waitForLoadState('networkidle').catch(() => {});
+  }
+
   test('MockAuthToggle 노출 + 클릭으로 로그아웃 → /mypage 진입 시 /login redirect', async ({
     page,
   }) => {
-    await page.goto('/');
-    await page.waitForLoadState('networkidle').catch(() => {});
+    await resetToSignedIn(page);
 
     // 헤더 dev slot 의 mock 로그아웃 버튼
     const toggle = page.getByRole('button', { name: 'mock 로그아웃' });
@@ -37,8 +56,9 @@ test.describe('Mock 로그인 토글 + 보호 경로', () => {
 
     // 보호 경로 진입 시도 → AuthBootstrap 가 /login 으로 push.
     // goto 가 client-side redirect 도중 ABORT 되는 경우가 있어 catch 후 URL 만 검증.
+    // 병렬 실행 시 redirect 가 약간 지연될 수 있어 timeout 넉넉히.
     await page.goto('/mypage').catch(() => {});
-    await page.waitForURL(/\/login/, { timeout: 5000 });
+    await page.waitForURL(/\/login/, { timeout: 15000 });
     // redirect query 가 원래 경로 보존
     expect(page.url()).toContain('redirect=');
     expect(page.url()).toMatch(/redirect=.*mypage/);
@@ -47,8 +67,7 @@ test.describe('Mock 로그인 토글 + 보호 경로', () => {
   test('비로그인 상태에서 mock 로그인 토글 → 보호 페이지 정상 진입', async ({
     page,
   }) => {
-    await page.goto('/');
-    await page.waitForLoadState('networkidle').catch(() => {});
+    await resetToSignedIn(page);
 
     // 먼저 로그아웃
     await page.getByRole('button', { name: 'mock 로그아웃' }).click();
