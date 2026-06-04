@@ -22,70 +22,56 @@ npm run build && npm start   # 프로덕션 (PWA 활성)
 
 ## 스크립트
 
-| 명령                    | 설명                                                                                                                     |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `npm run dev`           | 개발 서버                                                                                                                |
-| `npm run build`         | 프로덕션 빌드                                                                                                            |
-| `npm start`             | 프로덕션 서버                                                                                                            |
-| `npm run lint`          | ESLint (next + security 룰)                                                                                              |
-| `npm run type-check`    | `tsc --noEmit` (strict + verbatim/noUnchecked)                                                                           |
-| `npm run format`        | Prettier 일괄 포맷                                                                                                       |
-| `npm test`              | Vitest watch                                                                                                             |
-| `npm run test:run`      | Vitest 1회 (CI)                                                                                                          |
-| `npm run test:coverage` | 커버리지 + threshold 게이트                                                                                              |
-| `npm run test:e2e`      | Playwright E2E (브라우저 1회: `npx playwright install`)                                                                  |
-| `npm run size`          | size-limit 번들 가드                                                                                                     |
-| `npm run analyze`       | `ANALYZE=true` 번들 분석 리포트                                                                                          |
-| `npm run build:icons`   | lucide → `public/icons.svg` sprite 생성                                                                                  |
-| `npm run fetch:openapi` | `OPENAPI_URL` → `./openapi.json` 다운로드 (백엔드 준비 시)                                                               |
-| `npm run generate:api`  | `openapi.json` → `src/generated/api` **타입 + SDK + Query hook** 생성 (`@hey-api/openapi-ts`)                            |
-| `npm run api:gen`       | `api/openapi.yaml` → `src/api/generated/` **client + hooks + zod + MSW** 생성 (`orval`). BE Swagger 도착 시 spec 만 교체 |
+| 명령                    | 설명                                                                                                                                                                       |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`           | 개발 서버                                                                                                                                                                  |
+| `npm run build`         | 프로덕션 빌드                                                                                                                                                              |
+| `npm start`             | 프로덕션 서버                                                                                                                                                              |
+| `npm run lint`          | ESLint (next + security 룰)                                                                                                                                                |
+| `npm run type-check`    | `tsc --noEmit` (strict + verbatim/noUnchecked)                                                                                                                             |
+| `npm run format`        | Prettier 일괄 포맷                                                                                                                                                         |
+| `npm test`              | Vitest watch                                                                                                                                                               |
+| `npm run test:run`      | Vitest 1회 (CI)                                                                                                                                                            |
+| `npm run test:coverage` | 커버리지 + threshold 게이트                                                                                                                                                |
+| `npm run test:e2e`      | Playwright E2E (브라우저 1회: `npx playwright install`)                                                                                                                    |
+| `npm run size`          | size-limit 번들 가드                                                                                                                                                       |
+| `npm run analyze`       | `ANALYZE=true` 번들 분석 리포트                                                                                                                                            |
+| `npm run build:icons`   | lucide → `public/icons.svg` sprite 생성                                                                                                                                    |
+| `npm run generate:api`  | `api/openapi.yaml` → `src/api/generated/` **client + react-query hooks + zod + MSW** 생성 (`orval`). BE Swagger 도착 시 `orval.config.ts` 의 `input.target` 만 URL 로 교체 |
 
 ---
 
-## OpenAPI 연동 (Swagger → SDK + Query hook + MSW)
+## OpenAPI 연동 — orval
 
-백엔드 swagger 준비 시 다음 순서로 활성화:
+백엔드 Spring Boot Swagger 준비 시:
 
 ```bash
-# 1) swagger 다운로드 (OPENAPI_URL 환경변수 설정 후)
-export OPENAPI_URL="http://localhost:8080/v3/api-docs"   # 또는 .env.local 에
-npm run fetch:openapi
+# 1) orval.config.ts 의 input.target 을 BE spec URL 또는 다운받은 파일로 교체
+#    예: 'https://api.tripbite.kr/v3/api-docs' 또는 './api/openapi.yaml'
 
-# 2) TS 타입 + SDK + TanStack Query hook 생성
+# 2) generate — client + react-query hooks + zod schemas + MSW handlers
 npm run generate:api
-# → src/generated/api/{types.gen.ts, sdk.gen.ts, @tanstack/react-query.gen.ts, client.gen.ts}
-
-# 3) openapi-client.ts 활성화 (주석 해제) — SDK 가 우리 axios 인스턴스 사용
-#    src/services/api/openapi-client.ts 참조
-
-# 4) providers.tsx 에서 configureOpenApiClient() 한 번 호출 (모듈 top-level)
+# → src/api/generated/{mypage,user,letter,...}/{*.ts, *.msw.ts} + schemas/*.ts
 ```
 
-**생성된 결과** — 자동 hook 사용:
+**생성 결과 활용**:
 
 ```tsx
-import { getAuthMeOptions } from '@/generated/api/@tanstack/react-query.gen';
-import { useQuery } from '@tanstack/react-query';
+import { useGetMypage } from '@/api/generated/mypage/mypage';
 
-const { data: me } = useQuery(getAuthMeOptions());
-// → 우리 axios → interceptor (401 refresh) → MSW proxy → 응답
+const { data } = useGetMypage();
+// → 기존 axios instance (services/api/client.ts) 통과
+// → interceptor (401 refresh / error-normalize) 자동 적용
+// → MSW proxy baseURL 분기 그대로
 ```
 
-**MSW handler** — `openapi-msw` 의 type-safe wrapper:
+**zod schemas** — orval 이 자동 생성. 기존 `src/features/{f}/schemas/*.ts` 의 10개
+임시 zod 는 점진 삭제 가능.
 
-```ts
-import { createOpenApiHttp } from 'openapi-msw';
-import type { paths } from '@/generated/api/types.gen';
+**MSW handlers** — orval 이 type-safe stub 생성 (`*.msw.ts`). 기존 mock 데이터는
+별도 fixture 로 채워서 합성.
 
-const http = createOpenApiHttp<paths>();
-export const handlers = [
-  http.get('/auth/me', ({ response }) => response(200).json({ id: 1, ... })),
-  // path / response 타입 자동 추론
-];
-```
-
-`generated/` 와 `openapi.json` 은 `.gitignore` — CI/local 에서 매번 재생성.
+`src/api/generated/` 는 `.gitignore` — CI/local 에서 매번 재생성.
 
 ---
 

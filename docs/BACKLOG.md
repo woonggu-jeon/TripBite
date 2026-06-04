@@ -56,18 +56,16 @@
 
 OpenAPI spec 도착 시 점검 / 합의 필요한 항목 + **orval 자동 생성 워크플로**:
 
-**워크플로**:
+**워크플로** (orval 단일화):
 
 1. BE 가 OpenAPI spec URL 제공 (예: `https://api.tripbite.kr/v3/api-docs`)
 2. `orval.config.ts` 의 `input.target` 을 BE URL 또는 다운받은 yaml/json 으로 교체
-3. `npm run api:gen` — `src/api/generated/` 에 client + react-query hooks + zod schemas + MSW handlers 자동 생성
+3. `npm run generate:api` — `src/api/generated/` 에 client + react-query hooks + zod schemas + MSW handlers 자동 생성
 4. 단계적 삭제:
    - `src/features/{feature}/api/*.ts` 의 수동 axios 호출 → generated 함수
    - `src/features/{feature}/schemas/*.ts` 10개 임시 zod → generated zod
    - `src/mocks/handlers.ts` 의 일부 → generated MSW handlers
 5. 임시 도구 (`safeParseResponse`, `lib/schemas/common.ts`) 제거
-
-대안: `@hey-api/openapi-ts` (이미 설치됨, `npm run generate:api`) — zod 자동 생성 미지원이라 임시 zod 작업 유지 필요. orval 권장.
 
 | #   | 항목                     | 현재 상태                                                               | 합의 필요                                                                          |
 | --- | ------------------------ | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |

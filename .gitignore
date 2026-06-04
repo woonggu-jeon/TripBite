@@ -60,8 +60,6 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
-# generated — npm run fetch:openapi && npm run generate:api 로 매번 재생성.
-# repo 깔끔 유지 + git diff 노이즈 차단. CI 가 build 전에 fetch+generate 실행.
-src/generated/
+# generated — `npm run generate:api` (orval) 로 매번 재생성.
+# repo 깔끔 유지 + git diff 노이즈 차단. CI 가 build 전에 generate 실행.
 src/api/generated/
-openapi.json
