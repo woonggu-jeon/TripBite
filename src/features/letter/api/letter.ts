@@ -1,4 +1,9 @@
 import { api } from '@/services/api/client';
+import { safeParseResponse } from '@/lib/safe-parse-response';
+import {
+  letterPageSchema,
+  letterDetailSchema,
+} from '@/features/letter/schemas/letter-response';
 import type {
   Letter,
   LetterPage,
@@ -11,10 +16,14 @@ async function fetchLetterPage(
   url: string,
   cursor: number,
 ): Promise<LetterPage> {
-  const res = await api.get<LetterPage>(url, {
+  const res = await api.get<unknown>(url, {
     params: { cursor, limit: PAGE_LIMIT },
   });
-  return res.data;
+  return safeParseResponse(
+    letterPageSchema,
+    res.data,
+    `GET ${url}`,
+  ) as LetterPage;
 }
 
 /**
@@ -46,18 +55,30 @@ export const letterApi = {
   listSaved: (cursor = 0) => fetchLetterPage('/letters/saved', cursor),
 
   get: async (id: string): Promise<Letter> => {
-    const res = await api.get<Letter>(`/letters/${id}`);
-    return res.data;
+    const res = await api.get<unknown>(`/letters/${id}`);
+    return safeParseResponse(
+      letterDetailSchema,
+      res.data,
+      `GET /letters/${id}`,
+    ) as Letter;
   },
 
   toggleLike: async (id: string): Promise<Letter> => {
-    const res = await api.post<Letter>(`/letters/${id}/like`);
-    return res.data;
+    const res = await api.post<unknown>(`/letters/${id}/like`);
+    return safeParseResponse(
+      letterDetailSchema,
+      res.data,
+      `POST /letters/${id}/like`,
+    ) as Letter;
   },
 
   toggleSave: async (id: string): Promise<Letter> => {
-    const res = await api.post<Letter>(`/letters/${id}/save`);
-    return res.data;
+    const res = await api.post<unknown>(`/letters/${id}/save`);
+    return safeParseResponse(
+      letterDetailSchema,
+      res.data,
+      `POST /letters/${id}/save`,
+    ) as Letter;
   },
 
   remove: async (id: string) => {

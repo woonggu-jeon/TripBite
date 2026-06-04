@@ -48,6 +48,23 @@
 
 ## 2. TODO / FUTURE BE 메모
 
+### 2-0. BE (Spring Boot Swagger) 합의 체크리스트
+
+OpenAPI spec 도착 시 점검 / 합의 필요한 항목:
+
+| #   | 항목                     | 현재 상태                                                               | 합의 필요                                                                          |
+| --- | ------------------------ | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| 1   | **응답 zod 스키마**      | 10 endpoint 임시 적용 (`/lib/safe-parse-response.ts`)                   | orval / kubb 도입 시 자동 생성 → 임시 스키마 모두 삭제                             |
+| 2   | **에러 응답 형태**       | `{ code: string, message: string, details? }` 가정                      | BE 가 동일 형태로 통일. `services/interceptors/error-normalize.ts` 가 normalize    |
+| 3   | **cookie 이름 / 정책**   | `access_token` (`src/middleware.ts:37`)                                 | BE 발급 쿠키 이름 / Domain / SameSite=None;Secure (cross-origin) 합의              |
+| 4   | **CORS**                 | `withCredentials: true` (axios)                                         | BE 가 `Access-Control-Allow-Origin: <our-domain>` + `Allow-Credentials: true` 설정 |
+| 5   | **`/me` 단일화**         | ✅ `/me` 만 사용. `/users/me` 잔재 삭제 완료                            | —                                                                                  |
+| 6   | **페이지네이션**         | cursor 기반 `{ items, nextCursor }` (letters / history)                 | BE 가 동일 형태 또는 offset 기반 시 InfiniteList 분기 추가                         |
+| 7   | **region code 형식**     | 영문 소문자 (`cheongju`)                                                | BE 가 같은 표기 / 또는 `sigunguCode` numeric → 매핑 layer 필요                     |
+| 8   | **destination category** | enum 4종 (`local/festival/attraction/experience`)                       | BE 가 동일 enum. 확장 시 UI 매핑 (emoji/tone) 추가 필요                            |
+| 9   | **mock-only endpoint**   | `POST /__mock/letter-arrive` (push 시뮬레이션)                          | 운영에선 BE web-push 가 대체 (Phase 4)                                             |
+| 10  | **미구현 endpoint**      | `DELETE /me`, `POST /tournaments`, `PATCH /users/me` (avatar multipart) | BE 가 구현 (Phase 3)                                                               |
+
 ### 2-1. `[FUTURE BE]` (3 화면) — Phase 3
 
 | 위치                                                       | 작업                                                                                                                |

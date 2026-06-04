@@ -1,6 +1,7 @@
 import axios, { type AxiosInstance } from 'axios';
 import { attachAuthInterceptor } from '@/services/interceptors/auth';
 import { attachTimingInterceptor } from '@/services/interceptors/timing';
+import { attachErrorNormalizeInterceptor } from '@/services/interceptors/error-normalize';
 import { assertRequiredEnv } from '@/lib/env';
 
 // 클라이언트 부팅 시 필수 env 검증 (미설정 시 콘솔 경고)
@@ -31,7 +32,9 @@ export const api: AxiosInstance = axios.create({
 });
 
 // Interceptor 부착
-//   - timing: 응답 시간 측정 (느린 API 감지) — 먼저 부착
-//   - auth:   401 → refresh → 재시도
+//   - timing:     응답 시간 측정 (느린 API 감지) — 먼저 부착
+//   - error-norm: 모든 응답 에러에 { code, message } 표준 속성 부여
+//   - auth:       401 → refresh → 재시도 (error-norm 보다 뒤 — refresh 분기가 흐름 가로채는 게 우선)
 attachTimingInterceptor(api);
+attachErrorNormalizeInterceptor(api);
 attachAuthInterceptor(api);

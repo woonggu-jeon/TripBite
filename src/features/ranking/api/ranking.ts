@@ -1,4 +1,10 @@
 import { api } from '@/services/api/client';
+import { safeParseResponse } from '@/lib/safe-parse-response';
+import {
+  rankingListSchema,
+  myTravelTypeSchema,
+} from '@/features/ranking/schemas/ranking';
+import { travelTypeSchema } from '@/features/mypage/schemas/mypage';
 import type {
   RankedDestination,
   RankingType,
@@ -30,8 +36,12 @@ export const rankingApi = {
     season?: 'spring' | 'summer' | 'autumn' | 'winter';
     region?: string;
   }): Promise<RankedDestination[]> => {
-    const res = await api.get<RankedDestination[]>('/rankings', { params });
-    return res.data;
+    const res = await api.get<unknown>('/rankings', { params });
+    return safeParseResponse(
+      rankingListSchema,
+      res.data,
+      `GET /rankings ${params.type}`,
+    ) as RankedDestination[];
   },
 
   getTravelTypeQuiz: async (): Promise<TravelTypeQuiz> => {
@@ -42,13 +52,21 @@ export const rankingApi = {
   submitTravelType: async (
     answers: TravelTypeAnswer[],
   ): Promise<TravelType> => {
-    const res = await api.post<TravelType>('/travel-types/submit', { answers });
-    return res.data;
+    const res = await api.post<unknown>('/travel-types/submit', { answers });
+    return safeParseResponse(
+      travelTypeSchema,
+      res.data,
+      'POST /travel-types/submit',
+    ) as TravelType;
   },
 
   getMyTravelType: async (): Promise<TravelType | null> => {
-    const res = await api.get<TravelType | null>('/travel-types/me');
-    return res.data;
+    const res = await api.get<unknown>('/travel-types/me');
+    return safeParseResponse(
+      myTravelTypeSchema,
+      res.data,
+      'GET /travel-types/me',
+    ) as TravelType | null;
   },
 
   /**
@@ -56,7 +74,11 @@ export const rankingApi = {
    * PATCH /travel-types/me { code }
    */
   setMyTravelType: async (code: string): Promise<TravelType> => {
-    const res = await api.patch<TravelType>('/travel-types/me', { code });
-    return res.data;
+    const res = await api.patch<unknown>('/travel-types/me', { code });
+    return safeParseResponse(
+      travelTypeSchema,
+      res.data,
+      'PATCH /travel-types/me',
+    ) as TravelType;
   },
 };

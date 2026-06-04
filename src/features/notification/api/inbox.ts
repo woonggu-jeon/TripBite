@@ -1,4 +1,6 @@
 import { api } from '@/services/api/client';
+import { safeParseResponse } from '@/lib/safe-parse-response';
+import { notificationInboxSchema } from '@/features/notification/schemas/inbox';
 import type { NotificationInbox } from '@/features/notification/types';
 
 /**
@@ -19,8 +21,12 @@ import type { NotificationInbox } from '@/features/notification/types';
  */
 export const notificationInboxApi = {
   get: async (): Promise<NotificationInbox> => {
-    const res = await api.get<NotificationInbox>('/notifications');
-    return res.data;
+    const res = await api.get<unknown>('/notifications');
+    return safeParseResponse(
+      notificationInboxSchema,
+      res.data,
+      'GET /notifications',
+    ) as NotificationInbox;
   },
   markRead: async (id: string) => {
     await api.post(`/notifications/${id}/read`);

@@ -1,4 +1,6 @@
 import { api } from '@/services/api/client';
+import { safeParseResponse } from '@/lib/safe-parse-response';
+import { destinationDetailSchema } from '@/features/tournament/schemas/destination';
 import type {
   Destination,
   DestinationDetail,
@@ -23,8 +25,12 @@ export const tournamentApi = {
    * 응답 필드는 모두 optional. 백엔드가 점진적으로 채우는 시나리오 가정.
    */
   getDestinationDetail: async (id: string): Promise<DestinationDetail> => {
-    const res = await api.get<DestinationDetail>(`/destinations/${id}`);
-    return res.data;
+    const res = await api.get<unknown>(`/destinations/${id}`);
+    return safeParseResponse(
+      destinationDetailSchema,
+      res.data,
+      `GET /destinations/${id}`,
+    ) as DestinationDetail;
   },
 
   /**

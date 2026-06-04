@@ -1,4 +1,6 @@
 import { api } from '@/services/api/client';
+import { safeParseResponse } from '@/lib/safe-parse-response';
+import { currentWeatherSchema } from '@/features/weather/schemas/weather';
 import type { CurrentWeather } from '@/features/weather/types';
 import type { Coordinates } from '@/features/location';
 
@@ -13,11 +15,15 @@ import type { Coordinates } from '@/features/location';
  */
 export const weatherApi = {
   getCurrent: async (coords?: Coordinates): Promise<CurrentWeather> => {
-    const res = await api.get<CurrentWeather>('/weather/current', {
+    const res = await api.get<unknown>('/weather/current', {
       params: coords
         ? { lat: coords.latitude, lng: coords.longitude }
         : undefined,
     });
-    return res.data;
+    return safeParseResponse(
+      currentWeatherSchema,
+      res.data,
+      'GET /weather/current',
+    ) as CurrentWeather;
   },
 };
