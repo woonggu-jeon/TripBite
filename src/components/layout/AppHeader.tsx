@@ -9,6 +9,7 @@ import { NotificationDropdown } from '@/features/notification/components/Notific
 import { useNotificationInbox } from '@/features/notification/hooks/use-notification-inbox';
 import { MockModeBanner } from '@/features/pwa/components/MockModeBanner';
 import { MockPushTrigger } from '@/features/notification/components/MockPushTrigger';
+import { MockAuthToggle } from '@/features/auth/components/MockAuthToggle';
 import styles from './AppHeader.module.scss';
 
 const MSW_ENABLED = process.env.NEXT_PUBLIC_USE_MSW === 'true';
@@ -50,6 +51,7 @@ export function AppHeader() {
           )}
           {MSW_ENABLED && (
             <>
+              <MockAuthToggle />
               <MockPushTrigger />
               <MockModeBanner />
             </>

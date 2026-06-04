@@ -1,0 +1,35 @@
+/* mock 로그인/로그아웃 토글 — AppHeader 의 좌측 dev slot 에 inline 배치.
+   mock 환경 (NEXT_PUBLIC_USE_MSW=true) 빌드에서만 mount. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-fg);
+  opacity: 0.85;
+  cursor: pointer;
+  transition:
+    border-color var(--motion-base) ease,
+    opacity var(--motion-base) ease,
+    transform var(--motion-fast) ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      opacity: 1;
+      border-color: var(--color-primary-border);
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.94);
+  }
+
+  &:disabled {
+    opacity: var(--opacity-disabled);
+    cursor: progress;
+  }
+}

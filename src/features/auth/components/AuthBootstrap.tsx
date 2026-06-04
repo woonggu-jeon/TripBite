@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import type { Route } from 'next';
 import { useMe } from '@/features/auth/hooks/use-auth';
 import { useAuthStore } from '@/stores/auth-store';
 import { localOnboarding } from '@/features/onboarding/hooks/use-local-onboarding';
@@ -35,6 +36,17 @@ const SKIP_REDIRECT_PATHS = [
   '/policy',
   '/offline',
 ];
+
+// middleware 와 동일 — mock 환경 (USE_MSW=true) 에선 middleware redirect 가 skip 되므로
+// 미인증 + 보호 경로 진입 시 클라이언트에서 동일한 redirect 를 적용해야 한다.
+// 운영에선 middleware 가 먼저 막아 이 경로 진입 자체가 없음 — 안전망 역할.
+const PROTECTED_PATHS = ['/mypage', '/settings', '/letter'];
+
+function isProtectedPath(pathname: string): boolean {
+  return PROTECTED_PATHS.some(
+    (p) => pathname === p || pathname.startsWith(`${p}/`),
+  );
+}
 
 function shouldSkipRedirect(pathname: string): boolean {
   return SKIP_REDIRECT_PATHS.some(
@@ -85,7 +97,14 @@ export function AuthBootstrap() {
       clearAuth();
     }
 
-    // 비인증 (isError 또는 me 호출 안 됨) — localStorage 기반 redirect
+    // 비인증 + 보호 경로 진입 → 로그인 페이지로 (mock 환경의 middleware skip 안전망)
+    if (isError && isProtectedPath(pathname)) {
+      const redirect = encodeURIComponent(pathname);
+      router.replace(`/login?redirect=${redirect}` as Route);
+      return;
+    }
+
+    // 비인증 (isError 또는 me 호출 안 됨) — localStorage 기반 onboarding redirect
     if (!shouldSkipRedirect(pathname) && !localOnboarding.read()) {
       router.replace('/onboarding');
     }
