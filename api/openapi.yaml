@@ -1,0 +1,250 @@
+openapi: 3.0.3
+info:
+  title: TripBite API
+  description: |
+    TripBite 백엔드 API 스펙 — Spring Boot Swagger 도착 시 본 파일을 BE 가 생성한
+    spec 으로 교체. orval 이 `npm run api:gen` 으로 src/api/generated/ 에 client +
+    hooks + zod schemas + MSW handlers 자동 생성.
+
+    현재는 placeholder skeleton — paths 일부 예시 / components 의 핵심 schema 정의.
+    BE 합류 즉시 본 파일 전체 교체 가능.
+  version: 0.1.0
+servers:
+  - url: http://localhost:8080
+    description: 로컬 BE
+  - url: https://api.tripbite.kr
+    description: 운영
+tags:
+  - name: auth
+  - name: user
+  - name: mypage
+  - name: letter
+  - name: tournament
+  - name: ranking
+  - name: region
+  - name: notification
+  - name: travel-type
+  - name: weather
+
+paths:
+  /me:
+    get:
+      tags: [user]
+      summary: 현재 사용자 조회
+      operationId: getMe
+      responses:
+        '200':
+          description: 사용자 정보
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /mypage:
+    get:
+      tags: [mypage]
+      summary: 마이페이지 요약 — 프로필 + 저장 우승지 + 편지 + 여행 유형
+      operationId: getMypage
+      responses:
+        '200':
+          description: 요약 응답
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyPageSummary'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /mypage/stamps:
+    get:
+      tags: [mypage]
+      summary: 도장책 진행
+      operationId: getStamps
+      responses:
+        '200':
+          description: visited 시군 코드 배열 + total
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StampsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  schemas:
+    User:
+      type: object
+      required: [id, email, nickname]
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        nickname:
+          type: string
+        isOnboarded:
+          type: boolean
+        homeRegion:
+          type: string
+        travelTypeCode:
+          type: string
+        role:
+          type: string
+          enum: [user, admin]
+        createdAt:
+          type: string
+
+    MyProfile:
+      type: object
+      required: [nickname]
+      properties:
+        nickname:
+          type: string
+        isDefault:
+          type: boolean
+
+    Destination:
+      type: object
+      required: [id, name, category, region]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+          enum: [local, festival, attraction, experience]
+        region:
+          type: string
+        description:
+          type: string
+        imageUrl:
+          type: string
+        eventStart:
+          type: string
+        eventEnd:
+          type: string
+
+    SavedTournament:
+      type: object
+      required: [id, destination, luckyColor, meetChance, savedAt]
+      properties:
+        id:
+          type: string
+        destination:
+          $ref: '#/components/schemas/Destination'
+        luckyColor:
+          type: string
+        meetChance:
+          type: number
+        savedAt:
+          type: string
+
+    Letter:
+      type: object
+      required: [id, body, author, arrivedAt, createdAt, isMine, liked, saved]
+      properties:
+        id:
+          type: string
+        body:
+          type: string
+        author:
+          type: object
+          required: [nickname]
+          properties:
+            nickname:
+              type: string
+            location:
+              type: string
+        arrivedAt:
+          type: string
+        createdAt:
+          type: string
+        isMine:
+          type: boolean
+        liked:
+          type: boolean
+        saved:
+          type: boolean
+        likeCount:
+          type: integer
+        read:
+          type: boolean
+
+    TravelType:
+      type: object
+      required: [code, title, emoji, description, keywords]
+      properties:
+        code:
+          type: string
+        title:
+          type: string
+        emoji:
+          type: string
+        description:
+          type: string
+        keywords:
+          type: array
+          items:
+            type: string
+        recommended:
+          type: array
+          items:
+            $ref: '#/components/schemas/Destination'
+
+    MyPageSummary:
+      type: object
+      required: [profile, savedTournaments, savedLetters, likedLetters]
+      properties:
+        profile:
+          $ref: '#/components/schemas/MyProfile'
+        savedTournaments:
+          type: array
+          items:
+            $ref: '#/components/schemas/SavedTournament'
+        savedLetters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Letter'
+        likedLetters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Letter'
+        travelType:
+          allOf:
+            - $ref: '#/components/schemas/TravelType'
+          nullable: true
+
+    StampsResponse:
+      type: object
+      required: [visited, total]
+      properties:
+        visited:
+          type: array
+          items:
+            type: string
+        total:
+          type: integer
+
+    ErrorResponse:
+      type: object
+      description: 표준 에러 응답 형태 — interceptor 의 normalize 와 정합.
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          description: 에러 코드 (예 AUTH_INVALID_CREDENTIAL, NICKNAME_TAKEN)
+        message:
+          type: string
+        details:
+          type: object
+
+  responses:
+    Unauthorized:
+      description: 인증 실패
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

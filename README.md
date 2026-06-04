@@ -22,23 +22,24 @@ npm run build && npm start   # 프로덕션 (PWA 활성)
 
 ## 스크립트
 
-| 명령                    | 설명                                                                                          |
-| ----------------------- | --------------------------------------------------------------------------------------------- |
-| `npm run dev`           | 개발 서버                                                                                     |
-| `npm run build`         | 프로덕션 빌드                                                                                 |
-| `npm start`             | 프로덕션 서버                                                                                 |
-| `npm run lint`          | ESLint (next + security 룰)                                                                   |
-| `npm run type-check`    | `tsc --noEmit` (strict + verbatim/noUnchecked)                                                |
-| `npm run format`        | Prettier 일괄 포맷                                                                            |
-| `npm test`              | Vitest watch                                                                                  |
-| `npm run test:run`      | Vitest 1회 (CI)                                                                               |
-| `npm run test:coverage` | 커버리지 + threshold 게이트                                                                   |
-| `npm run test:e2e`      | Playwright E2E (브라우저 1회: `npx playwright install`)                                       |
-| `npm run size`          | size-limit 번들 가드                                                                          |
-| `npm run analyze`       | `ANALYZE=true` 번들 분석 리포트                                                               |
-| `npm run build:icons`   | lucide → `public/icons.svg` sprite 생성                                                       |
-| `npm run fetch:openapi` | `OPENAPI_URL` → `./openapi.json` 다운로드 (백엔드 준비 시)                                    |
-| `npm run generate:api`  | `openapi.json` → `src/generated/api` **타입 + SDK + Query hook** 생성 (`@hey-api/openapi-ts`) |
+| 명령                    | 설명                                                                                                                     |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `npm run dev`           | 개발 서버                                                                                                                |
+| `npm run build`         | 프로덕션 빌드                                                                                                            |
+| `npm start`             | 프로덕션 서버                                                                                                            |
+| `npm run lint`          | ESLint (next + security 룰)                                                                                              |
+| `npm run type-check`    | `tsc --noEmit` (strict + verbatim/noUnchecked)                                                                           |
+| `npm run format`        | Prettier 일괄 포맷                                                                                                       |
+| `npm test`              | Vitest watch                                                                                                             |
+| `npm run test:run`      | Vitest 1회 (CI)                                                                                                          |
+| `npm run test:coverage` | 커버리지 + threshold 게이트                                                                                              |
+| `npm run test:e2e`      | Playwright E2E (브라우저 1회: `npx playwright install`)                                                                  |
+| `npm run size`          | size-limit 번들 가드                                                                                                     |
+| `npm run analyze`       | `ANALYZE=true` 번들 분석 리포트                                                                                          |
+| `npm run build:icons`   | lucide → `public/icons.svg` sprite 생성                                                                                  |
+| `npm run fetch:openapi` | `OPENAPI_URL` → `./openapi.json` 다운로드 (백엔드 준비 시)                                                               |
+| `npm run generate:api`  | `openapi.json` → `src/generated/api` **타입 + SDK + Query hook** 생성 (`@hey-api/openapi-ts`)                            |
+| `npm run api:gen`       | `api/openapi.yaml` → `src/api/generated/` **client + hooks + zod + MSW** 생성 (`orval`). BE Swagger 도착 시 spec 만 교체 |
 
 ---
 
