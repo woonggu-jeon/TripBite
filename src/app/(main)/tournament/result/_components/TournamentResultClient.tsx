@@ -9,7 +9,7 @@ import {
   useSaveTournament,
   useTournamentRecord,
 } from '@/features/tournament/hooks/use-tournament';
-import { Button } from '@/components/ui';
+import { Button, ButtonGrid } from '@/components/ui';
 import { WinnerCard } from '@/features/tournament/components/WinnerCard';
 import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetailPanel';
 import { TournamentStats } from '@/features/tournament/components/TournamentStats';
@@ -178,7 +178,7 @@ export function TournamentResultClient() {
       </section>
 
       <div className={styles.actions}>
-        <div className={styles.actionsRow}>
+        <ButtonGrid>
           <Button
             variant="secondary"
             fullWidth
@@ -190,7 +190,7 @@ export function TournamentResultClient() {
           <Button variant="ghost" fullWidth onClick={handleRetry}>
             {t('retry')}
           </Button>
-        </div>
+        </ButtonGrid>
         <Button
           variant="primary"
           fullWidth

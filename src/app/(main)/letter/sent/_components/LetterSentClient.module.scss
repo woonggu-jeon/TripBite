@@ -228,11 +228,4 @@
   white-space: nowrap;
 }
 
-// 3) 액션
-.actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.625rem;
-}
-
-/* .primary / .secondary 클래스는 Button primitive 마이그레이션 후 미사용 — 제거 */
+/* .primary / .secondary / .actions 는 ButtonGrid primitive 로 마이그레이션 — 제거 */

@@ -2,7 +2,7 @@
 
 import { useEffect, type ReactNode } from 'react';
 import { useIntersection } from '@/hooks/use-intersection';
-import { Skeleton } from '@/components/feedback/Skeleton';
+import { SkeletonList } from '@/components/feedback/SkeletonList';
 
 /**
  * <InfiniteList />
@@ -79,10 +79,9 @@ export function InfiniteList<T>({
       ))}
 
       {/* 다음 페이지 fetching 중 placeholder */}
-      {isFetchingNext &&
-        Array.from({ length: skeletonCount }).map((_, i) => (
-          <Skeleton key={`s-${i}`} width="100%" height={80} radius="md" />
-        ))}
+      {isFetchingNext && (
+        <SkeletonList count={skeletonCount} height={80} radius="md" />
+      )}
 
       {/* 마지막 페이지 후에는 sentinel 렌더 안 함.
           columns > 1 일 때 sentinel 도 전체 폭 차지하도록 column span. */}

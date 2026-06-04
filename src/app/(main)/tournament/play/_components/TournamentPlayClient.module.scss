@@ -56,12 +56,6 @@
   margin-top: 0.5rem;
 }
 
-.mapActions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
-}
-
 .counter {
   font-size: var(--font-body);
   font-weight: var(--font-weight-bold);

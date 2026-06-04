@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { Trophy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Skeleton } from '@/components/feedback/Skeleton';
+import { SkeletonList } from '@/components/feedback/SkeletonList';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
 import {
@@ -50,9 +50,7 @@ export function SavedTournamentsAll() {
     return (
       <div className={styles.wrap}>
         <div className={styles.grid}>
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} width="100%" height={180} radius="md" />
-          ))}
+          <SkeletonList count={6} height={180} radius="md" />
         </div>
       </div>
     );

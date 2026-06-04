@@ -48,10 +48,4 @@
   gap: 0.5rem;
 }
 
-.actionsRow {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
-}
-
 // .primary / .secondary / .cta 클래스는 Button primitive 로 마이그레이션됨 (제거)

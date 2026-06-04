@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Skeleton } from '@/components/feedback/Skeleton';
+import { SkeletonList } from '@/components/feedback/SkeletonList';
 import { PageSection } from '@/components/ui';
 import { useWeeklyTopDestinations } from '@/features/ranking/hooks/use-ranking';
 import { Top5Card } from '@/features/ranking/components/Top5Card';
@@ -36,9 +36,7 @@ export function RankingPageContent() {
       <PageSection title={tSection('weeklyWinners', { limit: 5 })}>
         {isLoading && (
           <div className={styles.list}>
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} width="100%" height={72} radius="lg" />
-            ))}
+            <SkeletonList count={5} height={72} radius="lg" />
           </div>
         )}
         {isError && (

@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Check, MailOpen } from 'lucide-react';
 import { useLetter } from '@/features/letter/hooks/use-letters';
 import { useLetterStore } from '@/features/letter/store/letter-store';
-import { Button } from '@/components/ui';
+import { Button, ButtonGrid } from '@/components/ui';
 import styles from './LetterSentClient.module.scss';
 
 /**
@@ -206,14 +206,14 @@ export function LetterSentClient() {
       </article>
 
       {/* 3) 액션 */}
-      <div className={styles.actions}>
+      <ButtonGrid gap="md">
         <Button variant="secondary" fullWidth onClick={handleAgain}>
           {t('again')}
         </Button>
         <Button variant="primary" fullWidth onClick={handleHome}>
           {t('home')}
         </Button>
-      </div>
+      </ButtonGrid>
     </div>
   );
 }

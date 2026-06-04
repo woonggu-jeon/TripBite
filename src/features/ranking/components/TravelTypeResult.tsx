@@ -6,7 +6,7 @@ import { Share2, RotateCcw, BadgeCheck } from 'lucide-react';
 import { haptic } from '@/lib/haptic';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { EmptyState } from '@/components/feedback/EmptyState';
-import { Button, Card, Chip } from '@/components/ui';
+import { Button, ButtonGrid, Card, Chip } from '@/components/ui';
 import {
   useMyTravelType,
   useSetMyTravelType,
@@ -153,7 +153,7 @@ export function TravelTypeResult() {
       )}
 
       <div className={styles.actions}>
-        <div className={styles.actionsRow}>
+        <ButtonGrid>
           <Button
             variant="secondary"
             fullWidth
@@ -173,7 +173,7 @@ export function TravelTypeResult() {
           >
             {t('retake')}
           </Button>
-        </div>
+        </ButtonGrid>
         <Button
           variant="primary"
           fullWidth

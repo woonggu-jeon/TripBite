@@ -18,7 +18,7 @@ import {
   useRecordTournament,
   useTournamentCandidates,
 } from '@/features/tournament/hooks/use-tournament';
-import { Button } from '@/components/ui';
+import { Button, ButtonGrid } from '@/components/ui';
 import styles from './TournamentPlayClient.module.scss';
 
 type Phase = 'intro' | 'map' | 'tournamentSize' | 'bracket' | 'celebration';
@@ -231,7 +231,7 @@ export function TournamentPlayClient() {
                 <p className={styles.counter}>
                   {t('mapSummary', { destinations: N })}
                 </p>
-                <div className={styles.mapActions}>
+                <ButtonGrid>
                   <Button
                     variant="secondary"
                     size="lg"
@@ -249,7 +249,7 @@ export function TournamentPlayClient() {
                   >
                     {t('next')}
                   </Button>
-                </div>
+                </ButtonGrid>
               </div>
             </>
           )}

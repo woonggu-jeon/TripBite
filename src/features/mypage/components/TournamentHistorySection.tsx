@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { Trophy } from 'lucide-react';
-import { Skeleton } from '@/components/feedback/Skeleton';
+import { SkeletonList } from '@/components/feedback/SkeletonList';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
 import { useTournamentHistory } from '@/features/tournament/hooks/use-tournament';
@@ -39,9 +39,7 @@ export function TournamentHistorySection() {
   if (isLoading) {
     return (
       <div className={styles.skeletonList}>
-        {Array.from({ length: 3 }).map((_, i) => (
-          <Skeleton key={i} width="100%" height={56} radius="md" />
-        ))}
+        <SkeletonList count={3} height={56} radius="md" />
       </div>
     );
   }
