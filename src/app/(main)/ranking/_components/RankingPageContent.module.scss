@@ -3,6 +3,26 @@
   gap: var(--space-6);
 }
 
+// 상단 주차/업데이트 안내 — 좌우 양끝
+.weekRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-size: var(--font-body-sm);
+}
+
+.week {
+  color: var(--color-fg);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-snug);
+}
+
+.updateNote {
+  color: var(--color-muted);
+  font-size: var(--font-caption);
+}
+
 .sectionTitle {
   font-size: var(--font-body);
   font-weight: var(--font-weight-extrabold);

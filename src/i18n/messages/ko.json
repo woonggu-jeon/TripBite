@@ -273,6 +273,8 @@
   "ranking": {
     "title": "여행지 랭킹",
     "winsUnit": "회",
+    "weekLabel": "{month}월 {week}주차",
+    "updateNote": "매주 월요일 업데이트",
     "sections": {
       "weeklyWinners": "이번주 가장 많이 우승한 여행지 TOP {limit}",
       "recommended": "추천 여행지 TOP {limit}",
@@ -442,6 +444,7 @@
   },
   "letter": {
     "title": "다섯글자 편지",
+    "new": "새 편지",
     "indexCta": {
       "title": "편지 보내러 가기",
       "subtitle": "단 다섯 글자, 누군가에게 닿습니다"

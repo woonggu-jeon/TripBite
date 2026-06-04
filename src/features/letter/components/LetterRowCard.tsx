@@ -104,6 +104,11 @@ export function LetterRowCard({ letter }: { letter: Letter }) {
 
       <div className={styles.meta}>
         <p className={styles.author}>
+          {!letter.isMine && letter.read === false && (
+            <span className={styles.newBadge} aria-label={t('new')}>
+              NEW
+            </span>
+          )}
           {letter.author.nickname || t('author.anonymous')}
         </p>
         {letter.author.location && (

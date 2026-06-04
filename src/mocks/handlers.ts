@@ -367,14 +367,21 @@ export const handlers = [
     const limit = Number(url.searchParams.get('limit') ?? 5);
 
     if (type === 'weekly-winners') {
-      // 우승 횟수 desc 시뮬레이션 — destinationSeeds 앞 N개
-      const top = destinationSeeds
-        .slice(0, Math.min(limit, 10))
-        .map((d, i) => ({
-          rank: i + 1,
-          destination: d,
-          score: 28 - i * 3, // 28, 25, 22 ...
-        }));
+      // 시군당 1개 규칙 — region 기준 dedupe 후 상위 N개. 같은 시군의 여러
+      // destination 이 우승해도 대표 1개만 노출 (정책: 시군 다양성 우선).
+      const seenRegion = new Set<string>();
+      const deduped: typeof destinationSeeds = [];
+      for (const d of destinationSeeds) {
+        if (seenRegion.has(d.region)) continue;
+        seenRegion.add(d.region);
+        deduped.push(d);
+        if (deduped.length >= Math.min(limit, 11)) break;
+      }
+      const top = deduped.map((d, i) => ({
+        rank: i + 1,
+        destination: d,
+        score: 28 - i * 3, // 28, 25, 22, 19, 16 ...
+      }));
       return HttpResponse.json(top);
     }
 

@@ -62,6 +62,23 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.newBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary);
+  color: var(--color-primary-fg);
+  font-size: 10px;
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: 0.5px;
+  line-height: 1.4;
+  flex-shrink: 0;
 }
 
 .location {

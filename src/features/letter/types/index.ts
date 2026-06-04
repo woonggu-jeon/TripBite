@@ -16,6 +16,12 @@ export type Letter = {
   saved: boolean;
   /** 좋아요 받은 수 (보낸 사람 입장에서 의미) */
   likeCount?: number;
+  /**
+   * 받은 편지 읽음 여부. 받은 편지 (isMine=false) 한정 의미.
+   * undefined 는 legacy / 보낸 편지 — UI 에서 NEW 배지 노출 X.
+   * 상세 진입 시 BE 가 자동 read 처리하거나 별도 mark-read endpoint 호출.
+   */
+  read?: boolean;
 };
 
 /** cursor 기반 페이지네이션 응답 */

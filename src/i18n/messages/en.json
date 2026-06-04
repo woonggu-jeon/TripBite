@@ -273,6 +273,8 @@
   "ranking": {
     "title": "Destination ranking",
     "winsUnit": "wins",
+    "weekLabel": "Week {week} of {month}",
+    "updateNote": "Updated every Monday",
     "sections": {
       "weeklyWinners": "Top {limit} most-won this week",
       "recommended": "Recommended top {limit}",
@@ -442,6 +444,7 @@
   },
   "letter": {
     "title": "Five-letter letter",
+    "new": "New letter",
     "indexCta": {
       "title": "Send a letter",
       "subtitle": "Just five letters, reaching someone"
