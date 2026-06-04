@@ -35,13 +35,17 @@
 }
 
 .title {
-  font-size: var(--font-body-sm);
-  font-weight: var(--font-weight-bold);
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-extrabold);
   color: var(--color-fg);
+  letter-spacing: var(--tracking-snug);
   margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.date {
+.meta {
   font-size: var(--font-caption);
   color: var(--color-muted);
   margin: 0;

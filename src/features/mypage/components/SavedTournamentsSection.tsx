@@ -1,40 +1,53 @@
 'use client';
 
-import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Trophy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { Carousel } from '@/features/carousel';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
 import { useSavedTournaments } from '@/features/tournament/hooks/use-tournament';
 import { SavedTournamentCard } from './SavedTournamentCard';
-import styles from './SavedTournamentsSection.module.scss';
-
-const PREVIEW_COUNT = 3;
 
 /**
- * 저장된 토너먼트 우승 여행지 — 최신 3개를 3 열 그리드로.
+ * 저장된 토너먼트 우승 여행지 — 최대 10개 가로 스크롤 카드 (Carousel).
  *
- * "전체보기" 액션은 부모 (MyPageClient) 의 PageSection action 슬롯이 담당.
- * 같은 `useSavedTournaments` 훅을 공유하므로 fetch 는 1회.
+ * 메인의 "지금 열리는 충북 축제" 와 동일한 패턴 — 가로 스와이퍼로 N장 모두 보임.
+ * "전체보기" 별도 액션은 없음 — Carousel 이 self-contained.
+ * deep-link 진입은 /mypage/saved-tournaments 라우트 유지.
  *
  * 표준 분기: isLoading → Skeleton / isError → EmptyState + retry
- * / data 0 → EmptyState + CTA / data → grid 3 cols.
+ * / data 0 → EmptyState + CTA / data → Carousel.
  */
+function pickSlidesPerView(w: number) {
+  return w <= 360 ? 1.8 : w <= 480 ? 2.2 : 3;
+}
+
+function useResponsiveSlidesPerView() {
+  const [v, setV] = useState(() =>
+    typeof window === 'undefined' ? 2.2 : pickSlidesPerView(window.innerWidth),
+  );
+  useEffect(() => {
+    const onResize = () => {
+      const next = pickSlidesPerView(window.innerWidth);
+      setV((prev) => (prev === next ? prev : next));
+    };
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  return v;
+}
+
 export function SavedTournamentsSection() {
   const t = useTranslations('mypage.savedTournaments');
   const router = useRouter();
+  const slidesPerView = useResponsiveSlidesPerView();
   const { data, isLoading, isError, refetch } = useSavedTournaments();
 
   if (isLoading) {
-    return (
-      <div className={styles.skeletonList}>
-        {Array.from({ length: PREVIEW_COUNT }).map((_, i) => (
-          <Skeleton key={i} width="100%" height={120} radius="lg" />
-        ))}
-      </div>
-    );
+    return <Skeleton width="100%" height={200} radius="lg" />;
   }
 
   if (isError) {
@@ -70,35 +83,20 @@ export function SavedTournamentsSection() {
     );
   }
 
-  const preview = data.slice(0, PREVIEW_COUNT);
+  // 최대 10개 — 그 이상이 들어와도 자르기
+  const slides = data.slice(0, 10);
 
   return (
-    <ul className={styles.list}>
-      {preview.map((saved) => (
-        <li key={saved.id}>
-          <SavedTournamentCard saved={saved} />
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-/**
- * PageSection action 슬롯용 — 우측 "전체보기 (N)" Link.
- * data 가 없으면 노출 X.
- */
-export function SavedTournamentsViewAll() {
-  const t = useTranslations('mypage.savedTournaments');
-  const { data } = useSavedTournaments();
-  const count = data?.length ?? 0;
-  if (count === 0) return null;
-  return (
-    <Link
-      href="/mypage/saved-tournaments"
-      prefetch={false}
-      className={styles.viewAll}
-    >
-      {t('viewAll', { count })}
-    </Link>
+    <Carousel
+      slides={slides}
+      renderSlide={(saved) => (
+        <SavedTournamentCard saved={saved} layout="tile" />
+      )}
+      keyExtractor={(saved) => saved.id}
+      options={{ slidesPerView, gap: 8 }}
+      showDots={false}
+      fallbackHeight={200}
+      ariaLabel={t('allTitle')}
+    />
   );
 }

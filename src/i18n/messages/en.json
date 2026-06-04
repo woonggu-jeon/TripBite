@@ -620,7 +620,8 @@
       "empty": "No tournaments yet",
       "error": "Failed to load history",
       "retry": "Retry",
-      "countUnit": "rounds"
+      "countUnit": "rounds",
+      "unknownWinner": "Winner"
     },
     "stampMap": {
       "error": "Failed to load stamps",

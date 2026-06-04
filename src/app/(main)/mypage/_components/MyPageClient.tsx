@@ -4,10 +4,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ROUTES } from '@/constants/routes';
 import { ProfileCard } from '@/features/mypage/components/ProfileCard';
-import {
-  SavedTournamentsSection,
-  SavedTournamentsViewAll,
-} from '@/features/mypage/components/SavedTournamentsSection';
+import { SavedTournamentsSection } from '@/features/mypage/components/SavedTournamentsSection';
 import { TournamentHistorySection } from '@/features/mypage/components/TournamentHistorySection';
 import { StampBookBanner } from '@/features/mypage/components/StampBookBanner';
 import { PageSection } from '@/components/ui';
@@ -42,11 +39,8 @@ export function MyPageClient() {
         <StampBookBanner />
       </PageSection>
 
-      {/* 4) 저장된 우승지 — 타이틀 우측 "전체보기 (N)" Link */}
-      <PageSection
-        title={t('savedTournaments')}
-        action={<SavedTournamentsViewAll />}
-      >
+      {/* 4) 저장된 우승지 — 가로 스크롤 Carousel (최대 10개) */}
+      <PageSection title={t('savedTournaments')}>
         <SavedTournamentsSection />
       </PageSection>
 

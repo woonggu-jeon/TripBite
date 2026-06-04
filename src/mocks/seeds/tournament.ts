@@ -7,6 +7,8 @@ import { destinationSeeds } from './destinations';
  *
  * winnerRegion 은 도장책 derive 에 사용 (mock /mypage/stamps).
  * 11 시군 중 일부만 반복해 도장 진행률 시각화 (5–6 시군 도장).
+ * winnerId / winnerName 은 destinationSeeds 에서 실제 일치하는 항목으로 매핑 —
+ * 우승지명 노출 + 클릭 시 destination 상세 페이지로 deep-link 가능 위함.
  */
 const REGION_CYCLE: RegionCode[] = [
   'cheongju',
@@ -26,15 +28,39 @@ const REGION_CYCLE: RegionCode[] = [
   'jincheon',
 ];
 
-export const tournamentHistorySeeds = Array.from({ length: 15 }, (_, i) => ({
-  id: `t-${i + 1}`,
-  theme: (['spring', 'summer', 'autumn', 'winter'] as const)[i % 4],
-  category: (['local', 'festival', 'attraction', 'experience'] as const)[i % 4],
-  count: ([4, 8, 16, 32] as const)[i % 4],
-  winnerId: `dest-${i + 100}`,
-  winnerRegion: REGION_CYCLE[i] as RegionCode,
-  completedAt: new Date(Date.now() - i * 86400 * 1000).toISOString(),
-}));
+const CATEGORY_CYCLE = [
+  'local',
+  'festival',
+  'attraction',
+  'experience',
+] as const;
+
+export const tournamentHistorySeeds = Array.from({ length: 15 }, (_, i) => {
+  const region = REGION_CYCLE[i] as RegionCode;
+  const category = CATEGORY_CYCLE[i % 4];
+  // 시군 + 카테고리 일치 destination — 없으면 시군 일치 destination, 둘 다 없으면 첫 시드.
+  // destinationSeeds 는 11 시군 × 4 카테고리 × 2 = 88개 → 항상 매칭. 컴파일 만족 위한 fallback.
+  const match = destinationSeeds.find(
+    (d) => d.region === region && d.category === category,
+  ) ??
+    destinationSeeds.find((d) => d.region === region) ??
+    destinationSeeds[0] ?? {
+      id: 'unknown',
+      name: '미상',
+      region,
+      category,
+    };
+  return {
+    id: `t-${i + 1}`,
+    theme: (['spring', 'summer', 'autumn', 'winter'] as const)[i % 4],
+    category,
+    count: ([4, 8, 16, 32] as const)[i % 4],
+    winnerId: match.id,
+    winnerName: match.name,
+    winnerRegion: region,
+    completedAt: new Date(Date.now() - i * 86400 * 1000).toISOString(),
+  };
+});
 
 /**
  * 저장한 토너먼트 우승지 시드 — 7개.

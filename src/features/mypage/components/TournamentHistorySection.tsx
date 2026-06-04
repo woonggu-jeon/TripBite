@@ -28,6 +28,7 @@ type HistoryItem = {
   category: string;
   count: number;
   winnerId: string;
+  winnerName?: string;
   completedAt: string;
 };
 
@@ -79,6 +80,7 @@ export function TournamentHistorySection() {
         const categoryLabel = CATEGORY_KO[it.category] ?? it.category;
         const date = new Date(it.completedAt);
         const dateLabel = `${date.getMonth() + 1}월 ${date.getDate()}일`;
+        const meta = `${categoryLabel} · ${it.count}${t('countUnit')} · ${dateLabel}`;
         return (
           <li key={it.id} className={styles.row}>
             <span className={styles.emoji} aria-hidden>
@@ -86,10 +88,9 @@ export function TournamentHistorySection() {
             </span>
             <div className={styles.body}>
               <p className={styles.title}>
-                {categoryLabel} · {it.count}
-                {t('countUnit')}
+                {it.winnerName ?? t('unknownWinner')}
               </p>
-              <p className={styles.date}>{dateLabel}</p>
+              <p className={styles.meta}>{meta}</p>
             </div>
           </li>
         );

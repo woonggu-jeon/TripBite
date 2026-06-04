@@ -620,7 +620,8 @@
       "empty": "아직 진행한 토너먼트가 없어요",
       "error": "기록을 불러오지 못했어요",
       "retry": "다시 시도",
-      "countUnit": "강"
+      "countUnit": "강",
+      "unknownWinner": "우승 여행지"
     },
     "stampMap": {
       "error": "도장 정보를 불러오지 못했어요",

@@ -1,27 +1,2 @@
-.list {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-2);
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-.skeletonList {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-2);
-}
-
-// PageSection action 슬롯 — 타이틀 우측 inline 링크
-.viewAll {
-  font-size: var(--font-body-sm);
-  color: var(--color-primary);
-  font-weight: var(--font-weight-bold);
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-}
+// 가로 Carousel 기반. 별도 list/grid 스타일 불필요 — Carousel 이 layout 담당.
+// (SavedTournamentCard 의 tile 스타일이 카드 표현).
