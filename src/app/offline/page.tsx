@@ -6,7 +6,8 @@ import { WifiOff } from 'lucide-react';
  * PWA 오프라인 fallback (/offline)
  *
  * SW 가 캐시한 적 없는 페이지에 오프라인 진입 시 표시.
- * next-pwa 가 자동으로 이 경로를 fallback 으로 사용.
+ * Serwist fallbacks.entries 에서 navigate(document) 요청이 실패하면
+ * 이 경로로 라우팅 (src/app/sw.ts).
  *
  * Server Component — 빌드 시점에 정적 생성.
  */

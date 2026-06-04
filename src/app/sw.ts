@@ -87,6 +87,16 @@ const serwist = new Serwist({
     // Next 내부(RSC/navigation/_next/static 등) 기본 캐시
     ...defaultCache,
   ],
+  // 오프라인 fallback — 문서 요청 실패 시 /offline 페이지로.
+  // /offline 은 정적 페이지로 precache 됨 (next-build → __SW_MANIFEST 에 포함).
+  fallbacks: {
+    entries: [
+      {
+        url: '/offline',
+        matcher: ({ request }) => request.destination === 'document',
+      },
+    ],
+  },
 });
 
 // PwaUpdateBanner → SKIP_WAITING (use-service-worker-update.ts 연동)
