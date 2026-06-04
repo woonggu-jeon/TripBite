@@ -6,6 +6,7 @@ import { Check, MailOpen } from 'lucide-react';
 import { useLetter } from '@/features/letter/hooks/use-letters';
 import { useLetterStore } from '@/features/letter/store/letter-store';
 import { Button, ButtonGrid } from '@/components/ui';
+import { Skeleton } from '@/components/feedback/Skeleton';
 import styles from './LetterSentClient.module.scss';
 
 /**
@@ -108,8 +109,29 @@ export function LetterSentClient() {
 
   if (enabled && letterQuery.isLoading && !lastSent) {
     return (
+      <div className={styles.wrap}>
+        <Skeleton width="100%" height={64} radius="lg" />
+        <Skeleton width="100%" height={320} radius="lg" />
+        <Skeleton width="100%" height={56} radius="md" />
+      </div>
+    );
+  }
+
+  if (enabled && letterQuery.isError && !lastSent) {
+    return (
       <div className={styles.empty}>
-        <p>{t('noticeBody')}</p>
+        <p>{t('loadError')}</p>
+        <ButtonGrid gap="md">
+          <Button variant="secondary" onClick={() => letterQuery.refetch()}>
+            {t('retry')}
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => router.replace('/letter/compose')}
+          >
+            {t('goCompose')}
+          </Button>
+        </ButtonGrid>
       </div>
     );
   }

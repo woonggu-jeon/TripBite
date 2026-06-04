@@ -285,7 +285,8 @@
       "byRegionChartHint": "막대를 누르면 해당 시군 상세로 이동해요",
       "travelTypeTest": "여행 유형 테스트",
       "error": "랭킹을 불러오지 못했어요",
-      "retry": "다시 시도"
+      "retry": "다시 시도",
+      "empty": "아직 이번주 랭킹이 없어요"
     },
     "chart": {
       "winsLabel": "우승 횟수",
@@ -533,7 +534,9 @@
       "again": "또 쓰기",
       "home": "홈으로",
       "empty": "방금 보낸 편지가 없어요",
-      "goCompose": "편지 쓰러 가기"
+      "goCompose": "편지 쓰러 가기",
+      "loadError": "편지를 불러오지 못했어요",
+      "retry": "다시 시도"
     }
   },
   "quiz": {

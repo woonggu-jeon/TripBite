@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Share2, ChevronLeft } from 'lucide-react';
 import { haptic } from '@/lib/haptic';
 import { EmptyState } from '@/components/feedback/EmptyState';
+import { Skeleton } from '@/components/feedback/Skeleton';
 import { Button, Card, Chip, IconButton } from '@/components/ui';
 import { useMyTravelType } from '@/features/ranking/hooks/use-ranking';
 import styles from './TravelTypeShareCard.module.scss';
@@ -25,7 +26,13 @@ export function TravelTypeShareCard() {
   const { data, isLoading } = useMyTravelType();
 
   if (isLoading) {
-    return <div className={styles.fallback}>{t('loading')}</div>;
+    return (
+      <div className={styles.fallback} role="status" aria-label={t('loading')}>
+        <Skeleton width="100%" height={220} radius="lg" />
+        <Skeleton width="60%" height={20} radius="sm" />
+        <Skeleton width="100%" height={48} radius="md" />
+      </div>
+    );
   }
   if (!data) {
     return (

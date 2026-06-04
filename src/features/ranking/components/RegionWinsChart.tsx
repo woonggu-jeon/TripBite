@@ -8,7 +8,7 @@ import { Button } from '@/components/ui';
 import { useRanking } from '@/features/ranking/hooks/use-ranking';
 import { isRegionCode, type RegionCode } from '@/constants/regions';
 import { haptic } from '@/lib/haptic';
-import { Skeleton } from '@/components/feedback/Skeleton';
+import { SkeletonList } from '@/components/feedback/SkeletonList';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { BarChart3 } from 'lucide-react';
 import styles from './RegionWinsChart.module.scss';
@@ -65,9 +65,7 @@ export function RegionWinsChart() {
         role="status"
         aria-label={t('chart.loading')}
       >
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} width="100%" height={32} radius="md" />
-        ))}
+        <SkeletonList count={5} height={32} radius="md" />
       </div>
     );
   }

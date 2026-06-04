@@ -285,7 +285,8 @@
       "byRegionChartHint": "Tap a bar to open the region",
       "travelTypeTest": "Travel type test",
       "error": "Couldn't load rankings",
-      "retry": "Try again"
+      "retry": "Try again",
+      "empty": "No rankings this week yet"
     },
     "chart": {
       "winsLabel": "Wins",
@@ -533,7 +534,9 @@
       "again": "Write again",
       "home": "Home",
       "empty": "No letter just sent",
-      "goCompose": "Write a letter"
+      "goCompose": "Write a letter",
+      "loadError": "Couldn't load the letter",
+      "retry": "Try again"
     }
   },
   "quiz": {

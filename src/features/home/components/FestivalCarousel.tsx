@@ -46,12 +46,14 @@ function periodCaption(content: RegionContent): string | undefined {
 export function FestivalCarousel() {
   const t = useTranslations('home.festivals');
   const slidesPerView = useResponsiveSlidesPerView();
-  const { data, isLoading } = useOngoingFestivals();
+  const { data, isLoading, isError } = useOngoingFestivals();
 
   if (isLoading) {
     return <Skeleton width="100%" height={200} radius="lg" />;
   }
-  if (!data || data.length === 0) {
+  // isError / empty 동일 처리 — 홈 다른 위젯이 화면을 채우고, 축제는 보조 정보.
+  // 강한 에러 UI 대신 null 로 자연스럽게 사라지게.
+  if (isError || !data || data.length === 0) {
     return null;
   }
 

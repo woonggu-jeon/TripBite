@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { Info } from 'lucide-react';
 import { haptic } from '@/lib/haptic';
 import { EmptyState } from '@/components/feedback/EmptyState';
+import { Skeleton } from '@/components/feedback/Skeleton';
 import { Button } from '@/components/ui';
 import {
   useSubmitTravelType,
@@ -58,7 +59,13 @@ export function TravelTypeQuiz() {
   }, [finishing, router]);
 
   if (isLoading) {
-    return <div className={styles.fallback}>{t('loading')}</div>;
+    return (
+      <div className={styles.fallback} role="status" aria-label={t('loading')}>
+        <Skeleton width="100%" height={180} radius="lg" />
+        <Skeleton width="100%" height={56} radius="md" />
+        <Skeleton width="100%" height={56} radius="md" />
+      </div>
+    );
   }
   if (isError || !quiz || quiz.questions.length === 0) {
     return (

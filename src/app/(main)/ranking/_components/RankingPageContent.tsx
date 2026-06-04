@@ -51,7 +51,7 @@ export function RankingPageContent() {
             </button>
           </div>
         )}
-        {data && (
+        {data && data.length > 0 && (
           <div className={styles.list}>
             {data.map((item) => (
               <Top5Card
@@ -60,6 +60,9 @@ export function RankingPageContent() {
               />
             ))}
           </div>
+        )}
+        {data && data.length === 0 && (
+          <p className={styles.error}>{tSection('empty')}</p>
         )}
       </PageSection>
 
