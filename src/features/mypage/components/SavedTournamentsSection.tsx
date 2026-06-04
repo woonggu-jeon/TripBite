@@ -48,9 +48,7 @@ export function SavedTournamentsSection() {
       {(data) => (
         <Carousel
           slides={data.slice(0, 10)}
-          renderSlide={(saved) => (
-            <SavedTournamentCard saved={saved} layout="tile" />
-          )}
+          renderSlide={(saved) => <SavedTournamentCard saved={saved} />}
           keyExtractor={(saved) => saved.id}
           options={{ slidesPerView, gap: 8 }}
           showDots={false}

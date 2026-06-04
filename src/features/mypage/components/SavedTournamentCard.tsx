@@ -1,7 +1,7 @@
 'use client';
 
-import Link from 'next/link';
-import { Card, DestinationCard } from '@/components/ui';
+import { Heart } from 'lucide-react';
+import { DestinationCard } from '@/components/ui';
 import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import { toneFor } from '@/constants/region-tone';
 import { categoryEmoji, FALLBACK_TROPHY_EMOJI } from '@/constants/emoji-map';
@@ -9,21 +9,25 @@ import type { SavedTournament } from '@/features/tournament/types';
 import styles from './SavedTournamentCard.module.scss';
 
 /**
- * 저장된 토너먼트 우승 여행지 카드.
+ * 저장된 토너먼트 우승 여행지 카드 — `DestinationCard` primitive 재사용.
  *
- * layout:
- *   - 'tile' (default) : `DestinationCard` primitive 재사용 — FestivalCarousel /
- *     RelatedDestinations 와 같은 디자인. luckyColor 는 accentDot 으로 작게 표시.
- *   - 'row'             : 가로 카드 — /mypage/saved-tournaments 상세 리스트 전용.
- *                         row 는 destination 외 luckyColor / meetChance 메타가
- *                         더 큰 영역으로 노출되도록 별도 layout 유지.
+ * 사용처:
+ *   1) 마이페이지 메인 carousel — `onUnsave` 미전달, 단순 카드
+ *   2) /mypage/saved-tournaments 상세 2열 그리드 — `onUnsave` 전달 → 우상단 하트
+ *
+ * 하트 클릭은 Link navigation 과 충돌하므로 e.preventDefault() + stopPropagation()
+ * 으로 직접 차단. confirm 흐름과 mutation 은 호출부 (SavedTournamentsAll) 담당.
  */
 export function SavedTournamentCard({
   saved,
-  layout = 'tile',
+  onUnsave,
+  unsaveAriaLabel,
 }: {
   saved: SavedTournament;
-  layout?: 'tile' | 'row';
+  /** 우상단 하트 클릭 콜백 — 미전달 시 하트 미노출 (메인 carousel 등). */
+  onUnsave?: () => void;
+  /** 하트 a11y 라벨 — 호출부가 i18n 으로 전달. onUnsave 와 짝. */
+  unsaveAriaLabel?: string;
 }) {
   const region = CHUNGBUK_REGIONS.find(
     (r) => r.code === saved.destination.region,
@@ -34,41 +38,38 @@ export function SavedTournamentCard({
     FALLBACK_TROPHY_EMOJI,
   );
 
-  if (layout === 'tile') {
-    return (
-      <DestinationCard
-        href={{ pathname: `/destination/${saved.destination.id}` }}
-        emoji={emoji}
-        tone={toneFor(saved.destination.region as RegionCode)}
-        regionLabel={regionLabel}
-        name={saved.destination.name}
-        accentDot={saved.luckyColor}
-        ariaLabel={`${saved.destination.name} · ${regionLabel}`}
+  const heart = onUnsave ? (
+    <button
+      type="button"
+      className={styles.heart}
+      aria-label={unsaveAriaLabel ?? 'Unsave'}
+      onClick={(e) => {
+        // Link navigation 차단 — 하트만 동작.
+        e.preventDefault();
+        e.stopPropagation();
+        onUnsave();
+      }}
+    >
+      <Heart
+        size={18}
+        aria-hidden
+        fill="currentColor"
+        strokeWidth={1.5}
+        className={styles.heartIcon}
       />
-    );
-  }
+    </button>
+  ) : undefined;
 
-  // row layout — 상세 리스트 전용.
   return (
-    <Card variant="surface" padding="none" className={styles.card}>
-      <Link
-        href={{ pathname: `/destination/${saved.destination.id}` }}
-        prefetch={false}
-        className={styles.linkRow}
-        aria-label={`${saved.destination.name} 상세`}
-      >
-        <div className={styles.image} aria-hidden>
-          <span
-            className={styles.colorChip}
-            style={{ background: saved.luckyColor }}
-          />
-          <span className={styles.emoji}>{emoji}</span>
-        </div>
-        <div className={styles.body}>
-          <h3 className={styles.name}>{saved.destination.name}</h3>
-          <p className={styles.meta}>{regionLabel}</p>
-        </div>
-      </Link>
-    </Card>
+    <DestinationCard
+      href={{ pathname: `/destination/${saved.destination.id}` }}
+      emoji={emoji}
+      tone={toneFor(saved.destination.region as RegionCode)}
+      regionLabel={regionLabel}
+      name={saved.destination.name}
+      accentDot={saved.luckyColor}
+      ariaLabel={`${saved.destination.name} · ${regionLabel}`}
+      topRightAction={heart}
+    />
   );
 }

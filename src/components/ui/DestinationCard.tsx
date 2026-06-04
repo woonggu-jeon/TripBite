@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import type { ComponentProps } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import styles from './DestinationCard.module.scss';
 
 export type DestinationCardTone = 'red' | 'amber' | 'green' | 'blue' | 'violet';
@@ -21,6 +21,12 @@ interface DestinationCardProps {
   accentDot?: string;
   /** 접근성 라벨 — 미지정 시 "name · region" 자동 */
   ariaLabel?: string;
+  /**
+   * 카드 우상단 액션 슬롯 — Link 영역 내부에 absolute 로 얹힘.
+   * 자식 button 은 onClick 에서 e.preventDefault() + stopPropagation() 으로
+   * Link navigation 을 직접 차단해야 함 (호출부 책임).
+   */
+  topRightAction?: ReactNode;
 }
 
 /**
@@ -43,6 +49,7 @@ export function DestinationCard({
   caption,
   accentDot,
   ariaLabel,
+  topRightAction,
 }: DestinationCardProps) {
   return (
     <Link
@@ -65,6 +72,9 @@ export function DestinationCard({
         <h3 className={styles.name}>{name}</h3>
         {caption && <p className={styles.caption}>{caption}</p>}
       </div>
+      {topRightAction && (
+        <div className={styles.topRight}>{topRightAction}</div>
+      )}
     </Link>
   );
 }

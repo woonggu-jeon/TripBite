@@ -1,6 +1,7 @@
 // Destination 형태 카드 — FestivalCarousel/RelatedDestinations/SavedTournaments tile 통일.
 // 톤은 globals 의 --accent-{tone} 토큰 사용.
 .card {
+  position: relative;
   display: grid;
   // grid-rows 명시 — image(auto), body(1fr) → 카드 간 body 높이 통일
   grid-template-rows: auto 1fr;
@@ -46,6 +47,17 @@
     color-mix(in srgb, var(--accent) 22%, var(--color-bg)),
     color-mix(in srgb, var(--accent) 8%, var(--color-bg))
   );
+}
+
+// 우상단 액션 슬롯 (예: 하트 unsave). Link 영역 위에 absolute 로 얹힘.
+// 자식 button 의 onClick 이 e.preventDefault() + stopPropagation() 책임.
+.topRight {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
 }
 
 // 좌상단 작은 색 dot (예: luckyColor) — 시각 메타.

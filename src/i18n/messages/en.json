@@ -622,7 +622,14 @@
       "retry": "Retry",
       "viewAll": "View all ({count})",
       "allTitle": "Saved winners",
-      "totalCount": "Total {count}"
+      "totalCount": "Total {count}",
+      "unsaveAria": "Unsave",
+      "removeConfirmTitle": "Remove this saved winner?",
+      "removeConfirmBody": "It will disappear from your saved list. Tournament history is kept.",
+      "removeConfirmYes": "Remove",
+      "removeConfirmNo": "Cancel",
+      "removeSuccess": "Removed from saved list",
+      "removeFailed": "Failed to remove"
     },
     "tournamentHistory": {
       "empty": "No tournaments yet",

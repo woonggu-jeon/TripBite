@@ -3,7 +3,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { tournamentApi } from '@/features/tournament/api/tournament';
 import { CACHE } from '@/lib/cache';
-import type { TournamentConfig } from '@/features/tournament/types';
+import type {
+  SavedTournament,
+  TournamentConfig,
+} from '@/features/tournament/types';
 
 /**
  * Candidates query key — tournamentSize 는 일부러 제외.
@@ -91,6 +94,35 @@ export function useSaveTournament() {
   return useMutation({
     mutationFn: tournamentApi.saveToMypage,
     onSuccess: () => {
+      qc.invalidateQueries({ queryKey: tournamentKeys.saved() });
+    },
+  });
+}
+
+/**
+ * 저장 우승지 삭제 — 마이페이지 저장 목록 상세에서 하트 클릭 시.
+ * Optimistic: 즉시 cache 에서 제거 → 사용자 피드백 즉각. 실패 시 invalidate 로 원복.
+ */
+export function useUnsaveTournament() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: tournamentApi.removeSaved,
+    onMutate: async (savedId: string) => {
+      await qc.cancelQueries({ queryKey: tournamentKeys.saved() });
+      const previous = qc.getQueryData<SavedTournament[]>(
+        tournamentKeys.saved(),
+      );
+      qc.setQueryData<SavedTournament[]>(tournamentKeys.saved(), (old) =>
+        (old ?? []).filter((s) => s.id !== savedId),
+      );
+      return { previous };
+    },
+    onError: (_err, _id, context) => {
+      if (context?.previous) {
+        qc.setQueryData(tournamentKeys.saved(), context.previous);
+      }
+    },
+    onSettled: () => {
       qc.invalidateQueries({ queryKey: tournamentKeys.saved() });
     },
   });

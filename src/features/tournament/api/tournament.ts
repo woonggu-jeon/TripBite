@@ -95,6 +95,11 @@ export const tournamentApi = {
     return res.data;
   },
 
+  /** 저장 우승지 삭제 — /mypage/saved-tournaments 상세에서 하트 클릭 시. */
+  removeSaved: async (savedId: string): Promise<void> => {
+    await api.delete(`/mypage/tournaments/${savedId}`);
+  },
+
   /**
    * 토너먼트 기록 — 사용자의 누적 토너먼트 결과 (각 토너먼트의 winner / 진행
    * 횟수 등 메타). mypage 의 "토너먼트 기록" 섹션에서 사용.

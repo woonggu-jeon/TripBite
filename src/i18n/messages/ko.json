@@ -622,7 +622,14 @@
       "retry": "다시 시도",
       "viewAll": "전체보기 ({count})",
       "allTitle": "저장한 우승 여행지",
-      "totalCount": "총 {count}개"
+      "totalCount": "총 {count}개",
+      "unsaveAria": "저장 해제",
+      "removeConfirmTitle": "저장한 우승지를 삭제할까요?",
+      "removeConfirmBody": "마이페이지 저장 목록에서 사라져요. 토너먼트 기록은 그대로 남아요.",
+      "removeConfirmYes": "삭제",
+      "removeConfirmNo": "취소",
+      "removeSuccess": "저장 목록에서 삭제됐어요",
+      "removeFailed": "삭제에 실패했어요"
     },
     "tournamentHistory": {
       "empty": "아직 진행한 토너먼트가 없어요",

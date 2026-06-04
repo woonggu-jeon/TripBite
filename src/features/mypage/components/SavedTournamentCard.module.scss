@@ -1,85 +1,44 @@
-// row layout 전용 — tile 은 ui/DestinationCard 가 담당.
-// /mypage/saved-tournaments 상세 리스트의 가로 카드.
+// SavedTournamentCard — 우상단 하트 (unsave) 스타일.
+// row layout 은 폐기 — DestinationCard primitive 만 사용.
 
-.card {
-  position: relative;
-  overflow: hidden;
-}
-
-.linkRow {
+.heart {
   display: grid;
-  grid-template-columns: 64px 1fr;
-  gap: var(--space-3);
-  align-items: center;
-  padding: var(--space-3);
-  color: var(--color-fg);
-  text-decoration: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: color-mix(in srgb, var(--color-bg) 86%, transparent);
+  color: var(--accent-red);
+  border: 1px solid color-mix(in srgb, var(--accent-red) 18%, transparent);
+  border-radius: var(--radius-full);
+  cursor: pointer;
   transition:
-    background var(--motion-base) ease,
-    transform var(--motion-fast) ease;
+    transform var(--motion-fast) ease,
+    background var(--motion-base) ease;
+  -webkit-tap-highlight-color: transparent;
 
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      background: var(--color-hover);
-    }
-  }
   &:active {
-    transform: scale(0.99);
+    transform: scale(0.92);
   }
   &:focus-visible {
     outline: 2px solid var(--color-primary);
-    outline-offset: -2px;
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: var(--color-bg);
+    }
   }
 }
 
-.image {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 64px;
-  height: 64px;
-  background: var(--color-surface-soft);
-  border-radius: var(--radius-md);
-}
-
-// 행운의 색 mini 칩 — 우하단
-.colorChip {
-  position: absolute;
-  bottom: 4px;
-  right: 4px;
-  width: 12px;
-  height: 12px;
-  border-radius: var(--radius-full);
-  box-shadow: 0 0 0 2px var(--color-bg);
-}
-
-.emoji {
-  font-size: var(--emoji-md);
-  line-height: 1;
-}
-
-.body {
-  display: grid;
-  gap: 2px;
-  min-width: 0;
-}
-
-.name {
-  font-size: var(--font-body);
-  font-weight: var(--font-weight-extrabold);
-  color: var(--color-fg);
-  letter-spacing: var(--tracking-snug);
-  margin: 0;
-}
-
-.meta {
-  font-size: var(--font-caption);
-  color: var(--color-muted);
-  margin: 0;
+.heartIcon {
+  // lucide stroke color 상속 — accent-red.
+  color: var(--accent-red);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .linkRow {
+  .heart {
     transition: none;
     &:active {
       transform: none;

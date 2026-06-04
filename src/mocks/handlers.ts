@@ -530,6 +530,16 @@ export const handlers = [
       : unauthorized(),
   ),
 
+  // 저장된 토너먼트 우승지 삭제 — /mypage/saved-tournaments 의 하트 클릭 흐름.
+  // seed array 를 in-place splice 로 mutate → 같은 세션 내 list/refetch 에 반영.
+  http.delete(`${apiUrl}/mypage/tournaments/:id`, ({ params }) => {
+    if (!getMockSignedIn()) return unauthorized();
+    const idx = savedTournamentSeeds.findIndex((s) => s.id === params.id);
+    if (idx < 0) return new HttpResponse(null, { status: 404 });
+    savedTournamentSeeds.splice(idx, 1);
+    return new HttpResponse(null, { status: 204 });
+  }),
+
   // ===== Settings ===== (모두 로그인 필요)
   http.get(`${apiUrl}/settings`, () =>
     getMockSignedIn()
