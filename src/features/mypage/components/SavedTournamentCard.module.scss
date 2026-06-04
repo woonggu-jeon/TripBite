@@ -1,42 +1,11 @@
-// Card primitive variant="surface" 가 bg/border/radius 담당.
-// 세로 카드 — 상단 emoji 영역 + 하단 이름/지역. 2 col grid 에서 잘 동작하는 폭.
+// row layout 전용 — tile 은 ui/DestinationCard 가 담당.
+// /mypage/saved-tournaments 상세 리스트의 가로 카드.
+
 .card {
   position: relative;
   overflow: hidden;
 }
 
-// 세로 (tile) — 상단 emoji 박스 + 하단 텍스트. 3 col grid 용.
-.link {
-  display: grid;
-  grid-template-rows: 64px auto;
-  gap: var(--space-2);
-  padding: var(--space-3);
-  color: var(--color-fg);
-  text-decoration: none;
-  transition:
-    background var(--motion-base) ease,
-    transform var(--motion-fast) ease;
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      background: var(--color-hover);
-    }
-  }
-  &:active {
-    transform: scale(0.99);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: -2px;
-  }
-
-  .image {
-    width: 100%;
-    height: 64px;
-  }
-}
-
-// 가로 (row) — 좌 emoji + 우 텍스트. 단일 컬럼 리스트 용.
 .linkRow {
   display: grid;
   grid-template-columns: 64px 1fr;
@@ -61,28 +30,19 @@
     outline: 2px solid var(--color-primary);
     outline-offset: -2px;
   }
-
-  .image {
-    width: 64px;
-    height: 64px;
-  }
-
-  .name {
-    white-space: normal;
-    overflow: visible;
-    text-overflow: clip;
-  }
 }
 
 .image {
   position: relative;
   display: grid;
   place-items: center;
+  width: 64px;
+  height: 64px;
   background: var(--color-surface-soft);
   border-radius: var(--radius-md);
 }
 
-// 행운의 색 mini 칩 — 좌하단
+// 행운의 색 mini 칩 — 우하단
 .colorChip {
   position: absolute;
   bottom: 4px;
@@ -105,13 +65,10 @@
 }
 
 .name {
-  font-size: var(--font-body-sm);
-  font-weight: var(--font-weight-bold);
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-extrabold);
   color: var(--color-fg);
   letter-spacing: var(--tracking-snug);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   margin: 0;
 }
 
@@ -122,7 +79,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .link {
+  .linkRow {
     transition: none;
     &:active {
       transform: none;

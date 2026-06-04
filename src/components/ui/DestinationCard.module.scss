@@ -1,3 +1,5 @@
+// Destination 형태 카드 — FestivalCarousel/RelatedDestinations/SavedTournaments tile 통일.
+// 톤은 globals 의 --accent-{tone} 토큰 사용.
 .card {
   display: grid;
   // grid-rows 명시 — image(auto), body(1fr) → 카드 간 body 높이 통일
@@ -10,10 +12,6 @@
   text-decoration: none;
   color: var(--color-fg);
   overflow: hidden;
-  // height: 100% 제거 — embla slide(부모) 의 height 가 자식으로 결정되는데
-  // card 가 부모 height 100% 를 요구하면 순환 reference → ios safari 에서
-  // 0/NaN 으로 무너짐 (찌그러짐/거대화의 핵심 원인).
-  // slide 가 flex column 이라 card 가 자연스럽게 stretch 됨 (Carousel.module.scss).
   width: 100%;
   transition:
     border-color var(--motion-base) ease,
@@ -35,10 +33,9 @@
   }
 }
 
-// width: 100% 명시 — aspect-ratio 는 width 기준으로 height 계산.
-// 부모(card) 가 grid 인데 image 자체에 width 명시 안 하면 ios safari 가 첫
-// frame 에 width 0 으로 evaluate → height 도 0 → 다음 frame 에 점프.
+// width 100% 명시 — aspect-ratio 가 width 기준 (ios safari 0 width 첫 frame 회피).
 .image {
+  position: relative;
   display: grid;
   place-items: center;
   width: 100%;
@@ -49,6 +46,17 @@
     color-mix(in srgb, var(--accent) 22%, var(--color-bg)),
     color-mix(in srgb, var(--accent) 8%, var(--color-bg))
   );
+}
+
+// 좌상단 작은 색 dot (예: luckyColor) — 시각 메타.
+.accentDot {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 0 2px var(--color-bg);
 }
 
 .emoji {
@@ -68,6 +76,7 @@
   font-weight: var(--font-weight-bold);
   color: var(--accent, var(--color-muted));
   letter-spacing: var(--tracking-snug);
+  margin: 0;
 }
 
 .name {
@@ -81,17 +90,18 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   word-break: keep-all;
+  margin: 0;
 }
 
-.period {
+.caption {
   font-size: var(--font-eyebrow);
   color: var(--color-muted);
   font-variant-numeric: tabular-nums;
   letter-spacing: var(--tracking-snug);
+  margin: 0;
 }
 
 // 톤별 accent — globals.scss --accent-{color} 토큰 사용.
-// 디자이너가 색 한 곳에서 조정 가능.
 .red {
   --accent: var(--accent-red);
 }
@@ -108,7 +118,7 @@
   --accent: var(--accent-violet);
 }
 
-// 일반 모바일 (≤ 480px) — card 영역 축소, image 가로 비율로 (정사각형 시 너무 큼)
+// 일반 모바일 (≤ 480px) — card 영역 축소, image 가로 비율로 변경
 @media (max-width: 480px) {
   .card {
     padding: 0.5rem;
