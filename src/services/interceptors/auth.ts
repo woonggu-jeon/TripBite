@@ -30,6 +30,28 @@ function isSkippedUrl(url: string | undefined): boolean {
   return SKIP_REFRESH_URLS.some((skip) => url.includes(skip));
 }
 
+/**
+ * 이미 인증 페이지(또는 onboarding) 라면 hard redirect 안 함.
+ * AuthBootstrap 이 모든 페이지에서 useMe() 를 부르는데, /login 등 미인증
+ * 페이지의 useMe 가 401 → refresh 401 → hard redirect '/login' → 페이지 reload
+ * → 또 useMe 401 → ... 무한 루프 회피.
+ */
+function isAlreadyOnAuthPage(): boolean {
+  if (typeof window === 'undefined') return false;
+  const p = window.location.pathname;
+  return (
+    p === '/login' ||
+    p.startsWith('/login/') ||
+    p === '/signup' ||
+    p.startsWith('/signup/') ||
+    p === '/find-id' ||
+    p === '/forgot-password' ||
+    p === '/reset-password' ||
+    p === '/onboarding' ||
+    p.startsWith('/onboarding/')
+  );
+}
+
 export function attachAuthInterceptor(instance: AxiosInstance) {
   instance.interceptors.response.use(
     (response) => response,
@@ -56,7 +78,11 @@ export function attachAuthInterceptor(instance: AxiosInstance) {
         // client-side 가드 + MockAuthToggle 토글이 unauth UX 를 자체 처리.
         // 운영에서는 session 만료 = 강제 재로그인 정책 유지.
         const isMock = process.env.NEXT_PUBLIC_USE_MSW === 'true';
-        if (!isMock && typeof window !== 'undefined') {
+        if (
+          !isMock &&
+          !isAlreadyOnAuthPage() &&
+          typeof window !== 'undefined'
+        ) {
           // store를 import하면 순환참조 위험이 있으므로 직접 redirect
           window.location.href = '/login';
         }
@@ -83,7 +109,11 @@ export function attachAuthInterceptor(instance: AxiosInstance) {
       } catch (refreshError) {
         refreshPromise = null;
         const isMock = process.env.NEXT_PUBLIC_USE_MSW === 'true';
-        if (!isMock && typeof window !== 'undefined') {
+        if (
+          !isMock &&
+          !isAlreadyOnAuthPage() &&
+          typeof window !== 'undefined'
+        ) {
           window.location.href = '/login';
         }
         return Promise.reject(refreshError);

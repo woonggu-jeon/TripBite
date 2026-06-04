@@ -15,9 +15,13 @@
  *   'strict-dynamic'이 있으면 'unsafe-inline'은 모던 브라우저에서 무시됨(전환 대비).
  *   dev는 React 리프레시 등으로 'unsafe-eval' 필요.
  */
+import { getApiOrigin } from './api-origin';
+
 export function buildCsp(nonce: string): string {
   const isDev = process.env.NODE_ENV === 'development';
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '';
+  // CSP connect-src 는 origin 만 받음 — path 포함 시 host-source 파싱 실패해
+  // 해당 origin fetch 가 CSP block. helper 로 정규화.
+  const apiUrl = getApiOrigin();
 
   return [
     "default-src 'self'",

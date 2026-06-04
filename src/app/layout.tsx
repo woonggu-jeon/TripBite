@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 import { Providers } from './providers';
+import { getApiOrigin } from '@/lib/api-origin';
 import './globals.scss';
 
 /**
@@ -129,7 +130,9 @@ export default async function RootLayout({
   const locale = await getLocale();
   const messages = await getMessages();
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  // preconnect 는 origin 만 받음 — path 포함 시 무효 (DNS/TLS 안 잡힘).
+  const apiOrigin = getApiOrigin();
+  const apiUrl = apiOrigin || undefined;
 
   return (
     <html lang={locale}>
