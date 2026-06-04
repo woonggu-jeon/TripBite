@@ -1,4 +1,8 @@
-import type { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+import type {
+  AxiosError,
+  AxiosInstance,
+  InternalAxiosRequestConfig,
+} from 'axios';
 import axios from 'axios';
 
 /**
@@ -47,10 +51,13 @@ export function attachAuthInterceptor(instance: AxiosInstance) {
 
       // 이미 재시도했거나, refresh 자체가 실패한 경우
       if (originalRequest._retry || isSkippedUrl(url)) {
-        // 인증 실패 확정 → 로그인 페이지로
-        if (typeof window !== 'undefined') {
+        // 인증 실패 확정 → 로그인 페이지로 (운영 한정).
+        // mock 환경 (USE_MSW=true) 에선 hard redirect 안 함 — AuthBootstrap 의
+        // client-side 가드 + MockAuthToggle 토글이 unauth UX 를 자체 처리.
+        // 운영에서는 session 만료 = 강제 재로그인 정책 유지.
+        const isMock = process.env.NEXT_PUBLIC_USE_MSW === 'true';
+        if (!isMock && typeof window !== 'undefined') {
           // store를 import하면 순환참조 위험이 있으므로 직접 redirect
-          // 또는 별도 이벤트 emit 패턴 사용 가능
           window.location.href = '/login';
         }
         return Promise.reject(error);
@@ -75,7 +82,8 @@ export function attachAuthInterceptor(instance: AxiosInstance) {
         return instance(originalRequest);
       } catch (refreshError) {
         refreshPromise = null;
-        if (typeof window !== 'undefined') {
+        const isMock = process.env.NEXT_PUBLIC_USE_MSW === 'true';
+        if (!isMock && typeof window !== 'undefined') {
           window.location.href = '/login';
         }
         return Promise.reject(refreshError);

@@ -5,23 +5,28 @@ import { useQueryClient } from '@tanstack/react-query';
 import { LogIn, LogOut } from 'lucide-react';
 import { api } from '@/services/api/client';
 import { useAuthStore } from '@/stores/auth-store';
-import { useMe } from '@/features/auth/hooks/use-auth';
-import { authKeys } from '@/features/auth/hooks/use-auth';
+import { authKeys, useMe } from '@/features/auth/hooks/use-auth';
 import styles from './MockAuthToggle.module.scss';
 
 /**
  * mock 모드 전용 — 로그인/로그아웃 상태를 한 번에 토글하는 dev 버튼.
  *
- * 흐름:
- *   - 현재 인증 상태에 따라 라벨/아이콘 분기
- *   - 클릭 시 mock POST /auth/login 또는 /auth/logout 호출 → mockSignedIn 토글
- *   - auth 캐시 invalidate → AuthBootstrap 이 /me 재조회 → 보호 경로 client 가드 동작
+ * 로그아웃 흐름:
+ *   1) POST /auth/logout → mockSignedIn=false
+ *   2) clearAuth() + queryClient.removeQueries(['auth','me'])
+ *   3) AuthBootstrap 가 unauth 로 재진입. /me 재호출 X (removeQueries 로 캐시 비워짐)
+ *      → 401 → refresh → hard redirect 무한 회귀 방지.
+ *
+ * 로그인 흐름:
+ *   1) POST /auth/login → mockSignedIn=true
+ *   2) invalidate authKeys.me() → AuthBootstrap 이 /me refetch → setAuth
  *
  * 노출 조건: NEXT_PUBLIC_USE_MSW === 'true' (AppHeader 에서 조건부 mount).
  */
 export function MockAuthToggle() {
   const queryClient = useQueryClient();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const clearAuth = useAuthStore((s) => s.clearAuth);
   const { isFetching } = useMe();
   const [busy, setBusy] = useState(false);
 
@@ -29,9 +34,20 @@ export function MockAuthToggle() {
     if (busy || isFetching) return;
     setBusy(true);
     try {
-      await api.post(isAuthenticated ? '/auth/logout' : '/auth/login', {});
-      // /me 재조회 → AuthBootstrap 의 setAuth / clearAuth + protected redirect
-      await queryClient.invalidateQueries({ queryKey: authKeys.me() });
+      if (isAuthenticated) {
+        await api.post('/auth/logout', {});
+        clearAuth();
+        // /me 캐시 제거 — invalidate 면 refetch 가 401 → refresh 흐름 타서 hard redirect.
+        queryClient.removeQueries({ queryKey: authKeys.me() });
+      } else {
+        await api.post('/auth/login', {});
+        // refetchType: 'all' — error 상태였던 query 도 강제 refetch (default 'active' 는
+        // 에러 query 가 stale 로 mark 만 되고 refetch 안 될 수 있음).
+        await queryClient.invalidateQueries({
+          queryKey: authKeys.me(),
+          refetchType: 'all',
+        });
+      }
     } finally {
       setBusy(false);
     }

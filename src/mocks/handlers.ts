@@ -73,14 +73,33 @@ const mockUser = {
 let onboardedState = false;
 
 /**
- * 로그인 상태 — mock 환경에서 양 상태 (logged in / out) 모두 테스트하기 위한 mutable.
- *   - 초기 true → demo 시작 시 mockUser 로 자동 로그인 (기존 흐름 유지)
- *   - POST /auth/logout 시 false → /me, /mypage 등 보호 endpoint 가 401 반환
- *   - POST /auth/login 시 true 로 복원
- *   - dev tool 토글 버튼이 두 endpoint 를 호출해 양 상태 토글 가능
- * dev 서버 재시작 시 true 로 리셋.
+ * 로그인 상태 — mock 환경에서 양 상태 토글.
+ *   - 초기 true → demo 시작 시 mockUser 로 자동 로그인
+ *   - POST /auth/logout / login 으로 토글
+ *   - localStorage 영속화 — page reload 시에도 상태 유지 (handlers 모듈 재로드 회피).
+ *     초기값 미설정 시 true.
+ * 새 브라우저 세션 / mock 초기화 후엔 ?reset 같은 dev 도구 또는 직접 localStorage 클리어.
  */
-let mockSignedIn = true;
+const MOCK_SIGNED_IN_KEY = '__mock_signed_in';
+
+function getMockSignedIn(): boolean {
+  if (typeof window === 'undefined') return true;
+  try {
+    const v = window.localStorage.getItem(MOCK_SIGNED_IN_KEY);
+    return v === null ? true : v === 'true';
+  } catch {
+    return true;
+  }
+}
+
+function setMockSignedIn(v: boolean): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(MOCK_SIGNED_IN_KEY, String(v));
+  } catch {
+    /* noop */
+  }
+}
 
 /**
  * 토너먼트 기록 인메모리 store — `POST /tournaments` 가 채우고
@@ -210,13 +229,13 @@ const mockWeather = {
   locationLabel: '충북 청주시',
 };
 
-// Unauthorized response — 보호 endpoint 가 mockSignedIn=false 일 때 반환.
+// Unauthorized response — 보호 endpoint 가 getMockSignedIn()=false 일 때 반환.
 const unauthorized = () => new HttpResponse(null, { status: 401 });
 
 export const handlers = [
   // ===== Auth =====
   http.post(`${apiUrl}/auth/login`, () => {
-    mockSignedIn = true;
+    setMockSignedIn(true);
     return HttpResponse.json({ success: true });
   }),
   http.post(
@@ -237,18 +256,24 @@ export const handlers = [
   ),
   // 비밀번호 변경 (로그인 상태)
   http.post(`${apiUrl}/me/change-password`, () =>
-    mockSignedIn ? new HttpResponse(null, { status: 204 }) : unauthorized(),
+    getMockSignedIn()
+      ? new HttpResponse(null, { status: 204 })
+      : unauthorized(),
   ),
   http.post(`${apiUrl}/auth/logout`, () => {
-    mockSignedIn = false;
+    setMockSignedIn(false);
     return new HttpResponse(null, { status: 204 });
   }),
-  http.post(
-    `${apiUrl}/auth/refresh`,
-    () => new HttpResponse(null, { status: 204 }),
+  // refresh 도 getMockSignedIn() 반영 — false 일 때 401 반환해야 interceptor 의
+  // refresh 흐름이 정상 종료. true 로 두면 /me 가 계속 401 인데도 refresh 가
+  // 성공해 무한 retry → /login hard redirect 회귀.
+  http.post(`${apiUrl}/auth/refresh`, () =>
+    getMockSignedIn()
+      ? new HttpResponse(null, { status: 204 })
+      : unauthorized(),
   ),
   http.get(`${apiUrl}/me`, () =>
-    mockSignedIn
+    getMockSignedIn()
       ? HttpResponse.json({ ...mockUser, isOnboarded: onboardedState })
       : unauthorized(),
   ),
@@ -289,7 +314,7 @@ export const handlers = [
   // ===== Letters ===== (모두 로그인 필요)
   // POST 응답으로 Letter 객체 반환 — /letter/sent?id= deep-link 가능하게.
   http.post(`${apiUrl}/letters`, async ({ request }) => {
-    if (!mockSignedIn) return unauthorized();
+    if (!getMockSignedIn()) return unauthorized();
     const body = (await request.json().catch(() => ({}))) as {
       body?: string;
       location?: { label?: string };
@@ -320,7 +345,7 @@ export const handlers = [
   // 편지 목록 — 모두 cursor 기반 페이지네이션 통일
   ...['received', 'sent', 'liked', 'saved'].map((kind) =>
     http.get(`${apiUrl}/letters/${kind}`, ({ request }) => {
-      if (!mockSignedIn) return unauthorized();
+      if (!getMockSignedIn()) return unauthorized();
       const url = new URL(request.url);
       const cursor = Number(url.searchParams.get('cursor') ?? 0);
       const limit = Number(url.searchParams.get('limit') ?? 10);
@@ -335,22 +360,24 @@ export const handlers = [
     }),
   ),
   http.get(`${apiUrl}/letters/:id`, ({ params }) => {
-    if (!mockSignedIn) return unauthorized();
+    if (!getMockSignedIn()) return unauthorized();
     const seed = letterSeeds.find((l) => l.id === params.id);
     if (!seed) return new HttpResponse(null, { status: 404 });
     return HttpResponse.json(seed);
   }),
   http.delete(`${apiUrl}/letters/:id`, () =>
-    mockSignedIn ? new HttpResponse(null, { status: 204 }) : unauthorized(),
+    getMockSignedIn()
+      ? new HttpResponse(null, { status: 204 })
+      : unauthorized(),
   ),
   http.post(`${apiUrl}/letters/:id/like`, ({ params }) => {
-    if (!mockSignedIn) return unauthorized();
+    if (!getMockSignedIn()) return unauthorized();
     const seed = letterSeeds.find((l) => l.id === params.id);
     if (!seed) return new HttpResponse(null, { status: 404 });
     return HttpResponse.json({ ...seed, liked: !seed.liked });
   }),
   http.post(`${apiUrl}/letters/:id/save`, ({ params }) => {
-    if (!mockSignedIn) return unauthorized();
+    if (!getMockSignedIn()) return unauthorized();
     const seed = letterSeeds.find((l) => l.id === params.id);
     if (!seed) return new HttpResponse(null, { status: 404 });
     return HttpResponse.json({ ...seed, saved: !seed.saved });
@@ -470,7 +497,7 @@ export const handlers = [
   // ===== MyPage ===== (모두 로그인 필요)
   // 마이페이지 요약 — 프로필 / 저장된 우승지 / 저장·좋아요 편지 / 여행 유형.
   http.get(`${apiUrl}/mypage`, () =>
-    mockSignedIn
+    getMockSignedIn()
       ? HttpResponse.json({
           profile: { nickname: mockUser.nickname, isDefault: false },
           savedTournaments: savedTournamentSeeds,
@@ -482,7 +509,7 @@ export const handlers = [
   ),
   // 닉네임 변경 (PATCH /mypage/profile)
   http.patch(`${apiUrl}/mypage/profile`, async ({ request }) => {
-    if (!mockSignedIn) return unauthorized();
+    if (!getMockSignedIn()) return unauthorized();
     const body = (await request.json().catch(() => ({}))) as {
       nickname?: string;
     };
@@ -493,12 +520,14 @@ export const handlers = [
   }),
   // 저장된 토너먼트 우승지 — 목록. summary 의 savedTournaments 와 같은 시드.
   http.get(`${apiUrl}/mypage/tournaments`, () =>
-    mockSignedIn ? HttpResponse.json(savedTournamentSeeds) : unauthorized(),
+    getMockSignedIn()
+      ? HttpResponse.json(savedTournamentSeeds)
+      : unauthorized(),
   ),
 
   // ===== Settings ===== (모두 로그인 필요)
   http.get(`${apiUrl}/settings`, () =>
-    mockSignedIn
+    getMockSignedIn()
       ? HttpResponse.json({
           notifications: {
             pushEnabled: false,
@@ -510,7 +539,7 @@ export const handlers = [
       : unauthorized(),
   ),
   http.patch(`${apiUrl}/settings/notifications`, async ({ request }) => {
-    if (!mockSignedIn) return unauthorized();
+    if (!getMockSignedIn()) return unauthorized();
     const patch = (await request.json().catch(() => ({}))) as Record<
       string,
       boolean
@@ -527,7 +556,7 @@ export const handlers = [
 
   // ===== Stamps (도장깨기) =====
   http.get(`${apiUrl}/mypage/stamps`, () => {
-    if (!mockSignedIn) return unauthorized();
+    if (!getMockSignedIn()) return unauthorized();
     const visited = Array.from(
       new Set(tournamentHistorySeeds.map((t) => t.winnerRegion)),
     );
@@ -536,7 +565,7 @@ export const handlers = [
 
   // ===== Tournament =====
   http.get(`${apiUrl}/mypage/tournament-history`, () =>
-    mockSignedIn
+    getMockSignedIn()
       ? HttpResponse.json({ items: tournamentHistorySeeds, nextCursor: null })
       : unauthorized(),
   ),
@@ -577,7 +606,7 @@ export const handlers = [
 
   // 우승 여행지를 마이페이지에 저장 (인증 필요)
   http.post(`${apiUrl}/mypage/tournaments`, async ({ request }) => {
-    if (!mockSignedIn) return unauthorized();
+    if (!getMockSignedIn()) return unauthorized();
     const body = (await request.json()) as { destinationId: string };
     const dest = destinationSeeds.find((d) => d.id === body.destinationId);
     if (!dest) return new HttpResponse(null, { status: 404 });
@@ -757,7 +786,7 @@ export const handlers = [
 
   // ===== Notifications ===== (모두 로그인 필요)
   http.get(`${apiUrl}/notifications`, () =>
-    mockSignedIn
+    getMockSignedIn()
       ? HttpResponse.json({
           items: notificationItems,
           unreadCount: notificationItems.filter((n) => !n.read).length,
@@ -765,14 +794,14 @@ export const handlers = [
       : unauthorized(),
   ),
   http.post(`${apiUrl}/notifications/:id/read`, ({ params }) => {
-    if (!mockSignedIn) return unauthorized();
+    if (!getMockSignedIn()) return unauthorized();
     const id = String(params.id);
     const target = notificationItems.find((n) => n.id === id);
     if (target) target.read = true;
     return new HttpResponse(null, { status: 204 });
   }),
   http.post(`${apiUrl}/notifications/read-all`, () => {
-    if (!mockSignedIn) return unauthorized();
+    if (!getMockSignedIn()) return unauthorized();
     notificationItems.forEach((n) => {
       n.read = true;
     });
@@ -828,14 +857,14 @@ export const handlers = [
     myTravelType = result;
     return HttpResponse.json(result);
   }),
-  // 적용된 본인 유형 — 비로그인 시 null (mockSignedIn 무관, 비로그인은 적용 불가).
+  // 적용된 본인 유형 — 비로그인 시 null (getMockSignedIn() 무관, 비로그인은 적용 불가).
   http.get(`${apiUrl}/travel-types/me`, () =>
-    mockSignedIn ? HttpResponse.json(myTravelType) : unauthorized(),
+    getMockSignedIn() ? HttpResponse.json(myTravelType) : unauthorized(),
   ),
 
   // 명시 적용 — quiz 결과 페이지의 "내 유형으로 적용" 버튼. 로그인 필요.
   http.patch(`${apiUrl}/travel-types/me`, async ({ request }) => {
-    if (!mockSignedIn) return unauthorized();
+    if (!getMockSignedIn()) return unauthorized();
     const { code } = (await request.json()) as { code: string };
     const meta = (travelTypeMetaSeed as Record<string, TravelType>)[code];
     if (!meta) return new HttpResponse(null, { status: 404 });
