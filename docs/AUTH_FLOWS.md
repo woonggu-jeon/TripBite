@@ -46,9 +46,11 @@ BE 는 다음 두 가지만 보장하면 됨 (interceptor 가 normalize):
 - `AUTH_USERNAME_TAKEN` (회원가입 — 아이디 중복)
 - `AUTH_EMAIL_TAKEN` (회원가입 — 이메일 중복)
 - `AUTH_TOKEN_EXPIRED` (reset 링크 만료)
-- `AUTH_TOKEN_INVALID` (reset 링크 위변조)
+- `AUTH_TOKEN_INVALID` (reset 링크 위변조 / 이미 사용됨)
 - `AUTH_PASSWORD_WEAK` (비밀번호 정책 위반 — BE 추가 검증)
+- `AUTH_PASSWORD_REUSED` (이전 N개 비밀번호 중 하나와 동일)
 - `AUTH_CURRENT_PASSWORD_WRONG` (변경 시 현재 비번 불일치)
+- `RATE_LIMIT` (forgot-password / login 등 시도 과다)
 
 ---
 
@@ -158,7 +160,31 @@ BE 는 다음 두 가지만 보장하면 됨 (interceptor 가 normalize):
 
 ---
 
-## 4. 비밀번호 찾기 (재설정 링크) — `POST /auth/forgot-password`
+## 4. 비밀번호 찾기 — 전체 여정
+
+### 사용자 단계별 흐름
+
+```
+[1] /login → "비밀번호를 잊으셨나요?" 클릭
+       ↓
+[2] /forgot-password 페이지 — 이메일 입력
+       ↓ POST /auth/forgot-password
+[3] "메일을 발송했어요" 안내 화면 (204 무조건 노출)
+       ↓ (이메일 수신)
+[4] 이메일 본문의 링크 클릭
+       ↓
+[5] /reset-password?token=... 페이지 — 새 비번 + 확인 입력
+       ↓ POST /auth/reset-password
+[6] /login?reset=success → toast "비밀번호가 변경됐어요. 다시 로그인해주세요"
+       ↓
+[7] 새 비번으로 로그인
+```
+
+각 단계의 endpoint / 정책은 아래 4-1, 4-2, 4-3 절에서 상세.
+
+---
+
+## 4-1. 재설정 링크 발송 — `POST /auth/forgot-password`
 
 ### Request
 
@@ -171,13 +197,96 @@ BE 는 다음 두 가지만 보장하면 됨 (interceptor 가 normalize):
 ### Response 성공 — 204
 
 - Body 비어있음.
-- BE 가 이메일 존재 시 → 토큰 + 링크 메일 발송. 미존재 시 → **여전히 204 반환**
-  (enumeration 방지).
-- 토큰 만료 권장: 1시간.
+- BE 가 이메일 존재 시 → 토큰 발급 + 링크 메일 발송.
+- 미존재 시 → **여전히 204 반환** + 메일 발송 X (account enumeration 방지).
+- 토큰 만료: **1시간** (운영 기본).
 
-### FE 동작
+### Response 실패
 
-- 204 받으면 무조건 "메일 발송됨" 안내 화면 노출.
+| 상태 | code         | 의미                       | FE 처리                     |
+| ---- | ------------ | -------------------------- | --------------------------- |
+| 400  | `VALIDATION` | email 형식 위반            | email field error           |
+| 429  | `RATE_LIMIT` | 같은 이메일/IP 재시도 과다 | "잠시 후 다시 시도해주세요" |
+
+### Rate limit 정책 (필수)
+
+- 같은 **이메일** 기준: 1시간 내 3회 초과 시 429.
+- 같은 **IP** 기준: 1시간 내 10회 초과 시 429 (계정 enumeration 방어).
+- 카운터는 **존재 안 하는 이메일도 동일하게 적용** (enum 방지).
+
+### 메일 발송 spec
+
+발신/제목/본문은 BE 책임. 변수 보간만 합의:
+
+| 변수                | 값                                                               |
+| ------------------- | ---------------------------------------------------------------- |
+| `${FE_URL}`         | `NEXT_PUBLIC_SITE_URL` (예: `https://trip-bite-mxue.vercel.app`) |
+| `${TOKEN}`          | URL-safe base64 / UUID 등 (충돌 X, 추측 불가)                    |
+| `${EXPIRES_AT_KST}` | 토큰 만료 시각 (KST, "2026-06-04 22:30")                         |
+| `${USERNAME}`       | 사용자 아이디 (가능 시 — 본인 확인 용도)                         |
+
+링크 형식 (정확 매칭):
+
+```
+${FE_URL}/reset-password?token=${TOKEN}
+```
+
+권장 메일 본문 (참고):
+
+```
+[TripBite] 비밀번호 재설정 안내
+
+${USERNAME} 님, 비밀번호 재설정을 요청하셨어요.
+
+아래 링크를 눌러 새 비밀번호를 설정하세요:
+${FE_URL}/reset-password?token=${TOKEN}
+
+이 링크는 ${EXPIRES_AT_KST} 까지 유효해요. 만료 후엔 다시 요청해주세요.
+
+본인이 요청하지 않았다면 이 메일은 무시하셔도 됩니다.
+다만 같은 알림이 반복된다면 계정 보안을 점검해주세요.
+```
+
+발신 주소 / 메일 템플릿 디자인은 BE 가 결정.
+
+### 메일 재발송 (resend) — 별도 endpoint 없음
+
+- 사용자가 메일을 못 받은 경우 `/forgot-password` 폼에서 동일 이메일로 다시 제출.
+- BE 가 **기존 토큰 무효화 후 새 토큰 발급** (둘 다 유효 X).
+- rate limit 카운터는 그대로 적용 — 1시간 3회 제한.
+
+### 계정 보호 알림 (선택, 권장)
+
+악의적 재설정 시도 인지를 위해 BE 가 다음 중 하나 발송 권장:
+
+- **메일**: "재설정 요청을 받았어요. 본인이 아니라면 비밀번호를 즉시 변경해 주세요"
+  → forgot-password 호출이 본인이라면 정상 안내, 타인이라면 경고.
+- **인앱 알림** (사용자 로그인 중이면): `notifications.security` type 으로 inbox 추가.
+  · `NOTIFICATIONS.md` 의 `AppNotification` type 에 `security` 추가 필요.
+
+발송 시점: 토큰 발급 직후 (즉, 이메일 매칭된 경우만).
+
+---
+
+## 4-2. 토큰 사전 검증 — `GET /auth/reset-password/validate?token=...` (선택)
+
+FE 의 `/reset-password` 페이지가 진입 시점에 즉시 만료 여부 표시할 수 있도록.
+구현 시 FE 도 함께 연동 필요 (현재는 POST 시점에 검증).
+
+### Response 200
+
+```ts
+{
+  valid: true;
+  expiresAt: string;
+} // ISO
+```
+
+### Response 410 / 400
+
+- `AUTH_TOKEN_EXPIRED` / `AUTH_TOKEN_INVALID` 동일 code.
+
+**우선순위 낮음** — POST 시점 검증으로도 UX 큰 차이 없음. 필요해지면 추가.
 
 ---
 
@@ -199,16 +308,26 @@ BE 는 다음 두 가지만 보장하면 됨 (interceptor 가 normalize):
 
 ### Response 실패
 
-| 상태 | code                 | 의미           | FE 처리                                 |
-| ---- | -------------------- | -------------- | --------------------------------------- |
-| 400  | `AUTH_TOKEN_INVALID` | 토큰 위변조    | root error                              |
-| 410  | `AUTH_TOKEN_EXPIRED` | 토큰 만료      | "재설정 링크가 만료됐어요" + 재발송 CTA |
-| 422  | `AUTH_PASSWORD_WEAK` | 비번 강도 부족 | password field error                    |
+| 상태 | code                   | 의미                      | FE 처리                                 |
+| ---- | ---------------------- | ------------------------- | --------------------------------------- |
+| 400  | `AUTH_TOKEN_INVALID`   | 토큰 위변조 / 이미 사용됨 | root error                              |
+| 410  | `AUTH_TOKEN_EXPIRED`   | 토큰 만료 (1시간 초과)    | "재설정 링크가 만료됐어요" + 재발송 CTA |
+| 422  | `AUTH_PASSWORD_WEAK`   | 비번 강도 부족            | password field error                    |
+| 422  | `AUTH_PASSWORD_REUSED` | 이전 비번과 동일          | password field error                    |
 
 ### 보안
 
-- 1회용 토큰 (사용 후 무효화).
-- 토큰 발급 시 user 의 모든 기존 session 무효화 권장 (탈취 대응).
+- **1회용 토큰** (성공 시 즉시 무효화).
+- **토큰 재발급 시 기존 토큰 무효화** — 둘 다 유효 상태 금지.
+- **재설정 성공 시 user 의 모든 기존 session 무효화** (refresh_token DB 전부 삭제).
+  → 다른 디바이스에서 로그아웃됨 → 탈취 대응.
+
+### 이전 비밀번호 재사용 차단
+
+- BE 가 **마지막 N개 비밀번호 hash 보관** (권장 N=3) — 새 비번이 이전 N개와 일치 시
+  422 `AUTH_PASSWORD_REUSED` 응답.
+- hash 비교 — 평문 보관 절대 금지.
+- 보관 정책: 최근 N개 + 가장 오래된 것 폐기 (롤링 큐).
 
 ---
 
@@ -345,13 +464,22 @@ CORS:
 - [ ] 미매칭 → `{ username: null }` (200 유지)
 - [ ] rate limit → 429
 
-### 비번 재설정
+### 비번 재설정 (forgot + reset)
 
-- [ ] 존재하는 이메일 forgot → 메일 발송 + 204
+- [ ] 존재하는 이메일 forgot → 메일 발송 + 204 + 토큰 1시간 만료
 - [ ] 존재 안 하는 이메일 forgot → 메일 발송 X + **204** (enum 방지)
-- [ ] 정상 토큰 reset → 204 + 기존 session 무효화
+- [ ] 같은 이메일 1시간 내 4회째 forgot → 429 `RATE_LIMIT`
+- [ ] 같은 IP 1시간 내 11회째 forgot (이메일 무관) → 429
+- [ ] forgot 재호출 → 기존 토큰 무효화 + 새 토큰 발급 (둘 다 유효 X)
+- [ ] 메일 본문 링크: `${FE_URL}/reset-password?token=${TOKEN}` 형식
+- [ ] 정상 토큰 reset → 204 + 모든 refresh_token DB 무효
 - [ ] 만료 토큰 → 410 `AUTH_TOKEN_EXPIRED`
 - [ ] 1회 사용한 토큰 재사용 → 400 `AUTH_TOKEN_INVALID`
+- [ ] 위변조 토큰 → 400 `AUTH_TOKEN_INVALID`
+- [ ] 새 비번이 최근 3개 중 하나와 일치 → 422 `AUTH_PASSWORD_REUSED`
+- [ ] 약한 비번 (BE 정책 위반) → 422 `AUTH_PASSWORD_WEAK`
+- [ ] reset 성공 후 기존 세션의 GET /me → 401 (강제 로그아웃 확인)
+- [ ] (선택) 계정 보호 알림 — 토큰 발급 직후 메일/인앱 알림
 
 ### 로그아웃 / refresh
 
