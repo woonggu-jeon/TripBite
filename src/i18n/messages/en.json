@@ -480,6 +480,8 @@
     },
     "compose": {
       "title": "Write a letter",
+      "introMain": "Send your feelings in 5 characters or less",
+      "introSub": "Letters arrive at a random time to someone",
       "label": "Letter body",
       "placeholder": "Up to 5 characters",
       "anonymous": "Send anonymously",

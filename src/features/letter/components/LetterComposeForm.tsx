@@ -146,6 +146,12 @@ export function LetterComposeForm() {
 
   return (
     <form onSubmit={onSubmit} className={styles.form}>
+      {/* 0) 상단 안내 — 메인 한 줄 + 서브 한 줄 */}
+      <div className={styles.intro}>
+        <p className={styles.introMain}>{t('introMain')}</p>
+        <p className={styles.introSub}>{t('introSub')}</p>
+      </div>
+
       {/* 1) 편지 내용 라벨 + PIN 5칸 입력 + 우측 하단 카운터 */}
       <div className={styles.inputSection}>
         <label htmlFor="body" className={styles.label}>

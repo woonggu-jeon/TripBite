@@ -480,6 +480,8 @@
     },
     "compose": {
       "title": "편지 쓰기",
+      "introMain": "5글자 이하로 마음을 전해보세요",
+      "introSub": "편지는 랜덤 시간에 누군가에게 도착해요",
       "label": "편지 내용",
       "placeholder": "다섯 글자 이내",
       "anonymous": "익명으로 편지 보내기",

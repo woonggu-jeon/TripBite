@@ -3,6 +3,27 @@
   gap: var(--space-5);
 }
 
+.intro {
+  display: grid;
+  gap: 0.25rem;
+  text-align: center;
+}
+
+.introMain {
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-fg);
+  letter-spacing: var(--tracking-tight);
+  word-break: keep-all;
+}
+
+.introSub {
+  font-size: var(--font-body-sm);
+  color: var(--color-muted);
+  letter-spacing: var(--tracking-snug);
+  word-break: keep-all;
+}
+
 .inputSection {
   display: grid;
   gap: 0.5rem;
