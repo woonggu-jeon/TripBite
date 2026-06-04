@@ -26,9 +26,10 @@ import { defineConfig } from 'orval';
 export default defineConfig({
   tripbite: {
     input: {
-      // TODO(backend): BE Spring Boot Swagger URL 또는 다운받은 spec 경로로 교체.
-      // 예: 'https://api.tripbite.kr/v3/api-docs' 또는 './api/openapi.yaml'
-      target: './api/openapi.yaml',
+      // BE NestJS Swagger — http://localhost:3000/docs-json 의 OpenAPI JSON.
+      // 운영 swap: env 로 분기 가능 — process.env.OPENAPI_URL ?? 기본값.
+      // 오프라인 fallback: api/openapi.yaml 캐시 사용 (BE 다운 시 generator 가 fail 하지 않도록).
+      target: process.env.OPENAPI_URL ?? 'http://localhost:3000/docs-json',
     },
     output: {
       mode: 'tags-split',
