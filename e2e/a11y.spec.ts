@@ -28,10 +28,12 @@ async function audit(page: Page, url: string) {
   return new AxeBuilder({ page })
     .withTags(TAGS)
     .disableRules([
-      'region',
+      // dev mode hot reload 잔재 — production 영향 X
       'duplicate-id-aria',
       // 2026-06-02: spring / autumn / red / amber / green / violet 톤을
-      // 어둡게 보강해 흰 배경 4.5:1+ 충족. color-contrast 다시 활성화.
+      // 어둡게 보강해 흰 배경 4.5:1+ 충족. color-contrast 활성.
+      // 2026-06-04: region rule 활성화 — 모든 section 이 main / nav / aside
+      // 같은 landmark 안 또는 aria-label 부여된 상태로 정리됨.
     ])
     .analyze();
 }
@@ -39,10 +41,16 @@ async function audit(page: Page, url: string) {
 const PAGES: { path: string; label: string }[] = [
   { path: '/', label: '홈' },
   { path: '/mypage', label: '마이페이지' },
+  { path: '/mypage/stamps', label: '도장책' },
+  { path: '/mypage/saved-tournaments', label: '저장한 우승지' },
   { path: '/letter', label: '편지' },
   { path: '/tournament', label: '토너먼트 setup' },
   { path: '/region', label: '시군 지도' },
+  { path: '/region/cheongju', label: '시군 상세' },
   { path: '/ranking', label: '랭킹' },
+  { path: '/quiz', label: '여행 유형 테스트' },
+  { path: '/settings', label: '설정' },
+  { path: '/destination/cheongju-attraction-1', label: '여행지 상세' },
 ];
 
 test.describe('a11y — serious/critical 위반 0건', () => {

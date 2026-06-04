@@ -1,3 +1,27 @@
+// Skip-to-content — 평소 visually-hidden, focus 시 좌상단에 노출 (z-index 최상).
+// 키보드 사용자가 헤더/하단 네비 건너뛰고 본문 진입 가능.
+.skipLink {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 8px 16px;
+  background: var(--color-primary);
+  color: var(--color-primary-fg);
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-bold);
+  border-radius: 0 0 var(--radius-md) 0;
+  text-decoration: none;
+  transform: translateY(-100%);
+  transition: transform var(--motion-base) ease;
+
+  &:focus-visible {
+    transform: translateY(0);
+    outline: 2px solid var(--color-bg);
+    outline-offset: -2px;
+  }
+}
+
 .shell {
   // svh — 카카오/Naver 인앱 toolbar 토글 시 layout 안정 (globals.scss 주석 참고)
   min-height: 100vh;

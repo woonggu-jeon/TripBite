@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { getTranslations } from 'next-intl/server';
 import { HeaderSwitch } from '@/components/layout/HeaderSwitch';
 import { BottomNav } from '@/components/layout/BottomNav';
 import styles from './layout.module.scss';
@@ -28,11 +29,21 @@ import styles from './layout.module.scss';
  *   - 인터랙션이 있는 부분만 _components/*Client.tsx 로 분리
  *   - 무거운 위젯(차트, 캐롤셀, 지도)은 @/features/*에서 동적 import
  */
-export default function MainLayout({ children }: { children: ReactNode }) {
+export default async function MainLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  // Skip-to-content link — 키보드 사용자가 헤더/네비 건너뛰고 본문으로 즉시.
+  // 평소 시각적으로 숨겨져 있다가 focus 시 좌상단에 표시. visually-hidden + focus 표시.
+  const t = await getTranslations('common');
   return (
     <div className={styles.shell}>
+      <a href="#main-content" className={styles.skipLink}>
+        {t('skipToContent')}
+      </a>
       <HeaderSwitch />
-      <main className={styles.content}>
+      <main id="main-content" className={styles.content} tabIndex={-1}>
         <div className={styles.contentInner}>{children}</div>
       </main>
       <BottomNav />
