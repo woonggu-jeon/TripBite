@@ -16,6 +16,7 @@ import { LuckyColor } from '@/features/tournament/components/LuckyColor';
 import { LuckyLadder } from '@/features/tournament/components/LuckyLadder';
 import { shareWithImage } from '@/lib/share';
 import { toast } from '@/lib/toast';
+import { useRequireAuth } from '@/hooks/use-require-auth';
 import styles from './TournamentResultClient.module.scss';
 
 /**
@@ -67,6 +68,7 @@ export function TournamentResultClient() {
   const tournamentSize = useTournamentStore((s) => s.config?.tournamentSize);
   const reset = useTournamentStore((s) => s.reset);
   const save = useSaveTournament();
+  const requireAuth = useRequireAuth();
   // 우승자 풍부 정보 — winner.id 기준 별도 fetch.
   // winner/stats 는 store 만으로 즉시 렌더 → 상세는 비동기로 채워짐 (렌더 속도 우선).
   // [FUTURE BE] deep-link 진입 시 winner 자체가 없을 수 있음 →
@@ -86,7 +88,9 @@ export function TournamentResultClient() {
 
   const handleSave = () => {
     if (save.isPending || save.isSuccess) return;
-    save.mutate(winner.id);
+    void requireAuth(() => save.mutate(winner.id), {
+      reason: t('saveRequireAuth'),
+    });
   };
 
   const handleRetry = () => {

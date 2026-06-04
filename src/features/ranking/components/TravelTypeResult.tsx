@@ -14,6 +14,7 @@ import {
 import type { TravelType } from '@/features/ranking/types';
 import { shareWithImage } from '@/lib/share';
 import { toast } from '@/lib/toast';
+import { useRequireAuth } from '@/hooks/use-require-auth';
 import styles from './TravelTypeResult.module.scss';
 
 const CATEGORY_EMOJI = {
@@ -46,13 +47,18 @@ export function TravelTypeResult() {
   const router = useRouter();
   const { data, isLoading } = useMyTravelType();
   const applyMutation = useSetMyTravelType();
+  const requireAuth = useRequireAuth();
 
   const handleApply = (result: TravelType) => {
     haptic.tap();
-    applyMutation.mutate(result.code, {
-      onSuccess: () => toast.success(t('appliedSuccess')),
-      onError: () => toast.error(t('appliedFailed')),
-    });
+    void requireAuth(
+      () =>
+        applyMutation.mutate(result.code, {
+          onSuccess: () => toast.success(t('appliedSuccess')),
+          onError: () => toast.error(t('appliedFailed')),
+        }),
+      { reason: t('applyRequireAuth') },
+    );
   };
 
   // file 단독 — title/text 동반 시 일부 share target (카카오톡 등) 이 텍스트만

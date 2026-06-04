@@ -32,7 +32,12 @@ import styles from './AuthForm.module.scss';
 export function LoginForm() {
   const t = useTranslations('auth.login');
   const searchParams = useSearchParams();
-  const redirect = searchParams.get('redirect') ?? '/';
+  // safe redirect — 외부 URL 주입 (open redirect) 차단. 같은 origin 경로만 허용.
+  const rawRedirect = searchParams.get('redirect');
+  const redirect =
+    rawRedirect && rawRedirect.startsWith('/') && !rawRedirect.startsWith('//')
+      ? rawRedirect
+      : '/';
 
   const {
     register,
@@ -44,12 +49,11 @@ export function LoginForm() {
     defaultValues: { username: '', password: '' },
   });
 
-  const { mutateAsync: login } = useLogin();
+  const { mutateAsync: login } = useLogin({ redirectTo: redirect });
 
   const onSubmit = handleSubmit(async (values) => {
     try {
       await login(values);
-      void redirect;
     } catch (err) {
       const message = isAxiosError(err)
         ? ((err.response?.data as { message?: string })?.message ?? t('failed'))

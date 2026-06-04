@@ -58,6 +58,11 @@
     "ogTitle": "TripBite — Chungbuk Travel Tournament"
   },
   "auth": {
+    "requireAuth": {
+      "title": "Sign in required",
+      "description": "Sign in to continue. Go to login now?",
+      "confirmLabel": "Sign in"
+    },
     "login": {
       "title": "Sign in",
       "username": "Username",
@@ -388,6 +393,7 @@
       "saving": "Saving…",
       "saved": "Saved",
       "saveFailed": "Save failed",
+      "saveRequireAuth": "Sign in to save to My Page. Go to login now?",
       "retry": "Try again",
       "savedToast": "Saved",
       "noWinner": "No tournament result yet",
@@ -557,6 +563,7 @@
       "keywordsAria": "Type keywords",
       "recommendTitle": "Destinations you'll love",
       "apply": "Apply to my profile",
+      "applyRequireAuth": "Sign in to apply your travel type. Go to login now?",
       "appliedSuccess": "Applied to your profile",
       "appliedFailed": "Could not apply",
       "share": "Create share card",

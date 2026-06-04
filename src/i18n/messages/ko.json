@@ -58,6 +58,11 @@
     "ogTitle": "TripBite — 충북 여행 토너먼트"
   },
   "auth": {
+    "requireAuth": {
+      "title": "로그인이 필요해요",
+      "description": "로그인 후 이용할 수 있어요. 지금 이동할까요?",
+      "confirmLabel": "로그인"
+    },
     "login": {
       "title": "로그인",
       "username": "아이디",
@@ -388,6 +393,7 @@
       "saving": "저장 중...",
       "saved": "저장됐어요",
       "saveFailed": "저장에 실패했어요",
+      "saveRequireAuth": "마이페이지 저장은 로그인 후 사용할 수 있어요. 지금 로그인할까요?",
       "retry": "다시 하기",
       "savedToast": "저장되었어요",
       "noWinner": "토너먼트 결과가 없어요",
@@ -557,6 +563,7 @@
       "keywordsAria": "유형 키워드",
       "recommendTitle": "이런 여행지가 어울려요",
       "apply": "내 유형으로 적용",
+      "applyRequireAuth": "유형 적용은 로그인 후 사용할 수 있어요. 지금 로그인할까요?",
       "appliedSuccess": "프로필에 적용됐어요",
       "appliedFailed": "적용에 실패했어요",
       "share": "공유 카드 만들기",

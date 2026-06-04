@@ -57,9 +57,14 @@ export function RegionWinsChart() {
   }, [data, tRegion]);
 
   if (isLoading) {
-    // 5 row skeleton — 시각적 자리잡이 (CLS 0)
+    // 5 row skeleton — 시각적 자리잡이 (CLS 0). role=status — axe-core prohibited
+    // attr 회피 + 스크린리더에 로딩 상태 announce.
     return (
-      <div className={styles.skeletonList} aria-label={t('chart.loading')}>
+      <div
+        className={styles.skeletonList}
+        role="status"
+        aria-label={t('chart.loading')}
+      >
         {Array.from({ length: 5 }).map((_, i) => (
           <Skeleton key={i} width="100%" height={32} radius="md" />
         ))}

@@ -11,12 +11,13 @@ import { buildCsp } from '@/lib/csp';
  *   3) CSP: 요청별 nonce 발급 + Content-Security-Policy-Report-Only 헤더
  *
  * 보호 정책:
- *   - /login                비인증만 (인증 시 / 로)
- *   - 그 외 모든 경로         인증 필요 (비인증 시 /login)
+ *   - PUBLIC_ONLY_PATHS    인증 시 / 로 (login 페이지 등)
+ *   - PROTECTED_PATHS      비인증 시 /login 으로 (개인 정보 페이지)
+ *   - 그 외 모든 경로       비인증 진입 허용 (홈/토너먼트/유형테스트/랭킹/시군/여행지)
  *   onboarding 완료 분기는 AuthBootstrap에서 (user.isOnboarded 필요)
  */
 
-// 인증 흐름용 — 인증된 사용자가 진입 시 / 로 보냄 ("로그인된 사람이 로그인 페이지 보면 안 됨")
+// 인증된 사용자가 진입 시 / 로 보냄 ("로그인된 사람이 로그인 페이지 보면 안 됨")
 const PUBLIC_ONLY_PATHS = [
   '/login',
   '/signup',
@@ -25,14 +26,10 @@ const PUBLIC_ONLY_PATHS = [
   '/find-id',
 ];
 
-// 비인증 사용자도 접근 가능 — auth flow + onboarding + 정책 + offline.
-// 이외 모든 경로는 access_token 쿠키 필수 (없으면 /login 으로).
-const PUBLIC_ACCESS_PATHS = [
-  ...PUBLIC_ONLY_PATHS,
-  '/onboarding',
-  '/policy',
-  '/offline',
-];
+// 비인증 사용자 차단 — 개인 정보 페이지. 비로그인 진입 시 /login?redirect= 으로 보냄.
+// 그 외 모든 경로 (/ , /tournament, /quiz, /ranking, /region, /destination 등) 는 비로그인도 접근 가능.
+// 알림함 (헤더 dropdown) 은 라우트가 아니라 컴포넌트가 자체 분기.
+const PROTECTED_PATHS = ['/mypage', '/settings', '/letter'];
 
 const ACCESS_TOKEN_COOKIE = 'access_token';
 const STATE_CHANGING = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
@@ -67,14 +64,12 @@ export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
     const hasAccessToken = request.cookies.has(ACCESS_TOKEN_COOKIE);
     const isPublicOnly = PUBLIC_ONLY_PATHS.some((p) => pathname.startsWith(p));
-    const isPublicAccess = PUBLIC_ACCESS_PATHS.some((p) =>
-      pathname.startsWith(p),
-    );
+    const isProtected = PROTECTED_PATHS.some((p) => pathname.startsWith(p));
 
     if (isPublicOnly && hasAccessToken) {
       return withCsp(NextResponse.redirect(new URL('/', request.url)), csp);
     }
-    if (!isPublicAccess && !hasAccessToken) {
+    if (isProtected && !hasAccessToken) {
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('redirect', pathname);
       return withCsp(NextResponse.redirect(loginUrl), csp);

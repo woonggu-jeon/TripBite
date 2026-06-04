@@ -7,6 +7,7 @@ import {
   type UseQueryOptions,
 } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import type { Route } from 'next';
 import { authApi } from '@/features/auth/api/auth';
 import { useAuthStore } from '@/stores/auth-store';
 import type {
@@ -49,7 +50,7 @@ export function useMe(
   });
 }
 
-export function useLogin() {
+export function useLogin(options?: { redirectTo?: string }) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const setAuth = useAuthStore((s) => s.setAuth);
@@ -63,8 +64,9 @@ export function useLogin() {
         queryFn: authApi.me,
       });
       setAuth(user);
-      // 로그인 성공 → 홈 (하단 네비 첫 항목)
-      router.replace('/');
+      // 로그인 성공 → 원래 가려던 경로 (LoginForm 이 ?redirect= 로 전달) 또는 홈.
+      // dynamic path 라 typedRoutes 강제 캐스팅 필요 (open-redirect 차단은 LoginForm 에서 처리).
+      router.replace((options?.redirectTo ?? '/') as Route);
     },
   });
 }
