@@ -1,7 +1,7 @@
 # TripBite 후속 작업 백로그
 
 > 코드베이스 전수조사 후 정리한 잔존 / 개선 항목. 분기점마다 갱신.
-> 마지막 갱신: 2026-06-03
+> 마지막 갱신: 2026-06-04
 >
 > 작업량 표기: **S** (≤30분) · **M** (1-3시간) · **L** (반나절+)
 
@@ -17,8 +17,12 @@
 - Phase 6 일부 — 명시 테마 토글, 만 14세 step, sticky 헤더 fix
 - 6 플랫폼 매트릭스 — Windows / Mac / AOS web / iOS web / AOS PWA / iOS PWA
 - 이미지 공유 — 카톡 file 단독 + Desktop URL clipboard + PNG 다운로드 fallback
-- 마이페이지 — 프로필 avatar 단일 button, 도장책 정밀 지도 + 음영, 청주 4 path 통합, 저장 우승지 3 col + 전체보기 헤더
-- 설정 — 닉네임/비밀번호 모달 통합
+- 마이페이지 — 프로필 avatar 단일 button, 도장책 배너 + `/mypage/stamps` 정밀 지도 + Sage 톤 + 11/11 마스터 OG 카드 공유, 저장 우승지 가로 Carousel (최대 10) + 헤더 전체보기, 최근 토너먼트 우승지명
+- 설정 — 닉네임/비밀번호 모달 통합. 테마/푸시/인앱/문의/오픈소스 라이센스 미노출
+- destination — 길찾기 provider 중립 ("길찾기" 라벨, 카카오 URL 내부), 액션 row 위치 최하단, 다른 여행지 Carousel UI
+- Auth — 진입 보호 좁힘 (mypage/settings/letter 만), `useRequireAuth` confirm + redirect, mock 로그인 toggle dev 도구
+- UI primitive 추출 — `DestinationCard`, `AsyncSection`, `useResponsiveSlidesPerView`, `useShareCard`, emoji-map 상수, Chip xs variant
+- API 보강 (BE Swagger 도입 대비) — zod 10 endpoint + safeParseResponse + 에러 normalize interceptor + `/me` 단일화 + 합의 체크리스트
 
 ---
 

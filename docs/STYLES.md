@@ -209,7 +209,8 @@ import { cardClasses } from '@/components/ui';
 ### Chip 변형
 
 - `default` / `primary` / `outline` / `subtle` / `solid`
-- `size`: `sm` / `md`, `pill` (기본 true)
+- `size`: `xs` (10px, NEW/HOT 류 inline 배지) / `sm` / `md`, `pill` (기본 true)
+- `aria-label`: optional — 의미 라벨 (스크린리더용)
 
 ### IconButton 변형
 
@@ -221,6 +222,30 @@ import { cardClasses } from '@/components/ui';
 
 - `title` / `hint` / `action` / `level` (h2/h3)
 - 페이지 안 섹션 헤더 + 본문 wrapper.
+
+### DestinationCard — 여행지 카드 통일
+
+FestivalCarousel / RelatedDestinations / SavedTournaments tile 이 모두 동일 카드 사용.
+
+```tsx
+import { DestinationCard } from '@/components/ui';
+import { toneFor } from '@/constants/region-tone';
+import { categoryEmoji } from '@/constants/emoji-map';
+
+<DestinationCard
+  href={{ pathname: `/destination/${d.id}` }}
+  emoji={categoryEmoji(d.category)}
+  tone={toneFor(d.region)} // red / amber / green / blue / violet
+  regionLabel={regionKo}
+  name={d.name}
+  caption="10/14 — 10/16" // 옵션 — 축제 기간 등
+  accentDot={luckyColor} // 옵션 — luckyColor dot 오버레이
+/>;
+```
+
+- region 톤은 `constants/region-tone.ts` 의 시군 → tone 매핑
+- emoji 매핑은 `constants/emoji-map.ts` 의 `categoryEmoji()` / `seasonEmoji()`
+- 360/480/desktop 별 aspect-ratio + emoji 사이즈 자동 분기
 
 ### Layout primitives (page wrapper)
 
@@ -249,6 +274,28 @@ import { cardClasses } from '@/components/ui';
 <Button variant="primary" fullWidth onClick={save} loading={isSaving}>저장</Button>
 <Button variant="secondary" leadingIcon={<RotateCcw size={16} />}>다시</Button>
 ```
+
+### AsyncSection — 표준 분기 wrapper
+
+`isLoading → Skeleton / isError → EmptyState+retry / 0 → EmptyState+CTA / else → render` 의 4단계 분기 통합.
+
+```tsx
+import { AsyncSection } from '@/components/feedback/AsyncSection';
+
+<AsyncSection
+  query={useSavedTournaments()}
+  icon={<Trophy size={28} aria-hidden />}
+  errorTitle={t('error')}
+  emptyTitle={t('empty')}
+  emptyDescription={t('emptyHint')}
+  emptyAction={<Button onClick={...}>{t('startCta')}</Button>}
+  isEmpty={(d) => d.length === 0}
+>
+  {(data) => <Carousel slides={data} ... />}
+</AsyncSection>;
+```
+
+children 은 narrow 된 T (non-null) 받음 — 호출부 null 체크 불필요.
 
 ### Skeleton — 로딩 자리잡이
 

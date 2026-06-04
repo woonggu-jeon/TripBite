@@ -99,10 +99,10 @@ export const handlers = [
 - **토너먼트**: `/tournament` setup (계절/카테고리/갯수) → `/tournament/play` (Bracket 매치 진행 + dedup) → `/tournament/result` (winner + LuckyColor + 저장).
 - **랭킹**: Top5 + 시군별 + 카테고리별 (mock 데이터).
 - **시군 상세**: `/region/[code]` 관광지/축제/체험 탭 (InfiniteList + RegionContentRow).
-- **마이페이지**: ProfileCard (avatar 클릭=이미지 변경, 여행유형 저장 시 노출) + 도장책 정밀 지도 + 저장된 우승지 (3 col + 헤더 전체보기 / 전체 페이지 list) + 토너먼트 기록. 닉네임은 /settings.
-- **여행지 상세**: `/destination/[id]` Hero + WinnerDetailPanel + Web Share API + OG 메타.
-- **이미지 카드 공유**: `/api/og/[type]` Edge route 4 종 (tournament/quiz/destination/region).
-- **설정**: `/settings` (알림 / 계정 / 정책 / 로그아웃).
+- **마이페이지**: ProfileCard (avatar 클릭=이미지 변경, 여행유형 저장 시 노출) + 도장책 배너 (→ `/mypage/stamps` 전체 지도, Sage 톤, 11/11 시 마스터 OG 카드 공유) + 저장된 우승지 (가로 Carousel 최대 10 + 헤더 전체보기 → 상세 list) + 최근 토너먼트 (우승지명 + 강수 + 카테고리 + 날짜). 닉네임은 /settings.
+- **여행지 상세**: `/destination/[id]` Photos + Hero + WinnerDetailPanel + 다른 여행지 Carousel + 길찾기/공유 액션. provider 중립 ("길찾기" 라벨, 내부는 카카오맵 URL).
+- **이미지 카드 공유**: `/api/og/[type]` Edge route 5 종 (tournament/quiz/destination/region/master).
+- **설정**: `/settings` (알림 / 계정 / 정책 / 로그아웃). 테마 / 푸시 / 인앱 알림 / 오픈소스 라이센스 / 문의하기는 사용자 요청 미노출 (재노출 대비 주석 유지).
 
 ### 🟡 부분 동작 (mock 한정, BE 연동 시 완성)
 
@@ -113,7 +113,7 @@ export const handlers = [
 ### 🔧 준비됨 (호출 대기)
 
 - **인프라**: api client + interceptor (auth 401-refresh / timing), feature별 데이터 hooks (TanStack Query), Zustand stores, 캐시 프로파일 7종.
-- **공용 컴포넌트**: `InfiniteList` (무한스크롤), 차트·캐러셀 동적 래퍼, `OptimizedImage`, `ConfirmDialog`, 피드백/PWA 배너.
+- **공용 컴포넌트**: `InfiniteList` (무한스크롤), 차트·캐러셀 동적 래퍼, `OptimizedImage`, `ConfirmDialog`, 피드백/PWA 배너, `DestinationCard` (FestivalCarousel/Related/Saved 카드 통일), `AsyncSection` (isLoading/isError/empty 표준 분기), `Chip xs` (NEW/HOT 류 배지).
 - **테스트**: Playwright 4-project 매트릭스 (desktop / mobile-chrome / mobile-safari / mobile-pwa) + axe-core a11y + toHaveScreenshot 시각 회귀.
 
 > **stub 0** (2026-06-03 사양 대기 / 편지 미사용 stub 일괄 삭제). 디자인 임시 구현 (WeatherWidget / RegionHero / SeasonalCenterIllustration / ConceptStep 일러스트) 은 시안 받으면 JSX/asset 만 교체. [`docs/BACKLOG.md`](docs/BACKLOG.md) 참고.

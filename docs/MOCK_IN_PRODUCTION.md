@@ -51,8 +51,15 @@ axios `baseURL` 이 `/api/backend` 로 자동 분기 (`src/services/api/client.t
 
 ## 5. 시각적 표시
 
-운영에 mock 을 띄울 때 사용자가 실데이터로 오해하지 않도록 우상단에 **DEMO** chip 자동 표시 (`MockModeBanner`).
-`providers.tsx` 에서 `MSW_ENABLED` 시 조건부 렌더되어 추가 설정 불필요.
+운영에 mock 을 띄울 때 사용자가 실데이터로 오해하지 않도록 헤더 좌측 dev slot 에 다음 도구가 자동 노출 — `NEXT_PUBLIC_USE_MSW=true` 빌드만:
+
+| 컴포넌트          | 역할                                                                                                                    |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `MockModeBanner`  | "DEMO" chip — 운영 모드와 시각 구분                                                                                     |
+| `MockPushTrigger` | 📬 새 편지 도착 시뮬레이션 버튼                                                                                         |
+| `MockAuthToggle`  | LogIn/LogOut 토글 — `mockSignedIn` state 뒤집어 비로그인 흐름 (requireAuth confirm / 보호 페이지 redirect 등) 검증 가능 |
+
+mock 의 `mockSignedIn` 모듈 state (`src/mocks/handlers.ts`) 가 `POST /auth/login` / `POST /auth/logout` 으로 토글되어 `/me`, `/mypage*`, `/letters*`, `/notifications` 등 보호 endpoint 가 401 분기. AuthBootstrap 이 보호 경로 진입 시 `/login?redirect=` 으로 client-side redirect (middleware 가 mock 환경 redirect skip 이므로 안전망).
 
 ## 6. 트러블슈팅 — `/me 404` / 모든 API 404
 
