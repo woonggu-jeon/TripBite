@@ -709,8 +709,7 @@
     "retry": "다시 시도",
     "actions": {
       "groupAria": "여행지 액션",
-      "kakao": "카카오맵",
-      "naver": "네이버맵",
+      "directions": "길찾기",
       "share": "링크 공유"
     },
     "related": {

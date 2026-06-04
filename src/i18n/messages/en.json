@@ -709,8 +709,7 @@
     "retry": "Retry",
     "actions": {
       "groupAria": "Destination actions",
-      "kakao": "KakaoMap",
-      "naver": "NaverMap",
+      "directions": "Directions",
       "share": "Share link"
     },
     "related": {
