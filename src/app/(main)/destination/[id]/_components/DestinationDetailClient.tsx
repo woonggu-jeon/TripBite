@@ -116,18 +116,10 @@ export function DestinationDetailClient({ id }: { id: string }) {
           {detail.name}
         </h1>
 
-        {/* 4) Actions row — 카카오/네이버 길찾기 + 공유 */}
-        <DestinationActions
-          id={id}
-          name={detail.name}
-          coords={detail.coords}
-          shareText={detail.summary ?? detail.description}
-        />
-
-        {/* 5) 장소 정보 (summary / rating / tags / 주소 / 시간 / 입장료 / 연락처 / web) */}
+        {/* 4) 장소 정보 (summary / rating / tags / 주소 / 시간 / 입장료 / 연락처 / web) */}
         <WinnerDetailPanel detail={detail} isLoading={false} />
 
-        {/* 6) 추천 계절 chips */}
+        {/* 5) 추천 계절 chips */}
         {detail.bestSeasons && detail.bestSeasons.length > 0 && (
           <section
             className={styles.seasons}
@@ -144,8 +136,16 @@ export function DestinationDetailClient({ id }: { id: string }) {
           </section>
         )}
 
-        {/* 7) 이 시군의 다른 여행지 */}
+        {/* 6) 이 시군의 다른 여행지 (Carousel) */}
         <RelatedDestinations id={id} />
+
+        {/* 7) Actions row — 카카오 길찾기 + 공유. (네이버 분기는 코드에 주석으로 유지) */}
+        <DestinationActions
+          id={id}
+          name={detail.name}
+          coords={detail.coords}
+          shareText={detail.summary ?? detail.description}
+        />
       </article>
     </>
   );

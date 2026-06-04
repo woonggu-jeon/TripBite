@@ -1,25 +1,22 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { MapPin, Navigation, Share2 } from 'lucide-react';
+import { MapPin, Share2 } from 'lucide-react';
 import { shareUrl } from '@/lib/share';
 import { toast } from '@/lib/toast';
 import styles from './DestinationActions.module.scss';
 
 /**
- * 여행지 상세의 액션 row — 길찾기 (카카오/네이버) + 공유.
+ * 여행지 상세의 액션 row — 카카오 길찾기 + 공유.
  *
  * 카카오맵 URL scheme:
  *   https://map.kakao.com/link/to/{name},{lat},{lng}
  *
- * 네이버맵 URL scheme:
- *   https://map.naver.com/p?lat={lat}&lng={lng}&title={name}&type=address
+ * coords 가 있을 때만 길찾기 노출. 공유는 coords 무관 — 항상 노출.
+ * iOS / Android 의 카카오맵 앱이 설치돼 있으면 web → 앱 자동 전환.
  *
- * 둘 다 외부 키 불필요. coords 가 있을 때만 노출 (없으면 길찾기 버튼 미렌더).
- * 공유는 coords 무관 — 항상 노출.
- *
- * iOS / Android 의 카카오맵/네이버맵 앱이 설치돼 있으면 web → 앱 자동 전환
- * (각 사이트의 `intent://` 또는 universal link 처리).
+ * 네이버 길찾기는 사용자 요청으로 일단 미노출 (재노출 대비 코드 주석 유지).
+ * 재오픈 시: import 의 Navigation 아이콘 + naverHref 변수 + 네이버 <a> 블록 주석 해제.
  */
 export function DestinationActions({
   id,
@@ -49,9 +46,11 @@ export function DestinationActions({
     ? `https://map.kakao.com/link/to/${encodeURIComponent(name)},${coords.lat},${coords.lng}`
     : null;
 
-  const naverHref = coords
-    ? `https://map.naver.com/p?lat=${coords.lat}&lng=${coords.lng}&title=${encodeURIComponent(name)}&type=address`
-    : null;
+  // 네이버 길찾기 — 미노출 (사용자 요청). 재노출 시 import 의 Navigation 아이콘과
+  // 함께 아래 변수/링크 블록 주석 해제.
+  // const naverHref = coords
+  //   ? `https://map.naver.com/p?lat=${coords.lat}&lng=${coords.lng}&title=${encodeURIComponent(name)}&type=address`
+  //   : null;
 
   return (
     <nav className={styles.row} aria-label={t('groupAria')}>
@@ -66,6 +65,7 @@ export function DestinationActions({
           <span>{t('kakao')}</span>
         </a>
       )}
+      {/* 네이버 길찾기 — 미노출 (사용자 요청). 추후 복원 시 주석 해제.
       {naverHref && (
         <a
           href={naverHref}
@@ -77,6 +77,7 @@ export function DestinationActions({
           <span>{t('naver')}</span>
         </a>
       )}
+      */}
       <button
         type="button"
         onClick={handleShare}

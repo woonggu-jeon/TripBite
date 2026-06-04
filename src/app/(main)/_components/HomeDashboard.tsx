@@ -5,9 +5,10 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Trophy, Sparkles } from 'lucide-react';
 import { ROUTES } from '@/constants/routes';
-import { RecommendationBanner } from '@/features/home/components/RecommendationBanner';
+// 오늘의 추천 (날씨) 위젯 미노출 (사용자 요청, 재노출 대비 import 주석 유지).
+// import { RecommendationBanner } from '@/features/home/components/RecommendationBanner';
+// import { WeatherWidget } from '@/features/weather';
 import { FestivalCarousel } from '@/features/home/components/FestivalCarousel';
-import { WeatherWidget } from '@/features/weather';
 // LatestReceivedLetter 위젯 미노출 — 추후 재오픈 시 import 복원.
 // import { LatestReceivedLetter } from '@/features/home/components/LatestReceivedLetter';
 import { getCurrentSeason } from '@/features/tournament/utils/season';
@@ -45,7 +46,7 @@ export function HomeDashboard() {
 
   return (
     <div className={styles.grid}>
-      {/* 1) 오늘의 추천 — 빌보드 배너 + 날씨 카드 */}
+      {/* 1) 오늘의 추천 — 미노출 (사용자 요청). 추후 복원 시 주석 해제 + import 도 복원.
       <section
         data-widget="weather-recommendation"
         aria-label={t('weatherRecommendation')}
@@ -54,6 +55,7 @@ export function HomeDashboard() {
         <WeatherWidget />
         <RecommendationBanner />
       </section>
+      */}
 
       {/* 2) 지금 열리는 충북 축제 — 카드 스와이퍼 */}
       <section
