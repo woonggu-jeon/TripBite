@@ -64,7 +64,6 @@ export function TournamentResultClient() {
   const searchParams = useSearchParams();
   const recordId = searchParams.get('id');
   const t = useTranslations('tournament.result');
-  const tCommon = useTranslations('common');
 
   // ?id= 가 있으면 BE record 조회 (deep-link / 새로고침). 없으면 store 만 사용.
   const recordQuery = useTournamentRecord(recordId);
@@ -179,6 +178,19 @@ export function TournamentResultClient() {
       </section>
 
       <div className={styles.actions}>
+        <div className={styles.actionsRow}>
+          <Button
+            variant="secondary"
+            fullWidth
+            onClick={handleShare}
+            leadingIcon={<Share2 size={16} aria-hidden />}
+          >
+            {t('share')}
+          </Button>
+          <Button variant="ghost" fullWidth onClick={handleRetry}>
+            {t('retry')}
+          </Button>
+        </div>
         <Button
           variant="primary"
           fullWidth
@@ -187,17 +199,6 @@ export function TournamentResultClient() {
           loading={save.isPending}
         >
           {saveLabel}
-        </Button>
-        <Button
-          variant="secondary"
-          fullWidth
-          onClick={handleShare}
-          leadingIcon={<Share2 size={16} aria-hidden />}
-        >
-          {tCommon('share')}
-        </Button>
-        <Button variant="ghost" fullWidth onClick={handleRetry}>
-          {t('retry')}
         </Button>
       </div>
     </div>

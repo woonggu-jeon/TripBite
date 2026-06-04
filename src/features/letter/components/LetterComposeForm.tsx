@@ -75,7 +75,7 @@ export function LetterComposeForm() {
     formState: { isSubmitting },
   } = useForm<LetterFormValues>({
     resolver: zodResolver(letterSchema),
-    defaultValues: { body: '' },
+    defaultValues: { body: '', isAnonymous: false },
     // 'onSubmit' — 입력 중 인라인 에러 미표시. submit 시점에 검증 + toast 안내.
     mode: 'onSubmit',
   });
@@ -98,7 +98,8 @@ export function LetterComposeForm() {
       }
       haptic.success();
       const created = await send({
-        ...values,
+        body: values.body,
+        isAnonymous: values.isAnonymous,
         location: {
           label: resolved.label,
           regionCode: resolved.regionCode,
@@ -134,7 +135,7 @@ export function LetterComposeForm() {
 
   const handleReset = () => {
     haptic.tap();
-    reset({ body: '' });
+    reset({ body: '', isAnonymous: false });
   };
 
   // 정상 UX: 빈 입력 또는 위치 미허용 시 보내기 버튼 disabled.
@@ -170,6 +171,35 @@ export function LetterComposeForm() {
             {count} / 5
           </span>
         </div>
+
+        {/* 익명 발송 체크박스 — 받는 사람에게 닉네임 미노출.
+            서버는 위치는 그대로 받되 author.nickname 만 가림 ("익명의 여행자"). */}
+        <Controller
+          name="isAnonymous"
+          control={control}
+          render={({ field }) => (
+            // input id + htmlFor 로 연결되어 있고 label 자식 span 이 accessible text 를
+            // 제공. rule 이 nested span 안 텍스트를 detect 못 해 disable.
+            // eslint-disable-next-line jsx-a11y/label-has-associated-control
+            <label htmlFor="isAnonymous" className={styles.anonymous}>
+              <input
+                id="isAnonymous"
+                type="checkbox"
+                checked={field.value}
+                onChange={(e) => field.onChange(e.target.checked)}
+                onBlur={field.onBlur}
+                name={field.name}
+                className={styles.anonymousCheckbox}
+              />
+              <span className={styles.anonymousText}>
+                <span className={styles.anonymousLabel}>{t('anonymous')}</span>
+                <span className={styles.anonymousHint}>
+                  {t('anonymousHint')}
+                </span>
+              </span>
+            </label>
+          )}
+        />
         {/* 인라인 에러 메시지 제거 — 보내기 버튼 클릭 시 toast 로 안내.
             disabled 자체는 시각적으로 dim 처리해 빈 상태를 명확히 표시. */}
       </div>

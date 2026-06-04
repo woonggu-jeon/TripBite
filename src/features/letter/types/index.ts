@@ -45,4 +45,9 @@ export type SendLetterRequest = {
     latitude?: number;
     longitude?: number;
   };
+  /**
+   * 익명 발송 — true 면 서버가 author.nickname 을 가리고 "익명의 여행자" 처리.
+   * 위치 정보는 그대로 전송 (지역만 노출, 닉네임만 가림).
+   */
+  isAnonymous?: boolean;
 };

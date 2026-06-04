@@ -153,30 +153,35 @@ export function TravelTypeResult() {
       )}
 
       <div className={styles.actions}>
+        <div className={styles.actionsRow}>
+          <Button
+            variant="secondary"
+            fullWidth
+            onClick={() => handleShare(result)}
+            leadingIcon={<Share2 size={16} aria-hidden />}
+          >
+            {t('share')}
+          </Button>
+          <Button
+            variant="ghost"
+            fullWidth
+            onClick={() => {
+              haptic.tap();
+              router.replace('/quiz');
+            }}
+            leadingIcon={<RotateCcw size={16} aria-hidden />}
+          >
+            {t('retake')}
+          </Button>
+        </div>
         <Button
           variant="primary"
+          fullWidth
           onClick={() => handleApply(result)}
           loading={applyMutation.isPending}
           leadingIcon={<BadgeCheck size={16} aria-hidden />}
         >
           {t('apply')}
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={() => handleShare(result)}
-          leadingIcon={<Share2 size={16} aria-hidden />}
-        >
-          {t('share')}
-        </Button>
-        <Button
-          variant="ghost"
-          onClick={() => {
-            haptic.tap();
-            router.replace('/quiz');
-          }}
-          leadingIcon={<RotateCcw size={16} aria-hidden />}
-        >
-          {t('retake')}
         </Button>
       </div>
     </div>

@@ -168,6 +168,13 @@ export function TournamentPlayClient() {
     setPhase('tournamentSize');
   };
 
+  // map phase 의 "다시하기" — 같은 query key 로 새 fetch 강제.
+  // mock 은 매 호출마다 Fisher-Yates 셔플 → 새 시군 조합으로 pool 갱신.
+  // 실 BE 도 /destinations/random 응답이 매번 다른 random N개 보장.
+  const handleReshuffle = () => {
+    void refetch();
+  };
+
   const handleStartBracket = () => {
     if (!pendingSize) return;
     setTournamentSize(pendingSize); // store.config.tournamentSize 갱신 (API 호출용)
@@ -224,14 +231,25 @@ export function TournamentPlayClient() {
                 <p className={styles.counter}>
                   {t('mapSummary', { destinations: N })}
                 </p>
-                <Button
-                  variant="primary"
-                  size="lg"
-                  fullWidth
-                  onClick={handleMapNext}
-                >
-                  {t('next')}
-                </Button>
+                <div className={styles.mapActions}>
+                  <Button
+                    variant="secondary"
+                    size="lg"
+                    fullWidth
+                    onClick={handleReshuffle}
+                    loading={isLoading}
+                  >
+                    {t('reshuffle')}
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    fullWidth
+                    onClick={handleMapNext}
+                  >
+                    {t('next')}
+                  </Button>
+                </div>
               </div>
             </>
           )}

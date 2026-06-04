@@ -318,14 +318,19 @@ export const handlers = [
     const body = (await request.json().catch(() => ({}))) as {
       body?: string;
       location?: { label?: string };
+      isAnonymous?: boolean;
     };
     const id = `letter-new-${Date.now()}`;
     const now = new Date().toISOString();
+    // 실 BE 도 동일 정책: isAnonymous=true 면 author.nickname 을 "익명의 여행자"
+    // 로 마스킹, 위치는 그대로 노출. 닉네임 정상이면 user 의 닉네임을 사용
+    // (mock 은 단일 사용자라 임시 '도장이' 사용).
+    const nickname = body.isAnonymous ? '익명의 여행자' : '도장이';
     const letter = {
       id,
       body: body.body ?? '',
       author: {
-        nickname: '익명의 여행자',
+        nickname,
         location: body.location?.label ?? '익명 위치',
       },
       arrivedAt: now,

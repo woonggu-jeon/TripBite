@@ -19,6 +19,8 @@ export const letterSchema = z.object({
     .refine(textGuards.noControl, 'invalidChar')
     .refine(textGuards.noZeroWidth, 'invalidChar')
     .refine(textGuards.noHtml, 'invalidChar'),
+  /** 익명 발송 — true 면 받는 쪽이 닉네임 못 봄 (서버가 author.nickname 가림) */
+  isAnonymous: z.boolean().default(false),
 });
 
 export type LetterFormValues = z.infer<typeof letterSchema>;
