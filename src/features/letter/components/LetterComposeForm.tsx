@@ -97,7 +97,7 @@ export function LetterComposeForm() {
         return;
       }
       haptic.success();
-      await send({
+      const created = await send({
         ...values,
         location: {
           label: resolved.label,
@@ -109,9 +109,14 @@ export function LetterComposeForm() {
       setLastSent({
         body: values.body,
         location: { label: resolved.label, regionCode: resolved.regionCode },
-        sentAt: new Date().toISOString(),
+        sentAt: created?.createdAt ?? new Date().toISOString(),
       });
-      router.push('/letter/sent');
+      // 서버가 letter id 반환 시 deep-link 로 push — 새로고침/공유 가능.
+      router.push(
+        created?.id
+          ? `/letter/sent?id=${encodeURIComponent(created.id)}`
+          : '/letter/sent',
+      );
     },
     // invalid submit — 인라인 에러 대신 toast 로 안내. 첫 에러 메시지만 표시.
     (formErrors) => {

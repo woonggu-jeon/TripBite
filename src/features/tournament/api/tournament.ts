@@ -6,6 +6,7 @@ import type {
   DestinationDetail,
   SavedTournament,
   TournamentConfig,
+  TournamentRecord,
 } from '@/features/tournament/types';
 
 /**
@@ -62,8 +63,24 @@ export const tournamentApi = {
     return res.data;
   },
 
-  recordResult: async (winnerId: string) => {
-    await api.post('/tournaments', { winnerId });
+  /**
+   * 토너먼트 결과 기록 — Play 종료 시 fire-and-forget. 응답으로 record id 받음.
+   * deep-link / result 페이지 재진입 시 이 id 로 GET 가능.
+   */
+  recordResult: async (input: {
+    winnerId: string;
+    runnerUpId: string | null;
+    matchesPlayed: number;
+    tournamentSize: number;
+  }): Promise<TournamentRecord> => {
+    const res = await api.post<TournamentRecord>('/tournaments', input);
+    return res.data;
+  },
+
+  /** Deep-link 진입 (`/tournament/result?id=...`) 시 record 복원. */
+  getRecord: async (id: string): Promise<TournamentRecord> => {
+    const res = await api.get<TournamentRecord>(`/tournaments/${id}`);
+    return res.data;
   },
 
   saveToMypage: async (winnerId: string): Promise<SavedTournament> => {

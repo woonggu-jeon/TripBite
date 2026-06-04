@@ -129,3 +129,18 @@ export type SavedTournament = {
   meetChance: number; // 0~100
   savedAt: string; // ISO
 };
+
+/**
+ * 토너먼트 기록 — `POST /tournaments` 응답 / `GET /tournaments/:id` 응답.
+ *
+ * 한 사용자의 한 회 토너먼트 결과 메타. mypage 의 토너먼트 기록 + result deep-link
+ * (`/tournament/result?id=`) 양쪽에서 사용.
+ */
+export type TournamentRecord = {
+  id: string;
+  winner: Destination;
+  runnerUp: Destination | null;
+  matchesPlayed: number;
+  tournamentSize: number;
+  completedAt: string; // ISO
+};

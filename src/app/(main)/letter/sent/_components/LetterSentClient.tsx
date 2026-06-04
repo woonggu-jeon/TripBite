@@ -1,8 +1,9 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Check, MailOpen } from 'lucide-react';
+import { useLetter } from '@/features/letter/hooks/use-letters';
 import { useLetterStore } from '@/features/letter/store/letter-store';
 import { Button } from '@/components/ui';
 import styles from './LetterSentClient.module.scss';
@@ -78,11 +79,42 @@ function formatKoreanDate(iso: string): string {
 
 export function LetterSentClient() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const letterId = searchParams.get('id');
   const t = useTranslations('letter.sent');
   const tAuthor = useTranslations('letter.author');
   const lastSent = useLetterStore((s) => s.lastSent);
 
-  if (!lastSent) {
+  // ?id= deep-link 우선 — 새로고침 / 공유 진입 대응. 없으면 store fallback.
+  const letterQuery = useLetter(letterId ?? '');
+  const enabled = !!letterId;
+  const serverLetter = enabled ? letterQuery.data : undefined;
+
+  // 통합 source — server 우선, store fallback.
+  const view: { body: string; sentAt: string; location: string } | null =
+    serverLetter
+      ? {
+          body: serverLetter.body,
+          sentAt: serverLetter.createdAt,
+          location: serverLetter.author.location ?? '익명 위치',
+        }
+      : lastSent
+        ? {
+            body: lastSent.body,
+            sentAt: lastSent.sentAt,
+            location: lastSent.location?.label ?? '익명 위치',
+          }
+        : null;
+
+  if (enabled && letterQuery.isLoading && !lastSent) {
+    return (
+      <div className={styles.empty}>
+        <p>{t('noticeBody')}</p>
+      </div>
+    );
+  }
+
+  if (!view) {
     return (
       <div className={styles.empty}>
         <p>{t('empty')}</p>
@@ -96,11 +128,11 @@ export function LetterSentClient() {
     );
   }
 
-  const seed = hashString(`${lastSent.body}|${lastSent.sentAt}`);
+  const seed = hashString(`${view.body}|${view.sentAt}`);
   const recipient = NICKNAMES[seed % NICKNAMES.length] ?? '봄바람';
   // 30~120분 사이 deterministic
   const arrivalMinutes = 30 + (seed % 91);
-  const senderLocation = lastSent.location?.label ?? '익명 위치';
+  const senderLocation = view.location;
 
   const handleAgain = () => router.replace('/letter/compose');
   const handleHome = () => router.replace('/');
@@ -137,9 +169,9 @@ export function LetterSentClient() {
 
         {/* Message — 5칸 박스 + 좌측 하단 날짜 */}
         <section className={styles.message}>
-          <div className={styles.pinBoxes} aria-label={lastSent.body}>
+          <div className={styles.pinBoxes} aria-label={view.body}>
             {Array.from({ length: 5 }).map((_, i) => {
-              const ch = Array.from(lastSent.body)[i] ?? '';
+              const ch = Array.from(view.body)[i] ?? '';
               return (
                 <div
                   key={i}
@@ -150,7 +182,7 @@ export function LetterSentClient() {
               );
             })}
           </div>
-          <p className={styles.date}>{formatKoreanDate(lastSent.sentAt)}</p>
+          <p className={styles.date}>{formatKoreanDate(view.sentAt)}</p>
         </section>
 
         {/* To — 2줄 + 전송완료 배지 */}

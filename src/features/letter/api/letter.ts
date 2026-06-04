@@ -45,8 +45,14 @@ async function fetchLetterPage(
  *   DELETE /letters/:id             — 편지 삭제 (수신자 권한)
  */
 export const letterApi = {
-  send: async (data: SendLetterRequest) => {
-    await api.post('/letters', data);
+  // POST 응답으로 Letter 받음 → ?id= deep-link / sent 페이지 재진입 가능.
+  send: async (data: SendLetterRequest): Promise<Letter> => {
+    const res = await api.post<unknown>('/letters', data);
+    return safeParseResponse(
+      letterDetailSchema,
+      res.data,
+      'POST /letters',
+    ) as Letter;
   },
 
   listReceived: (cursor = 0) => fetchLetterPage('/letters/received', cursor),

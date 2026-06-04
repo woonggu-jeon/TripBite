@@ -18,6 +18,7 @@ export const tournamentKeys = {
     [...tournamentKeys.all, 'candidates', config] as const,
   saved: () => [...tournamentKeys.all, 'saved'] as const,
   history: () => [...tournamentKeys.all, 'history'] as const,
+  record: (id: string) => [...tournamentKeys.all, 'record', id] as const,
   destinationDetail: (id: string) =>
     [...tournamentKeys.all, 'destination', id] as const,
   destinationRelated: (id: string) =>
@@ -52,6 +53,36 @@ export function useSavedTournaments() {
     queryKey: tournamentKeys.saved(),
     queryFn: tournamentApi.listSaved,
     ...CACHE.user, // 본인 저장 목록
+  });
+}
+
+/**
+ * 토너먼트 결과 기록 — Play 종료 시 fire-and-forget mutation.
+ * 응답 record 는 store / URL ?id= 에 사용 가능.
+ *
+ * 실패해도 결과 화면 진입 자체를 막지 않음 (silent fail). retry 정책 없음.
+ */
+export function useRecordTournament() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: tournamentApi.recordResult,
+    onSuccess: (record) => {
+      qc.setQueryData(tournamentKeys.record(record.id), record);
+      qc.invalidateQueries({ queryKey: tournamentKeys.history() });
+    },
+  });
+}
+
+/**
+ * Deep-link 진입 시 record 조회 — `/tournament/result?id=...`.
+ * id 없으면 disabled.
+ */
+export function useTournamentRecord(id: string | null | undefined) {
+  return useQuery({
+    queryKey: id ? tournamentKeys.record(id) : ['tournament', 'record', 'idle'],
+    queryFn: () => tournamentApi.getRecord(id!),
+    enabled: !!id,
+    ...CACHE.slow,
   });
 }
 

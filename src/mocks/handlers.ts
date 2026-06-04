@@ -83,6 +83,22 @@ let onboardedState = false;
 let mockSignedIn = true;
 
 /**
+ * 토너먼트 기록 인메모리 store — `POST /tournaments` 가 채우고
+ * `GET /tournaments/:id` 가 읽음. SW 재기동 시 휘발 (mock 한정).
+ */
+const tournamentRecords = new Map<
+  string,
+  {
+    id: string;
+    winner: (typeof destinationSeeds)[number];
+    runnerUp: (typeof destinationSeeds)[number] | null;
+    matchesPlayed: number;
+    tournamentSize: number;
+    completedAt: string;
+  }
+>();
+
+/**
  * 여행 유형 테스트 — 사용자의 저장된 결과(mutable). submit 시 갱신.
  * dev 서버 재시작 시 null 로 리셋.
  */
@@ -271,9 +287,36 @@ export const handlers = [
   http.get(`${apiUrl}/weather/current`, () => HttpResponse.json(mockWeather)),
 
   // ===== Letters ===== (모두 로그인 필요)
-  http.post(`${apiUrl}/letters`, () =>
-    mockSignedIn ? new HttpResponse(null, { status: 201 }) : unauthorized(),
-  ),
+  // POST 응답으로 Letter 객체 반환 — /letter/sent?id= deep-link 가능하게.
+  http.post(`${apiUrl}/letters`, async ({ request }) => {
+    if (!mockSignedIn) return unauthorized();
+    const body = (await request.json().catch(() => ({}))) as {
+      body?: string;
+      location?: { label?: string };
+    };
+    const id = `letter-new-${Date.now()}`;
+    const now = new Date().toISOString();
+    const letter = {
+      id,
+      body: body.body ?? '',
+      author: {
+        nickname: '익명의 여행자',
+        location: body.location?.label ?? '익명 위치',
+      },
+      arrivedAt: now,
+      createdAt: now,
+      isMine: true,
+      liked: false,
+      saved: false,
+      likeCount: 0,
+    };
+    // /letters/:id GET 이 deep-link 진입 시 이 letter 를 찾도록 letterSeeds 에 prepend.
+    letterSeeds.unshift(letter);
+    return new HttpResponse(JSON.stringify(letter), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }),
   // 편지 목록 — 모두 cursor 기반 페이지네이션 통일
   ...['received', 'sent', 'liked', 'saved'].map((kind) =>
     http.get(`${apiUrl}/letters/${kind}`, ({ request }) => {
@@ -497,6 +540,41 @@ export const handlers = [
       ? HttpResponse.json({ items: tournamentHistorySeeds, nextCursor: null })
       : unauthorized(),
   ),
+
+  // 토너먼트 기록 — Play 종료 시 fire-and-forget. record id 반환.
+  // 인메모리 (`tournamentRecords`) 에 저장 → GET /tournaments/:id 로 deep-link 복원.
+  http.post(`${apiUrl}/tournaments`, async ({ request }) => {
+    const body = (await request.json()) as {
+      winnerId: string;
+      runnerUpId: string | null;
+      matchesPlayed: number;
+      tournamentSize: number;
+    };
+    const winner = destinationSeeds.find((d) => d.id === body.winnerId);
+    if (!winner) return new HttpResponse(null, { status: 404 });
+    const runnerUp = body.runnerUpId
+      ? (destinationSeeds.find((d) => d.id === body.runnerUpId) ?? null)
+      : null;
+    const record = {
+      id: `tr-${Date.now()}`,
+      winner,
+      runnerUp,
+      matchesPlayed: body.matchesPlayed,
+      tournamentSize: body.tournamentSize,
+      completedAt: new Date().toISOString(),
+    };
+    tournamentRecords.set(record.id, record);
+    return HttpResponse.json(record);
+  }),
+
+  // Deep-link 진입 시 record 조회.
+  http.get(`${apiUrl}/tournaments/:id`, ({ params }) => {
+    const id = String(params.id);
+    const record = tournamentRecords.get(id);
+    if (!record) return new HttpResponse(null, { status: 404 });
+    return HttpResponse.json(record);
+  }),
+
   // 우승 여행지를 마이페이지에 저장 (인증 필요)
   http.post(`${apiUrl}/mypage/tournaments`, async ({ request }) => {
     if (!mockSignedIn) return unauthorized();

@@ -14,7 +14,10 @@ import type {
   TournamentCount,
 } from '@/features/tournament/types';
 import { useTournamentStore } from '@/features/tournament/store/tournament-store';
-import { useTournamentCandidates } from '@/features/tournament/hooks/use-tournament';
+import {
+  useRecordTournament,
+  useTournamentCandidates,
+} from '@/features/tournament/hooks/use-tournament';
 import { Button } from '@/components/ui';
 import styles from './TournamentPlayClient.module.scss';
 
@@ -66,6 +69,7 @@ export function TournamentPlayClient() {
   const config = useTournamentStore((s) => s.config);
   const setTournamentSize = useTournamentStore((s) => s.setTournamentSize);
   const setBracketResult = useTournamentStore((s) => s.setBracketResult);
+  const record_ = useRecordTournament();
 
   const [phase, setPhase] = useState<Phase>('intro');
   const [pendingSize, setPendingSize] = useState<TournamentCount | null>(null);
@@ -88,18 +92,39 @@ export function TournamentPlayClient() {
     return () => window.clearTimeout(id);
   }, [config, phase]);
 
-  // celebration → result 자동 이동
+  // celebration → result 자동 이동.
+  // - bracket 종료 → record mutation (fire-and-forget) → record.id 받아 ?id= 로 전달.
+  //   실패해도 store 만으로 result 페이지 동작 가능 — silent fail.
   useEffect(() => {
     if (phase !== 'celebration' || !pendingResult) return;
     const reduced =
       typeof window !== 'undefined' &&
       window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     const delay = reduced ? 400 : CELEBRATION_MS;
-    const id = window.setTimeout(() => {
+    const id = window.setTimeout(async () => {
       setBracketResult(pendingResult);
-      router.replace('/tournament/result');
+      // POST /tournaments — record id 받아 deep-link 가능하게 URL 에 박음.
+      // 실패 시 id 없이 그냥 store-only result 페이지 이동.
+      let recordId: string | undefined;
+      try {
+        const record = await record_.mutateAsync({
+          winnerId: pendingResult.winner.id,
+          runnerUpId: pendingResult.runnerUp?.id ?? null,
+          matchesPlayed: pendingResult.matchesPlayed,
+          tournamentSize: config?.tournamentSize ?? matchupSize,
+        });
+        recordId = record.id;
+      } catch {
+        /* silent — store 만으로 result 진입 */
+      }
+      router.replace(
+        recordId
+          ? `/tournament/result?id=${encodeURIComponent(recordId)}`
+          : '/tournament/result',
+      );
     }, delay);
     return () => window.clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, pendingResult, setBracketResult, router]);
 
   // 시군별 dedup → 여행지 갯수(N) 만큼 노출.
