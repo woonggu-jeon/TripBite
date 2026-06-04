@@ -29,6 +29,8 @@ export type ShareResult =
   | 'shared'
   /** Clipboard 로 URL 복사 성공 — 호출부가 toast "복사되었어요" 표시 */
   | 'copied'
+  /** Desktop Chrome/Edge: 이미지 blob 자체 clipboard 복사 (Ctrl+V 로 채팅 첨부) */
+  | 'copied-image'
   /** Web Share API 미지원 환경에서 이미지 파일 다운로드로 fallback */
   | 'downloaded'
   /** Desktop 미지원 환경에서 URL clipboard copy + 이미지 다운로드 동시 (둘 다 성공) */
@@ -150,11 +152,28 @@ export async function shareWithImage(
     }
   }
 
-  // 2) Desktop fallback — OG image URL clipboard copy + 이미지 다운로드 동시.
-  //    file share 미지원 환경 (Desktop Chrome/Edge/Firefox 등) 에서 URL 만 복사하면
-  //    이미지 자체를 사용자가 못 받고, 다운로드만 하면 받는 쪽에 보낼 링크가 없다.
-  //    둘 다 실행 — 사용자가 채팅에 URL 붙여넣어도 카톡/슬랙 미리보기 자동 노출되고,
-  //    별도로 첨부할 PNG 도 손에 있다.
+  // 2) Desktop Chrome/Edge — clipboard 에 image blob 자체 복사 (Ctrl+V 로 채팅 첨부).
+  //    Firefox/Safari 는 ClipboardItem 미지원 또는 image/png MIME 미허용 → catch
+  //    → 3) 다운로드 + URL 복사 fallback 으로 진행.
+  if (
+    typeof ClipboardItem !== 'undefined' &&
+    typeof navigator.clipboard?.write === 'function' &&
+    window.isSecureContext
+  ) {
+    try {
+      const mime = blob.type || 'image/png';
+      const item = new ClipboardItem({ [mime]: blob });
+      await navigator.clipboard.write([item]);
+      return 'copied-image';
+    } catch {
+      // 사용자 제스처 없음 / MIME 미허용 / Firefox 등 → 다운로드 fallback
+    }
+  }
+
+  // 3) Desktop 폴백 — OG image URL clipboard copy + 이미지 다운로드 동시.
+  //    image clipboard 도 안 되는 환경 (Firefox 등) 에서 URL 만 복사하면 이미지를
+  //    사용자가 못 받고, 다운로드만 하면 받는 쪽에 보낼 링크가 없다.
+  //    둘 다 실행 — 사용자가 손에 PNG, clipboard 에 URL.
   const absoluteUrl = toAbsoluteUrl(input.imageUrl);
   let copied = false;
   try {

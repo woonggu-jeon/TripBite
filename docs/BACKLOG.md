@@ -296,5 +296,5 @@ Projects (6): `desktop-windows` / `desktop-mac` / `mobile-chrome-aos` / `mobile-
 3. **mock 환경 middleware skip** — `USE_MSW=true` 시 모든 페이지 접근 가능. 운영은 그대로.
 4. **6 플랫폼 E2E + 48 visual baseline** — 레이아웃/CSS 깨짐 자동 검출.
 5. **핵심 BE 작업**: `POST /tournaments` + `?id=` deep-link — 3 화면 (play/result/sent) 이 store-only 라 reload 시 데이터 손실.
-6. **이미지 공유** — 모바일 file share + Desktop URL+download fallback 자동 분기. 카톡 채팅 첨부 정상.
+6. **이미지 공유** — 모바일 `navigator.share({files})` → Desktop Chrome/Edge `ClipboardItem` 이미지 blob 복사 (Ctrl+V 채팅 첨부) → Firefox/Safari URL+다운로드 fallback 의 3단 분기. 카톡 채팅 첨부 정상.
 7. **mock 시드 풍부화** — 저장 우승지 7개, 토너먼트 기록 15개, 도장책은 winnerRegion union 으로 derive.

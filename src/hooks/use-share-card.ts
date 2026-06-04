@@ -24,7 +24,9 @@ export function useShareCard() {
     filename: string;
   }) {
     const status = await shareWithImage(params);
-    if (status === 'copied-and-downloaded') {
+    if (status === 'copied-image') {
+      toast.success(t('shareImageCopied'));
+    } else if (status === 'copied-and-downloaded') {
       toast.success(t('shareCopiedAndDownloaded'));
     } else if (status === 'copied') toast.success(t('shareLinkCopied'));
     else if (status === 'downloaded') toast.success(t('shareDownloaded'));

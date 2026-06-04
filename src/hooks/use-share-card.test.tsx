@@ -32,6 +32,14 @@ describe('useShareCard', () => {
     expect(toast.error).not.toHaveBeenCalled();
   });
 
+  it("status='copied-image' → toast.success(shareImageCopied)", async () => {
+    vi.mocked(shareWithImage).mockResolvedValueOnce('copied-image');
+    const { result } = renderHookWithProviders(() => useShareCard());
+    await result.current({ imageUrl: '/api/og/x', filename: 'x.png' });
+    expect(toast.success).toHaveBeenCalledTimes(1);
+    expect(toast.error).not.toHaveBeenCalled();
+  });
+
   it("status='copied-and-downloaded' → toast.success", async () => {
     vi.mocked(shareWithImage).mockResolvedValueOnce('copied-and-downloaded');
     const { result } = renderHookWithProviders(() => useShareCard());
