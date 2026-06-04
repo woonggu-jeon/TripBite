@@ -116,6 +116,15 @@ export function ChungbukMap({
     () => placeAll(destinations),
     [destinations],
   );
+
+  // 같은 element 에 CSS animation 이 걸려 있으면 좌표/delay 가 inline style 로 바뀌어도
+  // animation 자체는 reset 되지 않음 — 다시하기 시 "내려오는 효과" 가 보이지 않음.
+  // destinations id 시퀀스를 nonce 로 묶어 overlay 컨테이너 key 갱신 → 자식 button/span
+  // 들이 unmount/remount → animation 처음부터 다시 재생.
+  const placedNonce = useMemo(
+    () => destinations.map((d) => d.id).join('|'),
+    [destinations],
+  );
   const [svg, setSvg] = useState<string | null>(null);
   const svgWrapRef = useRef<HTMLDivElement>(null);
   const glyph = getGlyph(theme);
@@ -212,7 +221,7 @@ export function ChungbukMap({
         aria-label="충청북도 지도"
       />
 
-      <div className={styles.overlay}>
+      <div key={placedNonce} className={styles.overlay}>
         {placed.map((p) => {
           const isSelected = !!selected?.has(p.id);
           const reached =
