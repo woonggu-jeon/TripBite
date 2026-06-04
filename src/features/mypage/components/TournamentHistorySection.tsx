@@ -6,14 +6,8 @@ import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
 import { useTournamentHistory } from '@/features/tournament/hooks/use-tournament';
+import { seasonEmoji } from '@/constants/emoji-map';
 import styles from './TournamentHistorySection.module.scss';
-
-const SEASON_EMOJI: Record<string, string> = {
-  spring: '🌸',
-  summer: '☀️',
-  autumn: '🍂',
-  winter: '❄️',
-};
 
 const CATEGORY_KO: Record<string, string> = {
   local: '지역',
@@ -76,7 +70,7 @@ export function TournamentHistorySection() {
   return (
     <ul className={styles.list}>
       {items.slice(0, 10).map((it) => {
-        const seasonEmoji = SEASON_EMOJI[it.theme] ?? '🏆';
+        const themeEmoji = seasonEmoji(it.theme);
         const categoryLabel = CATEGORY_KO[it.category] ?? it.category;
         const date = new Date(it.completedAt);
         const dateLabel = `${date.getMonth() + 1}월 ${date.getDate()}일`;
@@ -84,7 +78,7 @@ export function TournamentHistorySection() {
         return (
           <li key={it.id} className={styles.row}>
             <span className={styles.emoji} aria-hidden>
-              {seasonEmoji}
+              {themeEmoji}
             </span>
             <div className={styles.body}>
               <p className={styles.title}>

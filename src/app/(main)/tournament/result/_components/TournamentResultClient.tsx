@@ -14,8 +14,8 @@ import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetail
 import { TournamentStats } from '@/features/tournament/components/TournamentStats';
 import { LuckyColor } from '@/features/tournament/components/LuckyColor';
 import { LuckyLadder } from '@/features/tournament/components/LuckyLadder';
-import { shareWithImage } from '@/lib/share';
 import { toast } from '@/lib/toast';
+import { useShareCard } from '@/hooks/use-share-card';
 import { useRequireAuth } from '@/hooks/use-require-auth';
 import styles from './TournamentResultClient.module.scss';
 
@@ -69,6 +69,7 @@ export function TournamentResultClient() {
   const reset = useTournamentStore((s) => s.reset);
   const save = useSaveTournament();
   const requireAuth = useRequireAuth();
+  const shareCard = useShareCard();
   // 우승자 풍부 정보 — winner.id 기준 별도 fetch.
   // winner/stats 는 store 만으로 즉시 렌더 → 상세는 비동기로 채워짐 (렌더 속도 우선).
   // [FUTURE BE] deep-link 진입 시 winner 자체가 없을 수 있음 →
@@ -107,24 +108,17 @@ export function TournamentResultClient() {
    * 텍스트만 클립보드로 분리 처리하고 file 첨부 흐름이 끊긴다. file 만 보내야
    * OS 가 채팅 채널 선택 → 이미지 첨부의 정상 분기로 진행.
    */
-  const handleShare = async () => {
+  const handleShare = () => {
     const params = new URLSearchParams({
       winner: winner.name,
       region: winner.region,
       category: winner.category,
       ...(matchesPlayed > 0 ? { matches: String(matchesPlayed) } : {}),
     });
-    const imageUrl = `/api/og/tournament?${params.toString()}`;
-    const result = await shareWithImage({
-      imageUrl,
+    return shareCard({
+      imageUrl: `/api/og/tournament?${params.toString()}`,
       filename: `tripbite-tournament-${winner.id}.png`,
     });
-    if (result === 'copied-and-downloaded') {
-      toast.success(tCommon('shareCopiedAndDownloaded'));
-    } else if (result === 'copied') toast.success(tCommon('shareLinkCopied'));
-    else if (result === 'downloaded') toast.success(tCommon('shareDownloaded'));
-    else if (result === 'failed') toast.error(tCommon('shareFailed'));
-    // 'shared' / 'cancelled' 는 silent
   };
 
   const saveLabel = save.isPending

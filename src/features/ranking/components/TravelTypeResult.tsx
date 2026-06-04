@@ -12,17 +12,11 @@ import {
   useSetMyTravelType,
 } from '@/features/ranking/hooks/use-ranking';
 import type { TravelType } from '@/features/ranking/types';
-import { shareWithImage } from '@/lib/share';
 import { toast } from '@/lib/toast';
+import { useShareCard } from '@/hooks/use-share-card';
 import { useRequireAuth } from '@/hooks/use-require-auth';
+import { categoryEmoji } from '@/constants/emoji-map';
 import styles from './TravelTypeResult.module.scss';
-
-const CATEGORY_EMOJI = {
-  local: '🏘️',
-  festival: '🎪',
-  attraction: '📍',
-  experience: '🎨',
-} as const;
 
 /**
  * 여행 유형 결과 화면.
@@ -43,11 +37,11 @@ const CATEGORY_EMOJI = {
  */
 export function TravelTypeResult() {
   const t = useTranslations('travelType.result');
-  const tCommon = useTranslations('common');
   const router = useRouter();
   const { data, isLoading } = useMyTravelType();
   const applyMutation = useSetMyTravelType();
   const requireAuth = useRequireAuth();
+  const shareCard = useShareCard();
 
   const handleApply = (result: TravelType) => {
     haptic.tap();
@@ -63,23 +57,17 @@ export function TravelTypeResult() {
 
   // file 단독 — title/text 동반 시 일부 share target (카카오톡 등) 이 텍스트만
   // 클립보드로 분리 처리하고 file 첨부 흐름이 끊긴다.
-  const handleShare = async (result: TravelType) => {
+  const handleShare = (result: TravelType) => {
     haptic.tap();
     const params = new URLSearchParams({
       type: result.code,
       name: result.title,
       ...(result.description ? { tagline: result.description } : {}),
     });
-    const imageUrl = `/api/og/quiz?${params.toString()}`;
-    const status = await shareWithImage({
-      imageUrl,
+    return shareCard({
+      imageUrl: `/api/og/quiz?${params.toString()}`,
       filename: `tripbite-traveltype-${result.code}.png`,
     });
-    if (status === 'copied-and-downloaded') {
-      toast.success(tCommon('shareCopiedAndDownloaded'));
-    } else if (status === 'copied') toast.success(tCommon('shareLinkCopied'));
-    else if (status === 'downloaded') toast.success(tCommon('shareDownloaded'));
-    else if (status === 'failed') toast.error(tCommon('shareFailed'));
   };
 
   if (isLoading) {
@@ -151,7 +139,7 @@ export function TravelTypeResult() {
               return (
                 <li key={d.id} className={styles.recommendItem}>
                   <span className={styles.recEmoji} aria-hidden>
-                    {CATEGORY_EMOJI[d.category]}
+                    {categoryEmoji(d.category)}
                   </span>
                   <div className={styles.recText}>
                     <p className={styles.recName}>{d.name}</p>

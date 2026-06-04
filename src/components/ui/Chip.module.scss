@@ -16,6 +16,12 @@
 }
 
 // sizes
+.s-xs {
+  font-size: 10px;
+  padding: 1px 6px;
+  letter-spacing: 0.5px;
+  font-weight: var(--font-weight-extrabold);
+}
 .s-sm {
   font-size: var(--font-eyebrow); // 11px
   padding: 2px 8px;

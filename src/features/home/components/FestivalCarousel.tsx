@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Carousel } from '@/features/carousel';
 import { Skeleton } from '@/components/feedback/Skeleton';
@@ -8,6 +7,7 @@ import { DestinationCard } from '@/components/ui';
 import { useOngoingFestivals } from '@/features/region';
 import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import { toneFor } from '@/constants/region-tone';
+import { useResponsiveSlidesPerView } from '@/hooks/use-responsive-slides-per-view';
 import type { RegionContent } from '@/features/region/types';
 
 /**
@@ -41,25 +41,6 @@ function regionLabelFor(code: RegionCode): string {
 function periodCaption(content: RegionContent): string | undefined {
   if (!content.eventStart && !content.eventEnd) return undefined;
   return `${content.eventStart ?? ''}${content.eventEnd ? ` — ${content.eventEnd}` : ''}`;
-}
-
-function pickSlidesPerView(w: number) {
-  return w <= 360 ? 1.8 : w <= 480 ? 2.2 : 3;
-}
-
-function useResponsiveSlidesPerView() {
-  const [v, setV] = useState(() =>
-    typeof window === 'undefined' ? 2.2 : pickSlidesPerView(window.innerWidth),
-  );
-  useEffect(() => {
-    const onResize = () => {
-      const next = pickSlidesPerView(window.innerWidth);
-      setV((prev) => (prev === next ? prev : next));
-    };
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, []);
-  return v;
 }
 
 export function FestivalCarousel() {

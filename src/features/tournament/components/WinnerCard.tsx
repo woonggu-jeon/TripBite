@@ -3,15 +3,9 @@
 import { useTranslations } from 'next-intl';
 import { Card, Chip } from '@/components/ui';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
+import { categoryEmoji } from '@/constants/emoji-map';
 import type { Destination } from '@/features/tournament/types';
 import styles from './WinnerCard.module.scss';
-
-const CATEGORY_EMOJI = {
-  local: '🏘️',
-  festival: '🎪',
-  attraction: '📍',
-  experience: '🎨',
-} as const;
 
 /**
  * 토너먼트 우승 여행지 카드.
@@ -40,7 +34,7 @@ export function WinnerCard({ destination }: { destination: Destination }) {
       </div>
       <div className={styles.image} aria-hidden>
         <span className={styles.emoji}>
-          {CATEGORY_EMOJI[destination.category]}
+          {categoryEmoji(destination.category)}
         </span>
       </div>
       <h2 className={styles.name}>{destination.name}</h2>

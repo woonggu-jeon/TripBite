@@ -4,15 +4,9 @@ import Link from 'next/link';
 import { Card, DestinationCard } from '@/components/ui';
 import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import { toneFor } from '@/constants/region-tone';
+import { categoryEmoji, FALLBACK_TROPHY_EMOJI } from '@/constants/emoji-map';
 import type { SavedTournament } from '@/features/tournament/types';
 import styles from './SavedTournamentCard.module.scss';
-
-const CATEGORY_EMOJI: Record<string, string> = {
-  local: '🏘️',
-  festival: '🎪',
-  attraction: '📍',
-  experience: '🎨',
-};
 
 /**
  * 저장된 토너먼트 우승 여행지 카드.
@@ -35,7 +29,10 @@ export function SavedTournamentCard({
     (r) => r.code === saved.destination.region,
   );
   const regionLabel = region?.ko ?? saved.destination.region;
-  const emoji = CATEGORY_EMOJI[saved.destination.category] ?? '🏆';
+  const emoji = categoryEmoji(
+    saved.destination.category,
+    FALLBACK_TROPHY_EMOJI,
+  );
 
   if (layout === 'tile') {
     return (

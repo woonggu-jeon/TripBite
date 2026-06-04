@@ -8,8 +8,7 @@ import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
 import { useStamps } from '@/features/mypage/hooks/use-mypage';
 import { ChungbukStampMap } from '@/features/region/components/ChungbukStampMap';
-import { shareWithImage } from '@/lib/share';
-import { toast } from '@/lib/toast';
+import { useShareCard } from '@/hooks/use-share-card';
 import styles from './StampsClient.module.scss';
 
 /**
@@ -22,8 +21,8 @@ import styles from './StampsClient.module.scss';
  */
 export function StampsClient() {
   const t = useTranslations('mypage.stampBook');
-  const tCommon = useTranslations('common');
   const router = useRouter();
+  const shareCard = useShareCard();
   const { data, isLoading, isError, refetch } = useStamps();
 
   if (isLoading) {
@@ -56,18 +55,11 @@ export function StampsClient() {
   const remaining = Math.max(0, data.total - visitedCount);
   const isMaster = remaining === 0 && data.total > 0;
 
-  const handleShareMaster = async () => {
-    const imageUrl = `/api/og/master?count=${data.total}`;
-    const status = await shareWithImage({
-      imageUrl,
+  const handleShareMaster = () =>
+    shareCard({
+      imageUrl: `/api/og/master?count=${data.total}`,
       filename: 'tripbite-chungbuk-master.png',
     });
-    if (status === 'copied-and-downloaded') {
-      toast.success(tCommon('shareCopiedAndDownloaded'));
-    } else if (status === 'copied') toast.success(tCommon('shareLinkCopied'));
-    else if (status === 'downloaded') toast.success(tCommon('shareDownloaded'));
-    else if (status === 'failed') toast.error(tCommon('shareFailed'));
-  };
 
   return (
     <div className={styles.wrap}>

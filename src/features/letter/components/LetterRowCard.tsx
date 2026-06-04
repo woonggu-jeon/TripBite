@@ -6,7 +6,7 @@ import { Heart } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { haptic } from '@/lib/haptic';
 import { useDebouncedCallback } from '@/hooks/use-debounced-callback';
-import { cardClasses } from '@/components/ui';
+import { cardClasses, Chip } from '@/components/ui';
 import { relativeTimeToken } from '@/lib/relative-time';
 import { useToggleLikeLetter } from '@/features/letter/hooks/use-letters';
 import type { Letter } from '@/features/letter/types';
@@ -105,9 +105,9 @@ export function LetterRowCard({ letter }: { letter: Letter }) {
       <div className={styles.meta}>
         <p className={styles.author}>
           {!letter.isMine && letter.read === false && (
-            <span className={styles.newBadge} aria-label={t('new')}>
+            <Chip variant="solid" size="xs" aria-label={t('new')}>
               NEW
-            </span>
+            </Chip>
           )}
           {letter.author.nickname || t('author.anonymous')}
         </p>

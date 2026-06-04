@@ -4,15 +4,9 @@ import { useTranslations } from 'next-intl';
 import { haptic } from '@/lib/haptic';
 import { cardClasses } from '@/components/ui';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
+import { categoryEmoji } from '@/constants/emoji-map';
 import type { Destination } from '@/features/tournament/types';
 import styles from './MatchupCard.module.scss';
-
-const CATEGORY_EMOJI = {
-  local: '🏘️',
-  festival: '🎪',
-  attraction: '📍',
-  experience: '🎨',
-} as const;
 
 export interface MatchupCardProps {
   destination: Destination;
@@ -56,7 +50,7 @@ export function MatchupCard({
     >
       <div className={styles.image} aria-hidden>
         <span className={styles.emoji}>
-          {CATEGORY_EMOJI[destination.category]}
+          {categoryEmoji(destination.category)}
         </span>
       </div>
       <div className={styles.body}>

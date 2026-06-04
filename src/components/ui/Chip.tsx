@@ -12,6 +12,7 @@ import styles from './Chip.module.scss';
  *   - solid   : primary 채움 (대표 강조)
  *
  * size:
+ *   - xs : 최소형 badge — NEW / HOT 같은 inline 라벨 (10px)
  *   - sm : 작은 chip (#태그용)
  *   - md : 기본
  *
@@ -23,13 +24,14 @@ export type ChipVariant =
   | 'outline'
   | 'subtle'
   | 'solid';
-export type ChipSize = 'sm' | 'md';
+export type ChipSize = 'xs' | 'sm' | 'md';
 
 interface ChipProps {
   variant?: ChipVariant;
   size?: ChipSize;
   pill?: boolean;
   className?: string;
+  'aria-label'?: string;
   children: ReactNode;
 }
 
@@ -38,6 +40,7 @@ export function Chip({
   size = 'md',
   pill = true,
   className,
+  'aria-label': ariaLabel,
   children,
 }: ChipProps) {
   const cls = [
@@ -49,5 +52,9 @@ export function Chip({
   ]
     .filter(Boolean)
     .join(' ');
-  return <span className={cls}>{children}</span>;
+  return (
+    <span className={cls} aria-label={ariaLabel}>
+      {children}
+    </span>
+  );
 }

@@ -9,17 +9,11 @@ import { Button } from '@/components/ui';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { useDestinationDetail } from '@/features/tournament/hooks/use-tournament';
 import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetailPanel';
+import { categoryEmoji } from '@/constants/emoji-map';
 import { DestinationPhotos } from './DestinationPhotos';
 import { DestinationActions } from './DestinationActions';
 import { RelatedDestinations } from './RelatedDestinations';
 import styles from './DestinationDetailClient.module.scss';
-
-const CATEGORY_EMOJI: Record<string, string> = {
-  attraction: '📍',
-  festival: '🎪',
-  experience: '🎨',
-  local: '🏘️',
-};
 
 /**
  * 여행지 상세 client — `useDestinationDetail` 로 fetch 후 풍부한 메타 표시.
@@ -86,7 +80,7 @@ export function DestinationDetailClient({ id }: { id: string }) {
 
   const regionName =
     CHUNGBUK_REGIONS.find((r) => r.code === detail.region)?.ko ?? detail.region;
-  const emoji = CATEGORY_EMOJI[detail.category] ?? '📍';
+  const emoji = categoryEmoji(detail.category);
 
   return (
     <>
