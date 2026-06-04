@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { RegionCode } from '@/constants/regions';
 import { haptic } from '@/lib/haptic';
 import type { Destination, TournamentTheme } from '@/features/tournament/types';
@@ -109,7 +109,13 @@ export function ChungbukMap({
   onReady,
   onRegionClick,
 }: ChungbukMapProps) {
-  const [placed] = useState<Placed[]>(() => placeAll(destinations));
+  // ⚠ useState initializer 로 두면 destinations prop 이 refetch 등으로 바뀌어도
+  // mount 시점 값만 유지돼 시각이 그대로 — 다시하기 버튼이 무동작처럼 보임.
+  // useMemo 로 destinations 변경 시 즉시 재계산.
+  const placed = useMemo<Placed[]>(
+    () => placeAll(destinations),
+    [destinations],
+  );
   const [svg, setSvg] = useState<string | null>(null);
   const svgWrapRef = useRef<HTMLDivElement>(null);
   const glyph = getGlyph(theme);
