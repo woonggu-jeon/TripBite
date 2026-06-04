@@ -154,6 +154,6 @@ test.describe('위치 권한 — home 페이지 진입은 항상 가능', () => 
   test('홈은 위치 권한과 무관 진입', async ({ page }) => {
     await page.goto(HOME);
     await page.waitForLoadState('domcontentloaded');
-    expect(page.url()).toContain('localhost:3000');
+    expect(page.url()).toContain('localhost:3901');
   });
 });

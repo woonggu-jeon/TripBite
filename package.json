@@ -6,9 +6,9 @@
     "node": ">=22 <23"
   },
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --port 3900",
     "build": "next build",
-    "start": "next start",
+    "start": "next start --port 3900",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "format": "prettier --write \"src/**/*.{ts,tsx,scss}\"",

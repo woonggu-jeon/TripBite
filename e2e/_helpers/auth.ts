@@ -18,7 +18,7 @@ export async function injectAuthCookie(context: BrowserContext) {
     {
       name: 'access_token',
       value: MOCK_ACCESS_TOKEN,
-      url: 'http://localhost:3000',
+      url: 'http://localhost:3901',
     },
   ]);
 }
