@@ -58,9 +58,11 @@ export function AccountActionsSection() {
       >
         {isPending ? t('loggingOut') : t('logout')}
       </button>
+      {/* 문의하기 — 미노출 (사용자 요청). 추후 복원 시 주석 해제. 실 메일 주소도 그때 결정.
       <a href="mailto:support@example.com" className={styles.button}>
         {t('contact')}
       </a>
+      */}
       <button
         type="button"
         className={`${styles.button} ${styles.danger}`}

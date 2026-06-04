@@ -6,26 +6,28 @@ import {
   useUserSettings,
   useUpdateNotificationSettings,
 } from '@/features/settings/hooks/use-notification-settings';
-import { usePushNotification } from '@/features/notification/hooks/use-push-notification';
+// 푸시 알림 토글 미노출 (사용자 요청, 재노출 대비 hook 유지).
+// import { usePushNotification } from '@/features/notification/hooks/use-push-notification';
 import { Toggle } from '@/components/forms/Toggle';
 import styles from './SettingsRows.module.scss';
 
 /**
- * 알림 설정 섹션 — 4개 ARIA switch 토글.
+ * 알림 설정 섹션.
  *
- * 푸시 토글:
- *   - on  → enablePush() (브라우저 권한 + subscribe) + 서버 settings 저장
- *   - off → disablePush() + 서버 settings 저장
+ * 현재 노출: 새 편지 도착 / 좋아요 알림 (서버 settings 토글).
+ * 푸시 / 인앱 토글은 미노출 (사용자 요청) — Row 만 주석 처리, 모델/저장은 그대로.
  */
 export function NotificationSettingsSection() {
   const t = useTranslations('settings.notifications');
   const { data: settings } = useUserSettings();
   const { mutate: update } = useUpdateNotificationSettings();
-  const { enable: enablePush, disable: disablePush } = usePushNotification();
+  // 푸시 토글 미노출이므로 hook 호출도 보류 — 재노출 시 주석 해제.
+  // const { enable: enablePush, disable: disablePush } = usePushNotification();
   const n = settings?.notifications;
 
   return (
     <div className={styles.list}>
+      {/* 푸시 알림 — 미노출 (사용자 요청). 추후 복원 시 주석 해제.
       <Row
         label={t('push')}
         hint={t('pushHint')}
@@ -36,12 +38,15 @@ export function NotificationSettingsSection() {
           update({ pushEnabled: next });
         }}
       />
+      */}
+      {/* 인앱 알림 — 미노출 (사용자 요청). 추후 복원 시 주석 해제.
       <Row
         label={t('inApp')}
         hint={t('inAppHint')}
         checked={!!n?.inAppEnabled}
         onChange={(next) => update({ inAppEnabled: next })}
       />
+      */}
       <Row
         label={t('letterReceived')}
         checked={!!n?.letterReceived}

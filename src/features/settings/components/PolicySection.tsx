@@ -23,9 +23,12 @@ export function PolicySection() {
       <Link href="/policy/privacy" className={styles.button}>
         {t('privacy')}
       </Link>
+      {/* 오픈소스 라이센스 — 미노출 (사용자 요청). 추후 복원 시 주석 해제.
+          /policy/licenses 페이지 자체는 유지.
       <Link href="/policy/licenses" className={styles.button}>
         {t('licenses')}
       </Link>
+      */}
     </div>
   );
 }

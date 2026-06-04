@@ -7,7 +7,8 @@ import { NotificationSettingsSection } from '@/features/settings/components/Noti
 import { AccountSettingsSection } from '@/features/settings/components/AccountSettingsSection';
 import { PolicySection } from '@/features/settings/components/PolicySection';
 import { AccountActionsSection } from '@/features/settings/components/AccountActionsSection';
-import { ThemeSection } from '@/features/theme/ThemeSection';
+// 테마 섹션 미노출 (사용자 요청, 재노출 대비 import 유지)
+// import { ThemeSection } from '@/features/theme/ThemeSection';
 import { PageSection } from '@/components/ui';
 import styles from './SettingsClient.module.scss';
 
@@ -31,9 +32,11 @@ export function SettingsClient() {
         <NotificationSettingsSection />
       </PageSection>
 
+      {/* 테마 섹션 — 미노출 (사용자 요청). 추후 복원 시 주석 해제.
       <PageSection title={t('theme.section')}>
         <ThemeSection />
       </PageSection>
+      */}
 
       <PageSection title={t('account.section')}>
         <AccountSettingsSection />
