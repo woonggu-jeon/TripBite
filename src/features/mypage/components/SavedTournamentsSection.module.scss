@@ -1,2 +1,15 @@
 // 가로 Carousel 기반. 별도 list/grid 스타일 불필요 — Carousel 이 layout 담당.
 // (SavedTournamentCard 의 tile 스타일이 카드 표현).
+
+// PageSection action 슬롯 — 타이틀 우측 inline 링크 "전체보기 (N)"
+.viewAll {
+  font-size: var(--font-body-sm);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Trophy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -10,13 +11,14 @@ import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
 import { useSavedTournaments } from '@/features/tournament/hooks/use-tournament';
 import { SavedTournamentCard } from './SavedTournamentCard';
+import styles from './SavedTournamentsSection.module.scss';
 
 /**
  * 저장된 토너먼트 우승 여행지 — 최대 10개 가로 스크롤 카드 (Carousel).
  *
  * 메인의 "지금 열리는 충북 축제" 와 동일한 패턴 — 가로 스와이퍼로 N장 모두 보임.
- * "전체보기" 별도 액션은 없음 — Carousel 이 self-contained.
- * deep-link 진입은 /mypage/saved-tournaments 라우트 유지.
+ * 헤더 우측에 "전체보기 (N)" Link — /mypage/saved-tournaments 상세 페이지 진입점.
+ * (Carousel 자체로도 모두 보이지만, 상세 페이지는 list view 로 더 자세한 정보 제공)
  *
  * 표준 분기: isLoading → Skeleton / isError → EmptyState + retry
  * / data 0 → EmptyState + CTA / data → Carousel.
@@ -98,5 +100,25 @@ export function SavedTournamentsSection() {
       fallbackHeight={200}
       ariaLabel={t('allTitle')}
     />
+  );
+}
+
+/**
+ * PageSection action 슬롯용 — 헤더 우측 "전체보기 (N)" Link.
+ * /mypage/saved-tournaments 상세 페이지 진입점. data 없을 때는 미노출.
+ */
+export function SavedTournamentsViewAll() {
+  const t = useTranslations('mypage.savedTournaments');
+  const { data } = useSavedTournaments();
+  const count = data?.length ?? 0;
+  if (count === 0) return null;
+  return (
+    <Link
+      href="/mypage/saved-tournaments"
+      prefetch={false}
+      className={styles.viewAll}
+    >
+      {t('viewAll', { count })}
+    </Link>
   );
 }
