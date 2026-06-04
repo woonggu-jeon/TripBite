@@ -9,7 +9,7 @@ import {
   SavedTournamentsViewAll,
 } from '@/features/mypage/components/SavedTournamentsSection';
 import { TournamentHistorySection } from '@/features/mypage/components/TournamentHistorySection';
-import { RegionStampMap } from '@/features/region';
+import { StampBookBanner } from '@/features/mypage/components/StampBookBanner';
 import { PageSection } from '@/components/ui';
 import styles from './MyPageClient.module.scss';
 
@@ -18,7 +18,7 @@ import styles from './MyPageClient.module.scss';
  *
  * 컴포넌트 분할 (features/mypage/components):
  *   - <ProfileCard />              닉네임 + 유형 뱃지
- *   - <RegionStampMap />           도장깨기 (features/region 에서 import)
+ *   - <StampBookBanner />          도장책 진입 배너 → /mypage/stamps
  *   - <SavedTournamentsSection />  저장된 우승지 (최대 10)
  *   - <TournamentHistorySection /> 토너먼트 기록 (InfiniteList)
  *
@@ -37,9 +37,9 @@ export function MyPageClient() {
 
       {/* 2) 닉네임 변경은 설정 페이지로 이동됨. */}
 
-      {/* 3) 도장깨기 */}
+      {/* 3) 도장책 — 배너 진입점. 전체 지도는 /mypage/stamps */}
       <PageSection title={t('stampMap')}>
-        <RegionStampMap />
+        <StampBookBanner />
       </PageSection>
 
       {/* 4) 저장된 우승지 — 타이틀 우측 "전체보기 (N)" Link */}

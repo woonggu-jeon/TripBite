@@ -1,0 +1,52 @@
+.wrap {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4);
+}
+
+// 진행 배너 — sage 톤. 마스터 달성 시 stronger.
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-sage-mist);
+  border: 1.5px solid var(--color-sage);
+  border-radius: var(--radius-lg);
+}
+
+.bannerMaster {
+  background: var(--color-sage);
+  border-color: var(--color-sage-strong);
+  color: #fff;
+}
+
+.bannerText {
+  display: grid;
+  gap: 2px;
+}
+
+.bannerTitle {
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-sage-strong);
+  margin: 0;
+  letter-spacing: var(--tracking-snug);
+}
+
+.bannerMaster .bannerTitle {
+  color: var(--color-bg);
+}
+
+.bannerProgress {
+  font-size: var(--font-body-sm);
+  color: var(--color-sage-strong);
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+
+.bannerMaster .bannerProgress {
+  color: var(--color-bg);
+  opacity: 0.92;
+}

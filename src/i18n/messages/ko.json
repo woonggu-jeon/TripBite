@@ -627,6 +627,17 @@
       "retry": "다시 시도",
       "label": "찍은 도장",
       "countAria": "도장 {visited} / 총 {total}"
+    },
+    "stampBook": {
+      "pageTitle": "충북 도장책",
+      "remainingTitle": "충북 마스터까지 {remaining}개 남음",
+      "masterAchieved": "충북 마스터 달성!",
+      "progress": "{visited} / {total}",
+      "shareMaster": "마스터 카드 공유",
+      "error": "도장 정보를 불러오지 못했어요",
+      "retry": "다시 시도",
+      "bannerErrorTitle": "충북 도장책",
+      "bannerErrorHint": "지도 보러 가기"
     }
   },
   "settings": {

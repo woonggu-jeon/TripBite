@@ -1,0 +1,76 @@
+// 마이페이지 도장책 진입 배너. tap → /mypage/stamps.
+.banner {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-sage-mist);
+  border: 1.5px solid var(--color-sage);
+  border-radius: var(--radius-lg);
+  color: var(--color-sage-strong);
+  text-decoration: none;
+  transition:
+    transform var(--motion-fast) ease,
+    box-shadow var(--motion-base) ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      box-shadow: var(--shadow-md);
+    }
+  }
+  &:active {
+    transform: scale(0.99);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--color-sage);
+    outline-offset: 2px;
+  }
+}
+
+.master {
+  background: var(--color-sage);
+  border-color: var(--color-sage-strong);
+  color: var(--color-bg);
+}
+
+.iconBox {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg);
+  color: var(--color-sage-strong);
+  flex-shrink: 0;
+}
+
+.master .iconBox {
+  background: var(--color-sage-strong);
+  color: var(--color-bg);
+}
+
+.body {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.title {
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: var(--tracking-snug);
+  color: inherit;
+}
+
+.progress {
+  font-size: var(--font-body-sm);
+  color: inherit;
+  opacity: 0.85;
+  font-variant-numeric: tabular-nums;
+}
+
+.chevron {
+  color: inherit;
+  opacity: 0.7;
+}

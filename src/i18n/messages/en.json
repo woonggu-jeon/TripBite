@@ -627,6 +627,17 @@
       "retry": "Retry",
       "label": "Stamps",
       "countAria": "{visited} of {total} stamps collected"
+    },
+    "stampBook": {
+      "pageTitle": "Chungbuk stamp book",
+      "remainingTitle": "{remaining} more to Chungbuk Master",
+      "masterAchieved": "Chungbuk Master unlocked!",
+      "progress": "{visited} / {total}",
+      "shareMaster": "Share master card",
+      "error": "Failed to load stamps",
+      "retry": "Retry",
+      "bannerErrorTitle": "Chungbuk stamp book",
+      "bannerErrorHint": "View the map"
     }
   },
   "settings": {

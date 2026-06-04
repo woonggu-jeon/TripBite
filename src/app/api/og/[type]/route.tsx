@@ -97,7 +97,13 @@ export async function GET(
   const { type } = await params;
   const { searchParams } = new URL(request.url);
 
-  const validTypes = ['tournament', 'quiz', 'destination', 'region'] as const;
+  const validTypes = [
+    'tournament',
+    'quiz',
+    'destination',
+    'region',
+    'master',
+  ] as const;
   type OgType = (typeof validTypes)[number];
   if (!(validTypes as readonly string[]).includes(type)) {
     return new Response('Not found', { status: 404 });
@@ -115,6 +121,8 @@ export async function GET(
         return renderDestination(searchParams, fontData);
       case 'region':
         return renderRegion(searchParams, fontData);
+      case 'master':
+        return renderMaster(searchParams, fontData);
     }
   } catch (err) {
     // Satori 가 unsupported CSS / 누락 element 만나면 throw.
@@ -566,6 +574,108 @@ function renderRegion(
         }}
       >
         관광지 · 축제 · 체험 한눈에
+      </div>
+    </div>,
+    makeInit(fontData),
+  );
+}
+
+/**
+ * 충북 마스터 달성 카드 — 11/11 도장 완료 시 공유 카드.
+ *
+ * 디자인: Sage 톤 그라데이션 배경 + 큰 트로피/체크 emoji + "충북 마스터" 큰 텍스트 +
+ *         "충북 11개 시군 모두 정복" 부제 + TripBite 푸터.
+ *
+ * Query:
+ *   - count (optional) — 보통 11. 다른 값 (예: 향후 확장) 대비.
+ */
+function renderMaster(
+  q: URLSearchParams,
+  fontData: ArrayBuffer | null,
+): ImageResponse {
+  const count = Number(q.get('count') ?? 11);
+  const fontFamily = fontData ? 'Pretendard' : 'sans-serif';
+  return new ImageResponse(
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        background: 'linear-gradient(180deg, #d4e2d4 0%, #6b8e6b 100%)',
+        paddingTop: 80,
+        paddingRight: 80,
+        paddingBottom: 80,
+        paddingLeft: 80,
+        fontFamily,
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          fontSize: 32,
+          color: '#ffffff',
+        }}
+      >
+        <span>🏞️ 충북 도장책</span>
+        <span style={{ opacity: 0.85 }}>TripBite</span>
+      </div>
+
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            fontSize: 220,
+            lineHeight: 1,
+            marginBottom: 16,
+          }}
+        >
+          🏆
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            fontSize: 96,
+            fontWeight: 700,
+            color: '#ffffff',
+            letterSpacing: '-0.02em',
+          }}
+        >
+          충북 마스터
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            fontSize: 40,
+            color: '#ffffff',
+            marginTop: 24,
+            opacity: 0.92,
+          }}
+        >
+          {count}개 시군 모두 정복
+        </div>
+      </div>
+
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          fontSize: 28,
+          color: '#ffffff',
+          opacity: 0.85,
+        }}
+      >
+        충북 11개 시군 도장 완료
       </div>
     </div>,
     makeInit(fontData),

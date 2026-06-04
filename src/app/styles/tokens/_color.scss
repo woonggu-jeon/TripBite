@@ -13,6 +13,11 @@
   --color-success: #16a34a;
   --color-warning: #d97706;
 
+  /* Sage — 도장책 visited 표시 전용. 차분한 녹색 톤으로 brand black 과 분리 */
+  --color-sage-mist: #d4e2d4; /* visited fill (soft pale green) */
+  --color-sage: #6b8e6b; /* visited border (muted sage) */
+  --color-sage-strong: #4a6e4a; /* 마스터 배너 강조 색 */
+
   /* Primary scale — 컴포넌트 전반에서 자주 쓰던 color-mix() 패턴을 토큰화.
        - soft       : 카드 surface 배경 (bg 위 8% 톤)
        - tint       : chip / badge / 부드러운 강조 배경 (alpha 12%)

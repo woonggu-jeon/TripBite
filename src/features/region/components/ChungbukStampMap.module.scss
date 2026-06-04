@@ -13,15 +13,16 @@
     display: block;
   }
 
-  /* 시군 path 기본 — 외곽선만 보이는 흐릿한 톤. dark 자동 분기. */
+  /* 시군 path 기본 — 미획득 dashed 회색 외곽선. dark 자동 분기. */
   :global(path.region) {
-    fill: var(--color-surface-2, var(--color-hover));
-    stroke: var(--color-border);
-    stroke-width: 1.5;
+    fill: var(--color-bg);
+    stroke: var(--color-muted);
+    stroke-width: 1.25;
+    stroke-dasharray: 4 3;
     transition:
       fill var(--motion-base) ease,
-      fill-opacity var(--motion-base) ease,
-      stroke var(--motion-base) ease;
+      stroke var(--motion-base) ease,
+      stroke-dasharray var(--motion-base) ease;
   }
 
   /* 청주시 (4 path: 상당/서원/청원/흥덕) — 내부 구 경계선을 시각적으로 제거.
@@ -35,17 +36,19 @@
   @media (hover: hover) and (pointer: fine) {
     :global(path.region:hover) {
       fill: var(--color-hover);
-      stroke: var(--color-primary);
+      stroke: var(--color-sage);
     }
     :global(path.region[data-region='cheongju']:hover) {
       stroke-width: 0;
     }
   }
 
-  /* visited 시군 — 마커 없이 음영(primary tinted fill) 만으로 도장 표현. */
+  /* visited 시군 — Sage Mist fill + Sage 외곽선 (solid). 도장 획득 표현. */
   :global(path.region[data-visited='true']) {
-    fill: var(--color-primary);
-    fill-opacity: 0.45;
+    fill: var(--color-sage-mist);
+    stroke: var(--color-sage);
+    stroke-width: 2;
+    stroke-dasharray: none;
   }
 
   /* 라벨 텍스트 (SVG 내장) — 원본 SVG 의 text-anchor:middle / 24px / 외곽선 복원.
@@ -65,6 +68,6 @@
   }
 
   :global(text.label[data-visited='true']) {
-    fill: var(--color-primary);
+    fill: var(--color-sage-strong);
   }
 }
