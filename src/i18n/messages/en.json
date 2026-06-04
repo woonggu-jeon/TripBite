@@ -669,6 +669,10 @@
       "logout": "Sign out",
       "loggingOut": "Signing out...",
       "withdraw": "Delete account",
+      "withdrawConfirmTitle": "Delete your account?",
+      "withdrawConfirmDescription": "This permanently removes your profile, saved winners, stamps, and sent letters. This cannot be undone.",
+      "withdrawConfirmLabel": "Delete account",
+      "withdrawPending": "Account deletion will be enabled after the backend is wired.",
       "contact": "Contact us"
     }
   },

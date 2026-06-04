@@ -669,6 +669,10 @@
       "logout": "로그아웃",
       "loggingOut": "로그아웃 중...",
       "withdraw": "회원 탈퇴",
+      "withdrawConfirmTitle": "정말 탈퇴할까요?",
+      "withdrawConfirmDescription": "탈퇴하면 프로필 / 저장한 우승지 / 도장책 / 보낸 편지가 모두 영구 삭제돼요. 이 작업은 되돌릴 수 없어요.",
+      "withdrawConfirmLabel": "탈퇴하기",
+      "withdrawPending": "탈퇴 처리는 백엔드 연동 후 활성화돼요.",
       "contact": "문의하기"
     }
   },

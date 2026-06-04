@@ -2,6 +2,8 @@
 
 import { useTranslations } from 'next-intl';
 import { useLogout } from '@/features/auth/hooks/use-auth';
+import { useConfirm } from '@/hooks/use-confirm';
+import { toast } from '@/lib/toast';
 import styles from './SettingsRows.module.scss';
 
 /**
@@ -9,16 +11,31 @@ import styles from './SettingsRows.module.scss';
  *
  * 항목:
  *   - 로그아웃 (즉시)
- *   - 회원 탈퇴 (확인 모달 → 비밀번호 재입력 권장)
- *   - 문의하기 (mailto: 또는 외부 폼)
+ *   - 회원 탈퇴 (confirm 모달 → DELETE /me)
+ *   - 문의하기 (mailto:)
  *
  * 탈퇴 정책 (백엔드와 합의):
  *   - soft delete 권장 (30일 유예)
  *   - 보낸 편지는 익명 처리하여 보존? 또는 함께 삭제? — 결정 필요
+ *
+ * 현재는 confirm 까지만 wired — DELETE /me mutation 은 BE 준비 후 추가.
  */
 export function AccountActionsSection() {
   const t = useTranslations('settings.actions');
+  const confirm = useConfirm();
   const { mutate: logout, isPending } = useLogout();
+
+  const handleWithdraw = async () => {
+    const ok = await confirm({
+      title: t('withdrawConfirmTitle'),
+      description: t('withdrawConfirmDescription'),
+      confirmLabel: t('withdrawConfirmLabel'),
+      destructive: true,
+    });
+    if (!ok) return;
+    // TODO(backend): mypageApi.deleteAccount() / DELETE /me. soft delete + 로그아웃 flow.
+    toast.info(t('withdrawPending'));
+  };
 
   return (
     <div className={styles.list}>
@@ -30,16 +47,13 @@ export function AccountActionsSection() {
       >
         {isPending ? t('loggingOut') : t('logout')}
       </button>
-      <a
-        href="mailto:support@example.com"
-        className={styles.button}
-      >
+      <a href="mailto:support@example.com" className={styles.button}>
         {t('contact')}
       </a>
       <button
         type="button"
         className={`${styles.button} ${styles.danger}`}
-        // TODO: 확인 모달 → DELETE /me
+        onClick={handleWithdraw}
       >
         {t('withdraw')}
       </button>
