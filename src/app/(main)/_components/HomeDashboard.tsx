@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Trophy, Sparkles } from 'lucide-react';
 import { ROUTES } from '@/constants/routes';
-// 오늘의 추천 (날씨) 위젯 미노출 (사용자 요청, 재노출 대비 import 주석 유지).
-// import { RecommendationBanner } from '@/features/home/components/RecommendationBanner';
+import { RecommendationBanner } from '@/features/home/components/RecommendationBanner';
+// 날씨 위젯만 미노출 (사용자 요청). "오늘의 추천" 섹션 + RecommendationBanner 는 유지.
 // import { WeatherWidget } from '@/features/weather';
 import { FestivalCarousel } from '@/features/home/components/FestivalCarousel';
 // LatestReceivedLetter 위젯 미노출 — 추후 재오픈 시 import 복원.
@@ -46,16 +46,17 @@ export function HomeDashboard() {
 
   return (
     <div className={styles.grid}>
-      {/* 1) 오늘의 추천 — 미노출 (사용자 요청). 추후 복원 시 주석 해제 + import 도 복원.
+      {/* 1) 오늘의 추천 — RecommendationBanner 만 노출 (날씨 위젯은 사용자 요청으로 미노출). */}
       <section
         data-widget="weather-recommendation"
         aria-label={t('weatherRecommendation')}
       >
         <h2 className={styles.sectionTitle}>{t('weatherRecommendation')}</h2>
+        {/* 날씨 위젯 미노출 (사용자 요청). 추후 복원 시 주석 해제 + import 복원.
         <WeatherWidget />
+        */}
         <RecommendationBanner />
       </section>
-      */}
 
       {/* 2) 지금 열리는 충북 축제 — 카드 스와이퍼 */}
       <section
