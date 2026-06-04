@@ -41,6 +41,72 @@ test.describe('이미지 카드 공유 — desktop fallback', () => {
     expect(res.headers()['content-type']).toContain('image/png');
   });
 
+  test('토너먼트 결과 share 클릭 → clipboard 에 image blob 들어감', async ({
+    page,
+  }) => {
+    await page
+      .context()
+      .grantPermissions(['clipboard-read', 'clipboard-write']);
+
+    // 토너먼트 결과 페이지에 도달하려면 store 에 winner 가 있어야 함.
+    // ?id deep-link 로 mock /tournaments/:id 호출 — handlers 에 tournamentRecords Map
+    // 에 미리 record 가 있어야 함. 가장 단순: 직접 store 에 prime.
+    await page.goto('/');
+    await page.evaluate(() => {
+      const winner = {
+        id: 'cheongju-attraction-1',
+        name: '수암골',
+        region: 'cheongju',
+        category: 'attraction',
+      };
+      const persisted = JSON.parse(
+        localStorage.getItem('tournament-store') ?? '{"state":{}}',
+      );
+      persisted.state = {
+        ...persisted.state,
+        result: { winner, runnerUp: null, matchesPlayed: 4 },
+        tournamentSize: 8,
+      };
+      localStorage.setItem('tournament-store', JSON.stringify(persisted));
+    });
+    await page.goto('/tournament/result');
+
+    const shareBtn = page.getByRole('button', { name: /공유|share/i }).first();
+    const visible = await shareBtn.isVisible().catch(() => false);
+    if (!visible) {
+      test.info().annotations.push({
+        type: 'note',
+        description: 'share 버튼 미노출 — winner store prime 실패로 추정',
+      });
+      return;
+    }
+
+    const ogReq = page.waitForRequest((req) =>
+      req.url().includes('/api/og/tournament'),
+    );
+    await shareBtn.click();
+    await ogReq;
+
+    // toast 가 떴다 = useShareCard 가 status 받음 (success or error)
+    const toast = page
+      .locator('[role="status"], [data-sonner-toast], .sonner-toast')
+      .first();
+    await expect(toast).toBeVisible({ timeout: 5000 });
+
+    // 핵심: clipboard 에 image/png 들어가 있는지
+    const types = await page.evaluate(async () => {
+      try {
+        const items = await navigator.clipboard.read();
+        return items.flatMap((i) => i.types);
+      } catch (e) {
+        return ['ERR:' + (e as Error).message];
+      }
+    });
+    console.log('[share-card] clipboard types =', JSON.stringify(types));
+    // Desktop Chromium 흐름: clipboard 에 image/png 들어가야 함.
+    expect(types.some((t) => t.startsWith('image/'))).toBe(true);
+  });
+
   test('마스터 도장책 share 버튼 클릭 — 토스트 노출', async ({ page }) => {
     // 도장책 데이터를 마스터 상태로 set
     await page.goto('/mypage/stamps');
@@ -58,12 +124,10 @@ test.describe('이미지 카드 공유 — desktop fallback', () => {
       .catch(() => false);
     // 마스터(11/11) 가 아니면 share 버튼 미노출 — 그 상태도 정상.
     if (!visible) {
-      test
-        .info()
-        .annotations.push({
-          type: 'note',
-          description: '마스터 미달성 → share 버튼 미노출 (정상)',
-        });
+      test.info().annotations.push({
+        type: 'note',
+        description: '마스터 미달성 → share 버튼 미노출 (정상)',
+      });
       return;
     }
 

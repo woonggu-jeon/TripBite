@@ -117,28 +117,36 @@ export async function shareWithImage(
   input: ShareWithImageInput,
 ): Promise<ShareResult> {
   if (typeof navigator === 'undefined') return 'failed';
-
-  let blob: Blob;
-  try {
-    const res = await fetch(input.imageUrl);
-    if (!res.ok) return 'failed';
-    blob = await res.blob();
-  } catch {
-    return 'failed';
-  }
-
   const filename = input.filename ?? 'tripbite-share.png';
-  const file = new File([blob], filename, {
-    type: blob.type || 'image/png',
-  });
 
-  // 1) Web Share API (files) — iOS Safari 16+ / Android Chrome / Mac Safari 13+
-  if (
+  // 모바일 vs 데스크탑 분기 — 데스크탑 Chrome 도 `navigator.canShare({files})` 가
+  // true 반환할 수 있어 그대로 share() 호출하면 OS sheet 없이 실패 → 그 시점에
+  // user activation 이 소실되어 후속 clipboard 도 NotAllowedError. 따라서
+  // 모바일 식별을 먼저 한 뒤에만 file share 경로로.
+  const ua = navigator.userAgent ?? '';
+  const isLikelyMobile =
+    (navigator as Navigator & { userAgentData?: { mobile?: boolean } })
+      .userAgentData?.mobile === true || /Mobi|Android|iPhone|iPad/i.test(ua);
+
+  const probeFile = new File([new Blob([])], 'probe.png', {
+    type: 'image/png',
+  });
+  const supportsFileShare =
+    isLikelyMobile &&
     typeof navigator.share === 'function' &&
     typeof navigator.canShare === 'function' &&
-    navigator.canShare({ files: [file] })
-  ) {
+    navigator.canShare({ files: [probeFile] });
+
+  // 1) Web Share API (files) — 모바일 (iOS Safari 16+ / Android Chrome / Mac Safari 13+).
+  //    모바일은 share API 가 fetch 후 호출돼도 user activation 관대.
+  if (supportsFileShare) {
     try {
+      const res = await fetch(input.imageUrl);
+      if (!res.ok) throw new Error('fetch failed');
+      const blob = await res.blob();
+      const file = new File([blob], filename, {
+        type: blob.type || 'image/png',
+      });
       const payload: ShareData = { files: [file] };
       if (input.title) payload.title = input.title;
       if (input.text) payload.text = input.text;
@@ -148,32 +156,46 @@ export async function shareWithImage(
       if ((err as DOMException | undefined)?.name === 'AbortError') {
         return 'cancelled';
       }
-      // fall through to desktop fallback
+      // fetch / share 실패 → desktop fallback 으로
     }
   }
 
   // 2) Desktop Chrome/Edge — clipboard 에 image blob 자체 복사 (Ctrl+V 로 채팅 첨부).
-  //    Firefox/Safari 는 ClipboardItem 미지원 또는 image/png MIME 미허용 → catch
-  //    → 3) 다운로드 + URL 복사 fallback 으로 진행.
+  //    ⚠ user gesture 유지: ClipboardItem 에 Blob 대신 Promise<Blob> 전달.
+  //    `await fetch` 후 clipboard.write 호출하면 user activation 소실되어
+  //    NotAllowedError. Promise 를 직접 전달하면 write 가 user gesture 안에서
+  //    동기 호출되고, Promise 가 resolve 될 때까지 브라우저가 대기.
   if (
     typeof ClipboardItem !== 'undefined' &&
     typeof navigator.clipboard?.write === 'function' &&
     window.isSecureContext
   ) {
     try {
-      const mime = blob.type || 'image/png';
-      const item = new ClipboardItem({ [mime]: blob });
+      const blobPromise = fetch(input.imageUrl).then((r) => {
+        if (!r.ok) throw new Error('fetch failed');
+        return r.blob();
+      });
+      // ClipboardItem 의 MIME 키는 'image/png' 고정 (서버가 PNG 반환 보장).
+      const item = new ClipboardItem({ 'image/png': blobPromise });
       await navigator.clipboard.write([item]);
       return 'copied-image';
     } catch {
-      // 사용자 제스처 없음 / MIME 미허용 / Firefox 등 → 다운로드 fallback
+      // MIME 미허용 / Firefox / fetch 실패 등 → 다운로드 fallback
     }
   }
 
   // 3) Desktop 폴백 — OG image URL clipboard copy + 이미지 다운로드 동시.
-  //    image clipboard 도 안 되는 환경 (Firefox 등) 에서 URL 만 복사하면 이미지를
-  //    사용자가 못 받고, 다운로드만 하면 받는 쪽에 보낼 링크가 없다.
-  //    둘 다 실행 — 사용자가 손에 PNG, clipboard 에 URL.
+  //    여기까지 왔으면 ClipboardItem 도 안 되는 환경 (Firefox 등). fetch 결과
+  //    Blob 으로 다운로드 + URL 클립보드 복사.
+  let blob: Blob;
+  try {
+    const res = await fetch(input.imageUrl);
+    if (!res.ok) return 'failed';
+    blob = await res.blob();
+  } catch {
+    return 'failed';
+  }
+
   const absoluteUrl = toAbsoluteUrl(input.imageUrl);
   let copied = false;
   try {
