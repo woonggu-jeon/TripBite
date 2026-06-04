@@ -5,6 +5,12 @@
 `@/services/api/client` 의 axios `baseURL = NEXT_PUBLIC_API_URL`. 모든 요청은
 `withCredentials: true` (쿠키 기반).
 
+> **실시간 BE 명세는 Swagger UI 에서 확인**:
+>
+> - 로컬: http://localhost:3000/docs
+> - OpenAPI JSON: http://localhost:3000/docs-json
+>   본 MD 문서는 정책/시나리오/에러 코드 매핑 — Swagger 는 endpoint shape contract.
+
 ---
 
 ## 공통

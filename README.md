@@ -18,6 +18,18 @@ npm run dev
 npm run build && npm start   # 프로덕션 (PWA 활성)
 ```
 
+### 로컬 포트 매핑
+
+| 서비스                           | URL                             | 비고                       |
+| -------------------------------- | ------------------------------- | -------------------------- |
+| FE dev (`npm run dev`)           | http://localhost:3900           | `next dev --port 3900`     |
+| FE e2e test (`npm run test:e2e`) | http://localhost:3901           | playwright webServer       |
+| **BE NestJS**                    | http://localhost:3000           | 별도 실행                  |
+| **BE Swagger UI**                | http://localhost:3000/docs      | 도메인별 endpoint + try-it |
+| BE OpenAPI JSON                  | http://localhost:3000/docs-json | `orval` 등 codegen source  |
+
+BE 미준비 상태에선 `NEXT_PUBLIC_USE_MSW=true` 로 mock 동작.
+
 ---
 
 ## 스크립트
