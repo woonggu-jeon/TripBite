@@ -31,6 +31,25 @@ export const api: AxiosInstance = axios.create({
   },
 });
 
+/**
+ * NestJS versioning prefix 정규화.
+ *
+ * baseURL 이 이미 `/v1` 을 포함하는 환경(예: NEXT_PUBLIC_API_URL=http://localhost:3000/v1)에서
+ * orval 이 생성한 client 가 `/v1/auth/login` 같은 prefix 포함 URL 을 호출하면
+ * 최종 URL 이 `.../v1/v1/auth/login` 으로 중복 → 404.
+ *
+ * 모든 요청 url 에서 선행 `/v1/` 를 제거 — 기존 수동 코드(`/auth/login`)는 그대로,
+ * generated client(`/v1/auth/login`)는 자동으로 `/auth/login` 으로 정규화.
+ * baseURL 에 `/v1` 가 없는 환경(예: BE 가 versioning 끄거나 staging) 에서는
+ * 호출자가 그냥 prefix 없이 호출하면 됨 — interceptor 영향 없음.
+ */
+api.interceptors.request.use((config) => {
+  if (config.url?.startsWith('/v1/')) {
+    config.url = config.url.replace(/^\/v1\//, '/');
+  }
+  return config;
+});
+
 // Interceptor 부착
 //   - timing:     응답 시간 측정 (느린 API 감지) — 먼저 부착
 //   - error-norm: 모든 응답 에러에 { code, message } 표준 속성 부여

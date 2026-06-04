@@ -77,13 +77,30 @@ export function middleware(request: NextRequest) {
   }
 
   const response = NextResponse.next({ request: { headers: requestHeaders } });
-  response.headers.set('Content-Security-Policy-Report-Only', csp);
+  response.headers.set(cspHeaderName(), csp);
   return response;
 }
 
 function withCsp(res: NextResponse, csp: string): NextResponse {
-  res.headers.set('Content-Security-Policy-Report-Only', csp);
+  res.headers.set(cspHeaderName(), csp);
   return res;
+}
+
+/**
+ * CSP 헤더 이름 — 기본 Report-Only, NEXT_PUBLIC_CSP_ENFORCE=true 시 enforce.
+ *
+ * 점진 전환 정책:
+ *   1) Report-Only 로 1-2주 운영 → /api/csp-report 의 violation 0건 확인
+ *   2) NEXT_PUBLIC_CSP_ENFORCE=true 로 enforce 전환
+ *   3) 문제 발생 시 즉시 false 로 롤백 (단일 env 변경)
+ *
+ * 주의: enforce 시 style-src 의 'unsafe-inline' 은 외부 stylesheet (jsdelivr)
+ * 호환 위해 유지. 추가 보안 필요해지면 hash 매핑으로 교체.
+ */
+function cspHeaderName(): string {
+  return process.env.NEXT_PUBLIC_CSP_ENFORCE === 'true'
+    ? 'Content-Security-Policy'
+    : 'Content-Security-Policy-Report-Only';
 }
 
 export const config = {
