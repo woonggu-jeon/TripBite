@@ -25,6 +25,17 @@ export function AccountActionsSection() {
   const confirm = useConfirm();
   const { mutate: logout, isPending } = useLogout();
 
+  const handleLogout = async () => {
+    const ok = await confirm({
+      title: t('logoutConfirmTitle'),
+      description: t('logoutConfirmDescription'),
+      confirmLabel: t('logoutConfirmLabel'),
+      // 로그아웃은 reversible — destructive 톤은 회원 탈퇴에만 사용
+    });
+    if (!ok) return;
+    logout();
+  };
+
   const handleWithdraw = async () => {
     const ok = await confirm({
       title: t('withdrawConfirmTitle'),
@@ -42,7 +53,7 @@ export function AccountActionsSection() {
       <button
         type="button"
         className={styles.button}
-        onClick={() => logout()}
+        onClick={handleLogout}
         disabled={isPending}
       >
         {isPending ? t('loggingOut') : t('logout')}

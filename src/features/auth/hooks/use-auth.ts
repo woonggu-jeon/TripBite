@@ -121,7 +121,8 @@ export function useLogout() {
       queryClient.clear();
       // Service Worker 캐시 비우기 — 다음 사용자가 이전 응답을 보는 것 방지
       await clearAllCaches();
-      router.replace('/login');
+      // 로그아웃 후 메인 화면 — middleware 가 미인증 시 자동으로 /login 으로 보냄
+      router.replace('/');
     },
   });
 }

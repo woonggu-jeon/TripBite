@@ -668,6 +668,9 @@
     "actions": {
       "logout": "Sign out",
       "loggingOut": "Signing out...",
+      "logoutConfirmTitle": "Sign out?",
+      "logoutConfirmDescription": "You can sign back in anytime to continue.",
+      "logoutConfirmLabel": "Sign out",
       "withdraw": "Delete account",
       "withdrawConfirmTitle": "Delete your account?",
       "withdrawConfirmDescription": "This permanently removes your profile, saved winners, stamps, and sent letters. This cannot be undone.",
