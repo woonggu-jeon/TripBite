@@ -1,70 +1,35 @@
-import { api } from '@/services/api/client';
-import { userSchema } from '@/features/user/schemas/user';
-import type {
-  LoginRequest,
-  LoginResponse,
-  SignupRequest,
-  ForgotPasswordRequest,
-  ResetPasswordRequest,
-  ChangePasswordRequest,
-  FindIdRequest,
-  FindIdResponse,
-} from '@/features/auth/types';
-import type { User } from '@/features/user/types';
+import {
+  authControllerFindIdV1,
+  authControllerForgotPasswordV1,
+  authControllerLoginV1,
+  authControllerLogoutV1,
+  authControllerResetPasswordV1,
+  authControllerSignupV1,
+} from '@/api/generated/auth/auth';
+import {
+  meControllerChangePasswordV1,
+  meControllerGetMeV1,
+  meControllerWithdrawV1,
+} from '@/api/generated/me/me';
 
 /**
- * 인증 방식 — sessionID 단일 쿠키 (한국 표준)
+ * 인증 API — orval 가 BE swagger 로부터 자동 생성한 client functions wrap.
  *
- * 백엔드가 Set-Cookie 로 단일 session cookie (예: `SID`) 를 HttpOnly + Lax
- * 로 발급. 프론트는 쿠키를 직접 읽지 않고 withCredentials=true 로 자동 전송.
- * 만료/Revocation 모두 BE 가 DB Session 행 변경으로 즉시 반영.
+ * 인증 방식: sessionID 단일 쿠키 `SID` (HttpOnly; SameSite; Secure 운영).
+ *   - BE 가 Set-Cookie 로 발급, FE 는 withCredentials=true 로 자동 전송.
+ *   - 만료/Revocation 은 BE 가 DB Session 행 변경으로 즉시 반영.
+ *
+ * 마이그 패턴 (얕은): hook 의 mutationFn 만 generated 함수 호출로 교체.
+ * onSuccess (router redirect / cache clear) 등 FE 특화 흐름은 hook 안에 유지.
  */
-
 export const authApi = {
-  login: async (data: LoginRequest) => {
-    const res = await api.post<LoginResponse>('/auth/login', data);
-    return res.data;
-  },
-
-  signup: async (data: SignupRequest) => {
-    await api.post('/auth/signup', data);
-  },
-
-  // 재설정 링크 메일 발송 (백엔드가 토큰 URL 메일 전송)
-  forgotPassword: async (data: ForgotPasswordRequest) => {
-    await api.post('/auth/forgot-password', data);
-  },
-
-  // 메일 링크의 토큰 + 새 비밀번호
-  resetPassword: async (data: ResetPasswordRequest) => {
-    await api.post('/auth/reset-password', data);
-  },
-
-  // 로그인 상태에서 비밀번호 변경 (현재 비번 확인)
-  changePassword: async (data: ChangePasswordRequest) => {
-    await api.post('/me/change-password', data);
-  },
-
-  // 아이디 찾기 — 이름+이메일 매칭 → 마스킹 아이디 (메일 발송 X)
-  findId: async (data: FindIdRequest): Promise<FindIdResponse> => {
-    const res = await api.post<FindIdResponse>('/auth/find-id', data);
-    return res.data;
-  },
-
-  logout: async () => {
-    // 서버가 SID 쿠키를 만료시키도록 요청
-    await api.post('/auth/logout');
-  },
-
-  // 회원 탈퇴 — DELETE /me. BE 가 소프트 삭제 + 세션 무효 (SID cookie 만료).
-  deleteAccount: async () => {
-    await api.delete('/me');
-  },
-
-  // 현재 사용자 정보 — 인증 상태 hydration 용.
-  // 응답을 zod로 런타임 검증 — 백엔드 변경/오류 시 즉시 감지.
-  me: async (): Promise<User> => {
-    const res = await api.get<unknown>('/me');
-    return userSchema.parse(res.data) as User;
-  },
+  login: authControllerLoginV1,
+  signup: authControllerSignupV1,
+  forgotPassword: authControllerForgotPasswordV1,
+  resetPassword: authControllerResetPasswordV1,
+  changePassword: meControllerChangePasswordV1,
+  findId: authControllerFindIdV1,
+  logout: authControllerLogoutV1,
+  deleteAccount: meControllerWithdrawV1,
+  me: meControllerGetMeV1,
 };

@@ -1,49 +1,29 @@
 /**
- * Auth 요청/응답 타입
+ * Auth 요청/응답 타입 — orval 가 BE swagger 로 생성한 DTO 의 alias.
  *
- * 실제로는 openapi-typescript-codegen 의 @/generated/api 타입 re-export 권장.
- * 여기서는 백엔드 스키마 확정 전 fallback 타입.
+ * 호출처는 `LoginRequest` 같은 도메인 명 그대로 사용, 진실의 원천은 generated DTO.
+ * BE swagger 변경 시 자동 반영 (필드명/제약 조건 등).
+ *
+ * form validation 은 `src/features/auth/schemas/*.ts` 가 별도 zod 정의 — phone
+ * regex 등 FE 특화 룰 + react-hook-form 통합 + i18n 에러 키. generated DTO 는
+ * payload type 만 담당.
  */
+import type {
+  ChangePasswordDto,
+  FindIdDto,
+  FindIdResponseDto,
+  ForgotPasswordDto,
+  LoginDto,
+  LoginResponseDto,
+  ResetPasswordDto,
+  SignupDto,
+} from '@/api/generated/schemas';
 
-export type LoginRequest = {
-  username: string;
-  password: string;
-};
-
-export type LoginResponse = {
-  // 토큰은 Set-Cookie로 발급되므로 body는 최소 정보만
-  success: boolean;
-};
-
-export type SignupRequest = {
-  name: string;
-  username: string;
-  password: string;
-  birthDate: string; // YYYY-MM-DD
-  email: string;
-  phone: string;
-};
-
-export type ForgotPasswordRequest = {
-  email: string;
-};
-
-export type ResetPasswordRequest = {
-  token: string;
-  password: string;
-};
-
-export type ChangePasswordRequest = {
-  currentPassword: string;
-  newPassword: string;
-};
-
-export type FindIdRequest = {
-  name: string;
-  email: string;
-};
-
-export type FindIdResponse = {
-  /** 마스킹된 아이디 (예: "tes***01"). 미존재 시 null */
-  username: string | null;
-};
+export type LoginRequest = LoginDto;
+export type LoginResponse = LoginResponseDto;
+export type SignupRequest = SignupDto;
+export type ForgotPasswordRequest = ForgotPasswordDto;
+export type ResetPasswordRequest = ResetPasswordDto;
+export type ChangePasswordRequest = ChangePasswordDto;
+export type FindIdRequest = FindIdDto;
+export type FindIdResponse = FindIdResponseDto;

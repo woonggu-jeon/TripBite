@@ -39,9 +39,10 @@ export default defineConfig({
       httpClient: 'axios',
       override: {
         mutator: {
-          // 기존 axios instance 재사용 — interceptor (auth refresh / error-normalize) 그대로 적용.
-          path: './src/services/api/client.ts',
-          name: 'api',
+          // 기존 axios instance + response.data 자동 unwrap.
+          // interceptor (auth refresh / error-normalize / FormData multipart) 그대로 적용.
+          path: './src/services/api/orval-mutator.ts',
+          name: 'orvalMutator',
         },
         query: {
           useQuery: true,

@@ -81,10 +81,13 @@ parking / coords / summary / address`.
 
 | `POST /me/complete-onboarding` | `{nickname?, homeRegion?}` | `200 User` (isOnboarded:true) |
 
-### Location — **제거됨**
+### Location
 
-`POST /location/reverse` · `GET /location/ip` **삭제**. 역지오코딩 미사용.
-편지 등의 위치는 FE 가 직접 채운다: `location = { label, regionCode }` (라벨은 RegionCode→한글명으로 FE 에서 생성).
+| `POST /location/reverse` | `{latitude, longitude, accuracy?}` | `200 { latitude, longitude, label, sido, sigungu, regionCode: string\|null }` |
+
+> **역지오코딩(전국)**: 시군구 경계 GeoJSON(통계청, 앱 내장) 으로 in-memory point-in-polygon — 외부 API/키 없음.
+> `label`=`"경기도 오산시"` 같은 전국 라벨, `sido`/`sigungu` 분리. `regionCode`=충북 시군이면 RegionCode,
+> **충북 밖이면 `null`**. 대한민국 행정구역 밖(해상/국외) 좌표는 `label:""`, `regionCode:null`. (`GET /location/ip` 는 제거됨)
 
 ### Destination
 
@@ -198,7 +201,7 @@ parking / coords / summary / address`.
 
 - ~~`POST /auth/refresh`~~ (sessionID 모델 — 삭제)
 - ~~`GET /weather/current`~~ (날씨 기능 제거)
-- ~~`POST /location/reverse`~~ · ~~`GET /location/ip`~~ (역지오코딩 제거 — 위치는 FE 가 직접 공급)
+- ~~`GET /location/ip`~~ (제거 — `POST /location/reverse` 는 시군구 경계 데이터 역지오코딩으로 부활)
 - `POST /__mock/*` (mock 전용)
 
 ## 4. 데이터 메모

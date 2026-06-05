@@ -37,7 +37,9 @@ export function useMe(
 ) {
   return useQuery({
     queryKey: authKeys.me(),
-    queryFn: authApi.me,
+    // generated 함수는 (signal?) → Promise<UserDto>. react-query 의 queryFn 은
+    // ({signal, ...}) 객체 받으므로 lambda 로 signal 만 분리해 전달.
+    queryFn: ({ signal }) => authApi.me(signal),
     staleTime: 5 * 60 * 1000,
     retry: (failureCount, error) => {
       // 401은 미인증 상태로 간주 (재시도 X)
@@ -61,7 +63,7 @@ export function useLogin(options?: { redirectTo?: string }) {
       // 로그인 후 /me 재조회하여 상태 hydrate
       const user = await queryClient.fetchQuery({
         queryKey: authKeys.me(),
-        queryFn: authApi.me,
+        queryFn: ({ signal }) => authApi.me(signal),
       });
       setAuth(user);
       // 로그인 성공 → 원래 가려던 경로 (LoginForm 이 ?redirect= 로 전달) 또는 홈.
@@ -137,7 +139,9 @@ export function useLogout() {
   const clearAuth = useAuthStore((s) => s.clearAuth);
 
   return useMutation({
-    mutationFn: authApi.logout,
+    // void variables 보장 위해 lambda wrap — generated 함수는 `(signal?)` 시그니처라
+    // mutate() 가 variables 필수가 되는 회귀 회피.
+    mutationFn: () => authApi.logout(),
     onSettled: async () => {
       // 성공/실패 모두 클라이언트 상태는 비운다
       clearAuth();
@@ -161,7 +165,7 @@ export function useDeleteAccount() {
   const clearAuth = useAuthStore((s) => s.clearAuth);
 
   return useMutation({
-    mutationFn: authApi.deleteAccount,
+    mutationFn: () => authApi.deleteAccount(),
     onSettled: async (_data, error) => {
       // 실패해도 client cleanup — 사용자가 탈퇴 confirm 까지 했으므로 의도 명확.
       // (BE 가 이미 처리했지만 네트워크 timeout 같은 경우 client 상태는 cleanup.)
