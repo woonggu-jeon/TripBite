@@ -37,3 +37,32 @@ export function useStamps() {
     ...CACHE.user,
   });
 }
+
+/**
+ * 프로필 아바타 업로드 — multipart, onSuccess 시 /me + /mypage 캐시 갱신.
+ * BE 응답의 avatarUrl 이 즉시 ProfileCard 에 반영되도록 invalidate.
+ */
+export function useUpdateAvatar() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (file: File) => mypageApi.updateAvatar(file),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['auth', 'me'] });
+      qc.invalidateQueries({ queryKey: mypageKeys.summary() });
+    },
+  });
+}
+
+/**
+ * 프로필 아바타 제거 — DELETE /me/avatar. onSuccess 시 /me + /mypage 캐시 갱신.
+ */
+export function useRemoveAvatar() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: mypageApi.removeAvatar,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['auth', 'me'] });
+      qc.invalidateQueries({ queryKey: mypageKeys.summary() });
+    },
+  });
+}

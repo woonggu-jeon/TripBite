@@ -529,6 +529,64 @@ export const handlers = [
       isDefault: false,
     });
   }),
+  // 프로필 아바타 업로드 (POST /me/avatar) — multipart form-data 'file'.
+  //
+  // BE spec (docs/API_CONTRACT.md):
+  //   - 응답 201 { avatarUrl }
+  //   - 422 AVATAR_TYPE_UNSUPPORTED (image/jpeg|png|webp 외)
+  //   - 422 AVATAR_TOO_LARGE (>5MB)
+  //   - 400 VALIDATION (file 누락 / 파싱 실패)
+  //   - 503 STORAGE_NOT_CONFIGURED (R2 미설정 — mock 은 미시뮬)
+  //
+  // mock 은 placeholder URL 반환 — FE 의 localPreview (object URL) 가 화면 표시
+  // 담당이므로 실 파일 데이터는 echo 안 함. BE 합류 후엔 응답 URL 이 정식 source.
+  http.post(`${apiUrl}/me/avatar`, async ({ request }) => {
+    if (!getMockSignedIn()) return unauthorized();
+    try {
+      const form = await request.formData();
+      const file = form.get('file');
+      if (!(file instanceof File)) {
+        return HttpResponse.json(
+          { code: 'VALIDATION', message: 'file 필수' },
+          { status: 400 },
+        );
+      }
+      const ALLOWED = ['image/jpeg', 'image/png', 'image/webp'];
+      if (!ALLOWED.includes(file.type)) {
+        return HttpResponse.json(
+          {
+            code: 'AVATAR_TYPE_UNSUPPORTED',
+            message: 'JPG/PNG/WebP 만 업로드할 수 있어요.',
+          },
+          { status: 422 },
+        );
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        return HttpResponse.json(
+          {
+            code: 'AVATAR_TOO_LARGE',
+            message: '파일이 너무 큽니다 (최대 5MB).',
+          },
+          { status: 422 },
+        );
+      }
+      return HttpResponse.json(
+        { avatarUrl: `https://mock.tripbite/avatar/${Date.now()}.png` },
+        { status: 201 },
+      );
+    } catch {
+      return HttpResponse.json(
+        { code: 'VALIDATION', message: 'multipart 파싱 실패' },
+        { status: 400 },
+      );
+    }
+  }),
+  // 프로필 아바타 제거 (DELETE /me/avatar) — 200 { avatarUrl: null }.
+  // BE: R2 객체 삭제 + User.avatarUrl = null.
+  http.delete(`${apiUrl}/me/avatar`, () => {
+    if (!getMockSignedIn()) return unauthorized();
+    return HttpResponse.json({ avatarUrl: null });
+  }),
   // 저장된 토너먼트 우승지 — 목록. summary 의 savedTournaments 와 같은 시드.
   http.get(`${apiUrl}/mypage/tournaments`, () =>
     getMockSignedIn()

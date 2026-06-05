@@ -60,4 +60,28 @@ export const mypageApi = {
       'GET /mypage/stamps',
     ) as StampsResponse;
   },
+
+  /**
+   * 프로필 아바타 업로드 — `POST /me/avatar` multipart form-data, 응답 `201 {avatarUrl}`.
+   * BE: Cloudflare R2 업로드 후 CDN URL 반환. 검증 `image/jpeg|png|webp` + ≤5MB.
+   * 에러: 422 `AVATAR_TYPE_UNSUPPORTED` / `AVATAR_TOO_LARGE`, 503 `STORAGE_NOT_CONFIGURED`.
+   *
+   * Content-Type 은 request interceptor (services/api/client.ts) 가 FormData 자동
+   * 감지하여 명시 헤더 unset → axios + 브라우저가 boundary 포함한 multipart 헤더 자동 설정.
+   */
+  updateAvatar: async (file: File): Promise<{ avatarUrl: string }> => {
+    const form = new FormData();
+    form.append('file', file);
+    const res = await api.post<{ avatarUrl: string }>('/me/avatar', form);
+    return res.data;
+  },
+
+  /**
+   * 프로필 아바타 제거 — `DELETE /me/avatar`, 응답 `200 {avatarUrl: null}`.
+   * BE: R2 객체 삭제 + `User.avatarUrl = null` 갱신.
+   */
+  removeAvatar: async (): Promise<{ avatarUrl: null }> => {
+    const res = await api.delete<{ avatarUrl: null }>('/me/avatar');
+    return res.data;
+  },
 };

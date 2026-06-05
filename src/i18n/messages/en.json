@@ -621,6 +621,13 @@
       "anonymous": "Guest",
       "avatarAlt": "Profile image of {nickname}",
       "changeAvatar": "Change profile image",
+      "avatarUploaded": "Profile image updated.",
+      "avatarUploadFailed": "Couldn't upload image.",
+      "avatarTooLarge": "Image too large (max 5MB).",
+      "avatarInvalidType": "Only JPG/PNG/WebP are allowed.",
+      "removeAvatar": "Remove profile image",
+      "avatarRemoved": "Profile image removed.",
+      "avatarRemoveFailed": "Couldn't remove image.",
       "travelType": {
         "label": "Travel type"
       }

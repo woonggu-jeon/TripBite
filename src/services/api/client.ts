@@ -47,6 +47,17 @@ api.interceptors.request.use((config) => {
   if (config.url?.startsWith('/v1/')) {
     config.url = config.url.replace(/^\/v1\//, '/');
   }
+  // FormData (multipart) 요청 — defaults.headers 의 `application/json` 강제 unset.
+  // 명시 헤더가 있으면 axios 가 그대로 보내며 boundary 가 누락되어 BE multipart
+  // parse 실패 회귀 (`{code: 'VALIDATION', message: '이미지 파일이 필요합니다.'}`).
+  // unset 하면 axios + 브라우저가 boundary 포함한 multipart Content-Type 자동 설정.
+  if (
+    typeof FormData !== 'undefined' &&
+    config.data instanceof FormData &&
+    config.headers
+  ) {
+    delete config.headers['Content-Type'];
+  }
   return config;
 });
 

@@ -6,6 +6,53 @@
   text-align: center;
 }
 
+// avatar + remove(X) 둘 다 absolute 정렬할 wrapper.
+.avatarWrap {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+// X 버튼 — avatar 있을 때만 우상단. avatar 클릭 (변경) 과 분리.
+.avatarRemoveBtn {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  z-index: 1;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-full);
+  color: var(--color-fg);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform var(--motion-fast) ease,
+    border-color var(--motion-base) ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      border-color: var(--color-danger, var(--color-primary));
+      color: var(--color-danger, var(--color-primary));
+    }
+  }
+  &:active:not(:disabled) {
+    transform: scale(0.92);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+  &:disabled {
+    opacity: var(--opacity-disabled);
+    cursor: not-allowed;
+  }
+}
+
 // avatar 영역 전체를 button 으로 — 카메라 아이콘 없이 avatar 자체가 클릭 타깃.
 // 별도 absolute 띄우는 요소가 없어 primitive 와 spec 충돌이 발생할 구조 자체 없음.
 .avatarBtn {

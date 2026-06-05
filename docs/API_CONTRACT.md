@@ -14,6 +14,10 @@
   - 검증 실패 → `400 VALIDATION`, 미인증 → `401 AUTH_REQUIRED`, 없음 → `404 NOT_FOUND`,
     과다요청 → `429 RATE_LIMIT`.
 - 성공 바디 없는 응답은 `204`.
+- **커서 페이지네이션(무한스크롤 공통 규칙)**: `?cursor=&limit=` → `{ items, nextCursor: number|null }`.
+  `cursor`=offset(기본 0), `limit`=페이지 크기(엔드포인트별 기본/최대 상이, 초과 시 clamp).
+  `nextCursor`를 다음 요청 `cursor`로 넘기고 `null`이면 마지막 페이지. 적용:
+  `letters/{received,sent,liked,saved}`, `regions/:code/contents`, `mypage/tournament-history`, `notifications`.
 
 ---
 
@@ -41,17 +45,25 @@ parking / coords / summary / address`.
 
 ### Auth
 
-| 메서드·경로                  | 요청                                                                                                                             | 응답                                                                                                          |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | --------------------------- |
-| `POST /auth/signup`          | `{name, username(/^[A-Za-z0-9_]{4,20}$/), password(10~72), birthDate(YYYY-MM-DD), email, phone(/^01[016789]-?\d{3,4}-?\d{4}$/)}` | `201` (바디 없음, 쿠키 없음) / 409 `AUTH_USERNAME_TAKEN`·`AUTH_EMAIL_TAKEN` / 422 `AUTH_PASSWORD_WEAK`        |
-| `POST /auth/login`           | `{username, password}`                                                                                                           | `200 {success:true}` + `Set-Cookie: SID` / 401 `AUTH_INVALID_CREDENTIALS` / 429                               |
-| `POST /auth/logout`          | —                                                                                                                                | `204` (SID 만료)                                                                                              |
-| `POST /auth/find-id`         | `{name, email}`                                                                                                                  | `200 {username: string                                                                                        | null}`(마스킹`tes\*\*\*01`) |
-| `POST /auth/forgot-password` | `{email}`                                                                                                                        | `204` (항상)                                                                                                  |
-| `POST /auth/reset-password`  | `{token, password}`                                                                                                              | `204` / 400 `AUTH_TOKEN_INVALID` / 410 `AUTH_TOKEN_EXPIRED` / 422 `AUTH_PASSWORD_WEAK`·`AUTH_PASSWORD_REUSED` |
-| `GET /me`                    | —                                                                                                                                | `200 User` (아래) / 401                                                                                       |
-| `POST /me/change-password`   | `{currentPassword, newPassword}`                                                                                                 | `204` / 422 `AUTH_CURRENT_PASSWORD_WRONG`·`AUTH_PASSWORD_WEAK`                                                |
-| `DELETE /me`                 | —                                                                                                                                | `204` (회원탈퇴: 소프트삭제+세션무효)                                                                         |
+| 메서드·경로                  | 요청                                                                                                                             | 응답                                                                                                                   |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| `POST /auth/signup`          | `{name, username(/^[A-Za-z0-9_]{4,20}$/), password(10~72), birthDate(YYYY-MM-DD), email, phone(/^01[016789]-?\d{3,4}-?\d{4}$/)}` | `201` (바디 없음, 쿠키 없음) / 409 `AUTH_USERNAME_TAKEN`·`AUTH_EMAIL_TAKEN` / 422 `AUTH_PASSWORD_WEAK`                 |
+| `POST /auth/login`           | `{username, password}`                                                                                                           | `200 {success:true}` + `Set-Cookie: SID` / 401 `AUTH_INVALID_CREDENTIALS` / 429                                        |
+| `POST /auth/logout`          | —                                                                                                                                | `204` (SID 만료)                                                                                                       |
+| `POST /auth/find-id`         | `{name, email}`                                                                                                                  | `200 {username: string                                                                                                 | null}`(마스킹`tes\*\*\*01`) |
+| `POST /auth/forgot-password` | `{email}`                                                                                                                        | `204` (항상)                                                                                                           |
+| `POST /auth/reset-password`  | `{token, password}`                                                                                                              | `204` / 400 `AUTH_TOKEN_INVALID` / 410 `AUTH_TOKEN_EXPIRED` / 422 `AUTH_PASSWORD_WEAK`·`AUTH_PASSWORD_REUSED`          |
+| `GET /me`                    | —                                                                                                                                | `200 User` (아래) / 401                                                                                                |
+| `POST /me/change-password`   | `{currentPassword, newPassword}`                                                                                                 | `204` / 422 `AUTH_CURRENT_PASSWORD_WRONG`·`AUTH_PASSWORD_WEAK`                                                         |
+| `DELETE /me`                 | —                                                                                                                                | `204` (회원탈퇴: 소프트삭제+세션무효)                                                                                  |
+| `POST /me/avatar`            | `multipart/form-data` (필드 `file`)                                                                                              | `201 {avatarUrl}` / 422 `AVATAR_TYPE_UNSUPPORTED`·`AVATAR_TOO_LARGE` / 400 `VALIDATION` / 503 `STORAGE_NOT_CONFIGURED` |
+| `DELETE /me/avatar`          | —                                                                                                                                | `200 {avatarUrl: null}`                                                                                                |
+
+**아바타 업로드 (서버 경유 multipart, 단일 요청)**: FE 가 `multipart/form-data` 의 **`file`** 필드로
+이미지 1개(`image/jpeg\|png\|webp`, ≤5MB)를 전송 → BE 가 Cloudflare R2 에 업로드 후 `{avatarUrl}` 반환
+(→ `User.avatarUrl` 갱신). 파일은 우리 API 를 경유하므로 **버킷 CORS 불필요**. 스토리지 미설정 시 `503`.
+
+> ⚠ 이 요청만 `Content-Type: multipart/form-data` (axios 는 `FormData` 넣으면 자동). 나머지 API 는 JSON.
 
 **User** (`GET /me`, onboarding 응답):
 
@@ -155,12 +167,12 @@ parking / coords / summary / address`.
 | `GET /mypage/tournaments` | — | `200 SavedTournament[]` |
 | `POST /mypage/tournaments` | `{destinationId}` | `200 SavedTournament` |
 | `DELETE /mypage/tournaments/:id` | — | `204` / 404 |
-| `GET /mypage/tournament-history` | — | `200 { items:[{id, theme, category, count, winnerId, winnerName, winnerRegion, completedAt}], nextCursor:null }` |
+| `GET /mypage/tournament-history?cursor=&limit=` | — | `200 { items:[{id, theme, category, count, winnerId, winnerName, winnerRegion, completedAt}], nextCursor: number\|null }` (커서 페이지네이션, completedAt DESC) |
 
 ### Notifications (인증 필요)
 
 `AppNotification` = `{ id, type:'letter.received'|'letter.liked'|'tournament.shared'|'event'|'security', title, body?, link?, imageUrl?, read, createdAt }`
-| `GET /notifications` | — | `200 { items: AppNotification[], unreadCount } ` (createdAt DESC) |
+| `GET /notifications?cursor=&limit=` | — | `200 { items: AppNotification[], unreadCount, nextCursor: number\|null }` (커서 페이지네이션, createdAt DESC; `unreadCount`=전체 미읽음) |
 | `POST /notifications/:id/read` | — | `204` (멱등) / 404 |
 | `POST /notifications/read-all` | — | `204` |
 | `POST /notifications/subscribe` | `{endpoint, keys:{p256dh, auth}}` | `201` (endpoint upsert) |
