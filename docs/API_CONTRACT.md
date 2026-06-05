@@ -98,7 +98,7 @@ parking / coords / summary / address`.
 {
   id; name; category; region;
   description?; imageUrl?; address?;
-  summary: string;
+  summary: string;                    // overview 첫 문장(≤120자), 없으면 "이름 — 지역 대표 카테고리"(한글)
   coords?: { lat: number; lng: number };
   phone?; website?;                 // detailCommon2
   openingHours?; restDate?; parking?; // detailIntro2
@@ -108,12 +108,16 @@ parking / coords / summary / address`.
 
 ### Region
 
-| `GET /regions/:code/contents?type=` | — | `200 { items: RegionContent[], nextCursor: null }` |
+| `GET /regions/:code/contents?type=&cursor=&limit=` | — | `200 { items: RegionContent[], nextCursor: number\|null }` (커서 페이지네이션/무한스크롤) |
 | `GET /regions/:code/summary` | — | `200 { code, heroImage?, description, popularity:number }` |
 | `GET /regions/ongoing-festivals?region=` | — | `200 Festival[]` (진행중/예정, 없으면 `[]`) |
 
 `RegionContent` = `{ id, contentId, type:category, region, title, summary?, imageUrl? }`
 `Festival` = `{ id, contentId, type:'festival', region, title, summary?, imageUrl?, eventStart?, eventEnd? }` (날짜 ISO)
+
+> `contents` 페이지네이션(편지 목록과 동일 컨벤션): `cursor`=offset(기본 0), `limit`=페이지 크기(기본 20, 최대 60).
+> 응답 `nextCursor`=다음 요청에 그대로 넘길 offset, 마지막 페이지면 `null`. 무한스크롤은 `nextCursor`가
+> `null`이 될 때까지 이어서 요청. `type` 필터는 페이지네이션과 함께 동작.
 
 ### Rankings
 
@@ -161,6 +165,12 @@ parking / coords / summary / address`.
 | `POST /notifications/read-all` | — | `204` |
 | `POST /notifications/subscribe` | `{endpoint, keys:{p256dh, auth}}` | `201` (endpoint upsert) |
 | `POST /notifications/unsubscribe` | `{endpoint}` | `204` |
+
+### Settings (인증 필요)
+
+`NotificationSettings` = `{ pushEnabled, inAppEnabled, letterReceived, letterLiked }` (모두 boolean, 기본 true)
+| `GET /settings` | — | `200 { notifications: NotificationSettings }` (없으면 기본값 생성 후 반환, 404 없음) |
+| `PATCH /settings/notifications` | `Partial<NotificationSettings>` (부분 갱신) | `200 { notifications: NotificationSettings }` |
 
 ### TravelType / Quiz
 

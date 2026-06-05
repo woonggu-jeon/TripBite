@@ -84,30 +84,21 @@ export type Destination = {
  * 큐레이션 DB) 와 결합해 제공한다고 가정.
  */
 export type DestinationDetail = Destination & {
-  // 대표 사진은 base Destination.imageUrl 이 담당. photos[] 는 추가 갤러리.
-  /** 추가 갤러리 사진 (없으면 imageUrl 만 hero 로) */
+  /** 한 줄 요약 (≤120자) — BE 가 항상 채워서 보냄 */
+  summary?: string;
+  /** 갤러리 사진 (TourAPI detailImage2). 없으면 imageUrl 만 hero */
   photos?: string[];
   address?: string;
   phone?: string;
   website?: string;
-  /** 운영시간 — 줄바꿈 가능한 자유 문자열 (백엔드가 i18n/포맷 책임) */
+  /** 운영시간 — 자유 문자열 */
   openingHours?: string;
-  /** 휴무일 (예: '매주 월요일') */
-  closedDays?: string;
-  /** 입장료 / 가격 안내 */
-  admissionFee?: string;
-  /** 주차 가능 여부 — undefined 는 '정보 없음' */
-  parkingAvailable?: boolean;
+  /** 휴무일 — TourAPI restdate 원본 */
+  restDate?: string;
+  /** 주차 — TourAPI parking 원본 자유 문자열 (예: '가능', '불가', '유료') */
+  parking?: string;
   /** 좌표 (지도 표시용) */
   coords?: { lat: number; lng: number };
-  tags?: string[];
-  rating?: {
-    /** 0~5 평균 */
-    value: number;
-    count: number;
-  };
-  /** 추천 시즌 (Season 코드 배열) */
-  bestSeasons?: Season[];
 };
 
 export type BracketMatch = {

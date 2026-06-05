@@ -59,9 +59,16 @@ export const mockSeeds = {
 
 const mockUser = {
   id: '1',
+  username: 'tester01',
   nickname: '테스터',
   email: 't@e.com',
   homeRegion: 'cheongju',
+  avatarUrl: null as string | null,
+  travelType: null as {
+    code: string;
+    title: string;
+    emoji: string;
+  } | null,
 } as const;
 
 /**
@@ -135,6 +142,7 @@ const TITLE_BY_TYPE: Record<string, string> = {
   'letter.liked': '내 편지에 좋아요',
   event: '새 소식',
   'tournament.shared': '토너먼트 공유',
+  security: '보안 알림',
 };
 const notificationItems: AppNotification[] = notificationSeeds.map((n) => ({
   id: n.id,
@@ -220,15 +228,6 @@ const mockResolvedLocation = {
   ...mockRegionFromCoords(36.6424, 127.489),
 };
 
-const mockWeather = {
-  temperature: 18,
-  feelsLike: 17,
-  condition: 'clear' as const,
-  summary: '맑음, 외출하기 좋아요',
-  humidity: 55,
-  locationLabel: '충북 청주시',
-};
-
 // Unauthorized response — 보호 endpoint 가 getMockSignedIn()=false 일 때 반환.
 const unauthorized = () => new HttpResponse(null, { status: 401 });
 
@@ -264,19 +263,19 @@ export const handlers = [
     setMockSignedIn(false);
     return new HttpResponse(null, { status: 204 });
   }),
-  // refresh 도 getMockSignedIn() 반영 — false 일 때 401 반환해야 interceptor 의
-  // refresh 흐름이 정상 종료. true 로 두면 /me 가 계속 401 인데도 refresh 가
-  // 성공해 무한 retry → /login hard redirect 회귀.
-  http.post(`${apiUrl}/auth/refresh`, () =>
-    getMockSignedIn()
-      ? new HttpResponse(null, { status: 204 })
-      : unauthorized(),
-  ),
+  // POST /auth/refresh 는 sessionID 모델로 전환되며 폐기 (docs/API_CONTRACT.md §1).
   http.get(`${apiUrl}/me`, () =>
     getMockSignedIn()
       ? HttpResponse.json({ ...mockUser, isOnboarded: onboardedState })
       : unauthorized(),
   ),
+  // 회원탈퇴 — 204. 세션 무효 + 소프트 삭제 가정.
+  http.delete(`${apiUrl}/me`, () => {
+    if (!getMockSignedIn()) return unauthorized();
+    setMockSignedIn(false);
+    onboardedState = false;
+    return new HttpResponse(null, { status: 204 });
+  }),
 
   // ===== Onboarding =====
   http.post(`${apiUrl}/me/complete-onboarding`, async ({ request }) => {
@@ -307,9 +306,6 @@ export const handlers = [
   http.get(`${apiUrl}/location/ip`, () =>
     HttpResponse.json(mockResolvedLocation),
   ),
-
-  // ===== Weather =====
-  http.get(`${apiUrl}/weather/current`, () => HttpResponse.json(mockWeather)),
 
   // ===== Letters ===== (모두 로그인 필요)
   // POST 응답으로 Letter 객체 반환 — /letter/sent?id= deep-link 가능하게.
@@ -389,13 +385,23 @@ export const handlers = [
   }),
 
   // ===== Region =====
+  // 페이지네이션 — docs/API_CONTRACT.md §Region:
+  //   cursor=offset(기본 0), limit=페이지 크기(기본 20, 최대 60).
+  //   nextCursor=다음 요청에 그대로 넘길 offset, 마지막 페이지면 null.
   http.get(`${apiUrl}/regions/:code/contents`, ({ params, request }) => {
     const url = new URL(request.url);
     const type = url.searchParams.get('type');
-    const items = regionContentSeeds.filter(
-      (r) => r.region === params.code && r.type === type,
+    const cursorRaw = url.searchParams.get('cursor');
+    const limitRaw = url.searchParams.get('limit');
+    const cursor = Math.max(0, Number(cursorRaw) || 0);
+    const limit = Math.min(60, Math.max(1, Number(limitRaw) || 20));
+    const all = regionContentSeeds.filter(
+      (r) => r.region === params.code && (!type || r.type === type),
     );
-    return HttpResponse.json({ items, nextCursor: null });
+    const slice = all.slice(cursor, cursor + limit);
+    const next = cursor + slice.length;
+    const nextCursor = next < all.length ? next : null;
+    return HttpResponse.json({ items: slice, nextCursor });
   }),
 
   // 시군 summary — 헤더 이미지 / 설명 / 인기도. RegionHero 등에서 사용.
@@ -579,11 +585,21 @@ export const handlers = [
   }),
 
   // ===== Tournament =====
-  http.get(`${apiUrl}/mypage/tournament-history`, () =>
-    getMockSignedIn()
-      ? HttpResponse.json({ items: tournamentHistorySeeds, nextCursor: null })
-      : unauthorized(),
-  ),
+  // 페이지네이션 — 편지/시군콘텐츠와 동일 컨벤션: cursor=offset(기본 0),
+  // limit=페이지 크기(기본 20, 최대 60). 마지막 페이지면 nextCursor=null.
+  http.get(`${apiUrl}/mypage/tournament-history`, ({ request }) => {
+    if (!getMockSignedIn()) return unauthorized();
+    const url = new URL(request.url);
+    const cursor = Math.max(0, Number(url.searchParams.get('cursor')) || 0);
+    const limit = Math.min(
+      60,
+      Math.max(1, Number(url.searchParams.get('limit')) || 20),
+    );
+    const slice = tournamentHistorySeeds.slice(cursor, cursor + limit);
+    const next = cursor + slice.length;
+    const nextCursor = next < tournamentHistorySeeds.length ? next : null;
+    return HttpResponse.json({ items: slice, nextCursor });
+  }),
 
   // 토너먼트 기록 — Play 종료 시 fire-and-forget. record id 반환.
   // 인메모리 (`tournamentRecords`) 에 저장 → GET /tournaments/:id 로 deep-link 복원.
@@ -768,22 +784,6 @@ export const handlers = [
     for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0;
     const u = (n: number) => (Math.abs(h + n) % 1000) / 1000; // 0~1
 
-    const seasonPool: Array<'spring' | 'summer' | 'autumn' | 'winter'> = [
-      'spring',
-      'summer',
-      'autumn',
-      'winter',
-    ];
-    const bestSeasons = seasonPool.filter((_, i) => u(i + 1) > 0.4);
-
-    const tagPool: Record<string, string[]> = {
-      local: ['#로컬', '#시군대표', '#골목투어'],
-      festival: ['#축제', '#연중행사', '#포토존'],
-      attraction: ['#명소', '#자연', '#뷰맛집'],
-      experience: ['#체험', '#가족', '#실내'],
-    };
-    const tags = tagPool[seed.category] ?? [];
-
     // mock photos — deterministic SVG data URL 3장 (id 기반 hue 변동).
     // CSP `img-src: 'self' data: blob:` 에 data: 허용되어 있음.
     // 실 BE 는 CDN URL.
@@ -803,18 +803,21 @@ export const handlers = [
       return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
     });
 
-    const closedDaysPool = [
+    const restDatePool = [
       '매주 월요일',
       '매주 화요일',
       '설/추석 당일',
       '첫째·셋째 월요일',
     ];
+    const parkingPool = ['가능', '불가', '유료', '소형 가능'];
+    // BE 실제 응답 spec (docs/API_CONTRACT.md):
+    //   summary (필수, ≤120자) / photos[] / address? / coords? / phone? / website? /
+    //   openingHours? / restDate? / parking? — TourAPI 원본 명칭 그대로.
+    //   admissionFee / tags / rating / bestSeasons 는 BE 미제공 — 응답에서 제거.
     const detail = {
       ...seed,
-      // description 은 base Destination 필드 — seed 에 없으면 합성.
-      description:
-        seed.description ??
-        `${seed.name} — ${seed.region} 대표 ${seed.category}`,
+      summary: `${seed.name} — ${seed.region} 대표 ${seed.category}`,
+      description: seed.description ?? undefined,
       photos,
       address: `충북 ${seed.region.replace(/[a-z]+/i, '')} ${seed.name} 일대`,
       phone:
@@ -823,22 +826,14 @@ export const handlers = [
           : undefined,
       website: u(20) > 0.5 ? `https://example.com/${id}` : undefined,
       openingHours: u(30) > 0.3 ? '매일 09:00 - 18:00' : undefined,
-      closedDays:
+      restDate:
         u(31) > 0.4
-          ? (closedDaysPool[Math.floor(u(32) * closedDaysPool.length)] ??
-            undefined)
+          ? (restDatePool[Math.floor(u(32) * restDatePool.length)] ?? undefined)
           : undefined,
-      admissionFee:
-        u(40) > 0.5
-          ? `성인 ${1000 + Math.floor(u(41) * 9) * 1000}원 · 청소년 ${1000 + Math.floor(u(42) * 5) * 500}원`
-          : '무료',
-      parkingAvailable: u(45) > 0.5 ? u(46) > 0.3 : undefined,
-      tags: tags.length > 0 ? tags : undefined,
-      rating: {
-        value: Math.round((3.5 + u(50) * 1.5) * 10) / 10,
-        count: 30 + Math.floor(u(51) * 470),
-      },
-      bestSeasons: bestSeasons.length > 0 ? bestSeasons : undefined,
+      parking:
+        u(45) > 0.3
+          ? (parkingPool[Math.floor(u(46) * parkingPool.length)] ?? undefined)
+          : undefined,
       coords: {
         lat: 36.5 + u(60) * 1.2,
         lng: 127.4 + u(61) * 0.9,
@@ -848,14 +843,26 @@ export const handlers = [
   }),
 
   // ===== Notifications ===== (모두 로그인 필요)
-  http.get(`${apiUrl}/notifications`, () =>
-    getMockSignedIn()
-      ? HttpResponse.json({
-          items: notificationItems,
-          unreadCount: notificationItems.filter((n) => !n.read).length,
-        })
-      : unauthorized(),
-  ),
+  // cursor 기반 페이지네이션 — 편지/시군콘텐츠와 동일 컨벤션.
+  // unreadCount 는 매 페이지 응답에 포함 (전체 통합 수) — FE 의 page[0].unreadCount 가
+  // badge source 라 첫 페이지뿐 아니라 일관 보장 의도.
+  http.get(`${apiUrl}/notifications`, ({ request }) => {
+    if (!getMockSignedIn()) return unauthorized();
+    const url = new URL(request.url);
+    const cursor = Math.max(0, Number(url.searchParams.get('cursor')) || 0);
+    const limit = Math.min(
+      60,
+      Math.max(1, Number(url.searchParams.get('limit')) || 20),
+    );
+    const slice = notificationItems.slice(cursor, cursor + limit);
+    const next = cursor + slice.length;
+    const nextCursor = next < notificationItems.length ? next : null;
+    return HttpResponse.json({
+      items: slice,
+      unreadCount: notificationItems.filter((n) => !n.read).length,
+      nextCursor,
+    });
+  }),
   http.post(`${apiUrl}/notifications/:id/read`, ({ params }) => {
     if (!getMockSignedIn()) return unauthorized();
     const id = String(params.id);

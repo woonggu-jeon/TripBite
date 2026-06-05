@@ -28,8 +28,8 @@ const PUBLIC_ONLY_PATHS = [
 
 // 비인증 사용자 차단 — 개인 정보 페이지. 비로그인 진입 시 /login?redirect= 으로 보냄.
 // 그 외 모든 경로 (/ , /tournament, /quiz, /ranking, /region, /destination 등) 는 비로그인도 접근 가능.
-// 알림함 (헤더 dropdown) 은 라우트가 아니라 컴포넌트가 자체 분기.
-const PROTECTED_PATHS = ['/mypage', '/settings', '/letter'];
+// 알림함 (/notifications) 은 이제 페이지 — 보호 경로 포함.
+const PROTECTED_PATHS = ['/mypage', '/settings', '/letter', '/notifications'];
 
 // sessionID 단일 쿠키 — BE 가 'SID' (또는 NEXT_PUBLIC_SESSION_COOKIE) 발급.
 // AUTH_FLOWS.md 의 sessionID 모델 — JWT access/refresh 폐기 후 단일.

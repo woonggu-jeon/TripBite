@@ -1,6 +1,9 @@
 import type { RegionCode } from '@/constants/regions';
-import type { SavedTournament } from '@/features/tournament/types';
-import { destinationSeeds } from './destinations';
+import type {
+  DestinationCategory,
+  SavedTournament,
+} from '@/features/tournament/types';
+import { destinationSeeds, tourSeedId } from './destinations';
 
 /**
  * 토너먼트 기록 시드 — 15회.
@@ -71,19 +74,63 @@ export const tournamentHistorySeeds = Array.from({ length: 15 }, (_, i) => {
  * savedAt 은 최신 → 오래된 순으로 설정 — slice(0, PREVIEW_COUNT) 가
  * 자연스럽게 "최근 저장" 순.
  */
-const SAVED_PICKS: Array<{ destId: string; color: string; chance: number }> = [
-  { destId: 'cheongju-festival-1', color: '#F472B6', chance: 88 },
-  { destId: 'danyang-attraction-1', color: '#60A5FA', chance: 92 },
-  { destId: 'chungju-experience-1', color: '#34D399', chance: 71 },
-  { destId: 'jecheon-attraction-1', color: '#A78BFA', chance: 80 },
-  { destId: 'boeun-local-1', color: '#FBBF24', chance: 65 },
-  { destId: 'goesan-festival-1', color: '#FB7185', chance: 77 },
-  { destId: 'okcheon-attraction-1', color: '#22D3EE', chance: 83 },
+// region+category+idx → tourSeedId() 가 destinations seed 와 동일 id 산출.
+const SAVED_PICKS: Array<{
+  region: RegionCode;
+  category: DestinationCategory;
+  idx: number;
+  color: string;
+  chance: number;
+}> = [
+  {
+    region: 'cheongju',
+    category: 'festival',
+    idx: 1,
+    color: '#F472B6',
+    chance: 88,
+  },
+  {
+    region: 'danyang',
+    category: 'attraction',
+    idx: 1,
+    color: '#60A5FA',
+    chance: 92,
+  },
+  {
+    region: 'chungju',
+    category: 'experience',
+    idx: 1,
+    color: '#34D399',
+    chance: 71,
+  },
+  {
+    region: 'jecheon',
+    category: 'attraction',
+    idx: 1,
+    color: '#A78BFA',
+    chance: 80,
+  },
+  { region: 'boeun', category: 'local', idx: 1, color: '#FBBF24', chance: 65 },
+  {
+    region: 'goesan',
+    category: 'festival',
+    idx: 1,
+    color: '#FB7185',
+    chance: 77,
+  },
+  {
+    region: 'okcheon',
+    category: 'attraction',
+    idx: 1,
+    color: '#22D3EE',
+    chance: 83,
+  },
 ];
 
 export const savedTournamentSeeds: SavedTournament[] = SAVED_PICKS.flatMap(
   (pick, i) => {
-    const dest = destinationSeeds.find((d) => d.id === pick.destId);
+    const id = tourSeedId(pick.region, pick.category, pick.idx);
+    const dest = destinationSeeds.find((d) => d.id === id);
     if (!dest) return [];
     return [
       {

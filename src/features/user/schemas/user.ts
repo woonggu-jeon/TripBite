@@ -12,13 +12,19 @@ import { z } from 'zod';
  */
 export const userSchema = z.object({
   id: z.string(),
+  username: z.string(),
   email: z.string(),
   nickname: z.string(),
-  isOnboarded: z.boolean().optional(),
-  homeRegion: z.string().optional(),
-  travelTypeCode: z.string().optional(),
-  role: z.enum(['user', 'admin']).optional(),
-  createdAt: z.string().optional(),
+  isOnboarded: z.boolean(),
+  homeRegion: z.string(),
+  avatarUrl: z.string().nullable(),
+  travelType: z
+    .object({
+      code: z.string(),
+      title: z.string(),
+      emoji: z.string(),
+    })
+    .nullable(),
 });
 
 export type UserDTO = z.infer<typeof userSchema>;

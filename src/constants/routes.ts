@@ -29,6 +29,7 @@ export const ROUTES = {
   DESTINATION_DETAIL: (id: string) => `/destination/${id}`,
   QUIZ: '/quiz',
   SETTINGS: '/settings',
+  NOTIFICATIONS: '/notifications',
 } as const;
 
 /**

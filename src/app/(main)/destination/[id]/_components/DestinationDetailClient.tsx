@@ -24,14 +24,12 @@ import styles from './DestinationDetailClient.module.scss';
  *   1) SubHeader        — 뒤로가기 + detail.name (fetch 후 채움)
  *   2) Hero             — 카테고리 이모지 + 시군 + 카테고리 라벨
  *   3) Name             — 큰 제목
- *   4) WinnerDetailPanel — 요약 + 평점 + 태그 + 주소/시간/입장료/연락처/웹사이트
- *   5) bestSeasons      — 추천 계절 chip (detail 있을 때만)
+ *   4) WinnerDetailPanel — summary/description + 주소/시간/휴무/주차/연락처/웹사이트
  *
  * isLoading / isError / 데이터 없음 모두 STYLES.md 표준 (Skeleton / EmptyState).
  */
 export function DestinationDetailClient({ id }: { id: string }) {
   const t = useTranslations('destination');
-  const tSeason = useTranslations('tournament.season');
   const tCategory = useTranslations('tournament.category');
   const {
     data: detail,
@@ -127,35 +125,18 @@ export function DestinationDetailClient({ id }: { id: string }) {
           {detail.name}
         </h1>
 
-        {/* 4) 장소 정보 (summary / rating / tags / 주소 / 시간 / 입장료 / 연락처 / web) */}
+        {/* 4) 장소 정보 (summary / description / 주소 / 시간 / 휴무 / 주차 / 연락처 / web) */}
         <WinnerDetailPanel detail={detail} isLoading={false} />
 
-        {/* 5) 추천 계절 chips */}
-        {detail.bestSeasons && detail.bestSeasons.length > 0 && (
-          <section
-            className={styles.seasons}
-            aria-label={t('bestSeasonsLabel')}
-          >
-            <h2 className={styles.sectionTitle}>{t('bestSeasonsLabel')}</h2>
-            <ul className={styles.seasonChips}>
-              {detail.bestSeasons.map((s) => (
-                <li key={s} className={styles.seasonChip}>
-                  {tSeason(s)}
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {/* 6) 이 시군의 다른 여행지 (Carousel) */}
+        {/* 5) 이 시군의 다른 여행지 (Carousel) */}
         <RelatedDestinations id={id} />
 
-        {/* 7) Actions row — 카카오 길찾기 + 공유. (네이버 분기는 코드에 주석으로 유지) */}
+        {/* 6) Actions row — 카카오 길찾기 + 공유. (네이버 분기는 코드에 주석으로 유지) */}
         <DestinationActions
           id={id}
           name={detail.name}
           coords={detail.coords}
-          shareText={detail.description}
+          shareText={detail.summary ?? detail.description}
         />
       </article>
     </>

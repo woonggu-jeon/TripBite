@@ -431,14 +431,10 @@
         "panelLabel": "Destination detail",
         "address": "Address",
         "openingHours": "Hours",
-        "closedDays": "Closed",
-        "admissionFee": "Admission",
+        "restDate": "Closed",
         "parking": "Parking",
-        "parkingYes": "Available",
-        "parkingNo": "Not available",
         "phone": "Phone",
-        "website": "Website",
-        "reviewCount": "{n} reviews"
+        "website": "Website"
       },
       "ladder": {
         "subtitle": "Pick a line and see the chance at its endpoint",
@@ -742,6 +738,8 @@
   "notification": {
     "title": "Notifications",
     "empty": "No notifications yet",
+    "error": "Couldn't load notifications",
+    "retry": "Retry",
     "markAllRead": "Mark all read",
     "signInToView": "Sign in to see your notifications.",
     "signInCta": "Sign in",

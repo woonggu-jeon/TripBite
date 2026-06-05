@@ -105,10 +105,26 @@ const CATEGORIES: DestinationCategory[] = [
   'experience',
 ];
 
+/**
+ * BE 실 데이터 id 체계 = `tour-<contentid>` (TourAPI contentid).
+ * mock seed 도 같은 형식으로 정합 — region/category/index 입력 → deterministic 7자리 정수.
+ * cross-reference (SAVED_PICKS 등) 에서 같은 region/category/idx 면 같은 id 산출.
+ */
+export function tourSeedId(
+  region: RegionCode,
+  category: DestinationCategory,
+  idx: number,
+): string {
+  const s = `${region}-${category}-${idx}`;
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return `tour-${(Math.abs(h) % 9000000) + 1000000}`;
+}
+
 export const destinationSeeds: Destination[] = DATA.flatMap((row) =>
   CATEGORIES.flatMap((c) =>
     row[c].map((name, i) => ({
-      id: `${row.region}-${c}-${i + 1}`,
+      id: tourSeedId(row.region, c, i + 1),
       name,
       category: c,
       region: row.region,

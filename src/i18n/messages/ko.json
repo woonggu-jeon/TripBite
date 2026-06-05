@@ -436,14 +436,10 @@
         "panelLabel": "여행지 상세",
         "address": "주소",
         "openingHours": "운영시간",
-        "closedDays": "휴무일",
-        "admissionFee": "입장료",
+        "restDate": "휴무일",
         "parking": "주차",
-        "parkingYes": "가능",
-        "parkingNo": "불가",
         "phone": "전화",
-        "website": "웹사이트",
-        "reviewCount": "리뷰 {n}"
+        "website": "웹사이트"
       },
       "ladder": {
         "subtitle": "라인을 선택하면 도착점의 확률이 공개돼요",
@@ -747,6 +743,8 @@
   "notification": {
     "title": "알림",
     "empty": "새로운 알림이 없어요",
+    "error": "알림을 불러오지 못했어요",
+    "retry": "다시 시도",
     "markAllRead": "모두 읽음",
     "signInToView": "로그인하면 알림함을 확인할 수 있어요.",
     "signInCta": "로그인",

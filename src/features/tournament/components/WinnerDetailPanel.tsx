@@ -6,8 +6,6 @@ import {
   Phone,
   Globe,
   Clock,
-  Ticket,
-  Star,
   CalendarX,
   CircleParking,
 } from 'lucide-react';
@@ -65,26 +63,19 @@ export function WinnerDetailPanel({ detail, isLoading }: Props) {
       label: t('openingHours'),
       value: detail.openingHours,
     });
-  if (detail.closedDays)
+  if (detail.restDate)
     rows.push({
-      key: 'closed',
+      key: 'restDate',
       icon: <CalendarX size={16} aria-hidden />,
-      label: t('closedDays'),
-      value: detail.closedDays,
+      label: t('restDate'),
+      value: detail.restDate,
     });
-  if (detail.admissionFee)
-    rows.push({
-      key: 'fee',
-      icon: <Ticket size={16} aria-hidden />,
-      label: t('admissionFee'),
-      value: detail.admissionFee,
-    });
-  if (typeof detail.parkingAvailable === 'boolean')
+  if (detail.parking)
     rows.push({
       key: 'parking',
       icon: <CircleParking size={16} aria-hidden />,
       label: t('parking'),
-      value: detail.parkingAvailable ? t('parkingYes') : t('parkingNo'),
+      value: detail.parking,
     });
   if (detail.phone)
     rows.push({
@@ -101,46 +92,17 @@ export function WinnerDetailPanel({ detail, isLoading }: Props) {
       value: detail.website,
     });
 
-  const hasDescription = !!detail.description;
-  const hasRating = !!detail.rating;
-  const hasTags = !!detail.tags && detail.tags.length > 0;
+  // summary 와 description 둘 다 BE 가 보낼 수 있음 — summary 가 짧은 요약, description 이 본문.
+  // 우선 순위: summary 먼저 표시 (있으면), 없으면 description.
+  const lead = detail.summary ?? detail.description;
+  const hasLead = !!lead;
   const hasRows = rows.length > 0;
 
-  if (!hasDescription && !hasRating && !hasTags && !hasRows) return null;
+  if (!hasLead && !hasRows) return null;
 
   return (
     <section className={styles.panel} aria-label={t('panelLabel')}>
-      {hasDescription && <p className={styles.summary}>{detail.description}</p>}
-
-      {(hasRating || hasTags) && (
-        <div className={styles.metaRow}>
-          {hasRating && detail.rating && (
-            <span className={styles.rating}>
-              <Star
-                size={14}
-                fill="currentColor"
-                aria-hidden
-                className={styles.starIcon}
-              />
-              <span className={styles.ratingValue}>
-                {detail.rating.value.toFixed(1)}
-              </span>
-              <span className={styles.ratingCount}>
-                ({t('reviewCount', { n: detail.rating.count })})
-              </span>
-            </span>
-          )}
-          {hasTags && detail.tags && (
-            <ul className={styles.tags}>
-              {detail.tags.map((tg) => (
-                <li key={tg} className={styles.tag}>
-                  {tg}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      )}
+      {hasLead && <p className={styles.summary}>{lead}</p>}
 
       {hasRows && (
         <dl className={styles.rows}>

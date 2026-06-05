@@ -1,0 +1,123 @@
+.wrap {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.allRead {
+  font-size: var(--font-caption);
+  color: var(--color-muted);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: var(--space-1) var(--space-2);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--color-fg);
+    }
+  }
+}
+
+/* loading skeleton — 알림 item 의 dimension 유지 */
+.skeletonList {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.skeletonItem {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3);
+  background: var(--color-surface-soft);
+  border-radius: var(--radius-md);
+}
+
+.skeletonLines {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.link {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: background var(--motion-base) ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: var(--color-hover);
+    }
+  }
+}
+
+.unread {
+  background: var(--color-primary-tint);
+  border-color: color-mix(
+    in srgb,
+    var(--color-primary) 25%,
+    var(--color-border)
+  );
+}
+
+.icon {
+  margin-top: 2px;
+  color: var(--color-muted);
+}
+
+.itemMessage {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  line-height: var(--line-snug);
+  word-break: keep-all;
+}
+
+/* push prompt — 페이지 상단 안내 + enable 버튼 */
+.pushPrompt {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-primary-tint);
+  border: 1px solid
+    color-mix(in srgb, var(--color-primary) 20%, var(--color-border));
+  border-radius: var(--radius-md);
+}
+
+.pushPromptText {
+  font-size: var(--text-sm);
+  color: var(--color-fg);
+  line-height: var(--line-snug);
+}
+
+.pushPromptHint {
+  font-size: var(--font-eyebrow);
+  color: var(--color-muted);
+  line-height: var(--line-snug);
+}
+
+.pushPromptActions {
+  display: flex;
+  gap: var(--space-2);
+}
