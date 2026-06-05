@@ -95,7 +95,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       new QueryClient({
         defaultOptions: queryClientOptions,
         // 글로벌 query 에러 → toast.
-        // 401은 axios interceptor가 /auth/refresh 처리 중이라 skip.
+        // 401은 axios interceptor 가 /login redirect 처리 중이라 skip.
         // mutation 에러는 각 폼에서 setError로 root 표시 → 자동 toast 중복 방지(여기 제외).
         queryCache: new QueryCache({
           onError: (error) => {

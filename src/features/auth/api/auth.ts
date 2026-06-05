@@ -13,10 +13,11 @@ import type {
 import type { User } from '@/features/user/types';
 
 /**
- * 아키텍처 문서 14번
+ * 인증 방식 — sessionID 단일 쿠키 (한국 표준)
  *
- * 백엔드가 Set-Cookie로 access_token/refresh_token을 발급한다고 가정.
- * 프론트는 응답 body의 토큰을 읽지 않는다.
+ * 백엔드가 Set-Cookie 로 단일 session cookie (예: `SID`) 를 HttpOnly + Lax
+ * 로 발급. 프론트는 쿠키를 직접 읽지 않고 withCredentials=true 로 자동 전송.
+ * 만료/Revocation 모두 BE 가 DB Session 행 변경으로 즉시 반영.
  */
 
 export const authApi = {
@@ -51,13 +52,8 @@ export const authApi = {
   },
 
   logout: async () => {
-    // 서버가 쿠키를 만료시키도록 요청
+    // 서버가 SID 쿠키를 만료시키도록 요청
     await api.post('/auth/logout');
-  },
-
-  // 명시적 호출 거의 안 함 — interceptor가 자동 처리
-  refresh: async () => {
-    await api.post('/auth/refresh');
   },
 
   // 현재 사용자 정보 — 인증 상태 hydration 용.

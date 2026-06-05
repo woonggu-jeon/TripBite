@@ -11,25 +11,35 @@
 > - OpenAPI JSON: http://localhost:3000/docs-json
 >   본 MD 문서는 정책/시나리오/에러 코드 매핑 — Swagger 는 endpoint shape contract.
 
+> ⚠️ **변경 알림** — 본 명세는 JWT (access/refresh) 모델에서 **sessionID 단일
+> 쿠키 모델** 로 전환되었습니다. 네이버 / 카카오 등 한국 표준과 일치. BE 가
+> 이미 JWT 로 구현 중이면 다음 작업 필요:
+>
+> - `access_token` JWT 폐기 → 단일 `SID` (또는 `session_id`) 쿠키 발급
+> - guard: 매 요청 cookie SID → DB `Session` 테이블 lookup
+> - `/auth/refresh` endpoint 삭제 (FE 가 더 이상 호출하지 않음)
+> - sliding expiration — 매 인증 요청마다 session 만료 시각 갱신 (선택)
+
 ---
 
 ## 공통
 
-### 인증 방식
+### 인증 방식 — sessionID 단일 쿠키 (한국 표준)
 
-- **쿠키 기반** — `Set-Cookie` 로 `access_token` / `refresh_token` 발급.
-- FE 는 응답 body 의 토큰을 절대 읽지 않음 (XSS 위험 회피).
-- 쿠키 속성 권장: `HttpOnly; Secure; SameSite=Lax; Path=/`.
-  · `refresh_token` 은 `Path=/auth/refresh` 로 좁히는 것 권장.
-  · 만료: access 짧게(15분), refresh 길게(2주~30일).
+- **단일 cookie** `SID` (또는 `session_id`) — `HttpOnly; Secure; SameSite=Lax; Path=/`.
+- BE 가 매 요청 cookie → DB/Redis `Session` 테이블 조회로 검증.
+- 만료 / Revocation 모두 DB row 변경으로 즉시 반영 (관리자 강제 로그아웃 가능).
+- FE 는 쿠키를 직접 읽지 않고 `withCredentials=true` 로 자동 전송.
+- 만료 권장:
+  · session 자체 — 14일 absolute / 1시간 sliding (선택)
+  · sliding 활성 시 매 인증 요청에서 BE 가 `Session.expiresAt` 갱신
 
-### 토큰 갱신 (interceptor 자동)
+### 401 처리 (FE interceptor)
 
-- 401 응답을 받으면 axios interceptor 가 `POST /auth/refresh` 호출 → 성공 시
-  원 요청 재시도. 실패 시 `clearAuth()` + `/login?redirect=...` 푸시.
-- BE 는 `/auth/refresh` 가 access_token 쿠키만 갱신해서 204 또는 200 반환.
-- 무한 refresh 루프 방지: `/auth/refresh` 호출 자체에는 retry 안 함 (interceptor
-  에서 ensure).
+- 401 응답 받으면 **즉시** `window.location.href = '/login'` (refresh 시도 X)
+- auth 페이지 (`/login`, `/signup`, `/find-id`, `/forgot-password`,
+  `/reset-password`, `/onboarding`) 에 있으면 hard redirect skip — 페이지 자체가
+  미인증 흐름이라 reload 무한 루프 회피.
 
 ### 에러 표준화
 
@@ -74,7 +84,7 @@ BE 는 다음 두 가지만 보장하면 됨 (interceptor 가 normalize):
 ### Response 성공 — 200
 
 - Body: `{ "success": true }` (현재 FE 가 success 필드 안 읽음)
-- **Set-Cookie**: `access_token=...; HttpOnly; ...`, `refresh_token=...; HttpOnly; ...`
+- **Set-Cookie**: `SID=<sessionId>; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=...`
 - FE 동작: 즉시 `GET /me` 재호출 → `useAuthStore.setAuth(user)` → `?redirect=`
   쿼리 또는 `/` 로 이동.
 
@@ -325,7 +335,7 @@ FE 의 `/reset-password` 페이지가 진입 시점에 즉시 만료 여부 표�
 
 - **1회용 토큰** (성공 시 즉시 무효화).
 - **토큰 재발급 시 기존 토큰 무효화** — 둘 다 유효 상태 금지.
-- **재설정 성공 시 user 의 모든 기존 session 무효화** (refresh_token DB 전부 삭제).
+- **재설정 성공 시 user 의 모든 기존 Session 무효화** (DB `Session` row 전부 삭제).
   → 다른 디바이스에서 로그아웃됨 → 탈취 대응.
 
 ### 이전 비밀번호 재사용 차단
@@ -362,7 +372,7 @@ FE 폼은 `confirmPassword` 도 받지만 zod refine 으로 일치 검증 후 BE
 
 ### 권장
 
-- 변경 성공 시 기존 refresh_token 무효화 → 다른 디바이스 강제 로그아웃.
+- 변경 성공 시 기존 Session row 전부 무효화 → 다른 디바이스 강제 로그아웃.
 
 ---
 
@@ -374,30 +384,14 @@ FE 폼은 `confirmPassword` 도 받지만 zod refine 으로 일치 검증 후 BE
 
 ### 동작
 
-- BE: 쿠키 만료 (`Set-Cookie: access_token=; Max-Age=0`), refresh_token DB
-  에서 무효화.
+- BE: SID cookie 만료 (`Set-Cookie: SID=; Max-Age=0`) + DB `Session` row 의
+  `revokedAt = now` 또는 row 삭제.
 - FE: 응답 무관 (`onSettled`) `useAuthStore.clearAuth()`, queryClient.clear(),
   SW cache 비움 → `/` 로 이동 (middleware 가 미인증 시 `/login` 으로).
 
 ---
 
-## 8. 토큰 갱신 — `POST /auth/refresh`
-
-### Request — Body 없음, refresh_token 쿠키만
-
-### Response 성공 — 204 + 새 access_token Set-Cookie
-
-### Response 실패 — 401
-
-### 동작
-
-- FE interceptor 가 401 받으면 자동 호출. 호출 결과로 원 요청 retry.
-- BE: refresh_token 검증 → 새 access_token 만 발급. refresh_token rotation
-  적용 시 새 refresh_token 도 Set-Cookie (권장).
-
----
-
-## 9. 내 정보 — `GET /me`
+## 8. 내 정보 — `GET /me`
 
 ### Response 성공 — 200
 
@@ -416,7 +410,7 @@ FE 가 `userSchema.parse()` 로 런타임 검증 — 누락 필드면 hard fail.
 
 ### Response 실패 — 401
 
-- 미인증. interceptor refresh 시도 후 fail 시 `/login?redirect=` 푸시.
+- 미인증. interceptor 가 즉시 `/login?redirect=` 푸시.
 
 ---
 
@@ -435,9 +429,23 @@ BE 는 동일 규칙 + 추가 보안 검증 적용.
 
 ## Set-Cookie 예시 (BE 참고)
 
+sessionID 단일 cookie. `Max-Age` 는 absolute (예: 14일) — sliding expiration
+적용 시 BE 가 매 인증 요청에서 Set-Cookie 재발급해 sliding 효과.
+
 ```http
-Set-Cookie: access_token=eyJhbGc...; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=900
-Set-Cookie: refresh_token=eyJhbGc...; Path=/auth/refresh; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000
+Set-Cookie: SID=<opaque-random-id>; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=1209600
+```
+
+세션 자체는 BE 가 `Session` 테이블 (또는 Redis) 에 보관:
+
+```
+sessionId (PK) | userId (FK) | userAgent | ip | expiresAt | revokedAt | createdAt
+```
+
+로그아웃 / 강제 종료:
+
+```http
+Set-Cookie: SID=; Path=/; HttpOnly; Max-Age=0
 ```
 
 CORS:
@@ -478,7 +486,7 @@ CORS:
 - [ ] 같은 IP 1시간 내 11회째 forgot (이메일 무관) → 429
 - [ ] forgot 재호출 → 기존 토큰 무효화 + 새 토큰 발급 (둘 다 유효 X)
 - [ ] 메일 본문 링크: `${FE_URL}/reset-password?token=${TOKEN}` 형식
-- [ ] 정상 토큰 reset → 204 + 모든 refresh_token DB 무효
+- [ ] 정상 토큰 reset → 204 + 모든 Session DB row 삭제 (강제 로그아웃)
 - [ ] 만료 토큰 → 410 `AUTH_TOKEN_EXPIRED`
 - [ ] 1회 사용한 토큰 재사용 → 400 `AUTH_TOKEN_INVALID`
 - [ ] 위변조 토큰 → 400 `AUTH_TOKEN_INVALID`
@@ -487,8 +495,10 @@ CORS:
 - [ ] reset 성공 후 기존 세션의 GET /me → 401 (강제 로그아웃 확인)
 - [ ] (선택) 계정 보호 알림 — 토큰 발급 직후 메일/인앱 알림
 
-### 로그아웃 / refresh
+### 세션 (로그인 / 로그아웃)
 
-- [ ] 로그아웃 → 204 + 쿠키 만료 + refresh_token DB 무효
-- [ ] 만료된 access + 유효 refresh → /auth/refresh 204 → 원 요청 자동 retry
-- [ ] 만료된 refresh → 401 → FE 가 /login 푸시
+- [ ] 정상 자격 로그인 → 200 + `SID` Set-Cookie + DB `Session` row 생성
+- [ ] 로그아웃 → 204 + SID 쿠키 만료 + DB Session row revoked/delete
+- [ ] 만료된 SID 로 보호 endpoint → 401 → FE 가 /login 푸시
+- [ ] 다른 디바이스 / 브라우저 동시 로그인 → 각자 별도 Session row (UA/IP)
+- [ ] 관리자 강제 로그아웃 → DB Session row 삭제 즉시 차단

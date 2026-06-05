@@ -14,8 +14,7 @@ export const notificationKeys = {
  * 인박스 조회
  *
  * - 인증 상태에서만 fetch — 비로그인 시 enabled=false 로 query 정지.
- *   비로그인에서 fetch 시 401 → axios interceptor 의 /auth/refresh 실패 →
- *   /login hard redirect 회귀.
+ *   비로그인에서 fetch 시 401 → axios interceptor 가 /login hard redirect.
  * - mock 환경도 mockSignedIn 토글로 실제 401 분기 → 동일 isAuthenticated 사용.
  * - 30초마다 자동 갱신 (윈도우 포커스 시에도).
  */
