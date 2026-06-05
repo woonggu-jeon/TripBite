@@ -30,8 +30,27 @@ import { localOnboarding } from '@/features/onboarding/hooks/use-local-onboardin
 // 운영에선 middleware 가 먼저 막아 이 경로 진입 자체가 없음 — 안전망 역할.
 const PROTECTED_PATHS = ['/mypage', '/settings', '/letter'];
 
+// onboarding 자동 redirect 를 적용하지 않는 경로 — auth/정책/오프라인 + onboarding 자체.
+// 무한 루프 회피: /onboarding 안에서 /onboarding 으로 또 redirect 하지 않도록.
+const SKIP_ONBOARDING_REDIRECT_PATHS = [
+  '/onboarding',
+  '/login',
+  '/signup',
+  '/find-id',
+  '/forgot-password',
+  '/reset-password',
+  '/policy',
+  '/offline',
+];
+
 function isProtectedPath(pathname: string): boolean {
   return PROTECTED_PATHS.some(
+    (p) => pathname === p || pathname.startsWith(`${p}/`),
+  );
+}
+
+function shouldSkipOnboardingRedirect(pathname: string): boolean {
+  return SKIP_ONBOARDING_REDIRECT_PATHS.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
   );
 }
@@ -86,10 +105,12 @@ export function AuthBootstrap() {
       return;
     }
 
-    // 비인증 + public 경로 (메인 / 시군 / 토너먼트 / 퀴즈 / 랭킹 등) —
-    // **자유롭게 둘러볼 수 있도록 onboarding 자동 redirect 안 함**.
-    // 첫 방문 안내가 필요하면 별도 banner / CTA 로 onboarding 진입 유도.
-    // (사용자가 /onboarding 직접 진입은 그대로 가능.)
+    // 비인증 + public 경로 + 첫 방문 (localStorage 미설정) → /onboarding 자동 진입.
+    // SKIP_ONBOARDING_REDIRECT_PATHS 에 포함된 경로 (auth / policy / onboarding
+    // 자체 등) 는 skip — 무한 루프 회피.
+    if (!shouldSkipOnboardingRedirect(pathname) && !localOnboarding.read()) {
+      router.replace('/onboarding');
+    }
   }, [
     isLoading,
     isSuccess,

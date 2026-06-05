@@ -17,7 +17,6 @@ import { ThemeApplier } from '@/features/theme/ThemeApplier';
 import { ServiceWorkerNavigateBridge } from '@/features/notification/components/ServiceWorkerNavigateBridge';
 import { Toaster } from '@/components/feedback/Toaster';
 import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
-import { OnboardingModal } from '@/features/onboarding/components/OnboardingModal';
 import {
   PwaUpdateBanner,
   OfflineBanner,
@@ -160,9 +159,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
       {/* 글로벌 피드백 UI */}
       <Toaster />
       <ConfirmDialog />
-
-      {/* 첫 방문자 환영 modal — localStorage tripbite.onboarded 미설정 시 1회 표시 */}
-      <OnboardingModal />
 
       {/* PWA 배너들 */}
       <PwaUpdateBanner />

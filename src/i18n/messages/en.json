@@ -191,16 +191,6 @@
         "invisibleChar": "Invisible characters are not allowed.",
         "controlChar": "Disallowed characters detected."
       }
-    },
-    "welcomeModal": {
-      "title": "Welcome to TripBite",
-      "subtitle": "Three ways to rediscover Chungbuk",
-      "feature1": "🏆 Tournament — pick winners from your favorite spots",
-      "feature2": "✉️ 5-letter Letter — send anonymous messages",
-      "feature3": "📮 Stamp Book — collect 11 city winners",
-      "cta": "Start exploring",
-      "detailCta": "Learn more",
-      "ariaLabel": "About TripBite"
     }
   },
   "home": {
