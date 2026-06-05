@@ -18,13 +18,10 @@ import { buildCsp } from '@/lib/csp';
  */
 
 // 인증된 사용자가 진입 시 / 로 보냄 ("로그인된 사람이 로그인 페이지 보면 안 됨")
-const PUBLIC_ONLY_PATHS = [
-  '/login',
-  '/signup',
-  '/forgot-password',
-  '/reset-password',
-  '/find-id',
-];
+// /reset-password 는 token 기반 흐름 — 이메일 링크에서 진입 시 로그인 상태와 무관하게
+// 토큰 검증해야 하므로 제외. (다른 디바이스에서 로그인된 사용자가 메일 링크 클릭하는
+// 케이스가 정상 시나리오 — / 로 차단되면 비밀번호 재설정 불가능 회귀.)
+const PUBLIC_ONLY_PATHS = ['/login', '/signup', '/forgot-password', '/find-id'];
 
 // 비인증 사용자 차단 — 개인 정보 페이지. 비로그인 진입 시 /login?redirect= 으로 보냄.
 // 그 외 모든 경로 (/ , /tournament, /quiz, /ranking, /region, /destination 등) 는 비로그인도 접근 가능.

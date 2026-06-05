@@ -152,13 +152,20 @@
     },
     "resetPassword": {
       "title": "Set new password",
-      "password": "New password",
+      "password": "New password (10+ chars)",
+      "confirmPassword": "Confirm new password",
       "submit": "Change password",
       "submitting": "Changing...",
       "failed": "Could not reset. The link may have expired.",
       "invalidTitle": "Invalid link",
       "invalidDescription": "This reset link is expired or invalid.",
-      "retry": "Request again"
+      "retry": "Request again",
+      "errors": {
+        "passwordMin": "Password must be at least 10 characters.",
+        "passwordMax": "Password is too long.",
+        "confirmRequired": "Please confirm your new password.",
+        "mismatch": "Passwords do not match."
+      }
     },
     "logout": "Sign out"
   },

@@ -17,23 +17,35 @@ describe('forgotPasswordSchema', () => {
 });
 
 describe('resetPasswordSchema', () => {
-  it('토큰 + 10자 비번 통과', () => {
-    expect(
-      resetPasswordSchema.safeParse({ token: 't', password: '1234567890' })
-        .success,
-    ).toBe(true);
+  const valid = {
+    token: 't',
+    password: '1234567890',
+    confirmPassword: '1234567890',
+  };
+  it('토큰 + 10자 비번 + 확인 일치 통과', () => {
+    expect(resetPasswordSchema.safeParse(valid).success).toBe(true);
   });
   it('비번 10자 미만 거부', () => {
     expect(
-      resetPasswordSchema.safeParse({ token: 't', password: '123456789' })
-        .success,
+      resetPasswordSchema.safeParse({
+        ...valid,
+        password: '123456789',
+        confirmPassword: '123456789',
+      }).success,
     ).toBe(false);
   });
   it('빈 토큰 거부', () => {
-    expect(
-      resetPasswordSchema.safeParse({ token: '', password: '1234567890' })
-        .success,
-    ).toBe(false);
+    expect(resetPasswordSchema.safeParse({ ...valid, token: '' }).success).toBe(
+      false,
+    );
+  });
+  it('확인 불일치 거부 (mismatch)', () => {
+    const r = resetPasswordSchema.safeParse({
+      ...valid,
+      confirmPassword: 'different00',
+    });
+    expect(r.success).toBe(false);
+    if (!r.success) expect(r.error.issues[0]?.message).toBe('mismatch');
   });
 });
 

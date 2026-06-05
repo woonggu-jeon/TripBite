@@ -12,10 +12,20 @@ export const forgotPasswordSchema = z.object({
   email: z.string().email('emailInvalid'),
 });
 
-export const resetPasswordSchema = z.object({
-  token: z.string().min(1),
-  password: z.string().min(10, 'passwordMin').max(72, 'passwordMax'),
-});
+/**
+ * 재설정 — token + 새 비번 + 확인 일치.
+ * BE 는 `{ token, password }` 만 받음 — confirmPassword 는 FE 검증용 (전송 X).
+ */
+export const resetPasswordSchema = z
+  .object({
+    token: z.string().min(1),
+    password: z.string().min(10, 'passwordMin').max(72, 'passwordMax'),
+    confirmPassword: z.string().min(1, 'confirmRequired'),
+  })
+  .refine((d) => d.password === d.confirmPassword, {
+    message: 'mismatch',
+    path: ['confirmPassword'],
+  });
 
 /**
  * 비밀번호 변경 (로그인 상태) — 현재 비번 확인 + 새 비번(10자+) + 확인 일치

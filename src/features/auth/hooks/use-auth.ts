@@ -66,7 +66,13 @@ export function useLogin(options?: { redirectTo?: string }) {
       setAuth(user);
       // 로그인 성공 → 원래 가려던 경로 (LoginForm 이 ?redirect= 로 전달) 또는 홈.
       // dynamic path 라 typedRoutes 강제 캐스팅 필요 (open-redirect 차단은 LoginForm 에서 처리).
+      //
+      // router.refresh() — RSC cache 강제 갱신.
+      // 회귀: 첫 로그인 시 replace 만 호출하면 next/server 의 RSC payload 가
+      // 미인증 시점 cache 를 그대로 들고 있어 navigate 가 paint 안 됨 (사용자
+      // 보고 "다시 클릭하면 이동"). refresh 가 새 cookie 로 RSC 재요청 → 정상 paint.
       router.replace((options?.redirectTo ?? '/') as Route);
+      router.refresh();
     },
   });
 }
@@ -90,10 +96,25 @@ export function useForgotPassword() {
 
 export function useResetPassword() {
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const clearAuth = useAuthStore((s) => s.clearAuth);
   return useMutation({
     mutationFn: (data: ResetPasswordRequest) => authApi.resetPassword(data),
-    onSuccess: () => {
+    onSuccess: async () => {
+      // 비번 변경 후 기존 세션 즉시 무효화.
+      // BE 가 reset 시 세션을 자동 invalidate 안 할 가능성 대비 — 명시 logout 호출로
+      // SID cookie 정리. SID 가 살아있으면 /login 진입을 middleware 가 / 로 차단해
+      // 사용자가 새 비번으로 다시 로그인 불가능한 회귀가 생김. HttpOnly 라 JS 로
+      // cookie 직접 제거 불가 — BE 의 logout endpoint 가 Set-Cookie 만료로 정리.
+      try {
+        await authApi.logout();
+      } catch {
+        // logout 실패 (이미 세션 없거나 401) — 무시. 다음 navigate 진행.
+      }
+      clearAuth();
+      queryClient.clear();
       router.replace('/login?reset=success');
+      router.refresh();
     },
   });
 }

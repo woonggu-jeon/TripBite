@@ -20,7 +20,7 @@ import styles from './AuthForm.module.scss';
  */
 export function ResetPasswordForm() {
   const t = useTranslations('auth.resetPassword');
-  const tErr = useTranslations('auth.signup.errors');
+  const tErr = useTranslations('auth.resetPassword.errors');
   const token = useSearchParams().get('token') ?? '';
   const { mutateAsync: reset } = useResetPassword();
 
@@ -31,12 +31,13 @@ export function ResetPasswordForm() {
     setError,
   } = useForm<ResetPasswordValues>({
     resolver: zodResolver(resetPasswordSchema),
-    defaultValues: { token, password: '' },
+    defaultValues: { token, password: '', confirmPassword: '' },
   });
 
   const onSubmit = handleSubmit(async (values) => {
     try {
-      await reset(values);
+      // BE 는 { token, password } 만 받음 — confirmPassword 는 FE 검증용.
+      await reset({ token: values.token, password: values.password });
     } catch (err) {
       const message = isAxiosError(err)
         ? ((err.response?.data as { message?: string })?.message ?? t('failed'))
@@ -78,6 +79,25 @@ export function ResetPasswordForm() {
         {errors.password && (
           <p className={styles.error}>
             {tErr(errors.password.message as Parameters<typeof tErr>[0])}
+          </p>
+        )}
+      </div>
+
+      <div className={styles.field}>
+        <label htmlFor="confirmPassword" className={styles.label}>
+          {t('confirmPassword')}
+        </label>
+        <input
+          id="confirmPassword"
+          type="password"
+          autoComplete="new-password"
+          aria-invalid={!!errors.confirmPassword}
+          className={styles.input}
+          {...register('confirmPassword')}
+        />
+        {errors.confirmPassword && (
+          <p className={styles.error}>
+            {tErr(errors.confirmPassword.message as Parameters<typeof tErr>[0])}
           </p>
         )}
       </div>
