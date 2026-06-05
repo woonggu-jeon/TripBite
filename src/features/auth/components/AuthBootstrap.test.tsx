@@ -101,16 +101,16 @@ describe('AuthBootstrap — 4 redirect 분기', () => {
     });
   });
 
-  it('비인증 + localStorage 없음 + / → /onboarding 으로 replace', async () => {
+  it('비인증 + localStorage 없음 + / → 메인 머묾 (onboarding 강제 X)', async () => {
     setPath('/');
     stubMe401();
-    // localStorage 없음 기본
+    // localStorage 없음 기본 — public 페이지는 비로그인 자유 둘러보기 정책
 
     renderWithProviders(<AuthBootstrap />);
 
-    await waitFor(() => {
-      expect(router.replace).toHaveBeenCalledWith('/onboarding');
-    });
+    // 충분히 기다림 — replace 호출 안 됨 확인
+    await new Promise((r) => setTimeout(r, 100));
+    expect(router.replace).not.toHaveBeenCalled();
   });
 
   it('비인증 + localStorage onboarded → 진입 가능 (no redirect)', async () => {

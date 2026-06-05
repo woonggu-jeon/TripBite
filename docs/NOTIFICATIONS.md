@@ -4,7 +4,9 @@
 FE 작업 없이 동작.
 
 `@/services/api/client` 의 axios `baseURL = NEXT_PUBLIC_API_URL` 기준.
-모든 요청은 `withCredentials: true` (쿠키 기반 인증).
+모든 요청은 `withCredentials: true` (sessionID `SID` cookie 자동 전송).
+인증 모델은 `AUTH_FLOWS.md` 참조 — 인박스 / 구독 endpoint 도 401 시 동일
+처리 (interceptor 가 `/login` 으로 hard redirect, auth 페이지 외).
 
 알림은 **두 채널** 으로 분리:
 
@@ -26,10 +28,22 @@ type NotificationType =
   | 'letter.received' // 받은 편지 도착
   | 'letter.liked' // 내 편지에 좋아요
   | 'tournament.shared' // 토너먼트 공유 (수신자에게)
+  | 'security' // 비번 재설정 요청 등 계정 보안 알림 (AUTH_FLOWS.md §4-1)
   | 'event'; // 일반 이벤트/공지
 ```
 
 추가 필요 시 type 유니온 확장 + FE `NotificationDropdown` 의 `TYPE_ICON` 매핑.
+
+#### Wire format — dot vs underscore
+
+**전송 format 합의 필요**:
+
+- Prisma enum 은 dot (`.`) 사용 불가 → BE entity 는 `letter_received` 등
+  underscore 로 저장.
+- FE 는 dot 표기 (`letter.received`) 사용 중.
+- **권장**: BE 가 응답 시 underscore → dot 변환 (예: `letter_received` →
+  `letter.received`). 또는 FE 가 underscore 통일 (전수 변경 필요).
+- 합의 전까지 FE 가 unknown type 도 Bell fallback 으로 안전 처리.
 
 ### A-1. `GET /notifications` — 인박스 조회
 
@@ -43,7 +57,12 @@ type NotificationType =
 
 type AppNotification = {
   id: string;
-  type: 'letter.received' | 'letter.liked' | 'tournament.shared' | 'event';
+  type:
+    | 'letter.received'
+    | 'letter.liked'
+    | 'tournament.shared'
+    | 'security'
+    | 'event';
   title: string;              // 표시용 텍스트 ("새로운 편지가 도착했어요")
   body?: string;              // 부가 정보 (보낸 사람 닉네임 / 편지 미리보기 등)
   link?: string;              // 클릭 시 이동 경로 (예: "/letter/abc123")
@@ -291,15 +310,19 @@ BE 합류 후 mock 코드는 제거하지 않고 dev 도구로 유지 (`NEXT_PUB
 
 ## F. 발송 이벤트 매핑 (실 비즈니스 룰)
 
-| 트리거             | type                | title                          | body                                       | link                                | tag                            |
-| ------------------ | ------------------- | ------------------------------ | ------------------------------------------ | ----------------------------------- | ------------------------------ | --------------------- | -------------------- |
-| 새 편지 도착       | `letter.received`   | `편지가 도착했어요`            | `{senderNickname                           |                                     | '익명의 여행자'}가 보낸 5글자` | `/letter/${letterId}` | `letter:${letterId}` |
-| 내 편지에 좋아요   | `letter.liked`      | `좋아요를 받았어요`            | `${likerCount}명이 당신의 편지를 좋아해요` | `/letter/${letterId}`               | `like:${letterId}`             |
-| 토너먼트 공유 받음 | `tournament.shared` | `친구가 토너먼트를 공유했어요` | `${sharerNickname}: ${winnerName}`         | `/tournament/result?id=${recordId}` | `tournament:${recordId}`       |
-| 이벤트/공지        | `event`             | (관리자 입력)                  | (관리자 입력)                              | (관리자 입력)                       | `event:${id}`                  |
+| 트리거                  | type                | title                        | body                                                                               | link                                | tag                        |
+| ----------------------- | ------------------- | ---------------------------- | ---------------------------------------------------------------------------------- | ----------------------------------- | -------------------------- |
+| 새 편지 도착            | `letter.received`   | 편지가 도착했어요            | `${senderNickname}` (익명 발송 또는 nickname 없으면 "익명의 여행자") 가 보낸 5글자 | `/letter/${letterId}`               | `letter:${letterId}`       |
+| 내 편지에 좋아요        | `letter.liked`      | 좋아요를 받았어요            | `${likerCount}` 명이 당신의 편지를 좋아해요                                        | `/letter/${letterId}`               | `like:${letterId}`         |
+| 토너먼트 공유 받음      | `tournament.shared` | 친구가 토너먼트를 공유했어요 | `${sharerNickname}: ${winnerName}`                                                 | `/tournament/result?id=${recordId}` | `tournament:${recordId}`   |
+| 비번 재설정 요청 (선택) | `security`          | 비밀번호 재설정 요청         | 본인이 아니라면 비밀번호를 즉시 변경해 주세요                                      | `/settings` 또는 `/forgot-password` | `security:reset:${userId}` |
+| 이벤트/공지             | `event`             | (관리자 입력)                | (관리자 입력)                                                                      | (관리자 입력)                       | `event:${id}`              |
 
 `tag` 가 같은 알림은 OS 가 중복 표시 안 함 — 같은 편지에 여러 좋아요는 마지막
 하나만 보임 (의도).
+
+`body` 의 변수는 BE 가 보간한 **완성된 한글 문자열** 로 발송 (FE 는 그대로 표시).
+i18n 분리는 향후 다국어 알림 도입 시 별도 작업 (현재 ko 만).
 
 ---
 
@@ -363,13 +386,32 @@ BE 합류 후 mock 코드는 제거하지 않고 dev 도구로 유지 (`NEXT_PUB
 
 ### FE (`NEXT_PUBLIC_*` — 빌드 시 inline)
 
-- `NEXT_PUBLIC_VAPID_PUBLIC_KEY` — VAPID public key (base64url)
-- `NEXT_PUBLIC_API_URL` — API base URL
+```
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=BNbxqv...    # 88자 base64url, BE Public 과 동일
+NEXT_PUBLIC_API_URL=http://localhost:3000/v1
+```
 
-### BE (서버 secrets)
+### BE (서버 secrets — 절대 노출 금지)
 
-- `VAPID_PUBLIC_KEY` — 동일 값 (검증용)
-- `VAPID_PRIVATE_KEY` — 서명용 (절대 노출 금지)
-- `VAPID_SUBJECT` — `mailto:contact@tripbite.app` 형식
+```
+VAPID_PUBLIC_KEY=BNbxqv...                # FE 와 동일
+VAPID_PRIVATE_KEY=43자_base64url           # 서명용. 노출 시 즉시 회전
+VAPID_SUBJECT=mailto:contact@tripbite.app # RFC 8292 형식 (mailto: 또는 https:)
+```
 
-VAPID key 변경 시 모든 기존 구독 무효화 — 신중히.
+### Key 회전 절차 (운영 단계)
+
+1. 새 VAPID pair 생성 (`npx web-push generate-vapid-keys`)
+2. BE 가 신/구 key 둘 다 인정하는 transition 기간 (1-2주)
+3. FE 환경변수 갱신 + 재배포 → 신규 구독은 새 public key 로
+4. transition 종료 후 구 key 제거 + 기존 endpoint DB 자연 만료 (또는 cleanup)
+
+급한 회전 (key 노출 사고) — transition 생략 가능, 모든 기존 구독 즉시 무효화.
+
+### Push 발송 rate limit (운영 권장)
+
+- 사용자당 1시간 N건 (예: 10건) 초과 시 BE skip + 로그
+- 같은 tag 의 알림은 최대 1건 / 5분
+- bulk push (event 공지) 는 별도 cron + 배치 단위로
+
+브라우저가 push 빈도 과다 감지 시 자체 throttle 또는 사용자가 권한 취소 위험.

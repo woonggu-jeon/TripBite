@@ -7,25 +7,28 @@ import axios from 'axios';
  * 한국 표준 (네이버 / 카카오 / 대형 포털) 의 sessionID 쿠키 모델:
  *   - 단일 cookie (HttpOnly, SameSite=Lax) 가 sessionID 보관
  *   - BE 가 매 요청마다 cookie → DB/Redis 세션 조회로 검증
- *   - 만료 시 BE 가 cookie 폐기 + 401. FE 는 /login 으로 보냄
- *   - revocation 즉시 가능 (관리자 강제 로그아웃 / 보안 사고)
- *
- * → JWT access/refresh rotation 같은 클라이언트 측 갱신 로직 불필요.
+ *   - 만료 시 BE 가 cookie 폐기 + 401. FE 는 보호 경로에서만 /login 으로 보냄
  *
  * 정책:
  *   - 401 받으면 그대로 reject (refresh 시도 X)
+ *   - **보호 경로 (/mypage, /settings, /letter, /notifications) 에 있을 때만**
+ *     hard redirect '/login' — 비로그인으로 둘러볼 수 있는 public 페이지
+ *     (/, /region, /quiz, /tournament 등) 에서는 401 silent reject 만 하고
+ *     페이지 그대로 유지.
  *   - auth 페이지 (/login, /signup, /find-id, /forgot-password,
- *     /reset-password, /onboarding) 에서는 hard redirect 안 함 — 페이지
- *     자체가 미인증 흐름이라 reload 무한 루프 회피
- *   - mock 환경 (USE_MSW=true) 도 hard redirect 안 함 — AuthBootstrap +
- *     MockAuthToggle 이 unauth UX 자체 처리
- *   - 나머지는 window.location.href = '/login' (강제 재로그인)
+ *     /reset-password, /onboarding) 에서도 hard redirect skip — 무한 루프 회피.
+ *   - mock 환경 (USE_MSW=true) 도 hard redirect skip — AuthBootstrap +
+ *     MockAuthToggle 이 unauth UX 자체 처리.
  */
 
 /**
+ * 미인증 시 강제 로그인 이동 대상 경로.
+ * AUTH_FLOWS.md 의 보호 경로 정책 + middleware.ts 의 PROTECTED_PATHS 와 동기.
+ */
+const PROTECTED_PATHS = ['/mypage', '/settings', '/letter', '/notifications'];
+
+/**
  * 이미 인증 페이지인지 검사 — hard redirect 무한 루프 회피.
- * AuthBootstrap 이 모든 페이지에서 useMe() 를 부르는데, /login 의 useMe 가 401 →
- * hard redirect '/login' → 페이지 reload → 또 useMe 401 → ... 무한.
  */
 function isAlreadyOnAuthPage(): boolean {
   if (typeof window === 'undefined') return false;
@@ -43,6 +46,17 @@ function isAlreadyOnAuthPage(): boolean {
   );
 }
 
+/**
+ * 보호 경로에 있는지 — 401 시 hard redirect 대상.
+ * public 페이지 (메인 / 시군 / 토너먼트 setup / 퀴즈 등) 는 비로그인 사용자도
+ * 자유롭게 둘러볼 수 있도록 redirect 안 함.
+ */
+function isOnProtectedPath(): boolean {
+  if (typeof window === 'undefined') return false;
+  const p = window.location.pathname;
+  return PROTECTED_PATHS.some((pp) => p === pp || p.startsWith(`${pp}/`));
+}
+
 export function attachAuthInterceptor(instance: AxiosInstance) {
   instance.interceptors.response.use(
     (response) => response,
@@ -53,7 +67,12 @@ export function attachAuthInterceptor(instance: AxiosInstance) {
       }
 
       const isMock = process.env.NEXT_PUBLIC_USE_MSW === 'true';
-      if (!isMock && !isAlreadyOnAuthPage() && typeof window !== 'undefined') {
+      if (
+        !isMock &&
+        !isAlreadyOnAuthPage() &&
+        isOnProtectedPath() &&
+        typeof window !== 'undefined'
+      ) {
         // store import 시 순환참조 위험 → 직접 redirect
         window.location.href = '/login';
       }

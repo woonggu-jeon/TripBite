@@ -25,18 +25,6 @@ import { localOnboarding } from '@/features/onboarding/hooks/use-local-onboardin
  * 렌더 X — 부수효과만.
  */
 
-// onboarding redirect 를 적용하지 않는 경로 — auth 페이지, 정책 페이지 등.
-const SKIP_REDIRECT_PATHS = [
-  '/onboarding',
-  '/login',
-  '/signup',
-  '/find-id',
-  '/forgot-password',
-  '/reset-password',
-  '/policy',
-  '/offline',
-];
-
 // middleware 와 동일 — mock 환경 (USE_MSW=true) 에선 middleware redirect 가 skip 되므로
 // 미인증 + 보호 경로 진입 시 클라이언트에서 동일한 redirect 를 적용해야 한다.
 // 운영에선 middleware 가 먼저 막아 이 경로 진입 자체가 없음 — 안전망 역할.
@@ -44,12 +32,6 @@ const PROTECTED_PATHS = ['/mypage', '/settings', '/letter'];
 
 function isProtectedPath(pathname: string): boolean {
   return PROTECTED_PATHS.some(
-    (p) => pathname === p || pathname.startsWith(`${p}/`),
-  );
-}
-
-function shouldSkipRedirect(pathname: string): boolean {
-  return SKIP_REDIRECT_PATHS.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
   );
 }
@@ -104,10 +86,10 @@ export function AuthBootstrap() {
       return;
     }
 
-    // 비인증 (isError 또는 me 호출 안 됨) — localStorage 기반 onboarding redirect
-    if (!shouldSkipRedirect(pathname) && !localOnboarding.read()) {
-      router.replace('/onboarding');
-    }
+    // 비인증 + public 경로 (메인 / 시군 / 토너먼트 / 퀴즈 / 랭킹 등) —
+    // **자유롭게 둘러볼 수 있도록 onboarding 자동 redirect 안 함**.
+    // 첫 방문 안내가 필요하면 별도 banner / CTA 로 onboarding 진입 유도.
+    // (사용자가 /onboarding 직접 진입은 그대로 가능.)
   }, [
     isLoading,
     isSuccess,
