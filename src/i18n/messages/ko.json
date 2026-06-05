@@ -541,8 +541,8 @@
       "letterAria": "보낸 편지 카드",
       "from": "From",
       "to": "To",
-      "toRecipient": "{recipient} 님에게",
-      "toArrival": "약 {minutes}분 후 도착해요",
+      "toRecipient": "익명의 여행자 님에게",
+      "toArrival": "랜덤 시간에 도착해요",
       "sentBadge": "전송됨",
       "again": "또 쓰기",
       "home": "홈으로",
@@ -732,11 +732,11 @@
       "logoutConfirmDescription": "다시 로그인하면 이어서 사용할 수 있어요.",
       "logoutConfirmLabel": "로그아웃",
       "withdraw": "회원 탈퇴",
+      "withdrawing": "탈퇴 중...",
       "withdrawConfirmTitle": "정말 탈퇴할까요?",
       "withdrawConfirmDescription": "탈퇴하면 프로필 / 저장한 우승지 / 도장책 / 보낸 편지가 모두 영구 삭제돼요. 이 작업은 되돌릴 수 없어요.",
       "withdrawConfirmLabel": "탈퇴하기",
-      "withdrawPending": "탈퇴 처리는 백엔드 연동 후 활성화돼요.",
-      "contact": "문의하기"
+      "withdrawFailed": "탈퇴에 실패했어요. 잠시 후 다시 시도해주세요."
     }
   },
   "destination": {

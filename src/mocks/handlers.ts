@@ -198,8 +198,7 @@ function resolveTravelType(answers: TravelTypeAnswer[]): TravelType {
   return { ...meta, recommended: pickRandom(pool, 3) };
 }
 
-// dev mock — 단일 좌표라도 사용자에게 다양해 보이도록 좌표 hash 기반 11시군 매핑.
-// 좌표가 같으면 같은 시군 반환(deterministic). 실제 backend 는 정확한 reverse geocoding.
+// 11 시군 라벨 — rankings/by-region 응답에서 사용.
 const MOCK_REGIONS = [
   { label: '충북 청주시', regionCode: 'cheongju' },
   { label: '충북 충주시', regionCode: 'chungju' },
@@ -213,20 +212,6 @@ const MOCK_REGIONS = [
   { label: '충북 음성군', regionCode: 'eumseong' },
   { label: '충북 증평군', regionCode: 'jeungpyeong' },
 ];
-
-function mockRegionFromCoords(latitude: number, longitude: number) {
-  // 0.0001 단위까지 반영 → 같은 위치에서 항상 같은 결과
-  const seed =
-    Math.abs(Math.round(latitude * 10000) + Math.round(longitude * 10000)) >>>
-    0;
-  return MOCK_REGIONS[seed % MOCK_REGIONS.length] ?? MOCK_REGIONS[0]!;
-}
-
-const mockResolvedLocation = {
-  latitude: 36.6424,
-  longitude: 127.489,
-  ...mockRegionFromCoords(36.6424, 127.489),
-};
 
 // Unauthorized response — 보호 endpoint 가 getMockSignedIn()=false 일 때 반환.
 const unauthorized = () => new HttpResponse(null, { status: 401 });
@@ -289,23 +274,26 @@ export const handlers = [
   }),
 
   // ===== Location =====
-  // 좌표 → 라벨 (reverse geocode) — 좌표 hash 기반 11시군 분산
+  // POST /location/reverse — 좌표 → 한글 행정구역 라벨. BE 가 Kakao reverse wrap.
+  // mock 은 좌표 hash 기반으로 11 시군 중 하나 분산 매핑 (전국 좌표도 동일 한도).
   http.post(`${apiUrl}/location/reverse`, async ({ request }) => {
     const coords = (await request.json()) as {
       latitude: number;
       longitude: number;
     };
-    const region = mockRegionFromCoords(coords.latitude, coords.longitude);
+    const seed =
+      Math.abs(
+        Math.round(coords.latitude * 10000) +
+          Math.round(coords.longitude * 10000),
+      ) >>> 0;
+    const region = MOCK_REGIONS[seed % MOCK_REGIONS.length] ?? MOCK_REGIONS[0]!;
     return HttpResponse.json({
-      ...coords,
+      latitude: coords.latitude,
+      longitude: coords.longitude,
       label: region.label,
       regionCode: region.regionCode,
     });
   }),
-  // IP 기반 대략적 위치
-  http.get(`${apiUrl}/location/ip`, () =>
-    HttpResponse.json(mockResolvedLocation),
-  ),
 
   // ===== Letters ===== (모두 로그인 필요)
   // POST 응답으로 Letter 객체 반환 — /letter/sent?id= deep-link 가능하게.

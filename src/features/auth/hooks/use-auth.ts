@@ -149,3 +149,29 @@ export function useLogout() {
     },
   });
 }
+
+/**
+ * 회원 탈퇴 — DELETE /me. BE 가 소프트 삭제 + 세션 무효 후 204 응답.
+ * onSuccess 흐름은 useLogout 와 동일 — clearAuth + queryClient.clear + sw cache clear + 홈으로.
+ * 차이점: 실패 시에도 onSettled 로 cleanup (탈퇴 의도 표시 — 사용자가 다시 들어가면 안 됨).
+ */
+export function useDeleteAccount() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const clearAuth = useAuthStore((s) => s.clearAuth);
+
+  return useMutation({
+    mutationFn: authApi.deleteAccount,
+    onSettled: async (_data, error) => {
+      // 실패해도 client cleanup — 사용자가 탈퇴 confirm 까지 했으므로 의도 명확.
+      // (BE 가 이미 처리했지만 네트워크 timeout 같은 경우 client 상태는 cleanup.)
+      if (!error) {
+        clearAuth();
+        queryClient.clear();
+        await clearAllCaches();
+      }
+      router.replace('/');
+      router.refresh();
+    },
+  });
+}

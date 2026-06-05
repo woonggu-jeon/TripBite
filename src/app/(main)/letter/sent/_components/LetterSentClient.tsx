@@ -41,32 +41,13 @@ import styles from './LetterSentClient.module.scss';
  *   │  │   2026.05.29 14:35       │        │
  *   │  ├──────────────────────────┤        │
  *   │  │ To                       │        │
- *   │  │ 봄바람 님에게 약 47분 후 │        │  랜덤 수신자 + 도착 ETA
- *   │  │ 도착해요          ✓ 전송됨│        │
+ *   │  │ 익명의 여행자 님에게      │        │  익명 수신자 + 추상 도착
+ *   │  │ 랜덤 시간에 도착해요 ✓전송│        │
  *   │  └──────────────────────────┘        │
  *   ├──────────────────────────────────────┤
  *   │ [또 쓰기]   [홈으로]                 │
  *   └──────────────────────────────────────┘
  */
-
-const NICKNAMES = [
-  '봄바람',
-  '단양 호반',
-  '청주 산책가',
-  '괴산의 가을',
-  '제천 음악가',
-  '단양 별',
-  '익명의 여행자',
-];
-
-function hashString(s: string): number {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) {
-    h = (h << 5) - h + s.charCodeAt(i);
-    h |= 0;
-  }
-  return Math.abs(h);
-}
 
 function formatKoreanDate(iso: string): string {
   const d = new Date(iso);
@@ -150,10 +131,8 @@ export function LetterSentClient() {
     );
   }
 
-  const seed = hashString(`${view.body}|${view.sentAt}`);
-  const recipient = NICKNAMES[seed % NICKNAMES.length] ?? '봄바람';
-  // 30~120분 사이 deterministic
-  const arrivalMinutes = 30 + (seed % 91);
+  // 수신자/도착시간은 BE 가 결정 (작성 후 15~60분 랜덤 매칭). 보낸 화면에선
+  // 사용자에게 수신자 정보 노출 X (익명 보장), 도착 시간도 추상 표현.
   const senderLocation = view.location;
 
   const handleAgain = () => router.replace('/letter/compose');
@@ -212,12 +191,8 @@ export function LetterSentClient() {
           <p className={styles.label}>{t('to')}</p>
           <div className={styles.toRow}>
             <div className={styles.toLines}>
-              <p className={styles.toLine1}>
-                {t('toRecipient', { recipient })}
-              </p>
-              <p className={styles.toLine2}>
-                {t('toArrival', { minutes: arrivalMinutes })}
-              </p>
+              <p className={styles.toLine1}>{t('toRecipient')}</p>
+              <p className={styles.toLine2}>{t('toArrival')}</p>
             </div>
             <span className={styles.status} aria-label={t('sentBadge')}>
               <Check size={14} aria-hidden />

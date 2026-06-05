@@ -81,10 +81,10 @@ parking / coords / summary / address`.
 
 | `POST /me/complete-onboarding` | `{nickname?, homeRegion?}` | `200 User` (isOnboarded:true) |
 
-### Location
+### Location — **제거됨**
 
-| `POST /location/reverse` | `{latitude, longitude}` | `200 {latitude, longitude, label, regionCode}` |
-| `GET /location/ip` | — | `200 {latitude, longitude, label, regionCode}` |
+`POST /location/reverse` · `GET /location/ip` **삭제**. 역지오코딩 미사용.
+편지 등의 위치는 FE 가 직접 채운다: `location = { label, regionCode }` (라벨은 RegionCode→한글명으로 FE 에서 생성).
 
 ### Destination
 
@@ -198,7 +198,8 @@ parking / coords / summary / address`.
 
 - ~~`POST /auth/refresh`~~ (sessionID 모델 — 삭제)
 - ~~`GET /weather/current`~~ (날씨 기능 제거)
-- 아바타 업로드 / `POST /__mock/*` (mock 전용)
+- ~~`POST /location/reverse`~~ · ~~`GET /location/ip`~~ (역지오코딩 제거 — 위치는 FE 가 직접 공급)
+- `POST /__mock/*` (mock 전용)
 
 ## 4. 데이터 메모
 

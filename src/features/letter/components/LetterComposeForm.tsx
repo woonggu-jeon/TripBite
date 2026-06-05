@@ -97,19 +97,20 @@ export function LetterComposeForm() {
         return;
       }
       haptic.success();
+      // BE reverse 응답의 label 그대로 사용 (예: "서울시 용산구"). reverse 실패 fallback 은
+      // useResolveLocation 가 좌표 표시 label 로 채움.
       const created = await send({
         body: values.body,
         isAnonymous: values.isAnonymous,
         location: {
           label: resolved.label,
-          regionCode: resolved.regionCode,
           latitude: resolved.latitude,
           longitude: resolved.longitude,
         },
       });
       setLastSent({
         body: values.body,
-        location: { label: resolved.label, regionCode: resolved.regionCode },
+        location: { label: resolved.label },
         sentAt: created?.createdAt ?? new Date().toISOString(),
       });
       // 서버가 letter id 반환 시 deep-link 로 push — 새로고침/공유 가능.

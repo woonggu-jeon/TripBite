@@ -56,6 +56,11 @@ export const authApi = {
     await api.post('/auth/logout');
   },
 
+  // 회원 탈퇴 — DELETE /me. BE 가 소프트 삭제 + 세션 무효 (SID cookie 만료).
+  deleteAccount: async () => {
+    await api.delete('/me');
+  },
+
   // 현재 사용자 정보 — 인증 상태 hydration 용.
   // 응답을 zod로 런타임 검증 — 백엔드 변경/오류 시 즉시 감지.
   me: async (): Promise<User> => {

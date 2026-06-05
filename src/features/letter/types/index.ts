@@ -36,12 +36,12 @@ export type LetterListKind = 'received' | 'sent' | 'liked' | 'saved';
 export type SendLetterRequest = {
   body: string; // 1~5자
   /**
-   * 보낸 위치 — useResolveLocation 결과를 그대로 전달.
-   * 미동의/실패 시 omit. 백엔드가 IP 기반 추론 또는 익명 처리.
+   * 보낸 위치 — navigator.geolocation 좌표 + label.
+   * BE 는 좌표만 받고 reverse geocoding 안 함 (docs/API_CONTRACT.md §Location 폐기).
+   * 미동의/실패 시 omit. label 은 FE 가 i18n 으로 채움 ("현재 위치" 등).
    */
   location?: {
     label: string;
-    regionCode?: string;
     latitude?: number;
     longitude?: number;
   };

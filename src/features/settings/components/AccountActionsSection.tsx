@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useLogout } from '@/features/auth/hooks/use-auth';
+import { useDeleteAccount, useLogout } from '@/features/auth/hooks/use-auth';
 import { useConfirm } from '@/hooks/use-confirm';
 import { toast } from '@/lib/toast';
 import styles from './SettingsRows.module.scss';
@@ -12,18 +12,17 @@ import styles from './SettingsRows.module.scss';
  * 항목:
  *   - 로그아웃 (즉시)
  *   - 회원 탈퇴 (confirm 모달 → DELETE /me)
- *   - 문의하기 (mailto:)
  *
- * 탈퇴 정책 (백엔드와 합의):
- *   - soft delete 권장 (30일 유예)
- *   - 보낸 편지는 익명 처리하여 보존? 또는 함께 삭제? — 결정 필요
- *
- * 현재는 confirm 까지만 wired — DELETE /me mutation 은 BE 준비 후 추가.
+ * 탈퇴 정책 (BE 합의 — docs/API_CONTRACT.md §Auth):
+ *   - DELETE /me → 204 (소프트 삭제 + 세션 무효)
+ *   - FE: clearAuth + cache clear + SW cache clear + 홈으로 redirect (refresh)
  */
 export function AccountActionsSection() {
   const t = useTranslations('settings.actions');
   const confirm = useConfirm();
-  const { mutate: logout, isPending } = useLogout();
+  const { mutate: logout, isPending: isLoggingOut } = useLogout();
+  const { mutate: deleteAccount, isPending: isWithdrawing } =
+    useDeleteAccount();
 
   const handleLogout = async () => {
     const ok = await confirm({
@@ -44,8 +43,11 @@ export function AccountActionsSection() {
       destructive: true,
     });
     if (!ok) return;
-    // TODO(backend): mypageApi.deleteAccount() / DELETE /me. soft delete + 로그아웃 flow.
-    toast.info(t('withdrawPending'));
+    deleteAccount(undefined, {
+      onError: () => toast.error(t('withdrawFailed')),
+      // onSuccess 시점엔 이미 useDeleteAccount 의 onSettled 가 cleanup + redirect.
+      // toast 는 사용자가 새 페이지에서 본 후 인지 — 굳이 success toast X.
+    });
   };
 
   return (
@@ -54,21 +56,17 @@ export function AccountActionsSection() {
         type="button"
         className={styles.button}
         onClick={handleLogout}
-        disabled={isPending}
+        disabled={isLoggingOut}
       >
-        {isPending ? t('loggingOut') : t('logout')}
+        {isLoggingOut ? t('loggingOut') : t('logout')}
       </button>
-      {/* 문의하기 — 미노출 (사용자 요청). 추후 복원 시 주석 해제. 실 메일 주소도 그때 결정.
-      <a href="mailto:support@example.com" className={styles.button}>
-        {t('contact')}
-      </a>
-      */}
       <button
         type="button"
         className={`${styles.button} ${styles.danger}`}
         onClick={handleWithdraw}
+        disabled={isWithdrawing}
       >
-        {t('withdraw')}
+        {isWithdrawing ? t('withdrawing') : t('withdraw')}
       </button>
     </div>
   );

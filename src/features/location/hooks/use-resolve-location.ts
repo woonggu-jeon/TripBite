@@ -9,16 +9,12 @@ import type {
 } from '@/features/location/types';
 
 /**
- * "사용 가능한 모든 수단으로 위치 확보" 훅
+ * GPS 좌표 + BE reverse geocoding → 한글 라벨 확보.
  *
- * 시도 순서:
- *   1) navigator.geolocation (정확)
- *      → 성공 시 reverseGeocode → label 까지 얻음
- *   2) 실패/거부 시 IP 기반 fallback (대략적)
- *
- * 사용처:
- *   - 편지 작성: 보낸 위치 자동 채우기
- *   - 홈 위젯: 현재 지역 기반 추천
+ * 흐름:
+ *   1) navigator.geolocation → { latitude, longitude }
+ *   2) POST /v1/location/reverse → { label, regionCode? } (BE 가 Kakao wrap)
+ *   3) reverse 실패 시 fallback: 좌표 표시 label 로 진행
  *
  * 호출은 항상 사용자 동작 직후에 (resolve()).
  * 컴포넌트 mount 시 자동 호출 X.
@@ -35,15 +31,25 @@ export function useResolveLocation() {
 
     try {
       const coords = await requestGps();
-      if (coords) {
+      if (!coords) {
+        setError({ code: 'permission-denied' });
+        return null;
+      }
+      try {
         const result = await locationApi.reverseGeocode(coords);
         setResolved(result);
         return result;
+      } catch {
+        // reverse 실패 (네트워크 / 401 / 500) — 좌표 표시 fallback 으로 진행.
+        const fallback: ResolvedLocation = {
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+          accuracy: coords.accuracy,
+          label: `${coords.latitude.toFixed(3)}, ${coords.longitude.toFixed(3)}`,
+        };
+        setResolved(fallback);
+        return fallback;
       }
-      // GPS 실패/거부 → IP fallback
-      const ipResult = await locationApi.fromIp();
-      setResolved(ipResult);
-      return ipResult;
     } catch (err) {
       setError({ code: 'unavailable', rawMessage: String(err) });
       return null;

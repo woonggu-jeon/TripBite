@@ -536,8 +536,8 @@
       "letterAria": "Sent letter card",
       "from": "From",
       "to": "To",
-      "toRecipient": "To {recipient}",
-      "toArrival": "Arrives in about {minutes} minutes",
+      "toRecipient": "To an anonymous traveler",
+      "toArrival": "Arrives at a random time",
       "sentBadge": "Sent",
       "again": "Write again",
       "home": "Home",
@@ -727,11 +727,11 @@
       "logoutConfirmDescription": "You can sign back in anytime to continue.",
       "logoutConfirmLabel": "Sign out",
       "withdraw": "Delete account",
+      "withdrawing": "Deleting...",
       "withdrawConfirmTitle": "Delete your account?",
       "withdrawConfirmDescription": "This permanently removes your profile, saved winners, stamps, and sent letters. This cannot be undone.",
       "withdrawConfirmLabel": "Delete account",
-      "withdrawPending": "Account deletion will be enabled after the backend is wired.",
-      "contact": "Contact us"
+      "withdrawFailed": "Couldn't delete account. Please try again."
     }
   },
   "destination": {

@@ -1,34 +1,20 @@
 import { api } from '@/services/api/client';
-import type {
-  Coordinates,
-  ResolvedLocation,
-} from '@/features/location/types';
+import type { Coordinates, ResolvedLocation } from '@/features/location/types';
 
 /**
- * 위치 관련 API
+ * Reverse geocoding API.
  *
- * reverseGeocode:
- *   - 좌표를 사람이 읽을 수 있는 주소로 변환
- *   - 백엔드가 Kakao/Naver Maps Reverse Geocoding API를 프록시
- *     (API 키 노출 방지 + 캐싱 + 비용 관리)
+ * BE 가 Kakao/Naver reverse wrap 으로 좌표 → 한글 행정구역 라벨 변환.
  *
- * fromIp:
- *   - geolocation 권한 거부/실패 시 IP 기반 대략적 위치 반환
- *   - 백엔드가 IP geolocation 서비스 사용
- *   - 정확도는 시/도 수준
- *
- * 백엔드 엔드포인트 예시:
+ * 엔드포인트:
  *   POST /location/reverse  { latitude, longitude } → ResolvedLocation
- *   GET  /location/ip                                → ResolvedLocation
+ *
+ * 응답 label 예: "서울시 용산구", "충북 청주시 상당구" — BE 응답 그대로 표시.
+ * regionCode 는 충북 한정에서만 채워질 수 있음 (전국 좌표는 undefined 가능).
  */
 export const locationApi = {
   reverseGeocode: async (coords: Coordinates): Promise<ResolvedLocation> => {
     const res = await api.post<ResolvedLocation>('/location/reverse', coords);
-    return res.data;
-  },
-
-  fromIp: async (): Promise<ResolvedLocation> => {
-    const res = await api.get<ResolvedLocation>('/location/ip');
     return res.data;
   },
 };
