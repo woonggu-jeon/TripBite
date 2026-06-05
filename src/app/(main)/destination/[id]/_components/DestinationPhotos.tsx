@@ -1,32 +1,58 @@
 'use client';
 
 import { Carousel } from '@/features/carousel';
+import { secureImageUrl } from '@/lib/secure-image-url';
 import styles from './DestinationPhotos.module.scss';
 
 /**
- * 여행지 상단 사진 캐러셀.
+ * 여행지 상단 사진 영역.
  *
- * - photos 가 없으면 null (graceful) — 호출처에서 분기 X.
- * - mock 은 SVG data URL placeholder 3장 (id 기반 hue). 실 BE 는 CDN URL.
+ * 표시 우선 순위:
+ *   1) photos[] 가 1+ 장 있으면 carousel
+ *   2) imageUrl (대표 사진) 만 있으면 단일 hero (carousel X)
+ *   3) 둘 다 없으면 null
+ *
+ * - imageUrl 은 base Destination 의 대표 사진. photos 는 추가 갤러리.
+ * - mock 은 SVG data URL placeholder. 실 BE 는 CDN URL.
  * - aspect-ratio 고정으로 CLS 0.
- * - 캐러셀 dots 노출 (사진 수 < 4 일 때 의미 있음).
  */
 export function DestinationPhotos({
   photos,
+  imageUrl,
   alt,
 }: {
   photos: readonly string[] | undefined;
+  imageUrl?: string | null;
   alt: string;
 }) {
-  if (!photos || photos.length === 0) return null;
+  const safeImageUrl = secureImageUrl(imageUrl);
+  const hasGallery = !!photos && photos.length > 0;
 
+  if (!hasGallery && !safeImageUrl) return null;
+
+  if (!hasGallery && safeImageUrl) {
+    // 대표 사진 단일 — carousel 없이 hero 한 장.
+    return (
+      <div className={styles.wrap}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={safeImageUrl}
+          alt={alt}
+          loading="eager"
+          className={styles.image}
+          draggable={false}
+        />
+      </div>
+    );
+  }
+
+  const slides = photos as readonly string[];
   return (
     <div className={styles.wrap}>
       <Carousel
-        slides={[...photos]}
+        slides={[...slides]}
         keyExtractor={(_, i) => i}
         renderSlide={(src, i) => (
-          // SVG data URL placeholder (mock) — alt 외부 prop. lazy 는 첫 외 모두.
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={src}
@@ -37,7 +63,7 @@ export function DestinationPhotos({
           />
         )}
         options={{ slidesPerView: 1, gap: 0 }}
-        showDots={photos.length > 1}
+        showDots={slides.length > 1}
         fallbackHeight={240}
         ariaLabel={alt}
       />

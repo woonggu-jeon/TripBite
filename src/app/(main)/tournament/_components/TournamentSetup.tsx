@@ -69,6 +69,7 @@ export function TournamentSetup() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const t = useTranslations('tournament.setup');
+  const tSeason = useTranslations('tournament.season');
   const setConfig = useTournamentStore((s) => s.setConfig);
 
   // 홈 "이번 {계절} 토너먼트 시작하기" 진입 시 query 로 theme + season 사전 선택.
@@ -186,14 +187,42 @@ export function TournamentSetup() {
             <SeasonSelector value={season} onChange={handleSeason} />
           )}
           {step === 3 && (
-            <CategoryFilter value={category} onChange={handleCategory} />
+            <>
+              <CategoryFilter value={category} onChange={handleCategory} />
+              {/*
+                BE 동작 고지 — 계절 필터는 'festival' 에만 적용 (eventStart 월 기반).
+                attraction/experience/local 선택 시 BE 가 계절 무관 응답 → 사용자가
+                "왜 겨울 아닌 게?" 혼란 막기 위해 결정적 시점 (카테고리 선택 후) 에 안내.
+              */}
+              {category && category !== 'festival' && season && (
+                <p className={styles.scopeHint} role="status">
+                  {t('steps.category.seasonScopeNonFestival', {
+                    season: tSeason(season),
+                  })}
+                </p>
+              )}
+            </>
           )}
           {step === 4 && (
-            <CountSelector
-              value={count}
-              onChange={handleCount}
-              mode="destination"
-            />
+            <>
+              <CountSelector
+                value={count}
+                onChange={handleCount}
+                mode="destination"
+              />
+              {/*
+                계절 적용 범위 hint — 비-festival + 계절 선택된 상태일 때.
+                step 3 에서 카테고리 선택 즉시 step 4 로 advance 되므로, 사용자가
+                실제로 hint 를 인지하는 시점은 여기 (시작 전 마지막 화면).
+              */}
+              {category && category !== 'festival' && season && (
+                <p className={styles.scopeHint} role="status">
+                  {t('steps.category.seasonScopeNonFestival', {
+                    season: tSeason(season),
+                  })}
+                </p>
+              )}
+            </>
           )}
         </div>
 

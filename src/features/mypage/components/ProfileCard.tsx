@@ -115,16 +115,7 @@ function TravelTypeField({
   if (!travelType?.title) return null;
   return (
     <div className={styles.travelType} role="group" aria-label={t('label')}>
-      <span className={styles.travelTypeEmoji} aria-hidden>
-        {travelType.emoji ?? '✨'}
-      </span>
-      <div className={styles.travelTypeBody}>
-        <p className={styles.travelTypeLabel}>{t('label')}</p>
-        <p className={styles.travelTypeTitle}>{travelType.title}</p>
-        {travelType.description && (
-          <p className={styles.travelTypeDesc}>{travelType.description}</p>
-        )}
-      </div>
+      <p className={styles.travelTypeTitle}>#{travelType.title}</p>
     </div>
   );
 }

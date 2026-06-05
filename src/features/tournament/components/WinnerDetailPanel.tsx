@@ -1,7 +1,16 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { MapPin, Phone, Globe, Clock, Ticket, Star } from 'lucide-react';
+import {
+  MapPin,
+  Phone,
+  Globe,
+  Clock,
+  Ticket,
+  Star,
+  CalendarX,
+  CircleParking,
+} from 'lucide-react';
 import type { DestinationDetail } from '@/features/tournament/types';
 import styles from './WinnerDetailPanel.module.scss';
 
@@ -56,12 +65,26 @@ export function WinnerDetailPanel({ detail, isLoading }: Props) {
       label: t('openingHours'),
       value: detail.openingHours,
     });
+  if (detail.closedDays)
+    rows.push({
+      key: 'closed',
+      icon: <CalendarX size={16} aria-hidden />,
+      label: t('closedDays'),
+      value: detail.closedDays,
+    });
   if (detail.admissionFee)
     rows.push({
       key: 'fee',
       icon: <Ticket size={16} aria-hidden />,
       label: t('admissionFee'),
       value: detail.admissionFee,
+    });
+  if (typeof detail.parkingAvailable === 'boolean')
+    rows.push({
+      key: 'parking',
+      icon: <CircleParking size={16} aria-hidden />,
+      label: t('parking'),
+      value: detail.parkingAvailable ? t('parkingYes') : t('parkingNo'),
     });
   if (detail.phone)
     rows.push({
@@ -78,16 +101,16 @@ export function WinnerDetailPanel({ detail, isLoading }: Props) {
       value: detail.website,
     });
 
-  const hasSummary = !!detail.summary;
+  const hasDescription = !!detail.description;
   const hasRating = !!detail.rating;
   const hasTags = !!detail.tags && detail.tags.length > 0;
   const hasRows = rows.length > 0;
 
-  if (!hasSummary && !hasRating && !hasTags && !hasRows) return null;
+  if (!hasDescription && !hasRating && !hasTags && !hasRows) return null;
 
   return (
     <section className={styles.panel} aria-label={t('panelLabel')}>
-      {hasSummary && <p className={styles.summary}>{detail.summary}</p>}
+      {hasDescription && <p className={styles.summary}>{detail.description}</p>}
 
       {(hasRating || hasTags) && (
         <div className={styles.metaRow}>

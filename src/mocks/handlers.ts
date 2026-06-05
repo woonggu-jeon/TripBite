@@ -803,9 +803,18 @@ export const handlers = [
       return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
     });
 
+    const closedDaysPool = [
+      '매주 월요일',
+      '매주 화요일',
+      '설/추석 당일',
+      '첫째·셋째 월요일',
+    ];
     const detail = {
       ...seed,
-      summary: `${seed.name} — ${seed.region} 대표 ${seed.category}`,
+      // description 은 base Destination 필드 — seed 에 없으면 합성.
+      description:
+        seed.description ??
+        `${seed.name} — ${seed.region} 대표 ${seed.category}`,
       photos,
       address: `충북 ${seed.region.replace(/[a-z]+/i, '')} ${seed.name} 일대`,
       phone:
@@ -813,12 +822,17 @@ export const handlers = [
           ? `043-${200 + Math.floor(u(11) * 800)}-${1000 + Math.floor(u(12) * 8999)}`
           : undefined,
       website: u(20) > 0.5 ? `https://example.com/${id}` : undefined,
-      openingHours:
-        u(30) > 0.3 ? '매일 09:00 - 18:00 (월요일 휴무)' : undefined,
+      openingHours: u(30) > 0.3 ? '매일 09:00 - 18:00' : undefined,
+      closedDays:
+        u(31) > 0.4
+          ? (closedDaysPool[Math.floor(u(32) * closedDaysPool.length)] ??
+            undefined)
+          : undefined,
       admissionFee:
         u(40) > 0.5
           ? `성인 ${1000 + Math.floor(u(41) * 9) * 1000}원 · 청소년 ${1000 + Math.floor(u(42) * 5) * 500}원`
           : '무료',
+      parkingAvailable: u(45) > 0.5 ? u(46) > 0.3 : undefined,
       tags: tags.length > 0 ? tags : undefined,
       rating: {
         value: Math.round((3.5 + u(50) * 1.5) * 10) / 10,

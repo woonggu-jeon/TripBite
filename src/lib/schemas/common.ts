@@ -27,13 +27,13 @@ export const coordsSchema = z.object({
 });
 
 // 기본 Destination shape — 여러 응답에서 nested 됨.
+// summary 는 폐기 — description 만 사용 (detail spec 합의 #12, BACKLOG).
 export const destinationSchema = z.object({
   id: z.string(),
   name: z.string(),
   category: destinationCategorySchema,
   region: regionCodeSchema,
   description: z.string().optional(),
-  summary: z.string().optional(),
   imageUrl: z.string().optional(),
   eventStart: z.string().optional(),
   eventEnd: z.string().optional(),

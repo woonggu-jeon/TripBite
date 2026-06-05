@@ -92,47 +92,15 @@
 }
 
 .travelType {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: var(--space-3);
-  width: 100%;
-  padding: var(--space-3);
+  display: inline-flex;
+  padding: var(--space-2) var(--space-3);
   background: var(--color-primary-tint);
   border-radius: var(--radius-md);
-  text-align: left;
-}
-
-.travelTypeEmoji {
-  font-size: var(--emoji-md);
-  line-height: 1;
-}
-
-.travelTypeBody {
-  display: grid;
-  gap: 2px;
-  min-width: 0;
-}
-
-.travelTypeLabel {
-  font-size: var(--font-eyebrow);
-  color: var(--color-primary);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-  margin: 0;
-  font-weight: var(--font-weight-bold);
 }
 
 .travelTypeTitle {
   font-size: var(--font-body);
   font-weight: var(--font-weight-extrabold);
-  color: var(--color-fg);
+  color: var(--color-primary);
   margin: 0;
-}
-
-.travelTypeDesc {
-  font-size: var(--font-caption);
-  color: var(--color-muted);
-  margin: 0;
-  line-height: var(--line-snug);
 }

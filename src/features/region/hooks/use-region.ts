@@ -30,7 +30,7 @@ export function useRegionContents(code: RegionCode, type: RegionContentType) {
   return useInfiniteList({
     queryKey: regionKeys.contents(code, type),
     queryFn: ({ pageParam }) =>
-      regionApi.listContents(code, { type, cursor: pageParam, limit: 20 }),
+      regionApi.listContents(code, { type, cursor: pageParam, limit: 10 }),
     cache: 'slow',
   });
 }

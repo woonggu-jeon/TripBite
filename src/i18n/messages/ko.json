@@ -320,7 +320,8 @@
         },
         "category": {
           "title": "어떤 유형이 끌리세요?",
-          "hint": "여러 개 선택할 수 있어요"
+          "hint": "여러 개 선택할 수 있어요",
+          "seasonScopeNonFestival": "선택한 계절({season})은 축제 카테고리에만 적용돼요. 다른 카테고리는 계절과 무관하게 추천됩니다."
         },
         "count": {
           "title": "여행지 갯수",
@@ -360,6 +361,11 @@
       "next": "다음",
       "reshuffle": "다시하기",
       "mapSummary": "여행지 {destinations}곳이 선정됐어요",
+      "emptyPool": {
+        "title": "조건에 맞는 여행지가 없어요",
+        "hint": "다른 시군 / 카테고리 조합으로 다시 시도해 보세요",
+        "back": "설정 다시"
+      },
       "tournamentSize": {
         "title": "토너먼트 수",
         "hint": "선택한 수만큼 토너먼트가 생성돼요",
@@ -430,7 +436,11 @@
         "panelLabel": "여행지 상세",
         "address": "주소",
         "openingHours": "운영시간",
+        "closedDays": "휴무일",
         "admissionFee": "입장료",
+        "parking": "주차",
+        "parkingYes": "가능",
+        "parkingNo": "불가",
         "phone": "전화",
         "website": "웹사이트",
         "reviewCount": "리뷰 {n}"

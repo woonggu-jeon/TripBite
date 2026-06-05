@@ -53,6 +53,31 @@
   margin-top: 0.25rem;
 }
 
+// 계절 적용 범위 hint — step 3 에서 비-festival 카테고리 선택 시.
+// info chip 톤 (강한 경고 X). 사용자 학습용.
+.scopeHint {
+  margin-top: 0.25rem;
+  padding: 0.625rem 0.75rem;
+  font-size: var(--font-caption);
+  line-height: var(--line-snug);
+  color: var(--color-fg);
+  background: color-mix(
+    in srgb,
+    var(--color-primary) 8%,
+    var(--color-surface-soft)
+  );
+  border: 1px solid
+    color-mix(in srgb, var(--color-primary) 20%, var(--color-border));
+  border-radius: var(--radius-md);
+  word-break: keep-all;
+
+  &::before {
+    content: 'ⓘ ';
+    color: var(--color-primary);
+    font-weight: var(--font-weight-bold);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .next,
   .start {

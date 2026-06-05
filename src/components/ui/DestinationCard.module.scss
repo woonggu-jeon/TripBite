@@ -97,15 +97,19 @@
   margin: 0;
 }
 
+// 카드 간 높이 일관 — name 영역이 항상 3 줄 분량 차지.
+// 짧은 이름(1줄)도 3 줄 만큼 자리 잡아 grid 안에서 카드 높이 정렬.
+// 4줄째 부터 ellipsis.
 .name {
   font-size: var(--font-label);
   font-weight: var(--font-weight-extrabold);
   letter-spacing: var(--tracking-tight);
   line-height: var(--line-tight);
+  min-height: calc(var(--line-tight) * 3 * 1em);
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   word-break: keep-all;
   margin: 0;

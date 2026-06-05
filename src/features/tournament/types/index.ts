@@ -84,17 +84,20 @@ export type Destination = {
  * 큐레이션 DB) 와 결합해 제공한다고 가정.
  */
 export type DestinationDetail = Destination & {
-  /** 한 줄 요약 (카드용) */
-  summary?: string;
-  /** 대표 이미지 URL 들 — 첫 항목이 헤로 */
+  // 대표 사진은 base Destination.imageUrl 이 담당. photos[] 는 추가 갤러리.
+  /** 추가 갤러리 사진 (없으면 imageUrl 만 hero 로) */
   photos?: string[];
   address?: string;
   phone?: string;
   website?: string;
   /** 운영시간 — 줄바꿈 가능한 자유 문자열 (백엔드가 i18n/포맷 책임) */
   openingHours?: string;
+  /** 휴무일 (예: '매주 월요일') */
+  closedDays?: string;
   /** 입장료 / 가격 안내 */
   admissionFee?: string;
+  /** 주차 가능 여부 — undefined 는 '정보 없음' */
+  parkingAvailable?: boolean;
   /** 좌표 (지도 표시용) */
   coords?: { lat: number; lng: number };
   tags?: string[];

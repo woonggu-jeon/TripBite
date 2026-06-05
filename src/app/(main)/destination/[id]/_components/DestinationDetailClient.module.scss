@@ -16,7 +16,10 @@
   border-radius: var(--radius-lg);
 }
 
+// 대표사진 (imageUrl) thumbnail 컨테이너. next/image fill 위해 position relative.
+// imageUrl 없을 때 emoji fallback — .heroEmojiGlyph 가 폰트 사이즈 담당.
 .heroEmoji {
+  position: relative;
   width: 80px;
   height: 80px;
   display: grid;
@@ -24,6 +27,14 @@
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.heroPhoto {
+  object-fit: cover;
+}
+
+.heroEmojiGlyph {
   font-size: var(--emoji-2xl);
   line-height: 1;
 }

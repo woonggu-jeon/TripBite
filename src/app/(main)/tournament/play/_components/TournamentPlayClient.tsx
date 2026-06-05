@@ -19,6 +19,7 @@ import {
   useTournamentCandidates,
 } from '@/features/tournament/hooks/use-tournament';
 import { Button, ButtonGrid } from '@/components/ui';
+import { EmptyState } from '@/components/feedback/EmptyState';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import styles from './TournamentPlayClient.module.scss';
 
@@ -309,7 +310,7 @@ export function TournamentPlayClient() {
           />
           <Button
             variant="primary"
-            size="lg"
+            size="md"
             fullWidth
             disabled={!canStartBracket}
             onClick={handleConfirmSize}
@@ -330,6 +331,30 @@ export function TournamentPlayClient() {
               </Button>
             </div>
           )}
+          {/* 빈 풀 — BE 응답 0건 또는 매치업 못 만드는 조합 (예: 시군+카테고리 교집합 없음) */}
+          {!isLoading &&
+            !isError &&
+            pool &&
+            matchupDestinations.length === 0 && (
+              <EmptyState
+                icon={
+                  <span aria-hidden style={{ fontSize: 32 }}>
+                    🗺️
+                  </span>
+                }
+                title={t('emptyPool.title')}
+                description={t('emptyPool.hint')}
+                action={
+                  <Button
+                    variant="primary"
+                    size="md"
+                    onClick={() => router.replace('/tournament')}
+                  >
+                    {t('emptyPool.back')}
+                  </Button>
+                }
+              />
+            )}
           {matchupDestinations.length > 0 && (
             <Bracket
               destinations={matchupDestinations}

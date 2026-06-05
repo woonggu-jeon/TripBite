@@ -67,7 +67,7 @@ export function RegionDetailTabs({ code }: { code: RegionCode }) {
           regionApi.listContents(code, {
             type,
             cursor: pageParam as string | number | null,
-            limit: 20,
+            limit: 10,
           }),
         initialPageParam: null as string | number | null,
       });

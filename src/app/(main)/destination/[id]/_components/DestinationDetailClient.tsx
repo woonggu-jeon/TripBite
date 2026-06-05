@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { AlertCircle } from 'lucide-react';
 import { SubHeader } from '@/components/layout/SubHeader';
@@ -10,6 +11,7 @@ import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { useDestinationDetail } from '@/features/tournament/hooks/use-tournament';
 import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetailPanel';
 import { categoryEmoji } from '@/constants/emoji-map';
+import { secureImageUrl } from '@/lib/secure-image-url';
 import { DestinationPhotos } from './DestinationPhotos';
 import { DestinationActions } from './DestinationActions';
 import { RelatedDestinations } from './RelatedDestinations';
@@ -81,19 +83,34 @@ export function DestinationDetailClient({ id }: { id: string }) {
   const regionName =
     CHUNGBUK_REGIONS.find((r) => r.code === detail.region)?.ko ?? detail.region;
   const emoji = categoryEmoji(detail.category);
+  const safeHeroImg = secureImageUrl(detail.imageUrl);
 
   return (
     <>
       <SubHeader title={title} />
       <article className={styles.wrap} aria-labelledby="destination-name">
-        {/* 1) 사진 캐러셀 (photos 있을 때만) */}
-        <DestinationPhotos photos={detail.photos} alt={detail.name} />
+        {/* 1) 사진 영역 — photos 있으면 carousel, 없으면 imageUrl 단일 hero */}
+        <DestinationPhotos
+          photos={detail.photos}
+          imageUrl={detail.imageUrl}
+          alt={detail.name}
+        />
 
-        {/* 2) Hero — 카테고리 emoji + 시군 · 카테고리 */}
+        {/* 2) Hero — 대표사진(imageUrl) thumbnail + 시군 · 카테고리. 사진 없으면 emoji fallback */}
         <header className={styles.hero}>
-          <span className={styles.heroEmoji} aria-hidden>
-            {emoji}
-          </span>
+          <div className={styles.heroEmoji} aria-hidden>
+            {safeHeroImg ? (
+              <Image
+                src={safeHeroImg}
+                alt=""
+                fill
+                sizes="80px"
+                className={styles.heroPhoto}
+              />
+            ) : (
+              <span className={styles.heroEmojiGlyph}>{emoji}</span>
+            )}
+          </div>
           <p className={styles.heroMeta}>
             <span className={styles.heroRegion}>{regionName}</span>
             <span aria-hidden className={styles.dot}>
@@ -138,7 +155,7 @@ export function DestinationDetailClient({ id }: { id: string }) {
           id={id}
           name={detail.name}
           coords={detail.coords}
-          shareText={detail.summary ?? detail.description}
+          shareText={detail.description}
         />
       </article>
     </>

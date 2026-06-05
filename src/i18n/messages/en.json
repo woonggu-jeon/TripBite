@@ -320,7 +320,8 @@
         },
         "category": {
           "title": "What type interests you?",
-          "hint": "You can pick more than one"
+          "hint": "You can pick more than one",
+          "seasonScopeNonFestival": "Season ({season}) applies to Festival only. Other categories are recommended regardless of season."
         },
         "count": {
           "title": "Destination count",
@@ -430,7 +431,11 @@
         "panelLabel": "Destination detail",
         "address": "Address",
         "openingHours": "Hours",
+        "closedDays": "Closed",
         "admissionFee": "Admission",
+        "parking": "Parking",
+        "parkingYes": "Available",
+        "parkingNo": "Not available",
         "phone": "Phone",
         "website": "Website",
         "reviewCount": "{n} reviews"

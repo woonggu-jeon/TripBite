@@ -25,21 +25,10 @@
       stroke-dasharray var(--motion-base) ease;
   }
 
-  /* 청주시 (4 path: 상당/서원/청원/흥덕) — 내부 구 경계선을 시각적으로 제거.
-     stroke 를 없애면 청주 사이 공유 변은 어느 쪽도 그리지 않아 한 덩어리로 보이고,
-     청주 ↔ 다른 시군 변은 상대 path 의 stroke 가 여전히 그려 외곽선이 유지됨. */
-  :global(path.region[data-region='cheongju']) {
-    stroke-width: 0;
-    stroke: transparent;
-  }
-
   @media (hover: hover) and (pointer: fine) {
     :global(path.region:hover) {
       fill: var(--color-hover);
       stroke: var(--color-sage);
-    }
-    :global(path.region[data-region='cheongju']:hover) {
-      stroke-width: 0;
     }
   }
 
@@ -49,6 +38,20 @@
     stroke: var(--color-sage);
     stroke-width: 2;
     stroke-dasharray: none;
+  }
+
+  /* 청주시 (4 path: 상당/서원/청원/흥덕) — visited 일 때만 내부 구 경계선 제거.
+     stroke 를 없애면 4 path 가 한 덩어리로 sage fill 만 보임.
+     미획득 (visited X) 상태에선 다른 시군과 동일 dashed 외곽선 유지 — 0개 도장책에서
+     청주시 영역이 안 보이던 회귀 fix. */
+  :global(path.region[data-region='cheongju'][data-visited='true']) {
+    stroke-width: 0;
+    stroke: transparent;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    :global(path.region[data-region='cheongju'][data-visited='true']:hover) {
+      stroke-width: 0;
+    }
   }
 
   /* 라벨 텍스트 (SVG 내장) — 원본 SVG 의 text-anchor:middle / 24px / 외곽선 복원.

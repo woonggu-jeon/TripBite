@@ -15,7 +15,7 @@ import type { PageResponse } from '@/features/list';
  *
  * 엔드포인트:
  *   GET /regions/:code/summary
- *   GET /regions/:code/contents?type=festival&cursor=...&limit=20
+ *   GET /regions/:code/contents?type=festival&cursor=...&limit=10
  *   GET /regions/:code/ongoing-festivals    (홈 캐러셀용 — 진행 중인 축제)
  */
 export const regionApi = {
