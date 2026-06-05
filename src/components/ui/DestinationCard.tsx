@@ -1,5 +1,7 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import type { ComponentProps, ReactNode } from 'react';
+import { secureImageUrl } from '@/lib/secure-image-url';
 import styles from './DestinationCard.module.scss';
 
 export type DestinationCardTone = 'red' | 'amber' | 'green' | 'blue' | 'violet';
@@ -7,7 +9,13 @@ export type DestinationCardTone = 'red' | 'amber' | 'green' | 'blue' | 'violet';
 interface DestinationCardProps {
   /** 진입 경로. next/link 가 받는 형식 그대로 — typedRoutes 의 dynamic path 도 호환. */
   href: ComponentProps<typeof Link>['href'];
-  /** 카테고리 emoji (또는 임의 단일 글리프) */
+  /**
+   * 실 이미지 URL (TourAPI). 있으면 next/image 로 표시.
+   * 없으면 emoji + tone gradient fallback.
+   * http URL 은 자동 https 정규화 (lib/secure-image-url).
+   */
+  imageUrl?: string | null;
+  /** 카테고리 emoji (또는 임의 단일 글리프) — imageUrl 없을 때 fallback */
   emoji: string;
   /** 톤 키 — region 별 매핑. 색은 globals 의 --accent-{tone} 토큰 사용 */
   tone: DestinationCardTone;
@@ -42,6 +50,7 @@ interface DestinationCardProps {
  */
 export function DestinationCard({
   href,
+  imageUrl,
   emoji,
   tone,
   regionLabel,
@@ -51,6 +60,7 @@ export function DestinationCard({
   ariaLabel,
   topRightAction,
 }: DestinationCardProps) {
+  const safeImg = secureImageUrl(imageUrl);
   return (
     <Link
       href={href}
@@ -65,7 +75,17 @@ export function DestinationCard({
             style={{ background: accentDot }}
           />
         )}
-        <span className={styles.emoji}>{emoji}</span>
+        {safeImg ? (
+          <Image
+            src={safeImg}
+            alt=""
+            fill
+            sizes="(max-width: 480px) 50vw, 200px"
+            className={styles.photo}
+          />
+        ) : (
+          <span className={styles.emoji}>{emoji}</span>
+        )}
       </div>
       <div className={styles.body}>
         <p className={styles.region}>{regionLabel}</p>

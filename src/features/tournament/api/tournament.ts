@@ -1,5 +1,9 @@
 import { api } from '@/services/api/client';
 import { safeParseResponse } from '@/lib/safe-parse-response';
+import {
+  normalizeImageField,
+  normalizePhotosField,
+} from '@/lib/secure-image-url';
 import { destinationDetailSchema } from '@/features/tournament/schemas/destination';
 import type {
   Destination,
@@ -27,11 +31,13 @@ export const tournamentApi = {
    */
   getDestinationDetail: async (id: string): Promise<DestinationDetail> => {
     const res = await api.get<unknown>(`/destinations/${id}`);
-    return safeParseResponse(
+    const parsed = safeParseResponse(
       destinationDetailSchema,
       res.data,
       `GET /destinations/${id}`,
     ) as DestinationDetail;
+    // TourAPI 원본 http URL → https 정규화 (imageUrl + photos[])
+    return normalizePhotosField(normalizeImageField(parsed));
   },
 
   /**
@@ -40,7 +46,7 @@ export const tournamentApi = {
    */
   getRelatedDestinations: async (id: string): Promise<Destination[]> => {
     const res = await api.get<Destination[]>(`/destinations/${id}/related`);
-    return res.data;
+    return res.data.map(normalizeImageField);
   },
 
   fetchCandidates: async (config: TournamentConfig): Promise<Destination[]> => {
@@ -60,7 +66,7 @@ export const tournamentApi = {
         pool: poolSize,
       },
     });
-    return res.data;
+    return res.data.map(normalizeImageField);
   },
 
   /**

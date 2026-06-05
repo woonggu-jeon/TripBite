@@ -1,5 +1,6 @@
 import { api } from '@/services/api/client';
 import type { RegionCode } from '@/constants/regions';
+import { normalizeImageField } from '@/lib/secure-image-url';
 import type {
   RegionContent,
   RegionContentType,
@@ -35,15 +36,14 @@ export const regionApi = {
       `/regions/${code}/contents`,
       { params: { ...params, cursor: params.cursor ?? undefined } },
     );
-    return res.data;
+    // TourAPI 원본 http URL → https 정규화 (BE 가 sync 시점에 변환 안 했을 때 안전망)
+    return { ...res.data, items: res.data.items.map(normalizeImageField) };
   },
 
-  ongoingFestivals: async (
-    region?: RegionCode,
-  ): Promise<RegionContent[]> => {
+  ongoingFestivals: async (region?: RegionCode): Promise<RegionContent[]> => {
     const res = await api.get<RegionContent[]>('/regions/ongoing-festivals', {
       params: { region },
     });
-    return res.data;
+    return res.data.map(normalizeImageField);
   },
 };

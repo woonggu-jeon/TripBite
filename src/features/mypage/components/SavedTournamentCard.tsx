@@ -63,6 +63,7 @@ export function SavedTournamentCard({
   return (
     <DestinationCard
       href={{ pathname: `/destination/${saved.destination.id}` }}
+      imageUrl={saved.destination.imageUrl}
       emoji={emoji}
       tone={toneFor(saved.destination.region as RegionCode)}
       regionLabel={regionLabel}

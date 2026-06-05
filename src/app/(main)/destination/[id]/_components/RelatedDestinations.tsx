@@ -47,6 +47,7 @@ export function RelatedDestinations({ id }: { id: string }) {
         renderSlide={(d) => (
           <DestinationCard
             href={{ pathname: `/destination/${d.id}` }}
+            imageUrl={d.imageUrl}
             emoji={categoryEmoji(d.category)}
             tone={toneFor(d.region as RegionCode)}
             regionLabel={regionLabelFor(d.region as RegionCode)}

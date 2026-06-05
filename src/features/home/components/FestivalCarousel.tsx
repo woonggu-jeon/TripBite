@@ -63,6 +63,7 @@ export function FestivalCarousel() {
       renderSlide={(content) => (
         <DestinationCard
           href={{ pathname: `/destination/${content.id}` }}
+          imageUrl={content.imageUrl}
           emoji={emojiFor(content)}
           tone={toneFor(content.region)}
           regionLabel={regionLabelFor(content.region)}
