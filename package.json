@@ -21,7 +21,13 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "size": "size-limit"
+    "size": "size-limit",
+    "be:smoke": "node scripts/be-smoke.mjs",
+    "be:anon": "node scripts/be-anon-flow.mjs",
+    "be:onboarded": "node scripts/be-onboarded-flow.mjs",
+    "be:login": "node scripts/be-login-redirect.mjs",
+    "be:check": "npm run be:smoke && npm run be:anon && npm run be:onboarded && npm run be:login",
+    "dev:clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\" && next dev --port 3900"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

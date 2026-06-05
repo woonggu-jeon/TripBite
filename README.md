@@ -30,6 +30,46 @@ npm run build && npm start   # 프로덕션 (PWA 활성)
 
 BE 미준비 상태에선 `NEXT_PUBLIC_USE_MSW=true` 로 mock 동작.
 
+### BE 통합 dev 가이드
+
+**전환 시 .env.local 변경**:
+
+```env
+# BE 통신 모드
+NEXT_PUBLIC_USE_MSW=false
+NEXT_PUBLIC_API_URL=http://localhost:3000/v1
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=<BE 와 동일>
+
+# (옵션) BE 가 다른 cookie 이름 쓰면 명시 — 기본 'SID'
+# NEXT_PUBLIC_SESSION_COOKIE=SID
+```
+
+**Mock 모드로 복귀**:
+
+```env
+NEXT_PUBLIC_USE_MSW=true
+```
+
+**middleware / 환경변수 변경 후 dev hot reload 가 stale 한 경우** —
+edge runtime 의 middleware 가 reload 안 되면 `/login` 무한 redirect 등 발생.
+clean restart:
+
+```bash
+npm run dev:clean   # .next 삭제 + dev 재시작 (cross-platform)
+```
+
+**BE 회귀 검증 (실 BE 통신 시나리오)**:
+
+| 명령                   | 검증 시나리오                                  |
+| ---------------------- | ---------------------------------------------- |
+| `npm run be:smoke`     | login + CORS + Cookie + 핵심 endpoint 매트릭스 |
+| `npm run be:anon`      | 비로그인 + public/protected 진입 5종           |
+| `npm run be:onboarded` | 첫방문 vs 완료자 분기 3종                      |
+| `npm run be:login`     | /mypage → /login → 로그인 → /mypage 흐름       |
+| `npm run be:check`     | 위 4개 순차 실행 (전체 회귀)                   |
+
+사전: BE `:3000` + FE dev `:3900` (`USE_MSW=false`) 띄운 상태에서 실행.
+
 ---
 
 ## 스크립트
