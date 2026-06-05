@@ -1,5 +1,6 @@
 import { api } from '@/services/api/client';
 import { safeParseResponse } from '@/lib/safe-parse-response';
+import { normalizeImageField } from '@/lib/secure-image-url';
 import {
   rankingListSchema,
   myTravelTypeSchema,
@@ -37,11 +38,16 @@ export const rankingApi = {
     region?: string;
   }): Promise<RankedDestination[]> => {
     const res = await api.get<unknown>('/rankings', { params });
-    return safeParseResponse(
+    const parsed = safeParseResponse(
       rankingListSchema,
       res.data,
       `GET /rankings ${params.type}`,
     ) as RankedDestination[];
+    // destination.imageUrl 의 http → https 정규화 (TourAPI 원본 안전망)
+    return parsed.map((r) => ({
+      ...r,
+      destination: normalizeImageField(r.destination),
+    }));
   },
 
   getTravelTypeQuiz: async (): Promise<TravelTypeQuiz> => {

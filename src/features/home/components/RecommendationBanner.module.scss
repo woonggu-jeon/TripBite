@@ -37,11 +37,31 @@
   }
 }
 
+// 이미지 (또는 emoji fallback) 영역. position relative — next/image fill 컨테이너.
+.media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  z-index: 1;
+  background: color-mix(
+    in srgb,
+    var(--accent, var(--color-primary)) 12%,
+    transparent
+  );
+}
+
+.photo {
+  object-fit: cover;
+}
+
 .emoji {
   font-size: var(--emoji-xl);
   line-height: 1;
   filter: var(--drop-shadow-md);
-  z-index: 1;
 }
 
 .body {

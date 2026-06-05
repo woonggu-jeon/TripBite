@@ -58,14 +58,8 @@ export function HomeDashboard() {
         <RecommendationBanner />
       </section>
 
-      {/* 2) 지금 열리는 충북 축제 — 카드 스와이퍼 */}
-      <section
-        data-widget="ongoing-festivals"
-        aria-label={t('ongoingFestivals')}
-      >
-        <h2 className={styles.sectionTitle}>{t('ongoingFestivals')}</h2>
-        <FestivalCarousel />
-      </section>
+      {/* 2) 지금 열리는 충북 축제 — 빈 응답 시 자체 미노출 (FestivalCarousel 안에서 section+h2 책임) */}
+      <FestivalCarousel />
 
       {/* 3) 빠른 시작 2버튼 — 계절 토너먼트 / 유형 테스트 */}
       <section data-widget="quick-actions" className={styles.quickActions}>

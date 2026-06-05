@@ -9,6 +9,7 @@ import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import { toneFor } from '@/constants/region-tone';
 import { useResponsiveSlidesPerView } from '@/hooks/use-responsive-slides-per-view';
 import type { RegionContent } from '@/features/region/types';
+import styles from './FestivalCarousel.module.scss';
 
 /**
  * 지금 열리는 충북 축제 — 카드형 가로 스와이퍼.
@@ -43,40 +44,50 @@ function periodCaption(content: RegionContent): string | undefined {
   return `${content.eventStart ?? ''}${content.eventEnd ? ` — ${content.eventEnd}` : ''}`;
 }
 
+/**
+ * 섹션 wrapper (section + h2) 도 자체 책임 — 빈 응답 시 영역 자체 미노출.
+ * 부모 (HomeDashboard) 는 `<FestivalCarousel />` 한 줄만 쓰면 됨.
+ */
 export function FestivalCarousel() {
-  const t = useTranslations('home.festivals');
+  const t = useTranslations('home');
   const slidesPerView = useResponsiveSlidesPerView();
   const { data, isLoading, isError } = useOngoingFestivals();
 
-  if (isLoading) {
-    return <Skeleton width="100%" height={200} radius="lg" />;
-  }
-  // isError / empty 동일 처리 — 홈 다른 위젯이 화면을 채우고, 축제는 보조 정보.
-  // 강한 에러 UI 대신 null 로 자연스럽게 사라지게.
-  if (isError || !data || data.length === 0) {
+  // 빈 응답 / 에러 — section 자체 안 그림 (헤더만 남는 빈 영역 회피).
+  if (isError || (!isLoading && (!data || data.length === 0))) {
     return null;
   }
 
   return (
-    <Carousel
-      slides={data}
-      renderSlide={(content) => (
-        <DestinationCard
-          href={{ pathname: `/destination/${content.id}` }}
-          imageUrl={content.imageUrl}
-          emoji={emojiFor(content)}
-          tone={toneFor(content.region)}
-          regionLabel={regionLabelFor(content.region)}
-          name={content.title}
-          caption={periodCaption(content)}
-          ariaLabel={`${content.title} · ${regionLabelFor(content.region)}`}
+    <section
+      data-widget="ongoing-festivals"
+      aria-label={t('widgets.ongoingFestivals')}
+    >
+      <h2 className={styles.title}>{t('widgets.ongoingFestivals')}</h2>
+      {isLoading ? (
+        <Skeleton width="100%" height={200} radius="lg" />
+      ) : (
+        <Carousel
+          slides={data ?? []}
+          renderSlide={(content) => (
+            <DestinationCard
+              href={{ pathname: `/destination/${content.id}` }}
+              imageUrl={content.imageUrl}
+              emoji={emojiFor(content)}
+              tone={toneFor(content.region)}
+              regionLabel={regionLabelFor(content.region)}
+              name={content.title}
+              caption={periodCaption(content)}
+              ariaLabel={`${content.title} · ${regionLabelFor(content.region)}`}
+            />
+          )}
+          keyExtractor={(s) => s.id}
+          options={{ slidesPerView, gap: 8 }}
+          showDots={false}
+          fallbackHeight={200}
+          ariaLabel={t('festivals.label')}
         />
       )}
-      keyExtractor={(s) => s.id}
-      options={{ slidesPerView, gap: 8 }}
-      showDots={false}
-      fallbackHeight={200}
-      ariaLabel={t('label')}
-    />
+    </section>
   );
 }

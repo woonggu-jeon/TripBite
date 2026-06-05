@@ -37,16 +37,22 @@
 }
 
 .image {
+  position: relative;
   display: grid;
   place-items: center;
   width: 56px;
   height: 56px;
   border-radius: var(--radius-md);
+  overflow: hidden;
   background: linear-gradient(
     135deg,
     color-mix(in srgb, var(--accent) 22%, var(--color-bg)),
     color-mix(in srgb, var(--accent) 8%, var(--color-bg))
   );
+}
+
+.photo {
+  object-fit: cover;
 }
 
 .emoji {
