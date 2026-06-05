@@ -19,6 +19,7 @@ import {
   useTournamentCandidates,
 } from '@/features/tournament/hooks/use-tournament';
 import { Button, ButtonGrid } from '@/components/ui';
+import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import styles from './TournamentPlayClient.module.scss';
 
 type Phase = 'intro' | 'map' | 'tournamentSize' | 'bracket' | 'celebration';
@@ -27,12 +28,40 @@ const INTRO_MS = 2500;
 const CELEBRATION_MS = 1800;
 
 /**
+ * 충북 11 시군에서 N 개 random pick. Fisher–Yates.
+ * config.region (단일 시군 한정) 있으면 그것만 반환.
+ * count > 11 이면 11개 전체 반환.
+ */
+function pickRandomRegions(config: {
+  count: number;
+  region?: string;
+}): string[] {
+  if (config.region) return [config.region];
+  const codes = CHUNGBUK_REGIONS.map((r) => r.code).slice();
+  for (let i = codes.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const ci = codes[i];
+    const cj = codes[j];
+    if (ci !== undefined && cj !== undefined) {
+      codes[i] = cj;
+      codes[j] = ci;
+    }
+  }
+  return codes.slice(0, Math.min(config.count, codes.length));
+}
+
+/**
  * 토너먼트 진행 클라이언트
  *
  *   1) intro          : 중앙 일러스트 + 계절 파티클 (자동 2.5초 → map)
- *   2) map            : 충북 지도 + N 개 시군 자동 꽃잎 → "다음" 클릭 → tournamentSize
- *   3) tournamentSize : 토너먼트 수 M 선택 (M ≤ N) → store.setTournamentSize → bracket
- *   4) bracket        : N 중 앞에서 M 개로 1:1 매치업 (pool 이 이미 셔플돼있음)
+ *   2) map            : 충북 지도 + N 시군 random pick → store.setSelectedRegions
+ *                       → ChungbukMap 에 시군 표식 → "다음" → tournamentSize
+ *   3) tournamentSize : 4/8/16/32 선택 → store.setTournamentSize
+ *                       → fetch 트리거 (regions + tournamentSize 모두 충족) → bracket
+ *   4) bracket        : BE 응답 destinations 로 1:1 매치업
+ *
+ * fetch 시점: tournamentSize 결정 후 (selectedRegions + tournamentSize 모두 set).
+ * BE 가 시군을 query 로 받으므로, FE 가 먼저 N 시군 결정해야 함.
  *
  * 설정 없이 직접 진입 시 자동 redirect 대신 안내 + 설정 화면 진입 버튼.
  *
@@ -67,6 +96,7 @@ export function TournamentPlayClient() {
   const router = useRouter();
   const t = useTranslations('tournament.play');
   const config = useTournamentStore((s) => s.config);
+  const setSelectedRegions = useTournamentStore((s) => s.setSelectedRegions);
   const setTournamentSize = useTournamentStore((s) => s.setTournamentSize);
   const setBracketResult = useTournamentStore((s) => s.setBracketResult);
   const record_ = useRecordTournament();
@@ -85,12 +115,21 @@ export function TournamentPlayClient() {
     refetch,
   } = useTournamentCandidates(config);
 
-  // intro 자동 진행 (config 있을 때만)
+  // intro 자동 진행 → map phase.
   useEffect(() => {
     if (!config || phase !== 'intro') return;
     const id = window.setTimeout(() => setPhase('map'), INTRO_MS);
     return () => window.clearTimeout(id);
   }, [config, phase]);
+
+  // map phase 진입 시 N 시군 random pick (충북 11 시군 중).
+  //   - config.region (단일 시군 한정) 이 있으면 그것만 사용
+  //   - 이미 selectedRegions 있으면 그대로 (reshuffle 이 별도 트리거)
+  useEffect(() => {
+    if (!config || phase !== 'map') return;
+    if (config.selectedRegions && config.selectedRegions.length > 0) return;
+    setSelectedRegions(pickRandomRegions(config));
+  }, [config, phase, setSelectedRegions]);
 
   // celebration → result 자동 이동.
   // - bracket 종료 → record mutation (fire-and-forget) → record.id 받아 ?id= 로 전달.
@@ -127,29 +166,49 @@ export function TournamentPlayClient() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, pendingResult, setBracketResult, router]);
 
-  // 시군별 dedup → 여행지 갯수(N) 만큼 노출.
-  // hook 은 항상 같은 순서로 호출되어야 하므로 early return 앞에 배치.
+  // map phase 시각화 — selectedRegions 기반 placeholder Destination[].
+  //   - fetch 가 tournamentSize 결정 후라 이 시점엔 실 destinations 없음
+  //   - 지도에 시군 위치 표식만 보이면 충분 (이름/카테고리는 config 에서 차용)
   const N = config?.count ?? 0;
-  const dedupedPool = useMemo<Destination[] | null>(() => {
-    if (!pool) return null;
-    const seen = new Set<string>();
-    const dedup: Destination[] = [];
-    for (const d of pool) {
-      if (seen.has(d.region)) continue;
-      seen.add(d.region);
-      dedup.push(d);
-      if (dedup.length >= N) break;
-    }
-    return dedup;
-  }, [pool, N]);
+  const mapPlaceholders = useMemo<Destination[]>(() => {
+    if (!config?.selectedRegions?.length) return [];
+    const cat = config.categories[0] ?? 'attraction';
+    return config.selectedRegions.map((code) => {
+      const ko = CHUNGBUK_REGIONS.find((r) => r.code === code)?.ko ?? code;
+      return {
+        id: `placeholder-${code}`,
+        name: ko,
+        category: cat,
+        region: code,
+      };
+    });
+  }, [config?.selectedRegions, config?.categories]);
 
-  // bracket 진입 시 pool 앞 M 개 사용 (pool 이 이미 셔플됨, dedup X — 시군 중복 허용)
-  // 사용자가 32강 선택 시 32 destinations 필요 — dedupedPool(시군 dedup) 은 11개 한계라 X.
+  // bracket 진입 시 매치업 destinations 구성.
+  // 1단계: 시군 unique 우선 — 같은 시군의 다른 destination 두 개가 매치업에 나오는 걸 피함
+  // 2단계: tournamentSize > 시군 unique 갯수면, 같은 시군의 남은 destination 으로 채움
+  // id 중복은 절대 허용 X — Bracket 이 같은 카드 두 번 그리는 사고 차단.
   const matchupSize = config?.tournamentSize ?? pendingSize ?? 0;
-  const matchupDestinations = useMemo<Destination[]>(
-    () => pool?.slice(0, matchupSize) ?? [],
-    [pool, matchupSize],
-  );
+  const matchupDestinations = useMemo<Destination[]>(() => {
+    if (!pool || matchupSize <= 0) return [];
+    const seenRegions = new Set<string>();
+    const seenIds = new Set<string>();
+    const picked: Destination[] = [];
+    for (const d of pool) {
+      if (seenRegions.has(d.region)) continue;
+      seenRegions.add(d.region);
+      seenIds.add(d.id);
+      picked.push(d);
+      if (picked.length >= matchupSize) return picked;
+    }
+    for (const d of pool) {
+      if (seenIds.has(d.id)) continue;
+      seenIds.add(d.id);
+      picked.push(d);
+      if (picked.length >= matchupSize) break;
+    }
+    return picked;
+  }, [pool, matchupSize]);
 
   if (!config) {
     return (
@@ -164,20 +223,22 @@ export function TournamentPlayClient() {
 
   const theme = config.theme;
 
+  // map "다음" — N 시군 확정 후 tournamentSize phase 로.
   const handleMapNext = () => {
     setPhase('tournamentSize');
   };
 
-  // map phase 의 "다시하기" — 같은 query key 로 새 fetch 강제.
-  // mock 은 매 호출마다 Fisher-Yates 셔플 → 새 시군 조합으로 pool 갱신.
-  // 실 BE 도 /destinations/random 응답이 매번 다른 random N개 보장.
+  // map "다시하기" — N 시군 random 재추첨 (fetch 와 무관, store 갱신).
   const handleReshuffle = () => {
-    void refetch();
+    if (!config) return;
+    setSelectedRegions(pickRandomRegions(config));
   };
 
-  const handleStartBracket = () => {
+  // tournamentSize 결정 → store.setTournamentSize → useTournamentCandidates 가
+  // enabled (regions + size 둘 다 set) → fetch 1회 → bracket.
+  const handleConfirmSize = () => {
     if (!pendingSize) return;
-    setTournamentSize(pendingSize); // store.config.tournamentSize 갱신 (API 호출용)
+    setTournamentSize(pendingSize);
     setPhase('bracket');
   };
 
@@ -199,34 +260,16 @@ export function TournamentPlayClient() {
       {phase === 'intro' && (
         <div className={styles.center}>
           <CenterIllustration theme={theme} onTap={() => {}} disabled />
-          <p className={styles.hint}>
-            {isLoading ? t('loading') : isError ? t('error') : t('introHint')}
-          </p>
-          {isError && (
-            <Button variant="secondary" size="sm" onClick={() => refetch()}>
-              {t('retry')}
-            </Button>
-          )}
+          <p className={styles.hint}>{t('introHint')}</p>
         </div>
       )}
 
       {phase === 'map' && (
         <div className={styles.map}>
-          {!dedupedPool && isLoading && (
-            <p className={styles.hint}>{t('loading')}</p>
-          )}
-          {!dedupedPool && isError && (
-            <div className={styles.errorBox}>
-              <p>{t('error')}</p>
-              <Button variant="secondary" size="sm" onClick={() => refetch()}>
-                {t('retry')}
-              </Button>
-            </div>
-          )}
-          {dedupedPool && (
+          {mapPlaceholders.length > 0 && (
             <>
-              {/* 자동 표시 — 사용자 선택 X (selected/onToggle 미전달) */}
-              <ChungbukMap destinations={dedupedPool} theme={theme} />
+              {/* 자동 표시 — 사용자 선택 X. fetch 전 placeholder 로 시군 위치만 시각화 */}
+              <ChungbukMap destinations={mapPlaceholders} theme={theme} />
               <div className={styles.mapFooter}>
                 <p className={styles.counter}>
                   {t('mapSummary', { destinations: N })}
@@ -237,7 +280,6 @@ export function TournamentPlayClient() {
                     size="lg"
                     fullWidth
                     onClick={handleReshuffle}
-                    loading={isLoading}
                   >
                     {t('reshuffle')}
                   </Button>
@@ -270,19 +312,30 @@ export function TournamentPlayClient() {
             size="lg"
             fullWidth
             disabled={!canStartBracket}
-            onClick={handleStartBracket}
+            onClick={handleConfirmSize}
           >
-            {t('startBracket')}
+            {t('next')}
           </Button>
         </div>
       )}
 
       {phase === 'bracket' && (
         <div className={styles.bracket}>
-          <Bracket
-            destinations={matchupDestinations}
-            onComplete={handleBracketComplete}
-          />
+          {isLoading && <p className={styles.hint}>{t('loading')}</p>}
+          {isError && (
+            <div className={styles.errorBox}>
+              <p>{t('error')}</p>
+              <Button variant="secondary" size="sm" onClick={() => refetch()}>
+                {t('retry')}
+              </Button>
+            </div>
+          )}
+          {matchupDestinations.length > 0 && (
+            <Bracket
+              destinations={matchupDestinations}
+              onComplete={handleBracketComplete}
+            />
+          )}
         </div>
       )}
 

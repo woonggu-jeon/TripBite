@@ -49,21 +49,27 @@ export const tournamentApi = {
     return res.data.map(normalizeImageField);
   },
 
+  /**
+   * 토너먼트 매치업 후보 fetch.
+   *
+   * 합의된 BE spec:
+   *   - themeKind / themeValue / categories: filter
+   *   - regions (comma): map phase 에서 FE 가 random pick 한 N 시군 코드 (필수)
+   *     → BE 는 이 시군들 안에서만 destination 추출
+   *   - tournamentSize ∈ {4, 8, 16, 32}: 응답 destination 갯수 (strict)
+   *   - 응답: 정확히 tournamentSize 개 + 시군 다양성 (regions 안에서 균형 분배,
+   *     tournamentSize > regions.length 인 경우 같은 시군 다른 destination 추가)
+   *
+   * count / pool / region(단일) param 폐기.
+   */
   fetchCandidates: async (config: TournamentConfig): Promise<Destination[]> => {
-    // pool 사이즈 — 매치업 진입 시 토너먼트 사이즈(M, 최대 32) 만큼 destinations 가
-    // 필요하므로 최소 32 보장. 여행지 갯수(N) 대비 여유.
-    const poolSize = Math.max(32, config.count * 3);
     const res = await api.get<Destination[]>('/destinations/random', {
       params: {
         themeKind: config.theme.kind,
         themeValue: config.theme.value,
         categories: config.categories.join(','),
-        region: config.region,
-        count: config.count,
-        // 매치업 사이즈 — Play 의 tournamentSize phase 에서 결정되면 함께 전달.
-        // 백엔드가 destinations 결정 시 활용 가능 (현재 mock 은 무시).
+        regions: config.selectedRegions?.join(','),
         tournamentSize: config.tournamentSize,
-        pool: poolSize,
       },
     });
     return res.data.map(normalizeImageField);

@@ -1,10 +1,12 @@
 'use client';
 
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { haptic } from '@/lib/haptic';
 import { cardClasses } from '@/components/ui';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { categoryEmoji } from '@/constants/emoji-map';
+import { secureImageUrl } from '@/lib/secure-image-url';
 import type { Destination } from '@/features/tournament/types';
 import styles from './MatchupCard.module.scss';
 
@@ -17,7 +19,7 @@ export interface MatchupCardProps {
 /**
  * 1:1 매치업 카드. 클릭/탭 시 onPick. 세로 2칸 레이아웃의 한 칸.
  *
- * 이미지가 없을 때(현재 mock) 카테고리 이모지를 큰 placeholder 로.
+ * imageUrl 있으면 next/image fill, 없으면 카테고리 이모지 placeholder.
  */
 export function MatchupCard({
   destination,
@@ -28,6 +30,7 @@ export function MatchupCard({
   const region = CHUNGBUK_REGIONS.find((r) => r.code === destination.region);
   const regionLabel = region?.ko ?? destination.region;
   const categoryLabel = t(`category.${destination.category}`);
+  const safeImg = secureImageUrl(destination.imageUrl);
 
   return (
     <button
@@ -49,9 +52,19 @@ export function MatchupCard({
       aria-label={`${destination.name} 선택`}
     >
       <div className={styles.image} aria-hidden>
-        <span className={styles.emoji}>
-          {categoryEmoji(destination.category)}
-        </span>
+        {safeImg ? (
+          <Image
+            src={safeImg}
+            alt=""
+            fill
+            sizes="(max-width: 380px) 40vw, 160px"
+            className={styles.photo}
+          />
+        ) : (
+          <span className={styles.emoji}>
+            {categoryEmoji(destination.category)}
+          </span>
+        )}
       </div>
       <div className={styles.body}>
         <h3 className={styles.name}>{destination.name}</h3>

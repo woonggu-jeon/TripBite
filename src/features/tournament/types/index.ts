@@ -49,7 +49,13 @@ export type TournamentConfig = {
   /** 여행지 갯수 (N) — 지도에 떨어질 꽃잎(시군) 수. Setup 에서 결정. */
   count: TournamentCount;
   /**
-   * 토너먼트 매치업 사이즈 (M ≤ N). Play 페이지의 tournamentSize phase 에서 결정.
+   * map phase 에서 결정된 N 시군 코드 (예: ['cheongju','boeun']).
+   * BE 의 `/destinations/random?regions=...` query 로 전달 → BE 는 이 시군들 안에서만
+   * destinations 추출. Setup 직후엔 undefined, map phase 의 random pick 후 set.
+   */
+  selectedRegions?: string[];
+  /**
+   * 토너먼트 매치업 사이즈 (M). Play 페이지의 tournamentSize phase 에서 결정.
    * 결정되면 store.setTournamentSize 로 갱신되며 백엔드 API 호출 파라미터로 함께 전달.
    * 초기(Setup 직후) 단계에선 undefined.
    */

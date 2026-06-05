@@ -4,16 +4,23 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { tournamentApi } from '@/features/tournament/api/tournament';
 import { CACHE } from '@/lib/cache';
 import type {
+  DestinationCategory,
   SavedTournament,
   TournamentConfig,
+  TournamentCount,
+  TournamentTheme,
 } from '@/features/tournament/types';
 
 /**
- * Candidates query key — tournamentSize 는 일부러 제외.
- * 토너먼트 수가 Play 중에 결정되어도 destinations 풀은 그대로 유지(refetch 방지).
- * (tournamentSize 변경 시 시군 셔플이 다시 일어나 사용자 본 화면이 깨지지 않도록.)
+ * Candidates query key — BE 호출에 실제 영향 주는 param 만 포함.
+ * count 는 UI 표시용 (지도 시군 갯수) 이라 cache scope 와 무관.
  */
-type CandidateKeyShape = Omit<TournamentConfig, 'tournamentSize'>;
+type CandidateKeyShape = {
+  theme: TournamentTheme;
+  categories: DestinationCategory[];
+  regions: string[] | undefined;
+  tournamentSize: TournamentCount | undefined;
+};
 
 export const tournamentKeys = {
   all: ['tournament'] as const,
@@ -30,23 +37,42 @@ export const tournamentKeys = {
 
 /**
  * 설정에 맞는 후보 여행지 풀 조회
- * - /tournament/play 진입 직후 호출
- * - enabled: config 존재 시
- * - tournamentSize 는 fetchCandidates 가 받은 config 에서 query param 으로 전달되지만,
- *   query key 에는 포함하지 않음(같은 풀 유지).
+ *
+ * enabled: **tournamentSize 까지 결정된 후에만** fetch.
+ *   theme/categories/count/region 외에 tournamentSize 도 BE 쿼리에 영향
+ *   (매치업 size 만큼 destinations 필요) → 미결정 상태에서 미리 fetch 하면
+ *   부족한 pool 받을 위험. 사용자가 play phase 의 tournamentSize 선택 후
+ *   setTournamentSize 호출 → enabled true → fetch 1회.
+ *
+ * tournamentSize 는 query key 에 포함 — 다른 size 선택 시 새 fetch.
+ * (사용자가 다른 size 로 토너먼트 다시 시작하는 시나리오 지원)
  */
 export function useTournamentCandidates(config: TournamentConfig | null) {
+  // fetch 조건 — 둘 다 필요:
+  //   1) selectedRegions: map phase 에서 N 시군 결정 후 set
+  //   2) tournamentSize: tournamentSize phase 에서 M 선택 후 set
+  // 둘 다 충족돼야 BE 한테 의미 있는 query 됨.
+  const hasRegions =
+    !!config &&
+    Array.isArray(config.selectedRegions) &&
+    config.selectedRegions.length > 0;
+  const hasSize =
+    !!config &&
+    typeof config.tournamentSize === 'number' &&
+    config.tournamentSize > 0;
+  const enabled = hasRegions && hasSize;
   return useQuery({
-    queryKey: config
-      ? tournamentKeys.candidates({
-          theme: config.theme,
-          categories: config.categories,
-          count: config.count,
-          region: config.region,
-        })
-      : ['tournament', 'candidates', 'idle'],
+    queryKey:
+      config && enabled
+        ? tournamentKeys.candidates({
+            theme: config.theme,
+            categories: config.categories,
+            regions: config.selectedRegions,
+            tournamentSize: config.tournamentSize,
+          })
+        : ['tournament', 'candidates', 'idle'],
     queryFn: () => tournamentApi.fetchCandidates(config!),
-    enabled: !!config,
+    enabled,
     ...CACHE.session, // 한 세션 동안 고정 (Infinity + 1h gc)
   });
 }

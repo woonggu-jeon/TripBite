@@ -37,6 +37,11 @@ type TournamentState = {
 type TournamentActions = {
   setConfig: (config: TournamentConfig) => void;
   /**
+   * Play 의 map phase 에서 호출 — random pick 한 N 시군 코드 set.
+   * BE 가 destinations 응답할 때 이 시군들 안에서만 추출하도록 query 에 전달.
+   */
+  setSelectedRegions: (regions: string[]) => void;
+  /**
    * Play 페이지의 tournamentSize phase 에서 호출.
    * config.tournamentSize 만 갱신해 백엔드 호출 파라미터로 전달되도록.
    */
@@ -56,6 +61,12 @@ export const useTournamentStore = create<TournamentState & TournamentActions>()(
       matchesPlayed: 0,
 
       setConfig: (config) => set({ config }),
+      setSelectedRegions: (regions) =>
+        set((state) =>
+          state.config
+            ? { config: { ...state.config, selectedRegions: regions } }
+            : { config: state.config },
+        ),
       setTournamentSize: (size) =>
         set((state) =>
           state.config

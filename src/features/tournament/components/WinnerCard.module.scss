@@ -14,6 +14,7 @@
 }
 
 .image {
+  position: relative;
   display: grid;
   place-items: center;
   width: 96px;
@@ -22,6 +23,11 @@
   background: var(--color-bg);
   border: 2px solid var(--color-primary-ring);
   margin-top: 0.25rem;
+  overflow: hidden;
+}
+
+.photo {
+  object-fit: cover;
 }
 
 .emoji {

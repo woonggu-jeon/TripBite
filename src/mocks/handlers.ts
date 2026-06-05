@@ -664,30 +664,46 @@ export const handlers = [
   }),
 
   // ⚠ 반드시 `/destinations/:id` 보다 먼저 등록 — :id 가 'random' 도 매칭하므로.
+  //
+  // 토너먼트 매치업용 random destination 응답 (BE 구현 spec example).
+  //
+  // Query:
+  //   - themeKind: 'season' | 'mood' | ...      (filter, 선택)
+  //   - themeValue: 'spring' | 'summer' | ...   (filter, 선택)
+  //   - categories: 'festival,attraction'       (comma-separated enum filter)
+  //   - regions:   'cheongju,boeun'             (comma-separated, FE 가 map phase 에서 결정한 N 시군 — 필수)
+  //   - tournamentSize: 4 | 8 | 16 | 32         (응답 destination 갯수 — strict)
+  //
+  // 응답:
+  //   - 정확히 tournamentSize 개 (단, regions 안의 데이터가 더 적으면 가능한 만큼)
+  //   - 시군 균형 분배 — regions 안의 각 시군에서 가능한 한 다양하게 pick
+  //     · regions.length ≥ tournamentSize: 각 시군 1개씩 우선
+  //     · regions.length <  tournamentSize: 시군 1순환 + 같은 시군 다른 destination 으로 채움
+  //   - id 중복 0 (Bracket 이 같은 카드 두 번 그리는 사고 차단)
+  //
+  // 합의: count / pool / region(단일) param 폐기. 시군은 응답 destination.region 에서 추출.
   http.get(`${apiUrl}/destinations/random`, ({ request }) => {
     const url = new URL(request.url);
     const categoriesParam = url.searchParams.get('categories') ?? '';
-    const region = url.searchParams.get('region');
-    const count = Math.min(
-      32,
-      Math.max(2, Number(url.searchParams.get('count') ?? 8)),
-    );
-    // tournamentSize 는 수신만 (mock 동작에 영향 X)
-    void url.searchParams.get('tournamentSize');
-    const poolParam = url.searchParams.get('pool');
-    const desired = poolParam !== null ? Number(poolParam) : count;
+    const regionsParam = url.searchParams.get('regions') ?? '';
+
+    const VALID_SIZES = [4, 8, 16, 32];
+    const rawSize = Number(url.searchParams.get('tournamentSize') ?? 8);
+    const tournamentSize = VALID_SIZES.includes(rawSize) ? rawSize : 8;
+
     const categories = categoriesParam
       ? categoriesParam.split(',').filter(Boolean)
       : [];
+    const regions = regionsParam ? regionsParam.split(',').filter(Boolean) : [];
 
     let pool = destinationSeeds;
     if (categories.length > 0) {
       pool = pool.filter((d) => categories.includes(d.category));
     }
-    if (region) {
-      pool = pool.filter((d) => d.region === region);
+    if (regions.length > 0) {
+      pool = pool.filter((d) => regions.includes(d.region));
     }
-    // Fisher–Yates 부분 셔플
+    // Fisher–Yates 셔플
     const arr = pool.slice();
     for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -698,9 +714,27 @@ export const handlers = [
         arr[j] = ai;
       }
     }
-    return HttpResponse.json(
-      arr.slice(0, Math.min(arr.length, Math.max(count, desired))),
-    );
+
+    // 시군 균형 분배 우선 + 부족 시 같은 시군 다른 destination 채움.
+    const seenRegions = new Set<string>();
+    const seenIds = new Set<string>();
+    const picked: typeof arr = [];
+    for (const d of arr) {
+      if (seenRegions.has(d.region)) continue;
+      seenRegions.add(d.region);
+      seenIds.add(d.id);
+      picked.push(d);
+      if (picked.length >= tournamentSize) break;
+    }
+    if (picked.length < tournamentSize) {
+      for (const d of arr) {
+        if (seenIds.has(d.id)) continue;
+        seenIds.add(d.id);
+        picked.push(d);
+        if (picked.length >= tournamentSize) break;
+      }
+    }
+    return HttpResponse.json(picked);
   }),
 
   // 여행지 상세 — id 기반 deterministic mock 메타 합성.

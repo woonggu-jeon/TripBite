@@ -59,20 +59,22 @@ export const rankingApi = {
     answers: TravelTypeAnswer[],
   ): Promise<TravelType> => {
     const res = await api.post<unknown>('/travel-types/submit', { answers });
-    return safeParseResponse(
+    const parsed = safeParseResponse(
       travelTypeSchema,
       res.data,
       'POST /travel-types/submit',
     ) as TravelType;
+    return normalizeTravelTypeImages(parsed);
   },
 
   getMyTravelType: async (): Promise<TravelType | null> => {
     const res = await api.get<unknown>('/travel-types/me');
-    return safeParseResponse(
+    const parsed = safeParseResponse(
       myTravelTypeSchema,
       res.data,
       'GET /travel-types/me',
     ) as TravelType | null;
+    return parsed ? normalizeTravelTypeImages(parsed) : null;
   },
 
   /**
@@ -81,10 +83,22 @@ export const rankingApi = {
    */
   setMyTravelType: async (code: string): Promise<TravelType> => {
     const res = await api.patch<unknown>('/travel-types/me', { code });
-    return safeParseResponse(
+    const parsed = safeParseResponse(
       travelTypeSchema,
       res.data,
       'PATCH /travel-types/me',
     ) as TravelType;
+    return normalizeTravelTypeImages(parsed);
   },
 };
+
+/**
+ * TravelType.recommended[].imageUrl 의 http → https 정규화 (TourAPI 안전망).
+ */
+function normalizeTravelTypeImages(input: TravelType): TravelType {
+  if (!input.recommended?.length) return input;
+  return {
+    ...input,
+    recommended: input.recommended.map(normalizeImageField),
+  };
+}

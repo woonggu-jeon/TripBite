@@ -15,7 +15,9 @@ import type { TravelType } from '@/features/ranking/types';
 import { toast } from '@/lib/toast';
 import { useShareCard } from '@/hooks/use-share-card';
 import { useRequireAuth } from '@/hooks/use-require-auth';
+import Image from 'next/image';
 import { categoryEmoji } from '@/constants/emoji-map';
+import { secureImageUrl } from '@/lib/secure-image-url';
 import styles from './TravelTypeResult.module.scss';
 
 /**
@@ -136,10 +138,21 @@ export function TravelTypeResult() {
             {recommended.map((d) => {
               const region = CHUNGBUK_REGIONS.find((r) => r.code === d.region);
               const regionLabel = region?.ko ?? d.region;
+              const safeImg = secureImageUrl(d.imageUrl);
               return (
                 <li key={d.id} className={styles.recommendItem}>
                   <span className={styles.recEmoji} aria-hidden>
-                    {categoryEmoji(d.category)}
+                    {safeImg ? (
+                      <Image
+                        src={safeImg}
+                        alt=""
+                        fill
+                        sizes="40px"
+                        className={styles.recPhoto}
+                      />
+                    ) : (
+                      categoryEmoji(d.category)
+                    )}
                   </span>
                   <div className={styles.recText}>
                     <p className={styles.recName}>{d.name}</p>

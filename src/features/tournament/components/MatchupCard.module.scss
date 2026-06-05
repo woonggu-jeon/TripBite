@@ -39,6 +39,7 @@
 }
 
 .image {
+  position: relative;
   width: 100%;
   aspect-ratio: var(--aspect-square);
   border-radius: var(--radius-md);
@@ -49,6 +50,11 @@
   );
   display: grid;
   place-items: center;
+  overflow: hidden;
+}
+
+.photo {
+  object-fit: cover;
 }
 
 .emoji {

@@ -81,6 +81,7 @@
 }
 
 .recEmoji {
+  position: relative;
   display: grid;
   place-items: center;
   width: 40px;
@@ -88,6 +89,11 @@
   font-size: var(--emoji-sm);
   background: var(--color-surface-soft);
   border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.recPhoto {
+  object-fit: cover;
 }
 
 .recText {
