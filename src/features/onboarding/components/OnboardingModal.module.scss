@@ -1,0 +1,127 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal, 1000);
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  background: var(--color-backdrop, rgba(0, 0, 0, 0.4));
+  animation: fadeIn var(--motion-base, 200ms) ease;
+}
+
+.dialog {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--color-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  animation: rise var(--motion-base, 200ms) ease;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 0.625rem;
+  right: 0.625rem;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: transparent;
+  color: var(--color-muted);
+  border: 0;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background var(--motion-base) ease;
+  -webkit-tap-highlight-color: transparent;
+
+  &:hover {
+    background: var(--color-hover-soft);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.title {
+  font-size: var(--font-h2);
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
+  margin: 0;
+  padding-right: 32px; // close btn 자리
+  word-break: keep-all;
+}
+
+.subtitle {
+  font-size: var(--font-body-sm);
+  color: var(--color-muted);
+  line-height: var(--line-normal);
+  margin: 0;
+  word-break: keep-all;
+}
+
+.features {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  margin: 0;
+  list-style: none;
+  background: var(--color-surface-soft);
+  border-radius: var(--radius-md);
+
+  li {
+    font-size: var(--font-body-sm);
+    color: var(--color-fg);
+    line-height: var(--line-normal);
+    word-break: keep-all;
+  }
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop,
+  .dialog {
+    animation: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .dialog {
+    padding: var(--space-4);
+  }
+  .title {
+    font-size: var(--font-h3);
+  }
+}

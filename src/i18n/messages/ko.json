@@ -191,6 +191,16 @@
         "invisibleChar": "보이지 않는 문자는 사용할 수 없어요.",
         "controlChar": "허용되지 않는 문자가 포함되어 있어요."
       }
+    },
+    "welcomeModal": {
+      "title": "TripBite 에 오신 걸 환영해요",
+      "subtitle": "충북 여행을 새롭게 발견하는 3가지 방법",
+      "feature1": "🏆 토너먼트 — 내 취향 여행지 우승자 뽑기",
+      "feature2": "✉️ 5글자 편지 — 익명의 누군가에게 마음 전하기",
+      "feature3": "📮 도장책 — 11 시군 우승지 모으기",
+      "cta": "둘러보기 시작",
+      "detailCta": "자세히 보기",
+      "ariaLabel": "TripBite 소개"
     }
   },
   "home": {

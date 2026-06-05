@@ -31,7 +31,9 @@ const PUBLIC_ONLY_PATHS = [
 // 알림함 (헤더 dropdown) 은 라우트가 아니라 컴포넌트가 자체 분기.
 const PROTECTED_PATHS = ['/mypage', '/settings', '/letter'];
 
-const ACCESS_TOKEN_COOKIE = 'access_token';
+// sessionID 단일 쿠키 — BE 가 'SID' (또는 NEXT_PUBLIC_SESSION_COOKIE) 발급.
+// AUTH_FLOWS.md 의 sessionID 모델 — JWT access/refresh 폐기 후 단일.
+const SESSION_COOKIE = process.env.NEXT_PUBLIC_SESSION_COOKIE ?? 'SID';
 const STATE_CHANGING = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
 export function middleware(request: NextRequest) {
@@ -55,21 +57,21 @@ export function middleware(request: NextRequest) {
   requestHeaders.set('x-nonce', nonce);
   requestHeaders.set('content-security-policy-report-only', csp);
 
-  // mock 환경 (NEXT_PUBLIC_USE_MSW=true) 에서는 백엔드가 없어 access_token 발급 불가.
+  // mock 환경 (NEXT_PUBLIC_USE_MSW=true) 에서는 백엔드가 없어 session 발급 불가.
   // 인증 redirect 를 skip 해 모든 페이지를 둘러볼 수 있게 함. E2E 는 별도 cookie 주입.
   // 운영 빌드 (USE_MSW=false) 에서는 그대로 redirect 동작.
   const isMockMode = process.env.NEXT_PUBLIC_USE_MSW === 'true';
 
   if (!isMockMode) {
     const { pathname } = request.nextUrl;
-    const hasAccessToken = request.cookies.has(ACCESS_TOKEN_COOKIE);
+    const hasSession = request.cookies.has(SESSION_COOKIE);
     const isPublicOnly = PUBLIC_ONLY_PATHS.some((p) => pathname.startsWith(p));
     const isProtected = PROTECTED_PATHS.some((p) => pathname.startsWith(p));
 
-    if (isPublicOnly && hasAccessToken) {
+    if (isPublicOnly && hasSession) {
       return withCsp(NextResponse.redirect(new URL('/', request.url)), csp);
     }
-    if (isProtected && !hasAccessToken) {
+    if (isProtected && !hasSession) {
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('redirect', pathname);
       return withCsp(NextResponse.redirect(loginUrl), csp);
