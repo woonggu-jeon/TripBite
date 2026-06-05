@@ -3,7 +3,7 @@ import { Skeleton } from './Skeleton';
 /**
  * 같은 모양의 Skeleton 을 N개 반복 — 리스트/그리드/카드 로딩 자리잡이 표준화.
  *
- * 사용처: SavedTournamentsAll(2x3), InfiniteList, NotificationDropdown,
+ * 사용처: SavedTournamentsAll(2x3), InfiniteList, NotificationsClient,
  *   OnboardingFlow, LetterSentClient, RankingPageContent 등 — 모두 동일
  *   `Array.from({length}).map((_, i) => <Skeleton key={i} ... />)` 패턴.
  *

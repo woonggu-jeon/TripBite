@@ -8,8 +8,8 @@ FE 작업 없이 동작.
 
 알림은 **두 채널** 으로 분리:
 
-1. **인앱 알림함** (Notification Inbox) — 헤더 종 버튼 → dropdown.
-   인증된 사용자가 앱을 열어 둔 동안만. 폴링 30초.
+1. **인앱 알림함** (Notification Inbox) — **`/notifications` 페이지** (헤더 종 클릭 → navigate).
+   인증된 사용자만 접근. cursor 기반 무한스크롤 + 30초 폴링.
 2. **Web Push** — OS 레벨 알림. 앱이 닫혀 있어도 수신.
    VAPID + Service Worker 기반.
 
@@ -26,24 +26,31 @@ type NotificationType =
   | 'letter.received' // 받은 편지 도착
   | 'letter.liked' // 내 편지에 좋아요
   | 'tournament.shared' // 토너먼트 공유 (수신자에게)
-  | 'event'; // 일반 이벤트/공지
+  | 'event' // 일반 이벤트/공지
+  | 'security'; // 보안 알림 (비밀번호 변경 등)
 ```
 
-추가 필요 시 type 유니온 확장 + FE `NotificationDropdown` 의 `TYPE_ICON` 매핑.
+추가 필요 시 type 유니온 확장 + FE `NotificationsClient` 의 `TYPE_ICON` 매핑.
 
-### A-1. `GET /notifications` — 인박스 조회
+### A-1. `GET /notifications?cursor=&limit=` — 인박스 조회 (페이지)
+
+#### Query
+
+- `cursor`: offset (기본 0). 첫 요청은 생략.
+- `limit`: 페이지 크기 (기본 20, 최대 60). 헤더 badge 만 필요 시 `limit=1`.
 
 #### Response 200
 
 ```ts
 {
   items: AppNotification[];
-  unreadCount: number;
+  unreadCount: number;          // 전체 통합 미읽음 수 (모든 페이지 기준)
+  nextCursor: number | null;    // 다음 페이지 offset, 마지막 페이지면 null
 }
 
 type AppNotification = {
   id: string;
-  type: 'letter.received' | 'letter.liked' | 'tournament.shared' | 'event';
+  type: 'letter.received' | 'letter.liked' | 'tournament.shared' | 'event' | 'security';
   title: string;              // 표시용 텍스트 ("새로운 편지가 도착했어요")
   body?: string;              // 부가 정보 (보낸 사람 닉네임 / 편지 미리보기 등)
   link?: string;              // 클릭 시 이동 경로 (예: "/letter/abc123")
@@ -62,14 +69,19 @@ type AppNotification = {
 현재 FE 미사용. 30개 이상 누적되면 cursor 추가 권장:
 
 ```
-GET /notifications?cursor=<id>&limit=20
-→ { items, unreadCount, nextCursor }
+GET /notifications?cursor=<offset>&limit=20
+→ { items, unreadCount, nextCursor: number|null }
 ```
 
-#### 폴링
+`cursor` 는 offset (편지/시군콘텐츠와 동일 컨벤션). `nextCursor` 가 `null` 이면 마지막 페이지.
+첫 요청은 `cursor` 생략 → BE 가 0 처리.
 
-FE 는 `refetchInterval: 30s` + `refetchOnWindowFocus`. BE 부하 고려해 응답에
-`ETag` / `Last-Modified` 추가하고 304 활용 권장.
+#### 헤더 badge (limit=1)
+
+헤더 종 badge 는 unreadCount 만 필요 — `useNotificationBadge` 가 `limit=1` 로 가장 가벼운 fetch.
+`CACHE.realtime` 프로파일 (30s stale + 30s 폴링 + `refetchOnWindowFocus`). markRead 시 `notificationKeys.all` 일괄 invalidate 로 페이지/badge 동시 갱신.
+
+BE 부하 고려해 응답에 `ETag` / `Last-Modified` 추가하고 304 활용 권장.
 
 #### Response 실패
 

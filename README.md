@@ -1,8 +1,8 @@
-# Next.js 15 + PWA + JWT Cookie Auth — Travel App
+# Next.js 15 + PWA + sessionID Cookie Auth — Travel App
 
 > 충청북도 여행지 토너먼트 + 다섯글자 편지 PWA
 >
-> Next.js 15 App Router · Cookie 기반 JWT · TourAPI 연동 · 다국어 · 위치/날씨 · 무한스크롤 · 차트 · 캐러셀
+> Next.js 15 App Router · sessionID 단일 쿠키 (`SID`) · TourAPI 연동 · 다국어 · 무한스크롤 · 차트 · 캐러셀
 
 ---
 

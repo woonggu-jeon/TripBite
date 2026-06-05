@@ -7,7 +7,6 @@ import { Trophy, Sparkles } from 'lucide-react';
 import { ROUTES } from '@/constants/routes';
 import { RecommendationBanner } from '@/features/home/components/RecommendationBanner';
 // 날씨 위젯만 미노출 (사용자 요청). "오늘의 추천" 섹션 + RecommendationBanner 는 유지.
-// import { WeatherWidget } from '@/features/weather';
 import { FestivalCarousel } from '@/features/home/components/FestivalCarousel';
 // LatestReceivedLetter 위젯 미노출 — 추후 재오픈 시 import 복원.
 // import { LatestReceivedLetter } from '@/features/home/components/LatestReceivedLetter';
@@ -19,7 +18,7 @@ import styles from './HomeDashboard.module.scss';
  * 홈 대시보드 (사이트맵 v2)
  *
  * 위젯 (위 → 아래):
- *   1) 위치+날씨 기반 오늘의 추천 (WeatherWidget + 추천 1~3개)
+ *   1) 오늘의 추천 (RecommendationBanner — `/v1/rankings?type=recommended&limit=5`)
  *   2) 진행 중인 충북 축제 슬라이드 (Carousel + useOngoingFestivals)
  *   3) 빠른 시작 2버튼 (계절 토너먼트 / 유형 테스트)
  *      - 토너먼트: 현재 월 → 계절 자동 → 라벨 동적, 클릭 시 theme=season +
@@ -52,9 +51,6 @@ export function HomeDashboard() {
         aria-label={t('weatherRecommendation')}
       >
         <h2 className={styles.sectionTitle}>{t('weatherRecommendation')}</h2>
-        {/* 날씨 위젯 미노출 (사용자 요청). 추후 복원 시 주석 해제 + import 복원.
-        <WeatherWidget />
-        */}
         <RecommendationBanner />
       </section>
 
