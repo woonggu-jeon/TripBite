@@ -7,10 +7,13 @@ import { secureImageUrl } from '@/lib/secure-image-url';
 import type { RegionContent } from '@/features/region/types';
 import styles from './RegionContentRow.module.scss';
 
+// BE 가 RegionContent 에는 'local' 카테고리 안 보내지만 generated DestinationCategory
+// 는 4종 enum 이라 type-check 위해 fallback 키 추가.
 const TYPE_EMOJI = {
   attraction: '📍',
   festival: '🎪',
   experience: '🎨',
+  local: '🏘️',
 } as const;
 
 /**

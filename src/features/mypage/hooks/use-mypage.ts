@@ -14,7 +14,9 @@ export const mypageKeys = {
 export function useMypage() {
   return useQuery({
     queryKey: mypageKeys.summary(),
-    queryFn: mypageApi.getSummary,
+    // generated 함수가 (signal?) → Promise<DTO>. react-query 의 queryFn 은
+    // ({signal, ...}) 객체 받으므로 lambda 로 signal 만 분리해 전달.
+    queryFn: ({ signal }) => mypageApi.getSummary(signal),
     ...CACHE.user, // 사용자 데이터 (2min)
   });
 }
@@ -33,7 +35,7 @@ export function useUpdateNickname() {
 export function useStamps() {
   return useQuery({
     queryKey: mypageKeys.stamps(),
-    queryFn: mypageApi.getStamps,
+    queryFn: ({ signal }) => mypageApi.getStamps(signal),
     ...CACHE.user,
   });
 }
@@ -59,7 +61,7 @@ export function useUpdateAvatar() {
 export function useRemoveAvatar() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: mypageApi.removeAvatar,
+    mutationFn: () => mypageApi.removeAvatar(),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['auth', 'me'] });
       qc.invalidateQueries({ queryKey: mypageKeys.summary() });

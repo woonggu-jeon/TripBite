@@ -5,6 +5,7 @@ import { rankingApi } from '@/features/ranking/api/ranking';
 import { CACHE } from '@/lib/cache';
 import type { RankingType, TravelTypeAnswer } from '@/features/ranking/types';
 import type { DestinationCategory } from '@/features/tournament/types';
+import type { TravelTypeCode } from '@/api/generated/schemas';
 
 export const rankingKeys = {
   all: ['ranking'] as const,
@@ -72,7 +73,7 @@ export function useSubmitTravelType() {
 export function useSetMyTravelType() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (code: string) => rankingApi.setMyTravelType(code),
+    mutationFn: (code: TravelTypeCode) => rankingApi.setMyTravelType(code),
     onSuccess: (result) => {
       qc.setQueryData(rankingKeys.travelType(), result);
       qc.invalidateQueries({ queryKey: ['mypage', 'summary'] });

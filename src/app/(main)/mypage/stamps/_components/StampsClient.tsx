@@ -9,6 +9,7 @@ import { Button } from '@/components/ui';
 import { useStamps } from '@/features/mypage/hooks/use-mypage';
 import { ChungbukStampMap } from '@/features/region/components/ChungbukStampMap';
 import { useShareCard } from '@/hooks/use-share-card';
+import { isRegionCode, type RegionCode } from '@/constants/regions';
 import styles from './StampsClient.module.scss';
 
 /**
@@ -50,7 +51,10 @@ export function StampsClient() {
     );
   }
 
-  const visited = new Set(data.visited);
+  // BE 응답의 visited 는 string[] (generated StampsDto). RegionCode 가드 후 Set.
+  const visited = new Set(
+    data.visited.filter((v): v is RegionCode => isRegionCode(v)),
+  );
   const visitedCount = visited.size;
   const remaining = Math.max(0, data.total - visitedCount);
   const isMaster = remaining === 0 && data.total > 0;

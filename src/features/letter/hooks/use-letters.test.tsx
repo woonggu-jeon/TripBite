@@ -26,6 +26,7 @@ function makeLetter(over: Partial<Letter> = {}): Letter {
     liked: false,
     saved: false,
     likeCount: 5,
+    read: false,
     ...over,
   };
 }

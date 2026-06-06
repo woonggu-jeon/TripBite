@@ -1,11 +1,12 @@
-import { api } from '@/services/api/client';
-import { safeParseResponse } from '@/lib/safe-parse-response';
-import { normalizeImageField } from '@/lib/secure-image-url';
+import { rankingControllerListV1 } from '@/api/generated/rankings/rankings';
 import {
-  rankingListSchema,
-  myTravelTypeSchema,
-} from '@/features/ranking/schemas/ranking';
-import { travelTypeSchema } from '@/features/mypage/schemas/mypage';
+  quizControllerApplyV1,
+  quizControllerGetMeV1,
+  quizControllerGetQuizV1,
+  quizControllerSubmitV1,
+} from '@/api/generated/travel-types/travel-types';
+import type { TravelTypeCode } from '@/api/generated/schemas';
+import { normalizeImageField } from '@/lib/secure-image-url';
 import type {
   RankedDestination,
   RankingType,
@@ -16,18 +17,14 @@ import type {
 import type { DestinationCategory } from '@/features/tournament/types';
 
 /**
- * 랭킹 / 여행 유형 테스트 API
+ * 랭킹 / 여행 유형 테스트 API — orval generated client wrap.
  *
- * 엔드포인트 예시:
- *   GET  /rankings?type=weekly-winners&limit=5
- *   GET  /rankings?type=recommended&limit=5
- *   GET  /rankings?type=by-category&category=festival&limit=5
- *   GET  /rankings?type=seasonal&season=spring
- *   GET  /rankings?type=by-travel-type
- *   GET  /rankings?type=by-region&region=청주시
- *   GET  /travel-types/quiz                  — 질문 목록
- *   POST /travel-types/submit                — 응답 제출 → 결과 반환 + 저장
- *   GET  /travel-types/me                    — 내 결과
+ * 엔드포인트:
+ *   GET   /rankings?type=&limit=        — RankItem[]
+ *   GET   /travel-types/quiz            — 질문 목록 (public)
+ *   POST  /travel-types/submit          — 응답 제출 → TravelType
+ *   GET   /travel-types/me              — 내 결과 | null
+ *   PATCH /travel-types/me              — 명시 적용 (code)
  */
 export const rankingApi = {
   list: async (params: {
@@ -37,64 +34,37 @@ export const rankingApi = {
     season?: 'spring' | 'summer' | 'autumn' | 'winter';
     region?: string;
   }): Promise<RankedDestination[]> => {
-    const res = await api.get<unknown>('/rankings', { params });
-    const parsed = safeParseResponse(
-      rankingListSchema,
-      res.data,
-      `GET /rankings ${params.type}`,
-    ) as RankedDestination[];
-    // destination.imageUrl 의 http → https 정규화 (TourAPI 원본 안전망)
-    return parsed.map((r) => ({
+    // generated Params 가 type/limit 만 (category/season/region 미정의). type 만 매핑.
+    const res = await rankingControllerListV1({
+      type: params.type,
+      limit: params.limit != null ? String(params.limit) : undefined,
+    });
+    return (res as RankedDestination[]).map((r) => ({
       ...r,
       destination: normalizeImageField(r.destination),
     }));
   },
 
-  getTravelTypeQuiz: async (): Promise<TravelTypeQuiz> => {
-    const res = await api.get<TravelTypeQuiz>('/travel-types/quiz');
-    return res.data;
-  },
+  getTravelTypeQuiz: () => quizControllerGetQuizV1() as Promise<TravelTypeQuiz>,
 
   submitTravelType: async (
     answers: TravelTypeAnswer[],
   ): Promise<TravelType> => {
-    const res = await api.post<unknown>('/travel-types/submit', { answers });
-    const parsed = safeParseResponse(
-      travelTypeSchema,
-      res.data,
-      'POST /travel-types/submit',
-    ) as TravelType;
-    return normalizeTravelTypeImages(parsed);
+    const res = await quizControllerSubmitV1({ answers });
+    return normalizeTravelTypeImages(res as TravelType);
   },
 
   getMyTravelType: async (): Promise<TravelType | null> => {
-    const res = await api.get<unknown>('/travel-types/me');
-    const parsed = safeParseResponse(
-      myTravelTypeSchema,
-      res.data,
-      'GET /travel-types/me',
-    ) as TravelType | null;
-    return parsed ? normalizeTravelTypeImages(parsed) : null;
+    const res = (await quizControllerGetMeV1()) as TravelType | null;
+    return res ? normalizeTravelTypeImages(res) : null;
   },
 
-  /**
-   * 내 유형 설정/변경 — quiz 결과 외에 사용자가 명시 선택해 프로필에 적용.
-   * PATCH /travel-types/me { code }
-   */
-  setMyTravelType: async (code: string): Promise<TravelType> => {
-    const res = await api.patch<unknown>('/travel-types/me', { code });
-    const parsed = safeParseResponse(
-      travelTypeSchema,
-      res.data,
-      'PATCH /travel-types/me',
-    ) as TravelType;
-    return normalizeTravelTypeImages(parsed);
+  setMyTravelType: async (code: TravelTypeCode): Promise<TravelType> => {
+    const res = await quizControllerApplyV1({ code });
+    return normalizeTravelTypeImages(res as TravelType);
   },
 };
 
-/**
- * TravelType.recommended[].imageUrl 의 http → https 정규화 (TourAPI 안전망).
- */
 function normalizeTravelTypeImages(input: TravelType): TravelType {
   if (!input.recommended?.length) return input;
   return {

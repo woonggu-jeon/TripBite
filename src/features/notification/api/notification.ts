@@ -1,14 +1,9 @@
-import { api } from '@/services/api/client';
+import {
+  notificationControllerSubscribeV1,
+  notificationControllerUnsubscribeV1,
+} from '@/api/generated/notifications/notifications';
 
-type PushSubscriptionPayload = {
-  endpoint: string;
-  keys: {
-    p256dh: string;
-    auth: string;
-  };
-};
-
-function toPayload(subscription: PushSubscription): PushSubscriptionPayload {
+function toPayload(subscription: PushSubscription) {
   const json = subscription.toJSON();
   return {
     endpoint: json.endpoint ?? subscription.endpoint,
@@ -19,11 +14,16 @@ function toPayload(subscription: PushSubscription): PushSubscriptionPayload {
   };
 }
 
+/**
+ * Web Push subscribe / unsubscribe — orval generated client wrap.
+ *
+ * BE 가 VAPID + endpoint upsert.
+ *   POST /notifications/subscribe   {endpoint, keys:{p256dh, auth}}
+ *   POST /notifications/unsubscribe {endpoint}
+ */
 export const notificationApi = {
-  subscribe: async (subscription: PushSubscription) => {
-    await api.post('/notifications/subscribe', toPayload(subscription));
-  },
-  unsubscribe: async (endpoint: string) => {
-    await api.post('/notifications/unsubscribe', { endpoint });
-  },
+  subscribe: (subscription: PushSubscription) =>
+    notificationControllerSubscribeV1(toPayload(subscription)),
+  unsubscribe: (endpoint: string) =>
+    notificationControllerUnsubscribeV1({ endpoint }),
 };

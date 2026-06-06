@@ -47,6 +47,8 @@ export function useNotificationInboxInfinite() {
     enabled: isAuthenticated,
   });
 
+  // BE swagger 의 AppNotificationType enum 명시로 generated 가 자동 narrowing.
+  // cast 불필요. TYPE_ICON 미지원 type 은 NotificationsClient 의 `?? Bell` fallback.
   const items = query.data?.pages.flatMap((p) => p.items) ?? [];
   // 가장 최근 페이지의 unreadCount 사용 — markRead 시 invalidate 되며 갱신.
   const unreadCount = query.data?.pages[0]?.unreadCount ?? 0;
@@ -83,7 +85,7 @@ export function useNotificationBadge() {
 export function useMarkNotificationRead() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: notificationInboxApi.markRead,
+    mutationFn: (id: string) => notificationInboxApi.markRead(id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: notificationKeys.all });
     },
@@ -93,7 +95,7 @@ export function useMarkNotificationRead() {
 export function useMarkAllNotificationsRead() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: notificationInboxApi.markAllRead,
+    mutationFn: () => notificationInboxApi.markAllRead(),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: notificationKeys.all });
     },

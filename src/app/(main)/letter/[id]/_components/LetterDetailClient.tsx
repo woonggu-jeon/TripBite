@@ -104,7 +104,9 @@ export function LetterDetailClient({ letterId }: { letterId: string }) {
 
         <section className={styles.message}>
           <p className={styles.body}>{letter.body}</p>
-          <p className={styles.date}>{formatKoreanDate(letter.arrivedAt)}</p>
+          <p className={styles.date}>
+            {formatKoreanDate(letter.arrivedAt ?? letter.createdAt)}
+          </p>
         </section>
 
         <section className={styles.to}>

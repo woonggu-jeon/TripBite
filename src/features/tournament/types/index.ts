@@ -1,10 +1,16 @@
 /**
- * 토너먼트 도메인 타입
+ * 토너먼트 도메인 타입 — orval generated enum / DTO alias.
  *
- * 백엔드 OpenAPI 스펙 확정 후엔 @/generated/api 에서 import 권장.
+ * BE swagger 가 Season / DestinationCategory enum 명시 → generated 가 자동 union.
+ * FE 는 그대로 re-export — 진실의 원천은 swagger.
  */
+import type {
+  DestinationCategory as DestinationCategoryDto,
+  Season as SeasonDto,
+} from '@/api/generated/schemas';
 
-export type Season = 'spring' | 'summer' | 'autumn' | 'winter';
+export type Season = SeasonDto;
+export type DestinationCategory = DestinationCategoryDto;
 
 /**
  * 토너먼트 테마 — 항상 계절 기반.
@@ -17,12 +23,6 @@ export type Season = 'spring' | 'summer' | 'autumn' | 'winter';
  * 백엔드 호환 위해 kind 는 'season' 단일로 유지 (special 분기는 폐기).
  */
 export type TournamentTheme = { kind: 'season'; value: Season };
-
-export type DestinationCategory =
-  | 'local' // 지역 — 시군 대표/일반 명소
-  | 'festival' // 축제
-  | 'attraction' // 관광지
-  | 'experience'; // 체험관광
 
 /**
  * 갯수 옵션 — 여행지 갯수(N) 와 토너먼트 매치업 사이즈(M) 는 다른 옵션 셋.
@@ -62,44 +62,17 @@ export type TournamentConfig = {
   tournamentSize?: TournamentCount;
 };
 
-export type Destination = {
-  id: string;
-  name: string;
-  category: DestinationCategory;
-  region: string;
-  imageUrl?: string;
-  description?: string;
-  // 기타 메타: 운영시간, 주소, 좌표 등
-};
-
 /**
- * 여행지 상세 — 토너먼트 결과 화면 등에서 별도 fetch 로 받는 풍부한 메타.
- *
- * 모든 추가 필드는 optional — 백엔드 응답이 점진적으로 채워져도 (또는 누락되어도)
- * 컴포넌트가 깨지지 않도록. UI 는 있는 필드만 렌더 (분기/디폴트 X).
- *
- * API: GET /destinations/:id → DestinationDetail
- *
- * 이미지 / 평점 / 운영시간 / 주소 등은 백엔드가 외부 데이터 소스(공공 API,
- * 큐레이션 DB) 와 결합해 제공한다고 가정.
+ * Destination / DestinationDetail — orval generated DTO alias.
+ * BE swagger 가 enum + 모든 응답 필드 명시 → generated 가 진실의 원천.
  */
-export type DestinationDetail = Destination & {
-  /** 한 줄 요약 (≤120자) — BE 가 항상 채워서 보냄 */
-  summary?: string;
-  /** 갤러리 사진 (TourAPI detailImage2). 없으면 imageUrl 만 hero */
-  photos?: string[];
-  address?: string;
-  phone?: string;
-  website?: string;
-  /** 운영시간 — 자유 문자열 */
-  openingHours?: string;
-  /** 휴무일 — TourAPI restdate 원본 */
-  restDate?: string;
-  /** 주차 — TourAPI parking 원본 자유 문자열 (예: '가능', '불가', '유료') */
-  parking?: string;
-  /** 좌표 (지도 표시용) */
-  coords?: { lat: number; lng: number };
-};
+import type {
+  DestinationDetailDto,
+  DestinationDto,
+} from '@/api/generated/schemas';
+
+export type Destination = DestinationDto;
+export type DestinationDetail = DestinationDetailDto;
 
 export type BracketMatch = {
   round: number; // 1=결승, 2=준결승, ...
@@ -122,25 +95,11 @@ export type BracketResult = {
   matchesPlayed: number;
 };
 
-export type SavedTournament = {
-  id: string;
-  destination: Destination;
-  luckyColor: string; // hex
-  meetChance: number; // 0~100
-  savedAt: string; // ISO
-};
+// SavedTournament / TournamentRecord — orval generated DTO alias.
+import type {
+  SavedTournamentDto,
+  TournamentRecordDto,
+} from '@/api/generated/schemas';
 
-/**
- * 토너먼트 기록 — `POST /tournaments` 응답 / `GET /tournaments/:id` 응답.
- *
- * 한 사용자의 한 회 토너먼트 결과 메타. mypage 의 토너먼트 기록 + result deep-link
- * (`/tournament/result?id=`) 양쪽에서 사용.
- */
-export type TournamentRecord = {
-  id: string;
-  winner: Destination;
-  runnerUp: Destination | null;
-  matchesPlayed: number;
-  tournamentSize: number;
-  completedAt: string; // ISO
-};
+export type SavedTournament = SavedTournamentDto;
+export type TournamentRecord = TournamentRecordDto;

@@ -323,6 +323,8 @@ export const handlers = [
       liked: false,
       saved: false,
       likeCount: 0,
+      // 보낸 편지는 자기 글이라 항상 read true.
+      read: true,
     };
     // /letters/:id GET 이 deep-link 진입 시 이 letter 를 찾도록 letterSeeds 에 prepend.
     letterSeeds.unshift(letter);

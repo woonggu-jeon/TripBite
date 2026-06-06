@@ -12,6 +12,7 @@ import type {
   Letter,
   LetterListKind,
   LetterPage,
+  SendLetterRequest,
 } from '@/features/letter/types';
 
 export const letterKeys = {
@@ -56,7 +57,7 @@ export function useLetter(id: string) {
 export function useSendLetter() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: letterApi.send,
+    mutationFn: (data: SendLetterRequest) => letterApi.send(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: letterKeys.list('sent') });
     },
@@ -75,7 +76,7 @@ export function useSendLetter() {
 export function useToggleLikeLetter() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: letterApi.toggleLike,
+    mutationFn: (id: string) => letterApi.toggleLike(id),
     onMutate: async (id: string) => {
       await qc.cancelQueries({ queryKey: letterKeys.detail(id) });
       const previous = qc.getQueryData<Letter>(letterKeys.detail(id));
@@ -105,7 +106,7 @@ export function useToggleLikeLetter() {
 export function useToggleSaveLetter() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: letterApi.toggleSave,
+    mutationFn: (id: string) => letterApi.toggleSave(id),
     onMutate: async (id: string) => {
       await qc.cancelQueries({ queryKey: letterKeys.detail(id) });
       const previous = qc.getQueryData<Letter>(letterKeys.detail(id));
@@ -130,7 +131,7 @@ export function useToggleSaveLetter() {
 export function useDeleteLetter() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: letterApi.remove,
+    mutationFn: (id: string) => letterApi.remove(id),
     onSuccess: (_, id) => {
       qc.removeQueries({ queryKey: letterKeys.detail(id) });
       qc.invalidateQueries({ queryKey: letterKeys.list('received') });

@@ -29,7 +29,8 @@ export function LatestReceivedLetter() {
   // 첫 fetch 중에는 컴포넌트 영역 자체 미노출 (렌더 속도 우선 — skeleton X)
   if (isLoading || !latest) return null;
 
-  const time = relativeTimeLabel(latest.arrivedAt, t);
+  // received 편지라 arrivedAt 정상 있을 거지만 generated DTO 에서 string|null 라 fallback.
+  const time = relativeTimeLabel(latest.arrivedAt ?? latest.createdAt, t);
   const author = latest.author.nickname;
 
   return (

@@ -1,21 +1,15 @@
-import type { Letter } from '@/features/letter/types';
-import type { SavedTournament } from '@/features/tournament/types';
-import type { TravelType } from '@/features/ranking/types';
+/**
+ * 마이페이지 도메인 type — orval generated DTO alias.
+ *
+ * 호출처는 도메인 명 (`MyPageSummary`/`MyProfile`/`UpdateNicknameRequest`) 그대로,
+ * 진실의 원천은 generated DTO. BE swagger 변경 시 자동 반영.
+ */
+import type {
+  MypageSummaryDto,
+  ProfileDto,
+  UpdateProfileDto,
+} from '@/api/generated/schemas';
 
-export type MyProfile = {
-  nickname: string;
-  /** 기본 여부 (서버가 자동 생성한 닉네임이면 true) */
-  isDefault?: boolean;
-};
-
-export type MyPageSummary = {
-  profile: MyProfile;
-  savedTournaments: SavedTournament[];  // 최대 10
-  savedLetters: Letter[];
-  likedLetters: Letter[];
-  travelType: TravelType | null;
-};
-
-export type UpdateNicknameRequest = {
-  nickname: string; // 1~10자 권장 (서버 검증)
-};
+export type MyProfile = ProfileDto;
+export type MyPageSummary = MypageSummaryDto;
+export type UpdateNicknameRequest = UpdateProfileDto;

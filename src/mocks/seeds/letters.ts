@@ -56,7 +56,7 @@ export const letterSeeds: Letter[] = Array.from({ length: 30 }, (_, i) => {
     liked: i % 4 === 0,
     saved: i % 6 === 0,
     likeCount: (i * 3) % 17,
-    // 가장 최근 받은 편지 4개 (i=1..4) 미읽음 — NEW 배지 노출. 보낸 편지는 undefined.
-    read: isMine ? undefined : i >= 5,
+    // 가장 최근 받은 편지 4개 (i=1..4) 미읽음 — NEW 배지 노출. 보낸 편지는 true (자기 글 읽음).
+    read: isMine ? true : i >= 5,
   };
 });

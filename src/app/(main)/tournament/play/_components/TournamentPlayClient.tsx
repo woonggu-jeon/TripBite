@@ -175,12 +175,14 @@ export function TournamentPlayClient() {
     if (!config?.selectedRegions?.length) return [];
     const cat = config.categories[0] ?? 'attraction';
     return config.selectedRegions.map((code) => {
-      const ko = CHUNGBUK_REGIONS.find((r) => r.code === code)?.ko ?? code;
+      const region = CHUNGBUK_REGIONS.find((r) => r.code === code);
+      // selectedRegions 는 충북 11 시군 코드만 — find 실패해도 첫번째 (cheongju) fallback.
+      const safeCode = region?.code ?? 'cheongju';
       return {
-        id: `placeholder-${code}`,
-        name: ko,
+        id: `placeholder-${safeCode}`,
+        name: region?.ko ?? safeCode,
         category: cat,
-        region: code,
+        region: safeCode,
       };
     });
   }, [config?.selectedRegions, config?.categories]);

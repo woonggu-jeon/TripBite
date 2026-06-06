@@ -1,22 +1,14 @@
-import { api } from '@/services/api/client';
+import { onboardingControllerCompleteV1 } from '@/api/generated/onboarding/onboarding';
 import type { CompleteOnboardingRequest } from '@/features/onboarding/types';
 
 /**
- * 온보딩 완료 API
+ * 온보딩 완료 — orval generated client wrap.
  *
- * 백엔드:
- *   POST /me/complete-onboarding
- *     body: { nickname, regionCode? }
- *     → User { isOnboarded: true, nickname, ... }
+ *   POST /me/complete-onboarding { nickname?, homeRegion? } → User (isOnboarded:true)
  *
- * 호출 후:
- *   - /me cache invalidate
- *   - AuthBootstrap이 새 user 받아 store 업데이트
- *   - 라우터에서 / 로 이동
+ * 호출 후 hook 이 /me cache invalidate → AuthBootstrap 가 새 user 로 store 갱신.
  */
 export const onboardingApi = {
-  complete: async (data: CompleteOnboardingRequest) => {
-    const res = await api.post('/me/complete-onboarding', data);
-    return res.data;
-  },
+  complete: (data: CompleteOnboardingRequest) =>
+    onboardingControllerCompleteV1(data),
 };

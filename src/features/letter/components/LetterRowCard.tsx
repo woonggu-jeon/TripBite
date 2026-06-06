@@ -57,7 +57,8 @@ function useRelativeTimeLabel(iso: string): string {
 
 export function LetterRowCard({ letter }: { letter: Letter }) {
   const t = useTranslations('letter');
-  const time = useRelativeTimeLabel(letter.arrivedAt);
+  // arrivedAt 이 null (아직 도착 전, sent 페이지) 이면 createdAt 으로 fallback.
+  const time = useRelativeTimeLabel(letter.arrivedAt ?? letter.createdAt);
   const toggle = useToggleLikeLetter();
   const hue = hueFromId(letter.id);
 
@@ -126,7 +127,10 @@ export function LetterRowCard({ letter }: { letter: Letter }) {
         >
           <Heart size={18} fill={likedLocal ? 'currentColor' : 'none'} />
         </button>
-        <time className={styles.time} dateTime={letter.arrivedAt}>
+        <time
+          className={styles.time}
+          dateTime={letter.arrivedAt ?? letter.createdAt}
+        >
           {time}
         </time>
       </div>

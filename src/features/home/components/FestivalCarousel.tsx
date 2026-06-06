@@ -5,10 +5,14 @@ import { Carousel } from '@/features/carousel';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { DestinationCard } from '@/components/ui';
 import { useOngoingFestivals } from '@/features/region';
-import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
+import {
+  CHUNGBUK_REGIONS,
+  isRegionCode,
+  type RegionCode,
+} from '@/constants/regions';
 import { toneFor } from '@/constants/region-tone';
 import { useResponsiveSlidesPerView } from '@/hooks/use-responsive-slides-per-view';
-import type { RegionContent } from '@/features/region/types';
+import type { Festival } from '@/features/region/types';
 import styles from './FestivalCarousel.module.scss';
 
 /**
@@ -31,15 +35,21 @@ const ID_EMOJI: Record<string, string> = {
   'jecheon-festival-1': '🎬',
 };
 
-function emojiFor(content: RegionContent): string {
+function emojiFor(content: Festival): string {
   return ID_EMOJI[content.id] ?? '🎉';
 }
 
-function regionLabelFor(code: RegionCode): string {
-  return CHUNGBUK_REGIONS.find((r) => r.code === code)?.ko ?? code;
+// generated 의 Festival.region 이 string — RegionCode 가드 후 fallback.
+function regionCodeOf(region: string): RegionCode {
+  return isRegionCode(region) ? region : 'cheongju';
 }
 
-function periodCaption(content: RegionContent): string | undefined {
+function regionLabelFor(region: string): string {
+  const code = regionCodeOf(region);
+  return CHUNGBUK_REGIONS.find((r) => r.code === code)?.ko ?? region;
+}
+
+function periodCaption(content: Festival): string | undefined {
   if (!content.eventStart && !content.eventEnd) return undefined;
   return `${content.eventStart ?? ''}${content.eventEnd ? ` — ${content.eventEnd}` : ''}`;
 }
@@ -74,7 +84,7 @@ export function FestivalCarousel() {
               href={{ pathname: `/destination/${content.id}` }}
               imageUrl={content.imageUrl}
               emoji={emojiFor(content)}
-              tone={toneFor(content.region)}
+              tone={toneFor(regionCodeOf(content.region))}
               regionLabel={regionLabelFor(content.region)}
               name={content.title}
               caption={periodCaption(content)}

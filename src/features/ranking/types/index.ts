@@ -47,15 +47,6 @@ export type TravelTypeQuiz = {
   questions: TravelTypeQuizQuestion[];
 };
 
-export type TravelType = {
-  /** 서버 발급 코드 (예: 'adventurer'). UI 분기보다는 식별/공유용. */
-  code: string;
-  title: string;
-  description: string;
-  /** 공유 카드 / 결과 화면용 핵심 키워드 (#태그) */
-  keywords: string[];
-  /** 유형 시각화 emoji — 서버가 제공 (대체 가능 자산) */
-  emoji: string;
-  /** 추천 여행지 (서버가 유형에 맞춰 선정 — 보통 3곳) */
-  recommended: import('@/features/tournament/types').Destination[];
-};
+// orval generated TravelTypeDto alias — code 가 TravelTypeCode enum, recommended 가
+// DestinationDto[]. BE swagger 정합 후 진실의 원천.
+export type TravelType = import('@/api/generated/schemas').TravelTypeDto;

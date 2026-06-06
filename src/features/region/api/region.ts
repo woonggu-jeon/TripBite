@@ -1,28 +1,24 @@
-import { api } from '@/services/api/client';
+import {
+  regionControllerContentsV1,
+  regionControllerOngoingFestivalsV1,
+  regionControllerSummaryV1,
+} from '@/api/generated/regions/regions';
 import type { RegionCode } from '@/constants/regions';
 import { normalizeImageField } from '@/lib/secure-image-url';
-import type {
-  RegionContent,
-  RegionContentType,
-  RegionSummary,
-} from '@/features/region/types';
-import type { PageResponse } from '@/features/list';
+import type { RegionContent, RegionContentType } from '@/features/region/types';
 
 /**
- * Region (시군) API
+ * Region (시군) API — orval 가 BE swagger 로 자동 생성한 client functions wrap.
  *
- * 백엔드 = TourAPI 프록시 (서버에서 API 키 보관, 응답 정규화, 캐시).
+ * BE 는 TourAPI 프록시 (서버에서 API 키 보관, 응답 정규화, 캐시).
  *
  * 엔드포인트:
  *   GET /regions/:code/summary
- *   GET /regions/:code/contents?type=festival&cursor=...&limit=10
- *   GET /regions/:code/ongoing-festivals    (홈 캐러셀용 — 진행 중인 축제)
+ *   GET /regions/:code/contents?type=&cursor=&limit=10
+ *   GET /regions/ongoing-festivals    (홈 캐러셀용 — 진행 중인 축제)
  */
 export const regionApi = {
-  getSummary: async (code: RegionCode): Promise<RegionSummary> => {
-    const res = await api.get<RegionSummary>(`/regions/${code}/summary`);
-    return res.data;
-  },
+  getSummary: (code: RegionCode) => regionControllerSummaryV1(code),
 
   listContents: async (
     code: RegionCode,
@@ -31,19 +27,21 @@ export const regionApi = {
       cursor?: string | number | null;
       limit?: number;
     },
-  ): Promise<PageResponse<RegionContent>> => {
-    const res = await api.get<PageResponse<RegionContent>>(
-      `/regions/${code}/contents`,
-      { params: { ...params, cursor: params.cursor ?? undefined } },
-    );
-    // TourAPI 원본 http URL → https 정규화 (BE 가 sync 시점에 변환 안 했을 때 안전망)
-    return { ...res.data, items: res.data.items.map(normalizeImageField) };
+  ) => {
+    const res = await regionControllerContentsV1(code, {
+      type: params.type,
+      cursor: params.cursor != null ? String(params.cursor) : undefined,
+      limit: params.limit != null ? String(params.limit) : undefined,
+    });
+    // TourAPI 원본 http URL → https 정규화 (BE 안전망)
+    return {
+      ...res,
+      items: res.items.map(normalizeImageField) as RegionContent[],
+    };
   },
 
-  ongoingFestivals: async (region?: RegionCode): Promise<RegionContent[]> => {
-    const res = await api.get<RegionContent[]>('/regions/ongoing-festivals', {
-      params: { region },
-    });
-    return res.data.map(normalizeImageField);
+  ongoingFestivals: async (region?: RegionCode) => {
+    const res = await regionControllerOngoingFestivalsV1({ region });
+    return res.map(normalizeImageField);
   },
 };
