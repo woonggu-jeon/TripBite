@@ -113,7 +113,7 @@ import { useGetMypage } from '@/api/generated/mypage/mypage';
 
 const { data } = useGetMypage();
 // → 기존 axios instance (services/api/client.ts) 통과
-// → interceptor (401 refresh / error-normalize) 자동 적용
+// → interceptor (401 → /login redirect / error-normalize) 자동 적용
 // → MSW proxy baseURL 분기 그대로
 ```
 
@@ -151,11 +151,11 @@ const { data } = useGetMypage();
 
 ### 🔧 준비됨 (호출 대기)
 
-- **인프라**: api client + interceptor (auth 401-refresh / timing), feature별 데이터 hooks (TanStack Query), Zustand stores, 캐시 프로파일 7종.
+- **인프라**: orval generated client + axios interceptor (401 → /login redirect / error-normalize / timing / FormData multipart 자동), feature별 데이터 hooks (TanStack Query), Zustand stores, 캐시 프로파일 7종.
 - **공용 컴포넌트**: `InfiniteList` (무한스크롤), 차트·캐러셀 동적 래퍼, `OptimizedImage`, `ConfirmDialog`, 피드백/PWA 배너, `DestinationCard` (FestivalCarousel/Related/Saved 카드 통일), `AsyncSection` (isLoading/isError/empty 표준 분기), `Chip xs` (NEW/HOT 류 배지).
 - **테스트**: Playwright 4-project 매트릭스 (desktop / mobile-chrome / mobile-safari / mobile-pwa) + axe-core a11y + toHaveScreenshot 시각 회귀.
 
-> **stub 0** (2026-06-03 사양 대기 / 편지 미사용 stub 일괄 삭제). 디자인 임시 구현 (WeatherWidget / RegionHero / SeasonalCenterIllustration / ConceptStep 일러스트) 은 시안 받으면 JSX/asset 만 교체. [`docs/BACKLOG.md`](docs/BACKLOG.md) 참고.
+> **stub 0** (2026-06-03 사양 대기 / 편지 미사용 stub 일괄 삭제). 디자인 임시 구현 (RegionHero / SeasonalCenterIllustration / ConceptStep 일러스트) 은 시안 받으면 JSX/asset 만 교체. [`docs/BACKLOG.md`](docs/BACKLOG.md) 참고.
 
 ---
 
@@ -236,7 +236,6 @@ src/features/
  ├─ tournament/        토너먼트 setup·play·result (BE deep-link 대기)  [✅]
  ├─ ranking/           Top5·시군·카테고리 / 추가 섹션 ⏳ (사양 대기)   [✅]
  ├─ region/            시군 그리드·상세 탭·ChungbukStampMap (정밀 11 시군 SVG)·RegionHero [✅]
- ├─ weather/           useCurrentWeather + WeatherWidget (홈 배치)     [✅]
  ├─ mypage/            ProfileCard·도장책·저장 우승지·토너먼트 기록    [✅]
  ├─ notification/      Web Push + 인앱 알림함 + MockPushTrigger        [✅]
  ├─ settings/          알림·테마·계정(닉네임/비밀번호 모달)·정책       [✅]
@@ -289,7 +288,6 @@ src/features/
 | user     | 2m         | 본인 데이터                                  | `useMypage`, `useSentLetters`, `useSavedTournaments`, `useMyTravelType` |
 | realtime | 30s + 폴링 | 편지 도착, 알림 인박스                       | `useReceivedLetters`, `useNotificationInbox`                            |
 | session  | ∞ + 1h gc  | 토너먼트 후보 (한 세션 동안 고정)            | `useTournamentCandidates`                                               |
-| weather  | 15m        | 날씨                                         | `useCurrentWeather`                                                     |
 
 ### 5. PWA Runtime Caching (`src/app/sw.ts` — serwist)
 
@@ -390,27 +388,28 @@ App Router `<Link>`는 기본적으로 **viewport 진입 시 자동 prefetch**. 
 ## 인증
 
 - **아이디(username)/비밀번호 로그인만** — 소셜 OAuth(kakao/google/naver) 없음. `next-auth`/`@auth/core`/소셜 SDK 불필요.
-- HttpOnly Cookie (access/refresh). 프론트는 토큰 직접 관리 X (`jwt-decode` 등 클라이언트 토큰 라이브러리 불필요).
-- `services/api/client.ts` — `withCredentials: true` axios
-- `services/interceptors/auth.ts` — 401 → `/auth/refresh` 자동, 동시 401 단일 promise 공유
-- `middleware.ts` — 쿠키 존재 여부만 체크. PUBLIC_ONLY: `/login` `/signup` `/forgot-password` `/reset-password` `/find-id` (그 외 미인증 시 `/login` 리다이렉트)
+- **sessionID 단일 HttpOnly Cookie** (`SID`, `NEXT_PUBLIC_SESSION_COOKIE` env). BE 가 DB Session 행으로 관리. 프론트는 쿠키 직접 읽지 않음 (`jwt-decode` 등 불필요).
+- `services/api/client.ts` — `withCredentials: true` axios + FormData 감지 시 Content-Type 자동 unset (multipart boundary 보존)
+- `services/interceptors/auth.ts` — 401 받으면 **즉시 `/login` redirect** (refresh 시도 X — sessionID 모델은 refresh endpoint 없음). `/login` 등 auth 페이지에선 redirect skip
+- `middleware.ts` — 쿠키 존재 여부만 체크. PUBLIC_ONLY: `/login` `/signup` `/forgot-password` `/find-id` (그 외 미인증 시 `/login` 리다이렉트). `/reset-password` 는 토큰 기반이라 제외 (로그인 상태에서도 진입 허용)
 - `AuthBootstrap` — `GET /me` → store hydrate. `isOnboarded === false` 면 `/onboarding` 으로, 완료 사용자가 `/onboarding` 진입 시 `/` 로 redirect
 
 ### 인증 — 백엔드(B/E) 구현 계약 ⭐
 
 > 프론트는 폼·검증·라우팅·MSW mock까지 완성됨(아래 모든 화면 동작 가능). **실제 동작은 백엔드가 아래 계약대로 구현해야** 함. 인증/토큰/메일은 전적으로 백엔드 책임 (보안상 프론트에 두지 않음).
 
-| 엔드포인트                   | 요청 body                                               | 성공 응답                              | 백엔드 책임                                                                                                                              |
-| ---------------------------- | ------------------------------------------------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `POST /auth/signup`          | `{ name, username, password, birthDate, email, phone }` | `201`                                  | 아이디·이메일·폰 **중복 검사**(409+message), **비밀번호 해싱**(argon2/bcrypt), 비속어/형식 재검증                                        |
-| `POST /auth/login`           | `{ username, password }`                                | `200` + **Set-Cookie**(access/refresh) | 자격 검증, `HttpOnly; Secure; SameSite=Lax` 쿠키 발급                                                                                    |
-| `POST /auth/logout`          | —                                                       | `204` + 쿠키 만료                      | refresh 토큰 무효화                                                                                                                      |
-| `POST /auth/refresh`         | — (refresh 쿠키)                                        | `200` + 새 access 쿠키                 | refresh 검증/회전                                                                                                                        |
-| `GET /me`                    | —                                                       | `User`(+`isOnboarded`)                 | 쿠키 기반 현재 사용자                                                                                                                    |
-| `POST /auth/find-id`         | `{ name, email }`                                       | `{ username: "tes***01" \| null }`     | 이름+이메일 매칭 → **마스킹** 아이디. **열거 방지**(미존재도 동일 형태)                                                                  |
-| `POST /auth/forgot-password` | `{ email }`                                             | `204`                                  | **재설정 토큰 생성**(랜덤·만료 ~30분·1회용·DB저장) → **메일로 링크 발송** `https://앱/reset-password?token=...`. 열거 방지(미존재도 204) |
-| `POST /auth/reset-password`  | `{ token, password }`                                   | `204`                                  | 토큰 **검증/만료확인/1회 소비** → 비밀번호 해싱 교체                                                                                     |
-| `POST /me/change-password`   | `{ currentPassword, newPassword }`                      | `204`                                  | 현재 비밀번호 **재확인** 후 교체 (로그인 상태)                                                                                           |
+| 엔드포인트                   | 요청 body                                               | 성공 응답                                       | 백엔드 책임                                                                                                                              |
+| ---------------------------- | ------------------------------------------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST /auth/signup`          | `{ name, username, password, birthDate, email, phone }` | `201`                                           | 아이디·이메일·폰 **중복 검사**(409+message), **비밀번호 해싱**(argon2/bcrypt), 비속어/형식 재검증                                        |
+| `POST /auth/login`           | `{ username, password }`                                | `200` + **Set-Cookie**(`SID`)                   | 자격 검증, `HttpOnly; SameSite=Lax; Secure` 단일 sessionID 쿠키 발급                                                                     |
+| `POST /auth/logout`          | —                                                       | `204` + 쿠키 만료                               | DB Session 행 무효화                                                                                                                     |
+| `GET /me`                    | —                                                       | `User`(+`isOnboarded`/`avatarUrl`/`travelType`) | 쿠키 기반 현재 사용자                                                                                                                    |
+| `DELETE /me`                 | —                                                       | `204` + 쿠키 만료                               | 회원 탈퇴 (소프트 삭제 + 세션 무효)                                                                                                      |
+| `POST /me/avatar`            | multipart (`file: image/jpeg\|png\|webp`, ≤5MB)         | `201 { avatarUrl }`                             | R2/S3 업로드 후 CDN URL 반환                                                                                                             |
+| `POST /auth/find-id`         | `{ name, email }`                                       | `{ username: "tes***01" \| null }`              | 이름+이메일 매칭 → **마스킹** 아이디. **열거 방지**(미존재도 동일 형태)                                                                  |
+| `POST /auth/forgot-password` | `{ email }`                                             | `204`                                           | **재설정 토큰 생성**(랜덤·만료 ~30분·1회용·DB저장) → **메일로 링크 발송** `https://앱/reset-password?token=...`. 열거 방지(미존재도 204) |
+| `POST /auth/reset-password`  | `{ token, password }`                                   | `204`                                           | 토큰 **검증/만료확인/1회 소비** → 비밀번호 해싱 교체                                                                                     |
+| `POST /me/change-password`   | `{ currentPassword, newPassword }`                      | `204`                                           | 현재 비밀번호 **재확인** 후 교체 (로그인 상태)                                                                                           |
 
 **메일 발송**(B/E): `forgot-password`의 재설정 링크 메일. Resend / AWS SES / SMTP 등. 링크는 위 형식, 토큰은 단명·1회용. (Vercel/Next에서 보내려면 토큰 DB가 Next에 있어야 하므로, 분리 백엔드 구조에선 백엔드가 발송하는 것이 일관)
 
@@ -439,56 +438,46 @@ App Router `<Link>`는 기본적으로 **viewport 진입 시 자동 prefetch**. 
 
 ## 백엔드 엔드포인트 체크리스트
 
-| 영역                    | 엔드포인트                                                                                                                                                                                                                        |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ----------- | ---------- |
-| Auth                    | `POST /auth/login` `POST /auth/signup` `POST /auth/logout` `POST /auth/refresh` `GET /me` `POST /me/complete-onboarding` `POST /auth/find-id` `POST /auth/forgot-password` `POST /auth/reset-password` `POST /me/change-password` |
-| User                    | `PATCH /mypage/profile`                                                                                                                                                                                                           |
-| Letter                  | `POST /letters` `GET /letters/{received,sent,liked,saved}` `GET /letters/:id` `POST /letters/:id/like` `POST /letters/:id/save` `DELETE /letters/:id`                                                                             |
-| Tournament              | `GET /destinations/random` `POST /tournaments` `GET/POST/DELETE /mypage/tournaments` `GET /mypage/tournament-history`                                                                                                             |
-| Region (TourAPI 프록시) | `GET /regions/:code/summary` `GET /regions/:code/contents?type=` `GET /regions/ongoing-festivals`                                                                                                                                 |
-| Ranking                 | `GET /rankings?type=weekly-winners                                                                                                                                                                                                | recommended | hidden-gems | by-region` |
-| Quiz                    | `GET /quiz/questions` `POST /quiz/submit` `GET /quiz/me`                                                                                                                                                                          |
-| MyPage                  | `GET /mypage` `GET /mypage/stamps`                                                                                                                                                                                                |
-| Location                | `POST /location/reverse` `GET /location/ip`                                                                                                                                                                                       |
-| Weather                 | `GET /weather/current`                                                                                                                                                                                                            |
-| Notification            | `GET /notifications` `POST /notifications/:id/read` `POST /notifications/read-all` `POST /notifications/subscribe` `POST /notifications/unsubscribe`                                                                              |
-| Settings                | `GET /settings` `PATCH /settings/notifications`                                                                                                                                                                                   |
+| 영역                    | 엔드포인트                                                                                                                                                                                                                                                      |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Auth                    | `POST /auth/login` `POST /auth/signup` `POST /auth/logout` `GET /me` `DELETE /me` `POST /me/avatar` `DELETE /me/avatar` `POST /me/complete-onboarding` `POST /auth/find-id` `POST /auth/forgot-password` `POST /auth/reset-password` `POST /me/change-password` |
+| User                    | `PATCH /mypage/profile`                                                                                                                                                                                                                                         |
+| Letter                  | `POST /letters` `GET /letters/{received,sent,liked,saved}` `GET /letters/:id` `POST /letters/:id/like` `POST /letters/:id/save` `DELETE /letters/:id`                                                                                                           |
+| Tournament              | `GET /destinations/random` `GET /destinations/:id` `GET /destinations/:id/related` `POST /tournaments` `GET /tournaments/:id` `GET/POST/DELETE /mypage/tournaments` `GET /mypage/tournament-history`                                                            |
+| Region (TourAPI 프록시) | `GET /regions/:code/summary` `GET /regions/:code/contents?type=` `GET /regions/ongoing-festivals`                                                                                                                                                               |
+| Ranking                 | `GET /rankings?type={weekly-winners\|recommended\|hidden-gems\|by-region}`                                                                                                                                                                                      |
+| Quiz / TravelType       | `GET /travel-types/quiz` `POST /travel-types/submit` `GET /travel-types/me` `PATCH /travel-types/me`                                                                                                                                                            |
+| MyPage                  | `GET /mypage` `GET /mypage/stamps`                                                                                                                                                                                                                              |
+| Location                | `POST /location/reverse` (Kakao/Naver reverse wrap)                                                                                                                                                                                                             |
+| Notification            | `GET /notifications` `POST /notifications/:id/read` `POST /notifications/read-all` `POST /notifications/subscribe` `POST /notifications/unsubscribe`                                                                                                            |
+| Settings                | `GET /settings` `PATCH /settings/notifications`                                                                                                                                                                                                                 |
 
 ---
 
-## OpenAPI 타입 + SDK 생성 (백엔드 연동 시)
+## OpenAPI 타입 + SDK 생성 — ✅ 운영 중 (orval)
 
-도구: **`@hey-api/openapi-ts`** + **`@hey-api/client-axios`** (설정: `openapi-ts.config.ts`).
-**타입 + SDK 함수 + axios 클라이언트** 생성. 호출은 **request override 패턴**으로 우리 axios 인스턴스를 SDK에 주입 → interceptor(401 refresh / timing) · MSW proxy · CSP · withCredentials 모두 보존.
+도구: **`orval`** (설정: `orval.config.ts`). BE NestJS swagger → TypeScript client + react-query hooks + DTO + MSW handlers 자동 생성.
+
+mutator: `src/services/api/orval-mutator.ts` — 우리 axios 인스턴스 재사용 + `res.data` 자동 unwrap. interceptor (401 → /login redirect · error-normalize · timing · FormData multipart) · MSW proxy · CSP · withCredentials 모두 보존.
 
 ### 절차
 
 ```bash
-# 1) 백엔드 URL 환경변수
-OPENAPI_URL=http://localhost:8080/v3/api-docs
+# 1) 백엔드 swagger URL 환경변수 (기본: http://localhost:3000/docs-json)
+export OPENAPI_URL=http://localhost:3000/docs-json
 
-# 2) 스펙 다운로드
-npm run fetch:openapi              # curl $OPENAPI_URL -o openapi.json
+# 2) 타입 + SDK 생성
+npm run generate:api               # → src/api/generated/
 
-# 3) 타입 + SDK 생성
-npm run generate:api               # → src/generated/api/
-
-# 4) src/services/api/openapi-client.ts 의 주석 해제
-#    (generated/api/client.gen 에 우리 axios 인스턴스를 setConfig로 주입)
-
-# 5) Providers 또는 모듈 top-level에서 한 번 호출
-#    import { configureOpenApiClient } from '@/services/api/openapi-client';
-#    configureOpenApiClient();
-
-# 6) 호출 패턴 (점진 교체):
-#    import { postAuthLogin } from '@/generated/api';
-#    await postAuthLogin({ body: { username, password } });
-#    → 우리 axios 통과 → interceptor / MSW / cookie 자동 적용
+# 3) feature wrap 에서 generated 함수 호출 (이미 마이그 완료)
+#    src/features/{auth,mypage,letter,...}/api/*.ts 가 generated import
 ```
 
-### 점진 마이그레이션
+### 마이그 완료 상태 (2026-06-06)
 
-기존 `features/*/api/*.ts`(authApi/letterApi 등) manual API는 그대로 동작 — 새 호출은 generated SDK를, 기존은 천천히 교체. 둘 다 같은 axios 인스턴스를 거쳐 일관됨.
+10 features 모두 generated client 사용. 수동 axios/zod 패턴 폐기 (`safeParseResponse` + 5 response schemas + `lib/schemas/common` 삭제). hook 안의 onSuccess 흐름 (router redirect, cache invalidate, optimistic update) 만 FE 책임.
+
+BE swagger 변경 시: `npm run generate:api` → type 에러로 영향 호출처 즉시 발견 → wrap/hook 정합.
 
 > **현재 상태**: 백엔드 OpenAPI 스펙 대기 중. 도구·설정·스크립트·클라이언트 통합 파일(`openapi-client.ts` placeholder)까지 준비. 백엔드 붙으면 위 2~5만으로 SDK 통합 완료.
 
@@ -524,16 +513,15 @@ MSW가 잡지 못한 path는 `onUnhandledRequest: 'bypass'`로 destination(실 �
 
 ### 현재 mock된 엔드포인트
 
-| 영역          | 엔드포인트                                                       |
-| ------------- | ---------------------------------------------------------------- |
-| Auth          | POST `/auth/{login,logout,refresh}`, GET `/me`                   |
-| Onboarding    | POST `/me/complete-onboarding`                                   |
-| Location      | POST `/location/reverse`, GET `/location/ip`                     |
-| Weather       | GET `/weather/current`                                           |
-| Letters       | POST `/letters`, GET `/letters/{received,sent,liked,saved,/:id}` |
-| Region        | GET `/regions/:code/contents`                                    |
-| Tournament    | GET `/mypage/tournament-history`                                 |
-| Notifications | GET `/notifications`                                             |
+| 영역          | 엔드포인트                                                              |
+| ------------- | ----------------------------------------------------------------------- |
+| Auth          | POST `/auth/{login,logout}`, GET `/me`, DELETE `/me`, POST `/me/avatar` |
+| Onboarding    | POST `/me/complete-onboarding`                                          |
+| Location      | POST `/location/reverse`                                                |
+| Letters       | POST `/letters`, GET `/letters/{received,sent,liked,saved,/:id}`        |
+| Region        | GET `/regions/:code/contents`, GET `/regions/ongoing-festivals`         |
+| Tournament    | GET `/mypage/tournament-history`, GET `/destinations/{random,/:id}`     |
+| Notifications | GET `/notifications` (cursor 무한스크롤)                                |
 
 핸들러 추가는 `src/mocks/handlers.ts`. seed 데이터는 `src/mocks/seeds/`.
 
@@ -757,7 +745,7 @@ PR #123 → https://your-app-git-feature-branch.vercel.app
 | VAPID 분리          | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` (public) / `VAPID_PRIVATE_KEY` (server-only)            |
 | 입력 검증           | Zod 스키마 (로그인/편지/닉네임) + grapheme 단위 길이 + zero-width/HTML 특수문자 차단   |
 | XSS 자동 escape     | React JSX 기본 동작. `dangerouslySetInnerHTML` 사용 금지                               |
-| 401 race            | axios interceptor 가 단일 refresh promise 공유                                         |
+| 401 처리            | sessionID 모델 — refresh 없이 즉시 `/login` redirect (auth 페이지에선 skip)            |
 | 외부 이미지         | `next.config.js` `remotePatterns` 화이트리스트                                         |
 | 보안 헤더           | HSTS / X-Content-Type-Options / X-Frame-Options / Referrer-Policy / Permissions-Policy |
 | CSP                 | Report-Only 모드로 시작 — 운영 안정화 후 enforce                                       |
@@ -853,7 +841,7 @@ axios interceptor 에 자동 첨부 패턴 적용 가능.
 | 엔드포인트               | 권장 limit                             |
 | ------------------------ | -------------------------------------- |
 | `POST /auth/login`       | 분당 5회 / IP                          |
-| `POST /auth/refresh`     | 분당 30회 / 토큰                       |
+| `POST /auth/signup`      | 시간당 5회 / IP                        |
 | `POST /letters`          | 시간당 20회 / 사용자                   |
 | `POST /letters/:id/like` | 분당 60회 / 사용자                     |
 | `POST /tournaments`      | 시간당 50회 / 사용자                   |
@@ -1139,7 +1127,7 @@ Turborepo / Micro Frontend / Redux / GraphQL / Kubernetes / @tanstack/react-virt
 
 ### 렌더링 / PWA
 
-- [x] **위젯 stub 구현 정리** — stub 0 (2026-06-03 사양 대기 / 미사용 stub 일괄 삭제). WeatherWidget / RegionHero / SeasonalCenterIllustration / ConceptStep 일러스트 모두 임시 디자인 구현 완료. 사양 확정 시 ranking 추가 섹션 재도입
+- [x] **위젯 stub 구현 정리** — stub 0 (2026-06-03 사양 대기 / 미사용 stub 일괄 삭제). RegionHero / SeasonalCenterIllustration / ConceptStep 일러스트 모두 임시 디자인 구현 완료. weather feature 폐기 (2026-06-05). 사양 확정 시 ranking 추가 섹션 재도입
 - [ ] **렌더링 최적화 후속**:
   - RSC + `<Suspense>` 패턴 (또는 `useSuspenseQuery`) — 현재 위젯이 `'use client'`라 streaming 미작동
   - React Compiler (`babel-plugin-react-compiler`) — 리렌더 잦은 영역(토너먼트 store)
@@ -1298,7 +1286,7 @@ NEXT_PUBLIC_APP_VERSION=$VERCEL_GIT_COMMIT_SHA
 
 ```
 mocks/
- ├─ handlers.ts        REST 핸들러 (auth/me/onboarding/location/weather/letters/region/...)
+ ├─ handlers.ts        REST 핸들러 (auth/me/onboarding/location/letters/region/notifications/rankings/tournaments/...)
  ├─ server.ts          vitest용 setupServer (vitest.setup.ts에서 사용)
  ├─ browser.ts         dev용 setupWorker (NEXT_PUBLIC_USE_MSW=true 시 worker.start)
  └─ seeds/

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Mail, Heart, Trophy, Bell, ShieldAlert } from 'lucide-react';
+import { Mail, Heart, Trophy, Bell, ShieldAlert, Send } from 'lucide-react';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
@@ -35,7 +35,10 @@ const PUSH_PROMPT_DISMISS_KEY = 'tripbite.push-prompt.dismissed';
 const TYPE_ICON: Record<NotificationType, typeof Mail> = {
   'letter.received': Mail,
   'letter.liked': Heart,
+  // 보낸 편지가 누군가에게 도착 완료 — 발신자에게 알림.
+  'letter.delivered': Send,
   'tournament.shared': Trophy,
+  // 충북 마스터 달성 / 우승지 저장 한도 등은 BE 가 event type + 차별화된 link 로 발행.
   event: Bell,
   security: ShieldAlert,
 };

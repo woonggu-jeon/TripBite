@@ -138,8 +138,9 @@ let myTravelType: TravelType | null = null;
  * (그 외 body/link 는 옵션). title/body 는 type 에서 derive 해 채워둠.
  */
 const TITLE_BY_TYPE: Record<string, string> = {
-  'letter.received': '새 편지가 도착했어요',
+  'letter.received': '청주시에서 3글자 편지가 왔어요',
   'letter.liked': '내 편지에 좋아요',
+  'letter.delivered': '내 편지가 누군가에게 도착했어요 ✈',
   event: '새 소식',
   'tournament.shared': '토너먼트 공유',
   security: '보안 알림',
@@ -147,7 +148,9 @@ const TITLE_BY_TYPE: Record<string, string> = {
 const notificationItems: AppNotification[] = notificationSeeds.map((n) => ({
   id: n.id,
   type: n.type as AppNotification['type'],
-  title: TITLE_BY_TYPE[n.type] ?? '알림',
+  // showcase seed 는 title/link 자체 보유, 일반 seed 는 type 기반 fallback.
+  title: n.title ?? TITLE_BY_TYPE[n.type] ?? '알림',
+  link: n.link,
   read: n.read,
   createdAt: n.createdAt,
 }));
