@@ -61,5 +61,5 @@ yarn-error.log*
 Thumbs.db
 
 # generated — `npm run generate:api` (orval) 로 매번 재생성.
-# repo 깔끔 유지 + git diff 노이즈 차단. CI 가 build 전에 generate 실행.
+# 빌드 전 prebuild 훅이 자동 generate (BE Swagger SoT, drift 0). repo 깔끔 유지.
 src/api/generated/

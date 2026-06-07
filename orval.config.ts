@@ -12,9 +12,11 @@ import { defineConfig } from 'orval';
  *      · src/features/{feature}/schemas/*.ts — generated zod 로 교체 (본 turn 의 10개 임시 스키마)
  *      · src/mocks/handlers.ts — generated MSW handler 로 교체 (또는 일부 데이터 채우는 retain)
  *
- * 현재 상태:
- *   - input.target 은 placeholder. BE spec 도착 시 교체.
- *   - 본 config 는 빌드 / CI 가 자동 실행하지 않음 — npm script 명시 호출 시에만.
+ * 자동 실행:
+ *   - `predev` / `prebuild` 훅이 `generate:api` 자동 호출 — 개발/배포 모두 BE Swagger SoT.
+ *   - Vercel 빌드 시 `OPENAPI_URL` env 가 BE 운영 swagger URL 가리켜야 (예:
+ *     https://api.tripbite.kr/docs-json). 미설정 시 localhost 기본값 → 빌드 fail.
+ *   - BE down 시 빌드 fail — 운영 사이트도 BE 의존이라 동시 다운이 자연.
  *
  * Output 구조 (예정):
  *   src/api/generated/

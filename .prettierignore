@@ -1,0 +1,17 @@
+# orval 가 생성하는 client/hooks/schemas/msw — git 보관 (lock-file 패턴) 하되 formatter 미적용.
+# BE Swagger 가 SoT — 재생성마다 prettier 변경이 git diff 노이즈 추가하지 않도록.
+src/api/generated/
+
+# Next.js 빌드 산출물
+.next/
+out/
+build/
+dist/
+
+node_modules/
+coverage/
+playwright-report/
+test-results/
+public/sw.js
+public/workbox-*.js
+public/worker-*.js
