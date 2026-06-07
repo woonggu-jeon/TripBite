@@ -15,9 +15,9 @@ import { haptic } from '@/lib/haptic';
 import { toast } from '@/lib/toast';
 import styles from './ProfileCard.module.scss';
 
-// BE spec (docs/API_CONTRACT.md): `image/jpeg|png|webp`, ≤5MB. 다른 타입/크기는 client 에서 차단.
-const MAX_AVATAR_BYTES = 5 * 1024 * 1024;
-const ALLOWED_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const;
+// 업로드 정책: 이미지 파일만 · ≤10MB. BE spec 도 동일 정책 (image/*, ≤10MB) 가정 — 다르면 BE 422.
+// MIME 검증은 file.type.startsWith('image/') — accept="image/*" 와 동일 의미. PWA(iOS/Android) 친화.
+const MAX_AVATAR_BYTES = 10 * 1024 * 1024;
 
 /**
  * 프로필 카드 — 원형 아바타 + 닉네임 + 카메라 floating btn (이미지 변경).
@@ -51,13 +51,12 @@ export function ProfileCard() {
 
   const onFile = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    // 같은 파일 재선택 가능하도록 value clear (accept 통과 후에도 다시 같은 path 가능).
     e.target.value = '';
     if (!file) return;
-    if (
-      !ALLOWED_AVATAR_TYPES.includes(
-        file.type as (typeof ALLOWED_AVATAR_TYPES)[number],
-      )
-    ) {
+    // 이미지 외 차단 — file.type 이 'image/png' / 'image/jpeg' 등 image/* 일 때만.
+    // 일부 OS 가 type 을 못 정할 때 빈 string — 보수적으로 차단.
+    if (!file.type.startsWith('image/')) {
       toast.error(t('avatarInvalidType'));
       return;
     }
@@ -143,7 +142,9 @@ export function ProfileCard() {
       <input
         ref={fileRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp"
+        // PWA 친화: image/* 는 iOS/Android 의 파일 선택 dialog 가 카메라/갤러리/파일 모두 노출.
+        // multiple=false (default) — 단일 파일만. capture 미지정 — 사용자가 카메라/앨범 선택권 보유.
+        accept="image/*"
         className={styles.fileInput}
         onChange={onFile}
         aria-hidden

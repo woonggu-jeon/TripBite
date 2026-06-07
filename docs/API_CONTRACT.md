@@ -60,8 +60,9 @@ parking / coords / summary / address`.
 | `DELETE /me/avatar`          | —                                                                                                                                | `200 {avatarUrl: null}`                                                                                                |
 
 **아바타 업로드 (서버 경유 multipart, 단일 요청)**: FE 가 `multipart/form-data` 의 **`file`** 필드로
-이미지 1개(`image/jpeg\|png\|webp`, ≤5MB)를 전송 → BE 가 Cloudflare R2 에 업로드 후 `{avatarUrl}` 반환
+이미지 1개(`image/*`, ≤10MB)를 전송 → BE 가 Cloudflare R2 에 업로드 후 `{avatarUrl}` 반환
 (→ `User.avatarUrl` 갱신). 파일은 우리 API 를 경유하므로 **버킷 CORS 불필요**. 스토리지 미설정 시 `503`.
+BE 측 검증 권장: MIME `image/*` 시작 + 크기 ≤10MB + magic bytes 확인 (확장자 변조 차단).
 
 > ⚠ 이 요청만 `Content-Type: multipart/form-data` (axios 는 `FormData` 넣으면 자동). 나머지 API 는 JSON.
 
