@@ -138,18 +138,20 @@ test.describe('알림함 → 알림 클릭 → 페이지 이동', () => {
     await authedSession(page);
   });
 
-  test('헤더 알림 button → dialog 열림 + 항목 존재', async ({ page }) => {
+  test('헤더 알림 click → /notifications 페이지 이동 + 항목 존재', async ({
+    page,
+  }) => {
+    // 알림함은 페이지화 (이전 dropdown 폐기). 헤더 종 = Link → /notifications.
     await page.goto('/');
     await page
-      .getByRole('button', { name: /알림|Notification/i })
+      .getByRole('link', { name: /알림|Notification/i })
       .first()
       .click();
-    const dialog = page.getByRole('dialog', {
-      name: /알림|Notification/i,
-    });
-    await expect(dialog).toBeVisible({ timeout: 3000 });
-    // mock 환경에서 seed 알림 7개 노출 — 1개 이상 link 존재
-    const itemCount = await dialog.locator('a, button').count();
+    await expect(page).toHaveURL(/\/notifications/, { timeout: 3000 });
+    // mock seed 알림 노출 — 1개 이상 link 존재
+    const itemCount = await page
+      .locator('a[href^="/letter/"], a[href^="/mypage"], a[href^="/letters"]')
+      .count();
     expect(itemCount).toBeGreaterThan(0);
   });
 });

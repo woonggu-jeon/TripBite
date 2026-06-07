@@ -68,9 +68,9 @@ test.describe('페이지 smoke + 가로 overflow', () => {
 
   test('홈 헤더 / 하단 네비 노출', async ({ page }) => {
     await page.goto('/');
-    // 알림 / 설정 아이콘 버튼 — aria-label 기준
+    // 알림 — Link 로 변경 (/notifications 페이지화). 설정은 button.
     await expect(
-      page.getByRole('button', { name: /알림|Notification/i }).first(),
+      page.getByRole('link', { name: /알림|Notification/i }).first(),
     ).toBeVisible({ timeout: 5000 });
     // "Home" aria 가 로고 + 하단 네비 2 곳에 매칭 — strict mode 회피 .first().
     await expect(

@@ -78,17 +78,12 @@ test.describe('알림함', () => {
     await authedSession(page);
   });
 
-  test('헤더 알림 버튼 → 드롭다운 열림 + 항목 노출', async ({ page }) => {
+  test('헤더 알림 클릭 → /notifications 페이지 이동', async ({ page }) => {
+    // 알림함은 페이지화 (이전 dropdown 폐기). 헤더 종 = Link.
     await page.goto('/');
-    // Banner.module.scss 의 pointer-events: none 정책으로 banner 가 click 막지
-    // 않음 — dismissBanners 헬퍼 없이도 동작 검증.
-    const bell = page
-      .getByRole('button', { name: /알림|Notification/i })
-      .first();
+    const bell = page.getByRole('link', { name: /알림|Notification/i }).first();
     await bell.click();
-    await expect(
-      page.getByRole('dialog', { name: /알림|Notification/i }),
-    ).toBeVisible({ timeout: 3000 });
+    await expect(page).toHaveURL(/\/notifications/, { timeout: 3000 });
   });
 });
 
@@ -133,9 +128,10 @@ test.describe('여행지 상세 share button', () => {
     await authedSession(page);
   });
 
-  test('SubHeader 우측 share IconButton 노출', async ({ page }) => {
-    await page.goto('/destination/cheongju-attraction-1');
-    // SubHeader 의 share button — aria-label "공유" / "Share"
+  test('여행지 상세 — 공유 버튼 노출 (본문 액션 row)', async ({ page }) => {
+    // seed id 체계: tour-<hash(rc-<region>-<type>-<idx>)>. cheongju attraction 1 hash = tour-5537321.
+    // 공유 버튼은 SubHeader rightSlot 폐기 후 본문 DestinationActions 로 이동.
+    await page.goto('/destination/tour-5537321');
     await expect(
       page.getByRole('button', { name: /공유|Share/i }).first(),
     ).toBeVisible({ timeout: 5000 });

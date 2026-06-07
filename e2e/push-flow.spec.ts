@@ -24,17 +24,19 @@ test.describe('푸시 prompt + 알림 클릭 → letter detail', () => {
     await context.grantPermissions(['notifications']);
   });
 
-  test('알림 dropdown 열림 + 시드 알림 노출', async ({ page }) => {
+  test('헤더 알림 → /notifications 페이지 + 시드 알림 클릭 → letter', async ({
+    page,
+  }) => {
+    // dropdown 폐기, /notifications 페이지화.
     await page.goto('/');
-    const bell = page
-      .getByRole('button', { name: /알림|Notification/i })
-      .first();
-    await bell.click();
-    const dialog = page.getByRole('dialog', { name: /알림|Notification/i });
-    await expect(dialog).toBeVisible({ timeout: 3000 });
+    await page
+      .getByRole('link', { name: /알림|Notification/i })
+      .first()
+      .click();
+    await expect(page).toHaveURL(/\/notifications/, { timeout: 3000 });
 
     // 시드 알림 중 letter 관련 1개 — 클릭 시 /letter/[id] 진입
-    const firstLetterLink = dialog.locator('a[href^="/letter/"]').first();
+    const firstLetterLink = page.locator('a[href^="/letter/"]').first();
     if (await firstLetterLink.isVisible({ timeout: 2000 }).catch(() => false)) {
       await firstLetterLink.click();
       await page.waitForURL(/\/letter\//, { timeout: 5000 });
