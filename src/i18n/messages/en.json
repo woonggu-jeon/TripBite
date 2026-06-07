@@ -148,7 +148,10 @@
       "submitting": "Sending...",
       "sentTitle": "Check your email",
       "sentDescription": "If an account exists, a reset link has been sent.",
-      "toLogin": "Back to sign in"
+      "toLogin": "Back to sign in",
+      "errors": {
+        "emailInvalid": "Please enter a valid email."
+      }
     },
     "resetPassword": {
       "title": "Set new password",

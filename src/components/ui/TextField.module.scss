@@ -1,0 +1,64 @@
+// 폼 입력 primitive — label / input / error 한 세트.
+// auth/onboarding/settings 의 동일 패턴을 흡수. 토큰은 기존 AuthForm.module.scss 값 유지.
+
+.field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-fg);
+}
+
+// 시각적으로 가리되 스크린리더에는 노출. placeholder/aria-label 로 의미 전달 시.
+.labelHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.input {
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-size: var(--font-body-sm);
+  outline: none;
+  transition: border-color var(--motion-base) ease;
+
+  &::placeholder {
+    color: var(--color-muted);
+  }
+  &:focus {
+    border-color: var(--color-primary);
+  }
+  &[aria-invalid='true'] {
+    border-color: var(--color-danger);
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.hint {
+  font-size: var(--font-label);
+  color: var(--color-muted);
+  margin: 0;
+}
+
+.error {
+  font-size: var(--font-label);
+  color: var(--color-danger);
+  margin: 0;
+}

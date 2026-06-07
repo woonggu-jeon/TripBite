@@ -1,7 +1,7 @@
 # TripBite 후속 작업 백로그
 
 > 코드베이스 전수조사 후 정리한 잔존 / 개선 항목. 분기점마다 갱신.
-> 마지막 갱신: 2026-06-06
+> 마지막 갱신: 2026-06-07
 >
 > 작업량 표기: **S** (≤30분) · **M** (1-3시간) · **L** (반나절+)
 
@@ -33,6 +33,8 @@
 - **2026-06-05**: letter/sent 익명화 — To 단일 라벨 + 도착 추상 표현, dead code 정리
 - **2026-06-06**: orval 마이그 10 features — auth/mypage/notification/letter/region/ranking/tournament/settings/onboarding/location 모두 generated client 사용. mutator 가 res.data 자동 unwrap. 수동 axios/zod 일괄 폐기 (`safeParseResponse` + 5 response schemas + `lib/schemas/common` 삭제). 변경 코드 약 600줄 순감.
 - **2026-06-06**: BE swagger enum 정합 — Season / DestinationCategory / RegionCode (11 시군) / AppNotificationType / TournamentSize / ThemeKind / TravelTypeCode 모두 generated. `Omit + intersection` / `as cast` 패턴 일괄 폐기. Destination/DestinationDetail/SavedTournament/TournamentRecord/TravelType 모두 DTO alias.
+- **2026-06-07**: 보안 패치 + e2e 회귀 — vitest 3→4.1.8 / next-intl 3→4.13 (UI server CVE). 알림 dropdown→/notifications 페이지화 e2e 5건 fix. 잔여 FE security = 0.
+- **2026-06-07**: 폼 입력 primitive 추출 — `TextField` (label + input + error + a11y 자동 연결) 신설. 7 auth form (Login/Signup/FindId/Forgot/Reset/ChangePassword) + onboarding NicknameStep + settings NicknameEditDialog 8개 갈음. `AuthForm.module.scss` 의 .field/.label/.input/.error 흡수, `ForgotPasswordForm` 의 i18n `signup.errors` 차용을 `forgotPassword.errors` 자기 namespace 로 분리. aria-invalid 표현 boolean→undefined 통일 (axe lint false-positive 해소). 코드 약 100줄 순감.
 
 ---
 

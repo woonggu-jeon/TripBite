@@ -1,5 +1,5 @@
-// Auth 폼 공통 SCSS — Login/Signup/FindId/ForgotPassword/ResetPassword/ChangePassword 가
-// 거의 동일한 (form > title > field × N > submit > foot) 구조라 단일 module 공유.
+// Auth 폼 공통 SCSS — form/title/foot/card/result 등 outer layout.
+// label/input/error 는 TextField primitive(ui/TextField) 가 흡수 — 여기 미보유.
 
 .form {
   display: grid;
@@ -28,43 +28,7 @@
   margin-top: calc(-1 * var(--space-2));
 }
 
-.field {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.label {
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-fg);
-}
-
-.input {
-  width: 100%;
-  padding: var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-bg);
-  color: var(--color-fg);
-  font-size: var(--font-body-sm);
-  outline: none;
-  transition: border-color var(--motion-base) ease;
-
-  &::placeholder {
-    color: var(--color-muted);
-  }
-  &:focus {
-    border-color: var(--color-primary);
-  }
-  &[aria-invalid='true'] {
-    border-color: var(--color-danger);
-  }
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-}
-
+// root error 표시 (form-level — TextField 의 inline error 와 별개).
 .error {
   font-size: var(--font-label);
   color: var(--color-danger);

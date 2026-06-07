@@ -33,41 +33,7 @@
   margin: 0;
 }
 
-.field {
-  display: grid;
-  gap: var(--space-1);
-}
-
-.fieldLabel {
-  font-size: var(--font-caption);
-  color: var(--color-muted);
-}
-
-.input {
-  width: 100%;
-  padding: var(--space-3);
-  background: var(--color-bg);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-fg);
-  font-size: var(--font-body);
-  letter-spacing: var(--tracking-snug);
-  transition: border-color var(--motion-base) ease;
-
-  &:focus {
-    outline: none;
-    border-color: var(--color-primary);
-  }
-  &[aria-invalid='true'] {
-    border-color: var(--color-danger);
-  }
-}
-
-.error {
-  font-size: var(--font-caption);
-  color: var(--color-danger);
-  margin: 0;
-}
+// label/input/error 는 TextField primitive 가 흡수 — 여기 미보유.
 
 .actions {
   display: flex;

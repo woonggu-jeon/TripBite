@@ -7,15 +7,14 @@ import {
   nicknameSchema,
   type NicknameFormValues,
 } from '@/features/onboarding/schemas/nickname';
-import { Button } from '@/components/ui';
-import authStyles from '@/features/auth/components/AuthForm.module.scss';
+import { Button, TextField } from '@/components/ui';
 import styles from './OnboardingStep.module.scss';
 
 /**
  * <NicknameStep /> — 온보딩 step 3 (현재 미노출, 컴포넌트는 보존)
  *
  * 닉네임 입력 + zod 검증. 제출 시 부모(OnboardingFlow) 가 onboardingApi.complete 로 전송.
- * 폼 요소는 AuthForm module 의 .field/.input/.error 재사용.
+ * 라벨은 시각 미노출 (placeholder 로 의미 전달, 스크린리더에는 노출).
  */
 export function NicknameStep({
   onSubmit,
@@ -44,21 +43,20 @@ export function NicknameStep({
     <form onSubmit={submit} className={styles.step}>
       <h2 className={styles.title}>{t('nickname.title')}</h2>
 
-      <div className={authStyles.field}>
-        <input
-          type="text"
-          placeholder={t('nickname.placeholder')}
-          maxLength={20}
-          className={authStyles.input}
-          aria-invalid={!!errors.nickname}
-          {...register('nickname')}
-        />
-        {errors.nickname && (
-          <p className={authStyles.error}>
-            {tErr(errors.nickname.message as Parameters<typeof tErr>[0])}
-          </p>
-        )}
-      </div>
+      <TextField
+        id="nickname"
+        type="text"
+        label={t('nickname.title')}
+        visuallyHiddenLabel
+        placeholder={t('nickname.placeholder')}
+        maxLength={20}
+        errorMessage={
+          errors.nickname
+            ? tErr(errors.nickname.message as Parameters<typeof tErr>[0])
+            : undefined
+        }
+        {...register('nickname')}
+      />
 
       <div className={`${styles.actions} ${styles.actionsRow}`}>
         {onPrev && (

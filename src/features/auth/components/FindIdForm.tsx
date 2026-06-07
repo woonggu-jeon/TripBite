@@ -10,13 +10,18 @@ import {
   findIdSchema,
   type FindIdValues,
 } from '@/features/auth/schemas/find-id';
-import { Button } from '@/components/ui';
+import { Button, TextField } from '@/components/ui';
 import styles from './AuthForm.module.scss';
 
 /**
  * 아이디 찾기 — 이름 + 가입 이메일 매칭 → 마스킹 아이디를 화면에 표시.
  * 백엔드가 마스킹(tes***01) 처리. 미존재 시에도 동일 안내(열거 방지).
  */
+const FIELDS = [
+  { name: 'name', type: 'text', autoComplete: 'name' },
+  { name: 'email', type: 'email', autoComplete: 'email' },
+] as const;
+
 export function FindIdForm() {
   const t = useTranslations('auth.findId');
   const tErr = useTranslations('auth.findId.errors');
@@ -61,43 +66,21 @@ export function FindIdForm() {
     <form onSubmit={onSubmit} noValidate className={styles.form}>
       <h1 className={styles.title}>{t('title')}</h1>
 
-      <div className={styles.field}>
-        <label htmlFor="name" className={styles.label}>
-          {t('name')}
-        </label>
-        <input
-          id="name"
-          type="text"
-          autoComplete="name"
-          aria-invalid={!!errors.name}
-          className={styles.input}
-          {...register('name')}
+      {FIELDS.map((f) => (
+        <TextField
+          key={f.name}
+          id={f.name}
+          type={f.type}
+          autoComplete={f.autoComplete}
+          label={t(f.name)}
+          errorMessage={
+            errors[f.name]
+              ? tErr(errors[f.name]?.message as Parameters<typeof tErr>[0])
+              : undefined
+          }
+          {...register(f.name)}
         />
-        {errors.name && (
-          <p className={styles.error}>
-            {tErr(errors.name.message as Parameters<typeof tErr>[0])}
-          </p>
-        )}
-      </div>
-
-      <div className={styles.field}>
-        <label htmlFor="email" className={styles.label}>
-          {t('email')}
-        </label>
-        <input
-          id="email"
-          type="email"
-          autoComplete="email"
-          aria-invalid={!!errors.email}
-          className={styles.input}
-          {...register('email')}
-        />
-        {errors.email && (
-          <p className={styles.error}>
-            {tErr(errors.email.message as Parameters<typeof tErr>[0])}
-          </p>
-        )}
-      </div>
+      ))}
 
       <Button
         type="submit"

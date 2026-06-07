@@ -11,24 +11,26 @@ import {
   type LoginFormValues,
 } from '@/features/auth/schemas/login';
 import { isAxiosError } from '@/services/interceptors/auth';
-import { Button } from '@/components/ui';
+import { Button, TextField } from '@/components/ui';
 import styles from './AuthForm.module.scss';
 
 /**
  * 로그인 폼 — i18n 적용 예시
  *
  * 정적 UI 텍스트는 모두 useTranslations 로 처리.
- * Zod 에러 메시지는 두 가지 패턴이 가능:
- *
- *   (a) 스키마에서 i18n 키만 반환 → 컴포넌트에서 t() 로 변환 (지금 방식)
- *       스키마: z.string().min(1, 'auth.login.emailRequired')
- *       UI:    {errors.email && <p>{t(errors.email.message)}</p>}
- *
- *   (b) 컴포넌트에서 t를 받아 스키마를 동적 생성
- *       const schema = makeLoginSchema(t);
- *
- * 둘 다 유효. (a) 가 더 간단해서 권장.
+ * Zod 메시지는 i18n 키만 반환 → 컴포넌트에서 t() 로 변환.
  */
+type LoginField = {
+  name: 'username' | 'password';
+  type: 'text' | 'password';
+  autoComplete: 'username' | 'current-password';
+};
+
+const FIELDS: readonly LoginField[] = [
+  { name: 'username', type: 'text', autoComplete: 'username' },
+  { name: 'password', type: 'password', autoComplete: 'current-password' },
+] as const;
+
 export function LoginForm() {
   const t = useTranslations('auth.login');
   const searchParams = useSearchParams();
@@ -70,44 +72,21 @@ export function LoginForm() {
     >
       <h1 className={styles.title}>{t('title')}</h1>
 
-      <div className={styles.field}>
-        <label htmlFor="username" className={styles.label}>
-          {t('username')}
-        </label>
-        <input
-          id="username"
-          type="text"
-          autoComplete="username"
-          className={styles.input}
-          aria-invalid={!!errors.username}
-          {...register('username')}
+      {FIELDS.map((f) => (
+        <TextField
+          key={f.name}
+          id={f.name}
+          type={f.type}
+          autoComplete={f.autoComplete}
+          label={t(f.name)}
+          errorMessage={
+            errors[f.name]
+              ? t(errors[f.name]?.message as Parameters<typeof t>[0])
+              : undefined
+          }
+          {...register(f.name)}
         />
-        {/* Zod 메시지는 i18n 키 — t(key) 로 변환 */}
-        {errors.username && (
-          <p className={styles.error}>
-            {t(errors.username.message as Parameters<typeof t>[0])}
-          </p>
-        )}
-      </div>
-
-      <div className={styles.field}>
-        <label htmlFor="password" className={styles.label}>
-          {t('password')}
-        </label>
-        <input
-          id="password"
-          type="password"
-          autoComplete="current-password"
-          className={styles.input}
-          aria-invalid={!!errors.password}
-          {...register('password')}
-        />
-        {errors.password && (
-          <p className={styles.error}>
-            {t(errors.password.message as Parameters<typeof t>[0])}
-          </p>
-        )}
-      </div>
+      ))}
 
       {errors.root && (
         <p className={styles.error} role="alert">

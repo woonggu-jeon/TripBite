@@ -9,7 +9,7 @@ import {
   forgotPasswordSchema,
   type ForgotPasswordValues,
 } from '@/features/auth/schemas/password-reset';
-import { Button } from '@/components/ui';
+import { Button, TextField } from '@/components/ui';
 import styles from './AuthForm.module.scss';
 
 /**
@@ -18,7 +18,7 @@ import styles from './AuthForm.module.scss';
  */
 export function ForgotPasswordForm() {
   const t = useTranslations('auth.forgotPassword');
-  const tErr = useTranslations('auth.signup.errors');
+  const tErr = useTranslations('auth.forgotPassword.errors');
   const { mutateAsync: forgot, isSuccess, isPending } = useForgotPassword();
 
   const {
@@ -55,24 +55,18 @@ export function ForgotPasswordForm() {
       <h1 className={styles.title}>{t('title')}</h1>
       <p className={styles.subtitle}>{t('description')}</p>
 
-      <div className={styles.field}>
-        <label htmlFor="email" className={styles.label}>
-          {t('email')}
-        </label>
-        <input
-          id="email"
-          type="email"
-          autoComplete="email"
-          aria-invalid={!!errors.email}
-          className={styles.input}
-          {...register('email')}
-        />
-        {errors.email && (
-          <p className={styles.error}>
-            {tErr(errors.email.message as Parameters<typeof tErr>[0])}
-          </p>
-        )}
-      </div>
+      <TextField
+        id="email"
+        type="email"
+        autoComplete="email"
+        label={t('email')}
+        errorMessage={
+          errors.email
+            ? tErr(errors.email.message as Parameters<typeof tErr>[0])
+            : undefined
+        }
+        {...register('email')}
+      />
 
       <Button
         type="submit"

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { X } from 'lucide-react';
-import { Button, IconButton } from '@/components/ui';
+import { Button, IconButton, TextField } from '@/components/ui';
 import {
   useMypage,
   useUpdateNickname,
@@ -93,26 +93,19 @@ export function NicknameEditDialog({ onClose }: { onClose: () => void }) {
           </IconButton>
         </div>
 
-        <label className={styles.field}>
-          <span className={styles.fieldLabel}>{t('label')}</span>
-          <input
-            ref={inputRef}
-            type="text"
-            className={styles.input}
-            value={value}
-            onChange={(e) => {
-              setValue(e.target.value);
-              if (error) setError(null);
-            }}
-            maxLength={20}
-            aria-invalid={!!error}
-          />
-          {error && (
-            <p className={styles.error} role="alert">
-              {error}
-            </p>
-          )}
-        </label>
+        <TextField
+          ref={inputRef}
+          id="nickname-edit"
+          type="text"
+          label={t('label')}
+          value={value}
+          onChange={(e) => {
+            setValue(e.target.value);
+            if (error) setError(null);
+          }}
+          maxLength={20}
+          errorMessage={error}
+        />
 
         <div className={styles.actions}>
           <Button variant="ghost" onClick={onClose} disabled={update.isPending}>

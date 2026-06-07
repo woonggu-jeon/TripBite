@@ -10,13 +10,19 @@ import {
 } from '@/features/auth/schemas/password-reset';
 import { isAxiosError } from '@/services/interceptors/auth';
 import { toast } from '@/lib/toast';
-import { Button } from '@/components/ui';
+import { Button, TextField } from '@/components/ui';
 import styles from './AuthForm.module.scss';
 
 /**
  * 비밀번호 변경 (로그인 상태) — 현재 비번 확인 + 새 비번(10자+) + 확인.
  * 설정 계정 섹션에서 인라인으로 펼쳐 사용. 성공 시 onDone 으로 닫음.
  */
+const FIELDS = [
+  { name: 'currentPassword', auto: 'current-password' },
+  { name: 'newPassword', auto: 'new-password' },
+  { name: 'confirmPassword', auto: 'new-password' },
+] as const;
+
 export function ChangePasswordForm({ onDone }: { onDone?: () => void }) {
   const t = useTranslations('auth.changePassword');
   const tErr = useTranslations('auth.changePassword.errors');
@@ -54,33 +60,22 @@ export function ChangePasswordForm({ onDone }: { onDone?: () => void }) {
     }
   });
 
-  const fields = [
-    { name: 'currentPassword', auto: 'current-password' },
-    { name: 'newPassword', auto: 'new-password' },
-    { name: 'confirmPassword', auto: 'new-password' },
-  ] as const;
-
   return (
     <form onSubmit={onSubmit} noValidate className={styles.form}>
-      {fields.map((f) => (
-        <div key={f.name} className={styles.field}>
-          <label htmlFor={f.name} className={styles.label}>
-            {t(f.name)}
-          </label>
-          <input
-            id={f.name}
-            type="password"
-            autoComplete={f.auto}
-            aria-invalid={!!errors[f.name]}
-            className={styles.input}
-            {...register(f.name)}
-          />
-          {errors[f.name] && (
-            <p className={styles.error}>
-              {tErr(errors[f.name]?.message as Parameters<typeof tErr>[0])}
-            </p>
-          )}
-        </div>
+      {FIELDS.map((f) => (
+        <TextField
+          key={f.name}
+          id={f.name}
+          type="password"
+          autoComplete={f.auto}
+          label={t(f.name)}
+          errorMessage={
+            errors[f.name]
+              ? tErr(errors[f.name]?.message as Parameters<typeof tErr>[0])
+              : undefined
+          }
+          {...register(f.name)}
+        />
       ))}
 
       {errors.root && (

@@ -11,13 +11,18 @@ import {
   type ResetPasswordValues,
 } from '@/features/auth/schemas/password-reset';
 import { isAxiosError } from '@/services/interceptors/auth';
-import { Button } from '@/components/ui';
+import { Button, TextField } from '@/components/ui';
 import styles from './AuthForm.module.scss';
 
 /**
  * 비밀번호 재설정 — 메일 링크의 토큰(?token=) + 새 비밀번호(10자+).
  * 토큰이 없으면 만료/잘못된 링크 안내.
  */
+const FIELDS = [
+  { name: 'password', auto: 'new-password' },
+  { name: 'confirmPassword', auto: 'new-password' },
+] as const;
+
 export function ResetPasswordForm() {
   const t = useTranslations('auth.resetPassword');
   const tErr = useTranslations('auth.resetPassword.errors');
@@ -64,43 +69,21 @@ export function ResetPasswordForm() {
 
       <input type="hidden" {...register('token')} />
 
-      <div className={styles.field}>
-        <label htmlFor="password" className={styles.label}>
-          {t('password')}
-        </label>
-        <input
-          id="password"
+      {FIELDS.map((f) => (
+        <TextField
+          key={f.name}
+          id={f.name}
           type="password"
-          autoComplete="new-password"
-          aria-invalid={!!errors.password}
-          className={styles.input}
-          {...register('password')}
+          autoComplete={f.auto}
+          label={t(f.name)}
+          errorMessage={
+            errors[f.name]
+              ? tErr(errors[f.name]?.message as Parameters<typeof tErr>[0])
+              : undefined
+          }
+          {...register(f.name)}
         />
-        {errors.password && (
-          <p className={styles.error}>
-            {tErr(errors.password.message as Parameters<typeof tErr>[0])}
-          </p>
-        )}
-      </div>
-
-      <div className={styles.field}>
-        <label htmlFor="confirmPassword" className={styles.label}>
-          {t('confirmPassword')}
-        </label>
-        <input
-          id="confirmPassword"
-          type="password"
-          autoComplete="new-password"
-          aria-invalid={!!errors.confirmPassword}
-          className={styles.input}
-          {...register('confirmPassword')}
-        />
-        {errors.confirmPassword && (
-          <p className={styles.error}>
-            {tErr(errors.confirmPassword.message as Parameters<typeof tErr>[0])}
-          </p>
-        )}
-      </div>
+      ))}
 
       {errors.root && (
         <p className={styles.error} role="alert">

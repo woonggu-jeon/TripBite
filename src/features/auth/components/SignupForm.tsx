@@ -10,7 +10,7 @@ import {
   type SignupFormValues,
 } from '@/features/auth/schemas/signup';
 import { isAxiosError } from '@/services/interceptors/auth';
-import { Button } from '@/components/ui';
+import { Button, TextField } from '@/components/ui';
 import styles from './AuthForm.module.scss';
 
 /**
@@ -63,25 +63,20 @@ export function SignupForm() {
       <h1 className={styles.title}>{t('title')}</h1>
 
       {FIELDS.map((f) => (
-        <div key={f.name} className={styles.field}>
-          <label htmlFor={f.name} className={styles.label}>
-            {t(f.name)}
-          </label>
-          <input
-            id={f.name}
-            type={f.type}
-            autoComplete={f.autoComplete}
-            placeholder={t(`${f.name}Placeholder`)}
-            aria-invalid={!!errors[f.name]}
-            className={styles.input}
-            {...register(f.name)}
-          />
-          {errors[f.name] && (
-            <p className={styles.error}>
-              {tErr(errors[f.name]?.message as Parameters<typeof tErr>[0])}
-            </p>
-          )}
-        </div>
+        <TextField
+          key={f.name}
+          id={f.name}
+          type={f.type}
+          autoComplete={f.autoComplete}
+          placeholder={t(`${f.name}Placeholder`)}
+          label={t(f.name)}
+          errorMessage={
+            errors[f.name]
+              ? tErr(errors[f.name]?.message as Parameters<typeof tErr>[0])
+              : undefined
+          }
+          {...register(f.name)}
+        />
       ))}
 
       {errors.root && (
