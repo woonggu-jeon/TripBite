@@ -1,8 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { haptic } from '@/lib/haptic';
-import { cardClasses } from '@/components/ui';
+import { cardClasses, RadioGroup, RadioOption } from '@/components/ui';
 import type { Season } from '@/features/tournament/types';
 import styles from './SeasonSelector.module.scss';
 
@@ -25,38 +24,27 @@ export interface SeasonSelectorProps {
 export function SeasonSelector({ value, onChange }: SeasonSelectorProps) {
   const t = useTranslations('tournament');
 
-  const pick = (s: Season) => {
-    haptic.tap();
-    onChange(s);
-  };
-
   return (
-    <div
-      className={styles.grid}
-      role="radiogroup"
-      aria-label={t('setup.steps.season.title')}
-    >
+    <RadioGroup label={t('setup.steps.season.title')} className={styles.grid}>
       {SEASONS.map((s) => {
         const active = value === s.value;
         return (
-          <button
+          <RadioOption
             key={s.value}
-            type="button"
-            role="radio"
-            aria-checked={active}
+            checked={active}
+            onSelect={() => onChange(s.value)}
             className={cardClasses({
               variant: 'surface',
               className: `${styles.card} ${active ? styles.active : ''} ${styles[s.value] ?? ''}`,
             })}
-            onClick={() => pick(s.value)}
           >
             <span className={styles.emoji} aria-hidden>
               {s.emoji}
             </span>
             <span className={styles.label}>{t(`season.${s.value}`)}</span>
-          </button>
+          </RadioOption>
         );
       })}
-    </div>
+    </RadioGroup>
   );
 }

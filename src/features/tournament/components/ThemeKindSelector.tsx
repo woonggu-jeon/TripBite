@@ -1,8 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { haptic } from '@/lib/haptic';
-import { cardClasses } from '@/components/ui';
+import { cardClasses, RadioGroup, RadioOption } from '@/components/ui';
 import styles from './ThemeKindSelector.module.scss';
 
 export type ThemeKind = 'season' | 'random';
@@ -22,11 +21,6 @@ export interface ThemeKindSelectorProps {
 export function ThemeKindSelector({ value, onChange }: ThemeKindSelectorProps) {
   const t = useTranslations('tournament.setup.steps.themeKind');
 
-  const pick = (k: ThemeKind) => {
-    haptic.tap();
-    onChange(k);
-  };
-
   const KINDS: {
     value: ThemeKind;
     emoji: string;
@@ -43,31 +37,29 @@ export function ThemeKindSelector({ value, onChange }: ThemeKindSelectorProps) {
   ];
 
   return (
-    <div className={styles.grid} role="radiogroup" aria-label={t('title')}>
+    <RadioGroup label={t('title')} className={styles.grid}>
       {KINDS.map((k) => {
         const active = value === k.value;
         return (
-          <button
+          <RadioOption
             key={k.value}
-            type="button"
-            role="radio"
-            aria-checked={active}
+            checked={active}
+            onSelect={() => onChange(k.value)}
             className={cardClasses({
               variant: 'surface',
               // padding 은 module .card 가 직접 명시 — Card primitive 의 .p-*
               // 와 source order 충돌 방지 (cardClasses padding 옵션 미사용)
               className: `${styles.card} ${active ? styles.active : ''}`,
             })}
-            onClick={() => pick(k.value)}
           >
             <span className={styles.emoji} aria-hidden>
               {k.emoji}
             </span>
             <span className={styles.label}>{t(k.labelKey)}</span>
             <span className={styles.desc}>{t(k.descKey)}</span>
-          </button>
+          </RadioOption>
         );
       })}
-    </div>
+    </RadioGroup>
   );
 }

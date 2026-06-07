@@ -7,7 +7,7 @@ import { Info } from 'lucide-react';
 import { haptic } from '@/lib/haptic';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Skeleton } from '@/components/feedback/Skeleton';
-import { Button } from '@/components/ui';
+import { Button, RadioGroup, RadioOption } from '@/components/ui';
 import {
   useSubmitTravelType,
   useTravelTypeQuiz,
@@ -187,33 +187,24 @@ export function TravelTypeQuiz() {
 
       <h2 className={styles.question}>{current.text}</h2>
 
-      <ul
-        className={styles.options}
-        role="radiogroup"
-        aria-label={current.text}
-      >
+      <RadioGroup label={current.text} className={styles.options}>
         {current.options.map((opt) => {
           const active = currentAnswer?.optionId === opt.id;
           return (
-            <li key={opt.id}>
-              <button
-                type="button"
-                role="radio"
-                aria-checked={active}
-                className={`${styles.option} ${active ? styles.optionActive : ''}`}
-                onClick={(e) => {
-                  // ios safari 안전망 — tap 후 focus 가 button 에 남으면 다음
-                  // question 의 같은 위치 옵션이 강조된 듯 보임. Bracket fix 와 동일.
-                  e.currentTarget.blur();
-                  handlePick(opt.id);
-                }}
-              >
-                {opt.text}
-              </button>
-            </li>
+            <RadioOption
+              key={opt.id}
+              checked={active}
+              onSelect={() => handlePick(opt.id)}
+              // ios safari 안전망 — tap 후 focus 가 button 에 남으면 다음 question
+              // 의 같은 위치 옵션이 강조된 듯 보임. Bracket fix 와 동일.
+              blurOnClick
+              className={`${styles.option} ${active ? styles.optionActive : ''}`}
+            >
+              {opt.text}
+            </RadioOption>
           );
         })}
-      </ul>
+      </RadioGroup>
 
       {submit.isError && (
         <p className={styles.submitError} role="alert">

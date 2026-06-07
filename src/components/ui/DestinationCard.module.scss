@@ -50,11 +50,6 @@
   overflow: hidden;
 }
 
-// 실 이미지 (next/image fill) — emoji 위치 위에 cover 로 채움.
-.photo {
-  object-fit: cover;
-}
-
 // 우상단 액션 슬롯 (예: 하트 unsave). Link 영역 위에 absolute 로 얹힘.
 // 자식 button 의 onClick 이 e.preventDefault() + stopPropagation() 책임.
 .topRight {

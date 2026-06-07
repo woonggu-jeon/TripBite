@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { haptic } from '@/lib/haptic';
+import { RadioGroup, RadioOption } from '@/components/ui';
 import type { DestinationCategory } from '@/features/tournament/types';
 import styles from './CategoryFilter.module.scss';
 
@@ -20,33 +20,22 @@ export interface CategoryFilterProps {
 }
 
 /**
- * 여행 유형 4종 — 세로 1열 4행 카드. 단일 선택.
+ * 여행 유형 3종 — 세로 1열 3행 카드. 단일 선택.
  * 선택 즉시 부모로 onChange — 부모(TournamentSetup)에서 다음 step 자동 진행.
  */
 export function CategoryFilter({ value, onChange }: CategoryFilterProps) {
   const t = useTranslations('tournament');
 
-  const pick = (c: DestinationCategory) => {
-    haptic.tap();
-    onChange(c);
-  };
-
   return (
-    <div
-      className={styles.list}
-      role="radiogroup"
-      aria-label={t('setup.steps.category.title')}
-    >
+    <RadioGroup label={t('setup.steps.category.title')} className={styles.list}>
       {CATEGORIES.map((c) => {
         const active = value === c.value;
         return (
-          <button
+          <RadioOption
             key={c.value}
-            type="button"
-            role="radio"
-            aria-checked={active}
+            checked={active}
+            onSelect={() => onChange(c.value)}
             className={`${styles.row} ${active ? styles.active : ''}`}
-            onClick={() => pick(c.value)}
           >
             <span className={styles.emoji} aria-hidden>
               {c.emoji}
@@ -55,9 +44,9 @@ export function CategoryFilter({ value, onChange }: CategoryFilterProps) {
             <span className={styles.check} aria-hidden>
               {active ? '✓' : ''}
             </span>
-          </button>
+          </RadioOption>
         );
       })}
-    </div>
+    </RadioGroup>
   );
 }

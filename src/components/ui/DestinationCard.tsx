@@ -1,7 +1,6 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import type { ComponentProps, ReactNode } from 'react';
-import { secureImageUrl } from '@/lib/secure-image-url';
+import { MediaThumb } from './MediaThumb';
 import styles from './DestinationCard.module.scss';
 
 export type DestinationCardTone = 'red' | 'amber' | 'green' | 'blue' | 'violet';
@@ -60,7 +59,6 @@ export function DestinationCard({
   ariaLabel,
   topRightAction,
 }: DestinationCardProps) {
-  const safeImg = secureImageUrl(imageUrl);
   return (
     <Link
       href={href}
@@ -68,25 +66,20 @@ export function DestinationCard({
       className={`${styles.card} ${styles[tone]}`}
       aria-label={ariaLabel ?? `${name} · ${regionLabel}`}
     >
-      <div className={styles.image} aria-hidden>
+      <MediaThumb
+        src={imageUrl}
+        emoji={emoji}
+        sizes="(max-width: 480px) 50vw, 200px"
+        className={styles.image}
+        emojiClassName={styles.emoji}
+      >
         {accentDot && (
           <span
             className={styles.accentDot}
             style={{ background: accentDot }}
           />
         )}
-        {safeImg ? (
-          <Image
-            src={safeImg}
-            alt=""
-            fill
-            sizes="(max-width: 480px) 50vw, 200px"
-            className={styles.photo}
-          />
-        ) : (
-          <span className={styles.emoji}>{emoji}</span>
-        )}
-      </div>
+      </MediaThumb>
       <div className={styles.body}>
         <p className={styles.region}>{regionLabel}</p>
         <h3 className={styles.name}>{name}</h3>

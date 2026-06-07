@@ -16,3 +16,10 @@ export { Button, type ButtonVariant, type ButtonSize } from './button';
 export { DestinationCard, type DestinationCardTone } from './DestinationCard';
 export { ButtonGrid } from './ButtonGrid';
 export { TextField, type TextFieldProps } from './TextField';
+export { MediaThumb, type MediaThumbProps } from './MediaThumb';
+export {
+  RadioGroup,
+  RadioOption,
+  type RadioGroupProps,
+  type RadioOptionProps,
+} from './RadioGroup';

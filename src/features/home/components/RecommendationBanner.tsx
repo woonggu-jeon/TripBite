@@ -1,15 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { ArrowRight } from 'lucide-react';
 import { Carousel } from '@/features/carousel';
 import { Skeleton } from '@/components/feedback/Skeleton';
+import { MediaThumb } from '@/components/ui';
 import { useRecommendedDestinations } from '@/features/ranking/hooks/use-ranking';
-import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
+import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { categoryEmoji } from '@/constants/emoji-map';
-import { secureImageUrl } from '@/lib/secure-image-url';
 import type { Destination } from '@/features/tournament/types';
 import styles from './RecommendationBanner.module.scss';
 
@@ -62,7 +61,6 @@ export function RecommendationBanner() {
 }
 
 function Slide({ item, ctaLabel }: { item: Destination; ctaLabel: string }) {
-  const safeImg = secureImageUrl(item.imageUrl);
   const tone = toneForCategory(item.category);
   const regionKo = regionLabelFor(item.region);
   return (
@@ -71,21 +69,13 @@ function Slide({ item, ctaLabel }: { item: Destination; ctaLabel: string }) {
       className={`${styles.slide} ${styles[tone]}`}
       aria-label={`${item.name} · ${regionKo}`}
     >
-      <div className={styles.media} aria-hidden>
-        {safeImg ? (
-          <Image
-            src={safeImg}
-            alt=""
-            fill
-            sizes="(max-width: 480px) 72px, 96px"
-            className={styles.photo}
-          />
-        ) : (
-          <span className={styles.emoji}>
-            {categoryEmoji(item.category, '✨')}
-          </span>
-        )}
-      </div>
+      <MediaThumb
+        src={item.imageUrl}
+        emoji={categoryEmoji(item.category, '✨')}
+        sizes="(max-width: 480px) 72px, 96px"
+        className={styles.media}
+        emojiClassName={styles.emoji}
+      />
       <div className={styles.body}>
         <p className={styles.headline}>{regionKo}</p>
         <h3 className={styles.destination}>{item.name}</h3>

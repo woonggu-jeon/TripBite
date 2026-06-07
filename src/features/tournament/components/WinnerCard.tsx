@@ -1,11 +1,9 @@
 'use client';
 
-import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { Card, Chip } from '@/components/ui';
+import { Card, Chip, MediaThumb } from '@/components/ui';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { categoryEmoji } from '@/constants/emoji-map';
-import { secureImageUrl } from '@/lib/secure-image-url';
 import type { Destination } from '@/features/tournament/types';
 import styles from './WinnerCard.module.scss';
 
@@ -23,7 +21,6 @@ export function WinnerCard({ destination }: { destination: Destination }) {
   const region = CHUNGBUK_REGIONS.find((r) => r.code === destination.region);
   const regionLabel = region?.ko ?? destination.region;
   const categoryLabel = t(`category.${destination.category}`);
-  const safeImg = secureImageUrl(destination.imageUrl);
 
   return (
     <Card
@@ -35,21 +32,13 @@ export function WinnerCard({ destination }: { destination: Destination }) {
       <div className={styles.trophy} aria-hidden>
         🏆
       </div>
-      <div className={styles.image} aria-hidden>
-        {safeImg ? (
-          <Image
-            src={safeImg}
-            alt=""
-            fill
-            sizes="96px"
-            className={styles.photo}
-          />
-        ) : (
-          <span className={styles.emoji}>
-            {categoryEmoji(destination.category)}
-          </span>
-        )}
-      </div>
+      <MediaThumb
+        src={destination.imageUrl}
+        emoji={categoryEmoji(destination.category)}
+        sizes="96px"
+        className={styles.image}
+        emojiClassName={styles.emoji}
+      />
       <h2 className={styles.name}>{destination.name}</h2>
       <p className={styles.meta}>
         <Chip variant="primary" size="sm">

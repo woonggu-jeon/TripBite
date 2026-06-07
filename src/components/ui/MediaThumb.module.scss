@@ -1,0 +1,11 @@
+// MediaThumb default styles — primitive 내부 element 만 박음.
+// container (.thumb wrapper) 는 호출 측 SCSS 가 책임 (aspect-ratio/background/border).
+
+.photo {
+  object-fit: cover;
+}
+
+.emoji {
+  font-size: var(--emoji-md);
+  line-height: 1;
+}

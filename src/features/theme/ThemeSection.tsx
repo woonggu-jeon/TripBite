@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { Monitor, Sun, Moon } from 'lucide-react';
+import { RadioGroup, RadioOption } from '@/components/ui';
 import { useUIStore, type ThemeMode } from '@/stores/ui-store';
 import styles from './ThemeSection.module.scss';
 
@@ -31,23 +32,21 @@ export function ThemeSection() {
   const setTheme = useUIStore((s) => s.setTheme);
 
   return (
-    <div className={styles.row} role="radiogroup" aria-label={t('label')}>
+    <RadioGroup label={t('label')} className={styles.row}>
       {OPTIONS.map(({ value, Icon, labelKey }) => {
         const isActive = theme === value;
         return (
-          <button
+          <RadioOption
             key={value}
-            type="button"
-            role="radio"
-            aria-checked={isActive}
+            checked={isActive}
+            onSelect={() => setTheme(value)}
             className={`${styles.option} ${isActive ? styles.active : ''}`}
-            onClick={() => setTheme(value)}
           >
             <Icon size={16} aria-hidden />
             <span>{t(labelKey)}</span>
-          </button>
+          </RadioOption>
         );
       })}
-    </div>
+    </RadioGroup>
   );
 }

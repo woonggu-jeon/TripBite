@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { haptic } from '@/lib/haptic';
+import { RadioGroup, RadioOption } from '@/components/ui';
 import {
   DESTINATION_COUNT_OPTIONS,
   TOURNAMENT_SIZE_OPTIONS,
@@ -107,29 +107,22 @@ export function CountSelector({
     }
   };
 
-  const pick = (c: TournamentCount) => {
-    haptic.tap();
-    onChange(c);
-  };
-
   return (
-    <div className={styles.grid} role="radiogroup" aria-label={ariaLabel}>
+    <RadioGroup label={ariaLabel} className={styles.grid}>
       {options.map((c) => {
         const active = value === c;
         return (
-          <button
+          <RadioOption
             key={c}
-            type="button"
-            role="radio"
-            aria-checked={active}
+            checked={active}
+            onSelect={() => onChange(c)}
             className={`${styles.card} ${active ? styles.active : ''}`}
-            onClick={() => pick(c)}
           >
             <span className={styles.title}>{titleOf(c)}</span>
             {showLabel && <span className={styles.sub}>{subOf(c)}</span>}
-          </button>
+          </RadioOption>
         );
       })}
-    </div>
+    </RadioGroup>
   );
 }

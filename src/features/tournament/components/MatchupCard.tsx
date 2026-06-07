@@ -1,12 +1,10 @@
 'use client';
 
-import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { haptic } from '@/lib/haptic';
-import { cardClasses } from '@/components/ui';
+import { cardClasses, MediaThumb } from '@/components/ui';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { categoryEmoji } from '@/constants/emoji-map';
-import { secureImageUrl } from '@/lib/secure-image-url';
 import type { Destination } from '@/features/tournament/types';
 import styles from './MatchupCard.module.scss';
 
@@ -30,7 +28,6 @@ export function MatchupCard({
   const region = CHUNGBUK_REGIONS.find((r) => r.code === destination.region);
   const regionLabel = region?.ko ?? destination.region;
   const categoryLabel = t(`category.${destination.category}`);
-  const safeImg = secureImageUrl(destination.imageUrl);
 
   return (
     <button
@@ -51,21 +48,13 @@ export function MatchupCard({
       disabled={disabled}
       aria-label={`${destination.name} 선택`}
     >
-      <div className={styles.image} aria-hidden>
-        {safeImg ? (
-          <Image
-            src={safeImg}
-            alt=""
-            fill
-            sizes="(max-width: 380px) 40vw, 160px"
-            className={styles.photo}
-          />
-        ) : (
-          <span className={styles.emoji}>
-            {categoryEmoji(destination.category)}
-          </span>
-        )}
-      </div>
+      <MediaThumb
+        src={destination.imageUrl}
+        emoji={categoryEmoji(destination.category)}
+        sizes="(max-width: 380px) 40vw, 160px"
+        className={styles.image}
+        emojiClassName={styles.emoji}
+      />
       <div className={styles.body}>
         <h3 className={styles.name}>{destination.name}</h3>
         <p className={styles.meta}>
