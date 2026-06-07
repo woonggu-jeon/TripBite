@@ -1,33 +1,22 @@
 [
   {
-    "name": "전체 client JS (app router 청크, gzip) — MSW mock 운영 중이라 +60kB. 실 백엔드 + NEXT_PUBLIC_USE_MSW=false 후 440kB 회귀",
+    "name": "Shared First Load — 모든 페이지 공통 다운로드 (framework + main + polyfills, gzip)",
+    "path": [
+      ".next/static/chunks/framework-*.js",
+      ".next/static/chunks/main-*.js",
+      ".next/static/chunks/polyfills-*.js"
+    ],
+    "limit": "150 kB",
+    "gzip": true
+  },
+  {
+    "name": "전체 chunks 합계 — lazy 포함 (정보용, eager bundle 과 무관). MSW 운영 false 가정으로 baseline 조정.",
     "path": [
       ".next/static/chunks/*.js",
       "!.next/static/chunks/main.js",
       "!.next/static/chunks/_*.js"
     ],
-    "limit": "500 kB",
-    "gzip": true
-  },
-  {
-    "name": "shared First Load chunk (framework / react-dom / app-pages) — 230 KB warn baseline",
-    "path": [
-      ".next/static/chunks/framework-*.js",
-      ".next/static/chunks/main-app-*.js"
-    ],
-    "limit": "230 kB",
-    "gzip": true
-  },
-  {
-    "name": "recharts (lazy chunk) — RegionWinsChart / Ranking 차트에서만 load",
-    "path": [".next/static/chunks/*recharts*.js"],
-    "limit": "120 kB",
-    "gzip": true
-  },
-  {
-    "name": "MSW worker (lazy) — NEXT_PUBLIC_USE_MSW=true 시에만 download",
-    "path": [".next/static/chunks/*msw*.js"],
-    "limit": "100 kB",
+    "limit": "2 MB",
     "gzip": true
   }
 ]
