@@ -68,14 +68,20 @@ export function useSubmitTravelType() {
 
 /**
  * 내 유형 명시 설정 — quiz 결과 페이지의 "내 유형으로 적용" 액션.
+ *
+ * BE spec: PATCH /travel-types/me 응답은 TravelType (recommended: []) — 저장 ack.
+ * recommended 는 GET /travel-types/me 가 빌드. 따라서 setQueryData 대신 invalidate
+ * → 다음 useMyTravelType refetch 가 recommended 포함 데이터 반환 → 결과 화면의
+ * "이런 여행지가 어울려요" 영역 유지.
+ *
  * `useMypage` 의 summary 도 invalidate — 마이페이지 프로필 카드 즉시 반영.
  */
 export function useSetMyTravelType() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (code: TravelTypeCode) => rankingApi.setMyTravelType(code),
-    onSuccess: (result) => {
-      qc.setQueryData(rankingKeys.travelType(), result);
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: rankingKeys.travelType() });
       qc.invalidateQueries({ queryKey: ['mypage', 'summary'] });
     },
   });

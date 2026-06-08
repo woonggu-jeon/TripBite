@@ -290,10 +290,15 @@ export const handlers = [
           Math.round(coords.longitude * 10000),
       ) >>> 0;
     const region = MOCK_REGIONS[seed % MOCK_REGIONS.length] ?? MOCK_REGIONS[0]!;
+    // BE spec: { latitude, longitude, label, sido, sigungu, regionCode } —
+    // 전국 시군구 경계 데이터 기반 역지오코딩 응답.
+    const parts = region.label.split(' ');
     return HttpResponse.json({
       latitude: coords.latitude,
       longitude: coords.longitude,
       label: region.label,
+      sido: '충청북도',
+      sigungu: parts[1] ?? '',
       regionCode: region.regionCode,
     });
   }),
@@ -984,13 +989,14 @@ export const handlers = [
   ),
 
   // 명시 적용 — quiz 결과 페이지의 "내 유형으로 적용" 버튼. 로그인 필요.
-  // BE spec: 응답은 TravelTypeDto 전체 (recommended 포함) — submit 과 동일 형태.
+  // BE spec: 응답은 TravelType (recommended: []) — apply 는 저장만, recommended 는 GET /me 가 별도 빌드.
+  // FE hook 이 setQueryData 대신 invalidate 호출 → GET 재요청으로 recommended 복원.
   http.patch(`${apiUrl}/travel-types/me`, async ({ request }) => {
     if (!getMockSignedIn()) return unauthorized();
     const { code } = (await request.json()) as { code: string };
     const meta = (travelTypeMetaSeed as Record<string, TravelType>)[code];
     if (!meta) return new HttpResponse(null, { status: 404 });
-    // recommended 도 함께 build — apply 후에도 "이런 여행지가 어울려요" 영역 유지.
+    // 저장된 상태는 recommended 까지 — GET /me 가 같은 데이터 반환.
     const cats =
       (travelTypeRecommendCategoriesSeed as Record<string, readonly string[]>)[
         code
@@ -999,6 +1005,7 @@ export const handlers = [
       cats.includes(d.category as (typeof cats)[number]),
     );
     myTravelType = { ...meta, recommended: pickRandom(pool, 3) };
-    return HttpResponse.json(myTravelType);
+    // 다만 PATCH 응답 자체는 BE spec 대로 recommended:[] (저장 ack).
+    return HttpResponse.json({ ...meta, recommended: [] });
   }),
 ];
