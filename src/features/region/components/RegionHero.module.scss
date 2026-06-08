@@ -1,3 +1,4 @@
+// Fluid 반응형 — 320~desktop viewport 따라 부드럽게.
 .wrap {
   position: relative;
   width: 100%;
@@ -5,7 +6,7 @@
   overflow: hidden;
   background: var(--color-surface-soft);
   border: 1px solid var(--color-border);
-  padding: var(--space-4) var(--space-5);
+  padding: clamp(0.75rem, 3vw, 1rem) clamp(1rem, 4vw, 1.25rem);
   isolation: isolate;
 }
 
@@ -36,8 +37,8 @@
 .emojiWrap {
   display: grid;
   place-items: center;
-  width: 64px;
-  height: 64px;
+  width: clamp(48px, 14vw, 64px);
+  height: clamp(48px, 14vw, 64px);
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
@@ -45,7 +46,7 @@
 }
 
 .emoji {
-  font-size: var(--emoji-lg);
+  font-size: clamp(var(--emoji-md), 8vw, var(--emoji-lg));
   line-height: 1;
 }
 
@@ -56,7 +57,7 @@
 }
 
 .title {
-  font-size: var(--font-h1);
+  font-size: clamp(var(--font-h2), 5.5vw, var(--font-h1));
   font-weight: var(--font-weight-extrabold);
   color: var(--color-fg);
   letter-spacing: var(--tracking-tight);
@@ -94,18 +95,4 @@
   font-weight: var(--font-weight-bold);
 }
 
-@media (max-width: 380px) {
-  .wrap {
-    padding: var(--space-3) var(--space-4);
-  }
-  .emojiWrap {
-    width: 52px;
-    height: 52px;
-  }
-  .emoji {
-    font-size: var(--emoji-md);
-  }
-  .title {
-    font-size: var(--font-h2);
-  }
-}
+// fluid clamp() 가 단계별 media query 대체.

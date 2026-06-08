@@ -1,7 +1,8 @@
+// Fluid 반응형 — 320~tablet viewport 따라 max-width 부드럽게 (200~240).
 .wrap {
   position: relative;
   width: 100%;
-  max-width: 240px;
+  max-width: clamp(200px, 60vw, 240px);
   aspect-ratio: 6 / 5;
   margin: 0 auto;
   border-radius: var(--radius-xl);
@@ -20,16 +21,9 @@
   bottom: 12px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: var(--emoji-2xl);
+  font-size: clamp(var(--emoji-xl), 13vw, var(--emoji-2xl));
   line-height: 1;
   filter: var(--drop-shadow-icon-strong);
 }
 
-@media (max-width: 380px) {
-  .wrap {
-    max-width: 200px;
-  }
-  .emoji {
-    font-size: var(--emoji-xl);
-  }
-}
+// fluid clamp() 가 단계별 media query 대체.
