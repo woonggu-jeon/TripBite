@@ -5,13 +5,13 @@
   // contentInner 가 담당.
 }
 
-// Hero — 카테고리 이모지 + 시군·카테고리 메타.
+// Hero — 카테고리 이모지 + 시군·카테고리 메타. Fluid 반응형 (320~desktop).
 .hero {
   display: grid;
-  grid-template-columns: 80px 1fr;
+  grid-template-columns: clamp(64px, 20vw, 80px) 1fr;
   align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-4);
+  gap: clamp(0.75rem, 3vw, 1rem);
+  padding: clamp(0.75rem, 3vw, 1rem);
   background: var(--color-surface-soft);
   border-radius: var(--radius-lg);
 }
@@ -20,8 +20,8 @@
 // imageUrl 없을 때 emoji fallback — .heroEmojiGlyph 가 폰트 사이즈 담당.
 .heroEmoji {
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: clamp(64px, 20vw, 80px);
+  height: clamp(64px, 20vw, 80px);
   display: grid;
   place-items: center;
   background: var(--color-bg);
@@ -35,7 +35,7 @@
 }
 
 .heroEmojiGlyph {
-  font-size: var(--emoji-2xl);
+  font-size: clamp(var(--emoji-xl), 8vw, var(--emoji-2xl));
   line-height: 1;
 }
 
@@ -101,16 +101,4 @@
   font-weight: var(--font-weight-semibold);
 }
 
-// 모바일 — hero emoji 살짝 축소
-@media (max-width: 380px) {
-  .hero {
-    grid-template-columns: 64px 1fr;
-    gap: var(--space-3);
-    padding: var(--space-3);
-  }
-  .heroEmoji {
-    width: 64px;
-    height: 64px;
-    font-size: var(--emoji-xl);
-  }
-}
+// fluid clamp() 가 단계별 media query 대체.

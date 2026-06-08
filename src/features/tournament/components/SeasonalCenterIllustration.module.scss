@@ -1,8 +1,9 @@
+// Fluid 반응형 — wrap max-width 160~200, glyph 2xl~3xl 부드럽게.
 .wrap {
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
-  max-width: 200px;
+  max-width: clamp(160px, 50vw, 200px);
   margin: 0 auto;
   border-radius: var(--radius-full);
   overflow: hidden;
@@ -21,20 +22,11 @@
   inset: 0;
   display: grid;
   place-items: center;
-  font-size: var(--emoji-3xl);
+  font-size: clamp(var(--emoji-2xl), 14vw, var(--emoji-3xl));
   line-height: 1;
   pointer-events: none;
 }
 
 .spring {
   filter: var(--drop-shadow-petal);
-}
-
-@media (max-width: 380px) {
-  .wrap {
-    max-width: 160px;
-  }
-  .glyph {
-    font-size: var(--emoji-2xl);
-  }
 }

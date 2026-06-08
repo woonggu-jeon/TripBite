@@ -5,11 +5,12 @@
    variant:
      - center : form 류 (5개) — 화면 중앙 정렬
      - column : 멀티 step 류 (onboarding) — 상단부터 세로 배치 */
+// Fluid 반응형 — 320~desktop viewport 따라 padding 부드럽게.
 .main {
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
-  padding: var(--space-6) var(--space-4);
+  padding: clamp(1rem, 4vw, 1.5rem) clamp(0.75rem, 3vw, 1rem);
 }
 
 .center {
@@ -19,16 +20,4 @@
 
 .column {
   flex-direction: column;
-}
-
-@media (max-width: 480px) {
-  .main {
-    padding: var(--space-5) var(--space-3);
-  }
-}
-
-@media (max-width: 380px) {
-  .main {
-    padding: var(--space-4) var(--space-3);
-  }
 }
