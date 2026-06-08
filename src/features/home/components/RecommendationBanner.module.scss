@@ -1,3 +1,14 @@
+// 데스크탑 (>= 481px) 에서만 max-width 제한 — content-max 720px 안에서 hero 가
+// 과하게 차지 않도록 가운데 정렬. 모바일 (≤ 480px) 은 100% 유지 (touch swipe 영역).
+.wrap {
+  width: 100%;
+
+  @media (min-width: 481px) {
+    max-width: 480px;
+    margin: 0 auto;
+  }
+}
+
 .slide {
   display: grid;
   grid-template-columns: 96px 1fr;

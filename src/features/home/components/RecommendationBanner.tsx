@@ -48,15 +48,17 @@ export function RecommendationBanner() {
   const items = data.map((r) => r.destination);
 
   return (
-    <Carousel
-      slides={items}
-      renderSlide={(item) => <Slide item={item} ctaLabel={t('cta')} />}
-      keyExtractor={(item) => item.id}
-      options={{ loop: true, autoplayMs: 4500 }}
-      showDots
-      fallbackHeight={248}
-      ariaLabel={t('label')}
-    />
+    <div className={styles.wrap}>
+      <Carousel
+        slides={items}
+        renderSlide={(item) => <Slide item={item} ctaLabel={t('cta')} />}
+        keyExtractor={(item) => item.id}
+        options={{ loop: true, autoplayMs: 4500 }}
+        showDots
+        fallbackHeight={248}
+        ariaLabel={t('label')}
+      />
+    </div>
   );
 }
 
