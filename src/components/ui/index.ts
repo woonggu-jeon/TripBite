@@ -23,3 +23,4 @@ export {
   type RadioGroupProps,
   type RadioOptionProps,
 } from './RadioGroup';
+export { Dialog, type DialogProps } from './Dialog';

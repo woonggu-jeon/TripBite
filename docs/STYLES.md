@@ -331,6 +331,39 @@ import { RadioGroup, RadioOption } from '@/components/ui';
 - `blurOnClick` — iOS Safari/PWA 의 focus 잔존 안전망 (Bracket / 질문지 등 DOM 재사용 케이스).
 - 사용처 6건 흡수 (CategoryFilter/ThemeKindSelector/SeasonSelector/CountSelector/ThemeSection/TravelTypeQuiz).
 
+### Dialog — 모달 (backdrop + ESC + focus trap + a11y)
+
+```tsx
+import { Dialog, Button } from '@/components/ui';
+
+<Dialog
+  open={isOpen}
+  onClose={onClose}
+  title={t('title')}
+  description={t('description')} // optional
+  showCloseButton // 우상단 X (선택)
+  icon={<MapPin size={28} />} // 알림형 dialog (선택, title 위 중앙)
+  actions={
+    <>
+      <Button variant="secondary" onClick={onClose}>
+        {t('cancel')}
+      </Button>
+      <Button variant="primary" onClick={onConfirm}>
+        {t('confirm')}
+      </Button>
+    </>
+  }
+>
+  {/* 자유 본문 (form 등) */}
+</Dialog>;
+```
+
+- backdrop click + ESC + 우상단 X 모두 `onClose` 호출.
+- `useFocusTrap` + `useKeyboard('Escape')` 자동 — 외부 hook 호출 불필요.
+- `aria-labelledby` (title) / `aria-describedby` (description) 자동 연결 — `useId()` 충돌 X.
+- fade-in + pop-in 애니메이션 (reduced-motion 자동 해제).
+- 사용처 3건 흡수 (`ConfirmDialog` 큐 어댑터 / `NicknameEditDialog` / `ChangePasswordDialog`) — 동일 backdrop/dialog/ESC 코드 4곳 중복 폐기.
+
 ### Layout primitives (page wrapper)
 
 - `AuthLayout` — 인증 페이지 6곳(login/signup/find-id/forgot-password/reset-password/onboarding) 의 공통 main wrapper. `variant`: `center`(default) / `column`(onboarding). 모바일 padding 반응형 내장.
@@ -545,18 +578,18 @@ iOS Safari / PWA 의 native button rendering 이 일부 border 속성을 무시�
 
 ### 인프라
 
-| 영역               | 토큰 / Primitive                                                                                                                           |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| Color              | `--color-bg/-fg/-muted/-border/-primary*/-surface*/-divider/-hover*/-overlay/-glass`, `--color-letter-*`                                   |
-| Accent             | `--accent-{spring/summer/autumn/winter/festival}` + grad, `--accent-{red/amber/green/blue/violet}`                                         |
-| Chart              | `--chart-1 ~ -8`                                                                                                                           |
-| Shadow             | `--shadow-{sm/md/lg/card/card-strong/pop/emphasis}`, `--drop-shadow-{icon/xs/sm/md/lg/petal}`                                              |
-| Motion             | `--motion-{fast/base/slow/emphasis}`, `--ease-{out/spring}`                                                                                |
-| Spacing            | `--space-1 ~ -12` (4px grid)                                                                                                               |
-| Radius             | `--radius-{sm/md/lg/xl/full}`                                                                                                              |
-| z-index            | `--z-{base/elevated/header/bottom-nav/dropdown/banner/modal/toast}`                                                                        |
-| Typography         | `--font-{display/h1/h2/h3/body/body-sm/label/caption/eyebrow}`, `--font-letter-*`, `--font-tournament-*`                                   |
-| Emoji              | `--emoji-{sm/md/lg/xl/2xl/3xl/4xl}`                                                                                                        |
-| Primitive 컴포넌트 | `Card / Chip / IconButton / PageSection / Button / DestinationCard / ButtonGrid / TextField / MediaThumb / RadioGroup` (`@/components/ui`) |
-| Layout primitive   | `AuthLayout`, `PolicyArticle / PolicySection / PolicyFooter`                                                                               |
-| 검출기             | `scripts/dead-css.mjs` (CI 통합 가능)                                                                                                      |
+| 영역               | 토큰 / Primitive                                                                                                                                    |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Color              | `--color-bg/-fg/-muted/-border/-primary*/-surface*/-divider/-hover*/-overlay/-glass`, `--color-letter-*`                                            |
+| Accent             | `--accent-{spring/summer/autumn/winter/festival}` + grad, `--accent-{red/amber/green/blue/violet}`                                                  |
+| Chart              | `--chart-1 ~ -8`                                                                                                                                    |
+| Shadow             | `--shadow-{sm/md/lg/card/card-strong/pop/emphasis}`, `--drop-shadow-{icon/xs/sm/md/lg/petal}`                                                       |
+| Motion             | `--motion-{fast/base/slow/emphasis}`, `--ease-{out/spring}`                                                                                         |
+| Spacing            | `--space-1 ~ -12` (4px grid)                                                                                                                        |
+| Radius             | `--radius-{sm/md/lg/xl/full}`                                                                                                                       |
+| z-index            | `--z-{base/elevated/header/bottom-nav/dropdown/banner/modal/toast}`                                                                                 |
+| Typography         | `--font-{display/h1/h2/h3/body/body-sm/label/caption/eyebrow}`, `--font-letter-*`, `--font-tournament-*`                                            |
+| Emoji              | `--emoji-{sm/md/lg/xl/2xl/3xl/4xl}`                                                                                                                 |
+| Primitive 컴포넌트 | `Card / Chip / IconButton / PageSection / Button / DestinationCard / ButtonGrid / TextField / MediaThumb / RadioGroup / Dialog` (`@/components/ui`) |
+| Layout primitive   | `AuthLayout`, `PolicyArticle / PolicySection / PolicyFooter`                                                                                        |
+| 검출기             | `scripts/dead-css.mjs` (CI 통합 가능)                                                                                                               |
