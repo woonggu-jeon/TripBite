@@ -7,7 +7,8 @@ import { NextResponse } from 'next/server';
  * Report-Only 단계에서 위반을 모니터링 → enforce 전환 전 nonce/디렉티브 조정 근거.
  *
  * 브라우저는 application/csp-report 또는 application/reports+json 으로 전송.
- * 현재는 콘솔 로그(운영은 Sentry/수집 도구로 교체).
+ * 현재는 콘솔 로그 (Vercel logs 에서 모니터링). 운영 안정화 후 위반 0 확인되면
+ * NEXT_PUBLIC_CSP_ENFORCE=true 로 enforce 전환.
  */
 export const runtime = 'edge';
 

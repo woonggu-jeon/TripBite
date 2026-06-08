@@ -29,7 +29,6 @@ FE 가 사용하는 모든 env 변수의 단일 reference. 신규 개발자 셋�
 | `NEXT_PUBLIC_SESSION_COOKIE`   | 선택         | `SID`                   | BE 발급 sessionID 쿠키 이름 override           | `middleware.ts`                               |
 | `NEXT_PUBLIC_SITE_URL`         | 운영 필수    | `https://tripbite.kr`   | sitemap / OG url / canonical                   | `app/sitemap.ts` / OG meta                    |
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | push 사용 시 | (없음)                  | Web Push 구독 시 `applicationServerKey`        | `features/notification/utils/subscription.ts` |
-| `NEXT_PUBLIC_SENTRY_DSN`       | 선택         | (없음)                  | Sentry init (public 으로 안전)                 | (도입 시) sentry.client.config                |
 | `NEXT_PUBLIC_APP_VERSION`      | 선택         | (없음)                  | 앱 버전 표시 (디버그)                          | footer / about                                |
 | `NEXT_PUBLIC_PRETENDARD_SRI`   | 선택         | (없음)                  | Pretendard CDN SRI integrity                   | font preload                                  |
 
@@ -48,13 +47,12 @@ FE 가 사용하는 모든 env 변수의 단일 reference. 신규 개발자 셋�
 
 ## 3. Server-only env 일람
 
-| 변수                | 필수                  | 기본                              | 용도                                                     | 사용처                                          |
-| ------------------- | --------------------- | --------------------------------- | -------------------------------------------------------- | ----------------------------------------------- |
-| `OPENAPI_URL`       | 빌드 필수             | `http://localhost:3000/docs-json` | orval 의 BE Swagger fetch 대상                           | `orval.config.ts` (predev / prebuild 자동 호출) |
-| `NODE_ENV`          | (자동)                | `development` / `production`      | Next.js / vitest 등 분기                                 | 모든 곳                                         |
-| `ANALYZE`           | 선택                  | (없음)                            | `ANALYZE=true npm run build` — bundle analyzer html 생성 | `next.config.js`                                |
-| `CI`                | (자동)                | (없음)                            | GitHub Actions 에서 자동 `true`                          | playwright config / dead-css 스크립트           |
-| `SENTRY_AUTH_TOKEN` | 선택 (Sentry 도입 시) | (없음)                            | 빌드 시 source map 업로드 (CI secret)                    | `next.config.js` Sentry wrap                    |
+| 변수          | 필수      | 기본                              | 용도                                                     | 사용처                                          |
+| ------------- | --------- | --------------------------------- | -------------------------------------------------------- | ----------------------------------------------- |
+| `OPENAPI_URL` | 빌드 필수 | `http://localhost:3000/docs-json` | orval 의 BE Swagger fetch 대상                           | `orval.config.ts` (predev / prebuild 자동 호출) |
+| `NODE_ENV`    | (자동)    | `development` / `production`      | Next.js / vitest 등 분기                                 | 모든 곳                                         |
+| `ANALYZE`     | 선택      | (없음)                            | `ANALYZE=true npm run build` — bundle analyzer html 생성 | `next.config.js`                                |
+| `CI`          | (자동)    | (없음)                            | GitHub Actions 에서 자동 `true`                          | playwright config / dead-css 스크립트           |
 
 > ⚠ `VAPID_PRIVATE_KEY` 는 **BE 책임** (web-push 발송용) — FE 에는 절대 안 들어옴.
 
@@ -75,7 +73,6 @@ NEXT_PUBLIC_CSP_ENFORCE=false
 NEXT_PUBLIC_SESSION_COOKIE=SID
 NEXT_PUBLIC_SITE_URL=http://localhost:3900
 NEXT_PUBLIC_VAPID_PUBLIC_KEY=         # 푸시 테스트할 때만 채움
-NEXT_PUBLIC_SENTRY_DSN=               # Sentry 도입 후
 
 # ---- Server-only ----
 OPENAPI_URL=http://localhost:3000/docs-json   # BE 안 띄웠으면 prebuild 가 fail — MSW 모드면 BE 없이도 dev 동작
@@ -148,7 +145,6 @@ OPENAPI_URL                     = https://preview-api.../docs-json
 | `VERCEL_DEPLOY_HOOK_URL` | Vercel Deploy Hook URL                       |
 | `NEXT_PUBLIC_API_URL`    | 운영 API URL (deploy.yml 이 build 시 inline) |
 | `OPENAPI_URL`            | 운영 BE swagger URL (orval prebuild)         |
-| `SENTRY_AUTH_TOKEN`      | Sentry source map 업로드 (도입 시)           |
 
 ### Variables (비민감 — Settings → Secrets and variables → Actions → Variables)
 

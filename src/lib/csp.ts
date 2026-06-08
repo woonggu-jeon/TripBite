@@ -30,8 +30,7 @@ export function buildCsp(nonce: string): string {
     "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
     "img-src 'self' data: blob: https://tong.visitkorea.or.kr",
     "font-src 'self' data: https://cdn.jsdelivr.net",
-    // connect-src: 백엔드 + Vercel Speed Insights.
-    // *.sentry.io 제거 — client Sentry 미사용(server/edge runtime만 전송, CSP 무관).
+    // connect-src: 백엔드 + Vercel Speed Insights / Analytics.
     `connect-src 'self' ${apiUrl} https://vitals.vercel-insights.com`.trim(),
     "worker-src 'self'",
     "manifest-src 'self'",

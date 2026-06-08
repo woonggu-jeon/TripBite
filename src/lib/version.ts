@@ -9,7 +9,7 @@
  * 표시 위치:
  *   - /settings 페이지 하단
  *   - /api/health 응답
- *   - Sentry release 태그
+ *   - analytics release 태그
  */
 export const APP_VERSION = process.env.NEXT_PUBLIC_APP_VERSION ?? 'dev';
 

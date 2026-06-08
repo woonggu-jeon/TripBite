@@ -20,9 +20,6 @@ import styles from './SegmentError.module.scss';
  *   - 토너먼트 흐름에서 에러 발생 시 토너먼트 트리만 reset
  *   - 헤더/네비/홈은 그대로 살아있어 사용자가 다른 메뉴로 이동 가능
  *   - reset() 호출로 같은 페이지 재시도
- *
- * Sentry 도입 시:
- *   useEffect 안에서 Sentry.captureException(error) 추가.
  */
 export function SegmentError({
   error,
@@ -34,9 +31,8 @@ export function SegmentError({
   const t = useTranslations();
 
   useEffect(() => {
-    // 운영에서는 에러 추적 도구로 전송
+    // 운영 — Vercel Analytics 가 web vitals + 페이지뷰만 수집. error tracking 미도입.
     console.error('[SegmentError]', error);
-    // Sentry.captureException(error, { tags: { boundary: 'segment' } });
   }, [error]);
 
   return (

@@ -18,7 +18,7 @@ import styles from './page.module.scss';
  *   2) 수집 목적 — 서비스 제공 / 토너먼트 매칭 / 편지 전송 등
  *   3) 보유 기간 — 회원 탈퇴 시 즉시 또는 30일 유예
  *   4) 제3자 제공 — TourAPI, 지도, 푸시 등
- *   5) 처리 위탁 — Vercel, Sentry, CDN 등
+ *   5) 처리 위탁 — Vercel, CDN 등
  *   6) 이용자 권리 — 열람/정정/삭제/처리정지
  *   7) 개인정보보호책임자 연락처
  *   8) 만 14세 미만 보호자 동의 절차
@@ -56,8 +56,8 @@ export default async function PrivacyPage() {
           쿼리 파라미터로만 사용되며 저장되지 않습니다.
         </PolicySection>
         <PolicySection heading="5. 처리 위탁">
-          Vercel(호스팅), Sentry(에러 추적), 푸시 서비스 등에 일부 정보가 처리
-          위탁됩니다.
+          Vercel(호스팅 · 익명 web vitals/페이지뷰), 푸시 서비스 등에 일부
+          정보가 처리 위탁됩니다.
         </PolicySection>
         <PolicySection heading="6. 이용자 권리">
           언제든지 열람·정정·삭제·처리정지를 요구할 수 있습니다. 설정 페이지에서

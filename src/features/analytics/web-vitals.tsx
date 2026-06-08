@@ -23,8 +23,7 @@ import { useReportWebVitals } from 'next/web-vitals';
  *   <WebVitalsTracker />
  *
  * 운영에서 analytics 도구로 전송:
- *   - Vercel Analytics: useReportWebVitals 자동 통합
- *   - Sentry Performance: Sentry.metrics 로 전송
+ *   - Vercel Analytics: useReportWebVitals 자동 통합 (`<Analytics />` 마운트 시)
  *   - 백엔드 자체 수집: navigator.sendBeacon('/metrics', ...)
  */
 
@@ -55,20 +54,8 @@ export function WebVitalsTracker() {
       );
     }
 
-    // 운영 전송 예시 (도입 시 활성화):
-    //
-    // 1) navigator.sendBeacon (페이지 떠나기 직전에도 안전)
-    //    if (typeof navigator !== 'undefined' && 'sendBeacon' in navigator) {
-    //      const body = JSON.stringify({ ...metric, rating, pathname: location.pathname });
-    //      navigator.sendBeacon('/api/metrics', body);
-    //    }
-    //
-    // 2) Sentry (도입 시):
-    //    Sentry.metrics.distribution(`web_vitals.${metric.name}`, metric.value, {
-    //      tags: { rating, pathname: location.pathname },
-    //    });
-    //
-    // 3) Vercel Analytics: 자동 통합 — 별도 코드 불필요
+    // Vercel Analytics — `<Analytics />` mount (layout.tsx) 시 useReportWebVitals 자동 통합.
+    // 추가 endpoint 필요하면 navigator.sendBeacon('/api/metrics', ...) 패턴.
   });
 
   return null;

@@ -16,7 +16,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // 실 서비스에선 Sentry 등으로 전송
+    // 운영 — Vercel Analytics 가 vitals/페이지뷰만 수집. error tracking 미도입.
     console.error('[App Error]', error);
   }, [error]);
 

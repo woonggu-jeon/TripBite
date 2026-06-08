@@ -1,8 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
-import * as Sentry from '@sentry/nextjs';
-
 /**
  * 최상위(루트 레이아웃 자체) 에러 boundary — Next.js 권장.
  *
@@ -10,7 +7,6 @@ import * as Sentry from '@sentry/nextjs';
  *   - 세그먼트별 error.tsx(/letter/error.tsx 등)는 그 세그먼트만 격리.
  *   - 이 파일은 root layout 자체가 깨졌을 때 (예: Providers/QueryClient 마운트 실패) 최후 폴백.
  *   - global-error는 root layout을 대체하므로 <html>/<body> 직접 렌더 필요.
- *   - Sentry는 DSN 가드 통과 시 자동 캡처(no-op 그렇지 않으면).
  */
 export default function GlobalError({
   error,
@@ -19,10 +15,6 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {
-    Sentry.captureException(error);
-  }, [error]);
-
   return (
     <html lang="ko">
       <body

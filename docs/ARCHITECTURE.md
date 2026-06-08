@@ -246,4 +246,4 @@ git push (main)       → GitHub Actions deploy.yml
 - BE 운영 진입 (Oracle Cloud / Railway 검토 중)
 - Vercel production branch = `main` 으로 변경 + Edge Config i18n 도입 (조건 만족 시)
 - CSP enforce (현재 report-only) / rate limit BE 측 / 정책 본문 법무 검토
-- Sentry / Vercel Analytics 도입 검토
+- Vercel Analytics 마운트 완료 (web vitals + 페이지뷰). 에러 추적 도구 (Sentry 등) 는 의도적 미도입 — bundle +80KB / 개인정보 처리 부담 회피

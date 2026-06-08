@@ -292,10 +292,10 @@ Projects (6): `desktop-windows` / `desktop-mac` / `mobile-chrome-aos` / `mobile-
 
 ### Phase 6 — 선택 작업 (필요 시점)
 
-- `@sentry/nextjs` client lazy-load
 - `@tanstack/react-virtual` (편지함 1000+ 시)
 - 단축 URL 서비스 (OG image URL 너무 길어짐)
 - 카카오링크 SDK 통합 (카톡 공유 UX 강화)
+- 에러 추적 도구 (필요해지면 Sentry 가 아닌 가벼운 대안 검토 — bundle 영향 / 개인정보 처리 부담 고려)
 
 ---
 

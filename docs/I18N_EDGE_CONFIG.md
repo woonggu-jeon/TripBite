@@ -455,7 +455,7 @@ if (Object.keys(ko).length === 0) throw new Error('ko.json 비어있음');
 - [ ] Edge Config 크기 (`https://api.vercel.com/v1/edge-config/<id>` 응답) ≤ plan 한도 80%
 - [ ] 월 read 건수 ≤ 무료/포함 한도
 - [ ] `src/i18n/messages/*.json` 과 Edge Config 의 drift 0 (export 스크립트 + git diff)
-- [ ] missing key 모니터링 — Sentry / Vercel logs 에서 `MISSING_MESSAGE` warning
+- [ ] missing key 모니터링 — Vercel logs 에서 `MISSING_MESSAGE` warning
 - [ ] write token 만료 / rotate 정책 (90일)
 
 ---
