@@ -984,13 +984,21 @@ export const handlers = [
   ),
 
   // 명시 적용 — quiz 결과 페이지의 "내 유형으로 적용" 버튼. 로그인 필요.
+  // BE spec: 응답은 TravelTypeDto 전체 (recommended 포함) — submit 과 동일 형태.
   http.patch(`${apiUrl}/travel-types/me`, async ({ request }) => {
     if (!getMockSignedIn()) return unauthorized();
     const { code } = (await request.json()) as { code: string };
     const meta = (travelTypeMetaSeed as Record<string, TravelType>)[code];
     if (!meta) return new HttpResponse(null, { status: 404 });
-    // recommended 는 quiz 흐름 의 resolveTravelType 가 build — 명시 set 은 meta 만.
-    myTravelType = { ...meta, recommended: [] };
+    // recommended 도 함께 build — apply 후에도 "이런 여행지가 어울려요" 영역 유지.
+    const cats =
+      (travelTypeRecommendCategoriesSeed as Record<string, readonly string[]>)[
+        code
+      ] ?? [];
+    const pool = destinationSeeds.filter((d) =>
+      cats.includes(d.category as (typeof cats)[number]),
+    );
+    myTravelType = { ...meta, recommended: pickRandom(pool, 3) };
     return HttpResponse.json(myTravelType);
   }),
 ];
