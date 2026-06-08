@@ -97,6 +97,69 @@ src/app/
 
 - 간격: `var(--space-1)` ~ `var(--space-12)` (4px grid)
 
+### Fluid 반응형 — `clamp()` 우선 정책 (2026-06-08~)
+
+**단계별 `@media (max-width: 480/380)` 대신 `clamp(min, preferred, max)` 사용**.
+
+이유:
+
+- 단계 사이 viewport (예: 400px) 에서 step 어색
+- 480 / 380 사이 320~480 viewport 의 자연스러운 비율 부재
+- `clamp()` 한 줄로 320~desktop 부드럽게 cover
+
+표준 패턴:
+
+```scss
+// width / max-width
+.banner {
+  width: min(92%, 580px); // viewport 의 92% 또는 580px cap
+}
+
+// 단계별 size (padding/gap/icon/font 등)
+.card {
+  padding: clamp(0.875rem, 3vw, 1.25rem); // 320: 0.875 ~ 580+: 1.25
+  gap: clamp(0.5rem, 2vw, 0.75rem);
+}
+
+// grid 컬럼 폭
+.split {
+  grid-template-columns: clamp(80px, 22%, 140px) 1fr;
+}
+
+// font-size — 시멘틱 토큰 안에서 fluid
+.title {
+  font-size: clamp(var(--font-h2), 5.5vw, var(--font-h1));
+}
+
+// emoji
+.emoji {
+  font-size: clamp(var(--emoji-md), 8vw, var(--emoji-lg));
+}
+```
+
+**vw 권장 비율** (320~580 매핑):
+
+- 작은 항목 (icon/gap): `1~3vw`
+- 중간 (padding/grid col): `3~6vw`
+- 큰 (emoji/font display): `8~14vw`
+
+**`clamp()` 가 어울리는 곳**:
+
+- 같은 component 가 viewport 따라 부드럽게 변하는 경우 (padding/gap/font/icon)
+- max 와 min 사이 자연 비율 유지 가능
+
+**여전히 `@media` step 유지** (의도된 다른 비율):
+
+- `aspect-ratio` 자체가 viewport 별 다름 (예: DestinationCard square→wide→narrow)
+- 항목 개수 변경 (예: 그리드 3열→2열)
+- visibility (hide/show)
+
+적용 컴포넌트 (9종, 2026-06-08):
+
+- RecommendationBanner / LatestReceivedLetter / RegionHero / ConceptIllustration
+- AuthLayout / DestinationCard / SeasonalCenterIllustration / ThemeKindSelector
+- DestinationDetailClient / HomeDashboard
+
 ### Typography
 
 primitive: `--text-xs/sm/base/lg/xl/2xl/3xl` (크기만)
@@ -579,7 +642,7 @@ shadow 강도 조정 시 `--shadow-card-strong` 한 곳. dark/light 분기는 �
 
 ---
 
-## 5. 현재 적용 현황 (갱신 2026-06-07)
+## 5. 현재 적용 현황 (갱신 2026-06-08)
 
 대규모 sweep 완료 — raw 잔존 0. 의도된 unique 만 남음.
 
@@ -615,7 +678,8 @@ iOS Safari / PWA 의 native button rendering 이 일부 border 속성을 무시�
 
 - ✅ `_dark.scss` — 시즌 5 + 카테고리 5 + chart-2~8 dark override (light 500 → dark 400)
 - ✅ `_dark.scss` — `[data-theme="dark"]` / `[data-theme="light"]` 명시 토글 지원 (`@mixin dark-tokens`)
-- ✅ `_responsive.scss` — mobile-360 / 320 단계별 font / emoji / space / header-h 축소
+- ✅ `_responsive.scss` — mobile-360 / 320 단계별 font / emoji / space / header-h 축소 (전역 토큰)
+- ✅ **fluid clamp() 정책** — 9 컴포넌트의 단계별 media query 폐기 (320~desktop 부드러움)
 - ✅ `_mixins.scss` — `respond-to / text-truncate / focus-ring / visually-hidden / settings-row / banner-action / banner-close`
 
 ### 인프라

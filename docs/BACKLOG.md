@@ -1,7 +1,7 @@
 # TripBite 후속 작업 백로그
 
 > 코드베이스 전수조사 후 정리한 잔존 / 개선 항목. 분기점마다 갱신.
-> 마지막 갱신: 2026-06-07
+> 마지막 갱신: 2026-06-08
 >
 > 작업량 표기: **S** (≤30분) · **M** (1-3시간) · **L** (반나절+)
 
@@ -37,6 +37,10 @@
 - **2026-06-07**: 폼 입력 primitive 추출 — `TextField` (label + input + error + a11y 자동 연결) 신설. 7 auth form (Login/Signup/FindId/Forgot/Reset/ChangePassword) + onboarding NicknameStep + settings NicknameEditDialog 8개 갈음. `AuthForm.module.scss` 의 .field/.label/.input/.error 흡수, `ForgotPasswordForm` 의 i18n `signup.errors` 차용을 `forgotPassword.errors` 자기 namespace 로 분리. aria-invalid 표현 boolean→undefined 통일 (axe lint false-positive 해소). 코드 약 100줄 순감.
 - **2026-06-07**: UI primitive 2종 추가 — `MediaThumb` (secureImageUrl + next/image fill + emoji fallback) 5 사용처 흡수 (DestinationCard/MatchupCard/WinnerCard/RegionContentRow/RecommendationBanner.Slide), `RadioGroup` + `RadioOption` (role=radiogroup + role=radio + aria-checked + haptic.tap + iOS Safari blur 안전망) 6 사용처 흡수 (CategoryFilter/ThemeKindSelector/SeasonSelector/CountSelector/ThemeSection/TravelTypeQuiz). Checkbox 패턴은 layout 다양·1회 호출 비중 높아 추출 불필요로 결정.
 - **2026-06-07**: i18n Edge Config 마이그 계획 — 운영 안정화 후 텍스트 변경 빈도 ↑ 시 도입. `docs/I18N_EDGE_CONFIG.md` 신설 (도입 신호 / Pro plan 필수 / next-intl 통합 코드 / GitHub Actions sync / fallback / 마이그 5단계 / 트러블슈팅). 현재 bundle 유지 — 도입 신호 3 중 1 충족 시 진행.
+- **2026-06-08**: 문서 대정리 — API_CONTRACT 삭제 (Swagger SoT) / AUTH_FLOWS + NOTIFICATIONS → FEATURES 통합 / ARCHITECTURE / ENVIRONMENT 신설 / README slim (1843→152줄). 8개 docs 인덱스화.
+- **2026-06-08**: UI primitive 5종 추가 + Sentry 제거 — `Dialog` (4 모달 흡수) / `TabList+Tab+TabPanel` (2 사용처 흡수). `@sentry/nextjs` 패키지 + config 4 파일 제거 (의도적 미도입). `<Analytics />` mount (Vercel web vitals + 페이지뷰).
+- **2026-06-08**: RecommendationBanner 비율 개선 — desktop max-width 720→580 (3.4:1) + height clamp fluid (140~172). 양옆 빔 / 너무 wide 사이 sweet spot.
+- **2026-06-08**: Fluid 반응형 정책 도입 (`clamp()` 우선) — 9 컴포넌트 단계별 media query 폐기, 320~desktop 부드러움. STYLES.md §1 추가 + 적용 가이드.
 
 ---
 
