@@ -1,21 +1,21 @@
-// desktop 양옆 빔 / 가로 너무 wide 사이 sweet spot — 580px (3.4:1 비율).
-// 모바일은 100% 유지 (touch swipe + 가로 좁아서 자연스러움).
+// Fluid 반응형 — 320px (S8/Fold 닫힘) ~ 1280px+ desktop 까지 viewport 따라 자연스럽게.
+// clamp(min, preferred, max) 한 줄로 단계별 media query 대체.
 .wrap {
-  width: 100%;
-
-  @media (min-width: 481px) {
-    max-width: 580px;
-    margin: 0 auto;
-  }
+  // 화면 폭의 92% 사용 — 320px 에서 ~294px, 581px+ 에서 580px 로 cap.
+  width: min(92%, 580px);
+  margin: 0 auto;
 }
 
 .slide {
   display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: var(--space-4);
+  // 이미지 col — viewport 따라 80px(320) → 140px(580+) 사이로 부드럽게.
+  grid-template-columns: clamp(80px, 22%, 140px) 1fr;
+  gap: clamp(0.625rem, 2vw, 1rem);
   align-items: center;
-  height: 172px;
-  padding: var(--space-4) var(--space-5);
+  // height 명시 — fluid clamp 로 viewport 따라 140(320) ~ 172(580+) 사이.
+  // image col 의 정사각형 비율과 매칭되어 시각 임팩트 유지.
+  height: clamp(140px, 28vw, 172px);
+  padding: clamp(0.875rem, 3vw, 1.25rem);
   border-radius: var(--radius-xl);
   color: var(--color-fg);
   text-decoration: none;
@@ -157,27 +157,15 @@
   );
 }
 
-// 일반 모바일 (≤ 480px, iPhone 15/16/17 포함) — slide 영역 모바일 친화
+// fluid clamp() 로 320~1280+ 모두 cover — 단계별 media query 불필요.
+// 폰트만 viewport 별 미세 조정.
 @media (max-width: 480px) {
-  .slide {
-    grid-template-columns: 96px 1fr;
-    height: 152px;
-    padding: var(--space-4);
-    gap: var(--space-3);
-  }
   .destination {
     font-size: var(--text-lg);
   }
 }
 
-// 작은 모바일 (≤ 380px) — 더 축소
 @media (max-width: 380px) {
-  .slide {
-    grid-template-columns: 80px 1fr;
-    height: 140px;
-    padding: var(--space-3) var(--space-4);
-    gap: var(--space-2);
-  }
   .description,
   .headline,
   .cta {
