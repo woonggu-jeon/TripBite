@@ -1,15 +1,20 @@
-// content-max 720px 안에서 풀폭 사용 — 양옆 빔 없음. hero 임팩트는 height 축소 +
-// 이미지 영역 확대로 비율 개선 (이전 220px 너무 높음 + 96px 이미지 너무 작음).
+// desktop 양옆 빔 / 가로 너무 wide 사이 sweet spot — 580px (3.4:1 비율).
+// 모바일은 100% 유지 (touch swipe + 가로 좁아서 자연스러움).
 .wrap {
   width: 100%;
+
+  @media (min-width: 481px) {
+    max-width: 580px;
+    margin: 0 auto;
+  }
 }
 
 .slide {
   display: grid;
-  grid-template-columns: 128px 1fr;
+  grid-template-columns: 140px 1fr;
   gap: var(--space-4);
   align-items: center;
-  height: 168px;
+  height: 172px;
   padding: var(--space-4) var(--space-5);
   border-radius: var(--radius-xl);
   color: var(--color-fg);
