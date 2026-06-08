@@ -55,7 +55,7 @@ export function RecommendationBanner() {
         keyExtractor={(item) => item.id}
         options={{ loop: true, autoplayMs: 4500 }}
         showDots
-        fallbackHeight={248}
+        fallbackHeight={200}
         ariaLabel={t('label')}
       />
     </div>
