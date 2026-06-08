@@ -23,7 +23,7 @@ import axios from 'axios';
 
 /**
  * 미인증 시 강제 로그인 이동 대상 경로.
- * AUTH_FLOWS.md 의 보호 경로 정책 + middleware.ts 의 PROTECTED_PATHS 와 동기.
+ * docs/FEATURES.md §A 의 보호 경로 정책 + middleware.ts 의 PROTECTED_PATHS 와 동기.
  */
 const PROTECTED_PATHS = ['/mypage', '/settings', '/letter', '/notifications'];
 

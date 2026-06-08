@@ -29,7 +29,7 @@ const PUBLIC_ONLY_PATHS = ['/login', '/signup', '/forgot-password', '/find-id'];
 const PROTECTED_PATHS = ['/mypage', '/settings', '/letter', '/notifications'];
 
 // sessionID 단일 쿠키 — BE 가 'SID' (또는 NEXT_PUBLIC_SESSION_COOKIE) 발급.
-// AUTH_FLOWS.md 의 sessionID 모델 — JWT access/refresh 폐기 후 단일.
+// docs/FEATURES.md §A (Auth) 의 sessionID 모델 — JWT access/refresh 폐기 후 단일.
 const SESSION_COOKIE = process.env.NEXT_PUBLIC_SESSION_COOKIE ?? 'SID';
 const STATE_CHANGING = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
