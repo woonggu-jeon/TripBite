@@ -140,7 +140,7 @@ API 명세 SoT: **BE Swagger** (`{API}/docs`) — orval 이 빌드 전 자동 fe
 
 - **렌더링 속도 최우선** — SSR + cache. 깜빡임 회피 위해 미리 fetch X.
 - **Dark / Light 두 모드 필수** — 새 컴포넌트는 토큰만 사용.
-- **모바일 360px 반응형** — 모든 UI 가 S8 viewport 까지 검증.
+- **모바일 320px~ fluid 반응형** — `clamp()` 우선 (320 Fold/SE1 ~ desktop 부드러움). 단계별 `@media` 는 의도된 다른 비율에만.
 - **a11y 기본** — `role` / `aria-*` / `label htmlFor=id` / focus ring 토큰.
 - **commit-on-request-only** — 자동 git commit/push 금지. 사용자 명시 요청 시만.
 - **문서 동시 갱신** — 코드 변경마다 영향 문서 같은 turn 에 갱신.
