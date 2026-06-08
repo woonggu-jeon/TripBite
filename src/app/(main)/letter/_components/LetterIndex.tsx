@@ -8,7 +8,7 @@ import { LetterListPanel } from '@/features/letter/components/LetterListPanel';
 import { letterKeys } from '@/features/letter/hooks/use-letters';
 import { letterApi } from '@/features/letter/api/letter';
 import type { LetterListKind } from '@/features/letter/types';
-import { haptic } from '@/lib/haptic';
+import { TabList, Tab, TabPanel } from '@/components/ui';
 import styles from './LetterIndex.module.scss';
 
 /**
@@ -64,7 +64,6 @@ export function LetterIndex() {
 
   const selectTab = (next: LetterListKind) => {
     if (active === next) return;
-    haptic.tap();
     if (!activated.has(next)) {
       setActivated((s) => new Set(s).add(next));
     }
@@ -76,45 +75,36 @@ export function LetterIndex() {
       <ComposeEntryCard />
 
       <section aria-label={t('section')}>
-        <div className={styles.tabs} role="tablist" aria-label={t('section')}>
+        <TabList ariaLabel={t('section')} className={styles.tabs}>
           {TABS.map((tab) => {
             const isActive = active === tab.key;
             return (
-              <button
+              <Tab
                 key={tab.key}
-                type="button"
-                role="tab"
-                id={`letter-tab-${tab.key}`}
-                aria-selected={isActive}
-                aria-controls={`letter-panel-${tab.key}`}
+                id={`letter-${tab.key}`}
+                selected={isActive}
+                onSelect={() => selectTab(tab.key)}
+                onPrefetch={() => prefetchTab(tab.key)}
                 className={`${styles.tab} ${isActive ? styles.active : ''}`}
-                onClick={() => selectTab(tab.key)}
-                onPointerDown={() => prefetchTab(tab.key)}
-                onFocus={() => prefetchTab(tab.key)}
               >
                 {t(tab.labelKey)}
-              </button>
+              </Tab>
             );
           })}
-        </div>
+        </TabList>
 
         <div className={styles.list}>
-          {TABS.map((tab) => {
-            if (!activated.has(tab.key)) return null;
-            const isActive = active === tab.key;
-            return (
-              <div
-                key={tab.key}
-                role="tabpanel"
-                id={`letter-panel-${tab.key}`}
-                aria-labelledby={`letter-tab-${tab.key}`}
-                hidden={!isActive}
-                className={styles.panel}
-              >
-                <LetterListPanel kind={tab.key} />
-              </div>
-            );
-          })}
+          {TABS.map((tab) => (
+            <TabPanel
+              key={tab.key}
+              id={`letter-${tab.key}`}
+              selected={active === tab.key}
+              mounted={activated.has(tab.key)}
+              className={styles.panel}
+            >
+              <LetterListPanel kind={tab.key} />
+            </TabPanel>
+          ))}
         </div>
       </section>
     </div>

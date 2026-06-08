@@ -24,3 +24,11 @@ export {
   type RadioOptionProps,
 } from './RadioGroup';
 export { Dialog, type DialogProps } from './Dialog';
+export {
+  TabList,
+  Tab,
+  TabPanel,
+  type TabListProps,
+  type TabProps,
+  type TabPanelProps,
+} from './Tabs';

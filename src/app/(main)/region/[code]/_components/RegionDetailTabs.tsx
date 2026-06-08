@@ -12,7 +12,7 @@ import {
 import { regionApi } from '@/features/region/api/region';
 import { InfiniteList } from '@/features/list/components/InfiniteList';
 import { RegionContentRow } from '@/features/region/components/RegionContentRow';
-import { haptic } from '@/lib/haptic';
+import { TabList, Tab, TabPanel } from '@/components/ui';
 import styles from './RegionDetailTabs.module.scss';
 
 /**
@@ -77,7 +77,6 @@ export function RegionDetailTabs({ code }: { code: RegionCode }) {
 
   const selectTab = (next: RegionContentType) => {
     if (tab === next) return;
-    haptic.tap();
     if (!activated.has(next)) {
       setActivated((s) => new Set(s).add(next));
     }
@@ -86,48 +85,36 @@ export function RegionDetailTabs({ code }: { code: RegionCode }) {
 
   return (
     <div className={styles.wrap}>
-      <div role="tablist" className={styles.tabs} aria-label={t('sectionAria')}>
+      <TabList ariaLabel={t('sectionAria')} className={styles.tabs}>
         {TABS.map((it) => {
           const isActive = tab === it.key;
           return (
-            <button
+            <Tab
               key={it.key}
-              type="button"
-              role="tab"
-              id={`region-tab-${it.key}`}
-              aria-selected={isActive}
-              aria-controls={`region-panel-${it.key}`}
+              id={`region-${it.key}`}
+              selected={isActive}
+              onSelect={() => selectTab(it.key)}
+              onPrefetch={() => prefetchTab(it.key)}
               className={`${styles.tab} ${isActive ? styles.active : ''}`}
-              onClick={() => selectTab(it.key)}
-              // 모바일: 터치 다운 즉시 prefetch.
-              // PointerDown 은 mouse/touch/pen 통합 이벤트라 별도 분기 불필요.
-              onPointerDown={() => prefetchTab(it.key)}
-              // 키보드 사용자: focus(tab 키) 시점에도 prefetch.
-              onFocus={() => prefetchTab(it.key)}
             >
               {t(it.labelKey)}
-            </button>
+            </Tab>
           );
         })}
-      </div>
+      </TabList>
 
       <div className={styles.panelArea}>
-        {TABS.map((it) => {
-          if (!activated.has(it.key)) return null; // mount 미시작
-          const isActive = tab === it.key;
-          return (
-            <div
-              key={it.key}
-              role="tabpanel"
-              id={`region-panel-${it.key}`}
-              aria-labelledby={`region-tab-${it.key}`}
-              hidden={!isActive}
-              className={styles.panel}
-            >
-              <RegionContentPanel code={code} type={it.key} />
-            </div>
-          );
-        })}
+        {TABS.map((it) => (
+          <TabPanel
+            key={it.key}
+            id={`region-${it.key}`}
+            selected={tab === it.key}
+            mounted={activated.has(it.key)}
+            className={styles.panel}
+          >
+            <RegionContentPanel code={code} type={it.key} />
+          </TabPanel>
+        ))}
       </div>
     </div>
   );
