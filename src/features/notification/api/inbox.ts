@@ -7,7 +7,7 @@ import {
 /**
  * 인앱 알림함 API — orval 가 BE swagger 로 자동 생성한 client functions wrap.
  *
- * 엔드포인트 (docs/API_CONTRACT.md §Notifications):
+ * 엔드포인트 (BE Swagger §Notifications):
  *   GET    /notifications?cursor=&limit=  — 인박스 (페이지) → NotificationListDto
  *   POST   /notifications/:id/read        — 단건 읽음 (204 / 멱등)
  *   POST   /notifications/read-all        — 일괄 읽음 (204)

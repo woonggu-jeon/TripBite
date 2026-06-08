@@ -13,7 +13,7 @@ import styles from './SettingsRows.module.scss';
  *   - 로그아웃 (즉시)
  *   - 회원 탈퇴 (confirm 모달 → DELETE /me)
  *
- * 탈퇴 정책 (BE 합의 — docs/API_CONTRACT.md §Auth):
+ * 탈퇴 정책 (BE 합의 — Swagger §Auth, DELETE /me):
  *   - DELETE /me → 204 (소프트 삭제 + 세션 무효)
  *   - FE: clearAuth + cache clear + SW cache clear + 홈으로 redirect (refresh)
  */

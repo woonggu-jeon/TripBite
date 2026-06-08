@@ -251,7 +251,7 @@ export const handlers = [
     setMockSignedIn(false);
     return new HttpResponse(null, { status: 204 });
   }),
-  // POST /auth/refresh 는 sessionID 모델로 전환되며 폐기 (docs/API_CONTRACT.md §1).
+  // POST /auth/refresh 는 sessionID 모델로 전환되며 폐기 (BE Swagger §Auth).
   http.get(`${apiUrl}/me`, () =>
     getMockSignedIn()
       ? HttpResponse.json({ ...mockUser, isOnboarded: onboardedState })
@@ -378,7 +378,7 @@ export const handlers = [
   }),
 
   // ===== Region =====
-  // 페이지네이션 — docs/API_CONTRACT.md §Region:
+  // 페이지네이션 — BE Swagger §Region:
   //   cursor=offset(기본 0), limit=페이지 크기(기본 20, 최대 60).
   //   nextCursor=다음 요청에 그대로 넘길 offset, 마지막 페이지면 null.
   http.get(`${apiUrl}/regions/:code/contents`, ({ params, request }) => {
@@ -524,9 +524,9 @@ export const handlers = [
   }),
   // 프로필 아바타 업로드 (POST /me/avatar) — multipart form-data 'file'.
   //
-  // BE spec (docs/API_CONTRACT.md):
+  // BE spec (Swagger §Me, POST /me/avatar):
   //   - 응답 201 { avatarUrl }
-  //   - 422 AVATAR_TYPE_UNSUPPORTED (image/jpeg|png|webp 외)
+  //   - 422 AVATAR_TYPE_UNSUPPORTED (image/* 외)
   //   - 422 AVATAR_TOO_LARGE (>5MB)
   //   - 400 VALIDATION (file 누락 / 파싱 실패)
   //   - 503 STORAGE_NOT_CONFIGURED (R2 미설정 — mock 은 미시뮬)
@@ -861,7 +861,7 @@ export const handlers = [
       '첫째·셋째 월요일',
     ];
     const parkingPool = ['가능', '불가', '유료', '소형 가능'];
-    // BE 실제 응답 spec (docs/API_CONTRACT.md):
+    // BE 실제 응답 spec (Swagger §Destinations, GET /destinations/:id):
     //   summary (필수, ≤120자) / photos[] / address? / coords? / phone? / website? /
     //   openingHours? / restDate? / parking? — TourAPI 원본 명칭 그대로.
     //   admissionFee / tags / rating / bestSeasons 는 BE 미제공 — 응답에서 제거.
