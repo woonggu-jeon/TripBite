@@ -164,10 +164,19 @@ font-weight: `var(--font-weight-normal/medium/semibold/bold/extrabold)` (400/500
 
 ## 2. Primitive 컴포넌트
 
-새 카드/칩/아이콘버튼/섹션은 hardcoded SCSS 대신 다음을 사용.
+새 카드/칩/아이콘버튼/섹션/폼 입력/라디오/이미지는 hardcoded SCSS 대신 다음을 사용.
 
 ```tsx
-import { Card, Chip, IconButton, PageSection } from '@/components/ui';
+import {
+  Card,
+  Chip,
+  IconButton,
+  PageSection,
+  TextField,
+  MediaThumb,
+  RadioGroup,
+  RadioOption,
+} from '@/components/ui';
 
 <PageSection title="이번주 우승 Top 5" hint="투표 기반">
   <Card variant="highlighted" padding="lg">
@@ -246,6 +255,81 @@ import { categoryEmoji } from '@/constants/emoji-map';
 - region 톤은 `constants/region-tone.ts` 의 시군 → tone 매핑
 - emoji 매핑은 `constants/emoji-map.ts` 의 `categoryEmoji()` / `seasonEmoji()`
 - 360/480/desktop 별 aspect-ratio + emoji 사이즈 자동 분기
+
+### TextField — 폼 텍스트 입력 (label + input + error + a11y)
+
+```tsx
+import { TextField } from '@/components/ui';
+
+<TextField
+  id="email"
+  type="email"
+  autoComplete="email"
+  label={t('email')}
+  placeholder="you@example.com"
+  errorMessage={errors.email ? tErr(errors.email.message) : undefined}
+  {...register('email')} // RHF register 또는 controlled value/onChange
+/>;
+```
+
+- **`id` 필수** — label `htmlFor` + input `id` 자동 연결.
+- `label` — undefined 면 label 노드 자체 미렌더. `visuallyHiddenLabel` 로 시각만 가림 (스크린리더 노출).
+- `errorMessage` — 이미 i18n 변환된 string. invalid 자동 판단 (`aria-invalid={true|undefined}` boolean→undefined 정정).
+- `aria-describedby` 자동 — `${id}-error` / `${id}-hint`.
+- RHF + zod / controlled state 모두 호환.
+- 사용처 8건 흡수 (Login/Signup/FindId/Forgot/Reset/ChangePassword/NicknameStep/NicknameEditDialog).
+
+### MediaThumb — 이미지 + emoji fallback
+
+```tsx
+import { MediaThumb } from '@/components/ui';
+
+<MediaThumb
+  src={destination.imageUrl}
+  emoji={categoryEmoji(destination.category)}
+  sizes="(max-width: 380px) 40vw, 160px"
+  className={styles.image} // container — aspect/background/border-radius 책임
+  emojiClassName={styles.emoji} // font-size/filter override 시
+>
+  {accentDot && <span style={{ background: accentDot }} />}
+</MediaThumb>;
+```
+
+- `secureImageUrl` 자동 (http → https 정규화 + null 안전).
+- 있으면 `next/image fill` (alt="" + aria-hidden), 없으면 emoji span.
+- container 시각 토큰 (aspect-ratio / background gradient / border-radius) 는 호출 측 className.
+- `children` — accent dot / top-right slot 등 추가 노드 (container 안 absolute).
+- 사용처 5건 흡수 (DestinationCard/MatchupCard/WinnerCard/RegionContentRow/RecommendationBanner.Slide).
+
+### RadioGroup + RadioOption — 카드형 / segmented radio
+
+```tsx
+import { RadioGroup, RadioOption } from '@/components/ui';
+
+<RadioGroup label={t('setup.season.title')} className={styles.grid}>
+  {SEASONS.map((s) => {
+    const active = value === s.value;
+    return (
+      <RadioOption
+        key={s.value}
+        checked={active}
+        onSelect={() => onChange(s.value)}
+        className={`${styles.card} ${active ? styles.active : ''}`}
+        blurOnClick // iOS Safari focus 잔존 안전망 (선택)
+      >
+        <span aria-hidden>{s.emoji}</span>
+        <span>{t(`season.${s.value}`)}</span>
+      </RadioOption>
+    );
+  })}
+</RadioGroup>;
+```
+
+- `RadioGroup` = `<div role="radiogroup" aria-label>` wrapper.
+- `RadioOption` = `<button role="radio" aria-checked>` + `haptic.tap()` 자동.
+- content 는 children — 카드형/list/segmented 자유. `cardClasses({...})` 와 조합 가능.
+- `blurOnClick` — iOS Safari/PWA 의 focus 잔존 안전망 (Bracket / 질문지 등 DOM 재사용 케이스).
+- 사용처 6건 흡수 (CategoryFilter/ThemeKindSelector/SeasonSelector/CountSelector/ThemeSection/TravelTypeQuiz).
 
 ### Layout primitives (page wrapper)
 
@@ -420,7 +504,7 @@ shadow 강도 조정 시 `--shadow-card-strong` 한 곳. dark/light 분기는 �
 
 ---
 
-## 5. 현재 적용 현황 (갱신 2026-06-02)
+## 5. 현재 적용 현황 (갱신 2026-06-07)
 
 대규모 sweep 완료 — raw 잔존 0. 의도된 unique 만 남음.
 
@@ -461,18 +545,18 @@ iOS Safari / PWA 의 native button rendering 이 일부 border 속성을 무시�
 
 ### 인프라
 
-| 영역               | 토큰 / Primitive                                                                                         |
-| ------------------ | -------------------------------------------------------------------------------------------------------- |
-| Color              | `--color-bg/-fg/-muted/-border/-primary*/-surface*/-divider/-hover*/-overlay/-glass`, `--color-letter-*` |
-| Accent             | `--accent-{spring/summer/autumn/winter/festival}` + grad, `--accent-{red/amber/green/blue/violet}`       |
-| Chart              | `--chart-1 ~ -8`                                                                                         |
-| Shadow             | `--shadow-{sm/md/lg/card/card-strong/pop/emphasis}`, `--drop-shadow-{icon/xs/sm/md/lg/petal}`            |
-| Motion             | `--motion-{fast/base/slow/emphasis}`, `--ease-{out/spring}`                                              |
-| Spacing            | `--space-1 ~ -12` (4px grid)                                                                             |
-| Radius             | `--radius-{sm/md/lg/xl/full}`                                                                            |
-| z-index            | `--z-{base/elevated/header/bottom-nav/dropdown/banner/modal/toast}`                                      |
-| Typography         | `--font-{display/h1/h2/h3/body/body-sm/label/caption/eyebrow}`, `--font-letter-*`, `--font-tournament-*` |
-| Emoji              | `--emoji-{sm/md/lg/xl/2xl/3xl/4xl}`                                                                      |
-| Primitive 컴포넌트 | `Card / Chip / IconButton / PageSection / Button` (`@/components/ui`)                                    |
-| Layout primitive   | `AuthLayout`, `PolicyArticle / PolicySection / PolicyFooter`                                             |
-| 검출기             | `scripts/dead-css.mjs` (CI 통합 가능)                                                                    |
+| 영역               | 토큰 / Primitive                                                                                                                           |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Color              | `--color-bg/-fg/-muted/-border/-primary*/-surface*/-divider/-hover*/-overlay/-glass`, `--color-letter-*`                                   |
+| Accent             | `--accent-{spring/summer/autumn/winter/festival}` + grad, `--accent-{red/amber/green/blue/violet}`                                         |
+| Chart              | `--chart-1 ~ -8`                                                                                                                           |
+| Shadow             | `--shadow-{sm/md/lg/card/card-strong/pop/emphasis}`, `--drop-shadow-{icon/xs/sm/md/lg/petal}`                                              |
+| Motion             | `--motion-{fast/base/slow/emphasis}`, `--ease-{out/spring}`                                                                                |
+| Spacing            | `--space-1 ~ -12` (4px grid)                                                                                                               |
+| Radius             | `--radius-{sm/md/lg/xl/full}`                                                                                                              |
+| z-index            | `--z-{base/elevated/header/bottom-nav/dropdown/banner/modal/toast}`                                                                        |
+| Typography         | `--font-{display/h1/h2/h3/body/body-sm/label/caption/eyebrow}`, `--font-letter-*`, `--font-tournament-*`                                   |
+| Emoji              | `--emoji-{sm/md/lg/xl/2xl/3xl/4xl}`                                                                                                        |
+| Primitive 컴포넌트 | `Card / Chip / IconButton / PageSection / Button / DestinationCard / ButtonGrid / TextField / MediaThumb / RadioGroup` (`@/components/ui`) |
+| Layout primitive   | `AuthLayout`, `PolicyArticle / PolicySection / PolicyFooter`                                                                               |
+| 검출기             | `scripts/dead-css.mjs` (CI 통합 가능)                                                                                                      |

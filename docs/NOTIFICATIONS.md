@@ -25,6 +25,7 @@ FE 작업 없이 동작.
 type NotificationType =
   | 'letter.received' // 받은 편지 도착
   | 'letter.liked' // 내 편지에 좋아요
+  | 'letter.delivered' // 내가 보낸 편지가 누군가에게 도착 (배달 완료 — 2026-06-06 추가)
   | 'tournament.shared' // 토너먼트 공유 (수신자에게)
   | 'event' // 일반 이벤트/공지
   | 'security'; // 보안 알림 (비밀번호 변경 등)
@@ -50,7 +51,7 @@ type NotificationType =
 
 type AppNotification = {
   id: string;
-  type: 'letter.received' | 'letter.liked' | 'tournament.shared' | 'event' | 'security';
+  type: 'letter.received' | 'letter.liked' | 'letter.delivered' | 'tournament.shared' | 'event' | 'security';
   title: string;              // 표시용 텍스트 ("새로운 편지가 도착했어요")
   body?: string;              // 부가 정보 (보낸 사람 닉네임 / 편지 미리보기 등)
   link?: string;              // 클릭 시 이동 경로 (예: "/letter/abc123")
@@ -303,12 +304,13 @@ BE 합류 후 mock 코드는 제거하지 않고 dev 도구로 유지 (`NEXT_PUB
 
 ## F. 발송 이벤트 매핑 (실 비즈니스 룰)
 
-| 트리거             | type                | title                          | body                                       | link                                | tag                            |
-| ------------------ | ------------------- | ------------------------------ | ------------------------------------------ | ----------------------------------- | ------------------------------ | --------------------- | -------------------- |
-| 새 편지 도착       | `letter.received`   | `편지가 도착했어요`            | `{senderNickname                           |                                     | '익명의 여행자'}가 보낸 5글자` | `/letter/${letterId}` | `letter:${letterId}` |
-| 내 편지에 좋아요   | `letter.liked`      | `좋아요를 받았어요`            | `${likerCount}명이 당신의 편지를 좋아해요` | `/letter/${letterId}`               | `like:${letterId}`             |
-| 토너먼트 공유 받음 | `tournament.shared` | `친구가 토너먼트를 공유했어요` | `${sharerNickname}: ${winnerName}`         | `/tournament/result?id=${recordId}` | `tournament:${recordId}`       |
-| 이벤트/공지        | `event`             | (관리자 입력)                  | (관리자 입력)                              | (관리자 입력)                       | `event:${id}`                  |
+| 트리거             | type                | title                               | body                                               | link                                | tag                      |
+| ------------------ | ------------------- | ----------------------------------- | -------------------------------------------------- | ----------------------------------- | ------------------------ |
+| 새 편지 도착       | `letter.received`   | `편지가 도착했어요`                 | `{senderNickname \| '익명의 여행자'}가 보낸 5글자` | `/letter/${letterId}`               | `letter:${letterId}`     |
+| 내 편지에 좋아요   | `letter.liked`      | `좋아요를 받았어요`                 | `${likerCount}명이 당신의 편지를 좋아해요`         | `/letter/${letterId}`               | `like:${letterId}`       |
+| 내 편지 배달 완료  | `letter.delivered`  | `내 편지가 누군가에게 도착했어요 ✈` | `${receiverRegion}에서 받았어요`                   | `/letters?tab=sent`                 | `delivered:${letterId}`  |
+| 토너먼트 공유 받음 | `tournament.shared` | `친구가 토너먼트를 공유했어요`      | `${sharerNickname}: ${winnerName}`                 | `/tournament/result?id=${recordId}` | `tournament:${recordId}` |
+| 이벤트/공지        | `event`             | (관리자 입력)                       | (관리자 입력)                                      | (관리자 입력)                       | `event:${id}`            |
 
 `tag` 가 같은 알림은 OS 가 중복 표시 안 함 — 같은 편지에 여러 좋아요는 마지막
 하나만 보임 (의도).

@@ -20,22 +20,40 @@ PR(→dev) → CI 통과 → dev 머지
 
 ## 사전 준비 (1회만)
 
-### 1. Vercel — main 자동 배포 비활성
+### 1. Vercel — 자동 배포 분기 제어
 
-GitHub Actions 가 명시적으로 trigger 하므로 Vercel 의 git 자동 배포는 꺼야 한다(중복 방지).
+GitHub Actions 가 명시적으로 trigger 하므로 Vercel 의 git 자동 배포를 분기 제어해야 한다.
+현재 정책: **dev push 는 빌드 skip, main 만 Deploy Hook 으로 운영 배포**.
 
-**옵션 A — Production Branch 변경 (권장)**
+**현행 (적용 완료) — `vercel.json` `git.deploymentEnabled`**
 
-- Vercel Project → Settings → Git → **Production Branch** 를 `release` 같은 더미 브랜치로 변경
-- 해당 브랜치에는 아무도 push 하지 않음 → 자동 배포 발생 안 함
+```json
+// vercel.json (repo root)
+{
+  "git": {
+    "deploymentEnabled": {
+      "dev": false
+    }
+  }
+}
+```
 
-**옵션 B — Ignored Build Step**
+- dev push → Vercel "Deployment skipped" (빌드 트리거 X, ~즉시 종료)
+- main push → Vercel 자동 빌드 (또는 Deploy Hook 호출만 받도록 옵션 B 병행)
+
+**대시보드 보완 (필수 — Production Branch)**
+
+- Vercel Project → Settings → **Environments** → **Production** → **Branch Tracking**
+- Branch 를 `main` 으로 입력 → Save
+- ⚠ Vercel UI 변경됨 (2026-03~): 구버전의 "Settings → Git → Production Branch" 항목은 이제 Environments 메뉴 안에 있음.
+
+**옵션 B — Ignored Build Step (Deploy Hook 만 받게 하려면 병행)**
 
 - Vercel Project → Settings → Git → **Ignored Build Step** 에 다음 입력:
   ```bash
   echo "Skip auto build — deploy via GitHub Actions" && exit 0
   ```
-- 모든 git push 에 대해 Vercel 빌드 skip
+- 모든 git push 에 대해 Vercel 자체 빌드 skip → Deploy Hook 호출만 받음
 
 ### 2. Vercel — Deploy Hook 생성
 
@@ -126,4 +144,8 @@ Repo → Settings → Secrets and variables → Actions
 
 - `.github/workflows/ci.yml` — PR + dev/main push 시 lint/type/test/build/size (배포 X)
 - `.github/workflows/deploy.yml` — main push 시 승인 후 Vercel 배포
-- `.size-limit.json` — 번들 크기 회귀 가드 4 항목 (전체 500kB / shared First Load 230kB / recharts 120kB / MSW 100kB, 모두 gzip)
+- `vercel.json` — `git.deploymentEnabled.dev=false` (dev push 빌드 skip)
+- `.size-limit.json` — 번들 크기 회귀 가드 (2026-06-07 갱신):
+  - Shared First Load (framework + main + polyfills, gzip) ≤ **150 KB** (현재 136.71 KB)
+  - 전체 chunks 합계 (lazy 포함, 정보용) ≤ **2 MB** (현재 470.19 KB)
+  - 이전 `main-app-*` 패턴은 Next 15 통합으로 `main-*` 로 정정.
