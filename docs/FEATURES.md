@@ -617,6 +617,52 @@ VAPID key 변경 시 모든 기존 구독 무효화 — 신중히.
 
 ---
 
+# C. 선택 인증 / 응답 정책 (Swagger 가 cover 못 하는 분기)
+
+## C-1. 선택 인증 endpoint
+
+일부 endpoint 는 인증 강제 안 함 — BE 가 쿠키 유무로 분기 응답. 401 없음.
+
+| Endpoint            | 인증 시                            | 비로그인 시                         |
+| ------------------- | ---------------------------------- | ----------------------------------- |
+| `POST /tournaments` | 계정 귀속 (히스토리 / 충북 마스터) | 게스트 익명 record (랭킹 집계 반영) |
+
+### FE 정책
+
+- 토너먼트 흐름 (`/tournament` → `/play` → `/result`) 은 middleware `PROTECTED_PATHS` 미포함 → **게스트 진입 가능**.
+- `useRecordTournament` 는 `useRequireAuth` wrap **없음** — 자유 호출.
+- 호출 측 (`TournamentPlayClient`) 은 try/catch silent fail — 실패해도 결과 화면 진입.
+- **개인 데이터 쓰기 액션만 인증 요구** — `useRequireAuth` action 단위 wrap → 비로그인 시 confirm dialog → `/login?redirect=` 이동:
+  - 마이페이지 우승지 저장: `POST /mypage/tournaments`
+  - 여행 유형 적용: `PATCH /travel-types/me`
+
+→ 게스트 UX: 토너먼트 끝까지 플레이 + 결과 보기 가능. "저장" / "내 유형으로 적용" 누를 때만 로그인 dialog.
+
+## C-2. `PATCH /travel-types/me` — 저장 ack only
+
+BE 응답: `TravelType (recommended: [])` — 저장만 ack. `recommended` 빌드는 `GET /travel-types/me` 가 책임.
+
+### FE 정책
+
+- `useSetMyTravelType.onSuccess` 가 `setQueryData` 호출하면 캐시가 빈 `recommended` 로 덮어써져 quiz/result 의 "이런 여행지가 어울려요" 영역 사라짐.
+- 따라서 `invalidateQueries({ queryKey: rankingKeys.travelType() })` 호출 → 다음 `useMyTravelType` refetch 가 `recommended` 포함 응답 → 영역 유지.
+
+```ts
+// src/features/ranking/hooks/use-ranking.ts
+export function useSetMyTravelType() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (code) => rankingApi.setMyTravelType(code),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: rankingKeys.travelType() }); // ← setQueryData X
+      qc.invalidateQueries({ queryKey: ['mypage', 'summary'] });
+    },
+  });
+}
+```
+
+---
+
 ## 관련 문서
 
 - BE Swagger — endpoint shape (`/docs`)

@@ -41,6 +41,7 @@
 - **2026-06-08**: UI primitive 5종 추가 + Sentry 제거 — `Dialog` (4 모달 흡수) / `TabList+Tab+TabPanel` (2 사용처 흡수). `@sentry/nextjs` 패키지 + config 4 파일 제거 (의도적 미도입). `<Analytics />` mount (Vercel web vitals + 페이지뷰).
 - **2026-06-08**: RecommendationBanner 비율 개선 — desktop max-width 720→580 (3.4:1) + height clamp fluid (140~172). 양옆 빔 / 너무 wide 사이 sweet spot.
 - **2026-06-08**: Fluid 반응형 정책 도입 (`clamp()` 우선) — 9 컴포넌트 단계별 media query 폐기, 320~desktop 부드러움. STYLES.md §1 추가 + 적용 가이드.
+- **2026-06-08**: BE spec 정합 — `PATCH /travel-types/me` 응답 `recommended:[]` (저장 ack only) → FE `useSetMyTravelType` 의 `setQueryData` → `invalidateQueries` 로 변경 → GET refetch 가 recommended 포함 응답 → quiz/result "이런 여행지가 어울려요" 영역 유지. `POST /location/reverse` 응답에 `sido`/`sigungu` 필드 추가. `POST /tournaments` 선택 인증 (게스트 익명 기록 가능, 401 없음) 주석 명시 — FE 코드 자체는 이미 정합 (useRequireAuth 가 "마이페이지 저장" 액션 단위만 적용).
 
 ---
 
