@@ -32,8 +32,8 @@ import type {
  *   GET    /destinations/random   — 매치업 후보 (Destination[])
  *   GET    /destinations/:id      — 상세 (DestinationDetail)
  *   GET    /destinations/:id/related — 같은 시군 6
- *   POST   /tournaments           — 결과 기록
- *   GET    /tournaments/:id       — record 복원 (deep-link)
+ *   POST   /tournaments           — 결과 기록 (선택 인증 — 비로그인은 게스트 익명 기록)
+ *   GET    /tournaments/:id       — record 복원 (deep-link, 공개)
  *   GET    /mypage/tournaments    — 저장 목록
  *   POST   /mypage/tournaments    — 저장
  *   DELETE /mypage/tournaments/:id — 삭제

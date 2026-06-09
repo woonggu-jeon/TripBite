@@ -89,6 +89,9 @@ export function useSavedTournaments() {
  * 토너먼트 결과 기록 — Play 종료 시 fire-and-forget mutation.
  * 응답 record 는 store / URL ?id= 에 사용 가능.
  *
+ * 선택 인증 (BE Swagger §Tournament): 쿠키 있으면 계정 귀속 (히스토리/충북 마스터),
+ * 없으면 게스트 익명 기록 (랭킹 집계엔 반영). 401 응답 없음 — useRequireAuth 불필요.
+ *
  * 실패해도 결과 화면 진입 자체를 막지 않음 (silent fail). retry 정책 없음.
  */
 export function useRecordTournament() {

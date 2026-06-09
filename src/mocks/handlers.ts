@@ -658,6 +658,8 @@ export const handlers = [
   }),
 
   // 토너먼트 기록 — Play 종료 시 fire-and-forget. record id 반환.
+  // 선택 인증 (BE Swagger §Tournament): 쿠키 있으면 계정 귀속, 없으면 게스트
+  // 익명 기록 (랭킹 집계엔 반영). 401 없음 — getMockSignedIn() 가드 없음 (의도).
   // 인메모리 (`tournamentRecords`) 에 저장 → GET /tournaments/:id 로 deep-link 복원.
   http.post(`${apiUrl}/tournaments`, async ({ request }) => {
     const body = (await request.json()) as {
