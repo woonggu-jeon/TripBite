@@ -75,7 +75,7 @@ Repo → Settings → Secrets and variables → Actions
 | 이름 | 값 |
 |---|---|
 | `VERCEL_DEPLOY_HOOK_URL` | 2단계에서 복사한 Deploy Hook URL |
-| `NEXT_PUBLIC_API_URL` | 운영 API URL (예: `https://api.tripbite.kr`) |
+| `NEXT_PUBLIC_API_URL` | `https://tripbite.duckdns.org` (운영 BE — DuckDNS + docker) |
 
 **Variables (비민감, 빌드 로그에 노출돼도 무방)**
 | 이름 | 값 |

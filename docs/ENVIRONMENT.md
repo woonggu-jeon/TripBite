@@ -34,14 +34,14 @@ FE 가 사용하는 모든 env 변수의 단일 reference. 신규 개발자 셋�
 
 ### 환경별 필수 매트릭스
 
-| 변수                           | Local Dev               | Preview (Vercel)     | Production                                  |
-| ------------------------------ | ----------------------- | -------------------- | ------------------------------------------- |
-| `NEXT_PUBLIC_API_URL`          | `http://localhost:3000` | preview BE URL       | 운영 BE URL (예: `https://api.tripbite.kr`) |
-| `NEXT_PUBLIC_USE_MSW`          | `true` (BE 없을 때)     | `false`              | `false`                                     |
-| `NEXT_PUBLIC_BLOCK_INDEXING`   | 무관                    | `true`               | `false`                                     |
-| `NEXT_PUBLIC_SITE_URL`         | 무관                    | `https://preview...` | 운영 도메인                                 |
-| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | dev key                 | preview key          | 운영 key                                    |
-| `NEXT_PUBLIC_SW_DEV`           | `true` (PWA 테스트 시)  | 무관                 | `false`                                     |
+| 변수                           | Local Dev               | Preview (Vercel)     | Production                                        |
+| ------------------------------ | ----------------------- | -------------------- | ------------------------------------------------- |
+| `NEXT_PUBLIC_API_URL`          | `http://localhost:3000` | preview BE URL       | `https://tripbite.duckdns.org` (DuckDNS + docker) |
+| `NEXT_PUBLIC_USE_MSW`          | `true` (BE 없을 때)     | `false`              | `false`                                           |
+| `NEXT_PUBLIC_BLOCK_INDEXING`   | 무관                    | `true`               | `false`                                           |
+| `NEXT_PUBLIC_SITE_URL`         | 무관                    | `https://preview...` | 운영 도메인                                       |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | dev key                 | preview key          | 운영 key                                          |
+| `NEXT_PUBLIC_SW_DEV`           | `true` (PWA 테스트 시)  | 무관                 | `false`                                           |
 
 ---
 

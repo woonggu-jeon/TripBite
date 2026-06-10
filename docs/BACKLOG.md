@@ -167,6 +167,28 @@ orval 단일화 완료 (2026-06-06). 운영 워크플로:
 
 ---
 
+## 3-1. 운영 BE 배포 (진행 중)
+
+**도메인**: `tripbite.duckdns.org` (DuckDNS dynamic DNS + docker). 사용자가 BE 컨테이너 빌드/배포 중.
+
+**BE 측 확인 사항** (FE 가 정합하려면 BE 가 이렇게 설정):
+
+- HTTPS 필수 — Let's Encrypt + reverse proxy (nginx/caddy) 또는 cloudflare tunnel. DuckDNS 자체는 HTTP 만 제공
+- CORS: `Access-Control-Allow-Origin: <FE 운영 도메인>` + `Access-Control-Allow-Credentials: true`
+- Cookie: FE/BE 도메인이 cross-origin 이면 **`Set-Cookie: SID=...; SameSite=None; Secure`** 필수 (브라우저가 cookie 첨부 조건)
+- Session cookie 이름: `SID` (FE `NEXT_PUBLIC_SESSION_COOKIE` 기본값과 일치)
+
+**FE 측 배포 후 작업** (BE 배포 완료 시):
+
+1. Vercel env 등록 (`docs/DEPLOY.md` 참조) — `NEXT_PUBLIC_API_URL=https://tripbite.duckdns.org`
+2. `OPENAPI_URL=https://tripbite.duckdns.org/docs-json` (build env)
+3. `npm run be:check` — smoke / anon / onboarded / login 4종 회귀 (운영 API 대상)
+4. `images.remotePatterns` 갱신 — BE 가 이미지를 자체 도메인에서 호스팅하는 경우 (R2/S3 등)
+5. Vercel preview → production 승격
+6. 매뉴얼 smoke (`docs/PWA_VERIFICATION.md` 의 매뉴얼 체크리스트)
+
+---
+
 ## 4. 백엔드 의존 작업
 
 ### 4-1. mock 에 없는 endpoint (실 백엔드 계약 동시 정의)
