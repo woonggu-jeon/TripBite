@@ -8,7 +8,7 @@ import { AccountSettingsSection } from '@/features/settings/components/AccountSe
 import { PolicySection } from '@/features/settings/components/PolicySection';
 import { AccountActionsSection } from '@/features/settings/components/AccountActionsSection';
 // 테마 섹션 미노출 (사용자 요청, 재노출 대비 import 유지)
-// import { ThemeSection } from '@/features/theme/ThemeSection';
+// import { ThemeSection } from '@/features/theme/components/ThemeSection';
 import { PageSection } from '@/components/ui';
 import styles from './SettingsClient.module.scss';
 

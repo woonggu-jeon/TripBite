@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { Icon, type IconName } from '@/components/Icon';
+import { Icon, type IconName } from '@/components/icon';
 import { useUIStore, type Toast } from '@/stores/ui-store';
 import styles from './Toaster.module.scss';
 

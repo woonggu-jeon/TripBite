@@ -1,5 +1,13 @@
 // 전역에서 자주 쓰는 도메인 타입 re-export
-export type { User } from '@/features/user/types';
+import type { UserDto } from '@/api/generated/schemas';
+
+/**
+ * User — orval generated `UserDto` alias.
+ * homeRegion 은 generated 에서 `string` — RegionCode 가 필요한 곳은
+ * `isRegionCode` 가드 후 사용 (`src/constants/regions.ts`).
+ */
+export type User = UserDto;
+
 export type { Toast } from '@/stores/ui-store';
 
 export type {

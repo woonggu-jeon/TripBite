@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { User } from '@/features/user/types';
+import type { User } from '@/types';
 
 /**
  * 아키텍처 문서 13, 15번

@@ -24,22 +24,38 @@ import styles from './Icon.module.scss';
 
 export type IconName =
   // BottomNav
-  | 'home' | 'trending-up' | 'trophy' | 'mail' | 'user'
+  | 'home'
+  | 'trending-up'
+  | 'trophy'
+  | 'mail'
+  | 'user'
   // Header
-  | 'bell' | 'settings'
+  | 'bell'
+  | 'settings'
   // Navigation
-  | 'chevron-left' | 'chevron-right'
+  | 'chevron-left'
+  | 'chevron-right'
   // Feedback
-  | 'check-circle' | 'x-circle' | 'info' | 'alert-triangle' | 'alert-circle' | 'x'
+  | 'check-circle'
+  | 'x-circle'
+  | 'info'
+  | 'alert-triangle'
+  | 'alert-circle'
+  | 'x'
   // Status / connectivity
   | 'wifi-off'
   // Domain
-  | 'sparkles' | 'map-pin' | 'heart';
+  | 'sparkles'
+  | 'map-pin'
+  | 'heart';
 
 export type IconSize = 'sm' | 'md' | 'lg' | 'xl' | number;
 
 const SIZE_MAP: Record<Exclude<IconSize, number>, number> = {
-  sm: 16, md: 20, lg: 24, xl: 32,
+  sm: 16,
+  md: 20,
+  lg: 24,
+  xl: 32,
 };
 
 /**

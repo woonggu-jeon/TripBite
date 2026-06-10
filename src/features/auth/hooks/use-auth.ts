@@ -18,7 +18,7 @@ import type {
   ChangePasswordRequest,
   FindIdRequest,
 } from '@/features/auth/types';
-import type { User } from '@/features/user/types';
+import type { User } from '@/types';
 import { isAxiosError } from '@/services/interceptors/auth';
 import { clearAllCaches } from '@/lib/sw-cache';
 

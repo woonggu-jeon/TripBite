@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Icon } from '@/components/Icon';
+import { Icon } from '@/components/icon';
 import { ROUTES } from '@/constants/routes';
 import { useNotificationBadge } from '@/features/notification/hooks/use-notification-inbox';
 import { MockModeBanner } from '@/features/pwa/components/MockModeBanner';

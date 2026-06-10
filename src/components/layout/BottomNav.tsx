@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Icon, type IconName } from '@/components/Icon';
+import { Icon, type IconName } from '@/components/icon';
 import { BOTTOM_NAV_ROUTES } from '@/constants/routes';
 import { haptic } from '@/lib/haptic';
 import styles from './BottomNav.module.scss';

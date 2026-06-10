@@ -42,6 +42,8 @@ src/
 │   ├── layout/                   SubHeader / BottomNav / SiteHeader
 │   ├── feedback/                 AsyncSection / Skeleton / EmptyState /
 │   │                              ConfirmDialog / FullPageError / Toast
+│   ├── forms/                    Toggle / Slider
+│   ├── icon/                     lucide sprite 래퍼
 │   └── image/                    OptimizedImage
 ├── features/                     도메인별 (api / hooks / components / schemas)
 │   ├── auth/                     로그인 / 회원가입 / 비번 / FindId / Logout

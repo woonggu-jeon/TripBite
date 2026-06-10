@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
 import { AuthBootstrap } from '@/features/auth/components/AuthBootstrap';
-import { ThemeApplier } from '@/features/theme/ThemeApplier';
+import { ThemeApplier } from '@/features/theme/components/ThemeApplier';
 import { ServiceWorkerNavigateBridge } from '@/features/notification/components/ServiceWorkerNavigateBridge';
 import { Toaster } from '@/components/feedback/Toaster';
 import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
@@ -23,7 +23,7 @@ import {
   InstallPromptBanner,
 } from '@/features/pwa';
 import { usePageView } from '@/features/analytics/hooks/use-page-view';
-import { WebVitalsTracker } from '@/features/analytics/web-vitals';
+import { WebVitalsTracker } from '@/features/analytics/components/web-vitals';
 
 /**
  * react-query 정책:
