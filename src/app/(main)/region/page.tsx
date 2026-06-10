@@ -3,6 +3,10 @@ import type { Metadata } from 'next';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { RegionMapClient } from './_components/RegionMapClient';
 
+// 시군 정보는 안정 — 1h ISR 로 Lambda cold start 회피. RegionMapClient 의 client fetch 는
+// 그대로 동작 (인기도 등 동적 데이터는 client TanStack Query 책임).
+export const revalidate = 3600;
+
 /**
  * 충북 11개 시군 지도 페이지 (/region)
  *

@@ -7,6 +7,15 @@ import { JsonLd, breadcrumbList, touristAttraction } from '@/lib/json-ld';
 import { tournamentApi } from '@/features/tournament/api/tournament';
 import { DestinationDetailClient } from './_components/DestinationDetailClient';
 
+// On-demand ISR — id 가 다수 (TourAPI 전체) 라 build 시 pre-generate 안 함 (빈 배열).
+// 첫 진입 시 generate → 1h 캐시 → 두 번째부터 즉시 paint (Lambda cold start 회피).
+// 데이터가 stale 한 경우 BE 가 `revalidatePath('/destination/<id>')` 호출 또는 1h 후 자동 재생성.
+export const revalidate = 3600;
+export const dynamicParams = true;
+export function generateStaticParams(): { id: string }[] {
+  return [];
+}
+
 /**
  * 여행지 상세 (/destination/[id])
  *

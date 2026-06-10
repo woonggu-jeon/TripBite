@@ -2,10 +2,22 @@ import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { SubHeader } from '@/components/layout/SubHeader';
-import { isRegionCode, type RegionCode } from '@/constants/regions';
+import {
+  CHUNGBUK_REGIONS,
+  isRegionCode,
+  type RegionCode,
+} from '@/constants/regions';
 import { RegionHero } from '@/features/region';
 import { JsonLd, breadcrumbList } from '@/lib/json-ld';
 import { RegionDetailTabs } from './_components/RegionDetailTabs';
+
+// 11 시군 build 시 pre-generate — Lambda cold start 회피. 1h ISR 로 메타 갱신.
+// dynamicParams: false → 11 외 코드는 build/runtime 모두 notFound (정합).
+export const revalidate = 3600;
+export const dynamicParams = false;
+export function generateStaticParams() {
+  return CHUNGBUK_REGIONS.map((r) => ({ code: r.code }));
+}
 
 /**
  * 시군 상세 페이지 (/region/[code])

@@ -53,6 +53,7 @@
 - **2026-06-10**: dead infra 청소 — `src/lib/blur.ts` (`getBlurDataURL`) + `plaiceholder` devDep 삭제. 호출 0건 + LCP 후보 `DestinationPhotos` 가 raw `<img>` 라 적용 비용 > 효과. 필요 시 38줄 재작성. §3 인프라 항목 폐기.
 - **2026-06-10**: login returnUrl 회귀 fix — `AuthBootstrap` / `useRequireAuth` 가 `encodeURIComponent` 후 query 작성 → 브라우저가 다시 encode → double-encode → LoginForm 의 `startsWith('/')` 가드 실패 → fallback `/`. middleware 와 동일하게 `URLSearchParams.set('redirect', pathname)` 으로 통일. mock 환경 / `useRequireAuth` 경유 returnUrl 안정화.
 - **2026-06-10**: 회원가입 자동 로그인 — `useSignup` 의 onSuccess 에서 동일 credential 로 login mutation 자동 호출 → `me` fetch → `setAuth` → `/onboarding` replace. 실패 시 fallback `/login?signup=success&username=...` (prefill 가능). BE 요청서 [docs/BE_REQUEST_SIGNUP_AUTOLOGIN.md](BE_REQUEST_SIGNUP_AUTOLOGIN.md) — signup 응답에 session cookie + user 추가 시 FE 가 추가 login 호출 생략 (1 round-trip 화).
+- **2026-06-10**: 콜드 스타트 단축 — content 페이지 ISR. `/region` + `/region/[code]` 11 시군 `generateStaticParams` + `revalidate: 3600` (안정 데이터). `/destination/[id]` on-demand ISR (`generateStaticParams: [] + dynamicParams: true + revalidate: 3600`). 양쪽 `loading.tsx` 신설 — generate / cache miss 시 즉시 skeleton. Vercel Lambda cold start 회피. BE 변경 즉시 반영 필요 시 `revalidatePath` 호출.
 
 ---
 
