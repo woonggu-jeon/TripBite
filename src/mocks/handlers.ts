@@ -57,6 +57,18 @@ export const mockSeeds = {
   apiUrl,
 };
 
+/**
+ * Festival mock 일자 — deterministic (id hash 기반). YYYY-MM-DD.
+ * 2026 년 중 hash 로 결정된 첫 일자 + offsetDays.
+ * BE 실 데이터는 TourAPI 의 eventstartdate/eventenddate 정규화 값.
+ */
+function mockFestivalDate(idHash: number, offsetDays: number): string {
+  const dayOfYear = Math.abs(idHash) % 365;
+  const base = new Date('2026-01-01T00:00:00Z');
+  base.setUTCDate(base.getUTCDate() + dayOfYear + offsetDays);
+  return base.toISOString().slice(0, 10);
+}
+
 const mockUser = {
   id: '1',
   username: 'tester01',
@@ -896,6 +908,12 @@ export const handlers = [
         lat: 36.5 + u(60) * 1.2,
         lng: 127.4 + u(61) * 0.9,
       },
+      // festival 일정 — BE spec (BE_REQUEST_FESTIVAL_DATES.md) 동일.
+      // category === 'festival' 일 때만 deterministic mock 일자.
+      ...(seed.category === 'festival' && {
+        eventStart: mockFestivalDate(h, 0),
+        eventEnd: mockFestivalDate(h, 30 + Math.floor(u(70) * 60)),
+      }),
     };
     return HttpResponse.json(detail);
   }),

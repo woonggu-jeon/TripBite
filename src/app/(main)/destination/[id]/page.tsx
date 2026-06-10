@@ -4,6 +4,7 @@ import { destinationSeeds } from '@/mocks/seeds/destinations';
 import { regionContentSeeds } from '@/mocks/seeds/regions';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { JsonLd, breadcrumbList, touristAttraction } from '@/lib/json-ld';
+import { tournamentApi } from '@/features/tournament/api/tournament';
 import { DestinationDetailClient } from './_components/DestinationDetailClient';
 
 /**
@@ -77,6 +78,18 @@ export default async function DestinationDetailPage({ params }: Props) {
   const category = seed?.category ?? 'attraction';
   const type = CATEGORY_TO_TYPE[category] ?? 'TouristAttraction';
 
+  // BE 의 detail 응답으로 schema 보강 — festival 의 eventStart/eventEnd 가 있으면
+  // Event rich result 활성. 실패 (BE down / 비공개 응답) 시 seed-only schema fallback.
+  let startDate: string | undefined;
+  let endDate: string | undefined;
+  try {
+    const detail = await tournamentApi.getDestinationDetail(id);
+    startDate = detail.eventStart;
+    endDate = detail.eventEnd;
+  } catch {
+    /* SSR detail fetch 실패 — 기본 schema (이름/주소) 만 출력. crawler 가 다음 색인 때 재시도. */
+  }
+
   const tNav = await getTranslations('nav');
   const tRegion = await getTranslations('region');
 
@@ -87,6 +100,8 @@ export default async function DestinationDetailPage({ params }: Props) {
           name,
           type,
           addressLocality: region?.ko,
+          startDate,
+          endDate,
         })}
       />
       <JsonLd

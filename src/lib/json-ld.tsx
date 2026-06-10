@@ -85,26 +85,57 @@ export interface TouristAttractionOpts {
   type: string;
   /** 시군 한글명 (예: '청주시'). 없으면 address 자체 omit. */
   addressLocality?: string;
+  /**
+   * 축제 일정 (ISO 8601 YYYY-MM-DD).
+   * `type === 'Festival'` 이고 startDate 가 있을 때만 Event schema 로 변형.
+   * Google SERP 의 "이벤트 카드" rich result 조건 (Event + name + startDate).
+   */
+  startDate?: string;
+  endDate?: string;
 }
 
-/** TouristAttraction / Festival / Place — 여행지 상세 페이지용. */
+/**
+ * TouristAttraction / Festival / Place — 여행지 상세 페이지용.
+ *
+ * Festival + startDate 가 있으면 Event subtype (schema.org Festival is-a Event)
+ * 으로 변형 — startDate/endDate/location 포함.
+ */
 export function touristAttraction({
   name,
   type,
   addressLocality,
+  startDate,
+  endDate,
 }: TouristAttractionOpts): JsonLdValue {
+  const address = addressLocality && {
+    '@type': 'PostalAddress',
+    addressLocality,
+    addressRegion: '충청북도',
+    addressCountry: 'KR',
+  };
+
+  if (type === 'Festival' && startDate) {
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'Festival',
+      name,
+      startDate,
+      ...(endDate && { endDate }),
+      ...(addressLocality && {
+        location: {
+          '@type': 'Place',
+          name: addressLocality,
+          ...(address && { address }),
+        },
+      }),
+    };
+  }
+
   return {
     '@context': 'https://schema.org',
     '@type': type,
     name,
-    ...(addressLocality && {
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality,
-        addressRegion: '충청북도',
-        addressCountry: 'KR',
-      },
-    }),
+    ...(address && { address }),
   };
 }
 
