@@ -20,9 +20,7 @@ import {
 import type {
   Destination,
   DestinationDetail,
-  SavedTournament,
   TournamentConfig,
-  TournamentRecord,
 } from '@/features/tournament/types';
 
 /**

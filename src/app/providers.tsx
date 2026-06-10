@@ -25,12 +25,26 @@ import {
 import { usePageView } from '@/features/analytics/hooks/use-page-view';
 import { WebVitalsTracker } from '@/features/analytics/web-vitals';
 
+/**
+ * react-query 정책:
+ *   - staleTime 1m / gcTime 5m 기본 (개별 hook 이 CACHE 프로파일로 override)
+ *   - refetchOnWindowFocus false — PWA 의 OS 탭 전환 시 불필요 폴링 방지
+ *   - retry — 4xx (deterministic 에러) 는 재시도 X, 5xx/network 만 1회.
+ *     401/422 같은 비번 틀림 / 유효성 위반은 재시도해도 동일 결과 → 무한 hang 방지.
+ *   - mutation retry 0 — POST/PATCH 는 멱등성 보장 안 되어 재시도 위험.
+ */
 const queryClientOptions: DefaultOptions = {
   queries: {
     staleTime: 60 * 1000,
     gcTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
-    retry: 1,
+    retry: (failureCount, error) => {
+      const status =
+        (error as { response?: { status?: number } })?.response?.status ?? 0;
+      // 4xx 는 deterministic — 한 번에 fail. 5xx / network (status=0) 만 1회 재시도.
+      if (status >= 400 && status < 500) return false;
+      return failureCount < 1;
+    },
   },
   mutations: { retry: 0 },
 };

@@ -26,6 +26,8 @@ body {
      - clip 은 시각 차단만 (scroll container 생성 X) → sticky 정상 동작
      iOS Safari 16+ / Chrome 90+ 지원 (TripBite 대상 환경 OK). */
   overflow-x: clip;
+  /* sticky header 아래로 anchor 점프 시 가림 방지. var(--header-h) 만큼 padding. */
+  scroll-padding-top: var(--header-h, 56px);
 }
 
 body {
@@ -68,12 +70,15 @@ button {
   // iOS 의 회색 tap 잔상 제거 — 우리는 :active 로 직접 피드백.
   // sticky hover 와는 별개로 모든 button 일관 적용.
   -webkit-tap-highlight-color: transparent;
+  // iOS Safari 의 빠른 연속 tap → double-tap zoom 차단 (300ms delay 도 제거).
+  touch-action: manipulation;
 }
 
 a {
   color: inherit;
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 /* Safe area for PWA — iOS standalone 의 notch / home indicator */

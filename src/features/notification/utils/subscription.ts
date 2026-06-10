@@ -139,6 +139,8 @@ export async function triggerMockPush(payload: {
         n.close();
       };
     }
+    // dev/mock 흐름 가시화용 — eslint 의 no-console 은 warn/error 만 허용이라 disable.
+    // eslint-disable-next-line no-console
     console.info('[mock-push] Notification dispatched:', payload.title);
   } catch (err) {
     console.error('[mock-push] Notification 생성 실패:', err);

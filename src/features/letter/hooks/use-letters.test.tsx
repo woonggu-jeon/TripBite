@@ -39,13 +39,6 @@ describe('useToggleLikeLetter', () => {
       ),
     );
   }
-  function stubSaveOk() {
-    server.use(
-      http.post(`${apiUrl}/letters/:id/save`, ({ params }) =>
-        HttpResponse.json(makeLetter({ id: params.id as string, saved: true })),
-      ),
-    );
-  }
   function stubLikeFail() {
     server.use(
       http.post(`${apiUrl}/letters/:id/like`, () =>

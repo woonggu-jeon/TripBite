@@ -15,7 +15,6 @@ import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetail
 import { TournamentStats } from '@/features/tournament/components/TournamentStats';
 import { LuckyColor } from '@/features/tournament/components/LuckyColor';
 import { LuckyLadder } from '@/features/tournament/components/LuckyLadder';
-import { toast } from '@/lib/toast';
 import { useShareCard } from '@/hooks/use-share-card';
 import { useRequireAuth } from '@/hooks/use-require-auth';
 import styles from './TournamentResultClient.module.scss';
