@@ -44,6 +44,12 @@
 - **2026-06-08**: BE spec 정합 — `PATCH /travel-types/me` 응답 `recommended:[]` (저장 ack only) → FE `useSetMyTravelType` 의 `setQueryData` → `invalidateQueries` 로 변경 → GET refetch 가 recommended 포함 응답 → quiz/result "이런 여행지가 어울려요" 영역 유지. `POST /location/reverse` 응답에 `sido`/`sigungu` 필드 추가. `POST /tournaments` 선택 인증 (게스트 익명 기록 가능, 401 없음) 주석 명시 — FE 코드 자체는 이미 정합 (useRequireAuth 가 "마이페이지 저장" 액션 단위만 적용).
 - **2026-06-10**: 견고성·품질·폴리싱 — react-query retry 정합 (4xx skip / 5xx·network 1회 — 401/422 무한 hang 방지), iOS scroll-padding-top + touch-action: manipulation (sticky 헤더 anchor 가림 + double-tap zoom + 300ms delay 차단), ESLint warning 5→0, Dialog body scroll lock + overscroll-behavior:contain (iOS PWA backdrop chain 차단), Pretendard SRI 해시 등록 (jsdelivr v1.3.9), a11y seed id fix.
 - **2026-06-10**: primitive unit test 5종 추가 (TextField/MediaThumb/RadioGroup/Dialog/Tabs) — vitest 145/23 → 177/28 (+32 cases). RadioOption 정합 보강 (이미 선택된 radio idempotent — Tab 과 동일).
+- **2026-06-10**: 폴더 시멘틱 정합 5종 — `components/{form,common}/` 빈 폴더 제거 / `Icon/` → `icon/` (kebab 통일) / `features/user/` 평탄화 (`User = UserDto` alias → `src/types/`) / `features/{theme,analytics}/` 의 컴포넌트 `components/` 하위로 통일. import 9곳 갱신, 177 그대로.
+- **2026-06-10**: Storybook 9 (`@storybook/nextjs-vite`) 도입 — primitive 18종 카탈로그 (UI 12 / Feedback 4 / Toggle / Icon). Provider decorator: NextIntl / QueryClient / globals.scss / data-theme + locale toolbar. CI `ci.yml` 에 `build-storybook` 게이트 추가. `addon-vitest`/`addon-mcp` 제거 (vitest 177 + e2e 시각회귀와 중복). `docs/STORYBOOK.md` 신설. `/dev/components` ad-hoc 카탈로그는 stale (4종만, 12+ primitive 미반영) → 통째 삭제 후 Storybook 대체.
+- **2026-06-10**: 저장/삭제 mutation 누락 toast 보강 — `LetterActions` 편지 삭제 success/error toast, `TournamentPlayClient` record mutation 실패 silent → toast 명시. i18n: `letter.detail.deletedToast` / `deleteFailedToast` / `tournament.play.recordFailedToast` (ko + en).
+- **2026-06-10**: SEO 보강 sweep — `/region/[code]`, `/destination/[id]` metadata 에 `alternates.canonical` + `openGraph.url` 추가 (query 중복 정규화). `tournament/{play,result}/page.tsx` 정적 metadata → `generateMetadata` + i18n + `robots:noindex` (store 의존, 사용자별 결과). BreadcrumbList JSON-LD (region 3-level, destination 4-level). heading 위계 fix — `RegionHero` / `DestinationDetailClient` h1→h2 (SubHeader 가 페이지 h1). `next-seo` 검토 결과 비추천 (App Router native 가 cover).
+- **2026-06-10**: `lib/json-ld.tsx` helper 신설 — `breadcrumbList` / `webSiteOrganization` / `touristAttraction` factory + `<JsonLd>` 컴포넌트 (BLOCK_INDEXING 자체 처리). 3 inline `<script type="application/ld+json">` (layout/region/destination) 일괄 흡수.
+- **2026-06-10**: Event JSON-LD — `DestinationDetailDto.eventStart/eventEnd` BE 반영 (`docs/BE_REQUEST_FESTIVAL_DATES.md` 전달). `touristAttraction()` 이 Festival + startDate 시 schema.org Event 분기 (startDate/endDate/location.Place). `/destination/[id]` SSR 에서 `tournamentApi.getDestinationDetail(id)` fetch 로 schema 보강 (실패 시 graceful fallback). mock handler 가 category=festival 일 때 deterministic date 응답 (dev 검증).
 
 ---
 
@@ -206,7 +212,8 @@ orval 단일화 완료 (2026-06-06). 운영 워크플로:
 ### 5-2. SW 업데이트 — 운영 전 검증
 
 - ✅ `PwaUpdateBanner` + `SKIP_WAITING` + `clearAllCaches()`
-- **남은 작업**: 운영 빌드 실기기 매뉴얼 검증 (오프라인 / 업데이트 배너 / 푸시 / 설치). **M**.
+- ✅ **매뉴얼 검증 체크리스트** — `docs/PWA_VERIFICATION.md` 신설 (A~I 영역: 가상키보드 / pull-to-refresh / install / 푸시 / SW/오프라인 / UX / 결과 템플릿 / 빈도 / Android 별도)
+- **남은 작업**: 운영 빌드 실기기로 위 체크리스트 1회 수행. **M**.
 
 ### 5-3. 푸시 — 클라이언트 잔여
 
@@ -218,9 +225,9 @@ orval 단일화 완료 (2026-06-06). 운영 워크플로:
 
 ## 6. 테스트 커버리지
 
-### 6-1. vitest 단위 (총 123개 — 21 files)
+### 6-1. vitest 단위 (총 177개 — 28 files)
 
-신규 49 cases 추가 후 합계 122. 핵심 도메인 모두 커버:
+핵심 도메인 + UI primitive 모두 커버:
 
 - `bracket.ts` (23) — Fisher-Yates / pairRound / nextPow2 / roundLabelKey
 - `tournament-store.ts` (7) — persist + partialize
@@ -228,6 +235,7 @@ orval 단일화 완료 (2026-06-06). 운영 워크플로:
 - `use-letters.ts` (4) — like/save optimistic + 롤백
 - `AuthBootstrap.tsx` (5) — 4 redirect 분기
 - `use-push-notification.ts` (5) — 5 상태
+- **UI primitive 5종 (2026-06-10 추가, +32 cases)** — `TextField` / `MediaThumb` / `RadioGroup` / `Dialog` / `Tabs`
 - 기존: schemas / lib / store / use-format / LocationPermissionPrompt
 
 ### 6-2. E2E Playwright (총 420 cases — 6 projects × 70 cases)
