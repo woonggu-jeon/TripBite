@@ -91,6 +91,9 @@ export const viewport: Viewport = {
   maximumScale: 5,
   userScalable: true,
   viewportFit: 'cover',
+  // iOS/Android 가상 키보드 등장 시 viewport 재계산 — `100dvh` 가 키보드 영역
+  // 위까지 줄어 input 이 가려지지 않음. 미지원 브라우저는 그대로 동작.
+  interactiveWidget: 'resizes-content',
 };
 
 /**

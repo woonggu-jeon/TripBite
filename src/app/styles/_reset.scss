@@ -88,3 +88,12 @@ a {
     padding-bottom: env(safe-area-inset-bottom);
   }
 }
+
+/* PWA standalone 에서만 pull-to-refresh 차단 — 일반 Safari 탭은 기대 동작 유지.
+   iOS PWA 에선 swipe-down refresh 가 "앱" 사용감 깨뜨림 (uncontrolled reload). */
+@media all and (display-mode: standalone) {
+  html,
+  body {
+    overscroll-behavior-y: contain;
+  }
+}
