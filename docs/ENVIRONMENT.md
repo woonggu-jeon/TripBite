@@ -108,11 +108,11 @@ OPENAPI_URL=http://localhost:3000/docs-json   # BE 안 띄웠으면 prebuild 가
 ### 5.2 운영 (Production) 최소 등록 세트
 
 ```
-OPENAPI_URL                     = https://api.tripbite.kr/docs-json
-NEXT_PUBLIC_API_URL             = https://api.tripbite.kr
+OPENAPI_URL                     = https://tripbite.duckdns.org/docs-json
+NEXT_PUBLIC_API_URL             = https://tripbite.duckdns.org
 NEXT_PUBLIC_USE_MSW             = false
 NEXT_PUBLIC_BLOCK_INDEXING      = false
-NEXT_PUBLIC_SITE_URL            = https://tripbite.kr
+NEXT_PUBLIC_SITE_URL            = <FE 운영 도메인>
 NEXT_PUBLIC_VAPID_PUBLIC_KEY    = <운영 VAPID public>
 NEXT_PUBLIC_SESSION_COOKIE      = SID
 ```
