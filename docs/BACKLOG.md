@@ -60,8 +60,8 @@
 
 ## 0-SEO. 보류 SEO 보강 — 의존성/데이터 충족 시 진행
 
-- **hreflang alternates** (M) — `layout.tsx` generateMetadata 에 `alternates.languages` 추가. 단, 현재 next-intl 이 **cookie 기반 locale** (URL prefix 없음 — `/region/cheongju` ko/en 동일). hreflang 은 분리된 URL (`/en/...`) 이 전제 → routing 변경 (`next-intl` 의 `defineRouting` + middleware locale prefix) 도입 시 진행.
-- **Event JSON-LD** (S) — `/destination/[id]` 의 `category: festival` 콘텐츠에 `@type: Event` schema (startDate / endDate / url) 추가. 현재 `destinationSeeds` 및 BE festival 응답에 날짜 필드 없음 → BE 가 축제 일정 필드 노출하면 진행.
+- **hreflang alternates** (M-L) — `layout.tsx` generateMetadata 에 `alternates.languages` 추가. 현재 next-intl 이 **cookie 기반 locale** (URL prefix 없음) → routing 변경 (`defineRouting` + middleware locale prefix + 32+ Link/router import 교체) 필요. 사이드이펙트 통제 가능하지만 0 은 아님 (middleware 합성 / import 누락 위험). 영어권 유입 비중이 의미 있게 늘면 (analytics 확인 후) 도입. 검토 메모: 위험 영역 & 안전 절차 — git log `52faaae` 이후 turn 참조.
+- **Event JSON-LD** (S, BE 의존) — `/destination/[id]` 의 `category: festival` 에 `@type: Event` (startDate / endDate / location). `FestivalDto` 에는 이미 `eventStart`/`eventEnd` 있으나 `DestinationDetailDto` 에는 없음. BE 보강 요청서: **[docs/BE_REQUEST_FESTIVAL_DATES.md](BE_REQUEST_FESTIVAL_DATES.md)**. BE 작업 완료 시 FE 후속 ≤30분 (orval 재생성 + json-ld.tsx 의 touristAttraction() 확장 + mock seed date).
 
 ---
 
