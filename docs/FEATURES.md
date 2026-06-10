@@ -106,8 +106,10 @@ BE 는 다음 두 필드만 보장 (FE interceptor 가 normalize):
 
 ### Response 성공 — 201
 
-- Body 비어있음. **Set-Cookie 발급 안 함** (자동 로그인 X).
-- FE: `/login?signup=success` 이동 → toast.
+- Body: `{ user: UserDto }` (SignupResponseDto)
+- **Set-Cookie**: `SID=<sessionId>; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=...` (cross-origin 시 SameSite=None)
+- FE: `useSignup.onSuccess` 가 응답 user 로 `setAuth` + `queryClient.setQueryData(me)` → `/onboarding` replace.
+- 가입과 동시에 세션 발급 (atomic) — 별도 login 호출 불필요.
 
 ### Response 실패
 
