@@ -46,6 +46,10 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'http://localhost:8080' }}
 
+      # === Storybook 정적 빌드 (deploy X — build 통과만 검증) ===
+      - name: Build Storybook
+        run: npm run build-storybook
+
       # === 번들 사이즈 회귀 가드 ===
       - name: Bundle size limit
         run: npm run size

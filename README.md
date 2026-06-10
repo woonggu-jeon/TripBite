@@ -49,6 +49,8 @@ BE 미준비 시 `NEXT_PUBLIC_USE_MSW=true` 로 mock 모드 (실 BE 띄우면 `f
 | `npm run generate:api`          | BE Swagger → `src/api/generated/` (orval)             |
 | `npm run build:icons`           | lucide → `public/icons.svg` sprite                    |
 | `npm run be:check`              | BE 회귀 4종 일괄 (smoke + anon + onboarded + login)   |
+| `npm run storybook`             | Storybook dev (`http://localhost:6006`)               |
+| `npm run build-storybook`       | Storybook static build (CI 빌드 게이트)               |
 
 ---
 
@@ -132,6 +134,7 @@ src/
 | [I18N_EDGE_CONFIG.md](docs/I18N_EDGE_CONFIG.md)     | i18n 외부 스토리지 마이그 계획 (운영 안정 후)                               |
 | [MOCK_IN_PRODUCTION.md](docs/MOCK_IN_PRODUCTION.md) | 운영 mock 시나리오 (데모/QA)                                                |
 | [PWA_VERIFICATION.md](docs/PWA_VERIFICATION.md)     | iOS PWA 실기기 매뉴얼 검증 체크리스트 (A~F 영역)                            |
+| [STORYBOOK.md](docs/STORYBOOK.md)                   | Storybook 카탈로그 운영 가이드 (실행 / 추가 / CI)                           |
 
 API 명세 SoT: **BE Swagger** (`{API}/docs`) — orval 이 빌드 전 자동 fetch.
 

@@ -173,7 +173,8 @@ src/features/<domain>/components/*.tsx   (RSC / Client)
 
 ## 8. 디자인 시스템
 
-- primitive: `src/components/ui/*` (Card / Chip / Button / IconButton / PageSection / TextField / MediaThumb / RadioGroup / DestinationCard / ButtonGrid)
+- primitive: `src/components/ui/*` (Card / Chip / Button / IconButton / PageSection / TextField / MediaThumb / RadioGroup / Dialog / Tabs / DestinationCard / ButtonGrid)
+- 카탈로그: Storybook `npm run storybook` — primitive 18 종 등록. CI 가 `build-storybook` 게이트. 상세 → [STORYBOOK.md](STORYBOOK.md)
 - 토큰: `src/app/styles/tokens/*.scss` (color / typography / spacing / radius / shadow / motion / aspect / z-index / emoji)
 - dark / responsive: `_dark.scss` / `_responsive.scss` (360 / 320 단계)
 - 자세히 → [STYLES.md](./STYLES.md)

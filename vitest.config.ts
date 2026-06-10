@@ -16,17 +16,17 @@ import { resolve } from 'node:path';
  *   - setupFiles: jest-dom 매처 + MSW server lifecycle
  *
  * e2e는 Playwright가 담당 → exclude로 분리.
+ * Storybook story test 는 별도 검증 — build-storybook 통과 + Playwright 시각 회귀로 커버.
  */
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, './src'),
+    },
+  },
   test: {
-    environment: 'happy-dom',
-    globals: true,
-    // forks 풀 — 테스트 파일 간 모듈/전역 상태 격리 (MSW server, zustand store 등)
-    pool: 'forks',
-    setupFiles: ['./vitest.setup.ts'],
-    exclude: ['e2e/**', 'node_modules/**', '.next/**'],
-    css: false, // *.module.scss import는 빈 객체로 처리 (스타일은 테스트 대상 아님)
+    // *.module.scss import는 빈 객체로 처리 (스타일은 테스트 대상 아님)
     coverage: {
       provider: 'v8',
       // html reporter는 Windows에서 istanbul 경로 이슈(EINVAL) — text+json-summary로
@@ -57,8 +57,17 @@ export default defineConfig({
         lines: 80,
       },
     },
-  },
-  resolve: {
-    alias: { '@': resolve(__dirname, './src') },
+    environment: 'happy-dom',
+    globals: true,
+    // forks 풀 — 테스트 파일 간 모듈/전역 상태 격리 (MSW server, zustand store 등)
+    pool: 'forks',
+    setupFiles: ['./vitest.setup.ts'],
+    exclude: [
+      'e2e/**',
+      'node_modules/**',
+      '.next/**',
+      '**/*.stories.@(js|jsx|ts|tsx)',
+    ],
+    css: false,
   },
 });
