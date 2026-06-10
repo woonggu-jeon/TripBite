@@ -81,11 +81,37 @@ export function useLogin(options?: { redirectTo?: string }) {
 
 export function useSignup() {
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const setAuth = useAuthStore((s) => s.setAuth);
+
   return useMutation({
     mutationFn: (data: SignupRequest) => authApi.signup(data),
-    onSuccess: () => {
-      // 가입 완료 → 로그인 페이지로 (자동 로그인 안 함)
-      router.replace('/login?signup=success');
+    onSuccess: async (_data, variables) => {
+      // 가입 직후 동일 credential 로 자동 로그인 — 사용자가 한 번 더 입력 안 하도록.
+      // BE 가 signup 응답에 session cookie 를 set 하면 이 흐름은 더 깔끔해짐
+      // (login mutation 불필요) — `docs/BE_REQUEST_SIGNUP_AUTOLOGIN.md` 참조.
+      // 실패 시 fallback — /login?signup=success&username=... (현재 동작).
+      try {
+        await authApi.login({
+          username: variables.username,
+          password: variables.password,
+        });
+        const user = await queryClient.fetchQuery({
+          queryKey: authKeys.me(),
+          queryFn: ({ signal }) => authApi.me(signal),
+        });
+        setAuth(user);
+        // 첫 가입 → onboarding 으로. (AuthBootstrap 이 isOnboarded false 면 어차피 보내지만
+        // 명시 navigate 가 회귀 안전 — middleware/Bootstrap race 없음.)
+        router.replace('/onboarding');
+        router.refresh();
+      } catch {
+        // 자동 로그인 실패 (드문 케이스) — username 만 query 로 전달해 로그인 화면에서 prefill 가능.
+        const loginUrl = new URL('/login', window.location.origin);
+        loginUrl.searchParams.set('signup', 'success');
+        loginUrl.searchParams.set('username', variables.username);
+        router.replace((loginUrl.pathname + loginUrl.search) as Route);
+      }
     },
   });
 }

@@ -51,6 +51,8 @@
 - **2026-06-10**: `lib/json-ld.tsx` helper 신설 — `breadcrumbList` / `webSiteOrganization` / `touristAttraction` factory + `<JsonLd>` 컴포넌트 (BLOCK_INDEXING 자체 처리). 3 inline `<script type="application/ld+json">` (layout/region/destination) 일괄 흡수.
 - **2026-06-10**: Event JSON-LD — `DestinationDetailDto.eventStart/eventEnd` BE 반영 (`docs/BE_REQUEST_FESTIVAL_DATES.md` 전달). `touristAttraction()` 이 Festival + startDate 시 schema.org Event 분기 (startDate/endDate/location.Place). `/destination/[id]` SSR 에서 `tournamentApi.getDestinationDetail(id)` fetch 로 schema 보강 (실패 시 graceful fallback). mock handler 가 category=festival 일 때 deterministic date 응답 (dev 검증).
 - **2026-06-10**: dead infra 청소 — `src/lib/blur.ts` (`getBlurDataURL`) + `plaiceholder` devDep 삭제. 호출 0건 + LCP 후보 `DestinationPhotos` 가 raw `<img>` 라 적용 비용 > 효과. 필요 시 38줄 재작성. §3 인프라 항목 폐기.
+- **2026-06-10**: login returnUrl 회귀 fix — `AuthBootstrap` / `useRequireAuth` 가 `encodeURIComponent` 후 query 작성 → 브라우저가 다시 encode → double-encode → LoginForm 의 `startsWith('/')` 가드 실패 → fallback `/`. middleware 와 동일하게 `URLSearchParams.set('redirect', pathname)` 으로 통일. mock 환경 / `useRequireAuth` 경유 returnUrl 안정화.
+- **2026-06-10**: 회원가입 자동 로그인 — `useSignup` 의 onSuccess 에서 동일 credential 로 login mutation 자동 호출 → `me` fetch → `setAuth` → `/onboarding` replace. 실패 시 fallback `/login?signup=success&username=...` (prefill 가능). BE 요청서 [docs/BE_REQUEST_SIGNUP_AUTOLOGIN.md](BE_REQUEST_SIGNUP_AUTOLOGIN.md) — signup 응답에 session cookie + user 추가 시 FE 가 추가 login 호출 생략 (1 round-trip 화).
 
 ---
 

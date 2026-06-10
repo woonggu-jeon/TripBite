@@ -98,10 +98,14 @@ export function AuthBootstrap() {
       clearAuth();
     }
 
-    // 비인증 + 보호 경로 진입 → 로그인 페이지로 (mock 환경의 middleware skip 안전망)
+    // 비인증 + 보호 경로 진입 → 로그인 페이지로 (mock 환경의 middleware skip 안전망).
+    // redirect 값은 plain pathname — URLSearchParams 가 자동 encode. middleware 와 일관.
+    // (이전: encodeURIComponent 사용 → URL 에 다시 query encode 가 적용되어 double-encode
+    //  → LoginForm 의 `startsWith('/')` 체크 실패 → returnUrl 누락 회귀.)
     if (isError && isProtectedPath(pathname)) {
-      const redirect = encodeURIComponent(pathname);
-      router.replace(`/login?redirect=${redirect}` as Route);
+      const loginUrl = new URL('/login', window.location.origin);
+      loginUrl.searchParams.set('redirect', pathname);
+      router.replace((loginUrl.pathname + loginUrl.search) as Route);
       return;
     }
 

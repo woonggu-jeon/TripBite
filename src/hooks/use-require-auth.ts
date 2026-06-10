@@ -41,6 +41,15 @@ export function useRequireAuth() {
       confirmLabel: t('confirmLabel'),
     });
     if (!ok) return;
-    router.push(`/login?redirect=${encodeURIComponent(pathname ?? '/')}`);
+    // redirect 값은 plain pathname — URLSearchParams 가 자동 encode. middleware 와 일관.
+    // (이전: encodeURIComponent 사용 → query 단계에서 다시 encode 되어 double-encode
+    //  → LoginForm 의 `startsWith('/')` 가드 실패 → returnUrl 누락.)
+    const loginUrl = new URL('/login', window.location.origin);
+    loginUrl.searchParams.set('redirect', pathname ?? '/');
+    router.push(
+      (loginUrl.pathname + loginUrl.search) as Parameters<
+        typeof router.push
+      >[0],
+    );
   };
 }
