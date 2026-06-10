@@ -201,8 +201,64 @@ F-4. iOS 버그 | ✅ | sticky / dvh / sub-pixel
 
 ## H. 검증 빈도
 
-- **운영 진입 직전**: A~F 전체 1회 (필수)
+- **운영 진입 직전**: A~F 전체 1회 (필수) + I (Android) 1회
 - **주요 SW 변경 시**: E (SW / 오프라인) 재검증
 - **새 push type 추가 시**: D (push 발송) 재검증
 - **iOS 메이저 업그레이드 (예: iOS 17 → 18)**: A + D 재검증
 - **새 디자인 시안 적용 시**: A-3 (16px font) + F-2 (status bar) 재검증
+
+---
+
+## I. Android 추가 검증
+
+사전: Pixel / 갤럭시 S / 폴드 중 1개. Chrome / **Samsung Internet** / **카카오 인앱 / Naver 인앱**.
+
+### I-1. Android Chrome PWA
+
+- [ ] 일반 Chrome 탭 진입 → 주소창에 install 아이콘 자동 노출 (`BeforeInstallPromptEvent`)
+- [ ] InstallPromptBanner 의 "추가하기" → native install dialog → 추가
+- [ ] 홈 아이콘 → 앱 진입 → `display-mode: standalone`
+- [ ] 알림 권한 요청 → 허용 → mock push (📬) → OS 알림 + deep-link
+- [ ] BackHandler — 시스템 뒤로가기 = router.back()
+- [ ] pull-to-refresh — PWA standalone 차단 정상, 일반 탭은 refresh 정상
+
+### I-2. Samsung Internet (한국 점유율 ↑)
+
+- [ ] PWA install 동일 동작 (Chromium 기반)
+- [ ] dark / light 자동 — Samsung 의 "야간 모드" 우선
+- [ ] Samsung 알림 채널 (별도 권한 설정) 정상 등록
+- [ ] 가로 모드 화면 회전 시 layout 정상
+- [ ] 광고 차단 (Samsung 기본 옵션) ON 상태에서 정상 동작
+
+### I-3. 카카오 / Naver 인앱 브라우저 (가장 흔한 진입 경로)
+
+- [ ] 카카오톡 링크 → 인앱 브라우저 진입 → 페이지 정상 로드
+- [ ] 인앱 브라우저는 PWA install 불가 — 사용자에게 **"Chrome 으로 열기"** 안내 (`MockModeBanner` 또는 별도 안내)
+- [ ] SW 등록 제한 — `serviceWorker` API 일부 차단, 그래도 일반 fetch / 페이지 동작 OK
+- [ ] 100dvh — toolbar 토글 시 떨림 없음 (svh fallback 작동 검증)
+- [ ] 위치 권한 요청 — 인앱 정책상 OS 권한과 별개, Skip 흐름 정상
+- [ ] 공유 — 카카오 자체 공유 ↔ 우리 share API 충돌 X
+
+### I-4. Android 가상 키보드
+
+- [ ] Chrome / Samsung — `interactiveWidget=resizes-content` 자동 동작, 100dvh 키보드 위까지 줄어듦
+- [ ] iOS 와 달리 키보드 위 input fixed 동작 매끄러움 (`bottom: env(keyboard-inset-height)` 미적용이지만 dvh 로 충분)
+- [ ] 한글 IME — 조합 중 input value 조작 X (PinLikeInput 의 grapheme clamp 검증)
+
+### I-5. Android 알려진 issue
+
+- [ ] Chrome 의 일부 버전 (114+) — `:focus-visible` outline 이 touch 후에도 보임 — 우리는 `touch-action: manipulation` + tap-highlight-color transparent 로 우회
+- [ ] Samsung Internet 의 자동 폼 자동완성 — value 직접 변경 시 React state 와 sync 됨 검증
+- [ ] Android 9 이하 (점유율 작지만 존재) — `100dvh` 미지원 → svh fallback 정상
+
+### I-6. 결과 기록 (G 형식 동일)
+
+```
+영역 | 결과 | 비고
+--- | --- | ---
+I-1. Android Chrome PWA  | ✅ | Pixel 7 Android 14
+I-2. Samsung Internet    | ✅ | S24 OneUI 6.1
+I-3. 카카오/Naver 인앱   | ✅ | 인앱 제한 안내 노출
+I-4. Android 가상키보드  | ✅ | dvh 자동
+I-5. Android issue       | ✅ | 알려진 회피 패턴 적용
+```
