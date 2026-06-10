@@ -366,6 +366,7 @@
     "play": {
       "loading": "Loading destinations…",
       "error": "Couldn't load destinations",
+      "recordFailedToast": "Couldn't save the tournament",
       "retry": "Try again",
       "introHint": "The Chungbuk map will appear shortly",
       "next": "Next",
@@ -526,6 +527,8 @@
       "deleteConfirmNo": "Cancel",
       "autoDeleteNotice": "Will be auto-deleted in 3 days unless saved",
       "loadError": "Couldn't load the letter",
+      "deletedToast": "Letter deleted",
+      "deleteFailedToast": "Couldn't delete the letter",
       "retry": "Try again",
       "backToList": "Back to inbox"
     },

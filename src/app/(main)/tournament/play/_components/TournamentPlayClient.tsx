@@ -21,6 +21,7 @@ import {
 import { Button, ButtonGrid } from '@/components/ui';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
+import { toast } from '@/lib/toast';
 import styles from './TournamentPlayClient.module.scss';
 
 type Phase = 'intro' | 'map' | 'tournamentSize' | 'bracket' | 'celebration';
@@ -155,7 +156,8 @@ export function TournamentPlayClient() {
         });
         recordId = record.id;
       } catch {
-        /* silent — store 만으로 result 진입 */
+        // store 만으로 result 진입 — UX 끊김 방지. 단, 사용자에게 저장 실패는 알림.
+        toast.error(t('recordFailedToast'));
       }
       router.replace(
         recordId

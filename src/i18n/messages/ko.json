@@ -366,6 +366,7 @@
     "play": {
       "loading": "여행지를 불러오는 중이에요",
       "error": "여행지를 불러오지 못했어요",
+      "recordFailedToast": "토너먼트 기록을 저장하지 못했어요",
       "retry": "다시 시도",
       "introHint": "잠시 후 충북 지도가 펼쳐져요",
       "next": "다음",
@@ -531,6 +532,8 @@
       "deleteConfirmNo": "취소",
       "autoDeleteNotice": "저장하지 않으면 3일 후 자동 삭제돼요",
       "loadError": "편지를 불러오지 못했어요",
+      "deletedToast": "편지가 삭제됐어요",
+      "deleteFailedToast": "편지를 삭제하지 못했어요",
       "retry": "다시 시도",
       "backToList": "편지함으로"
     },

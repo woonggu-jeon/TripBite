@@ -7,6 +7,7 @@ import { Heart, Bookmark, Trash2 } from 'lucide-react';
 import { useConfirm } from '@/hooks/use-confirm';
 import { useDebouncedCallback } from '@/hooks/use-debounced-callback';
 import { haptic } from '@/lib/haptic';
+import { toast } from '@/lib/toast';
 import {
   useDeleteLetter,
   useToggleLikeLetter,
@@ -88,7 +89,11 @@ export function LetterActions({ letter }: { letter: Letter }) {
     commitLike.flush();
     commitSave.flush();
     del.mutate(letter.id, {
-      onSuccess: () => router.back(),
+      onSuccess: () => {
+        toast.success(t('deletedToast'));
+        router.back();
+      },
+      onError: () => toast.error(t('deleteFailedToast')),
     });
   };
 
