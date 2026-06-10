@@ -50,6 +50,7 @@
 - **2026-06-10**: SEO 보강 sweep — `/region/[code]`, `/destination/[id]` metadata 에 `alternates.canonical` + `openGraph.url` 추가 (query 중복 정규화). `tournament/{play,result}/page.tsx` 정적 metadata → `generateMetadata` + i18n + `robots:noindex` (store 의존, 사용자별 결과). BreadcrumbList JSON-LD (region 3-level, destination 4-level). heading 위계 fix — `RegionHero` / `DestinationDetailClient` h1→h2 (SubHeader 가 페이지 h1). `next-seo` 검토 결과 비추천 (App Router native 가 cover).
 - **2026-06-10**: `lib/json-ld.tsx` helper 신설 — `breadcrumbList` / `webSiteOrganization` / `touristAttraction` factory + `<JsonLd>` 컴포넌트 (BLOCK_INDEXING 자체 처리). 3 inline `<script type="application/ld+json">` (layout/region/destination) 일괄 흡수.
 - **2026-06-10**: Event JSON-LD — `DestinationDetailDto.eventStart/eventEnd` BE 반영 (`docs/BE_REQUEST_FESTIVAL_DATES.md` 전달). `touristAttraction()` 이 Festival + startDate 시 schema.org Event 분기 (startDate/endDate/location.Place). `/destination/[id]` SSR 에서 `tournamentApi.getDestinationDetail(id)` fetch 로 schema 보강 (실패 시 graceful fallback). mock handler 가 category=festival 일 때 deterministic date 응답 (dev 검증).
+- **2026-06-10**: dead infra 청소 — `src/lib/blur.ts` (`getBlurDataURL`) + `plaiceholder` devDep 삭제. 호출 0건 + LCP 후보 `DestinationPhotos` 가 raw `<img>` 라 적용 비용 > 효과. 필요 시 38줄 재작성. §3 인프라 항목 폐기.
 
 ---
 
@@ -157,9 +158,7 @@ orval 단일화 완료 (2026-06-06). 운영 워크플로:
 
 ## 3. 인프라 있지만 UI 미연결
 
-| 인프라                             | 상태 | 미연결 사용처                                          |
-| ---------------------------------- | ---- | ------------------------------------------------------ |
-| `getBlurDataURL` (LCP placeholder) | ✅   | BE imageUrl 연동 시점 — 현재 코드는 emoji/colorChip 만 |
+(현재 비어있음. 2026-06-10 `getBlurDataURL` + `plaiceholder` devDep 삭제 — 호출 0건 dead infra 청소. LCP 측정 후 실제 후보 식별되면 재작성 권장: SSR `cache(async (src) => plaiceholder buffer → base64)` 38줄 + `next/image` 의 `placeholder="blur"` + `blurDataURL` 조합. 단, 진짜 LCP element 인 `DestinationPhotos` 가 raw `<img>` 라 next/image 마이그 선행 필요.)
 
 ---
 

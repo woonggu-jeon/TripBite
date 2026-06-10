@@ -6,7 +6,6 @@ import Image, { type ImageProps } from 'next/image';
  * next/image 의 래퍼. 적용:
  *   - AVIF/WebP 우선 (next.config 의 images.formats)
  *   - lazy loading (priority 미지정 시)
- *   - blur placeholder (외부 이미지는 `getBlurDataURL()` from `@/lib/blur` 권장)
  *   - quality 기본값 75 — 모바일에선 시각 차이 거의 없음, 용량 30% 절감
  *
  * 사용:
