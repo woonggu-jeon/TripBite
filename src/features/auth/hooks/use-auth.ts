@@ -7,7 +7,6 @@ import {
   type UseQueryOptions,
 } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import type { Route } from 'next';
 import { authApi } from '@/features/auth/api/auth';
 import { useAuthStore } from '@/stores/auth-store';
 import type {
@@ -67,14 +66,22 @@ export function useLogin(options?: { redirectTo?: string }) {
       });
       setAuth(user);
       // 로그인 성공 → 원래 가려던 경로 (LoginForm 이 ?redirect= 로 전달) 또는 홈.
-      // dynamic path 라 typedRoutes 강제 캐스팅 필요 (open-redirect 차단은 LoginForm 에서 처리).
+      // open-redirect 차단은 LoginForm 에서 처리 (`startsWith('/')`).
       //
-      // router.refresh() — RSC cache 강제 갱신.
-      // 회귀: 첫 로그인 시 replace 만 호출하면 next/server 의 RSC payload 가
-      // 미인증 시점 cache 를 그대로 들고 있어 navigate 가 paint 안 됨 (사용자
-      // 보고 "다시 클릭하면 이동"). refresh 가 새 cookie 로 RSC 재요청 → 정상 paint.
-      router.replace((options?.redirectTo ?? '/') as Route);
-      router.refresh();
+      // 회귀 사유 — `router.replace + router.refresh` 조합이 race 3종:
+      //   1) (auth) → (main) 라우트 그룹 교체 + RSC client router cache 의 미인증 시점 payload
+      //      → replace 가 stale cache 재사용 → navigation 충돌
+      //   2) AuthBootstrap 이 setAuth 직후 useEffect 가 isOnboarded 분기로 또 redirect
+      //   3) refresh 가 replace 보다 먼저 발사되어 현재 (/login) RSC 갱신 → paint 정지
+      // 사용자 보고 "redirect=%2Fmypage 도 안 됨" — 위 race 들이 누적된 증상.
+      //
+      // Fix — hard navigation. 비용은 1회 full reload (login 1회만 발생), 보상은:
+      //   · middleware 가 새 요청에서 cookie 정합 검증 → 정확
+      //   · client router cache 완전 우회
+      //   · AuthBootstrap race 없음 (페이지가 처음부터 재 mount)
+      //   · refresh 불필요
+      const target = options?.redirectTo ?? '/';
+      window.location.assign(target);
     },
   });
 }
