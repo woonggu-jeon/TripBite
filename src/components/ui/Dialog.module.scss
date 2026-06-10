@@ -16,6 +16,11 @@
 .dialog {
   width: 100%;
   max-width: 360px;
+  max-height: calc(100dvh - var(--space-8));
+  overflow-y: auto;
+  // dialog 내부 스크롤이 backdrop / body 로 chain 되지 않도록 — iOS Safari 의
+  // pull-to-refresh + body overscroll bounce 차단.
+  overscroll-behavior: contain;
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);

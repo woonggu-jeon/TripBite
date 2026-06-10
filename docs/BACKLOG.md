@@ -1,7 +1,7 @@
 # TripBite 후속 작업 백로그
 
 > 코드베이스 전수조사 후 정리한 잔존 / 개선 항목. 분기점마다 갱신.
-> 마지막 갱신: 2026-06-08
+> 마지막 갱신: 2026-06-10
 >
 > 작업량 표기: **S** (≤30분) · **M** (1-3시간) · **L** (반나절+)
 
@@ -42,6 +42,8 @@
 - **2026-06-08**: RecommendationBanner 비율 개선 — desktop max-width 720→580 (3.4:1) + height clamp fluid (140~172). 양옆 빔 / 너무 wide 사이 sweet spot.
 - **2026-06-08**: Fluid 반응형 정책 도입 (`clamp()` 우선) — 9 컴포넌트 단계별 media query 폐기, 320~desktop 부드러움. STYLES.md §1 추가 + 적용 가이드.
 - **2026-06-08**: BE spec 정합 — `PATCH /travel-types/me` 응답 `recommended:[]` (저장 ack only) → FE `useSetMyTravelType` 의 `setQueryData` → `invalidateQueries` 로 변경 → GET refetch 가 recommended 포함 응답 → quiz/result "이런 여행지가 어울려요" 영역 유지. `POST /location/reverse` 응답에 `sido`/`sigungu` 필드 추가. `POST /tournaments` 선택 인증 (게스트 익명 기록 가능, 401 없음) 주석 명시 — FE 코드 자체는 이미 정합 (useRequireAuth 가 "마이페이지 저장" 액션 단위만 적용).
+- **2026-06-10**: 견고성·품질·폴리싱 — react-query retry 정합 (4xx skip / 5xx·network 1회 — 401/422 무한 hang 방지), iOS scroll-padding-top + touch-action: manipulation (sticky 헤더 anchor 가림 + double-tap zoom + 300ms delay 차단), ESLint warning 5→0, Dialog body scroll lock + overscroll-behavior:contain (iOS PWA backdrop chain 차단), Pretendard SRI 해시 등록 (jsdelivr v1.3.9), a11y seed id fix.
+- **2026-06-10**: primitive unit test 5종 추가 (TextField/MediaThumb/RadioGroup/Dialog/Tabs) — vitest 145/23 → 177/28 (+32 cases). RadioOption 정합 보강 (이미 선택된 radio idempotent — Tab 과 동일).
 
 ---
 

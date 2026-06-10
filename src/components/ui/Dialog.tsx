@@ -1,6 +1,6 @@
 'use client';
 
-import { useId, useRef, type ReactNode } from 'react';
+import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
@@ -53,6 +53,17 @@ export function Dialog({
 
   useFocusTrap(ref, open);
   useKeyboard('Escape', onClose, { enabled: open });
+
+  // body scroll lock — modal 뒤 콘텐츠 스크롤 차단. iOS PWA 에서 dialog 안
+  // 스와이프가 body 로 chain 되는 문제 + 모달 외부 클릭 의도 명확화.
+  useEffect(() => {
+    if (!open || typeof document === 'undefined') return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
 
   if (!open) return null;
 
