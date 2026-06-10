@@ -79,7 +79,7 @@ src/
 │   ├── location-store.ts         resolved location (좌표 + label)
 │   └── ui-store.ts               theme / toast / dialog 상태
 ├── hooks/                        공유 hook (use-intersection / use-share-card / ...)
-├── lib/                          util (haptic / validation / secure-image-url / toast / ...)
+├── lib/                          util (haptic / validation / secure-image-url / toast / json-ld / ...)
 ├── mocks/                        MSW handlers (운영 mock 도 동일 사용)
 │   ├── handlers.ts
 │   ├── browser.ts                worker 등록

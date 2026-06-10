@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { isRegionCode, type RegionCode } from '@/constants/regions';
 import { RegionHero } from '@/features/region';
+import { JsonLd, breadcrumbList } from '@/lib/json-ld';
 import { RegionDetailTabs } from './_components/RegionDetailTabs';
 
 /**
@@ -38,9 +39,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: name,
     description,
+    alternates: {
+      // 시군 상세는 query (탭 등) 없이도 동일 콘텐츠 — canonical 로 정규화.
+      canonical: `/region/${code}`,
+    },
     openGraph: {
       title: name,
       description,
+      url: `/region/${code}`,
       images: [{ url: ogImage, width: 1080, height: 1080 }],
     },
     twitter: {
@@ -58,10 +64,20 @@ export default async function RegionDetailPage({ params }: Props) {
 
   const validCode: RegionCode = code;
   const tNames = await getTranslations('region.names');
+  const tNav = await getTranslations('nav');
+  const tRegion = await getTranslations('region');
+  const name = tNames(validCode as Parameters<typeof tNames>[0]);
 
   return (
     <>
-      <SubHeader title={tNames(validCode as Parameters<typeof tNames>[0])} />
+      <JsonLd
+        data={breadcrumbList([
+          { name: tNav('home'), url: '/' },
+          { name: tRegion('title'), url: '/region' },
+          { name, url: `/region/${validCode}` },
+        ])}
+      />
+      <SubHeader title={name} />
       <RegionHero code={validCode} />
       <RegionDetailTabs code={validCode} />
     </>

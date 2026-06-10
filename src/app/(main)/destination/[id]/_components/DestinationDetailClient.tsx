@@ -120,10 +120,10 @@ export function DestinationDetailClient({ id }: { id: string }) {
           </p>
         </header>
 
-        {/* 3) Name */}
-        <h1 id="destination-name" className={styles.name}>
+        {/* 3) Name — SubHeader 가 페이지 h1 이므로 h2 로 위계 보존 */}
+        <h2 id="destination-name" className={styles.name}>
           {detail.name}
-        </h1>
+        </h2>
 
         {/* 4) 장소 정보 (summary / description / 주소 / 시간 / 휴무 / 주차 / 연락처 / web) */}
         <WinnerDetailPanel detail={detail} isLoading={false} />

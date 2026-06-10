@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { TournamentResultClient } from './_components/TournamentResultClient';
 
@@ -30,14 +32,21 @@ import { TournamentResultClient } from './_components/TournamentResultClient';
  *
  * 새로고침 / 직접 진입 시 store에 winner 없으면 /tournament 로 복귀.
  */
-export const metadata = {
-  title: '토너먼트 결과',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('tournament');
+  return {
+    title: t('resultTitle'),
+    alternates: { canonical: '/tournament/result' },
+    // 결과는 store 의존 + ?id= deep-link 도 사용자별 — 색인 제외.
+    robots: { index: false, follow: false },
+  };
+}
 
-export default function TournamentResultPage() {
+export default async function TournamentResultPage() {
+  const t = await getTranslations('tournament');
   return (
     <>
-      <SubHeader title="토너먼트 결과" />
+      <SubHeader title={t('resultTitle')} />
       <TournamentResultClient />
     </>
   );

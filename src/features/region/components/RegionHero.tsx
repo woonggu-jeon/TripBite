@@ -65,7 +65,8 @@ export function RegionHero({ code }: { code: RegionCode }) {
           <span className={styles.emoji}>{emoji}</span>
         </div>
         <div className={styles.body}>
-          <h1 className={styles.title}>{name}</h1>
+          {/* SubHeader 가 페이지 h1 — Hero 는 h2 로 위계 보존 */}
+          <h2 className={styles.title}>{name}</h2>
           <p className={styles.subtitle}>{meta?.en ?? code}</p>
           <p className={styles.description}>{description}</p>
         </div>

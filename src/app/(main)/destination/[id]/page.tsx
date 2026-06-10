@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import { destinationSeeds } from '@/mocks/seeds/destinations';
 import { regionContentSeeds } from '@/mocks/seeds/regions';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
+import { JsonLd, breadcrumbList, touristAttraction } from '@/lib/json-ld';
 import { DestinationDetailClient } from './_components/DestinationDetailClient';
 
 /**
@@ -40,9 +42,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: name,
     description,
+    alternates: {
+      canonical: `/destination/${id}`,
+    },
     openGraph: {
       title: name,
       description,
+      url: `/destination/${id}`,
       images: [{ url: ogImage, width: 1080, height: 1080 }],
     },
     twitter: {
@@ -61,10 +67,6 @@ const CATEGORY_TO_TYPE: Record<string, string> = {
   local: 'Place',
 };
 
-const BLOCK_INDEXING =
-  process.env.NEXT_PUBLIC_USE_MSW === 'true' ||
-  process.env.NEXT_PUBLIC_BLOCK_INDEXING === 'true';
-
 export default async function DestinationDetailPage({ params }: Props) {
   const { id } = await params;
   const seed = destinationSeeds.find((d) => d.id === id);
@@ -73,30 +75,30 @@ export default async function DestinationDetailPage({ params }: Props) {
   const regionCode = seed?.region ?? rc?.region;
   const region = CHUNGBUK_REGIONS.find((r) => r.code === regionCode);
   const category = seed?.category ?? 'attraction';
-  const jsonLdType = CATEGORY_TO_TYPE[category] ?? 'TouristAttraction';
+  const type = CATEGORY_TO_TYPE[category] ?? 'TouristAttraction';
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': jsonLdType,
-    name,
-    ...(region && {
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality: region.ko,
-        addressRegion: '충청북도',
-        addressCountry: 'KR',
-      },
-    }),
-  };
+  const tNav = await getTranslations('nav');
+  const tRegion = await getTranslations('region');
 
   return (
     <>
-      {!BLOCK_INDEXING && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      )}
+      <JsonLd
+        data={touristAttraction({
+          name,
+          type,
+          addressLocality: region?.ko,
+        })}
+      />
+      <JsonLd
+        data={breadcrumbList([
+          { name: tNav('home'), url: '/' },
+          { name: tRegion('title'), url: '/region' },
+          ...(region
+            ? [{ name: region.ko, url: `/region/${region.code}` }]
+            : []),
+          { name, url: `/destination/${id}` },
+        ])}
+      />
       <DestinationDetailClient id={id} />
     </>
   );

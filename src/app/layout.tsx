@@ -4,6 +4,7 @@ import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 import { Analytics } from '@vercel/analytics/next';
 import { Providers } from './providers';
 import { getApiOrigin } from '@/lib/api-origin';
+import { JsonLd, webSiteOrganization } from '@/lib/json-ld';
 import './globals.scss';
 
 /**
@@ -198,35 +199,15 @@ export default async function RootLayout({
         />
 
         {/* JSON-LD 구조화 데이터 — WebSite + Organization.
-            search 박스 (potentialAction) 는 site search 미구현이라 omit. */}
-        {!BLOCK_INDEXING && (
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                '@context': 'https://schema.org',
-                '@graph': [
-                  {
-                    '@type': 'WebSite',
-                    name: 'TripBite',
-                    url:
-                      process.env.NEXT_PUBLIC_SITE_URL ??
-                      'https://trip-bite-mxue.vercel.app',
-                    inLanguage: ['ko', 'en'],
-                  },
-                  {
-                    '@type': 'Organization',
-                    name: 'TripBite',
-                    url:
-                      process.env.NEXT_PUBLIC_SITE_URL ??
-                      'https://trip-bite-mxue.vercel.app',
-                    logo: '/icons/icon-512x512.png',
-                  },
-                ],
-              }),
-            }}
-          />
-        )}
+            search 박스 (potentialAction) 는 site search 미구현이라 omit.
+            JsonLd 가 BLOCK_INDEXING 모드면 자체 미렌더. */}
+        <JsonLd
+          data={webSiteOrganization({
+            name: 'TripBite',
+            inLanguage: ['ko', 'en'],
+            logoPath: '/icons/icon-512x512.png',
+          })}
+        />
       </head>
       <body>
         <NextIntlClientProvider locale={locale} messages={messages}>

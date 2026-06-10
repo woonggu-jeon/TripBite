@@ -58,6 +58,13 @@
 
 ---
 
+## 0-SEO. 보류 SEO 보강 — 의존성/데이터 충족 시 진행
+
+- **hreflang alternates** (M) — `layout.tsx` generateMetadata 에 `alternates.languages` 추가. 단, 현재 next-intl 이 **cookie 기반 locale** (URL prefix 없음 — `/region/cheongju` ko/en 동일). hreflang 은 분리된 URL (`/en/...`) 이 전제 → routing 변경 (`next-intl` 의 `defineRouting` + middleware locale prefix) 도입 시 진행.
+- **Event JSON-LD** (S) — `/destination/[id]` 의 `category: festival` 콘텐츠에 `@type: Event` schema (startDate / endDate / url) 추가. 현재 `destinationSeeds` 및 BE festival 응답에 날짜 필드 없음 → BE 가 축제 일정 필드 노출하면 진행.
+
+---
+
 ## 1. Stub 컴포넌트 — 모두 제거됨
 
 2026-06-03 일괄 정리:

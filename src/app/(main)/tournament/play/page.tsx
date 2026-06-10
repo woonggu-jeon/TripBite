@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { TournamentPlayClient } from './_components/TournamentPlayClient';
 
@@ -34,14 +36,21 @@ import { TournamentPlayClient } from './_components/TournamentPlayClient';
  *
  * 새로고침 시 store가 비어있으면 자동으로 /tournament 로 redirect.
  */
-export const metadata = {
-  title: '토너먼트 진행 중',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('tournament');
+  return {
+    title: t('inProgressTitle'),
+    alternates: { canonical: '/tournament/play' },
+    // 진행 화면은 store 상태 의존 — 공유 가치 없음, 색인 제외.
+    robots: { index: false, follow: false },
+  };
+}
 
-export default function TournamentPlayPage() {
+export default async function TournamentPlayPage() {
+  const t = await getTranslations('tournament');
   return (
     <>
-      <SubHeader title="토너먼트" />
+      <SubHeader title={t('title')} />
       <TournamentPlayClient />
     </>
   );
