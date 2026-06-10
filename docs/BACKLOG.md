@@ -169,14 +169,20 @@ orval 단일화 완료 (2026-06-06). 운영 워크플로:
 
 ## 3-1. 운영 BE 배포 (진행 중)
 
-**도메인**: `tripbite.duckdns.org` (DuckDNS dynamic DNS + docker). 사용자가 BE 컨테이너 빌드/배포 중.
+**도메인**:
+
+- **BE**: `tripbite.duckdns.org` (DuckDNS dynamic DNS + docker). 사용자가 BE 컨테이너 빌드/배포 중.
+- **FE** (임시): `trip-bite-mxue.vercel.app` (Vercel 자동 생성). custom domain 받으면 갱신.
+
+⚠ 두 도메인은 **cross-origin** (eTLD+1 다름) — cookie 가 SameSite=None+Secure 필요.
 
 **BE 측 확인 사항** (FE 가 정합하려면 BE 가 이렇게 설정):
 
 - HTTPS 필수 — Let's Encrypt + reverse proxy (nginx/caddy) 또는 cloudflare tunnel. DuckDNS 자체는 HTTP 만 제공
-- CORS: `Access-Control-Allow-Origin: <FE 운영 도메인>` + `Access-Control-Allow-Credentials: true`
-- Cookie: FE/BE 도메인이 cross-origin 이면 **`Set-Cookie: SID=...; SameSite=None; Secure`** 필수 (브라우저가 cookie 첨부 조건)
+- CORS: `Access-Control-Allow-Origin: https://trip-bite-mxue.vercel.app` (정확 일치, wildcard X) + `Access-Control-Allow-Credentials: true`
+- Cookie: cross-origin 이므로 **`Set-Cookie: SID=...; SameSite=None; Secure; HttpOnly; Path=/`** 필수
 - Session cookie 이름: `SID` (FE `NEXT_PUBLIC_SESSION_COOKIE` 기본값과 일치)
+- Preview 배포 도메인 (`*.vercel.app`) 도 CORS allow 하면 PR preview 검증 가능 — 옵션
 
 **FE 측 배포 후 작업** (BE 배포 완료 시):
 

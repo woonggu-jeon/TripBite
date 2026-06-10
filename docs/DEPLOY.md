@@ -81,8 +81,8 @@ Repo → Settings → Secrets and variables → Actions
 | 이름 | 값 |
 |---|---|
 | `NEXT_PUBLIC_USE_MSW` | `false` (실 백엔드 시) / `true` (mock 운영) |
-| `NEXT_PUBLIC_SITE_URL` | `https://tripbite.kr` |
-| `PRODUCTION_URL` | `https://tripbite.kr` (GitHub UI 의 배포 링크 표시용) |
+| `NEXT_PUBLIC_SITE_URL` | `https://trip-bite-mxue.vercel.app` |
+| `PRODUCTION_URL` | `https://trip-bite-mxue.vercel.app` (GitHub UI 의 배포 링크 표시용) |
 
 ---
 

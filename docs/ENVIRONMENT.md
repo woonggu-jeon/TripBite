@@ -19,18 +19,18 @@ FE 가 사용하는 모든 env 변수의 단일 reference. 신규 개발자 셋�
 
 ## 2. Client env (`NEXT_PUBLIC_*`) 일람
 
-| 변수                           | 필수         | 기본                    | 용도                                           | 사용처                                        |
-| ------------------------------ | ------------ | ----------------------- | ---------------------------------------------- | --------------------------------------------- |
-| `NEXT_PUBLIC_API_URL`          | ✅ 필수      | `http://localhost:3000` | axios baseURL                                  | `services/api/client.ts`                      |
-| `NEXT_PUBLIC_USE_MSW`          | (dev)        | `false`                 | MSW worker 활성. `true` 시 robots noindex 자동 | `mocks/browser.ts` / next.config / middleware |
-| `NEXT_PUBLIC_SW_DEV`           | (dev)        | `false`                 | dev 모드에서 Service Worker 강제 활성          | `next.config.js`                              |
-| `NEXT_PUBLIC_BLOCK_INDEXING`   | 선택         | `false`                 | staging/preview 에서 X-Robots-Tag 강제         | `next.config.js`                              |
-| `NEXT_PUBLIC_CSP_ENFORCE`      | 선택         | `false`                 | CSP enforce (default Report-Only)              | middleware                                    |
-| `NEXT_PUBLIC_SESSION_COOKIE`   | 선택         | `SID`                   | BE 발급 sessionID 쿠키 이름 override           | `middleware.ts`                               |
-| `NEXT_PUBLIC_SITE_URL`         | 운영 필수    | `https://tripbite.kr`   | sitemap / OG url / canonical                   | `app/sitemap.ts` / OG meta                    |
-| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | push 사용 시 | (없음)                  | Web Push 구독 시 `applicationServerKey`        | `features/notification/utils/subscription.ts` |
-| `NEXT_PUBLIC_APP_VERSION`      | 선택         | (없음)                  | 앱 버전 표시 (디버그)                          | footer / about                                |
-| `NEXT_PUBLIC_PRETENDARD_SRI`   | 운영 권장    | `sha384-GIdEBaq...`     | Pretendard CDN SRI integrity (jsdelivr v1.3.9) | font preload                                  |
+| 변수                           | 필수         | 기본                                | 용도                                           | 사용처                                        |
+| ------------------------------ | ------------ | ----------------------------------- | ---------------------------------------------- | --------------------------------------------- |
+| `NEXT_PUBLIC_API_URL`          | ✅ 필수      | `http://localhost:3000`             | axios baseURL                                  | `services/api/client.ts`                      |
+| `NEXT_PUBLIC_USE_MSW`          | (dev)        | `false`                             | MSW worker 활성. `true` 시 robots noindex 자동 | `mocks/browser.ts` / next.config / middleware |
+| `NEXT_PUBLIC_SW_DEV`           | (dev)        | `false`                             | dev 모드에서 Service Worker 강제 활성          | `next.config.js`                              |
+| `NEXT_PUBLIC_BLOCK_INDEXING`   | 선택         | `false`                             | staging/preview 에서 X-Robots-Tag 강제         | `next.config.js`                              |
+| `NEXT_PUBLIC_CSP_ENFORCE`      | 선택         | `false`                             | CSP enforce (default Report-Only)              | middleware                                    |
+| `NEXT_PUBLIC_SESSION_COOKIE`   | 선택         | `SID`                               | BE 발급 sessionID 쿠키 이름 override           | `middleware.ts`                               |
+| `NEXT_PUBLIC_SITE_URL`         | 운영 필수    | `https://trip-bite-mxue.vercel.app` | sitemap / OG url / canonical                   | `app/sitemap.ts` / OG meta                    |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | push 사용 시 | (없음)                              | Web Push 구독 시 `applicationServerKey`        | `features/notification/utils/subscription.ts` |
+| `NEXT_PUBLIC_APP_VERSION`      | 선택         | (없음)                              | 앱 버전 표시 (디버그)                          | footer / about                                |
+| `NEXT_PUBLIC_PRETENDARD_SRI`   | 운영 권장    | `sha384-GIdEBaq...`                 | Pretendard CDN SRI integrity (jsdelivr v1.3.9) | font preload                                  |
 
 ### 환경별 필수 매트릭스
 
@@ -148,11 +148,11 @@ OPENAPI_URL                     = https://preview-api.../docs-json
 
 ### Variables (비민감 — Settings → Secrets and variables → Actions → Variables)
 
-| 이름                   | 값                                                  |
-| ---------------------- | --------------------------------------------------- |
-| `NEXT_PUBLIC_USE_MSW`  | `false`                                             |
-| `NEXT_PUBLIC_SITE_URL` | `https://tripbite.kr`                               |
-| `PRODUCTION_URL`       | `https://tripbite.kr` (GitHub UI 의 배포 링크 표시) |
+| 이름                   | 값                                                                |
+| ---------------------- | ----------------------------------------------------------------- |
+| `NEXT_PUBLIC_USE_MSW`  | `false`                                                           |
+| `NEXT_PUBLIC_SITE_URL` | `https://trip-bite-mxue.vercel.app`                               |
+| `PRODUCTION_URL`       | `https://trip-bite-mxue.vercel.app` (GitHub UI 의 배포 링크 표시) |
 
 ---
 

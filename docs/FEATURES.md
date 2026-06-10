@@ -182,12 +182,12 @@ BE 는 다음 두 필드만 보장 (FE interceptor 가 normalize):
 
 #### 메일 발송 spec
 
-| 변수                | 값                                                 |
-| ------------------- | -------------------------------------------------- |
-| `${FE_URL}`         | `NEXT_PUBLIC_SITE_URL` (예: `https://tripbite.kr`) |
-| `${TOKEN}`          | URL-safe base64 / UUID (충돌 X, 추측 불가)         |
-| `${EXPIRES_AT_KST}` | 토큰 만료 시각 (KST)                               |
-| `${USERNAME}`       | 사용자 아이디 (가능 시)                            |
+| 변수                | 값                                                                      |
+| ------------------- | ----------------------------------------------------------------------- |
+| `${FE_URL}`         | `NEXT_PUBLIC_SITE_URL` (운영 임시: `https://trip-bite-mxue.vercel.app`) |
+| `${TOKEN}`          | URL-safe base64 / UUID (충돌 X, 추측 불가)                              |
+| `${EXPIRES_AT_KST}` | 토큰 만료 시각 (KST)                                                    |
+| `${USERNAME}`       | 사용자 아이디 (가능 시)                                                 |
 
 링크: `${FE_URL}/reset-password?token=${TOKEN}` (정확 매칭).
 
