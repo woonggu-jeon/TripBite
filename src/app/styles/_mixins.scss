@@ -61,8 +61,8 @@
 }
 
 @mixin focus-ring {
-  outline: var(--border-base) solid var(--color-primary);
-  outline-offset: 2px;
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
 }
 
 @mixin visually-hidden {

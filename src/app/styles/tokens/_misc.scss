@@ -17,4 +17,9 @@
   --border-thin: 1px;
   --border-base: 1.5px;
   --border-thick: 2px;
+
+  /* Focus ring — 키보드 포커스 시각 표시. shorthand 로 일관 적용 (a11y 핵심).
+     사용: `outline: var(--focus-outline); outline-offset: var(--focus-outline-offset);` */
+  --focus-outline: 2px solid var(--color-primary);
+  --focus-outline-offset: 2px;
 }

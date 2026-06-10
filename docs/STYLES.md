@@ -43,7 +43,7 @@ src/app/
 | 그라데이션 카드 상단 (10%)  | `var(--color-primary-surface-grad-start)`                                                                                                                 |
 | chip/badge 배경 (alpha 12%) | `var(--color-primary-tint)`                                                                                                                               |
 | 강조 카드 border            | `var(--color-primary-border)`                                                                                                                             |
-| focus ring / outline        | `var(--color-primary-ring)`                                                                                                                               |
+| focus ring / outline        | `var(--color-primary-ring)` (색만), `var(--focus-outline)` + `var(--focus-outline-offset)` (shorthand — 36+ 사용처 일관)                                  |
 | secondary 텍스트 (60% mix)  | `var(--color-primary-muted)`                                                                                                                              |
 | 정보 박스 / skim 배경       | `var(--color-surface-soft)`                                                                                                                               |
 | 분리선                      | `var(--color-divider)`                                                                                                                                    |

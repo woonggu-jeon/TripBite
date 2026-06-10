@@ -27,8 +27,8 @@
     transform: scale(0.98);
   }
   &:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
   }
 
   // 미세 글로우 (우측 상단)

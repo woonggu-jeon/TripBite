@@ -54,7 +54,7 @@
 
   &:focus-within {
     border-color: var(--color-primary);
-    outline: 2px solid var(--color-primary);
+    outline: var(--focus-outline);
     outline-offset: 1px;
   }
 }
@@ -152,8 +152,8 @@
   justify-self: start;
 
   &:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
   }
 }
 
