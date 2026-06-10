@@ -50,7 +50,8 @@ const PAGES: { path: string; label: string }[] = [
   { path: '/ranking', label: '랭킹' },
   { path: '/quiz', label: '여행 유형 테스트' },
   { path: '/settings', label: '설정' },
-  { path: '/destination/cheongju-attraction-1', label: '여행지 상세' },
+  // seed id 체계: tour-<hash(rc-<region>-<type>-<idx>)>. cheongju attraction 1 hash = tour-5537321.
+  { path: '/destination/tour-5537321', label: '여행지 상세' },
 ];
 
 test.describe('a11y — serious/critical 위반 0건', () => {

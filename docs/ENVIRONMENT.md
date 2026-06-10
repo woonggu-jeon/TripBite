@@ -30,7 +30,7 @@ FE 가 사용하는 모든 env 변수의 단일 reference. 신규 개발자 셋�
 | `NEXT_PUBLIC_SITE_URL`         | 운영 필수    | `https://tripbite.kr`   | sitemap / OG url / canonical                   | `app/sitemap.ts` / OG meta                    |
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | push 사용 시 | (없음)                  | Web Push 구독 시 `applicationServerKey`        | `features/notification/utils/subscription.ts` |
 | `NEXT_PUBLIC_APP_VERSION`      | 선택         | (없음)                  | 앱 버전 표시 (디버그)                          | footer / about                                |
-| `NEXT_PUBLIC_PRETENDARD_SRI`   | 선택         | (없음)                  | Pretendard CDN SRI integrity                   | font preload                                  |
+| `NEXT_PUBLIC_PRETENDARD_SRI`   | 운영 권장    | `sha384-GIdEBaq...`     | Pretendard CDN SRI integrity (jsdelivr v1.3.9) | font preload                                  |
 
 ### 환경별 필수 매트릭스
 

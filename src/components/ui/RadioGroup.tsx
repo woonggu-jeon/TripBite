@@ -62,6 +62,8 @@ export function RadioOption({
 }: RadioOptionProps) {
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     if (disabled) return;
+    // 이미 선택된 옵션 재클릭은 idempotent — haptic / onSelect 모두 skip (Tab 과 동일).
+    if (checked) return;
     haptic.tap();
     if (blurOnClick) e.currentTarget.blur();
     onSelect();
