@@ -11,7 +11,7 @@ import styles from './OnboardingStep.module.scss';
  * 정보통신망법 / 개인정보보호법 기준 만 14세 미만 가입 제한.
  * 체크박스로 "만 14세 이상" 자기 확인 — 미체크 시 다음 disabled.
  *
- * localStorage 영속화는 use-local-onboarding 의 onboarded 마킹과 함께
+ * 디바이스 onboarding 신호는 tripbite.visited cookie (middleware 가 보는 source) —
  * 다음 단계 진입 시 implicit 처리 (별 key 안 둠 — onboarded 자체가 14세 확인 후 완료된 신호).
  */
 export function AgeConfirmStep({

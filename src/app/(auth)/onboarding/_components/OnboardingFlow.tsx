@@ -7,7 +7,6 @@ import { ConceptStep } from '@/features/onboarding/components/ConceptStep';
 import { AgeConfirmStep } from '@/features/onboarding/components/AgeConfirmStep';
 import { LocationStep } from '@/features/onboarding/components/LocationStep';
 import { useCompleteOnboarding } from '@/features/onboarding/hooks/use-onboarding';
-import { useLocalOnboarding } from '@/features/onboarding/hooks/use-local-onboarding';
 import { useAuthStore } from '@/stores/auth-store';
 import { useLocationStore } from '@/stores/location-store';
 import styles from './OnboardingFlow.module.scss';
@@ -43,7 +42,6 @@ export function OnboardingFlow() {
   const [step, setStep] = useState<Step>(1);
   const { mutateAsync: complete, isPending } = useCompleteOnboarding();
   const resolvedLocation = useLocationStore((s) => s.resolved);
-  const { markCompleted } = useLocalOnboarding();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   const goNext = () =>
@@ -53,12 +51,9 @@ export function OnboardingFlow() {
   async function finishOnboarding() {
     if (isPending) return;
     // 디바이스 신호 — middleware 가 다음 진입부터 SSR 단계에서 skip 판정 (FOUC 회피).
-    // localStorage + cookie 둘 다 sync — cookie 는 SSR/middleware 가 보는 source,
-    // localStorage 는 client UI 동기 (기존 호출처 호환).
-    markCompleted();
+    // 1년 max-age, SameSite=Lax (same-site 충분, cross-origin 진입 무관).
+    // HttpOnly 아님 — 디바이스 UX 신호. 인증은 SID cookie 별도.
     if (typeof document !== 'undefined') {
-      // 1년 max-age, SameSite=Lax (same-site 환경에선 충분, cross-origin 진입 무관).
-      // HttpOnly 아님 — 디바이스 UX 신호일 뿐 인증과 무관 (인증은 SID cookie).
       document.cookie =
         'tripbite.visited=1; max-age=31536000; path=/; SameSite=Lax';
     }
