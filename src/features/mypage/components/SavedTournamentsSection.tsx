@@ -13,7 +13,7 @@ import { SavedTournamentCard } from './SavedTournamentCard';
 import styles from './SavedTournamentsSection.module.scss';
 
 /**
- * 저장된 토너먼트 우승 여행지 — 최대 10개 가로 스크롤 카드 (Carousel).
+ * 저장된 토너먼트 우승 여행지 — 최대 20개 가로 스크롤 카드 (Carousel).
  *
  * 메인의 "지금 열리는 충북 축제" 와 동일한 패턴 — 가로 스와이퍼로 N장 모두 보임.
  * 헤더 우측에 "전체보기 (N)" Link — /mypage/saved-tournaments 상세 페이지 진입점.

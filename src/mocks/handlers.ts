@@ -544,7 +544,7 @@ export const handlers = [
   // BE spec (Swagger §Me, POST /me/avatar):
   //   - 응답 201 { avatarUrl }
   //   - 422 AVATAR_TYPE_UNSUPPORTED (image/* 외)
-  //   - 422 AVATAR_TOO_LARGE (>5MB)
+  //   - 422 AVATAR_TOO_LARGE (>10MB)
   //   - 400 VALIDATION (file 누락 / 파싱 실패)
   //   - 503 STORAGE_NOT_CONFIGURED (R2 미설정 — mock 은 미시뮬)
   //
@@ -571,11 +571,11 @@ export const handlers = [
           { status: 422 },
         );
       }
-      if (file.size > 5 * 1024 * 1024) {
+      if (file.size > 10 * 1024 * 1024) {
         return HttpResponse.json(
           {
             code: 'AVATAR_TOO_LARGE',
-            message: '파일이 너무 큽니다 (최대 5MB).',
+            message: '파일이 너무 큽니다 (최대 10MB).',
           },
           { status: 422 },
         );

@@ -27,7 +27,7 @@ import { TournamentResultClient } from './_components/TournamentResultClient';
  *
  *   4) 저장 / 재시도 액션
  *      - "마이페이지에 저장하시겠습니까?" → POST /mypage/tournaments
- *        (마이페이지엔 최대 10개 보관, 초과 시 사용자에게 교체 선택 UI 노출)
+ *        (마이페이지엔 최대 20개 보관, 초과 시 사용자에게 교체 선택 UI 노출)
  *      - "다시 하시겠습니까?" → store 초기화 + router.replace('/tournament')
  *
  * 새로고침 / 직접 진입 시 store에 winner 없으면 /tournament 로 복귀.

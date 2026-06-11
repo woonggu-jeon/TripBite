@@ -14,7 +14,7 @@ import { MyPageClient } from './_components/MyPageClient';
  *      - RegionStampMap (SVG 지도 위에 도장 오버레이)
  *      - 진행률 "X/11 완료"
  *
- *   3) 토너먼트 우승지 저장 (최대 10개)
+ *   3) 토너먼트 우승지 저장 (최대 20개)
  *      - 카드 그리드 또는 가로 캐러셀
  *      - 카드 클릭 → 결과 페이지 재진입 또는 모달
  *      - 삭제 버튼 개별

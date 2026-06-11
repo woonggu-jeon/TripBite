@@ -19,7 +19,7 @@ import styles from './MyPageClient.module.scss';
  * 컴포넌트 분할 (features/mypage/components):
  *   - <ProfileCard />              닉네임 + 유형 뱃지
  *   - <StampBookBanner />          도장책 진입 배너 → /mypage/stamps
- *   - <SavedTournamentsSection />  저장된 우승지 (최대 10)
+ *   - <SavedTournamentsSection />  저장된 우승지 (최대 20)
  *   - <TournamentHistorySection /> 토너먼트 기록 (InfiniteList)
  *
  * 편지함 영역은 마이페이지에서 미노출 (요구사항). /letter 라우트는 유지.
