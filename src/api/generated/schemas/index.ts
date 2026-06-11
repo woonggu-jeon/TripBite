@@ -90,6 +90,7 @@ export * from './tournamentThemeDto';
 export * from './travelTypeBriefDto';
 export * from './travelTypeCode';
 export * from './travelTypeDto';
+export * from './unreadCountDto';
 export * from './unsubscribeDto';
 export * from './updateNotificationSettingsDto';
 export * from './updateProfileDto';

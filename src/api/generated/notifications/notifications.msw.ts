@@ -20,11 +20,14 @@ import {
   AppNotificationType
 } from '../schemas';
 import type {
-  NotificationListDto
+  NotificationListDto,
+  UnreadCountDto
 } from '../schemas';
 
 
 export const getNotificationControllerListV1ResponseMock = (overrideResponse: Partial<Extract<NotificationListDto, object>> = {}): NotificationListDto => ({items: Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => ({type: faker.helpers.arrayElement(Object.values(AppNotificationType)), id: faker.string.alpha({length: {min: 10, max: 20}}), title: faker.string.alpha({length: {min: 10, max: 20}}), body: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), link: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), imageUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), read: faker.datatype.boolean(), createdAt: faker.string.alpha({length: {min: 10, max: 20}})})), unreadCount: faker.number.float({fractionDigits: 2}), nextCursor: faker.helpers.arrayElement([faker.number.float({fractionDigits: 2}), null]), ...overrideResponse})
+
+export const getNotificationControllerUnreadCountV1ResponseMock = (overrideResponse: Partial<Extract<UnreadCountDto, object>> = {}): UnreadCountDto => ({unreadCount: faker.number.float({fractionDigits: 2}), ...overrideResponse})
 
 
 export const getNotificationControllerListV1MockHandler = (overrideResponse?: NotificationListDto | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<NotificationListDto> | NotificationListDto), options?: RequestHandlerOptions) => {
@@ -34,6 +37,18 @@ export const getNotificationControllerListV1MockHandler = (overrideResponse?: No
     return HttpResponse.json(overrideResponse !== undefined
     ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
     : getNotificationControllerListV1ResponseMock(),
+      { status: 200
+      })
+  }, options)
+}
+
+export const getNotificationControllerUnreadCountV1MockHandler = (overrideResponse?: UnreadCountDto | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<UnreadCountDto> | UnreadCountDto), options?: RequestHandlerOptions) => {
+  return http.get('*/v1/notifications/unread-count', async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+
+
+    return HttpResponse.json(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getNotificationControllerUnreadCountV1ResponseMock(),
       { status: 200
       })
   }, options)
@@ -80,6 +95,7 @@ export const getNotificationControllerMarkReadV1MockHandler = (overrideResponse?
 }
 export const getNotificationsMock = () => [
   getNotificationControllerListV1MockHandler(),
+  getNotificationControllerUnreadCountV1MockHandler(),
   getNotificationControllerReadAllV1MockHandler(),
   getNotificationControllerSubscribeV1MockHandler(),
   getNotificationControllerUnsubscribeV1MockHandler(),

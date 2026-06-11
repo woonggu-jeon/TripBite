@@ -29,6 +29,7 @@ import type {
   NotificationControllerListV1Params,
   NotificationListDto,
   SubscribeDto,
+  UnreadCountDto,
   UnsubscribeDto
 } from '../schemas';
 
@@ -183,6 +184,162 @@ export function useNotificationControllerListV1<TData = Awaited<ReturnType<typeo
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getNotificationControllerListV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+export const notificationControllerUnreadCountV1 = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalMutator<UnreadCountDto>(
+      {url: `/v1/notifications/unread-count`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getNotificationControllerUnreadCountV1InfiniteQueryKey = () => {
+    return [
+    'infinite', `/v1/notifications/unread-count`
+    ] as const;
+    }
+
+export const getNotificationControllerUnreadCountV1QueryKey = () => {
+    return [
+    `/v1/notifications/unread-count`
+    ] as const;
+    }
+
+
+export const getNotificationControllerUnreadCountV1InfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>>, TError = ErrorDto>( options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getNotificationControllerUnreadCountV1InfiniteQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>> = ({ signal }) => notificationControllerUnreadCountV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type NotificationControllerUnreadCountV1InfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>>
+export type NotificationControllerUnreadCountV1InfiniteQueryError = ErrorDto
+
+
+export function useNotificationControllerUnreadCountV1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>>, TError = ErrorDto>(
+  options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>,
+          TError,
+          Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useNotificationControllerUnreadCountV1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>>, TError = ErrorDto>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>,
+          TError,
+          Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useNotificationControllerUnreadCountV1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>>, TError = ErrorDto>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useNotificationControllerUnreadCountV1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>>, TError = ErrorDto>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getNotificationControllerUnreadCountV1InfiniteQueryOptions(options)
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+export const getNotificationControllerUnreadCountV1QueryOptions = <TData = Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>, TError = ErrorDto>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getNotificationControllerUnreadCountV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>> = ({ signal }) => notificationControllerUnreadCountV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type NotificationControllerUnreadCountV1QueryResult = NonNullable<Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>>
+export type NotificationControllerUnreadCountV1QueryError = ErrorDto
+
+
+export function useNotificationControllerUnreadCountV1<TData = Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>, TError = ErrorDto>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>,
+          TError,
+          Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useNotificationControllerUnreadCountV1<TData = Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>, TError = ErrorDto>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>,
+          TError,
+          Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useNotificationControllerUnreadCountV1<TData = Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>, TError = ErrorDto>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useNotificationControllerUnreadCountV1<TData = Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>, TError = ErrorDto>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof notificationControllerUnreadCountV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getNotificationControllerUnreadCountV1QueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
