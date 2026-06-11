@@ -6,31 +6,14 @@ import { buildCsp } from '@/lib/csp';
  * Middleware
  *
  * 책임:
- *   1) 인증: 쿠키 존재 여부 체크 (JWT 검증/리프레시는 axios interceptor)
- *   2) CSRF: state-changing 요청의 Origin 화이트리스트 검증 (1차 방어)
- *   3) CSP: 요청별 nonce 발급 + Content-Security-Policy-Report-Only 헤더
+ *   1) CSRF: state-changing 요청의 Origin 화이트리스트 검증 (1차 방어)
+ *   2) CSP: 요청별 nonce 발급 + Content-Security-Policy-Report-Only 헤더
  *
- * 보호 정책:
- *   - PUBLIC_ONLY_PATHS    인증 시 / 로 (login 페이지 등)
- *   - PROTECTED_PATHS      비인증 시 /login 으로 (개인 정보 페이지)
- *   - 그 외 모든 경로       비인증 진입 허용 (홈/토너먼트/유형테스트/랭킹/시군/여행지)
- *   onboarding 완료 분기는 AuthBootstrap에서 (user.isOnboarded 필요)
+ * 인증 redirect 는 AuthBootstrap (client-side) 책임 — cross-origin 운영에서
+ * BE cookie 가 FE 도메인 cookie jar 에 들어오지 않아 SSR 단계 cookie check
+ * 가 무용지물 (모두 false → 무한 redirect 회귀). 일관성 위해 mock 환경도 동일.
  */
 
-// 인증된 사용자가 진입 시 / 로 보냄 ("로그인된 사람이 로그인 페이지 보면 안 됨")
-// /reset-password 는 token 기반 흐름 — 이메일 링크에서 진입 시 로그인 상태와 무관하게
-// 토큰 검증해야 하므로 제외. (다른 디바이스에서 로그인된 사용자가 메일 링크 클릭하는
-// 케이스가 정상 시나리오 — / 로 차단되면 비밀번호 재설정 불가능 회귀.)
-const PUBLIC_ONLY_PATHS = ['/login', '/signup', '/forgot-password', '/find-id'];
-
-// 비인증 사용자 차단 — 개인 정보 페이지. 비로그인 진입 시 /login?redirect= 으로 보냄.
-// 그 외 모든 경로 (/ , /tournament, /quiz, /ranking, /region, /destination 등) 는 비로그인도 접근 가능.
-// 알림함 (/notifications) 은 이제 페이지 — 보호 경로 포함.
-const PROTECTED_PATHS = ['/mypage', '/settings', '/letter', '/notifications'];
-
-// sessionID 단일 쿠키 — BE 가 'SID' (또는 NEXT_PUBLIC_SESSION_COOKIE) 발급.
-// docs/FEATURES.md §A (Auth) 의 sessionID 모델 — JWT access/refresh 폐기 후 단일.
-const SESSION_COOKIE = process.env.NEXT_PUBLIC_SESSION_COOKIE ?? 'SID';
 const STATE_CHANGING = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
 export function middleware(request: NextRequest) {
@@ -54,35 +37,9 @@ export function middleware(request: NextRequest) {
   requestHeaders.set('x-nonce', nonce);
   requestHeaders.set('content-security-policy-report-only', csp);
 
-  // mock 환경 (NEXT_PUBLIC_USE_MSW=true) 에서는 백엔드가 없어 session 발급 불가.
-  // 인증 redirect 를 skip 해 모든 페이지를 둘러볼 수 있게 함. E2E 는 별도 cookie 주입.
-  // 운영 빌드 (USE_MSW=false) 에서는 그대로 redirect 동작.
-  const isMockMode = process.env.NEXT_PUBLIC_USE_MSW === 'true';
-
-  if (!isMockMode) {
-    const { pathname } = request.nextUrl;
-    const hasSession = request.cookies.has(SESSION_COOKIE);
-    const isPublicOnly = PUBLIC_ONLY_PATHS.some((p) => pathname.startsWith(p));
-    const isProtected = PROTECTED_PATHS.some((p) => pathname.startsWith(p));
-
-    if (isPublicOnly && hasSession) {
-      return withCsp(NextResponse.redirect(new URL('/', request.url)), csp);
-    }
-    if (isProtected && !hasSession) {
-      const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('redirect', pathname);
-      return withCsp(NextResponse.redirect(loginUrl), csp);
-    }
-  }
-
   const response = NextResponse.next({ request: { headers: requestHeaders } });
   response.headers.set(cspHeaderName(), csp);
   return response;
-}
-
-function withCsp(res: NextResponse, csp: string): NextResponse {
-  res.headers.set(cspHeaderName(), csp);
-  return res;
 }
 
 /**
