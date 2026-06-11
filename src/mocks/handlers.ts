@@ -920,8 +920,13 @@ export const handlers = [
 
   // ===== Notifications ===== (모두 로그인 필요)
   // cursor 기반 페이지네이션 — 편지/시군콘텐츠와 동일 컨벤션.
-  // unreadCount 는 매 페이지 응답에 포함 (전체 통합 수) — FE 의 page[0].unreadCount 가
-  // badge source 라 첫 페이지뿐 아니라 일관 보장 의도.
+  // unreadCount 는 매 페이지 응답에 포함 (전체 통합 수). badge 는 별도 unread-count endpoint.
+  http.get(`${apiUrl}/notifications/unread-count`, () => {
+    if (!getMockSignedIn()) return unauthorized();
+    return HttpResponse.json({
+      unreadCount: notificationItems.filter((n) => !n.read).length,
+    });
+  }),
   http.get(`${apiUrl}/notifications`, ({ request }) => {
     if (!getMockSignedIn()) return unauthorized();
     const url = new URL(request.url);

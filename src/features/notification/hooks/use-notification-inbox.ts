@@ -66,15 +66,15 @@ export function useNotificationInboxInfinite() {
 }
 
 /**
- * 헤더 badge 용 가벼운 조회 — unreadCount 만 필요.
- * 페이지 hook 과 같은 queryKey 사용 → 페이지 진입 후 추가 fetch 없음 (cache 공유).
- * 페이지 안 열린 사용자는 첫 페이지만 가져옴 — limit=1 로 작게.
+ * 헤더 badge 용 경량 조회 — `/notifications/unread-count` 단독 endpoint.
+ * 인박스 전체 fetch 없이 unreadCount 만 받음 (응답 ~50 bytes).
+ * 페이지 hook (`useNotificationInboxInfinite`) 과 별도 queryKey — 두 hook 의 invalidate 동시 갱신.
  */
 export function useNotificationBadge() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   return useQuery({
     queryKey: notificationKeys.badge(),
-    queryFn: () => notificationInboxApi.getPage({ limit: 1 }),
+    queryFn: () => notificationInboxApi.unreadCount(),
     ...CACHE.realtime,
     refetchOnWindowFocus: true,
     enabled: isAuthenticated,
