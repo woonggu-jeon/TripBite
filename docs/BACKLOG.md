@@ -51,6 +51,7 @@
 - **2026-06-10**: `lib/json-ld.tsx` helper 신설 — `breadcrumbList` / `webSiteOrganization` / `touristAttraction` factory + `<JsonLd>` 컴포넌트 (BLOCK_INDEXING 자체 처리). 3 inline `<script type="application/ld+json">` (layout/region/destination) 일괄 흡수.
 - **2026-06-10**: Event JSON-LD — `DestinationDetailDto.eventStart/eventEnd` BE 반영 (`docs/BE_REQUEST_FESTIVAL_DATES.md` 전달). `touristAttraction()` 이 Festival + startDate 시 schema.org Event 분기 (startDate/endDate/location.Place). `/destination/[id]` SSR 에서 `tournamentApi.getDestinationDetail(id)` fetch 로 schema 보강 (실패 시 graceful fallback). mock handler 가 category=festival 일 때 deterministic date 응답 (dev 검증).
 - **2026-06-10**: dead infra 청소 — `src/lib/blur.ts` (`getBlurDataURL`) + `plaiceholder` devDep 삭제. 호출 0건 + LCP 후보 `DestinationPhotos` 가 raw `<img>` 라 적용 비용 > 효과. 필요 시 38줄 재작성. §3 인프라 항목 폐기.
+- **2026-06-11**: orval generated commit — `src/api/generated/` 의 `.gitignore` 해제 + 121 파일 commit. 운영 BE 의 `/v1/docs-json` 비노출 (Swagger 보안) 으로 Vercel build prebuild 가 실패하던 회귀 대응. `predev`/`prebuild` 가 `generate:api || echo skip` fail-soft 로 — fetch 실패 시 cached generated 사용. BE swagger 변경 시 FE 가 `npm run generate:api && git commit src/api/generated/` 흐름.
 - **2026-06-10**: login returnUrl 회귀 fix — 2-단계 fix.
   - (1) `AuthBootstrap` / `useRequireAuth` 가 `encodeURIComponent` 후 query 작성 → double-encode → LoginForm 가드 실패 → fallback `/`. middleware 와 동일하게 `URLSearchParams.set('redirect', pathname)` 통일.
   - (2) URL 정상 (`%2Fmypage`) 인데도 useLogin onSuccess 의 `router.replace + router.refresh` race 3종 — (auth)↔(main) 그룹 교체 + RSC client cache 의 미인증 stale payload + AuthBootstrap의 onboarding 분기 + refresh 가 replace 보다 먼저 발사. **fix**: `window.location.assign(target)` hard navigation — 1회 full reload 비용으로 race 3종 모두 우회 (middleware cookie 정합 검증 / client router cache 우회 / AuthBootstrap mount-from-scratch).
@@ -184,11 +185,17 @@ orval 단일화 완료 (2026-06-06). 운영 워크플로:
 - Session cookie 이름: `SID` (FE `NEXT_PUBLIC_SESSION_COOKIE` 기본값과 일치)
 - Preview 배포 도메인 (`*.vercel.app`) 도 CORS allow 하면 PR preview 검증 가능 — 옵션
 
-**FE 측 배포 후 작업** (BE 배포 완료 시):
+**BE 측 차단 발견** (2026-06-11 운영 smoke):
+
+- `POST /v1/auth/login` → `403 {"code":"CSRF","message":"잘못된 요청입니다."}`. 모든 state-changing 요청 차단 (Origin 헤더 유무 무관).
+- BE 측 CSRF 정책 결정 필요 — 권장: **Origin allowlist** (`Origin === https://trip-bite-mxue.vercel.app` 통과) + `Set-Cookie: SID=...; SameSite=None; Secure`.
+- 운영 `/v1/docs-json` 404 — Swagger 비활성. orval 운영 build fail 방지를 위해 **FE 가 `src/api/generated/` 를 git commit** (2026-06-11 적용) + `prebuild` fail-soft.
+
+**FE 측 배포 후 작업** (BE CSRF 통과 시):
 
 1. Vercel env 등록 (`docs/DEPLOY.md` 참조) — `NEXT_PUBLIC_API_URL=https://tripbite.duckdns.org`
-2. `OPENAPI_URL=https://tripbite.duckdns.org/docs-json` (build env)
-3. `npm run be:check` — smoke / anon / onboarded / login 4종 회귀 (운영 API 대상)
+2. `OPENAPI_URL=https://tripbite.duckdns.org/v1/docs-json` (BE 노출 시. 미노출이면 prebuild fail-soft 가 cached generated 사용)
+3. `npm run be:check` — smoke / anon / onboarded / login 4종 회귀 (운영 API 대상, script env 인자화 후)
 4. `images.remotePatterns` 갱신 — BE 가 이미지를 자체 도메인에서 호스팅하는 경우 (R2/S3 등)
 5. Vercel preview → production 승격
 6. 매뉴얼 smoke (`docs/PWA_VERIFICATION.md` 의 매뉴얼 체크리스트)

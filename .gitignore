@@ -60,9 +60,11 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
-# generated — `npm run generate:api` (orval) 로 매번 재생성.
-# 빌드 전 prebuild 훅이 자동 generate (BE Swagger SoT, drift 0). repo 깔끔 유지.
-src/api/generated/
+# generated — `npm run generate:api` (orval) 로 BE Swagger 에서 재생성.
+# 운영 build 안정성 위해 commit 유지 (운영 BE 가 docs-json 비노출 시 generate 실패 대비).
+# BE swagger 변경 시 FE 가 `npm run generate:api && git commit src/api/generated/` 흐름.
+# prebuild 가 fail-soft — fetch 실패 시 cached generated 사용.
+# src/api/generated/
 
 *storybook.log
 storybook-static

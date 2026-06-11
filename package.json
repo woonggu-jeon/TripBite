@@ -7,8 +7,8 @@
   },
   "scripts": {
     "dev": "next dev --port 3900",
-    "predev": "npm run generate:api",
-    "prebuild": "npm run generate:api",
+    "predev": "npm run generate:api || echo \"[predev] generate:api skipped — using committed src/api/generated/\"",
+    "prebuild": "npm run generate:api || echo \"[prebuild] generate:api skipped — using committed src/api/generated/\"",
     "build": "next build",
     "start": "next start --port 3900",
     "lint": "next lint",
