@@ -128,7 +128,6 @@ export const destinationSeeds: Destination[] = DATA.flatMap((row) =>
       name,
       category: c,
       region: row.region,
-      description: undefined,
       imageUrl: undefined,
     })),
   ),

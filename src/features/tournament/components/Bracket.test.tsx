@@ -11,7 +11,6 @@ function makeDest(id: number, name?: string): Destination {
     name: name ?? `dest-${id}`,
     category: 'attraction',
     region: 'cheongju',
-    description: undefined,
     imageUrl: undefined,
   };
 }

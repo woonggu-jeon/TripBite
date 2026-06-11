@@ -31,7 +31,6 @@ export const regionContentSeeds = CHUNGBUK_REGIONS.flatMap((r) =>
       const id = tourContentId(r.code, type, idx);
       return {
         id,
-        contentId: id,
         type,
         region: r.code,
         title: `${r.ko} ${TYPE_LABEL[type]} ${idx}`,

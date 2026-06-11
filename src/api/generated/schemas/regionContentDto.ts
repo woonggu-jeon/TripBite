@@ -11,7 +11,6 @@ export interface RegionContentDto {
   type: DestinationCategory;
   region: RegionCode;
   id: string;
-  contentId: string;
   title: string;
   summary?: string;
   imageUrl?: string;

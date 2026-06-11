@@ -10,6 +10,5 @@ export interface SavedTournamentDto {
   id: string;
   destination: DestinationDto;
   luckyColor: string;
-  meetChance: number;
   savedAt: string;
 }

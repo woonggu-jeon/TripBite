@@ -137,7 +137,6 @@ export const savedTournamentSeeds: SavedTournament[] = SAVED_PICKS.flatMap(
         id: `saved-${dest.id}`,
         destination: dest,
         luckyColor: pick.color,
-        meetChance: pick.chance,
         savedAt: new Date(Date.now() - i * 86400 * 1000 * 2).toISOString(),
       },
     ];

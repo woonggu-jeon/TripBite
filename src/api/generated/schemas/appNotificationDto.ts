@@ -12,7 +12,6 @@ export interface AppNotificationDto {
   title: string;
   body?: string;
   link?: string;
-  imageUrl?: string;
   read: boolean;
   createdAt: string;
 }

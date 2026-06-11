@@ -439,7 +439,6 @@ export const handlers = [
       .slice(0, 8)
       .map((d) => ({
         id: d.id,
-        contentId: d.id,
         type: 'festival' as const,
         region: d.region,
         title: d.name,
@@ -713,7 +712,6 @@ export const handlers = [
       id: `saved-${body.destinationId}`,
       destination: dest,
       luckyColor: '#7AC7E8',
-      meetChance: 75,
       savedAt: new Date().toISOString(),
     });
   }),
@@ -840,7 +838,6 @@ export const handlers = [
           name: rc.title,
           category: rc.type as Destination['category'],
           region: rc.region,
-          description: rc.summary,
           imageUrl: rc.imageUrl,
         };
       }
@@ -885,7 +882,6 @@ export const handlers = [
     const detail = {
       ...seed,
       summary: `${seed.name} — ${seed.region} 대표 ${seed.category}`,
-      description: seed.description ?? undefined,
       photos,
       address: `충북 ${seed.region.replace(/[a-z]+/i, '')} ${seed.name} 일대`,
       phone:

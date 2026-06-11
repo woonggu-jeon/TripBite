@@ -12,6 +12,5 @@ export interface DestinationDto {
   region: RegionCode;
   id: string;
   name: string;
-  description?: string;
   imageUrl?: string;
 }
