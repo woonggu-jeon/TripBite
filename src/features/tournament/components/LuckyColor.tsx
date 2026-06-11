@@ -92,12 +92,12 @@ export function LuckyColor({ seed }: { seed: string }) {
       className={styles.box}
       aria-label={`${t('label')}: ${name} ${hex}`}
     >
-      <div className={styles.swatch} style={{ background: hex }} aria-hidden />
       <div className={styles.info}>
         <p className={styles.title}>{t('label')}</p>
         <p className={styles.name}>{name}</p>
         <p className={styles.hex}>{hex}</p>
       </div>
+      <div className={styles.swatch} style={{ background: hex }} aria-hidden />
     </section>
   );
 }

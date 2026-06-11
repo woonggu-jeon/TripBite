@@ -426,7 +426,7 @@
       "goSetup": "토너먼트 시작하기",
       "shareText": "TripBite 에서 {name} 가(이) 우승했어요!",
       "color": {
-        "label": "행운의 색",
+        "label": "오늘의 행운색",
         "red": "빨강",
         "orange": "주황",
         "yellow": "노랑",

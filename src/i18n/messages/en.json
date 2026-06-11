@@ -421,7 +421,7 @@
       "goSetup": "Start a bracket",
       "shareText": "{name} won my TripBite bracket!",
       "color": {
-        "label": "Lucky color",
+        "label": "Today's lucky color",
         "red": "Red",
         "orange": "Orange",
         "yellow": "Yellow",
