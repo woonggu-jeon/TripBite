@@ -4,9 +4,9 @@ import { buildCsp } from './csp';
 describe('buildCsp', () => {
   const csp = buildCsp('test-nonce-123');
 
-  it("script-src에 'self' + nonce (strict-dynamic 폐기 — self 무시 회귀 회피)", () => {
-    expect(csp).toContain("script-src 'self' 'nonce-test-nonce-123'");
-    expect(csp).not.toContain("'strict-dynamic'");
+  it('script-src에 nonce + strict-dynamic', () => {
+    expect(csp).toContain("'nonce-test-nonce-123'");
+    expect(csp).toContain("'strict-dynamic'");
   });
 
   it('sentry.io는 포함하지 않음 (client Sentry 미사용)', () => {
