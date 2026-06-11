@@ -222,9 +222,13 @@ function Item({ n, onSelect }: { n: AppNotification; onSelect: () => void }) {
   );
 
   if (n.link) {
+    // BE 가 `/letters` (복수) 잘못된 path 보내는 안전망 — FE 페이지는 `/letter` 단수.
+    // BE 측 정합 fix 가 정답이지만 (`/letters?tab=sent` → `/letter?tab=sent`),
+    // 운영 알림이 404 로 가지 않도록 normalize.
+    const normalized = n.link.replace(/^\/letters(?=[/?#]|$)/, '/letter');
     return (
       <Link
-        href={n.link as React.ComponentProps<typeof Link>['href']}
+        href={normalized as React.ComponentProps<typeof Link>['href']}
         prefetch={false}
         onClick={onSelect}
         className={styles.link}
