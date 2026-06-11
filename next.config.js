@@ -139,9 +139,11 @@ const nextConfig = {
    *     same-site (vercel.app) 로 통합. axios baseURL=/api/backend.
    *   - dev MSW: service worker 가 same-origin scope 만 intercept — proxy 패턴 필수.
    *
-   * destination 의 `/v1` prefix 자동 부여 — axios interceptor 가 generated 의
-   * `/v1/...` 를 `/...` 로 제거하므로 (`client.ts:46`), final URL 이 BE 의 `/v1/`
-   * 경로에 정확 매핑됨.
+   * 경로 매핑:
+   *   - axios interceptor 가 generated 의 `/v1/...` 를 `/...` 로 제거 (`client.ts:46`)
+   *   - rewrite destination 은 path 만 전달 (`${target}/:path*`)
+   *   - 운영 env `NEXT_PUBLIC_API_URL` 말미에 `/v1` 포함 가정
+   *     (예: `https://tripbite.duckdns.org/v1`) → final URL 이 BE `/v1/` 매핑.
    */
   async rewrites() {
     const target = process.env.NEXT_PUBLIC_API_URL;
@@ -149,7 +151,7 @@ const nextConfig = {
     return [
       {
         source: '/api/backend/:path*',
-        destination: `${target}/v1/:path*`,
+        destination: `${target}/:path*`,
       },
     ];
   },
@@ -170,7 +172,6 @@ if (process.env.ANALYZE === 'true') {
   try {
     withBundleAnalyzer = require('@next/bundle-analyzer')({ enabled: true });
   } catch {
-    // eslint-disable-next-line no-console
     console.warn(
       '[next.config] ANALYZE=true 인데 @next/bundle-analyzer 가 설치 안 됨.\n' +
         '  npm i -D @next/bundle-analyzer 후 다시 시도하세요.',

@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { mypageApi } from '@/features/mypage/api/mypage';
 import { CACHE } from '@/lib/cache';
+import { useAuthStore } from '@/stores/auth-store';
 import type { UpdateNicknameRequest } from '@/features/mypage/types';
 
 export const mypageKeys = {
@@ -12,12 +13,12 @@ export const mypageKeys = {
 };
 
 export function useMypage() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   return useQuery({
     queryKey: mypageKeys.summary(),
-    // generated 함수가 (signal?) → Promise<DTO>. react-query 의 queryFn 은
-    // ({signal, ...}) 객체 받으므로 lambda 로 signal 만 분리해 전달.
     queryFn: ({ signal }) => mypageApi.getSummary(signal),
-    ...CACHE.user, // 사용자 데이터 (2min)
+    enabled: isAuthenticated,
+    ...CACHE.user,
   });
 }
 
@@ -33,9 +34,11 @@ export function useUpdateNickname() {
 }
 
 export function useStamps() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   return useQuery({
     queryKey: mypageKeys.stamps(),
     queryFn: ({ signal }) => mypageApi.getStamps(signal),
+    enabled: isAuthenticated,
     ...CACHE.user,
   });
 }

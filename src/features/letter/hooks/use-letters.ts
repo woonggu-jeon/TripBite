@@ -8,6 +8,7 @@ import {
 } from '@tanstack/react-query';
 import { letterApi } from '@/features/letter/api/letter';
 import { CACHE } from '@/lib/cache';
+import { useAuthStore } from '@/stores/auth-store';
 import type {
   Letter,
   LetterListKind,
@@ -36,20 +37,23 @@ const FETCHERS: Record<
  * cursor 0 부터 시작 → nextCursor null 일 때까지.
  */
 export function useLettersInfinite(kind: LetterListKind) {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   return useInfiniteQuery({
     queryKey: letterKeys.list(kind),
     queryFn: ({ pageParam = 0 }) => FETCHERS[kind](pageParam as number),
     initialPageParam: 0,
     getNextPageParam: (last) => last.nextCursor,
+    enabled: isAuthenticated,
     ...(kind === 'received' ? CACHE.realtime : CACHE.user),
   });
 }
 
 export function useLetter(id: string) {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   return useQuery({
     queryKey: letterKeys.detail(id),
     queryFn: () => letterApi.get(id),
-    enabled: !!id,
+    enabled: isAuthenticated && !!id,
     ...CACHE.slow, // 단일 편지는 거의 변화 없음
   });
 }

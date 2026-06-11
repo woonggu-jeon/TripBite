@@ -5,6 +5,7 @@ import {
   settingsApi,
   type NotificationSettings,
 } from '@/features/settings/api/settings';
+import { useAuthStore } from '@/stores/auth-store';
 
 export const settingsKeys = {
   all: ['settings'] as const,
@@ -12,9 +13,11 @@ export const settingsKeys = {
 };
 
 export function useUserSettings() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   return useQuery({
     queryKey: settingsKeys.user(),
     queryFn: settingsApi.get,
+    enabled: isAuthenticated,
     staleTime: 5 * 60 * 1000,
   });
 }
