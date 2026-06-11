@@ -1,11 +1,16 @@
 name: CI
 
+# PR 만 trigger — dev push 직접 시 Actions 발동 X.
+# main push 시 검증은 .github/workflows/deploy.yml 의 build job 이 담당 (중복 방지).
+# 문서 only 변경 시 paths-ignore 로 skip (CI 분 절약).
 on:
   pull_request:
-  push:
-    branches:
-      - dev
-# main push 검증은 .github/workflows/deploy.yml 의 build job 이 담당 (중복 방지)
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.gitignore'
+      - 'LICENSE'
 
 # 같은 ref에 새 push 시 진행 중인 run 취소 (CI 분 절약)
 concurrency:

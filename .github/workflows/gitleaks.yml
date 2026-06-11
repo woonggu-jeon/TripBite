@@ -2,10 +2,14 @@ name: gitleaks
 
 # 시크릿/토큰이 커밋에 섞여 들어갔는지 스캔 (CodeQL 대체 — private repo + GHAS 없음).
 # gitleaks-action은 개인(personal) 계정 repo에서 라이선스 없이 무료.
-
+#
+# Trigger 좁힘 — dev push 마다 도는 노이즈 회피. main 진입 + PR 시점에 검증.
+# 본인 1인 repo + PR 흐름 전제. 협업 시 push 전체로 확대.
 on:
-  push:
   pull_request:
+  push:
+    branches:
+      - main
 
 concurrency:
   group: gitleaks-${{ github.ref }}
