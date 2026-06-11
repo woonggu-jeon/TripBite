@@ -516,14 +516,12 @@ export const handlers = [
   }),
 
   // ===== MyPage ===== (모두 로그인 필요)
-  // 마이페이지 요약 — 프로필 / 저장된 우승지 / 저장·좋아요 편지 / 여행 유형.
+  // 마이페이지 요약 — 프로필 / 여행 유형만. 저장 우승지·편지는 별도 endpoint 영역 분리
+  // (`/mypage/tournaments`, `/letters/{saved,liked}`) — BE 응답 정합 2026-06-11.
   http.get(`${apiUrl}/mypage`, () =>
     getMockSignedIn()
       ? HttpResponse.json({
           profile: { nickname: mockUser.nickname, isDefault: false },
-          savedTournaments: savedTournamentSeeds,
-          savedLetters: letterSeeds.filter((l) => l.saved).slice(0, 5),
-          likedLetters: letterSeeds.filter((l) => l.liked).slice(0, 5),
           travelType: myTravelType,
         })
       : unauthorized(),

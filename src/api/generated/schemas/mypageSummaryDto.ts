@@ -4,16 +4,11 @@
  * TripBite API
  * OpenAPI spec version: 1.0
  */
-import type { LetterDto } from './letterDto';
 import type { ProfileDto } from './profileDto';
-import type { SavedTournamentDto } from './savedTournamentDto';
 import type { TravelTypeDto } from './travelTypeDto';
 
 export interface MypageSummaryDto {
   profile: ProfileDto;
-  savedTournaments: SavedTournamentDto[];
-  savedLetters: LetterDto[];
-  likedLetters: LetterDto[];
   /** @nullable */
   travelType: TravelTypeDto | null;
 }
