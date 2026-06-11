@@ -124,6 +124,7 @@ export function useToggleSaveLetter() {
     onSettled: (_data, _err, id) => {
       qc.invalidateQueries({ queryKey: letterKeys.detail(id) });
       qc.invalidateQueries({ queryKey: letterKeys.list('received') });
+      qc.invalidateQueries({ queryKey: letterKeys.list('saved') });
     },
   });
 }
@@ -135,7 +136,9 @@ export function useDeleteLetter() {
     onSuccess: (_, id) => {
       qc.removeQueries({ queryKey: letterKeys.detail(id) });
       qc.invalidateQueries({ queryKey: letterKeys.list('received') });
+      qc.invalidateQueries({ queryKey: letterKeys.list('sent') });
       qc.invalidateQueries({ queryKey: letterKeys.list('liked') });
+      qc.invalidateQueries({ queryKey: letterKeys.list('saved') });
     },
   });
 }
