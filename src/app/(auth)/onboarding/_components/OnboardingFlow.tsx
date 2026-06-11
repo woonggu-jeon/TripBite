@@ -44,8 +44,16 @@ export function OnboardingFlow() {
 
   async function finishOnboarding() {
     if (isPending) return;
-    // localStorage 마킹은 인증/비인증 양쪽 모두 — 디바이스 단위로 다음 진입 시 skip.
+    // 디바이스 신호 — middleware 가 다음 진입부터 SSR 단계에서 skip 판정 (FOUC 회피).
+    // localStorage + cookie 둘 다 sync — cookie 는 SSR/middleware 가 보는 source,
+    // localStorage 는 client UI 동기 (기존 호출처 호환).
     markCompleted();
+    if (typeof document !== 'undefined') {
+      // 1년 max-age, SameSite=Lax (same-site 환경에선 충분, cross-origin 진입 무관).
+      // HttpOnly 아님 — 디바이스 UX 신호일 뿐 인증과 무관 (인증은 SID cookie).
+      document.cookie =
+        'tripbite.visited=1; max-age=31536000; path=/; SameSite=Lax';
+    }
     // 인증 사용자만 백엔드 onboarding API 호출 (비인증 사용자는 로그인 후 별도).
     if (isAuthenticated) {
       await complete({

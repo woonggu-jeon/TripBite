@@ -1,3 +1,5 @@
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { OnboardingFlow } from './_components/OnboardingFlow';
@@ -27,7 +29,11 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('title') };
 }
 
-export default function OnboardingPage() {
+export default async function OnboardingPage() {
+  // 이미 끝낸 사용자가 /onboarding 직접 URL 입력 시 — SSR 단계에서 / 로 보냄 (FOUC 0).
+  const c = await cookies();
+  if (c.get('tripbite.visited')?.value === '1') redirect('/');
+
   return (
     <AuthLayout variant="column">
       <OnboardingFlow />
