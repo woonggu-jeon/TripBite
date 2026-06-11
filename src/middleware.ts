@@ -52,10 +52,18 @@ export function middleware(request: NextRequest) {
   }
 
   // ── Onboarding redirect (first-visit) ──
+  // - 원래 path 를 ?next 로 보존 → deep-link / 공유 링크 UX 유지
+  // - Cache-Control: no-store → Vercel CDN 이 redirect 응답 캐싱 X (cookie 있는 사용자 회귀 회피)
   const { pathname } = request.nextUrl;
   const hasVisited = request.cookies.has('tripbite.visited');
   if (!hasVisited && !shouldSkipOnboarding(pathname)) {
-    return NextResponse.redirect(new URL('/onboarding', request.url));
+    const target = new URL('/onboarding', request.url);
+    if (pathname !== '/') {
+      target.searchParams.set('next', pathname + request.nextUrl.search);
+    }
+    const redirectRes = NextResponse.redirect(target);
+    redirectRes.headers.set('Cache-Control', 'no-store, must-revalidate');
+    return redirectRes;
   }
 
   // ── CSP nonce 발급 ──

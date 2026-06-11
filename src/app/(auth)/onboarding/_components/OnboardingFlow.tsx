@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { ConceptStep } from '@/features/onboarding/components/ConceptStep';
 import { AgeConfirmStep } from '@/features/onboarding/components/AgeConfirmStep';
@@ -32,6 +32,14 @@ const TOTAL_STEPS = 3;
 export function OnboardingFlow() {
   const t = useTranslations('onboarding');
   const router = useRouter();
+  // ?next= 가 있으면 onboarding 끝난 후 그 경로로 (deep-link / 공유 링크 보존).
+  // open-redirect 차단: `/` 시작 + `//` 아닌 경로만 (auth 의 redirect 와 동일 정책).
+  const searchParams = useSearchParams();
+  const rawNext = searchParams.get('next');
+  const safeNext =
+    rawNext && rawNext.startsWith('/') && !rawNext.startsWith('//')
+      ? rawNext
+      : '/';
   const [step, setStep] = useState<Step>(1);
   const { mutateAsync: complete, isPending } = useCompleteOnboarding();
   const resolvedLocation = useLocationStore((s) => s.resolved);
@@ -60,7 +68,7 @@ export function OnboardingFlow() {
         regionCode: resolvedLocation?.regionCode,
       });
     }
-    router.replace('/');
+    router.replace(safeNext as Parameters<typeof router.replace>[0]);
   }
 
   return (
