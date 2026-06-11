@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { ComposeEntryCard } from '@/features/letter/components/ComposeEntryCard';
@@ -41,13 +42,24 @@ const FETCHERS = {
   saved: letterApi.listSaved,
 } as const;
 
+const VALID_TABS = new Set<LetterListKind>(['received', 'sent', 'liked']);
+
+function readInitialTab(value: string | null): LetterListKind {
+  return value && VALID_TABS.has(value as LetterListKind)
+    ? (value as LetterListKind)
+    : 'received';
+}
+
 export function LetterIndex() {
   const t = useTranslations('letter.tabs');
   const queryClient = useQueryClient();
-  const [active, setActive] = useState<LetterListKind>('received');
-  // 한번이라도 활성화된 탭만 panel mount. 초기엔 'received' 만.
+  // 알림 / deep-link 에서 `?tab=sent|liked` 으로 직접 진입 가능 — 초기 active 분기.
+  const searchParams = useSearchParams();
+  const initial = readInitialTab(searchParams.get('tab'));
+  const [active, setActive] = useState<LetterListKind>(initial);
+  // 한번이라도 활성화된 탭만 panel mount. 초기엔 initial 탭만.
   const [activated, setActivated] = useState<Set<LetterListKind>>(
-    () => new Set(['received']),
+    () => new Set([initial]),
   );
 
   const prefetchTab = useCallback(

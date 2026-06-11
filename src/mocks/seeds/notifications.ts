@@ -52,7 +52,7 @@ const SHOWCASE: Seed[] = [
     read: false,
     createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
     title: '내 편지가 누군가에게 도착했어요 ✈',
-    link: '/letters?tab=sent',
+    link: '/letter?tab=sent',
   },
   {
     id: 'n-showcase-3',
