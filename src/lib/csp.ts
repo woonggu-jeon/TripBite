@@ -10,10 +10,17 @@
  *      + style-src의 'unsafe-inline' 제거 (nonce/hash로 대체)
  *
  * script-src 전략:
- *   'nonce-{nonce}' 'strict-dynamic' — nonce 있는 script가 로드한 것만 신뢰.
- *   Next.js가 x-nonce 헤더를 감지해 하이드레이션 inline script에 nonce 자동 부여.
- *   'strict-dynamic'이 있으면 'unsafe-inline'은 모던 브라우저에서 무시됨(전환 대비).
- *   dev는 React 리프레시 등으로 'unsafe-eval' 필요.
+ *   'self' 'nonce-{nonce}' — same-origin chunk + nonce 있는 inline script 허용.
+ *   Next.js 가 production build 에서 webpack chunk (`/_next/static/chunks/*.js`)
+ *   를 same-origin 으로 load — 'self' 가 그것을 허용. inline hydration script 는
+ *   x-nonce 헤더로 nonce 자동 부여.
+ *
+ *   회귀 사유 — 'strict-dynamic' 활성 시 브라우저가 'self' 무시 (spec):
+ *     nonce 있는 script 만 + 그게 load 한 child 만 허용 → webpack chunk 가 nonce
+ *     없이 load 되어 CSP 차단. Report-Only 라 동작은 됐지만 enforce 전환 시 깨짐.
+ *     Next.js App Router 의 chunk 가 nonce 첨부 안 됨 (static asset 라 정상).
+ *
+ *   dev 는 React 리프레시 등으로 'unsafe-eval' 필요.
  */
 import { getApiOrigin } from './api-origin';
 
@@ -25,7 +32,7 @@ export function buildCsp(nonce: string): string {
 
   return [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ''}`,
+    `script-src 'self' 'nonce-${nonce}'${isDev ? " 'unsafe-eval'" : ''}`,
     // jsdelivr — Pretendard 폰트 CSS (style은 nonce 미적용, unsafe-inline 유지)
     "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
     "img-src 'self' data: blob: https://tong.visitkorea.or.kr",
