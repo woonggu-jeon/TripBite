@@ -3,7 +3,7 @@
  */
 import { chromium } from '@playwright/test';
 
-const FE = 'http://localhost:3900';
+const FE = process.env.FE_URL ?? 'http://localhost:3900';
 const browser = await chromium.launch({ headless: true });
 
 // 1. 첫 방문자 (localStorage 비어있음) → onboarding redirect

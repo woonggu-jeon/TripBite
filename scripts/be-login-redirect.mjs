@@ -3,7 +3,11 @@
  */
 import { chromium } from '@playwright/test';
 
-const FE = 'http://localhost:3900';
+const FE = process.env.FE_URL ?? 'http://localhost:3900';
+const BE_ORIGIN = (process.env.BE_ORIGIN ?? 'http://localhost:3000').replace(
+  /^https?:\/\//,
+  '',
+);
 const browser = await chromium.launch({ headless: true });
 const ctx = await browser.newContext();
 const page = await ctx.newPage();
@@ -24,7 +28,7 @@ page.on('console', (msg) => {
 });
 
 page.on('request', (req) => {
-  if (req.url().includes('localhost:3000')) {
+  if (req.url().includes(BE_ORIGIN)) {
     traffic.push({
       stage: 'req',
       method: req.method(),
@@ -34,7 +38,7 @@ page.on('request', (req) => {
   }
 });
 page.on('response', async (res) => {
-  if (res.url().includes('localhost:3000')) {
+  if (res.url().includes(BE_ORIGIN)) {
     const setCookie = res.headers()['set-cookie'];
     traffic.push({
       stage: 'res',

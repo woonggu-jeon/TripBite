@@ -4,7 +4,7 @@
  */
 import { chromium } from '@playwright/test';
 
-const FE = 'http://localhost:3900';
+const FE = process.env.FE_URL ?? 'http://localhost:3900';
 const browser = await chromium.launch({ headless: true });
 const ctx = await browser.newContext();
 const page = await ctx.newPage();

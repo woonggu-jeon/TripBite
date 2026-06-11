@@ -2,10 +2,13 @@
  * 실 BE 통합 ad-hoc smoke — playwright config 우회.
  *
  * 사전:
- *   - BE :3000 떠 있음
- *   - FE dev npm run dev (USE_MSW=false, :3900)
+ *   - BE 떠 있음 (기본 :3000 — 운영 smoke 시 BE_ORIGIN 인자)
+ *   - FE dev npm run dev (USE_MSW=false, 기본 :3900 — FE_URL 인자)
  *
- * 실행: node scripts/be-smoke.mjs
+ * 실행:
+ *   node scripts/be-smoke.mjs                                          # 로컬 default
+ *   BE_ORIGIN=https://tripbite.duckdns.org FE_URL=https://trip-bite-mxue.vercel.app \
+ *     node scripts/be-smoke.mjs                                        # 운영 smoke
  *
  * 검증 항목 6가지:
  *   1. CORS preflight 응답 헤더
@@ -17,8 +20,8 @@
  */
 import { chromium } from '@playwright/test';
 
-const FE = 'http://localhost:3900';
-const BE_ORIGIN = 'http://localhost:3000';
+const FE = process.env.FE_URL ?? 'http://localhost:3900';
+const BE_ORIGIN = process.env.BE_ORIGIN ?? 'http://localhost:3000';
 
 const browser = await chromium.launch({ headless: true });
 const ctx = await browser.newContext();
