@@ -1,6 +1,8 @@
 {
   "common": {
     "skipToContent": "Skip to main content",
+    "showMore": "Show more",
+    "showLess": "Show less",
     "back": "Back",
     "save": "Save",
     "cancel": "Cancel",

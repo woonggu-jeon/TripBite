@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   MapPin,
@@ -11,6 +12,45 @@ import {
 } from 'lucide-react';
 import type { DestinationDetail } from '@/features/tournament/types';
 import styles from './WinnerDetailPanel.module.scss';
+
+/**
+ * 4 줄 line-clamp + 더보기 / 접기 토글. 짧아서 clamp 안 걸리면 토글 미노출.
+ * detail.description (TourAPI overview) 가 500-2000 bytes 까지 길 수 있어 카드 레이아웃 안정성 위해.
+ */
+function ExpandableSummary({ text }: { text: string }) {
+  const tCommon = useTranslations('common');
+  const ref = useRef<HTMLParagraphElement>(null);
+  const [expanded, setExpanded] = useState(false);
+  const [overflowing, setOverflowing] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    // 화면 paint 후 scrollHeight 가 정확. expanded 토글 시 측정 안 함 (오버플로우 판정은 clamp 상태 기준).
+    if (!expanded) setOverflowing(el.scrollHeight > el.clientHeight + 1);
+  }, [text, expanded]);
+
+  return (
+    <div className={styles.summaryWrap}>
+      <p
+        ref={ref}
+        className={`${styles.summary} ${expanded ? styles.expanded : styles.clamped}`}
+      >
+        {text}
+      </p>
+      {overflowing && (
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          className={styles.expandToggle}
+          aria-expanded={expanded}
+        >
+          {expanded ? tCommon('showLess') : tCommon('showMore')}
+        </button>
+      )}
+    </div>
+  );
+}
 
 interface Props {
   detail: DestinationDetail | undefined;
@@ -102,7 +142,7 @@ export function WinnerDetailPanel({ detail, isLoading }: Props) {
 
   return (
     <section className={styles.panel} aria-label={t('panelLabel')}>
-      {hasLead && <p className={styles.summary}>{lead}</p>}
+      {hasLead && <ExpandableSummary text={lead} />}
 
       {hasRows && (
         <dl className={styles.rows}>

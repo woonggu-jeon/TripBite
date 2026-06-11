@@ -7,12 +7,51 @@
   border-radius: var(--radius-lg);
 }
 
+.summaryWrap {
+  display: grid;
+  gap: 0.25rem;
+}
+
 .summary {
   font-size: var(--font-body-sm);
   line-height: var(--line-normal);
   color: var(--color-fg);
   letter-spacing: var(--tracking-snug);
   word-break: keep-all;
+  margin: 0;
+}
+
+.clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.expanded {
+  // 풀 표시
+}
+
+.expandToggle {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  padding: 0;
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  text-align: left;
+  align-self: start;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+    border-radius: var(--radius-sm);
+  }
 }
 
 .metaRow {
