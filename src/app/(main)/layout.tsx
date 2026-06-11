@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { getTranslations } from 'next-intl/server';
 import { HeaderSwitch } from '@/components/layout/HeaderSwitch';
 import { BottomNav } from '@/components/layout/BottomNav';
+import { ProtectedScope } from './_components/ProtectedScope';
 import styles from './layout.module.scss';
 
 /**
@@ -44,7 +45,9 @@ export default async function MainLayout({
       </a>
       <HeaderSwitch />
       <main id="main-content" className={styles.content} tabIndex={-1}>
-        <div className={styles.contentInner}>{children}</div>
+        <div className={styles.contentInner}>
+          <ProtectedScope>{children}</ProtectedScope>
+        </div>
       </main>
       <BottomNav />
     </div>
