@@ -4,7 +4,6 @@ import { destinationSeeds } from '@/mocks/seeds/destinations';
 import { regionContentSeeds } from '@/mocks/seeds/regions';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { JsonLd, breadcrumbList, touristAttraction } from '@/lib/json-ld';
-import { tournamentApi } from '@/features/tournament/api/tournament';
 import { DestinationDetailClient } from './_components/DestinationDetailClient';
 
 // On-demand ISR — id 가 다수 (TourAPI 전체) 라 build 시 pre-generate 안 함 (빈 배열).
@@ -87,18 +86,11 @@ export default async function DestinationDetailPage({ params }: Props) {
   const category = seed?.category ?? 'attraction';
   const type = CATEGORY_TO_TYPE[category] ?? 'TouristAttraction';
 
-  // BE 의 detail 응답으로 schema 보강 — festival 의 eventStart/eventEnd 가 있으면
-  // Event rich result 활성. 실패 (BE down / 비공개 응답) 시 seed-only schema fallback.
-  let startDate: string | undefined;
-  let endDate: string | undefined;
-  try {
-    const detail = await tournamentApi.getDestinationDetail(id);
-    startDate = detail.eventStart;
-    endDate = detail.eventEnd;
-  } catch {
-    /* SSR detail fetch 실패 — 기본 schema (이름/주소) 만 출력. crawler 가 다음 색인 때 재시도. */
-  }
-
+  // Event JSON-LD (festival 의 eventStart/eventEnd) 는 SSR 단계에서 BE detail fetch
+  // 의존이라 운영 ISR generate 시 다양한 회귀 발생 가능 (network / cookie / timeout).
+  // schema 보강은 client side hydration 후 DestinationDetailClient 가 detail 받고
+  // 처리하는 게 안정적 — SEO crawler 가 schema 못 볼 위험은 있으나, BE 측 generate
+  // 안정화 시점에 재도입. seed-only schema 만으로 첫 paint 안전.
   const tNav = await getTranslations('nav');
   const tRegion = await getTranslations('region');
 
@@ -109,8 +101,6 @@ export default async function DestinationDetailPage({ params }: Props) {
           name,
           type,
           addressLocality: region?.ko,
-          startDate,
-          endDate,
         })}
       />
       <JsonLd
