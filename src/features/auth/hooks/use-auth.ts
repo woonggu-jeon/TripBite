@@ -30,15 +30,25 @@ export const authKeys = {
  * 현재 사용자 정보 조회
  * - AuthBootstrap에서 한 번 호출 후 cache에 보관
  * - 다른 컴포넌트는 store(useAuthStore) 또는 이 hook을 통해 접근
+ *
+ * **initialData**: store 의 persisted user (localStorage) 를 첫 render 의 seed 로.
+ * mount 즉시 `isLoading: false + isSuccess: true` → AuthBootstrap 의 onboarding
+ * 분기가 즉시 결정됨 (FOUC 회피). 백그라운드 `/me` refetch 로 server truth 갱신.
+ *
+ * **initialDataUpdatedAt**: 0 (epoch) → staleTime 즉시 만료 → 백그라운드 refetch 트리거.
+ * persisted user 가 잠시 stale 인 동안 사용 가능 + 백엔드 변경 곧 반영.
  */
 export function useMe(
   options?: Omit<UseQueryOptions<User>, 'queryKey' | 'queryFn'>,
 ) {
+  const persistedUser = useAuthStore((s) => s.user);
   return useQuery({
     queryKey: authKeys.me(),
     // generated 함수는 (signal?) → Promise<UserDto>. react-query 의 queryFn 은
     // ({signal, ...}) 객체 받으므로 lambda 로 signal 만 분리해 전달.
     queryFn: ({ signal }) => authApi.me(signal),
+    initialData: persistedUser,
+    initialDataUpdatedAt: 0,
     staleTime: 5 * 60 * 1000,
     retry: (failureCount, error) => {
       // 401은 미인증 상태로 간주 (재시도 X)
