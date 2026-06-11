@@ -1,7 +1,7 @@
 'use client';
 
-import { Link } from '@/i18n/navigation';
-import { usePathname } from '@/i18n/navigation';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Icon, type IconName } from '@/components/icon';
 import { BOTTOM_NAV_ROUTES } from '@/constants/routes';

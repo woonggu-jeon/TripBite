@@ -1,4 +1,4 @@
-import { Link } from '@/i18n/navigation';
+import Link from 'next/link';
 import type { ComponentProps, ReactNode } from 'react';
 import { MediaThumb } from './MediaThumb';
 import styles from './DestinationCard.module.scss';

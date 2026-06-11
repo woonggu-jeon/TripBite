@@ -1,6 +1,6 @@
 'use client';
 
-import { Link } from '@/i18n/navigation';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { cardClasses } from '@/components/ui';
 import { isRegionCode } from '@/constants/regions';

@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from '@/i18n/navigation';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Mail, Inbox } from 'lucide-react';
 import { Skeleton } from '@/components/feedback/Skeleton';

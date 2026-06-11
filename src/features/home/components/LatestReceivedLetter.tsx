@@ -1,6 +1,6 @@
 'use client';
 
-import { Link } from '@/i18n/navigation';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Mail } from 'lucide-react';
 import { useLettersInfinite } from '@/features/letter/hooks/use-letters';

@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname } from '@/i18n/navigation';
+import { usePathname } from 'next/navigation';
 import { AppHeader } from './AppHeader';
 
 /**

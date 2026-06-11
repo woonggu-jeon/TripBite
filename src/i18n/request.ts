@@ -1,26 +1,22 @@
 import { getRequestConfig } from 'next-intl/server';
-import { hasLocale } from 'next-intl';
-import { routing } from './routing';
+import { readLocaleFromCookie } from './locale';
 
 /**
- * next-intl 핵심 설정 — URL prefix 기반 locale.
+ * next-intl 핵심 설정
  *
+ * 이 파일은 next.config.js 의 createNextIntlPlugin 이 가리키며,
  * 모든 요청마다 호출되어:
- *   1) URL pathname 에서 locale 추출 (`/en/...` → en, prefix 없음 → defaultLocale)
- *   2) 해당 locale 의 messages JSON 로드
+ *   1) 현재 locale 결정 (쿠키 기반)
+ *   2) 해당 locale의 messages JSON 로드
  *
- * URL prefix 기반이라 `cookies()` 호출 없음 → static generation / ISR 와 호환.
- * (이전 cookie 기반 → DYNAMIC_SERVER_USAGE 회귀 해소.)
- *
- * 결과:
- *   - Server: getTranslations(), getLocale(), getFormatter() 등
+ * 결과는:
+ *   - Server: getTranslations(), getLocale(), getFormatter() 등에서 사용
  *   - Client: <NextIntlClientProvider /> 를 통해 자동 전달
+ *
+ * dynamic import 를 사용해 사용 안 하는 locale 의 JSON은 번들에 포함하지 않음.
  */
-export default getRequestConfig(async ({ requestLocale }) => {
-  const requested = await requestLocale;
-  const locale = hasLocale(routing.locales, requested)
-    ? requested
-    : routing.defaultLocale;
+export default getRequestConfig(async () => {
+  const locale = await readLocaleFromCookie();
 
   return {
     locale,

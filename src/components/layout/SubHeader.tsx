@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from '@/i18n/navigation';
+import { useRouter } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import styles from './SubHeader.module.scss';
 

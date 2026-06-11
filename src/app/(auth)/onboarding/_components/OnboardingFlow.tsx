@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from '@/i18n/navigation';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { ConceptStep } from '@/features/onboarding/components/ConceptStep';
 import { AgeConfirmStep } from '@/features/onboarding/components/AgeConfirmStep';

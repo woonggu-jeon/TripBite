@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Link } from '@/i18n/navigation';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Mail, Heart, Trophy, Bell, ShieldAlert, Send } from 'lucide-react';
 import { SubHeader } from '@/components/layout/SubHeader';

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { usePathname } from '@/i18n/navigation';
+import { usePathname } from 'next/navigation';
 
 /**
  * 스크롤 위치 보존 + 복원

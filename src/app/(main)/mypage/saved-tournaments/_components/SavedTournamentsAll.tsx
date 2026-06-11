@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { Trophy } from 'lucide-react';
-import { useRouter } from '@/i18n/navigation';
+import { useRouter } from 'next/navigation';
 import { SkeletonList } from '@/components/feedback/SkeletonList';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from '@/i18n/navigation';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Heart, Bookmark, Trash2 } from 'lucide-react';
 import { useConfirm } from '@/hooks/use-confirm';

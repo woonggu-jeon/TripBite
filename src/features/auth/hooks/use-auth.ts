@@ -6,7 +6,7 @@ import {
   useQueryClient,
   type UseQueryOptions,
 } from '@tanstack/react-query';
-import { useRouter } from '@/i18n/navigation';
+import { useRouter } from 'next/navigation';
 import { authApi } from '@/features/auth/api/auth';
 import { useAuthStore } from '@/stores/auth-store';
 import type {
@@ -52,6 +52,7 @@ export function useMe(
 }
 
 export function useLogin(options?: { redirectTo?: string }) {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const setAuth = useAuthStore((s) => s.setAuth);
 

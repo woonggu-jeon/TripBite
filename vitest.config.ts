@@ -20,11 +20,6 @@ import { resolve } from 'node:path';
  */
 export default defineConfig({
   plugins: [react()],
-  // next-intl 의 createNavigation 가 'next/navigation' 을 ESM resolution 으로 호출 —
-  // vitest 가 next 패키지 의 dual export 처리 못 함. SSR 모드 강제 → server bundle 사용.
-  ssr: {
-    noExternal: ['next-intl'],
-  },
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),

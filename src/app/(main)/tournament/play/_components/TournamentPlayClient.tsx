@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { useRouter } from '@/i18n/navigation';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { CenterIllustration } from '@/features/tournament/components/CenterIllustration';
 import { FallingPetals } from '@/features/tournament/components/FallingPetals';

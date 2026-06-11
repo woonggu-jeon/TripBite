@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { usePathname, useRouter } from '@/i18n/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import type { Route } from 'next';
 import { useMe } from '@/features/auth/hooks/use-auth';
 import { useAuthStore } from '@/stores/auth-store';

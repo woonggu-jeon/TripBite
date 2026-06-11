@@ -1,7 +1,6 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
-import { useRouter } from '@/i18n/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Share2 } from 'lucide-react';
 import { useTournamentStore } from '@/features/tournament/store/tournament-store';

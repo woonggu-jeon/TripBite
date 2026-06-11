@@ -1,6 +1,6 @@
 'use client';
 
-import { Link } from '@/i18n/navigation';
+import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { MediaThumb } from '@/components/ui';
 import type { RegionContent } from '@/features/region/types';
