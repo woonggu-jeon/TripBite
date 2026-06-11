@@ -28,6 +28,11 @@ export const api: AxiosInstance = axios.create({
   timeout: 15_000,
   headers: {
     'Content-Type': 'application/json',
+    // BE 의 CSRF guard 통과용 — `X-Requested-With: XMLHttpRequest` 가 있으면
+    // non-simple request 로 분류되어 preflight 가 trigger 되므로 단순 form
+    // submit 으로 위조 불가 (CSRF 보호 유지). cross-origin 운영 (Vercel ↔
+    // tripbite.duckdns.org) 의 표준 패턴. BE 합의 — 2026-06-11.
+    'X-Requested-With': 'XMLHttpRequest',
   },
 });
 
