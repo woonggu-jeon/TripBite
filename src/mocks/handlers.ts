@@ -881,7 +881,7 @@ export const handlers = [
     //   admissionFee / tags / rating / bestSeasons 는 BE 미제공 — 응답에서 제거.
     const detail = {
       ...seed,
-      summary: `${seed.name} — ${seed.region} 대표 ${seed.category}`,
+      description: `${seed.name} — ${seed.region} 대표 ${seed.category}`,
       photos,
       address: `충북 ${seed.region.replace(/[a-z]+/i, '')} ${seed.name} 일대`,
       phone:

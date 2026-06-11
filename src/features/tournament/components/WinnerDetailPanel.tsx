@@ -132,9 +132,8 @@ export function WinnerDetailPanel({ detail, isLoading }: Props) {
       value: detail.website,
     });
 
-  // summary 와 description 둘 다 BE 가 보낼 수 있음 — summary 가 짧은 요약, description 이 본문.
-  // 우선 순위: summary 먼저 표시 (있으면), 없으면 description.
-  const lead = detail.summary ?? detail.description;
+  // BE 가 summary 폐기 + description 통합 (API_CONTRACT 2026-06-11) — overview 전체 또는 한글 폴백.
+  const lead = detail.description;
   const hasLead = !!lead;
   const hasRows = rows.length > 0;
 

@@ -16,7 +16,6 @@ export interface DestinationDetailDto {
   description?: string;
   imageUrl?: string;
   address?: string;
-  summary: string;
   coords?: CoordsDto;
   phone?: string;
   website?: string;

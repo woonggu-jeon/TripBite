@@ -136,7 +136,7 @@ export function DestinationDetailClient({ id }: { id: string }) {
           id={id}
           name={detail.name}
           coords={detail.coords}
-          shareText={detail.summary ?? detail.description}
+          shareText={detail.description}
         />
       </article>
     </>
