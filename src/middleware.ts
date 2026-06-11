@@ -1,24 +1,33 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import createIntlMiddleware from 'next-intl/middleware';
 import { buildCsp } from '@/lib/csp';
+import { routing } from '@/i18n/routing';
 
 /**
  * Middleware
  *
  * 책임:
- *   1) CSRF: state-changing 요청의 Origin 화이트리스트 검증 (1차 방어)
- *   2) CSP: 요청별 nonce 발급 + Content-Security-Policy-Report-Only 헤더
+ *   1) i18n routing: URL prefix 기반 locale 매핑 (next-intl middleware)
+ *   2) CSRF: state-changing 요청의 Origin 화이트리스트 검증 (1차 방어)
+ *   3) CSP: 요청별 nonce 발급 + Content-Security-Policy-Report-Only 헤더
  *
  * 인증 redirect 는 AuthBootstrap (client-side) 책임 — cross-origin 운영에서
  * BE cookie 가 FE 도메인 cookie jar 에 들어오지 않아 SSR 단계 cookie check
- * 가 무용지물 (모두 false → 무한 redirect 회귀). 일관성 위해 mock 환경도 동일.
+ * 가 무용지물.
+ *
+ * 합성 순서:
+ *   1) CSRF Origin 검증 — 차단 시 즉시 reject (intl 매핑 전)
+ *   2) intl middleware — locale prefix 정규화 후 redirect 또는 next
+ *   3) CSP 헤더 — 모든 응답에 첨부 (intl middleware 가 반환한 NextResponse 에도)
  */
 
 const STATE_CHANGING = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
+const intlMiddleware = createIntlMiddleware(routing);
+
 export function middleware(request: NextRequest) {
   // ── CSRF 1차 방어: state-changing 요청의 Origin이 our origin과 다르면 차단 ──
-  // (백엔드 직접 호출은 middleware 미경유 → 백엔드의 Origin 검증이 본 방어선)
   if (STATE_CHANGING.has(request.method)) {
     const origin = request.headers.get('origin');
     if (origin && origin !== request.nextUrl.origin) {
@@ -29,29 +38,22 @@ export function middleware(request: NextRequest) {
   }
 
   // ── CSP nonce 발급 ──
-  // request 헤더에 CSP도 set해야 Next.js가 하이드레이션 inline script에 nonce 자동 부여.
-  // layout에서 수동 사용 시 headers().get('x-nonce')로 읽음.
   const nonce = btoa(crypto.randomUUID());
   const csp = buildCsp(nonce);
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-nonce', nonce);
-  requestHeaders.set('content-security-policy-report-only', csp);
 
-  const response = NextResponse.next({ request: { headers: requestHeaders } });
+  // ── intl middleware 적용 ──
+  // next-intl 이 NextResponse (next 또는 redirect) 반환. 그 위에 CSP 헤더 첨부.
+  const response = intlMiddleware(request);
+
+  // intl middleware 가 next 인 경우 request headers 에 x-nonce / CSP 첨부 — Next.js 가
+  // 하이드레이션 inline script 에 nonce 자동 부여.
+  response.headers.set('x-nonce', nonce);
   response.headers.set(cspHeaderName(), csp);
   return response;
 }
 
 /**
  * CSP 헤더 이름 — 기본 Report-Only, NEXT_PUBLIC_CSP_ENFORCE=true 시 enforce.
- *
- * 점진 전환 정책:
- *   1) Report-Only 로 1-2주 운영 → /api/csp-report 의 violation 0건 확인
- *   2) NEXT_PUBLIC_CSP_ENFORCE=true 로 enforce 전환
- *   3) 문제 발생 시 즉시 false 로 롤백 (단일 env 변경)
- *
- * 주의: enforce 시 style-src 의 'unsafe-inline' 은 외부 stylesheet (jsdelivr)
- * 호환 위해 유지. 추가 보안 필요해지면 hash 매핑으로 교체.
  */
 function cspHeaderName(): string {
   return process.env.NEXT_PUBLIC_CSP_ENFORCE === 'true'

@@ -6,9 +6,14 @@ import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { JsonLd, breadcrumbList, touristAttraction } from '@/lib/json-ld';
 import { DestinationDetailClient } from './_components/DestinationDetailClient';
 
-// dynamic rendering — i18n 의 `readLocaleFromCookie` 가 cookies() 호출하므로
-// static generation (ISR) 과 incompatible (DYNAMIC_SERVER_USAGE). loading.tsx 가
-// cold start 동안 skeleton 으로 UX 보완.
+// On-demand ISR — id 가 다수 (TourAPI 전체) 라 build 시 pre-generate 안 함.
+// 첫 진입 시 generate → 1h 캐시 → 두 번째부터 즉시 paint (Lambda cold start 회피).
+// URL prefix 기반 i18n 도입으로 cookies() 의존 제거 → static generation 호환.
+export const revalidate = 3600;
+export const dynamicParams = true;
+export function generateStaticParams(): { id: string }[] {
+  return [];
+}
 
 /**
  * 여행지 상세 (/destination/[id])

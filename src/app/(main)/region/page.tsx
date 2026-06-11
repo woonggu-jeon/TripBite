@@ -3,6 +3,9 @@ import type { Metadata } from 'next';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { RegionMapClient } from './_components/RegionMapClient';
 
+// 시군 정보는 안정 — 1h ISR. URL prefix i18n 으로 cookies() 의존 제거 → 호환.
+export const revalidate = 3600;
+
 /**
  * 충북 11개 시군 지도 페이지 (/region)
  *

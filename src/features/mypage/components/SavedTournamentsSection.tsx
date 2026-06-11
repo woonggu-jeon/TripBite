@@ -1,9 +1,9 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { Trophy } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { Carousel } from '@/features/carousel';
 import { AsyncSection } from '@/components/feedback/AsyncSection';
 import { Button } from '@/components/ui';

@@ -1,7 +1,7 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { useTransition } from 'react';
 import { Check } from 'lucide-react';
 import { locales, localeLabels, type Locale } from '@/i18n/config';

@@ -2,13 +2,22 @@ import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { SubHeader } from '@/components/layout/SubHeader';
-import { isRegionCode, type RegionCode } from '@/constants/regions';
+import {
+  CHUNGBUK_REGIONS,
+  isRegionCode,
+  type RegionCode,
+} from '@/constants/regions';
 import { RegionHero } from '@/features/region';
 import { JsonLd, breadcrumbList } from '@/lib/json-ld';
 import { RegionDetailTabs } from './_components/RegionDetailTabs';
 
-// dynamic rendering — i18n cookies() 가 static generation 과 incompatible.
-// loading.tsx 가 cold start UX 보완. 11 시군은 notFound 가드로 검증.
+// 11 시군 build 시 pre-generate — Lambda cold start 회피. 1h ISR 로 메타 갱신.
+// URL prefix 기반 i18n 도입으로 cookies() 의존 제거 → static generation 호환.
+export const revalidate = 3600;
+export const dynamicParams = false;
+export function generateStaticParams() {
+  return CHUNGBUK_REGIONS.map((r) => ({ code: r.code }));
+}
 
 /**
  * 시군 상세 페이지 (/region/[code])

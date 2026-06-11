@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { MapPin, Share2 } from 'lucide-react';
 import { Skeleton } from '@/components/feedback/Skeleton';

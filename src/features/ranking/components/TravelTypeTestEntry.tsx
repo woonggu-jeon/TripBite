@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { ArrowRight } from 'lucide-react';
 import { cardClasses } from '@/components/ui';

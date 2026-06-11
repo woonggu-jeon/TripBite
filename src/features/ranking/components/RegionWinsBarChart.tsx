@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { BarChart } from '@/features/chart/components/BarChart';
 import { useRanking } from '@/features/ranking/hooks/use-ranking';

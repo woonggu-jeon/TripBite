@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { Heart } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { haptic } from '@/lib/haptic';

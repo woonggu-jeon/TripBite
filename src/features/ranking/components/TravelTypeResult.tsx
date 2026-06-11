@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { Share2, RotateCcw, BadgeCheck } from 'lucide-react';
 import { haptic } from '@/lib/haptic';
