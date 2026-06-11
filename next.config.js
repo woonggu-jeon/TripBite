@@ -131,25 +131,25 @@ const nextConfig = {
   },
 
   /**
-   * MSW same-origin proxy
+   * Same-origin proxy — `/api/backend/*` → BE.
    *
-   * Service worker는 same-origin scope만 가로채므로 cross-origin 백엔드
-   * (NEXT_PUBLIC_API_URL=http://localhost:8080 등) 호출은 MSW가 못 잡음.
+   * **운영 / dev 모두 활성**:
+   *   - 운영: Chrome 시크릿 모드 + 향후 3rd-party cookie phase-out 대응.
+   *     `vercel.app` ↔ `duckdns.org` 가 cross-site → cookie 차단 → proxy 통해
+   *     same-site (vercel.app) 로 통합. axios baseURL=/api/backend.
+   *   - dev MSW: service worker 가 same-origin scope 만 intercept — proxy 패턴 필수.
    *
-   * dev MSW 모드(NEXT_PUBLIC_USE_MSW=true)에서만 /api/backend/* 를
-   * 실 백엔드로 proxy → axios baseURL을 /api/backend 로 두면 same-origin이 되어
-   * MSW가 가로챔. 매칭 안 되는 path는 onUnhandledRequest='bypass'로 destination 도달.
-   *
-   * MSW 미사용 시 rewrites 빈 배열 — production에선 axios가 직접 cross-origin 호출.
+   * destination 의 `/v1` prefix 자동 부여 — axios interceptor 가 generated 의
+   * `/v1/...` 를 `/...` 로 제거하므로 (`client.ts:46`), final URL 이 BE 의 `/v1/`
+   * 경로에 정확 매핑됨.
    */
   async rewrites() {
-    if (process.env.NEXT_PUBLIC_USE_MSW !== 'true') return [];
     const target = process.env.NEXT_PUBLIC_API_URL;
     if (!target) return [];
     return [
       {
         source: '/api/backend/:path*',
-        destination: `${target}/:path*`,
+        destination: `${target}/v1/:path*`,
       },
     ];
   },

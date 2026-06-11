@@ -8,19 +8,17 @@ import { assertRequiredEnv } from '@/lib/env';
 assertRequiredEnv();
 
 /**
- * 아키텍처 문서 10번
- * - withCredentials: true → 쿠키 자동 전송
- * - HttpOnly Cookie 기반이므로 프론트는 토큰을 직접 다루지 않음
+ * 아키텍처 — same-origin proxy 단일화.
+ * - 항상 baseURL='/api/backend' → next.config.js rewrites 가 운영 BE 로 proxy.
+ * - withCredentials: true → cookie 자동 전송 (same-origin 이라 default 동작).
+ * - HttpOnly Cookie 기반 인증 — FE 는 token 직접 다루지 않음.
  *
- * baseURL 분기:
- *   - MSW 모드: '/api/backend' (same-origin) → next.config.js rewrites가 백엔드로 proxy.
- *     service worker가 same-origin 요청만 가로챌 수 있으므로 필수 우회 경로.
- *   - 평소: NEXT_PUBLIC_API_URL 그대로 (cross-origin 직접 호출)
+ * Same-origin 의 효과:
+ *   - Chrome 시크릿 / 3rd-party cookie 차단 무관 (vercel.app same-site)
+ *   - CORS preflight 불필요
+ *   - 향후 Chrome 의 3rd-party cookie phase-out 면역
  */
-const baseURL =
-  process.env.NEXT_PUBLIC_USE_MSW === 'true'
-    ? '/api/backend'
-    : process.env.NEXT_PUBLIC_API_URL;
+const baseURL = '/api/backend';
 
 export const api: AxiosInstance = axios.create({
   baseURL,

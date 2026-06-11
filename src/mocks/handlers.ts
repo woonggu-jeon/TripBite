@@ -39,15 +39,10 @@ import { isRegionCode } from '@/constants/regions';
 import type { Destination } from '@/features/tournament/types';
 
 /**
- * URL 매칭 base.
- * MSW 모드에서 axios baseURL이 '/api/backend'로 바뀌므로 (services/api/client.ts)
- * handler URL도 same-origin path prefix를 사용해야 매칭됨.
- * MSW 미사용 시(예: 테스트 외 production)는 NEXT_PUBLIC_API_URL 그대로.
+ * URL 매칭 base — axios baseURL 단일화 (`/api/backend`, services/api/client.ts).
+ * MSW handler 도 same-origin path 로 매칭.
  */
-const apiUrl =
-  process.env.NEXT_PUBLIC_USE_MSW === 'true'
-    ? '/api/backend'
-    : (process.env.NEXT_PUBLIC_API_URL ?? '');
+const apiUrl = '/api/backend';
 
 export const mockSeeds = {
   regions: regionContentSeeds,
