@@ -101,12 +101,32 @@ const nextConfig = {
   },
 
   async headers() {
+    // public content 페이지의 Vercel CDN cache — ISR 비슷한 효과.
+    // i18n 의 cookies() 의존으로 ISR 직접 사용 불가 (DYNAMIC_SERVER_USAGE) 회피 위해
+    // HTTP cache 헤더로 대체. 첫 진입 dynamic → CDN cache → 두 번째부터 즉시 paint.
+    //
+    // 정책:
+    //   - s-maxage=3600 — CDN 1h fresh
+    //   - stale-while-revalidate=86400 — fresh 만료 후에도 24h 동안 stale 응답 (백그라운드 갱신)
+    //   - public — 모든 사용자에게 공유 가능 (user-specific 콘텐츠 없음)
+    //
+    // 적용 대상 — public + non-user-specific:
+    //   /region, /region/[code], /destination/[id]
+    // 미적용 대상 — user-specific (cookie 기반 응답 다름):
+    //   /mypage/*, /settings/*, /letter/*, /notifications, /tournament/*
+    const CDN_CACHE = {
+      key: 'Cache-Control',
+      value: 'public, s-maxage=3600, stale-while-revalidate=86400',
+    };
     return [
       {
         // 모든 경로
         source: '/:path*',
         headers: SECURITY_HEADERS,
       },
+      { source: '/region', headers: [CDN_CACHE] },
+      { source: '/region/:code', headers: [CDN_CACHE] },
+      { source: '/destination/:id', headers: [CDN_CACHE] },
     ];
   },
 
