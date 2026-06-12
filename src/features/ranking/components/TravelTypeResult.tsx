@@ -11,7 +11,7 @@ import {
   useMyTravelType,
   useSetMyTravelType,
 } from '@/features/ranking/hooks/use-ranking';
-import type { TravelType } from '@/features/ranking/types';
+import type { TravelTypeDto } from '@/api/generated/schemas';
 import { toast } from '@/lib/toast';
 import { useShareCard } from '@/hooks/use-share-card';
 import { useRequireAuth } from '@/hooks/use-require-auth';
@@ -45,7 +45,7 @@ export function TravelTypeResult() {
   const requireAuth = useRequireAuth();
   const shareCard = useShareCard();
 
-  const handleApply = (result: TravelType) => {
+  const handleApply = (result: TravelTypeDto) => {
     haptic.tap();
     void requireAuth(
       () =>
@@ -59,7 +59,7 @@ export function TravelTypeResult() {
 
   // file 단독 — title/text 동반 시 일부 share target (카카오톡 등) 이 텍스트만
   // 클립보드로 분리 처리하고 file 첨부 흐름이 끊긴다.
-  const handleShare = (result: TravelType) => {
+  const handleShare = (result: TravelTypeDto) => {
     haptic.tap();
     const params = new URLSearchParams({
       type: result.code,
@@ -101,7 +101,7 @@ export function TravelTypeResult() {
     );
   }
 
-  const result: TravelType = data;
+  const result: TravelTypeDto = data;
   const keywords = result.keywords ?? [];
   const recommended = result.recommended ?? [];
 

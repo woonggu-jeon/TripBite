@@ -22,11 +22,7 @@ export type {
 
 export type { Letter, LetterAuthor } from '@/features/letter/types';
 
-export type {
-  RankedDestination,
-  RankingType,
-  TravelType,
-} from '@/features/ranking/types';
+export type { RankedDestination, RankingType } from '@/features/ranking/types';
 
 // API 공통 응답 envelope (백엔드 컨벤션에 맞춰 조정)
 export type ApiResponse<T> = {

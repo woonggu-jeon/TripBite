@@ -5,12 +5,11 @@ import {
   quizControllerGetQuizV1,
   quizControllerSubmitV1,
 } from '@/api/generated/travel-types/travel-types';
-import type { TravelTypeCode } from '@/api/generated/schemas';
+import type { TravelTypeCode, TravelTypeDto } from '@/api/generated/schemas';
 import { normalizeImageField } from '@/lib/secure-image-url';
 import type {
   RankedDestination,
   RankingType,
-  TravelType,
   TravelTypeAnswer,
   TravelTypeQuiz,
 } from '@/features/ranking/types';
@@ -22,7 +21,7 @@ import type { DestinationCategory } from '@/features/tournament/types';
  * 엔드포인트:
  *   GET   /rankings?type=&limit=        — RankItem[]
  *   GET   /travel-types/quiz            — 질문 목록 (public)
- *   POST  /travel-types/submit          — 응답 제출 → TravelType
+ *   POST  /travel-types/submit          — 응답 제출 → TravelTypeDto
  *   GET   /travel-types/me              — 내 결과 | null
  *   PATCH /travel-types/me              — 명시 적용 (code)
  */
@@ -49,23 +48,23 @@ export const rankingApi = {
 
   submitTravelType: async (
     answers: TravelTypeAnswer[],
-  ): Promise<TravelType> => {
+  ): Promise<TravelTypeDto> => {
     const res = await quizControllerSubmitV1({ answers });
-    return normalizeTravelTypeImages(res as TravelType);
+    return normalizeTravelTypeImages(res as TravelTypeDto);
   },
 
-  getMyTravelType: async (): Promise<TravelType | null> => {
-    const res = (await quizControllerGetMeV1()) as TravelType | null;
+  getMyTravelType: async (): Promise<TravelTypeDto | null> => {
+    const res = (await quizControllerGetMeV1()) as TravelTypeDto | null;
     return res ? normalizeTravelTypeImages(res) : null;
   },
 
-  setMyTravelType: async (code: TravelTypeCode): Promise<TravelType> => {
+  setMyTravelType: async (code: TravelTypeCode): Promise<TravelTypeDto> => {
     const res = await quizControllerApplyV1({ code });
-    return normalizeTravelTypeImages(res as TravelType);
+    return normalizeTravelTypeImages(res as TravelTypeDto);
   },
 };
 
-function normalizeTravelTypeImages(input: TravelType): TravelType {
+function normalizeTravelTypeImages(input: TravelTypeDto): TravelTypeDto {
   if (!input.recommended?.length) return input;
   return {
     ...input,

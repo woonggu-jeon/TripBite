@@ -33,8 +33,11 @@ import {
   travelTypeRecommendCategoriesSeed,
   type TravelTypeMockCode,
 } from './seeds/travel-types';
-import type { TravelType, TravelTypeAnswer } from '@/features/ranking/types';
-import type { AppNotificationDto } from '@/api/generated/schemas';
+import type { TravelTypeAnswer } from '@/features/ranking/types';
+import type {
+  AppNotificationDto,
+  TravelTypeDto,
+} from '@/api/generated/schemas';
 import { isRegionCode } from '@/constants/regions';
 import type { Destination } from '@/features/tournament/types';
 
@@ -137,7 +140,7 @@ const tournamentRecords = new Map<
  * 여행 유형 테스트 — 사용자의 저장된 결과(mutable). submit 시 갱신.
  * dev 서버 재시작 시 null 로 리셋.
  */
-let myTravelType: TravelType | null = null;
+let myTravelType: TravelTypeDto | null = null;
 
 /**
  * 알림 인박스 (mutable) — seed 복사. push 시뮬레이션 / markRead 가 mutate.
@@ -183,7 +186,7 @@ function pickRandom<T>(arr: readonly T[], n: number): T[] {
  * mock 측 점수 계산 — answers 의 optionId 마다 매핑된 유형에 +1, 최고점 유형 반환.
  * 동점 시 첫 등장 유형 우선 (Map 순서).
  */
-function resolveTravelType(answers: TravelTypeAnswer[]): TravelType {
+function resolveTravelType(answers: TravelTypeAnswer[]): TravelTypeDto {
   const score: Record<TravelTypeMockCode, number> = {
     adventurer: 0,
     explorer: 0,
@@ -1003,12 +1006,12 @@ export const handlers = [
   ),
 
   // 명시 적용 — quiz 결과 페이지의 "내 유형으로 적용" 버튼. 로그인 필요.
-  // BE spec: 응답은 TravelType (recommended: []) — apply 는 저장만, recommended 는 GET /me 가 별도 빌드.
+  // BE spec: 응답은 TravelTypeDto (recommended: []) — apply 는 저장만, recommended 는 GET /me 가 별도 빌드.
   // FE hook 이 setQueryData 대신 invalidate 호출 → GET 재요청으로 recommended 복원.
   http.patch(`${apiUrl}/travel-types/me`, async ({ request }) => {
     if (!getMockSignedIn()) return unauthorized();
     const { code } = (await request.json()) as { code: string };
-    const meta = (travelTypeMetaSeed as Record<string, TravelType>)[code];
+    const meta = (travelTypeMetaSeed as Record<string, TravelTypeDto>)[code];
     if (!meta) return new HttpResponse(null, { status: 404 });
     // 저장된 상태는 recommended 까지 — GET /me 가 같은 데이터 반환.
     const cats =

@@ -1,4 +1,5 @@
-import type { TravelType, TravelTypeQuiz } from '@/features/ranking/types';
+import type { TravelTypeDto } from '@/api/generated/schemas';
+import type { TravelTypeQuiz } from '@/features/ranking/types';
 
 /**
  * 여행 유형 테스트 mock seed.
@@ -106,7 +107,7 @@ export const travelTypeMockScoreMap: Record<string, TravelTypeMockCode> = {
 /** 유형별 메타 (서버가 결과 응답에 포함시켜 던지는 내용). */
 export const travelTypeMetaSeed: Record<
   TravelTypeMockCode,
-  Omit<TravelType, 'recommended'>
+  Omit<TravelTypeDto, 'recommended'>
 > = {
   adventurer: {
     code: 'adventurer',

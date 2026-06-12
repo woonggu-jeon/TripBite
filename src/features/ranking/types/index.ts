@@ -46,7 +46,3 @@ export type TravelTypeQuizQuestion = {
 export type TravelTypeQuiz = {
   questions: TravelTypeQuizQuestion[];
 };
-
-// orval generated TravelTypeDto alias — code 가 TravelTypeCode enum, recommended 가
-// DestinationDto[]. BE swagger 정합 후 진실의 원천.
-export type TravelType = import('@/api/generated/schemas').TravelTypeDto;
