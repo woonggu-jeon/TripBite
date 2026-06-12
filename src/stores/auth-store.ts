@@ -15,9 +15,19 @@ import type { UserDto } from '@/api/generated/schemas';
  * 다른 기기 변경 사항 동기화: `/mypage` 진입 시 ProfileCard 의 useMe 가 background
  * refetch — 다른 보호 경로 진입 시엔 stale 허용 (다음 reload/navigation 까지).
  *
- * 보안: HttpOnly cookie (SID) 가 인증 단일 source. localStorage 의 user 는 UX 가속용.
- * 로그아웃 시 clearAuth 가 store + cache 모두 비움.
+ * **보안 — persist 의 PII 최소화 (2026-06-12)**:
+ * HttpOnly cookie (SID) 가 인증 단일 source. localStorage 는 UX 가속용 cache 라
+ * email / id 같은 PII 평문 저장 시 XSS 1회 노출 위험. UI 표시에 실제 필요한
+ * `nickname / avatarUrl / isOnboarded / homeRegion / travelType` 만 persist.
+ * 메모리 내 state (in-memory user) 는 그대로 전체 — `useMe` refetch 시 server
+ * 응답으로 곧 보강. 새로고침 직후 UI 가 잠깐 minimal 정보로 보이는 게 trade-off.
  */
+
+/** localStorage 에 저장되는 user subset — PII (email/id/username) 제외. */
+type PersistedUser = Pick<
+  UserDto,
+  'nickname' | 'avatarUrl' | 'isOnboarded' | 'homeRegion' | 'travelType'
+>;
 
 type AuthState = {
   isAuthenticated: boolean;
@@ -28,6 +38,17 @@ type AuthActions = {
   setAuth: (user: UserDto) => void;
   clearAuth: () => void;
 };
+
+function toPersistedUser(user: UserDto | undefined): PersistedUser | undefined {
+  if (!user) return undefined;
+  return {
+    nickname: user.nickname,
+    avatarUrl: user.avatarUrl,
+    isOnboarded: user.isOnboarded,
+    homeRegion: user.homeRegion,
+    travelType: user.travelType,
+  };
+}
 
 export const useAuthStore = create<AuthState & AuthActions>()(
   persist(
@@ -41,9 +62,11 @@ export const useAuthStore = create<AuthState & AuthActions>()(
     {
       name: 'tripbite.auth',
       storage: createJSONStorage(() => localStorage),
+      // PII 축소 — email/id/username 은 localStorage 미저장. 새 setAuth 시 메모리
+      // 전체 채워지고, refresh 후엔 useMe refetch 가 다시 서버에서 가져옴.
       partialize: (state) => ({
         isAuthenticated: state.isAuthenticated,
-        user: state.user,
+        user: toPersistedUser(state.user) as UserDto | undefined,
       }),
     },
   ),

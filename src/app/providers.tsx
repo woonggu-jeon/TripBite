@@ -28,6 +28,10 @@ import {
 } from '@/features/pwa';
 import { usePageView } from '@/features/analytics/hooks/use-page-view';
 import { WebVitalsTracker } from '@/features/analytics/components/web-vitals';
+import {
+  installGlobalErrorReporters,
+  reportClientError,
+} from '@/lib/client-error-reporter';
 
 /**
  * react-query 정책:
@@ -123,11 +127,25 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 '요청을 처리하지 못했어요.')
               : '네트워크 오류가 발생했어요.';
             toast.error(message);
+            // 운영 client-error endpoint 로 보고. dev 는 console 만.
+            // 4xx (보통 검증 실패) 는 skip — server 측 정합 issue 가 아니라 사용자 입력.
+            const status = isAxiosError(error)
+              ? error.response?.status
+              : undefined;
+            if (status === undefined || status >= 500) {
+              reportClientError('react-query', error);
+            }
           },
         }),
       }),
   );
   const [mswReady, setMswReady] = useState(!MSW_ENABLED);
+
+  // 운영 client-error 수집 — window.onerror / unhandledrejection 글로벌 핸들러.
+  // dev 는 console 로만, production 빌드에서만 endpoint POST. installed flag 로 idempotent.
+  useEffect(() => {
+    installGlobalErrorReporters();
+  }, []);
 
   useEffect(() => {
     if (!MSW_ENABLED || mswReady) return;

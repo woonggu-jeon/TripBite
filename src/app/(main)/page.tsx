@@ -13,6 +13,6 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('title') };
 }
 
-export default function HomePage() {
+export default async function HomePage() {
   return <HomeDashboard />;
 }

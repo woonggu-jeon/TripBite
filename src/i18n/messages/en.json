@@ -382,6 +382,11 @@
       "next": "Next",
       "reshuffle": "Reshuffle",
       "mapSummary": "{destinations} destinations selected",
+      "emptyPool": {
+        "title": "No destinations match your filters",
+        "hint": "Try a different region or category combination",
+        "back": "Adjust setup"
+      },
       "tournamentSize": {
         "title": "Bracket size",
         "hint": "A bracket of this size will be generated",

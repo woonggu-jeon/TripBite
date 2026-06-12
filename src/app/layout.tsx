@@ -86,7 +86,12 @@ export async function generateMetadata(): Promise<Metadata> {
  * 으로 해결 — Pretendard + --text-base (1rem = 16px) 라 안전.
  */
 export const viewport: Viewport = {
-  themeColor: '#0a0a0a',
+  // light/dark prefers-color-scheme 별 status bar 색 분기.
+  // 값은 tokens/_color.scss (--color-bg light) + _dark.scss (--color-bg dark) 와 동기.
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
+  ],
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
