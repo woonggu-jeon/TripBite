@@ -16,8 +16,8 @@ import type {
   ResetPasswordDto,
   ChangePasswordDto,
   FindIdDto,
+  UserDto,
 } from '@/api/generated/schemas';
-import type { User } from '@/types';
 import { isAxiosError } from '@/services/interceptors/auth';
 import { clearAllCaches } from '@/lib/sw-cache';
 
@@ -38,7 +38,7 @@ export const authKeys = {
  * persisted user 가 잠시 stale 인 동안 사용 가능 + 백엔드 변경 곧 반영.
  */
 export function useMe(
-  options?: Omit<UseQueryOptions<User>, 'queryKey' | 'queryFn'>,
+  options?: Omit<UseQueryOptions<UserDto>, 'queryKey' | 'queryFn'>,
 ) {
   const persistedUser = useAuthStore((s) => s.user);
   return useQuery({

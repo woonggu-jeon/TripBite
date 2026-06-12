@@ -57,6 +57,10 @@
   - (2) URL 정상 (`%2Fmypage`) 인데도 useLogin onSuccess 의 `router.replace + router.refresh` race 3종 — (auth)↔(main) 그룹 교체 + RSC client cache 의 미인증 stale payload + AuthBootstrap의 onboarding 분기 + refresh 가 replace 보다 먼저 발사. **fix**: `window.location.assign(target)` hard navigation — 1회 full reload 비용으로 race 3종 모두 우회 (middleware cookie 정합 검증 / client router cache 우회 / AuthBootstrap mount-from-scratch).
 - **2026-06-10**: 회원가입 자동 로그인 — BE 가 `POST /v1/auth/signup` 응답에 `Set-Cookie: SID` + `SignupResponseDto { user: UserDto }` atomic 발급. FE `useSignup` 단순화 — 응답의 user 로 `setAuth` + `queryClient.setQueryData(me)` + `/onboarding` replace. 별도 login/me 호출 폐기 (3-call → 1-call). BE 요청서 삭제 (전달/완료).
 - **2026-06-10**: 콜드 스타트 단축 — content 페이지 ISR. `/region` + `/region/[code]` 11 시군 `generateStaticParams` + `revalidate: 3600` (안정 데이터). `/destination/[id]` on-demand ISR (`generateStaticParams: [] + dynamicParams: true + revalidate: 3600`). 양쪽 `loading.tsx` 신설 — generate / cache miss 시 즉시 skeleton. Vercel Lambda cold start 회피. BE 변경 즉시 반영 필요 시 `revalidatePath` 호출.
+- **2026-06-12**: 인증 redirect 를 middleware (SSR) 로 일원화 — 3 회 hydration race 회귀 누적 (AuthGuard / AuthBootstrap / selector closure) 으로 클라 가드 비활성. middleware 가 SID cookie 존재 검증 (보호 경로 진입) + 인증된 사용자의 `/login`·`/signup` 재진입 차단 (안전 redirect param 가드) 모두 SSR 단계 처리. FOUC 0. 클라 가드 (AuthGuard / ProtectedScope / AuthBootstrap) 는 mount 0 으로 회귀 시 원복 위해 보존. mock 환경 (`USE_MSW=true`) 은 분기 skip — MSW 가 Set-Cookie 발급 안 함. useLogout / useDeleteAccount 도 useLogin 과 일관 hard nav (`window.location.assign('/')`).
+- **2026-06-12**: 충북 축제 캐러셀 3단계 폴백 — BE 가 단일 endpoint 안에서 `ongoing` (진행 중) → `upcoming` (30 일 이내) → `popular` (인기 여행지) 응답 결정. 응답 `{ type, items[] }`. FE 는 `type` 분기로 sectionTitle i18n + `upcoming` 시 D-day 뱃지 (좌상단, Deep Forest 톤). D-day 는 BE 가 KST 기준 `daysToStart` 서버 계산 — 클라 시계 의존 X. `DestinationCard.topLeftBadge` slot 신설.
+- **2026-06-12**: DTO alias 일괄 정리 — 30+ alias (`Letter=LetterDto`, `Destination=DestinationDto`, `User=UserDto`, `RegionContent=RegionContentDto`, `OngoingFestivals=OngoingFestivalsDto` 등) 모두 제거. 사용처 모두 `@/api/generated/schemas` 에서 직접 import + generated 명 (Dto 접미사) 직접 사용. features/region/types 폴더 자체 삭제. 자체 도메인 shape (`TournamentConfig`, `BracketMatch`, `RankedDestination`, `LetterListKind`, `OnboardingState` 등) 만 features/\*/types 에 잔존.
+- **2026-06-12**: `local` 카테고리 cleanup — UI 의 모든 영역에서 미노출 + BE 도 안 보내는 dead enum. mock seed (destinations / tournament / travel-types), i18n (ko/en category.local 라벨), `RecommendationBanner` 의 local tone 분기, `emoji-map` 의 local 키, "local 미노출" 정책 코멘트 모두 제거. `RegionContentType = Exclude<DestinationCategory, 'local'>` narrowing 도 무용해져 폐기. 남은 잔재는 `src/api/generated/schemas/destinationCategory.ts` 의 enum 정의만 — BE 측 swagger 갱신 후 orval 재생성으로 자동 정리.
 
 ---
 
@@ -190,6 +194,10 @@ orval 단일화 완료 (2026-06-06). 운영 워크플로:
 - `POST /v1/auth/login` → `403 {"code":"CSRF","message":"잘못된 요청입니다."}`. 모든 state-changing 요청 차단 (Origin 헤더 유무 무관).
 - BE 측 CSRF 정책 결정 필요 — 권장: **Origin allowlist** (`Origin === https://trip-bite-mxue.vercel.app` 통과) + `Set-Cookie: SID=...; SameSite=None; Secure`.
 - 운영 `/v1/docs-json` 404 — Swagger 비활성. orval 운영 build fail 방지를 위해 **FE 가 `src/api/generated/` 를 git commit** (2026-06-11 적용) + `prebuild` fail-soft.
+
+**BE 정리 요청** (2026-06-12 발견):
+
+- `DestinationCategory` enum 에서 `'local'` 제거 — UI 의 모든 영역에서 미노출이고 BE 응답에도 안 보내는 dead enum. swagger 갱신 후 FE 가 orval 재생성하면 자동 정리 (cleanup 완료된 generated 파일이 깨끗해짐).
 
 **FE 측 배포 후 작업** (BE CSRF 통과 시):
 

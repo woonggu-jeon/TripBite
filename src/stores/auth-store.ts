@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { User } from '@/types';
+import type { UserDto } from '@/api/generated/schemas';
 
 /**
  * 아키텍처 문서 13, 15번
@@ -21,11 +21,11 @@ import type { User } from '@/types';
 
 type AuthState = {
   isAuthenticated: boolean;
-  user?: User;
+  user?: UserDto;
 };
 
 type AuthActions = {
-  setAuth: (user: User) => void;
+  setAuth: (user: UserDto) => void;
   clearAuth: () => void;
 };
 
