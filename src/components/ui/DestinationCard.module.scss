@@ -94,9 +94,10 @@
   margin: 0;
 }
 
-// 카드 간 높이 일관 — name 영역이 항상 3 줄 분량 차지.
-// 짧은 이름(1줄)도 3 줄 만큼 자리 잡아 grid 안에서 카드 높이 정렬.
-// 4줄째 부터 ellipsis.
+// 카드 간 높이 일관 — name 영역이 줄 수 만큼 자리 차지.
+// 짧은 이름도 동일 줄 수 만큼 자리 잡아 grid 안에서 카드 높이 정렬.
+// 모바일(≤380) 은 좁아 같은 문자가 더 많은 줄을 차지하므로 4 줄까지 허용,
+// 그 위는 3 줄. 4 줄째부터 ellipsis.
 .name {
   font-size: clamp(var(--font-caption), 3vw, var(--font-label));
   font-weight: var(--font-weight-extrabold);
@@ -110,6 +111,11 @@
   -webkit-box-orient: vertical;
   word-break: keep-all;
   margin: 0;
+
+  @media (max-width: 380px) {
+    -webkit-line-clamp: 4;
+    min-height: calc(var(--line-tight) * 4 * 1em);
+  }
 }
 
 .caption {
