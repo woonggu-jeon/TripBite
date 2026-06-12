@@ -37,7 +37,10 @@ function stubMe401() {
   );
 }
 
-describe('AuthBootstrap — 4 redirect 분기', () => {
+// 2026-06-12 — AuthBootstrap mount 자체를 비활성화 (providers.tsx). 인증 redirect
+// 는 middleware, 만료 SID 는 interceptor 가 담당. 본 describe 의 store sync
+// 검증은 의미 약해졌으나 회귀 원복 시 그대로 복원 가능하도록 describe.skip 적용.
+describe.skip('AuthBootstrap — 4 redirect 분기 [mount 비활성]', () => {
   beforeEach(() => {
     router.replace.mockReset();
     router.push.mockReset();

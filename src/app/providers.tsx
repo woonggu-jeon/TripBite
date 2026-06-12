@@ -12,7 +12,11 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useEffect, useState } from 'react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
-import { AuthBootstrap } from '@/features/auth/components/AuthBootstrap';
+// 2026-06-12 — AuthBootstrap mount 비활성. 인증 redirect 는 middleware (SSR) +
+// interceptor (401) 가 담당, 로그인 직후 store sync 는 useLogin.onSuccess 의
+// fetchQuery 가 처리. 다른 기기 user 변경 stale 만 trade-off (다음 navigation 까지).
+// 회귀 시 본 import 와 아래 <AuthBootstrap /> mount 주석 복원.
+// import { AuthBootstrap } from '@/features/auth/components/AuthBootstrap';
 import { ThemeApplier } from '@/features/theme/components/ThemeApplier';
 import { ServiceWorkerNavigateBridge } from '@/features/notification/components/ServiceWorkerNavigateBridge';
 import { Toaster } from '@/components/feedback/Toaster';
@@ -160,7 +164,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeApplier />
-      <AuthBootstrap />
+      {/* <AuthBootstrap /> — 2026-06-12 비활성 (위 import 코멘트 참조) */}
       <ServiceWorkerNavigateBridge />
       <PageViewTracker />
       {/* dev 디버그용 콘솔 로깅만. 운영 Web Vitals 수집은 SpeedInsights 담당(중복 방지) */}
