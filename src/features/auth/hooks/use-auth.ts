@@ -159,7 +159,6 @@ export function useFindId() {
 }
 
 export function useLogout() {
-  const router = useRouter();
   const queryClient = useQueryClient();
   const clearAuth = useAuthStore((s) => s.clearAuth);
 
@@ -173,19 +172,20 @@ export function useLogout() {
       queryClient.clear();
       // Service Worker 캐시 비우기 — 다음 사용자가 이전 응답을 보는 것 방지
       await clearAllCaches();
-      // 로그아웃 후 메인 화면 — middleware 가 미인증 시 자동으로 /login 으로 보냄
-      router.replace('/');
+      // hard nav — useLogin 과 일관. soft router.replace 는 RSC payload / client
+      // router cache 잔재 위험 (이전 로그인 상태의 query 결과 / layout). 홈은 public
+      // 이라 middleware 통과. 보호 경로 직접 진입 시도 시 middleware 가 /login 처리.
+      window.location.assign('/');
     },
   });
 }
 
 /**
  * 회원 탈퇴 — DELETE /me. BE 가 소프트 삭제 + 세션 무효 후 204 응답.
- * onSuccess 흐름은 useLogout 와 동일 — clearAuth + queryClient.clear + sw cache clear + 홈으로.
+ * onSuccess 흐름은 useLogout 와 동일 — clearAuth + queryClient.clear + sw cache clear + 홈.
  * 차이점: 실패 시에도 onSettled 로 cleanup (탈퇴 의도 표시 — 사용자가 다시 들어가면 안 됨).
  */
 export function useDeleteAccount() {
-  const router = useRouter();
   const queryClient = useQueryClient();
   const clearAuth = useAuthStore((s) => s.clearAuth);
 
@@ -199,8 +199,8 @@ export function useDeleteAccount() {
         queryClient.clear();
         await clearAllCaches();
       }
-      router.replace('/');
-      router.refresh();
+      // hard nav — useLogin / useLogout 과 일관 (RSC cache 잔재 회피).
+      window.location.assign('/');
     },
   });
 }
