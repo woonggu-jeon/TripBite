@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { rankingApi } from '@/features/ranking/api/ranking';
 import { CACHE } from '@/lib/cache';
+import { useAuthStore } from '@/stores/auth-store';
 import type { RankingType, TravelTypeAnswer } from '@/features/ranking/types';
 import type { DestinationCategory } from '@/features/tournament/types';
 import type { TravelTypeCode } from '@/api/generated/schemas';
@@ -48,9 +49,11 @@ export function useTravelTypeQuiz() {
 }
 
 export function useMyTravelType() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   return useQuery({
     queryKey: rankingKeys.travelType(),
     queryFn: rankingApi.getMyTravelType,
+    enabled: isAuthenticated,
     ...CACHE.user, // 본인 결과
   });
 }

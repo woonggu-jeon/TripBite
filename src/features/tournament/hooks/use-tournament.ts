@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { tournamentApi } from '@/features/tournament/api/tournament';
 import { CACHE } from '@/lib/cache';
+import { useAuthStore } from '@/stores/auth-store';
 import type {
   DestinationCategory,
   SavedTournament,
@@ -78,9 +79,11 @@ export function useTournamentCandidates(config: TournamentConfig | null) {
 }
 
 export function useSavedTournaments() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   return useQuery({
     queryKey: tournamentKeys.saved(),
     queryFn: tournamentApi.listSaved,
+    enabled: isAuthenticated,
     ...CACHE.user, // 본인 저장 목록
   });
 }
@@ -198,9 +201,11 @@ export function useRelatedDestinations(id: string | undefined) {
  * 현재 mock 은 단일 페이지 반환 (cursor 미지원) — BE 도입 시 InfiniteList 로 확장.
  */
 export function useTournamentHistory() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   return useQuery({
     queryKey: tournamentKeys.history(),
     queryFn: tournamentApi.listHistory,
+    enabled: isAuthenticated,
     ...CACHE.user,
   });
 }
