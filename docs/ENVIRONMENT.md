@@ -21,7 +21,7 @@ FE 가 사용하는 모든 env 변수의 단일 reference. 신규 개발자 셋�
 
 | 변수                           | 필수         | 기본                                | 용도                                           | 사용처                                        |
 | ------------------------------ | ------------ | ----------------------------------- | ---------------------------------------------- | --------------------------------------------- |
-| `NEXT_PUBLIC_API_URL`          | ✅ 필수      | `http://localhost:3000`             | axios baseURL                                  | `services/api/client.ts`                      |
+| `NEXT_PUBLIC_API_URL`          | ✅ 필수      | `http://localhost:3000/v1`          | rewrite target (말미 `/v1` 필수)               | `next.config.js` rewrites                     |
 | `NEXT_PUBLIC_USE_MSW`          | (dev)        | `false`                             | MSW worker 활성. `true` 시 robots noindex 자동 | `mocks/browser.ts` / next.config / middleware |
 | `NEXT_PUBLIC_SW_DEV`           | (dev)        | `false`                             | dev 모드에서 Service Worker 강제 활성          | `next.config.js`                              |
 | `NEXT_PUBLIC_BLOCK_INDEXING`   | 선택         | `false`                             | staging/preview 에서 X-Robots-Tag 강제         | `next.config.js`                              |
@@ -34,14 +34,14 @@ FE 가 사용하는 모든 env 변수의 단일 reference. 신규 개발자 셋�
 
 ### 환경별 필수 매트릭스
 
-| 변수                           | Local Dev               | Preview (Vercel)     | Production                                        |
-| ------------------------------ | ----------------------- | -------------------- | ------------------------------------------------- |
-| `NEXT_PUBLIC_API_URL`          | `http://localhost:3000` | preview BE URL       | `https://tripbite.duckdns.org` (DuckDNS + docker) |
-| `NEXT_PUBLIC_USE_MSW`          | `true` (BE 없을 때)     | `false`              | `false`                                           |
-| `NEXT_PUBLIC_BLOCK_INDEXING`   | 무관                    | `true`               | `false`                                           |
-| `NEXT_PUBLIC_SITE_URL`         | 무관                    | `https://preview...` | 운영 도메인                                       |
-| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | dev key                 | preview key          | 운영 key                                          |
-| `NEXT_PUBLIC_SW_DEV`           | `true` (PWA 테스트 시)  | 무관                 | `false`                                           |
+| 변수                           | Local Dev                  | Preview (Vercel)     | Production                                          |
+| ------------------------------ | -------------------------- | -------------------- | --------------------------------------------------- |
+| `NEXT_PUBLIC_API_URL`          | `http://localhost:3000/v1` | `<preview BE>/v1`    | `https://tripbite.duckdns.org/v1` (말미 `/v1` 필수) |
+| `NEXT_PUBLIC_USE_MSW`          | `true` (BE 없을 때)        | `false`              | `false`                                             |
+| `NEXT_PUBLIC_BLOCK_INDEXING`   | 무관                       | `true`               | `false`                                             |
+| `NEXT_PUBLIC_SITE_URL`         | 무관                       | `https://preview...` | 운영 도메인                                         |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | dev key                    | preview key          | 운영 key                                            |
+| `NEXT_PUBLIC_SW_DEV`           | `true` (PWA 테스트 시)     | 무관                 | `false`                                             |
 
 ---
 
@@ -65,7 +65,8 @@ FE 가 사용하는 모든 env 변수의 단일 reference. 신규 개발자 셋�
 # .env.example 를 그대로 복사한 뒤 값만 채우면 됨
 
 # ---- Client (NEXT_PUBLIC_*) ----
-NEXT_PUBLIC_API_URL=http://localhost:3000
+# 말미 `/v1` 필수 — next.config rewrites 가 path 만 부여
+NEXT_PUBLIC_API_URL=http://localhost:3000/v1
 NEXT_PUBLIC_USE_MSW=true              # BE 없으면 true, 실 BE 띄웠으면 false
 NEXT_PUBLIC_SW_DEV=false              # PWA 테스트할 때만 true
 NEXT_PUBLIC_BLOCK_INDEXING=false
@@ -109,7 +110,7 @@ OPENAPI_URL=http://localhost:3000/docs-json   # BE 안 띄웠으면 prebuild 가
 
 ```
 OPENAPI_URL                     = https://tripbite.duckdns.org/docs-json
-NEXT_PUBLIC_API_URL             = https://tripbite.duckdns.org
+NEXT_PUBLIC_API_URL             = https://tripbite.duckdns.org/v1     # 말미 /v1 필수
 NEXT_PUBLIC_USE_MSW             = false
 NEXT_PUBLIC_BLOCK_INDEXING      = false
 NEXT_PUBLIC_SITE_URL            = <FE 운영 도메인>
@@ -121,7 +122,7 @@ NEXT_PUBLIC_SESSION_COOKIE      = SID
 
 ```
 NEXT_PUBLIC_BLOCK_INDEXING      = true              # preview 색인 차단
-NEXT_PUBLIC_API_URL             = https://preview-api...
+NEXT_PUBLIC_API_URL             = https://preview-api.../v1
 NEXT_PUBLIC_SITE_URL            = https://<preview>.vercel.app
 OPENAPI_URL                     = https://preview-api.../docs-json
 ```
@@ -161,7 +162,8 @@ OPENAPI_URL                     = https://preview-api.../docs-json
 | 누락 변수                                         | 어디서 fail                                     | 메시지 / 증상                                                                                                 |
 | ------------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | `OPENAPI_URL` (orval target down)                 | `npm run dev` / `npm run build` 의 prebuild     | `Error: connect ECONNREFUSED` — BE 안 띄웠을 때. MSW 모드면 cached generated 가 있으면 진행, 첫 셋업이면 fail |
-| `NEXT_PUBLIC_API_URL` 미설정                      | 런타임 axios 호출                               | baseURL=`undefined` → 같은 origin 으로 보내 404 / CORS                                                        |
+| `NEXT_PUBLIC_API_URL` 미설정                      | next.config rewrites                            | rewrite 비활성 → `/api/backend/*` 가 FE 자체 라우터로 가서 404                                                |
+| `NEXT_PUBLIC_API_URL` 말미 `/v1` 누락             | 런타임 API 호출                                 | rewrite 결과가 `${target}/regions/...` 가 되어 BE `/v1/...` 와 어긋남 → 404 (`Cannot GET /regions/...`)       |
 | `NEXT_PUBLIC_USE_MSW` 미설정                      | dev                                             | default `false` 처리 — MSW worker 안 띄움 → API 404                                                           |
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` 미설정 + push 시도 | `Notification.requestPermission()` 후 subscribe | `applicationServerKey is invalid` (브라우저 측)                                                               |
 | `NEXT_PUBLIC_SITE_URL` 미설정                     | sitemap.xml / OG meta                           | URL 이 hardcoded 기본값 (`localhost`) 으로 들어가 SEO 망가짐                                                  |

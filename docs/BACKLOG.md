@@ -193,7 +193,7 @@ orval 단일화 완료 (2026-06-06). 운영 워크플로:
 
 **FE 측 배포 후 작업** (BE CSRF 통과 시):
 
-1. Vercel env 등록 (`docs/DEPLOY.md` 참조) — `NEXT_PUBLIC_API_URL=https://tripbite.duckdns.org`
+1. Vercel env 등록 (`docs/DEPLOY.md` 참조) — `NEXT_PUBLIC_API_URL=https://tripbite.duckdns.org/v1` (말미 `/v1` 필수 — next.config rewrites 가 path 만 부여)
 2. `OPENAPI_URL=https://tripbite.duckdns.org/v1/docs-json` (BE 노출 시. 미노출이면 prebuild fail-soft 가 cached generated 사용)
 3. `npm run be:check` — smoke / anon / onboarded / login 4종 회귀 (운영 API 대상, script env 인자화 후)
 4. `images.remotePatterns` 갱신 — BE 가 이미지를 자체 도메인에서 호스팅하는 경우 (R2/S3 등)
