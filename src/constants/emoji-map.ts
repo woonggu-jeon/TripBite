@@ -5,7 +5,7 @@
  *   import { categoryEmoji, seasonEmoji } from '@/constants/emoji-map';
  *   const e = categoryEmoji('festival');
  */
-import type { DestinationCategory, Season } from '@/features/tournament/types';
+import type { DestinationCategory, Season } from '@/api/generated/schemas';
 
 const CATEGORY_EMOJI: Record<DestinationCategory, string> = {
   local: '🏘️',

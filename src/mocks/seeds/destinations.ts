@@ -1,7 +1,7 @@
 import type {
-  Destination,
+  DestinationDto,
   DestinationCategory,
-} from '@/features/tournament/types';
+} from '@/api/generated/schemas';
 import type { RegionCode } from '@/constants/regions';
 
 /**
@@ -121,7 +121,7 @@ export function tourSeedId(
   return `tour-${(Math.abs(h) % 9000000) + 1000000}`;
 }
 
-export const destinationSeeds: Destination[] = DATA.flatMap((row) =>
+export const destinationSeeds: DestinationDto[] = DATA.flatMap((row) =>
   CATEGORIES.flatMap((c) =>
     row[c].map((name, i) => ({
       id: tourSeedId(row.region, c, i + 1),

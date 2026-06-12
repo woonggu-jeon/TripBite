@@ -5,7 +5,11 @@ import {
   quizControllerGetQuizV1,
   quizControllerSubmitV1,
 } from '@/api/generated/travel-types/travel-types';
-import type { TravelTypeCode, TravelTypeDto } from '@/api/generated/schemas';
+import type {
+  DestinationCategory,
+  TravelTypeCode,
+  TravelTypeDto,
+} from '@/api/generated/schemas';
 import { normalizeImageField } from '@/lib/secure-image-url';
 import type {
   RankedDestination,
@@ -13,7 +17,6 @@ import type {
   TravelTypeAnswer,
   TravelTypeQuiz,
 } from '@/features/ranking/types';
-import type { DestinationCategory } from '@/features/tournament/types';
 
 /**
  * 랭킹 / 여행 유형 테스트 API — orval generated client wrap.

@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import type { Destination } from '@/features/tournament/types';
+import type { DestinationDto } from '@/api/generated/schemas';
 import { pairRound, nextPow2, roundLabelKey } from './bracket';
 
-function makeDest(id: number): Destination {
+function makeDest(id: number): DestinationDto {
   return {
     id: `d-${id}`,
     name: `dest-${id}`,

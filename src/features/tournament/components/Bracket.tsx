@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useReducer } from 'react';
 import { useTranslations } from 'next-intl';
-import type { BracketResult, Destination } from '@/features/tournament/types';
+import type { DestinationDto } from '@/api/generated/schemas';
+import type { BracketResult } from '@/features/tournament/types';
 import {
   pairRound,
   roundLabelKey,
@@ -16,10 +17,10 @@ interface BracketState {
   currentRoundIndex: number;
   currentMatchIndex: number;
   done: boolean;
-  winner: Destination | null;
+  winner: DestinationDto | null;
 }
 
-type Action = { type: 'pick'; winner: Destination };
+type Action = { type: 'pick'; winner: DestinationDto };
 
 function reducer(state: BracketState, action: Action): BracketState {
   switch (action.type) {
@@ -45,7 +46,7 @@ function reducer(state: BracketState, action: Action): BracketState {
       // 라운드 종료 — winners 모음
       const winners = newMatches
         .map((m) => m.winner)
-        .filter((w): w is Destination => !!w);
+        .filter((w): w is DestinationDto => !!w);
       if (round.bye) winners.push(round.bye);
 
       // 최종 우승
@@ -71,7 +72,7 @@ function reducer(state: BracketState, action: Action): BracketState {
   }
 }
 
-function initState(destinations: Destination[]): BracketState {
+function initState(destinations: DestinationDto[]): BracketState {
   if (destinations.length === 0) {
     return {
       rounds: [],
@@ -116,7 +117,7 @@ function useRoundLabel(participants: number): string {
 }
 
 export interface BracketProps {
-  destinations: Destination[];
+  destinations: DestinationDto[];
   onComplete: (result: BracketResult) => void;
 }
 
@@ -137,7 +138,7 @@ export function Bracket({ destinations, onComplete }: BracketProps) {
   const label = useRoundLabel(round?.participants.length ?? 0);
 
   // 결승 상대 (마지막으로 채워진 매치의 패자) — 결승전이 실제로 있었던 경우만.
-  const runnerUp = useMemo<Destination | null>(() => {
+  const runnerUp = useMemo<DestinationDto | null>(() => {
     if (!state.done || !state.winner) return null;
     const lastRound = state.rounds[state.rounds.length - 1];
     const finalMatch = lastRound?.matches[lastRound.matches.length - 1];

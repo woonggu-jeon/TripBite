@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { RegionCode } from '@/constants/regions';
 import { haptic } from '@/lib/haptic';
-import type { Destination, TournamentTheme } from '@/features/tournament/types';
+import type { DestinationDto } from '@/api/generated/schemas';
+import type { TournamentTheme } from '@/features/tournament/types';
 import styles from './ChungbukMap.module.scss';
 
 /**
@@ -59,7 +60,7 @@ interface Placed {
   delay: number;
 }
 
-function placeAll(destinations: Destination[]): Placed[] {
+function placeAll(destinations: DestinationDto[]): Placed[] {
   const perRegion = new Map<RegionCode, number>();
   return destinations.map((d, i) => {
     const region = d.region as RegionCode;
@@ -87,7 +88,7 @@ function placeAll(destinations: Destination[]): Placed[] {
 }
 
 export interface ChungbukMapProps {
-  destinations: Destination[];
+  destinations: DestinationDto[];
   theme: TournamentTheme;
   selected?: Set<string>;
   onToggle?: (id: string) => void;

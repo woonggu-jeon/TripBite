@@ -1,8 +1,8 @@
-import type { Destination } from '@/features/tournament/types';
+import type { DestinationDto } from '@/api/generated/schemas';
 
 export type RankedDestination = {
   rank: number;
-  destination: Destination;
+  destination: DestinationDto;
   /** 우승 횟수 (weekly-winners) 또는 점수 (recommended) */
   score: number;
 };

@@ -6,7 +6,9 @@ import { CACHE } from '@/lib/cache';
 import { useAuthStore } from '@/stores/auth-store';
 import type {
   DestinationCategory,
-  SavedTournament,
+  SavedTournamentDto,
+} from '@/api/generated/schemas';
+import type {
   TournamentConfig,
   TournamentCount,
   TournamentTheme,
@@ -141,10 +143,10 @@ export function useUnsaveTournament() {
     mutationFn: tournamentApi.removeSaved,
     onMutate: async (savedId: string) => {
       await qc.cancelQueries({ queryKey: tournamentKeys.saved() });
-      const previous = qc.getQueryData<SavedTournament[]>(
+      const previous = qc.getQueryData<SavedTournamentDto[]>(
         tournamentKeys.saved(),
       );
-      qc.setQueryData<SavedTournament[]>(tournamentKeys.saved(), (old) =>
+      qc.setQueryData<SavedTournamentDto[]>(tournamentKeys.saved(), (old) =>
         (old ?? []).filter((s) => s.id !== savedId),
       );
       return { previous };
@@ -180,7 +182,7 @@ export function useDestinationDetail(id: string | undefined) {
 
 /**
  * 관련 여행지 — 같은 시군의 다른 destination 6개.
- * Destination 상세 페이지 하단 "이 시군의 다른 여행지" 섹션에서 사용.
+ * DestinationDto 상세 페이지 하단 "이 시군의 다른 여행지" 섹션에서 사용.
  */
 export function useRelatedDestinations(id: string | undefined) {
   return useQuery({

@@ -11,13 +11,9 @@ export type User = UserDto;
 export type { Toast } from '@/stores/ui-store';
 
 export type {
-  Destination,
-  DestinationCategory,
-  Season,
   TournamentTheme,
   TournamentConfig,
   TournamentCount,
-  SavedTournament,
 } from '@/features/tournament/types';
 
 export type { RankedDestination, RankingType } from '@/features/ranking/types';

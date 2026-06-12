@@ -1,8 +1,8 @@
 import type { RegionCode } from '@/constants/regions';
 import type {
   DestinationCategory,
-  SavedTournament,
-} from '@/features/tournament/types';
+  SavedTournamentDto,
+} from '@/api/generated/schemas';
 import { destinationSeeds, tourSeedId } from './destinations';
 
 /**
@@ -127,7 +127,7 @@ const SAVED_PICKS: Array<{
   },
 ];
 
-export const savedTournamentSeeds: SavedTournament[] = SAVED_PICKS.flatMap(
+export const savedTournamentSeeds: SavedTournamentDto[] = SAVED_PICKS.flatMap(
   (pick, i) => {
     const id = tourSeedId(pick.region, pick.category, pick.idx);
     const dest = destinationSeeds.find((d) => d.id === id);

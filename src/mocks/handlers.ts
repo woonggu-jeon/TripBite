@@ -36,10 +36,10 @@ import {
 import type { TravelTypeAnswer } from '@/features/ranking/types';
 import type {
   AppNotificationDto,
+  DestinationDto,
   TravelTypeDto,
 } from '@/api/generated/schemas';
 import { isRegionCode } from '@/constants/regions';
-import type { Destination } from '@/features/tournament/types';
 
 /**
  * URL 매칭 base — axios baseURL 단일화 (`/api/backend`, services/api/client.ts).
@@ -824,7 +824,7 @@ export const handlers = [
   // ⚠️ 두 id space 모두 받음:
   //   - destination id 형태 (예: 'boeun-attraction-1') — 토너먼트 우승지
   //   - region content id 형태 (예: 'boeun-1')         — 시군 상세 row 클릭
-  // 후자의 경우 regionContentSeeds 에서 찾아 Destination 형태로 정규화.
+  // 후자의 경우 regionContentSeeds 에서 찾아 DestinationDto 형태로 정규화.
   http.get(`${apiUrl}/destinations/:id`, ({ params }) => {
     const id = String(params.id);
     let seed = destinationSeeds.find((d) => d.id === id);
@@ -834,7 +834,7 @@ export const handlers = [
         seed = {
           id: rc.id,
           name: rc.title,
-          category: rc.type as Destination['category'],
+          category: rc.type as DestinationDto['category'],
           region: rc.region,
           imageUrl: rc.imageUrl,
         };

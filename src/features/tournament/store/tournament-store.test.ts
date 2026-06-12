@@ -1,11 +1,9 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import type {
-  Destination,
-  TournamentConfig,
-} from '@/features/tournament/types';
+import type { DestinationDto } from '@/api/generated/schemas';
+import type { TournamentConfig } from '@/features/tournament/types';
 import { useTournamentStore } from './tournament-store';
 
-function makeDest(id: number, name = `dest-${id}`): Destination {
+function makeDest(id: number, name = `dest-${id}`): DestinationDto {
   return {
     id: `d-${id}`,
     name,

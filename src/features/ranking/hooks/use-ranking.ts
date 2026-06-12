@@ -5,7 +5,7 @@ import { rankingApi } from '@/features/ranking/api/ranking';
 import { CACHE } from '@/lib/cache';
 import { useAuthStore } from '@/stores/auth-store';
 import type { RankingType, TravelTypeAnswer } from '@/features/ranking/types';
-import type { DestinationCategory } from '@/features/tournament/types';
+import type { DestinationCategory } from '@/api/generated/schemas';
 import type { TravelTypeCode } from '@/api/generated/schemas';
 
 export const rankingKeys = {

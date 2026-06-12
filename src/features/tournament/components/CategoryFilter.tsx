@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { RadioGroup, RadioOption } from '@/components/ui';
-import type { DestinationCategory } from '@/features/tournament/types';
+import type { DestinationCategory } from '@/api/generated/schemas';
 import styles from './CategoryFilter.module.scss';
 
 // 'local'(지역 명소) 은 UI 미노출 — 정책상 토너먼트 카테고리 선택은 축제 /

@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { Card, Chip, MediaThumb } from '@/components/ui';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { categoryEmoji } from '@/constants/emoji-map';
-import type { Destination } from '@/features/tournament/types';
+import type { DestinationDto } from '@/api/generated/schemas';
 import styles from './WinnerCard.module.scss';
 
 /**
@@ -16,7 +16,7 @@ import styles from './WinnerCard.module.scss';
  *   - <Chip variant="primary"> — region 라벨
  * 자체 SCSS 는 grid/place-items 같은 layout 만 담당 (디자인 토큰 일관성).
  */
-export function WinnerCard({ destination }: { destination: Destination }) {
+export function WinnerCard({ destination }: { destination: DestinationDto }) {
   const t = useTranslations('tournament');
   const region = CHUNGBUK_REGIONS.find((r) => r.code === destination.region);
   const regionLabel = region?.ko ?? destination.region;

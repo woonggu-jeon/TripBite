@@ -1,4 +1,4 @@
-import type { Destination } from '@/features/tournament/types';
+import type { DestinationDto } from '@/api/generated/schemas';
 
 /**
  * 토너먼트 트리 유틸 (단일 라운드 페어링 + 라운드 사이즈 결정)
@@ -12,17 +12,17 @@ import type { Destination } from '@/features/tournament/types';
 
 export type BracketMatch = {
   id: string;
-  a: Destination;
-  b: Destination;
-  winner?: Destination;
+  a: DestinationDto;
+  b: DestinationDto;
+  winner?: DestinationDto;
 };
 
 export type RoundState = {
   /** 이 라운드 시작 시점의 참가자 */
-  participants: Destination[];
+  participants: DestinationDto[];
   matches: BracketMatch[];
   /** 부전승 (다음 라운드 자동 진출). 짝수 참가자면 null */
-  bye: Destination | null;
+  bye: DestinationDto | null;
 };
 
 function shuffle<T>(arr: readonly T[]): T[] {
@@ -37,10 +37,10 @@ function shuffle<T>(arr: readonly T[]): T[] {
   return a;
 }
 
-export function pairRound(participants: Destination[]): RoundState {
+export function pairRound(participants: DestinationDto[]): RoundState {
   const shuffled = shuffle(participants);
   const matches: BracketMatch[] = [];
-  let bye: Destination | null = null;
+  let bye: DestinationDto | null = null;
 
   let start = 0;
   if (shuffled.length % 2 === 1) {

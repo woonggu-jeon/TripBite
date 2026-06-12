@@ -1,4 +1,4 @@
-import type { Season } from '@/features/tournament/types';
+import type { Season } from '@/api/generated/schemas';
 
 /**
  * 월 → 계절 매핑 (북반구 기상학적 분류).

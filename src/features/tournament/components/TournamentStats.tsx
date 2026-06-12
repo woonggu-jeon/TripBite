@@ -2,12 +2,13 @@
 
 import { useTranslations } from 'next-intl';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
-import type { Destination, TournamentCount } from '@/features/tournament/types';
+import type { DestinationDto } from '@/api/generated/schemas';
+import type { TournamentCount } from '@/features/tournament/types';
 import styles from './TournamentStats.module.scss';
 
 interface Props {
-  winner: Destination;
-  runnerUp: Destination | null;
+  winner: DestinationDto;
+  runnerUp: DestinationDto | null;
   matchesPlayed: number;
   tournamentSize: TournamentCount | undefined;
 }

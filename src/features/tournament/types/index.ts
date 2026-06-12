@@ -1,16 +1,15 @@
 /**
- * 토너먼트 도메인 타입 — orval generated enum / DTO alias.
+ * 토너먼트 도메인 타입 — FE 전용 union / config / bracket meta 한정.
  *
- * BE swagger 가 Season / DestinationCategory enum 명시 → generated 가 자동 union.
- * FE 는 그대로 re-export — 진실의 원천은 swagger.
+ * DTO (Season/DestinationCategory/Destination/DestinationDetail/SavedTournament/
+ * TournamentRecord) 는 `@/api/generated/schemas` 의 generated 형을 사용처에서
+ * 직접 import. 본 파일은 FE 가 빌드/렌더에 필요한 wrapper 타입만 보관.
  */
 import type {
-  DestinationCategory as DestinationCategoryDto,
-  Season as SeasonDto,
+  DestinationDto,
+  DestinationCategory,
+  Season,
 } from '@/api/generated/schemas';
-
-export type Season = SeasonDto;
-export type DestinationCategory = DestinationCategoryDto;
 
 /**
  * 토너먼트 테마 — 항상 계절 기반.
@@ -62,23 +61,11 @@ export type TournamentConfig = {
   tournamentSize?: TournamentCount;
 };
 
-/**
- * Destination / DestinationDetail — orval generated DTO alias.
- * BE swagger 가 enum + 모든 응답 필드 명시 → generated 가 진실의 원천.
- */
-import type {
-  DestinationDetailDto,
-  DestinationDto,
-} from '@/api/generated/schemas';
-
-export type Destination = DestinationDto;
-export type DestinationDetail = DestinationDetailDto;
-
 export type BracketMatch = {
   round: number; // 1=결승, 2=준결승, ...
   matchId: string;
-  a: Destination;
-  b: Destination;
+  a: DestinationDto;
+  b: DestinationDto;
   winnerId?: string;
 };
 
@@ -90,16 +77,7 @@ export type BracketMatch = {
  * - matchesPlayed: 결정된 매치 수 (= participants - 1)
  */
 export type BracketResult = {
-  winner: Destination;
-  runnerUp: Destination | null;
+  winner: DestinationDto;
+  runnerUp: DestinationDto | null;
   matchesPlayed: number;
 };
-
-// SavedTournament / TournamentRecord — orval generated DTO alias.
-import type {
-  SavedTournamentDto,
-  TournamentRecordDto,
-} from '@/api/generated/schemas';
-
-export type SavedTournament = SavedTournamentDto;
-export type TournamentRecord = TournamentRecordDto;

@@ -10,7 +10,7 @@ import {
   CalendarX,
   CircleParking,
 } from 'lucide-react';
-import type { DestinationDetail } from '@/features/tournament/types';
+import type { DestinationDetailDto } from '@/api/generated/schemas';
 import styles from './WinnerDetailPanel.module.scss';
 
 /**
@@ -53,7 +53,7 @@ function ExpandableSummary({ text }: { text: string }) {
 }
 
 interface Props {
-  detail: DestinationDetail | undefined;
+  detail: DestinationDetailDto | undefined;
   isLoading: boolean;
 }
 

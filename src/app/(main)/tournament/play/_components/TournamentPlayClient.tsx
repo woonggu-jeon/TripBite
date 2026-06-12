@@ -8,9 +8,9 @@ import { FallingPetals } from '@/features/tournament/components/FallingPetals';
 import { ChungbukMap } from '@/features/tournament/components/ChungbukMap';
 import { CountSelector } from '@/features/tournament/components/CountSelector';
 import { Bracket } from '@/features/tournament/components/Bracket';
+import type { DestinationDto } from '@/api/generated/schemas';
 import type {
   BracketResult,
-  Destination,
   TournamentCount,
 } from '@/features/tournament/types';
 import { useTournamentStore } from '@/features/tournament/store/tournament-store';
@@ -169,11 +169,11 @@ export function TournamentPlayClient() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, pendingResult, setBracketResult, router]);
 
-  // map phase 시각화 — selectedRegions 기반 placeholder Destination[].
+  // map phase 시각화 — selectedRegions 기반 placeholder DestinationDto[].
   //   - fetch 가 tournamentSize 결정 후라 이 시점엔 실 destinations 없음
   //   - 지도에 시군 위치 표식만 보이면 충분 (이름/카테고리는 config 에서 차용)
   const N = config?.count ?? 0;
-  const mapPlaceholders = useMemo<Destination[]>(() => {
+  const mapPlaceholders = useMemo<DestinationDto[]>(() => {
     if (!config?.selectedRegions?.length) return [];
     const cat = config.categories[0] ?? 'attraction';
     return config.selectedRegions.map((code) => {
@@ -194,11 +194,11 @@ export function TournamentPlayClient() {
   // 2단계: tournamentSize > 시군 unique 갯수면, 같은 시군의 남은 destination 으로 채움
   // id 중복은 절대 허용 X — Bracket 이 같은 카드 두 번 그리는 사고 차단.
   const matchupSize = config?.tournamentSize ?? pendingSize ?? 0;
-  const matchupDestinations = useMemo<Destination[]>(() => {
+  const matchupDestinations = useMemo<DestinationDto[]>(() => {
     if (!pool || matchupSize <= 0) return [];
     const seenRegions = new Set<string>();
     const seenIds = new Set<string>();
-    const picked: Destination[] = [];
+    const picked: DestinationDto[] = [];
     for (const d of pool) {
       if (seenRegions.has(d.region)) continue;
       seenRegions.add(d.region);

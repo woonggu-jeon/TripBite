@@ -11,7 +11,7 @@ import { FestivalCarousel } from '@/features/home/components/FestivalCarousel';
 // LatestReceivedLetter 위젯 미노출 — 추후 재오픈 시 import 복원.
 // import { LatestReceivedLetter } from '@/features/home/components/LatestReceivedLetter';
 import { getCurrentSeason } from '@/features/tournament/utils/season';
-import type { Season } from '@/features/tournament/types';
+import type { Season } from '@/api/generated/schemas';
 import styles from './HomeDashboard.module.scss';
 
 /**

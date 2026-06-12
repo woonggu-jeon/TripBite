@@ -5,11 +5,11 @@ import { haptic } from '@/lib/haptic';
 import { cardClasses, MediaThumb } from '@/components/ui';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { categoryEmoji } from '@/constants/emoji-map';
-import type { Destination } from '@/features/tournament/types';
+import type { DestinationDto } from '@/api/generated/schemas';
 import styles from './MatchupCard.module.scss';
 
 export interface MatchupCardProps {
-  destination: Destination;
+  destination: DestinationDto;
   onPick: () => void;
   disabled?: boolean;
 }

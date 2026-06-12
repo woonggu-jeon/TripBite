@@ -18,17 +18,17 @@ import {
   normalizePhotosField,
 } from '@/lib/secure-image-url';
 import type {
-  Destination,
-  DestinationDetail,
-  TournamentConfig,
-} from '@/features/tournament/types';
+  DestinationDto,
+  DestinationDetailDto,
+} from '@/api/generated/schemas';
+import type { TournamentConfig } from '@/features/tournament/types';
 
 /**
  * 토너먼트 API — orval generated client wrap.
  *
  * 엔드포인트:
- *   GET    /destinations/random   — 매치업 후보 (Destination[])
- *   GET    /destinations/:id      — 상세 (DestinationDetail)
+ *   GET    /destinations/random   — 매치업 후보 (DestinationDto[])
+ *   GET    /destinations/:id      — 상세 (DestinationDetailDto)
  *   GET    /destinations/:id/related — 같은 시군 6
  *   POST   /tournaments           — 결과 기록 (선택 인증 — 비로그인은 게스트 익명 기록)
  *   GET    /tournaments/:id       — record 복원 (deep-link, 공개)
@@ -38,17 +38,19 @@ import type {
  *   GET    /mypage/tournament-history — 누적 기록 (cursor)
  */
 export const tournamentApi = {
-  getDestinationDetail: async (id: string): Promise<DestinationDetail> => {
+  getDestinationDetail: async (id: string): Promise<DestinationDetailDto> => {
     const res = await destinationControllerDetailV1(id);
     return normalizePhotosField(normalizeImageField(res));
   },
 
-  getRelatedDestinations: async (id: string): Promise<Destination[]> => {
+  getRelatedDestinations: async (id: string): Promise<DestinationDto[]> => {
     const res = await destinationControllerRelatedV1(id);
     return res.map(normalizeImageField);
   },
 
-  fetchCandidates: async (config: TournamentConfig): Promise<Destination[]> => {
+  fetchCandidates: async (
+    config: TournamentConfig,
+  ): Promise<DestinationDto[]> => {
     const res = await destinationControllerRandomV1({
       themeKind: config.theme.kind,
       themeValue: config.theme.value,

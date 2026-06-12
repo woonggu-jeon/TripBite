@@ -9,7 +9,7 @@ import { MediaThumb } from '@/components/ui';
 import { useRecommendedDestinations } from '@/features/ranking/hooks/use-ranking';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { categoryEmoji } from '@/constants/emoji-map';
-import type { Destination } from '@/features/tournament/types';
+import type { DestinationDto } from '@/api/generated/schemas';
 import styles from './RecommendationBanner.module.scss';
 
 /**
@@ -21,7 +21,7 @@ import styles from './RecommendationBanner.module.scss';
  */
 type Tone = 'spring' | 'summer' | 'autumn' | 'winter' | 'festival';
 
-function toneForCategory(category: Destination['category']): Tone {
+function toneForCategory(category: DestinationDto['category']): Tone {
   // category → 시즌/festival 톤 매핑 (디자인 일관 유지).
   if (category === 'festival') return 'festival';
   if (category === 'experience') return 'spring';
@@ -62,7 +62,7 @@ export function RecommendationBanner() {
   );
 }
 
-function Slide({ item, ctaLabel }: { item: Destination; ctaLabel: string }) {
+function Slide({ item, ctaLabel }: { item: DestinationDto; ctaLabel: string }) {
   const tone = toneForCategory(item.category);
   const regionKo = regionLabelFor(item.region);
   return (

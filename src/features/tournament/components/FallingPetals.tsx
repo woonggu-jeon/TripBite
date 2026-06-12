@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { Season } from '@/features/tournament/types';
+import type { Season } from '@/api/generated/schemas';
 import styles from './FallingPetals.module.scss';
 
 /**

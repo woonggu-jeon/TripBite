@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import type { DestinationDto } from '@/api/generated/schemas';
 import type {
   BracketResult,
-  Destination,
   TournamentConfig,
   TournamentCount,
 } from '@/features/tournament/types';
@@ -27,9 +27,9 @@ import type {
  */
 type TournamentState = {
   config: TournamentConfig | null;
-  winner: Destination | null;
+  winner: DestinationDto | null;
   /** 결승 상대 (참가 1명이거나 bye 우승이면 null) — Result 화면 stat 카드용. */
-  runnerUp: Destination | null;
+  runnerUp: DestinationDto | null;
   /** 결정된 매치 수 — Result 화면 "총 N매치" 표시용. */
   matchesPlayed: number;
 };
@@ -46,7 +46,7 @@ type TournamentActions = {
    * config.tournamentSize 만 갱신해 백엔드 호출 파라미터로 전달되도록.
    */
   setTournamentSize: (size: TournamentCount) => void;
-  setWinner: (winner: Destination) => void;
+  setWinner: (winner: DestinationDto) => void;
   /** Bracket onComplete 결과(우승자/결승상대/매치수) 일괄 저장. */
   setBracketResult: (result: BracketResult) => void;
   reset: () => void;

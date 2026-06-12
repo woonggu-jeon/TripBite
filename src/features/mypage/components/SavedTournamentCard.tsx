@@ -5,7 +5,7 @@ import { DestinationCard } from '@/components/ui';
 import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import { toneFor } from '@/constants/region-tone';
 import { categoryEmoji, FALLBACK_TROPHY_EMOJI } from '@/constants/emoji-map';
-import type { SavedTournament } from '@/features/tournament/types';
+import type { SavedTournamentDto } from '@/api/generated/schemas';
 import styles from './SavedTournamentCard.module.scss';
 
 /**
@@ -23,7 +23,7 @@ export function SavedTournamentCard({
   onUnsave,
   unsaveAriaLabel,
 }: {
-  saved: SavedTournament;
+  saved: SavedTournamentDto;
   /** 우상단 하트 클릭 콜백 — 미전달 시 하트 미노출 (메인 carousel 등). */
   onUnsave?: () => void;
   /** 하트 a11y 라벨 — 호출부가 i18n 으로 전달. onUnsave 와 짝. */
