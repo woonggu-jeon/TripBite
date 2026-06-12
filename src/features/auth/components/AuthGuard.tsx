@@ -6,28 +6,21 @@ import { useAuthStore } from '@/stores/auth-store';
 /**
  * AuthGuard — 보호 경로 진입 시 비인증이면 즉시 paint 차단 + /login redirect.
  *
- * 회귀 사유 (재발): 첫 회귀는 `/me` fetch 응답 전 paint 됨 (FOUC) → mount 즉시
- * isAuthenticated 검사로 해결. 그런데 hard navigation (window.location.assign)
- * 후 진입 시 **zustand persist 의 client hydration 이 완료되기 전** 에 useEffect
- * 가 SSR 초기값 `isAuthenticated=false` 를 보고 즉시 location.replace → 로그인
- * 성공한 사용자도 /login 으로 풀리는 증상. cookie 와 무관 — 클라 hydration 타이밍.
+ * 회귀 사유 (3차 — 진단 확정 2026-06-12): SSR server snapshot 단계에서 zustand
+ * store 의 isAuthenticated 가 initial false 로 render → React hydrate 시 첫
+ * commit 후 useEffect 가 그 시점 **selector 의 캡처값 (false)** 으로 발동 →
+ * `location.replace('/login')` 트리거. 직후 client snapshot 의 true 로 re-render
+ * 되어 두 번째 effect run 은 OK paint 분기지만, 이미 navigation 시작 후.
  *
- * Fix — persist hydration 완료 후에만 인증 판정:
- *   - `useAuthStore.persist.hasHydrated()` flag 가 true 일 때까지 대기
- *   - onFinishHydration subscription 으로 비동기 케이스도 커버
+ * 진단 로그가 결정적이었음 — selector closure 의 isAuthenticated=false 와
+ * `useAuthStore.getState()` 의 isAuthenticated=true 가 동일 effect 내에서 충돌.
  *
- * 동작:
- *   - hydration 전 → null (paint 0, redirect 0)
- *   - hydration 후 isAuthenticated=false → location.replace('/login?redirect=...')
- *   - hydration 후 isAuthenticated=true → children paint
- *
- * 안전망: AuthBootstrap 의 `/me` 401 → /login redirect 은 그대로 유지 — cached
- * stale (cookie 만료, 다른 기기 로그아웃) 케이스 대응.
+ * Fix — useEffect 안에서 closure 값 대신 `useAuthStore.getState()` 로 store 의
+ * 최신 snapshot 직접 조회. SSR→CSR snapshot transition 무관하게 정합 보장.
  */
 export function AuthGuard({ children }: { children: ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const [hasHydrated, setHasHydrated] = useState<boolean>(() => {
-    // SSR 에선 false, CSR mount 시점엔 이미 hydrated 인 경우가 많음 (localStorage sync).
     if (typeof window === 'undefined') return false;
     return useAuthStore.persist.hasHydrated();
   });
@@ -38,27 +31,16 @@ export function AuthGuard({ children }: { children: ReactNode }) {
     const unsub = useAuthStore.persist.onFinishHydration(() =>
       setHasHydrated(true),
     );
-    // 구독 직후에도 한 번 더 체크 — subscribe 와 hydration 완료 사이의 race 대응.
     if (useAuthStore.persist.hasHydrated()) setHasHydrated(true);
     return unsub;
   }, [hasHydrated]);
 
   useEffect(() => {
-    if (!hasHydrated) {
-      console.warn('[diag:AuthGuard] hasHydrated=false → wait');
-      return;
-    }
-    if (!isAuthenticated) {
-      console.warn(
-        '[diag:AuthGuard] REDIRECT → /login (hasHydrated=true, isAuthenticated=false)',
-        {
-          storeSnapshot: useAuthStore.getState(),
-          localStorage:
-            typeof window !== 'undefined'
-              ? window.localStorage.getItem('tripbite.auth')
-              : null,
-        },
-      );
+    if (!hasHydrated) return;
+    // selector closure 의 stale 값 (SSR server snapshot 잔재) 회피 —
+    // 매 effect run 마다 store 의 최신 snapshot 직접 조회.
+    const currentAuth = useAuthStore.getState().isAuthenticated;
+    if (!currentAuth) {
       const loginUrl = new URL('/login', window.location.origin);
       loginUrl.searchParams.set(
         'redirect',
@@ -67,10 +49,6 @@ export function AuthGuard({ children }: { children: ReactNode }) {
       window.location.replace(loginUrl.toString());
       return;
     }
-
-    console.warn(
-      '[diag:AuthGuard] OK (hasHydrated=true, isAuthenticated=true) → paint',
-    );
     setReady(true);
   }, [hasHydrated, isAuthenticated]);
 
