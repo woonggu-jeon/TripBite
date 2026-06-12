@@ -3,17 +3,14 @@
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { MediaThumb } from '@/components/ui';
-import type { RegionContent } from '@/features/region/types';
+import type { RegionContentDto } from '@/api/generated/schemas';
 import styles from './RegionContentRow.module.scss';
 
-// BE 가 RegionContent 에는 'local' 카테고리 안 보내지만 generated DestinationCategory
-// 는 4종 enum 이라 type-check 위해 fallback 키 추가.
-const TYPE_EMOJI = {
+const TYPE_EMOJI: Partial<Record<RegionContentDto['type'], string>> = {
   attraction: '📍',
   festival: '🎪',
   experience: '🎨',
-  local: '🏘️',
-} as const;
+};
 
 /**
  * 시군 상세 row 카드 — 좌측 이미지(또는 emoji fallback) + 제목/한줄소개 + 화살표.
@@ -21,7 +18,7 @@ const TYPE_EMOJI = {
  * 클릭 시 여행지 상세 페이지 (/destination/[id]) 로 이동.
  * imageUrl 있으면 TourAPI 실 이미지, 없으면 emoji + tone gradient.
  */
-export function RegionContentRow({ content }: { content: RegionContent }) {
+export function RegionContentRow({ content }: { content: RegionContentDto }) {
   return (
     <Link
       href={{ pathname: `/destination/${content.id}` }}

@@ -7,8 +7,7 @@
  */
 import type { DestinationCategory, Season } from '@/api/generated/schemas';
 
-const CATEGORY_EMOJI: Record<DestinationCategory, string> = {
-  local: '🏘️',
+const CATEGORY_EMOJI: Partial<Record<DestinationCategory, string>> = {
   festival: '🎪',
   attraction: '📍',
   experience: '🎨',

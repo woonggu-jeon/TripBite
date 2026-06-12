@@ -31,12 +31,7 @@ const REGION_CYCLE: RegionCode[] = [
   'jincheon',
 ];
 
-const CATEGORY_CYCLE = [
-  'local',
-  'festival',
-  'attraction',
-  'experience',
-] as const;
+const CATEGORY_CYCLE = ['festival', 'attraction', 'experience'] as const;
 
 export const tournamentHistorySeeds = Array.from({ length: 15 }, (_, i) => {
   const region = REGION_CYCLE[i] as RegionCode;
@@ -110,7 +105,13 @@ const SAVED_PICKS: Array<{
     color: '#A78BFA',
     chance: 80,
   },
-  { region: 'boeun', category: 'local', idx: 1, color: '#FBBF24', chance: 65 },
+  {
+    region: 'boeun',
+    category: 'attraction',
+    idx: 1,
+    color: '#FBBF24',
+    chance: 65,
+  },
   {
     region: 'goesan',
     category: 'festival',

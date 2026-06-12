@@ -5,7 +5,8 @@ import {
 } from '@/api/generated/regions/regions';
 import type { RegionCode } from '@/constants/regions';
 import { normalizeImageField } from '@/lib/secure-image-url';
-import type { RegionContent, RegionContentType } from '@/features/region/types';
+import type { RegionContentDto } from '@/api/generated/schemas';
+import type { RegionContentType } from '@/features/region/types';
 
 /**
  * Region (시군) API — orval 가 BE swagger 로 자동 생성한 client functions wrap.
@@ -37,7 +38,7 @@ export const regionApi = {
     // TourAPI 원본 http URL → https 정규화 (BE 안전망)
     return {
       ...res,
-      items: res.items.map(normalizeImageField) as RegionContent[],
+      items: res.items.map(normalizeImageField) as RegionContentDto[],
     };
   },
 

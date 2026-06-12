@@ -13,9 +13,9 @@ import {
 import { toneFor } from '@/constants/region-tone';
 import { useResponsiveSlidesPerView } from '@/hooks/use-responsive-slides-per-view';
 import type {
-  OngoingFestivalItem,
-  OngoingFestivals,
-} from '@/features/region/types';
+  OngoingFestivalItemDto,
+  OngoingFestivalsDto,
+} from '@/api/generated/schemas';
 import { DdayBadge } from './DdayBadge';
 import styles from './FestivalCarousel.module.scss';
 
@@ -40,13 +40,13 @@ const ID_EMOJI: Record<string, string> = {
   'jecheon-festival-1': '🎬',
 };
 
-const TITLE_KEY: Record<OngoingFestivals['type'], string> = {
+const TITLE_KEY: Record<OngoingFestivalsDto['type'], string> = {
   ongoing: 'festival.ongoing',
   upcoming: 'festival.upcoming',
   popular: 'festival.popular',
 };
 
-function emojiFor(item: OngoingFestivalItem): string {
+function emojiFor(item: OngoingFestivalItemDto): string {
   return ID_EMOJI[item.id] ?? '🎉';
 }
 
@@ -60,12 +60,12 @@ function regionCodeOf(label: string | undefined): RegionCode {
   return matched?.code ?? 'cheongju';
 }
 
-function regionLabelOf(item: OngoingFestivalItem): string {
+function regionLabelOf(item: OngoingFestivalItemDto): string {
   if (item.regionLabel) return item.regionLabel;
   return CHUNGBUK_REGIONS.find((r) => r.code === 'cheongju')?.ko ?? '';
 }
 
-function periodCaption(item: OngoingFestivalItem): string | undefined {
+function periodCaption(item: OngoingFestivalItemDto): string | undefined {
   if (!item.eventStartDate && !item.eventEndDate) return undefined;
   return `${item.eventStartDate ?? ''}${item.eventEndDate ? ` — ${item.eventEndDate}` : ''}`;
 }

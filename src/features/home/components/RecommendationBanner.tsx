@@ -25,7 +25,6 @@ function toneForCategory(category: DestinationDto['category']): Tone {
   // category → 시즌/festival 톤 매핑 (디자인 일관 유지).
   if (category === 'festival') return 'festival';
   if (category === 'experience') return 'spring';
-  if (category === 'local') return 'autumn';
   return 'summer';
 }
 

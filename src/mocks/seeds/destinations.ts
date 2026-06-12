@@ -99,7 +99,6 @@ const DATA: SeedRow[] = [
 ];
 
 const CATEGORIES: DestinationCategory[] = [
-  'local',
   'festival',
   'attraction',
   'experience',

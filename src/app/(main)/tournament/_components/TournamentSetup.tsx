@@ -51,8 +51,6 @@ const VALID_SEASONS: readonly Season[] = [
   'winter',
 ];
 
-// 토너먼트 카테고리 — 'local'(지역 명소) 미노출 정책 일관 (CategoryFilter 와 동일).
-// 랜덤 테마 흐름의 pickRandom 도 이 목록에서만 선택.
 const CATEGORIES: readonly DestinationCategory[] = [
   'festival',
   'attraction',
