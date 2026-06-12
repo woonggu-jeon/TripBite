@@ -10,13 +10,13 @@ import { useRouter } from 'next/navigation';
 import { authApi } from '@/features/auth/api/auth';
 import { useAuthStore } from '@/stores/auth-store';
 import type {
-  LoginRequest,
-  SignupRequest,
-  ForgotPasswordRequest,
-  ResetPasswordRequest,
-  ChangePasswordRequest,
-  FindIdRequest,
-} from '@/features/auth/types';
+  LoginDto,
+  SignupDto,
+  ForgotPasswordDto,
+  ResetPasswordDto,
+  ChangePasswordDto,
+  FindIdDto,
+} from '@/api/generated/schemas';
 import type { User } from '@/types';
 import { isAxiosError } from '@/services/interceptors/auth';
 import { clearAllCaches } from '@/lib/sw-cache';
@@ -66,7 +66,7 @@ export function useLogin(options?: { redirectTo?: string }) {
   const setAuth = useAuthStore((s) => s.setAuth);
 
   return useMutation({
-    mutationFn: (data: LoginRequest) => authApi.login(data),
+    mutationFn: (data: LoginDto) => authApi.login(data),
     onSuccess: async () => {
       // 로그인 후 /me 재조회하여 상태 hydrate
       const user = await queryClient.fetchQuery({
@@ -98,7 +98,7 @@ export function useSignup() {
   const setAuth = useAuthStore((s) => s.setAuth);
 
   return useMutation({
-    mutationFn: (data: SignupRequest) => authApi.signup(data),
+    mutationFn: (data: SignupDto) => authApi.signup(data),
     onSuccess: (response) => {
       // BE 가 가입 + 세션 발급을 atomic 처리 — Set-Cookie: SID + { user: UserDto }.
       // FE 는 별도 login/me 호출 불필요 — 응답의 user 그대로 store / cache hydrate.
@@ -113,7 +113,7 @@ export function useSignup() {
 
 export function useForgotPassword() {
   return useMutation({
-    mutationFn: (data: ForgotPasswordRequest) => authApi.forgotPassword(data),
+    mutationFn: (data: ForgotPasswordDto) => authApi.forgotPassword(data),
   });
 }
 
@@ -122,7 +122,7 @@ export function useResetPassword() {
   const queryClient = useQueryClient();
   const clearAuth = useAuthStore((s) => s.clearAuth);
   return useMutation({
-    mutationFn: (data: ResetPasswordRequest) => authApi.resetPassword(data),
+    mutationFn: (data: ResetPasswordDto) => authApi.resetPassword(data),
     onSuccess: async () => {
       // 비번 변경 후 기존 세션 즉시 무효화.
       // BE 가 reset 시 세션을 자동 invalidate 안 할 가능성 대비 — 명시 logout 호출로
@@ -143,13 +143,13 @@ export function useResetPassword() {
 
 export function useChangePassword() {
   return useMutation({
-    mutationFn: (data: ChangePasswordRequest) => authApi.changePassword(data),
+    mutationFn: (data: ChangePasswordDto) => authApi.changePassword(data),
   });
 }
 
 export function useFindId() {
   return useMutation({
-    mutationFn: (data: FindIdRequest) => authApi.findId(data),
+    mutationFn: (data: FindIdDto) => authApi.findId(data),
   });
 }
 
