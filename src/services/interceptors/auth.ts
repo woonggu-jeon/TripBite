@@ -17,8 +17,8 @@ import axios from 'axios';
  *     페이지 그대로 유지.
  *   - auth 페이지 (/login, /signup, /find-id, /forgot-password,
  *     /reset-password, /onboarding) 에서도 hard redirect skip — 무한 루프 회피.
- *   - mock 환경 (USE_MSW=true) 도 hard redirect skip — AuthBootstrap +
- *     MockAuthToggle 이 unauth UX 자체 처리.
+ *   - mock 환경 (USE_MSW=true) 도 hard redirect skip — MockAuthToggle 이 unauth
+ *     UX 자체 처리.
  */
 
 /**

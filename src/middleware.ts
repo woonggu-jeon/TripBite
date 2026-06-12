@@ -76,7 +76,15 @@ export function middleware(request: NextRequest) {
   // ── 인증 redirect (보호 경로 + SID 없음) ──
   // SSR 단계 — 클라 hydration race 무관. paint 0.
   // SID 만료 케이스는 통과 후 첫 API 401 → interceptor hard redirect 가 처리.
-  if (isProtectedPath(pathname) && !request.cookies.has(SESSION_COOKIE)) {
+  //
+  // mock 환경 skip: MSW handler 가 Set-Cookie SID 발급 안 함 — 검사 시 무한 루프.
+  // MockAuthToggle + 응답의 401 분기로 dev UX 보호 (interceptor 도 동일하게 skip).
+  const isMockMode = process.env.NEXT_PUBLIC_USE_MSW === 'true';
+  if (
+    !isMockMode &&
+    isProtectedPath(pathname) &&
+    !request.cookies.has(SESSION_COOKIE)
+  ) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('redirect', pathname + request.nextUrl.search);
     const redirectRes = NextResponse.redirect(loginUrl);

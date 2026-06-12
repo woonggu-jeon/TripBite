@@ -11,7 +11,8 @@ BE 인계용 정책·시나리오·보안 명세 (Swagger 가 cover 못 하는 �
 
 ### 인증 방식 — sessionID 단일 쿠키 (한국 표준)
 
-- 단일 cookie `SID` — `HttpOnly; Secure; SameSite=Lax; Path=/`
+- 단일 cookie `SID` — `HttpOnly; Secure; SameSite=None; Path=/`
+  - SameSite=None — vercel.app 의 FE same-origin proxy (`/api/backend/*` → BE) 통해 cookie 가 vercel.app 도메인에 저장됨. `Domain` attribute 는 비워 둠 (응답 origin 에 자동 저장).
 - BE 가 매 요청 cookie → DB/Redis `Session` 테이블 조회로 검증
 - 만료 / Revocation 모두 DB row 변경으로 즉시 반영 (관리자 강제 로그아웃 가능)
 - FE 는 쿠키를 직접 읽지 않고 `withCredentials=true` 로 자동 전송
@@ -22,10 +23,12 @@ BE 인계용 정책·시나리오·보안 명세 (Swagger 가 cover 못 하는 �
 > ⚠ 본 명세는 JWT (access/refresh) 모델에서 sessionID 단일 쿠키로 전환됨.
 > JWT 로 구현 중이면 `access_token` 폐기 + `/auth/refresh` endpoint 제거 + DB Session lookup guard 로 마이그.
 
-### 401 처리 (FE interceptor)
+### 인증 redirect 흐름 (2-layer)
 
-- 401 응답 → 즉시 `window.location.href = '/login'` (refresh 시도 X)
-- auth 페이지 (`/login`, `/signup`, `/find-id`, `/forgot-password`, `/reset-password`, `/onboarding`) 에 있으면 hard redirect skip — reload 무한 루프 회피.
+1. **middleware (SSR, FOUC 0)** — 보호 경로 (`/mypage`, `/settings`, `/letter`, `/notifications`) 진입 시 `SID` cookie 없음 → `/login?redirect=...` 302 redirect
+   - mock 환경 (`NEXT_PUBLIC_USE_MSW=true`) 은 skip — MSW 가 Set-Cookie 발급 안 함
+2. **axios interceptor (401 안전망)** — middleware 통과한 만료 SID 케이스. 보호 경로에서 401 응답 → `window.location.href = '/login'`
+   - auth 페이지 (`/login`, `/signup`, `/find-id`, `/forgot-password`, `/reset-password`, `/onboarding`) / mock 환경 skip — 무한 루프 회피
 
 ### 에러 표준화
 

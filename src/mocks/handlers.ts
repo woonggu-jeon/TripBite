@@ -80,9 +80,11 @@ const mockUser = {
 
 /**
  * 온보딩 완료 상태 — 신규 가입 흐름 재현용 mutable 상태.
- *   - 초기 false → /me가 isOnboarded:false → AuthBootstrap이 /onboarding 유지
- *   - complete-onboarding 호출 시 true → 이후 /me가 true → 홈 진입
- * dev 서버(서비스워커) 재시작 시 false로 리셋.
+ *   - 초기 false → /me 가 isOnboarded:false 반환 (UI 표시용)
+ *   - complete-onboarding 호출 시 true → 이후 /me 가 true 반환
+ *
+ * 디바이스 onboarding (middleware) 은 `tripbite.visited` cookie 기반 — 본 상태와 별개.
+ * dev 서버(서비스워커) 재시작 시 false 로 리셋.
  */
 let onboardedState = false;
 

@@ -10,9 +10,10 @@ import type { User } from '@/types';
  * - Zustand에는 최소 정보만 (isAuthenticated, user)
  * - 서버 데이터를 Zustand에 두는 것은 금지 (TanStack Query가 담당)
  *
- * **persist (localStorage)** — `/me` 응답을 디바이스에 저장.
- * AuthBootstrap 이 mount 즉시 cached user 사용 → onboarding 분기 즉시 결정 → FOUC 회피.
- * `/me` 백그라운드 refetch 로 server truth 갱신 (TanStack Query 의 staleTime 정책).
+ * **persist (localStorage)** — 로그인 시 `/me` 응답을 디바이스에 저장.
+ * 페이지 reload 후에도 cached user 즉시 사용 → AppHeader/ProfileCard UI 표시 가속.
+ * 다른 기기 변경 사항 동기화: `/mypage` 진입 시 ProfileCard 의 useMe 가 background
+ * refetch — 다른 보호 경로 진입 시엔 stale 허용 (다음 reload/navigation 까지).
  *
  * 보안: HttpOnly cookie (SID) 가 인증 단일 source. localStorage 의 user 는 UX 가속용.
  * 로그아웃 시 clearAuth 가 store + cache 모두 비움.

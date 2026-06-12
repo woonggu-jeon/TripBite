@@ -58,7 +58,7 @@ const queryClientOptions: DefaultOptions = {
  *
  * 마운트되는 글로벌 UI / 부수효과:
  *   - QueryClientProvider — TanStack Query
- *   - AuthBootstrap        /me 조회 + onboarding redirect
+ *   - (인증 redirect 는 middleware (SSR) 담당 — AuthBootstrap mount 비활성)
  *   - PageViewTracker      라우트 변경 자동 추적
  *   - Toaster              toast 큐 렌더
  *   - ConfirmDialog        confirm 다이얼로그 큐 렌더

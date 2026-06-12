@@ -2,12 +2,12 @@
  * Onboarding feature — Public API
  *
  * 진입 흐름:
- *   /login 성공 → AuthBootstrap 이 /me 조회 →
- *   user.isOnboarded === false → router.replace('/onboarding')
+ *   middleware 가 `tripbite.visited` cookie 없는 디바이스 → /onboarding 으로 SSR redirect.
+ *   원래 가려던 path 는 ?next= 로 보존.
  *
  * 완료 시:
  *   POST /me/complete-onboarding { nickname, regionCode? }
- *   → /me invalidate → AuthBootstrap이 isOnboarded=true 받음 → router.replace('/')
+ *   → OnboardingFlow 가 `tripbite.visited=1` cookie set 후 ?next= 경로로 router.replace.
  */
 export { onboardingApi } from './api/onboarding';
 export { useCompleteOnboarding } from './hooks/use-onboarding';

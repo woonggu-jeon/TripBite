@@ -13,10 +13,10 @@ import {
  * Server Component — 정적 콘텐츠라 SSG 가능.
  * 본문은 법무 검토 후 확정하는 게 안전.
  *
- * 변경 시 사용자 동의 재취득 정책:
+ * 변경 시 사용자 동의 재취득 정책 (향후 도입 예정):
  *   - 약관 버전(termsVersion) 을 백엔드 user 레코드에 저장
- *   - 약관 업데이트 시 버전 증가 → AuthBootstrap 에서 비교 후
- *     변경된 사용자에게 재동의 UI 노출
+ *   - 약관 업데이트 시 버전 증가 → 보호 경로 진입 시 useMe (ProfileCard)
+ *     또는 별도 hook 에서 비교 후 변경된 사용자에게 재동의 UI 노출
  */
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('settings.policy');

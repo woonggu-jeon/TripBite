@@ -6,9 +6,9 @@ import { authedSession } from './_helpers/auth';
  *
  * 시나리오:
  *   1) MockAuthToggle 버튼이 헤더 dev slot 에 노출 (USE_MSW=true 빌드)
- *   2) 로그아웃 토글 → mockSignedIn=false → /me 401 → AuthBootstrap clearAuth
- *   3) 비로그인 상태에서 /mypage 진입 → AuthBootstrap 가 /login?redirect= 으로 push
- *      (middleware 가 mock-skip 이므로 client-side 가드가 fallback)
+ *   2) 로그아웃 토글 → mockSignedIn=false → /me 401 → toggle 이 clearAuth
+ *   3) 비로그인 상태에서 /mypage 진입 → middleware 가 SID cookie 없음 확인 →
+ *      /login?redirect=/mypage 로 SSR redirect
  */
 // Serial — 병렬 실행 시 localStorage / mock 상태 race 로 flaky.
 // 같은 파일 안에서 logout 토글이 다른 test 의 mock 상태에 영향 주지 않게 순차 실행.
@@ -49,14 +49,13 @@ test.describe('Mock 로그인 토글 + 보호 경로', () => {
     await expect(toggle).toBeVisible();
     await toggle.click();
 
-    // 토글 후 라벨이 'mock 로그인' 으로 전환되는지 (AuthBootstrap 가 /me 401 처리 후)
+    // 토글 후 라벨이 'mock 로그인' 으로 전환되는지 (MockAuthToggle 의 useMe 가 401 후)
     await expect(page.getByRole('button', { name: 'mock 로그인' })).toBeVisible(
       { timeout: 5000 },
     );
 
-    // 보호 경로 진입 시도 → AuthBootstrap 가 /login 으로 push.
-    // goto 가 client-side redirect 도중 ABORT 되는 경우가 있어 catch 후 URL 만 검증.
-    // 병렬 실행 시 redirect 가 약간 지연될 수 있어 timeout 넉넉히.
+    // 보호 경로 진입 시도 → middleware 가 SID 없음 확인 → /login?redirect= 로 SSR redirect.
+    // SSR redirect 라 client-side ABORT race 가능성 적지만 안전망 catch 유지.
     await page.goto('/mypage').catch(() => {});
     await page.waitForURL(/\/login/, { timeout: 15000 });
     // redirect query 가 원래 경로 보존

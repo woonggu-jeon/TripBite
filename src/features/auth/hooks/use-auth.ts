@@ -28,12 +28,11 @@ export const authKeys = {
 
 /**
  * 현재 사용자 정보 조회
- * - AuthBootstrap에서 한 번 호출 후 cache에 보관
- * - 다른 컴포넌트는 store(useAuthStore) 또는 이 hook을 통해 접근
+ * - 호출처: ProfileCard (/mypage), MockAuthToggle (dev), useLogin.onSuccess 의 fetchQuery
+ * - 다른 컴포넌트는 store(useAuthStore) 의 cached user 만 사용 (UI 표시용)
  *
  * **initialData**: store 의 persisted user (localStorage) 를 첫 render 의 seed 로.
- * mount 즉시 `isLoading: false + isSuccess: true` → AuthBootstrap 의 onboarding
- * 분기가 즉시 결정됨 (FOUC 회피). 백그라운드 `/me` refetch 로 server truth 갱신.
+ * mount 즉시 `isLoading: false + isSuccess: true` → UI 즉시 표시 (FOUC 회피).
  *
  * **initialDataUpdatedAt**: 0 (epoch) → staleTime 즉시 만료 → 백그라운드 refetch 트리거.
  * persisted user 가 잠시 stale 인 동안 사용 가능 + 백엔드 변경 곧 반영.
@@ -78,17 +77,14 @@ export function useLogin(options?: { redirectTo?: string }) {
       // 로그인 성공 → 원래 가려던 경로 (LoginForm 이 ?redirect= 로 전달) 또는 홈.
       // open-redirect 차단은 LoginForm 에서 처리 (`startsWith('/')`).
       //
-      // 회귀 사유 — `router.replace + router.refresh` 조합이 race 3종:
-      //   1) (auth) → (main) 라우트 그룹 교체 + RSC client router cache 의 미인증 시점 payload
-      //      → replace 가 stale cache 재사용 → navigation 충돌
-      //   2) AuthBootstrap 이 setAuth 직후 useEffect 가 isOnboarded 분기로 또 redirect
-      //   3) refresh 가 replace 보다 먼저 발사되어 현재 (/login) RSC 갱신 → paint 정지
-      // 사용자 보고 "redirect=%2Fmypage 도 안 됨" — 위 race 들이 누적된 증상.
+      // 회귀 사유 — `router.replace + router.refresh` 조합 race 누적:
+      //   · (auth) → (main) 라우트 그룹 교체 + RSC client router cache stale payload
+      //   · refresh 가 replace 보다 먼저 발사되어 현재 (/login) RSC 갱신 → paint 정지
+      // 사용자 보고 "redirect=%2Fmypage 도 안 됨" — 위 race 누적 증상.
       //
-      // Fix — hard navigation. 비용은 1회 full reload (login 1회만 발생), 보상은:
-      //   · middleware 가 새 요청에서 cookie 정합 검증 → 정확
+      // Fix — hard navigation. 비용은 1회 full reload, 보상은:
+      //   · middleware 가 새 요청에서 SID cookie 정합 검증 → 보호 경로 통과
       //   · client router cache 완전 우회
-      //   · AuthBootstrap race 없음 (페이지가 처음부터 재 mount)
       //   · refresh 불필요
       const target = options?.redirectTo ?? '/';
       window.location.assign(target);
@@ -108,7 +104,7 @@ export function useSignup() {
       // FE 는 별도 login/me 호출 불필요 — 응답의 user 그대로 store / cache hydrate.
       setAuth(response.user);
       queryClient.setQueryData(authKeys.me(), response.user);
-      // 첫 가입 → onboarding 으로. (AuthBootstrap 의 isOnboarded false redirect 와 일치.)
+      // 첫 가입 → onboarding 으로. middleware 의 visited cookie redirect 와 일치.
       router.replace('/onboarding');
       router.refresh();
     },
@@ -130,9 +126,8 @@ export function useResetPassword() {
     onSuccess: async () => {
       // 비번 변경 후 기존 세션 즉시 무효화.
       // BE 가 reset 시 세션을 자동 invalidate 안 할 가능성 대비 — 명시 logout 호출로
-      // SID cookie 정리. SID 가 살아있으면 /login 진입을 middleware 가 / 로 차단해
-      // 사용자가 새 비번으로 다시 로그인 불가능한 회귀가 생김. HttpOnly 라 JS 로
-      // cookie 직접 제거 불가 — BE 의 logout endpoint 가 Set-Cookie 만료로 정리.
+      // SID cookie 정리. HttpOnly 라 JS 로 직접 제거 불가 — BE 의 logout endpoint 가
+      // Set-Cookie 만료(Max-Age=0)로 정리. 정리 후 새 비번으로 /login 진입 가능.
       try {
         await authApi.logout();
       } catch {

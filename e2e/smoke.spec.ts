@@ -11,10 +11,11 @@ test.describe('smoke', () => {
   test('미인증 사용자는 /login 또는 /onboarding 으로 리다이렉트', async ({
     page,
   }) => {
-    // 운영(USE_MSW=false): middleware 가 access_token 없음 → /login.
-    // mock(USE_MSW=true): middleware skip, AuthBootstrap 의 localStorage 기반 →
-    //   localStorage 없으면 /onboarding.
-    // 두 시나리오 모두 허용 — 환경별 동작 검증.
+    // middleware 가 두 분기로 redirect:
+    //   1) tripbite.visited cookie 없음 → /onboarding (먼저 발동, public 경로 / 도 해당)
+    //   2) SID cookie 없음 + 보호 경로 → /login
+    // 본 test 는 / 진입이라 1)번 분기 적용 → /onboarding. (운영/mock 환경 동일)
+    // 두 경로 모두 허용 — 구현 변경 시 안전망.
     await page.goto('/');
     await expect(page).toHaveURL(/\/(login|onboarding)/);
   });

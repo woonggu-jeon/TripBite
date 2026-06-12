@@ -5,7 +5,7 @@ import { authedSession } from './_helpers/auth';
  * 페이지 자동 QA — 주요 페이지 진입 + 핵심 콘텐츠 확인 + 가로 overflow 검증.
  *
  * 흐름:
- *   1) localStorage 에 onboarded 미리 set → AuthBootstrap 의 /onboarding redirect 우회
+ *   1) authedSession() — SID + tripbite.visited cookie 주입 → middleware 두 redirect 우회
  *   2) 각 페이지 진입 → 응답 200 + viewport 가로 overflow 없음
  *   3) 핵심 element / heading 존재 (변경에 강한 셀렉터)
  *

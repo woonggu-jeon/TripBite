@@ -30,8 +30,8 @@ test.describe('온보딩 — 3-step 흐름', () => {
   test('미인증 / 진입 → /login 또는 /onboarding 으로 redirect', async ({
     page,
   }) => {
-    // mock(USE_MSW=true): middleware skip → AuthBootstrap 이 /onboarding 으로.
-    // 운영(USE_MSW=false): middleware 가 /login 으로. 환경 무관 둘 다 허용.
+    // 미인증 + visited cookie 없는 신규 진입 → middleware 가 /onboarding 으로 redirect
+    // (visited cookie 우선). visited 있고 SID 없을 때만 /login 으로. 두 경로 모두 허용.
     await page.goto('/');
     await expect(page).toHaveURL(/\/(login|onboarding)/);
   });

@@ -9,8 +9,8 @@ import { AuthLayout } from '@/components/layout/AuthLayout';
  * 온보딩 페이지 (/onboarding)
  *
  * 진입 조건:
- *   - 인증된 사용자 + 아직 onboarding 미완료
- *   - middleware 가 아닌 AuthBootstrap에서 검사 후 router.replace 처리 권장
+ *   - middleware 가 `tripbite.visited` cookie 없는 디바이스 → 본 페이지로 redirect
+ *   - 인증 무관 (디바이스 단위 onboarding). 비로그인 사용자도 진입 가능 — 가입 유도
  *
  * 3 step 단일 페이지 (URL 그대로, 내부 step 상태):
  *   1) 컨셉 소개 — 앱이 뭘 하는지 3-4줄 + 일러스트

@@ -14,12 +14,11 @@ import styles from './MockAuthToggle.module.scss';
  * 로그아웃 흐름:
  *   1) POST /auth/logout → mockSignedIn=false
  *   2) clearAuth() + queryClient.removeQueries(['auth','me'])
- *   3) AuthBootstrap 가 unauth 로 재진입. /me 재호출 X (removeQueries 로 캐시 비워짐)
- *      → 401 → refresh → hard redirect 무한 회귀 방지.
+ *   3) /me 재호출 X (removeQueries 로 캐시 비워짐) → 401 → hard redirect 무한 회귀 방지
  *
  * 로그인 흐름:
  *   1) POST /auth/login → mockSignedIn=true
- *   2) invalidate authKeys.me() → AuthBootstrap 이 /me refetch → setAuth
+ *   2) invalidate authKeys.me() → 본 컴포넌트의 useMe refetch → setAuth
  *
  * 노출 조건: NEXT_PUBLIC_USE_MSW === 'true' (AppHeader 에서 조건부 mount).
  */
