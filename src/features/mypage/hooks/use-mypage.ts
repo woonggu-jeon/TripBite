@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { mypageApi } from '@/features/mypage/api/mypage';
 import { CACHE } from '@/lib/cache';
 import { useAuthStore } from '@/stores/auth-store';
-import type { UpdateNicknameRequest } from '@/features/mypage/types';
+import type { UpdateProfileDto } from '@/api/generated/schemas';
 
 export const mypageKeys = {
   all: ['mypage'] as const,
@@ -25,7 +25,7 @@ export function useMypage() {
 export function useUpdateNickname() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: UpdateNicknameRequest) => mypageApi.updateNickname(data),
+    mutationFn: (data: UpdateProfileDto) => mypageApi.updateNickname(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: mypageKeys.summary() });
       qc.invalidateQueries({ queryKey: ['auth', 'me'] }); // /me 응답도 닉네임 포함
