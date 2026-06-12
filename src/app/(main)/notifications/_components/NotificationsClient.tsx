@@ -21,9 +21,9 @@ import {
   isPushSupported,
 } from '@/features/notification/utils/subscription';
 import type {
-  AppNotification,
-  NotificationType,
-} from '@/features/notification/types';
+  AppNotificationDto,
+  AppNotificationType,
+} from '@/api/generated/schemas';
 import styles from './NotificationsClient.module.scss';
 
 const PUSH_PROMPT_DISMISS_KEY = 'tripbite.push-prompt.dismissed';
@@ -32,7 +32,7 @@ const PUSH_PROMPT_DISMISS_KEY = 'tripbite.push-prompt.dismissed';
  * type 별 아이콘 매핑.
  * unknown type 은 `?? Bell` 로 fallback (스키마 확장 전 BE 응답 호환).
  */
-const TYPE_ICON: Record<NotificationType, typeof Mail> = {
+const TYPE_ICON: Record<AppNotificationType, typeof Mail> = {
   'letter.received': Mail,
   'letter.liked': Heart,
   // 보낸 편지가 누군가에게 도착 완료 — 발신자에게 알림.
@@ -211,7 +211,13 @@ function PushPrompt() {
   );
 }
 
-function Item({ n, onSelect }: { n: AppNotification; onSelect: () => void }) {
+function Item({
+  n,
+  onSelect,
+}: {
+  n: AppNotificationDto;
+  onSelect: () => void;
+}) {
   const Icon = TYPE_ICON[n.type] ?? Bell;
   const message = n.body ?? n.title;
   const body = (

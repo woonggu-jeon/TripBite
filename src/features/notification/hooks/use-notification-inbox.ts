@@ -11,7 +11,7 @@ import {
 import { notificationInboxApi } from '@/features/notification/api/inbox';
 import { useAuthStore } from '@/stores/auth-store';
 import { CACHE } from '@/lib/cache';
-import type { NotificationInbox } from '@/features/notification/types';
+import type { NotificationListDto } from '@/api/generated/schemas';
 
 export const notificationKeys = {
   all: ['notification'] as const,
@@ -30,9 +30,9 @@ export function useNotificationInboxInfinite() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const profile = CACHE.realtime;
   const query = useInfiniteQuery<
-    NotificationInbox,
+    NotificationListDto,
     Error,
-    InfiniteData<NotificationInbox>,
+    InfiniteData<NotificationListDto>,
     QueryKey,
     number | string | null
   >({

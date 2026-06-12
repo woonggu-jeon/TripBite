@@ -34,7 +34,7 @@ import {
   type TravelTypeMockCode,
 } from './seeds/travel-types';
 import type { TravelType, TravelTypeAnswer } from '@/features/ranking/types';
-import type { AppNotification } from '@/features/notification/types';
+import type { AppNotificationDto } from '@/api/generated/schemas';
 import { isRegionCode } from '@/constants/regions';
 import type { Destination } from '@/features/tournament/types';
 
@@ -143,7 +143,7 @@ let myTravelType: TravelType | null = null;
  * 알림 인박스 (mutable) — seed 복사. push 시뮬레이션 / markRead 가 mutate.
  * dev 서버 재시작 시 seed 로 reset.
  *
- * seed 는 type / read / createdAt 만 가지지만 AppNotification 은 title 필수
+ * seed 는 type / read / createdAt 만 가지지만 AppNotificationDto 는 title 필수
  * (그 외 body/link 는 옵션). title/body 는 type 에서 derive 해 채워둠.
  */
 const TITLE_BY_TYPE: Record<string, string> = {
@@ -154,9 +154,9 @@ const TITLE_BY_TYPE: Record<string, string> = {
   'tournament.shared': '토너먼트 공유',
   security: '보안 알림',
 };
-const notificationItems: AppNotification[] = notificationSeeds.map((n) => ({
+const notificationItems: AppNotificationDto[] = notificationSeeds.map((n) => ({
   id: n.id,
-  type: n.type as AppNotification['type'],
+  type: n.type as AppNotificationDto['type'],
   // showcase seed 는 title/link 자체 보유, 일반 seed 는 type 기반 fallback.
   title: n.title ?? TITLE_BY_TYPE[n.type] ?? '알림',
   link: n.link,

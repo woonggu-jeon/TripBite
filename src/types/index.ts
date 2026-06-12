@@ -28,12 +28,6 @@ export type {
   TravelType,
 } from '@/features/ranking/types';
 
-export type {
-  AppNotification,
-  NotificationInbox,
-  NotificationType,
-} from '@/features/notification/types';
-
 // API 공통 응답 envelope (백엔드 컨벤션에 맞춰 조정)
 export type ApiResponse<T> = {
   data: T;
