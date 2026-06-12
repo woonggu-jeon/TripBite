@@ -135,6 +135,7 @@ src/
 | [MOCK_IN_PRODUCTION.md](docs/MOCK_IN_PRODUCTION.md) | 운영 mock 시나리오 (데모/QA)                                                |
 | [PWA_VERIFICATION.md](docs/PWA_VERIFICATION.md)     | iOS PWA 실기기 매뉴얼 검증 체크리스트 (A~F 영역)                            |
 | [STORYBOOK.md](docs/STORYBOOK.md)                   | Storybook 카탈로그 운영 가이드 (실행 / 추가 / CI)                           |
+| [FIGMA_INTEGRATION.md](docs/FIGMA_INTEGRATION.md)   | Figma MCP → 코드 워크플로우 (토큰 매니페스트 / MCP 셋업 / 운영 룰)          |
 
 API 명세 SoT: **BE Swagger** (`{API}/docs`) — orval 이 빌드 전 자동 fetch.
 

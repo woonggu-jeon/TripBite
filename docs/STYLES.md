@@ -2,6 +2,8 @@
 
 퍼블리싱/디자인 교체 시 손대야 할 곳을 최소화하기 위한 규칙. 새 컴포넌트는 이 가이드를 따르고, 기존 컴포넌트는 손댈 때 점진 마이그레이션.
 
+> Figma → 코드 자동화 워크플로우 (Tokens Studio + MCP) → [FIGMA_INTEGRATION.md](./FIGMA_INTEGRATION.md)
+
 ## 파일 구조
 
 ```
