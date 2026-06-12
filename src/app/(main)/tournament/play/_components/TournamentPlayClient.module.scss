@@ -205,7 +205,11 @@
 .celebSparkle3 {
   position: absolute;
   font-size: var(--font-h2);
-  color: color-mix(in srgb, var(--color-primary) 70%, #ffcf5b);
+  color: color-mix(
+    in srgb,
+    var(--color-primary) 70%,
+    var(--accent-festival-grad-start)
+  );
   pointer-events: none;
   animation: sparkleFloat 1.6s var(--ease-out) infinite;
 }

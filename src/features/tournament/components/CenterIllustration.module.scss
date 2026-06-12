@@ -53,21 +53,21 @@
   filter: var(--drop-shadow-md);
 }
 
-/* 톤 색상 (각 계절·특별한 날별 그라데이션 베이스) */
+/* 톤 색상 (각 계절·특별한 날별 그라데이션 베이스) — accent token 으로 dark mode 자동 분기 */
 .spring {
-  --tone: #ff9eb5;
+  --tone: var(--accent-spring-grad-start);
 }
 .summer {
-  --tone: #5db4ff;
+  --tone: var(--accent-summer-grad-start);
 }
 .autumn {
-  --tone: #ff9a4d;
+  --tone: var(--accent-autumn-grad-start);
 }
 .winter {
-  --tone: #9ec5ff;
+  --tone: var(--accent-winter-grad-start);
 }
 .special {
-  --tone: #ffcf5b;
+  --tone: var(--accent-festival-grad-start);
 }
 
 /* 부드러운 부유 */

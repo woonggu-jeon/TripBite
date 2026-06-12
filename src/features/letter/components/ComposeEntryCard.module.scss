@@ -33,9 +33,10 @@
   place-items: center;
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #ff9eb5 22%, var(--color-bg)),
-    color-mix(in srgb, #ffcf5b 18%, var(--color-bg)) 50%,
-    color-mix(in srgb, #9ec5ff 22%, var(--color-bg))
+    color-mix(in srgb, var(--accent-spring-grad-start) 22%, var(--color-bg)),
+    color-mix(in srgb, var(--accent-festival-grad-start) 18%, var(--color-bg))
+      50%,
+    color-mix(in srgb, var(--accent-winter-grad-start) 22%, var(--color-bg))
   );
   overflow: hidden;
 }

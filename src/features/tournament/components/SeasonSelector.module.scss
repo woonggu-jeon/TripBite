@@ -52,28 +52,28 @@
 .spring.active {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #ff9eb5 18%, var(--color-bg)),
+    color-mix(in srgb, var(--accent-spring-grad-start) 18%, var(--color-bg)),
     var(--color-bg)
   );
 }
 .summer.active {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #5db4ff 18%, var(--color-bg)),
+    color-mix(in srgb, var(--accent-summer-grad-start) 18%, var(--color-bg)),
     var(--color-bg)
   );
 }
 .autumn.active {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #ff9a4d 18%, var(--color-bg)),
+    color-mix(in srgb, var(--accent-autumn-grad-start) 18%, var(--color-bg)),
     var(--color-bg)
   );
 }
 .winter.active {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #9ec5ff 20%, var(--color-bg)),
+    color-mix(in srgb, var(--accent-winter-grad-start) 20%, var(--color-bg)),
     var(--color-bg)
   );
 }

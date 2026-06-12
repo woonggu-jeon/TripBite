@@ -87,11 +87,11 @@
 }
 
 .attraction {
-  --accent: #2563eb;
+  --accent: var(--accent-blue);
 }
 .festival {
-  --accent: #d97706;
+  --accent: var(--color-warning);
 }
 .experience {
-  --accent: #7c3aed;
+  --accent: var(--accent-violet);
 }
