@@ -16,4 +16,3 @@ export {
   useOngoingFestivals,
   regionKeys,
 } from './hooks/use-region';
-export type { RegionContentType } from './types';

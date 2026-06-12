@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import type { RegionCode } from '@/constants/regions';
-import type { RegionContentType } from '@/features/region/types';
+import type { DestinationCategory } from '@/api/generated/schemas';
 import {
   regionKeys,
   useRegionContents,
@@ -41,7 +41,7 @@ import styles from './RegionDetailTabs.module.scss';
  */
 
 const TABS: {
-  key: RegionContentType;
+  key: DestinationCategory;
   labelKey: 'attraction' | 'festival' | 'experience';
 }[] = [
   { key: 'attraction', labelKey: 'attraction' },
@@ -52,14 +52,14 @@ const TABS: {
 export function RegionDetailTabs({ code }: { code: RegionCode }) {
   const t = useTranslations('region.tabs');
   const queryClient = useQueryClient();
-  const [tab, setTab] = useState<RegionContentType>('attraction');
+  const [tab, setTab] = useState<DestinationCategory>('attraction');
   // 한번이라도 활성화된 탭만 panel mount. 초기엔 'attraction' 만.
-  const [activated, setActivated] = useState<Set<RegionContentType>>(
+  const [activated, setActivated] = useState<Set<DestinationCategory>>(
     () => new Set(['attraction']),
   );
 
   const prefetchTab = useCallback(
-    (type: RegionContentType) => {
+    (type: DestinationCategory) => {
       if (activated.has(type)) return; // 이미 mount 중이면 중복 호출 X
       queryClient.prefetchInfiniteQuery({
         queryKey: regionKeys.contents(code, type),
@@ -75,7 +75,7 @@ export function RegionDetailTabs({ code }: { code: RegionCode }) {
     [activated, code, queryClient],
   );
 
-  const selectTab = (next: RegionContentType) => {
+  const selectTab = (next: DestinationCategory) => {
     if (tab === next) return;
     if (!activated.has(next)) {
       setActivated((s) => new Set(s).add(next));
@@ -125,7 +125,7 @@ function RegionContentPanel({
   type,
 }: {
   code: RegionCode;
-  type: RegionContentType;
+  type: DestinationCategory;
 }) {
   const t = useTranslations('region');
   const {
