@@ -143,8 +143,10 @@ src/features/<domain>/components/*.tsx   (RSC / Client)
 ## 5. 인증 (sessionID 모델)
 
 - 단일 cookie `SID` (HttpOnly + SameSite=None + Secure + Path=/, vercel.app 도메인)
-- middleware (`src/middleware.ts`) 가 `PROTECTED_PATHS` (/mypage, /settings, /letter, /notifications) 진입 시 SID cookie **존재** 검증 → 없으면 `/login?redirect=` 302 (SSR, FOUC 0)
-  - mock 환경 (`NEXT_PUBLIC_USE_MSW=true`) 은 skip — MSW 가 Set-Cookie 발급 안 함
+- middleware (`src/middleware.ts`) 두 분기:
+  - 인증된 사용자의 `/login`·`/signup` 진입 → `?redirect=` 안전 경로 또는 `/` 로 302 (재진입 차단)
+  - `PROTECTED_PATHS` (/mypage, /settings, /letter, /notifications) + SID 없음 → `/login?redirect=` 302 (SSR, FOUC 0)
+  - mock 환경 (`NEXT_PUBLIC_USE_MSW=true`) 두 분기 모두 skip — MSW 가 Set-Cookie 발급 안 함
 - 401 interceptor (`src/services/interceptors/auth.ts`) — 만료 SID 안전망. 보호 경로에서 401 시 `window.location.href = '/login'`. auth 페이지 / mock 환경 skip
 - `useAuthStore` (`src/stores/auth-store.ts`) — `setAuth(user)` / `clearAuth()`. localStorage persist (UI 표시 cache)
 - 클라 가드 (AuthGuard / ProtectedScope / AuthBootstrap) 비활성 — middleware SSR redirect 로 일원화 (2026-06-12). 회귀 원복 위해 파일 보존, mount 0

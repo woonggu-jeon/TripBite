@@ -25,8 +25,10 @@ BE 인계용 정책·시나리오·보안 명세 (Swagger 가 cover 못 하는 �
 
 ### 인증 redirect 흐름 (2-layer)
 
-1. **middleware (SSR, FOUC 0)** — 보호 경로 (`/mypage`, `/settings`, `/letter`, `/notifications`) 진입 시 `SID` cookie 없음 → `/login?redirect=...` 302 redirect
-   - mock 환경 (`NEXT_PUBLIC_USE_MSW=true`) 은 skip — MSW 가 Set-Cookie 발급 안 함
+1. **middleware (SSR, FOUC 0)** — 두 분기:
+   - 인증된 사용자가 `/login`·`/signup` 진입 시 → `?redirect=` 안전 경로 또는 `/` (뒤로가기로 다시 form 보는 비정상 UX 차단)
+   - 보호 경로 (`/mypage`, `/settings`, `/letter`, `/notifications`) + `SID` cookie 없음 → `/login?redirect=...` 302
+   - mock 환경 (`NEXT_PUBLIC_USE_MSW=true`) 은 두 분기 모두 skip — MSW 가 Set-Cookie 발급 안 함
 2. **axios interceptor (401 안전망)** — middleware 통과한 만료 SID 케이스. 보호 경로에서 401 응답 → `window.location.href = '/login'`
    - auth 페이지 (`/login`, `/signup`, `/find-id`, `/forgot-password`, `/reset-password`, `/onboarding`) / mock 환경 skip — 무한 루프 회피
 
