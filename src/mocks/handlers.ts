@@ -316,7 +316,7 @@ export const handlers = [
   }),
 
   // ===== Letters ===== (모두 로그인 필요)
-  // POST 응답으로 Letter 객체 반환 — /letter/sent?id= deep-link 가능하게.
+  // POST 응답으로 LetterDto 객체 반환 — /letter/sent?id= deep-link 가능하게.
   http.post(`${apiUrl}/letters`, async ({ request }) => {
     if (!getMockSignedIn()) return unauthorized();
     const body = (await request.json().catch(() => ({}))) as {

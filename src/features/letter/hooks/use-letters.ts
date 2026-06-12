@@ -10,11 +10,11 @@ import { letterApi } from '@/features/letter/api/letter';
 import { CACHE } from '@/lib/cache';
 import { useAuthStore } from '@/stores/auth-store';
 import type {
-  Letter,
-  LetterListKind,
-  LetterPage,
-  SendLetterRequest,
-} from '@/features/letter/types';
+  ComposeLetterDto,
+  LetterDto,
+  LetterPageDto,
+} from '@/api/generated/schemas';
+import type { LetterListKind } from '@/features/letter/types';
 
 export const letterKeys = {
   all: ['letter'] as const,
@@ -24,7 +24,7 @@ export const letterKeys = {
 
 const FETCHERS: Record<
   LetterListKind,
-  (cursor: number) => Promise<LetterPage>
+  (cursor: number) => Promise<LetterPageDto>
 > = {
   received: letterApi.listReceived,
   sent: letterApi.listSent,
@@ -61,7 +61,7 @@ export function useLetter(id: string) {
 export function useSendLetter() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: SendLetterRequest) => letterApi.send(data),
+    mutationFn: (data: ComposeLetterDto) => letterApi.send(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: letterKeys.list('sent') });
     },
@@ -83,9 +83,9 @@ export function useToggleLikeLetter() {
     mutationFn: (id: string) => letterApi.toggleLike(id),
     onMutate: async (id: string) => {
       await qc.cancelQueries({ queryKey: letterKeys.detail(id) });
-      const previous = qc.getQueryData<Letter>(letterKeys.detail(id));
+      const previous = qc.getQueryData<LetterDto>(letterKeys.detail(id));
       if (previous) {
-        qc.setQueryData<Letter>(letterKeys.detail(id), {
+        qc.setQueryData<LetterDto>(letterKeys.detail(id), {
           ...previous,
           liked: !previous.liked,
           likeCount:
@@ -113,9 +113,9 @@ export function useToggleSaveLetter() {
     mutationFn: (id: string) => letterApi.toggleSave(id),
     onMutate: async (id: string) => {
       await qc.cancelQueries({ queryKey: letterKeys.detail(id) });
-      const previous = qc.getQueryData<Letter>(letterKeys.detail(id));
+      const previous = qc.getQueryData<LetterDto>(letterKeys.detail(id));
       if (previous) {
-        qc.setQueryData<Letter>(letterKeys.detail(id), {
+        qc.setQueryData<LetterDto>(letterKeys.detail(id), {
           ...previous,
           saved: !previous.saved,
         });

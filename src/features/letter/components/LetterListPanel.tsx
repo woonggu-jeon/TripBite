@@ -3,7 +3,8 @@
 import { useTranslations } from 'next-intl';
 import { InfiniteList } from '@/features/list/components/InfiniteList';
 import { useLettersInfinite } from '@/features/letter/hooks/use-letters';
-import type { Letter, LetterListKind } from '@/features/letter/types';
+import type { LetterDto } from '@/api/generated/schemas';
+import type { LetterListKind } from '@/features/letter/types';
 import { LetterRowCard } from './LetterRowCard';
 import styles from './LetterListPanel.module.scss';
 
@@ -23,7 +24,7 @@ export function LetterListPanel({ kind }: { kind: LetterListKind }) {
     refetch,
   } = useLettersInfinite(kind);
 
-  const items: Letter[] = data?.pages.flatMap((p) => p.items) ?? [];
+  const items: LetterDto[] = data?.pages.flatMap((p) => p.items) ?? [];
 
   if (isError) {
     return (

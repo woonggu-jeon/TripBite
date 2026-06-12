@@ -9,7 +9,7 @@ import { useDebouncedCallback } from '@/hooks/use-debounced-callback';
 import { cardClasses, Chip } from '@/components/ui';
 import { relativeTimeToken } from '@/lib/relative-time';
 import { useToggleLikeLetter } from '@/features/letter/hooks/use-letters';
-import type { Letter } from '@/features/letter/types';
+import type { LetterDto } from '@/api/generated/schemas';
 import styles from './LetterRowCard.module.scss';
 
 const TOGGLE_DEBOUNCE_MS = 400;
@@ -55,7 +55,7 @@ function useRelativeTimeLabel(iso: string): string {
   }
 }
 
-export function LetterRowCard({ letter }: { letter: Letter }) {
+export function LetterRowCard({ letter }: { letter: LetterDto }) {
   const t = useTranslations('letter');
   // arrivedAt 이 null (아직 도착 전, sent 페이지) 이면 createdAt 으로 fallback.
   const time = useRelativeTimeLabel(letter.arrivedAt ?? letter.createdAt);

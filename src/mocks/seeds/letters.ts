@@ -1,8 +1,8 @@
-import type { Letter } from '@/features/letter/types';
+import type { LetterDto } from '@/api/generated/schemas';
 
 /**
  * 편지함 시드 — 30개 (페이지네이션 테스트용)
- * Letter 타입 호환: id/body/author/arrivedAt/createdAt/isMine/liked/saved/likeCount
+ * LetterDto 타입 호환: id/body/author/arrivedAt/createdAt/isMine/liked/saved/likeCount
  */
 const SAMPLE_BODIES = [
   '고마워요',
@@ -40,7 +40,7 @@ const NICKNAMES = [
   '제천음악광',
 ];
 
-export const letterSeeds: Letter[] = Array.from({ length: 30 }, (_, i) => {
+export const letterSeeds: LetterDto[] = Array.from({ length: 30 }, (_, i) => {
   const arrivedMs = Date.now() - i * 1800 * 1000; // 30분 간격
   const isMine = i % 5 === 0; // 6개는 내가 보낸 편지
   return {

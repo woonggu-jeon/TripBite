@@ -10,12 +10,12 @@ import {
   useToggleLikeLetter,
   useToggleSaveLetter,
 } from './use-letters';
-import type { Letter } from '@/features/letter/types';
+import type { LetterDto } from '@/api/generated/schemas';
 
 // handlers.ts 와 같은 base — test 환경에선 baseURL undefined 라 path-only 매칭.
 const apiUrl = mockSeeds.apiUrl;
 
-function makeLetter(over: Partial<Letter> = {}): Letter {
+function makeLetter(over: Partial<LetterDto> = {}): LetterDto {
   return {
     id: 'l-1',
     body: '잘있어요',
@@ -62,7 +62,7 @@ describe('useToggleLikeLetter', () => {
       await result.current.mutateAsync('l-1');
     });
 
-    const cached = qc.getQueryData<Letter>(letterKeys.detail('l-1'));
+    const cached = qc.getQueryData<LetterDto>(letterKeys.detail('l-1'));
     expect(cached?.liked).toBe(true);
     expect(cached?.likeCount).toBe(6);
   });
@@ -93,7 +93,7 @@ describe('useToggleLikeLetter', () => {
     });
 
     await waitFor(() => {
-      const cached = qc.getQueryData<Letter>(letterKeys.detail('l-1'));
+      const cached = qc.getQueryData<LetterDto>(letterKeys.detail('l-1'));
       // 롤백 — 원본 그대로
       expect(cached?.liked).toBe(false);
       expect(cached?.likeCount).toBe(5);
@@ -136,7 +136,7 @@ describe('useToggleSaveLetter', () => {
       await result.current.mutateAsync('l-2');
     });
 
-    const cached = qc.getQueryData<Letter>(letterKeys.detail('l-2'));
+    const cached = qc.getQueryData<LetterDto>(letterKeys.detail('l-2'));
     expect(cached?.saved).toBe(true);
   });
 

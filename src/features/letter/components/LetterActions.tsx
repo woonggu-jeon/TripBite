@@ -13,7 +13,7 @@ import {
   useToggleLikeLetter,
   useToggleSaveLetter,
 } from '@/features/letter/hooks/use-letters';
-import type { Letter } from '@/features/letter/types';
+import type { LetterDto } from '@/api/generated/schemas';
 import styles from './LetterActions.module.scss';
 
 /**
@@ -30,7 +30,7 @@ import styles from './LetterActions.module.scss';
  */
 const TOGGLE_DEBOUNCE_MS = 400;
 
-export function LetterActions({ letter }: { letter: Letter }) {
+export function LetterActions({ letter }: { letter: LetterDto }) {
   const t = useTranslations('letter.detail');
   const router = useRouter();
   const confirm = useConfirm();
