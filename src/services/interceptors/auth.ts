@@ -73,6 +73,11 @@ export function attachAuthInterceptor(instance: AxiosInstance) {
         isOnProtectedPath() &&
         typeof window !== 'undefined'
       ) {
+        console.warn('[diag:interceptor] 401 HARD REDIRECT → /login', {
+          url: error.config?.url,
+          method: error.config?.method,
+          pathname: window.location.pathname,
+        });
         // store import 시 순환참조 위험 → 직접 redirect
         window.location.href = '/login';
       }

@@ -44,8 +44,21 @@ export function AuthGuard({ children }: { children: ReactNode }) {
   }, [hasHydrated]);
 
   useEffect(() => {
-    if (!hasHydrated) return;
+    if (!hasHydrated) {
+      console.warn('[diag:AuthGuard] hasHydrated=false → wait');
+      return;
+    }
     if (!isAuthenticated) {
+      console.warn(
+        '[diag:AuthGuard] REDIRECT → /login (hasHydrated=true, isAuthenticated=false)',
+        {
+          storeSnapshot: useAuthStore.getState(),
+          localStorage:
+            typeof window !== 'undefined'
+              ? window.localStorage.getItem('tripbite.auth')
+              : null,
+        },
+      );
       const loginUrl = new URL('/login', window.location.origin);
       loginUrl.searchParams.set(
         'redirect',
@@ -54,6 +67,10 @@ export function AuthGuard({ children }: { children: ReactNode }) {
       window.location.replace(loginUrl.toString());
       return;
     }
+
+    console.warn(
+      '[diag:AuthGuard] OK (hasHydrated=true, isAuthenticated=true) → paint',
+    );
     setReady(true);
   }, [hasHydrated, isAuthenticated]);
 

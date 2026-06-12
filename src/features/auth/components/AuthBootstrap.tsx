@@ -38,11 +38,16 @@ export function AuthBootstrap() {
     if (isLoading) return;
 
     if (isSuccess && data) {
+      console.warn('[diag:AuthBootstrap] /me 200 → setAuth', { pathname });
       setAuth(data);
       return;
     }
 
     if (isError) {
+      console.warn(
+        '[diag:AuthBootstrap] isError → clearAuth + (maybe) redirect',
+        { pathname, isProtected: isProtectedPath(pathname) },
+      );
       clearAuth();
       // 보호 경로 + 미인증 → /login. middleware 가 cross-origin cookie 못 봐서 client 안전망.
       if (isProtectedPath(pathname)) {
