@@ -231,6 +231,15 @@
     "festivals": {
       "label": "지금 열리는 축제"
     },
+    "festival": {
+      "ongoing": "지금 열리는 축제",
+      "upcoming": "곧 충북에서 열리는 축제",
+      "popular": "이번 주 인기 여행지",
+      "dday": {
+        "label": "D-{n}",
+        "aria": "{n}일 후 시작"
+      }
+    },
     "latestLetterWidget": {
       "badge": "새 편지 도착",
       "justNow": "방금 전",

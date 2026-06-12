@@ -26,7 +26,7 @@ import type {
 
 import type {
   ErrorDto,
-  FestivalDto,
+  OngoingFestivalsDto,
   RegionContentPageDto,
   RegionControllerContentsV1Params,
   RegionControllerOngoingFestivalsV1Params,
@@ -44,7 +44,7 @@ export const regionControllerOngoingFestivalsV1 = (
 ) => {
 
 
-      return orvalMutator<FestivalDto[]>(
+      return orvalMutator<OngoingFestivalsDto>(
       {url: `/v1/regions/ongoing-festivals`, method: 'GET',
         params, signal
     },

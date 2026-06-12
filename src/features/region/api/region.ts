@@ -15,7 +15,8 @@ import type { RegionContent, RegionContentType } from '@/features/region/types';
  * 엔드포인트:
  *   GET /regions/:code/summary
  *   GET /regions/:code/contents?type=&cursor=&limit=10
- *   GET /regions/ongoing-festivals    (홈 캐러셀용 — 진행 중인 축제)
+ *   GET /regions/ongoing-festivals?region=
+ *     → { type: ongoing|upcoming|popular, items[] } — BE 가 3단계 폴백 후 결정.
  */
 export const regionApi = {
   getSummary: (code: RegionCode) => regionControllerSummaryV1(code),
@@ -42,6 +43,10 @@ export const regionApi = {
 
   ongoingFestivals: async (region?: RegionCode) => {
     const res = await regionControllerOngoingFestivalsV1({ region });
-    return res.map(normalizeImageField);
+    // imageUrl 의 http → https 정규화 (BE 안전망). type / daysToStart 등은 그대로.
+    return {
+      type: res.type,
+      items: res.items.map((item) => normalizeImageField(item)),
+    };
   },
 };

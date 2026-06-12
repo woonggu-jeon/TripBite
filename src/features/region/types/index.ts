@@ -7,7 +7,8 @@
  */
 import type {
   DestinationCategory,
-  FestivalDto,
+  OngoingFestivalItemDto,
+  OngoingFestivalsDto,
   RegionContentDto,
   RegionSummaryDto,
 } from '@/api/generated/schemas';
@@ -16,5 +17,13 @@ import type {
 export type RegionContentType = Exclude<DestinationCategory, 'local'>;
 
 export type RegionContent = RegionContentDto;
-export type Festival = FestivalDto;
 export type RegionSummary = RegionSummaryDto;
+
+/**
+ * 홈 캐러셀 — 3단계 폴백 응답 (BE 가 단일 endpoint 안에서 결정).
+ *   - 'ongoing'  진행 중 축제 (eventStart ≤ today ≤ eventEnd)
+ *   - 'upcoming' 다가오는 축제 30일 이내 — daysToStart 표시
+ *   - 'popular'  fallback. 이번 주 인기 여행지
+ */
+export type OngoingFestivals = OngoingFestivalsDto;
+export type OngoingFestivalItem = OngoingFestivalItemDto;

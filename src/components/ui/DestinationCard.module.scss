@@ -63,6 +63,17 @@
   place-items: center;
 }
 
+// 좌상단 뱃지 슬롯 (예: D-day). Link 영역 위 absolute. 자체 인터랙션 X.
+.topLeft {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
 // 좌상단 작은 색 dot (예: luckyColor) — 시각 메타.
 .accentDot {
   position: absolute;

@@ -12,21 +12,26 @@ import {
 } from '@/constants/regions';
 import { toneFor } from '@/constants/region-tone';
 import { useResponsiveSlidesPerView } from '@/hooks/use-responsive-slides-per-view';
-import type { Festival } from '@/features/region/types';
+import type {
+  OngoingFestivalItem,
+  OngoingFestivals,
+} from '@/features/region/types';
+import { DdayBadge } from './DdayBadge';
 import styles from './FestivalCarousel.module.scss';
 
 /**
- * 지금 열리는 충북 축제 — 카드형 가로 스와이퍼.
+ * 충북 축제 / 인기 여행지 캐러셀 — 3단계 폴백 표시 (BE 가 결정).
  *
- * 카드는 `DestinationCard` primitive 재사용 (RelatedDestinations / SavedTournamentCard
- * tile 과 동일 디자인). 축제는 `caption` 으로 기간 표시.
+ * 응답 type:
+ *   - ongoing  진행 중 축제 (오늘 ≤ eventEndDate). 섹션 타이틀 "지금 열리는 축제"
+ *   - upcoming 30일 이내 시작. 섹션 타이틀 "곧 열리는 축제" + 카드 좌상단 D-day 뱃지
+ *   - popular  fallback. 섹션 타이틀 "이번 주 인기 여행지"
  *
- * 데이터: `useOngoingFestivals()` → MSW handler `/regions/ongoing-festivals`.
+ * D-day 는 BE 서버 KST 기준 daysToStart 필드. FE 클라 시계 의존 X.
  *
- * 분기: isLoading → Skeleton row / 빈 응답 → null (홈 다른 위젯이 채움).
+ * 빈 응답 (3단계 모두 0건) — section 자체 미노출.
  */
 
-// destination id 기반 emoji — 보은 대추 / 단양 마늘 / 괴산 고추 등 기존 라벨 유지.
 const ID_EMOJI: Record<string, string> = {
   'boeun-festival-1': '🌰',
   'danyang-festival-1': '🧄',
@@ -35,67 +40,83 @@ const ID_EMOJI: Record<string, string> = {
   'jecheon-festival-1': '🎬',
 };
 
-function emojiFor(content: Festival): string {
-  return ID_EMOJI[content.id] ?? '🎉';
+const TITLE_KEY: Record<OngoingFestivals['type'], string> = {
+  ongoing: 'festival.ongoing',
+  upcoming: 'festival.upcoming',
+  popular: 'festival.popular',
+};
+
+function emojiFor(item: OngoingFestivalItem): string {
+  return ID_EMOJI[item.id] ?? '🎉';
 }
 
-// generated 의 Festival.region 이 string — RegionCode 가드 후 fallback.
-function regionCodeOf(region: string): RegionCode {
-  return isRegionCode(region) ? region : 'cheongju';
+function regionCodeOf(label: string | undefined): RegionCode {
+  // BE 가 regionLabel 을 한글 (예: '청주') 로 보내는 케이스 + region code 케이스 둘 다 안전.
+  if (!label) return 'cheongju';
+  if (isRegionCode(label)) return label;
+  const matched = CHUNGBUK_REGIONS.find(
+    (r) => r.ko === label || r.en === label,
+  );
+  return matched?.code ?? 'cheongju';
 }
 
-function regionLabelFor(region: string): string {
-  const code = regionCodeOf(region);
-  return CHUNGBUK_REGIONS.find((r) => r.code === code)?.ko ?? region;
+function regionLabelOf(item: OngoingFestivalItem): string {
+  if (item.regionLabel) return item.regionLabel;
+  return CHUNGBUK_REGIONS.find((r) => r.code === 'cheongju')?.ko ?? '';
 }
 
-function periodCaption(content: Festival): string | undefined {
-  if (!content.eventStart && !content.eventEnd) return undefined;
-  return `${content.eventStart ?? ''}${content.eventEnd ? ` — ${content.eventEnd}` : ''}`;
+function periodCaption(item: OngoingFestivalItem): string | undefined {
+  if (!item.eventStartDate && !item.eventEndDate) return undefined;
+  return `${item.eventStartDate ?? ''}${item.eventEndDate ? ` — ${item.eventEndDate}` : ''}`;
 }
 
-/**
- * 섹션 wrapper (section + h2) 도 자체 책임 — 빈 응답 시 영역 자체 미노출.
- * 부모 (HomeDashboard) 는 `<FestivalCarousel />` 한 줄만 쓰면 됨.
- */
 export function FestivalCarousel() {
   const t = useTranslations('home');
   const slidesPerView = useResponsiveSlidesPerView();
   const { data, isLoading, isError } = useOngoingFestivals();
 
   // 빈 응답 / 에러 — section 자체 안 그림 (헤더만 남는 빈 영역 회피).
-  if (isError || (!isLoading && (!data || data.length === 0))) {
+  if (isError || (!isLoading && (!data || data.items.length === 0))) {
     return null;
   }
+
+  const sectionTitle = data ? t(TITLE_KEY[data.type]) : t('festival.ongoing');
+  const showDday = data?.type === 'upcoming';
 
   return (
     <section
       data-widget="ongoing-festivals"
-      aria-label={t('widgets.ongoingFestivals')}
+      data-type={data?.type}
+      aria-label={sectionTitle}
     >
-      <h2 className={styles.title}>{t('widgets.ongoingFestivals')}</h2>
-      {isLoading ? (
+      <h2 className={styles.title}>{sectionTitle}</h2>
+      {isLoading || !data ? (
         <Skeleton width="100%" height={200} radius="lg" />
       ) : (
         <Carousel
-          slides={data ?? []}
-          renderSlide={(content) => (
+          slides={data.items}
+          renderSlide={(item) => (
             <DestinationCard
-              href={{ pathname: `/destination/${content.id}` }}
-              imageUrl={content.imageUrl}
-              emoji={emojiFor(content)}
-              tone={toneFor(regionCodeOf(content.region))}
-              regionLabel={regionLabelFor(content.region)}
-              name={content.title}
-              caption={periodCaption(content)}
-              ariaLabel={`${content.title} · ${regionLabelFor(content.region)}`}
+              href={{ pathname: `/destination/${item.id}` }}
+              imageUrl={item.imageUrl}
+              emoji={emojiFor(item)}
+              tone={toneFor(regionCodeOf(item.regionLabel))}
+              regionLabel={regionLabelOf(item)}
+              name={item.name}
+              caption={periodCaption(item)}
+              ariaLabel={`${item.name} · ${regionLabelOf(item)}`}
+              topLeftBadge={
+                showDday && typeof item.daysToStart === 'number' ? (
+                  <DdayBadge daysToStart={item.daysToStart} />
+                ) : undefined
+              }
             />
           )}
           keyExtractor={(s) => s.id}
           options={{ slidesPerView, gap: 8 }}
           showDots={false}
           fallbackHeight={200}
-          ariaLabel={t('festivals.label')}
+          ariaLabel={sectionTitle}
         />
       )}
     </section>

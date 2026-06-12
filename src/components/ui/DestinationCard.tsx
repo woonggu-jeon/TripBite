@@ -34,6 +34,11 @@ interface DestinationCardProps {
    * Link navigation 을 직접 차단해야 함 (호출부 책임).
    */
   topRightAction?: ReactNode;
+  /**
+   * 카드 좌상단 뱃지 슬롯 — Link 영역 위 absolute. pointer-events:none 이라
+   * 클릭은 Link 로 통과. D-day 뱃지 등 정적 표시만.
+   */
+  topLeftBadge?: ReactNode;
 }
 
 /**
@@ -58,6 +63,7 @@ export function DestinationCard({
   accentDot,
   ariaLabel,
   topRightAction,
+  topLeftBadge,
 }: DestinationCardProps) {
   return (
     <Link
@@ -88,6 +94,7 @@ export function DestinationCard({
       {topRightAction && (
         <div className={styles.topRight}>{topRightAction}</div>
       )}
+      {topLeftBadge && <div className={styles.topLeft}>{topLeftBadge}</div>}
     </Link>
   );
 }

@@ -21,20 +21,20 @@ import {
   RegionCode
 } from '../schemas';
 import type {
-  FestivalDto,
+  OngoingFestivalsDto,
   RegionContentPageDto,
   RegionSummaryDto
 } from '../schemas';
 
 
-export const getRegionControllerOngoingFestivalsV1ResponseMock = (): FestivalDto[] => (Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => ({region: faker.helpers.arrayElement(Object.values(RegionCode)), id: faker.string.alpha({length: {min: 10, max: 20}}), contentId: faker.string.alpha({length: {min: 10, max: 20}}), type: faker.string.alpha({length: {min: 10, max: 20}}), title: faker.string.alpha({length: {min: 10, max: 20}}), summary: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), imageUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), eventStart: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), eventEnd: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])})))
+export const getRegionControllerOngoingFestivalsV1ResponseMock = (overrideResponse: Partial<Extract<OngoingFestivalsDto, object>> = {}): OngoingFestivalsDto => ({type: faker.helpers.arrayElement(['ongoing','upcoming','popular'] as const), items: Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => ({imageUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), id: faker.string.alpha({length: {min: 10, max: 20}}), name: faker.string.alpha({length: {min: 10, max: 20}}), regionLabel: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), daysToStart: faker.helpers.arrayElement([faker.number.float({fractionDigits: 2}), undefined]), eventStartDate: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), eventEndDate: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])})), ...overrideResponse})
 
 export const getRegionControllerContentsV1ResponseMock = (overrideResponse: Partial<Extract<RegionContentPageDto, object>> = {}): RegionContentPageDto => ({items: Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => ({type: faker.helpers.arrayElement(Object.values(DestinationCategory)), region: faker.helpers.arrayElement(Object.values(RegionCode)), id: faker.string.alpha({length: {min: 10, max: 20}}), title: faker.string.alpha({length: {min: 10, max: 20}}), summary: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), imageUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])})), nextCursor: faker.helpers.arrayElement([faker.number.float({fractionDigits: 2}), null]), ...overrideResponse})
 
 export const getRegionControllerSummaryV1ResponseMock = (overrideResponse: Partial<Extract<RegionSummaryDto, object>> = {}): RegionSummaryDto => ({code: faker.helpers.arrayElement(Object.values(RegionCode)), heroImage: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), description: faker.string.alpha({length: {min: 10, max: 20}}), popularity: faker.number.float({fractionDigits: 2}), ...overrideResponse})
 
 
-export const getRegionControllerOngoingFestivalsV1MockHandler = (overrideResponse?: FestivalDto[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<FestivalDto[]> | FestivalDto[]), options?: RequestHandlerOptions) => {
+export const getRegionControllerOngoingFestivalsV1MockHandler = (overrideResponse?: OngoingFestivalsDto | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<OngoingFestivalsDto> | OngoingFestivalsDto), options?: RequestHandlerOptions) => {
   return http.get('*/v1/regions/ongoing-festivals', async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
 
 

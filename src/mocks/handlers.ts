@@ -424,27 +424,25 @@ export const handlers = [
     });
   }),
 
-  // 진행 중 축제 — 홈 FestivalCarousel.
-  // 실 BE 는 eventStart/eventEnd 가 오늘 포함되는 row 만 반환. mock 은 시드의
-  // festival 카테고리 8개 (region 별 1-2개) 를 반환.
+  // 진행 중 축제 / 다가오는 축제 / 인기 여행지 — 홈 FestivalCarousel.
+  // 실 BE 는 3단계 폴백 후 single response. mock 은 항상 'upcoming' 분기를 반환해
+  // D-day 뱃지 UI 도 같이 검증 가능.
   http.get(`${apiUrl}/regions/ongoing-festivals`, ({ request }) => {
     const url = new URL(request.url);
     const region = url.searchParams.get('region');
-    const filtered = destinationSeeds
+    const items = destinationSeeds
       .filter((d) => d.category === 'festival')
       .filter((d) => !region || d.region === region)
       .slice(0, 8)
-      .map((d) => ({
+      .map((d, i) => ({
         id: d.id,
-        type: 'festival' as const,
-        region: d.region,
-        title: d.name,
-        summary: undefined,
-        imageUrl: undefined,
-        eventStart: undefined,
-        eventEnd: undefined,
+        name: d.name,
+        imageUrl: null,
+        regionLabel: d.region,
+        // 7, 14, 21 ... 일 후 시작 — D-day 뱃지 다양성 검증.
+        daysToStart: 7 + i * 7,
       }));
-    return HttpResponse.json(filtered);
+    return HttpResponse.json({ type: 'upcoming', items });
   }),
 
   // ===== Rankings =====

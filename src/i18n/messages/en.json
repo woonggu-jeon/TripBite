@@ -231,6 +231,15 @@
     "festivals": {
       "label": "Festivals happening now"
     },
+    "festival": {
+      "ongoing": "Festivals happening now",
+      "upcoming": "Upcoming festivals in Chungbuk",
+      "popular": "Popular destinations this week",
+      "dday": {
+        "label": "D-{n}",
+        "aria": "Starts in {n} days"
+      }
+    },
     "latestLetterWidget": {
       "badge": "New letter",
       "justNow": "Just now",
