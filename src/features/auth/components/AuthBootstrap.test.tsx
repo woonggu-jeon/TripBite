@@ -66,7 +66,10 @@ describe('AuthBootstrap — 4 redirect 분기', () => {
     expect(router.replace).not.toHaveBeenCalled();
   });
 
-  it('비인증 + 보호 경로 (/mypage) → /login?redirect=... replace', async () => {
+  // 2026-06-12 — 인증 redirect 책임이 middleware 로 이전됨 (보호 경로 + SID 없음
+  // → SSR redirect). AuthBootstrap 은 /me 동기화만 담당. 회귀 시 분기 + 본 테스트
+  // 함께 원복.
+  it.skip('비인증 + 보호 경로 (/mypage) → /login?redirect=... replace [middleware 이전]', async () => {
     setPath('/mypage');
     stubMe401();
 
