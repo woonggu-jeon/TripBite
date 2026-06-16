@@ -60,6 +60,16 @@
 - **2026-06-12**: 인증 redirect 를 middleware (SSR) 로 일원화 — 3 회 hydration race 회귀 누적 (AuthGuard / AuthBootstrap / selector closure) 으로 클라 가드 비활성. middleware 가 SID cookie 존재 검증 (보호 경로 진입) + 인증된 사용자의 `/login`·`/signup` 재진입 차단 (안전 redirect param 가드) 모두 SSR 단계 처리. FOUC 0. 클라 가드 (AuthGuard / ProtectedScope / AuthBootstrap) 는 mount 0 으로 회귀 시 원복 위해 보존. mock 환경 (`USE_MSW=true`) 은 분기 skip — MSW 가 Set-Cookie 발급 안 함. useLogout / useDeleteAccount 도 useLogin 과 일관 hard nav (`window.location.assign('/')`).
 - **2026-06-12**: 충북 축제 캐러셀 3단계 폴백 — BE 가 단일 endpoint 안에서 `ongoing` (진행 중) → `upcoming` (30 일 이내) → `popular` (인기 여행지) 응답 결정. 응답 `{ type, items[] }`. FE 는 `type` 분기로 sectionTitle i18n + `upcoming` 시 D-day 뱃지 (좌상단, Deep Forest 톤). D-day 는 BE 가 KST 기준 `daysToStart` 서버 계산 — 클라 시계 의존 X. `DestinationCard.topLeftBadge` slot 신설.
 - **2026-06-12**: DTO alias 일괄 정리 — 30+ alias (`Letter=LetterDto`, `Destination=DestinationDto`, `User=UserDto`, `RegionContent=RegionContentDto`, `OngoingFestivals=OngoingFestivalsDto` 등) 모두 제거. 사용처 모두 `@/api/generated/schemas` 에서 직접 import + generated 명 (Dto 접미사) 직접 사용. features/region/types 폴더 자체 삭제. 자체 도메인 shape (`TournamentConfig`, `BracketMatch`, `RankedDestination`, `LetterListKind`, `OnboardingState` 등) 만 features/\*/types 에 잔존.
+- **2026-06-14**: use-tournament.ts unit test 추가 +6 cases (210 → 216):
+  - 신규 cover: useSavedTournaments / useTournamentHistory (둘 다 비인증 가드) /
+    useSaveTournament (saved invalidate) / useUnsaveTournament (optimistic remove +
+    rollback 2 cases) / useRecordTournament (record cache set + history invalidate).
+  - **vitest.config include 확장** — `use-tournament.ts` 추가.
+  - **gcTime trade-off** — useUnsaveTournament 의 optimistic 검증 시 gcTime:0 이면
+    onSettled invalidate 후 inactive cache 즉시 GC 되어 검증 불가 → gcTime:60_000
+    적용.
+  - 새 baseline (use-tournament 의 미커버 query hooks 분모에 추가):
+    Stmts 86.01 / Branches 70.16 / Funcs 81.97 / Lines 86.98 (이전 87/74/85/89 대비 -1~4).
 - **2026-06-14**: use-mypage.ts unit test 추가 +5 cases (205 → 210):
   - 신규 cover: useMypage / useStamps (둘 다 비인증 시 fetch 0) /
     useUpdateNickname (mypage summary + auth.me 양쪽 invalidate) /

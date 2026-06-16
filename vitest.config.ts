@@ -73,6 +73,7 @@ export default defineConfig({
         'src/features/mypage/hooks/use-mypage.ts',
         'src/features/notification/hooks/use-push-notification.ts',
         'src/features/location/components/LocationPermissionPrompt.tsx',
+        'src/features/tournament/hooks/use-tournament.ts',
         'src/features/tournament/utils/bracket.ts',
         'src/features/tournament/components/Bracket.tsx',
         'src/features/home/components/DdayBadge.tsx',
