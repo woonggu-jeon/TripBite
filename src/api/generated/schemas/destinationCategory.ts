@@ -12,5 +12,4 @@ export const DestinationCategory = {
   attraction: 'attraction',
   festival: 'festival',
   experience: 'experience',
-  local: 'local',
 } as const;

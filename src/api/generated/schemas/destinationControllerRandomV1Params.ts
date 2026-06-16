@@ -10,7 +10,7 @@ import type { TournamentSize } from './tournamentSize';
 
 export type DestinationControllerRandomV1Params = {
 /**
- * CSV: attraction,festival,experience,local
+ * CSV: attraction,festival,experience
  */
 categories?: string;
 /**

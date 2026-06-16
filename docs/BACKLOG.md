@@ -96,7 +96,7 @@
 
 ## 0-SEO. 보류 SEO 보강 — 의존성/데이터 충족 시 진행
 
-- **hreflang alternates** (M-L) — `layout.tsx` generateMetadata 에 `alternates.languages` 추가. 현재 next-intl 이 **cookie 기반 locale** (URL prefix 없음) → routing 변경 (`defineRouting` + middleware locale prefix + 32+ Link/router import 교체) 필요. 사이드이펙트 통제 가능하지만 0 은 아님 (middleware 합성 / import 누락 위험). 영어권 유입 비중이 의미 있게 늘면 (analytics 확인 후) 도입. 검토 메모: 위험 영역 & 안전 절차 — git log `52faaae` 이후 turn 참조.
+- **hreflang alternates + URL-based locale** (L, 8-12 시간) — `layout.tsx` generateMetadata 에 `alternates.languages` 추가 + next-intl routing 변경 (`defineRouting` + middleware locale prefix + 32+ Link/router import 교체). 현재 cookie 기반 locale → URL prefix 도입 시 부수 효과로 `cookies()` 의존 제거 → **static generation / ISR 직접 사용 가능 → cold start 추가 개선**. 다만 한 번 시도 후 revert 경험 (commit `8f0d83c` 의 Option A — `app/[locale]/...` segment 요구로 모든 페이지 404). 영어권 유입 비중이 의미 있게 늘 때 (analytics 확인 후) 도입. **2026-06-14 결정: 보류** — 본 작업 비용 (1.5일 + 회귀 risk) 대비 한국 시장 한정 단계에선 ROI 낮음. cold start 는 loading.tsx + CDN cache 로 우선 cover.
 - ~~**Event JSON-LD** (S, BE 의존)~~ ✅ **2026-06-10 완료** — `DestinationDetailDto` 에 `eventStart/eventEnd` 추가 (BE) → `touristAttraction()` 가 Festival + startDate 시 Event schema (startDate/endDate/location) 분기 + SSR 시 `tournamentApi.getDestinationDetail(id)` fetch 로 schema 보강 + mock handler 가 category=festival 일 때 deterministic date 응답. 검증: [Rich Results Test](https://search.google.com/test/rich-results) 로 schema 유효성 점검 권장.
 
 ---
