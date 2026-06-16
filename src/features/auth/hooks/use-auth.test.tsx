@@ -13,59 +13,75 @@ vi.mock('next/navigation', async () => {
   return { ...actual, useRouter: () => router };
 });
 
-const { useLogin } = await import('./use-auth');
+// SW cache clear — clearAllCaches 는 caches API 의존 (jsdom 없음).
+// stub 으로 noop 처리해 logout/signup/reset 분기에서 throw 안 함.
+vi.mock('@/lib/sw-cache', () => ({
+  clearAllCaches: vi.fn(async () => {}),
+}));
+
+const {
+  useLogin,
+  useSignup,
+  useLogout,
+  useDeleteAccount,
+  useResetPassword,
+  useForgotPassword,
+  useFindId,
+} = await import('./use-auth');
 
 const apiUrl = mockSeeds.apiUrl;
 
-/**
- * useLogin onSuccess 의 hard navigation 검증.
- *
- * 회귀 사유: `router.replace + router.refresh` 가 (auth)↔(main) 그룹 교체 / RSC client cache
- * stale / AuthBootstrap onboarding 분기 / refresh-vs-replace 순서 race 누적으로 returnUrl
- * 진입 실패. fix 는 `window.location.assign(target)` hard navigation — 1회 full reload
- * 비용으로 race 우회.
- */
+const mockUser = {
+  id: 'u-1',
+  username: 'tester',
+  name: '여행자',
+  nickname: '여행자',
+  email: 't@e.st',
+  phone: '01000000000',
+  birthDate: '1990-01-01',
+  isOnboarded: true,
+} as const;
+
+/** location.assign 만 spy — happy-dom URL parser 보존. */
+function spyLocationAssign() {
+  const spy = vi.fn();
+  const original = window.location.assign;
+  Object.defineProperty(window.location, 'assign', {
+    configurable: true,
+    value: spy,
+  });
+  return {
+    spy,
+    restore: () => {
+      Object.defineProperty(window.location, 'assign', {
+        configurable: true,
+        value: original,
+      });
+    },
+  };
+}
+
 describe('useLogin', () => {
-  let assignSpy: ReturnType<typeof vi.fn>;
-  let originalAssign: typeof window.location.assign;
+  let assignCtl: ReturnType<typeof spyLocationAssign>;
 
   beforeEach(() => {
-    assignSpy = vi.fn();
-    originalAssign = window.location.assign;
-    // location.assign 메서드만 spy — location 자체 재정의는 happy-dom URL parser 깨짐.
-    Object.defineProperty(window.location, 'assign', {
-      configurable: true,
-      value: assignSpy,
-    });
+    assignCtl = spyLocationAssign();
     router.replace.mockReset();
     router.refresh.mockReset();
     useAuthStore.getState().clearAuth();
   });
 
   afterEach(() => {
-    Object.defineProperty(window.location, 'assign', {
-      configurable: true,
-      value: originalAssign,
-    });
+    assignCtl.restore();
     vi.restoreAllMocks();
   });
 
   it('성공 시 redirectTo 로 window.location.assign 호출', async () => {
     server.use(
-      http.post(`${apiUrl}/v1/auth/login`, () =>
+      http.post(`${apiUrl}/auth/login`, () =>
         HttpResponse.json({ success: true }),
       ),
-      http.get(`${apiUrl}/me`, () =>
-        HttpResponse.json({
-          id: 'u-1',
-          username: 'tester',
-          name: '여행자',
-          email: 't@e.st',
-          phone: '01000000000',
-          birthDate: '1990-01-01',
-          isOnboarded: true,
-        }),
-      ),
+      http.get(`${apiUrl}/me`, () => HttpResponse.json(mockUser)),
     );
 
     const { result } = renderHookWithProviders(() =>
@@ -77,28 +93,17 @@ describe('useLogin', () => {
       password: '1234567890',
     });
 
-    await waitFor(() => expect(assignSpy).toHaveBeenCalledTimes(1));
-    expect(assignSpy).toHaveBeenCalledWith('/mypage');
-    // refresh 호출 안 함 (race 회피)
+    await waitFor(() => expect(assignCtl.spy).toHaveBeenCalledTimes(1));
+    expect(assignCtl.spy).toHaveBeenCalledWith('/mypage');
     expect(router.refresh).not.toHaveBeenCalled();
   });
 
   it('redirectTo 미지정 시 "/" 로 fallback', async () => {
     server.use(
-      http.post(`${apiUrl}/v1/auth/login`, () =>
+      http.post(`${apiUrl}/auth/login`, () =>
         HttpResponse.json({ success: true }),
       ),
-      http.get(`${apiUrl}/me`, () =>
-        HttpResponse.json({
-          id: 'u-2',
-          username: 'tester2',
-          name: '여행자',
-          email: 't2@e.st',
-          phone: '01000000001',
-          birthDate: '1990-01-01',
-          isOnboarded: true,
-        }),
-      ),
+      http.get(`${apiUrl}/me`, () => HttpResponse.json(mockUser)),
     );
 
     const { result } = renderHookWithProviders(() => useLogin());
@@ -107,7 +112,230 @@ describe('useLogin', () => {
       password: '1234567890',
     });
 
-    await waitFor(() => expect(assignSpy).toHaveBeenCalledTimes(1));
-    expect(assignSpy).toHaveBeenCalledWith('/');
+    await waitFor(() => expect(assignCtl.spy).toHaveBeenCalledTimes(1));
+    expect(assignCtl.spy).toHaveBeenCalledWith('/');
+  });
+
+  it('onSuccess 가 store.setAuth 로 user hydrate', async () => {
+    server.use(
+      http.post(`${apiUrl}/auth/login`, () =>
+        HttpResponse.json({ success: true }),
+      ),
+      http.get(`${apiUrl}/me`, () => HttpResponse.json(mockUser)),
+    );
+
+    const { result } = renderHookWithProviders(() => useLogin());
+    await result.current.mutateAsync({
+      username: 'tester',
+      password: '1234567890',
+    });
+
+    await waitFor(() => {
+      const state = useAuthStore.getState();
+      expect(state.isAuthenticated).toBe(true);
+      expect(state.user?.id).toBe('u-1');
+    });
+  });
+});
+
+describe('useSignup', () => {
+  beforeEach(() => {
+    router.replace.mockReset();
+    router.refresh.mockReset();
+    useAuthStore.getState().clearAuth();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('atomic 응답의 user 로 setAuth + router.replace("/onboarding")', async () => {
+    server.use(
+      http.post(`${apiUrl}/auth/signup`, () =>
+        HttpResponse.json({ user: mockUser }),
+      ),
+    );
+
+    const { result } = renderHookWithProviders(() => useSignup());
+    await result.current.mutateAsync({
+      username: 'tester',
+      password: '1234567890',
+      passwordConfirm: '1234567890',
+      name: '여행자',
+      email: 't@e.st',
+      birthDate: '1990-01-01',
+      phone: '01000000000',
+    });
+
+    await waitFor(() => {
+      expect(useAuthStore.getState().isAuthenticated).toBe(true);
+    });
+    expect(router.replace).toHaveBeenCalledWith('/onboarding');
+  });
+});
+
+describe('useLogout', () => {
+  let assignCtl: ReturnType<typeof spyLocationAssign>;
+
+  beforeEach(() => {
+    assignCtl = spyLocationAssign();
+    useAuthStore.getState().setAuth(mockUser);
+  });
+
+  afterEach(() => {
+    assignCtl.restore();
+    vi.restoreAllMocks();
+  });
+
+  it('성공 시 clearAuth + window.location.assign("/")', async () => {
+    server.use(
+      http.post(`${apiUrl}/auth/logout`, () =>
+        HttpResponse.json({ success: true }),
+      ),
+    );
+
+    const { result } = renderHookWithProviders(() => useLogout());
+    await result.current.mutateAsync();
+
+    await waitFor(() => {
+      expect(useAuthStore.getState().isAuthenticated).toBe(false);
+    });
+    expect(assignCtl.spy).toHaveBeenCalledWith('/');
+  });
+
+  it('mutation 실패해도 onSettled 가 clearAuth + assign("/") 호출', async () => {
+    server.use(
+      http.post(
+        `${apiUrl}/auth/logout`,
+        () => new HttpResponse(null, { status: 500 }),
+      ),
+    );
+
+    const { result } = renderHookWithProviders(() => useLogout());
+    await result.current.mutateAsync().catch(() => {});
+
+    await waitFor(() => {
+      expect(useAuthStore.getState().isAuthenticated).toBe(false);
+    });
+    expect(assignCtl.spy).toHaveBeenCalledWith('/');
+  });
+});
+
+describe('useDeleteAccount', () => {
+  let assignCtl: ReturnType<typeof spyLocationAssign>;
+
+  beforeEach(() => {
+    assignCtl = spyLocationAssign();
+    useAuthStore.getState().setAuth(mockUser);
+  });
+
+  afterEach(() => {
+    assignCtl.restore();
+    vi.restoreAllMocks();
+  });
+
+  it('성공 시 clearAuth + window.location.assign("/")', async () => {
+    server.use(
+      http.delete(
+        `${apiUrl}/me`,
+        () => new HttpResponse(null, { status: 204 }),
+      ),
+    );
+
+    const { result } = renderHookWithProviders(() => useDeleteAccount());
+    await result.current.mutateAsync();
+
+    await waitFor(() => {
+      expect(useAuthStore.getState().isAuthenticated).toBe(false);
+    });
+    expect(assignCtl.spy).toHaveBeenCalledWith('/');
+  });
+
+  it('실패 시 store cleanup 안 함 (탈퇴 의도 실패 — 사용자 retry 가능) + assign 그대로 호출', async () => {
+    server.use(
+      http.delete(
+        `${apiUrl}/me`,
+        () => new HttpResponse(null, { status: 500 }),
+      ),
+    );
+
+    const { result } = renderHookWithProviders(() => useDeleteAccount());
+    await result.current.mutateAsync().catch(() => {});
+
+    // 실패 시 store 는 그대로 (setAuth 한 상태 유지) — useDeleteAccount 의 onSettled
+    // 가 if(!error) 분기로 cleanup 분리. assign 은 항상 호출.
+    expect(useAuthStore.getState().isAuthenticated).toBe(true);
+    expect(assignCtl.spy).toHaveBeenCalledWith('/');
+  });
+});
+
+describe('useResetPassword', () => {
+  beforeEach(() => {
+    router.replace.mockReset();
+    router.refresh.mockReset();
+    useAuthStore.getState().setAuth(mockUser);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('성공 시 logout 호출 + clearAuth + router.replace("/login?reset=success")', async () => {
+    server.use(
+      http.post(`${apiUrl}/auth/reset-password`, () =>
+        HttpResponse.json({ success: true }),
+      ),
+      http.post(`${apiUrl}/auth/logout`, () =>
+        HttpResponse.json({ success: true }),
+      ),
+    );
+
+    const { result } = renderHookWithProviders(() => useResetPassword());
+    await result.current.mutateAsync({
+      token: 't-1',
+      newPassword: 'newpass1234',
+    });
+
+    await waitFor(() => {
+      expect(useAuthStore.getState().isAuthenticated).toBe(false);
+    });
+    expect(router.replace).toHaveBeenCalledWith('/login?reset=success');
+  });
+});
+
+describe('useForgotPassword / useFindId — mutation only (분기 없음)', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('useForgotPassword 가 POST /auth/forgot-password 호출', async () => {
+    const calls: unknown[] = [];
+    server.use(
+      http.post(`${apiUrl}/auth/forgot-password`, async ({ request }) => {
+        calls.push(await request.json());
+        return HttpResponse.json({ success: true });
+      }),
+    );
+
+    const { result } = renderHookWithProviders(() => useForgotPassword());
+    await result.current.mutateAsync({ email: 't@e.st' });
+
+    expect(calls).toHaveLength(1);
+  });
+
+  it('useFindId 가 POST /auth/find-id 호출 후 username 반환', async () => {
+    server.use(
+      http.post(`${apiUrl}/auth/find-id`, () =>
+        HttpResponse.json({ username: 'foundUser' }),
+      ),
+    );
+
+    const { result } = renderHookWithProviders(() => useFindId());
+    const res = await result.current.mutateAsync({
+      name: '여행자',
+      email: 't@e.st',
+    });
+
+    expect(res.username).toBe('foundUser');
   });
 });

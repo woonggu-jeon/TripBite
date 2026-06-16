@@ -78,14 +78,14 @@ export default defineConfig({
         'src/features/home/components/FestivalCarousel.tsx',
         'src/app/(main)/region/[code]/_components/RegionDetailTabs.tsx',
       ],
-      // Threshold — 현실 baseline 의 5-8% 아래로 설정 (회귀 가드 + 일시적 측정
-      // 오차 허용). 신규 test 추가로 baseline 올라가면 threshold 도 점진 상향.
-      // 2026-06-14 baseline: Stmts 76.4% / Branches 72.9% / Funcs 68.6% / Lines 77.5%.
+      // Threshold — 현실 baseline 의 5% 아래로 설정 (회귀 가드 + 일시적 측정 오차).
+      // 2026-06-14 baseline (use-auth test 추가 후):
+      //   Stmts 84.1% / Branches 73.5% / Funcs 79.3% / Lines 85.4%.
       thresholds: {
-        statements: 70,
-        branches: 65,
-        functions: 60,
-        lines: 70,
+        statements: 78,
+        branches: 68,
+        functions: 73,
+        lines: 80,
       },
     },
     environment: 'happy-dom',
