@@ -60,6 +60,16 @@
 - **2026-06-12**: 인증 redirect 를 middleware (SSR) 로 일원화 — 3 회 hydration race 회귀 누적 (AuthGuard / AuthBootstrap / selector closure) 으로 클라 가드 비활성. middleware 가 SID cookie 존재 검증 (보호 경로 진입) + 인증된 사용자의 `/login`·`/signup` 재진입 차단 (안전 redirect param 가드) 모두 SSR 단계 처리. FOUC 0. 클라 가드 (AuthGuard / ProtectedScope / AuthBootstrap) 는 mount 0 으로 회귀 시 원복 위해 보존. mock 환경 (`USE_MSW=true`) 은 분기 skip — MSW 가 Set-Cookie 발급 안 함. useLogout / useDeleteAccount 도 useLogin 과 일관 hard nav (`window.location.assign('/')`).
 - **2026-06-12**: 충북 축제 캐러셀 3단계 폴백 — BE 가 단일 endpoint 안에서 `ongoing` (진행 중) → `upcoming` (30 일 이내) → `popular` (인기 여행지) 응답 결정. 응답 `{ type, items[] }`. FE 는 `type` 분기로 sectionTitle i18n + `upcoming` 시 D-day 뱃지 (좌상단, Deep Forest 톤). D-day 는 BE 가 KST 기준 `daysToStart` 서버 계산 — 클라 시계 의존 X. `DestinationCard.topLeftBadge` slot 신설.
 - **2026-06-12**: DTO alias 일괄 정리 — 30+ alias (`Letter=LetterDto`, `Destination=DestinationDto`, `User=UserDto`, `RegionContent=RegionContentDto`, `OngoingFestivals=OngoingFestivalsDto` 등) 모두 제거. 사용처 모두 `@/api/generated/schemas` 에서 직접 import + generated 명 (Dto 접미사) 직접 사용. features/region/types 폴더 자체 삭제. 자체 도메인 shape (`TournamentConfig`, `BracketMatch`, `RankedDestination`, `LetterListKind`, `OnboardingState` 등) 만 features/\*/types 에 잔존.
+- **2026-06-14**: vitest coverage 정직성 보강 — include 분모 확장 + threshold 현실 baseline:
+  - 이전: include 9 entry (schemas + lib 5 + hook 1 + store 1 + component 1) — 분모 작아 거짓 안심.
+  - 이후: include 28 entry — test 가 실 작성된 module 명시. 신규 test 추가 시 함께 갱신.
+  - **2026-06-14 baseline**: Statements 76.44% / Branches 72.94% / Functions 68.61% / Lines 77.54%.
+  - threshold 조정 — 회귀 가드 유지: Stmts 70 / Branches 65 / Funcs 60 / Lines 70 (baseline 의 5-8% 아래, 일시적 측정 오차 허용).
+  - **uncover 식별 영역** (baseline 의 빈 곳, 향후 test 추가 가치):
+    · `use-auth.ts` 19% (useLogin/useSignup/useResetPassword/useLogout 등 다수)
+    · `use-letters.ts` 56% (useToggleLikeLetter optimistic rollback 미검증)
+    · `FestivalCarousel.tsx` 37% (jsdom carousel measurement 한계)
+    · `tournament-store.ts` 66% (일부 action 미커버)
 - **2026-06-14**: 12 영역 자율 진단 후속 (자율 진단 한계 도달):
   - **WinnerDetailPanel URL prefix 가드** — `r.value` 의 `website` 가
     `https?://` 시작인지 강제 검증 (`/^https?:\/\//i.test`). javascript: URL
