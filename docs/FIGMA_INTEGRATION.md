@@ -3,7 +3,169 @@
 Figma MCP 를 통해 디자인을 Claude Code 가 직접 코드로 반영하는 환경 셋업.
 
 > SoT: 디자이너 측 Tokens Studio variable 명과 본 문서의 매핑 표.
-> 마지막 갱신: 2026-06-12
+> 마지막 갱신: 2026-06-14
+
+---
+
+## 0. 처음 시작하는 분을 위한 step-by-step (총 15분)
+
+Figma 처음이면 이 섹션만 따라하면 됩니다. 아래 6 step 끝나면 Claude 에게 "Figma URL 줄게, 이대로 만들어줘" 가능.
+
+### Step 0-1. Figma 계정 만들기 (3분)
+
+1. https://figma.com → 우상단 **"Sign up"** 클릭
+2. Email + 비밀번호 또는 Google 로그인
+3. 가입 직후 "What's your role?" 같은 onboarding 질문 — 아무거나 선택 (skip 가능)
+4. **Plan 선택**: **Starter (Free)** 선택. 신용카드 입력 X.
+5. workspace 이름 — 본인 또는 회사명 (나중에 변경 가능)
+
+**완료 신호**: figma.com 진입 시 빈 dashboard 가 보임.
+
+---
+
+### Step 0-2. 디자이너에게 받은 link 열어보기 (2분)
+
+디자이너가 보낸 URL 형식 — 둘 중 하나:
+
+```
+https://www.figma.com/design/{fileKey}/{title}            ← 새 형식
+https://www.figma.com/file/{fileKey}/{title}              ← 옛 형식
+```
+
+특정 frame/component 를 가리키면 끝에 `?node-id=...` 가 붙음:
+
+```
+https://www.figma.com/design/abc123/TripBite?node-id=1-234
+```
+
+URL 클릭 → 자동으로 Figma 웹에 열림. **로그인 상태에서 디자이너가 View-only 권한 주면 그대로 보임**. 권한 없으면 "Request access" 화면 — 디자이너에게 요청.
+
+⚠ View-only 라 편집은 불가 (정상). 우리는 읽기만 필요.
+
+---
+
+### Step 0-3. Personal Access Token 발급 (3분)
+
+Claude 가 Figma API 로 디자인 정보 fetch 하려면 token 이 필요.
+
+1. Figma 우상단 본인 **프로필 아이콘** 클릭 → **Settings**
+2. 좌측 **Account** 탭
+3. 스크롤 내려 **"Personal access tokens"** 섹션
+4. **"Generate new token"** 버튼 클릭
+5. 입력 화면:
+   - **Name**: `claude-code-mcp` (식별용, 자유)
+   - **Expiration**: 90일 / no expiration 등 선택 (운영용이면 no expiration)
+   - **Scopes** (권한): 다음만 체크
+     - ✅ `File content` → **Read-only**
+     - 나머지는 체크 X (보안)
+6. **"Generate token"** 클릭
+7. **`figd_xxxxxxx...` 형식의 token 이 한 번만 표시** — 즉시 복사해서 메모장 등에 임시 저장. 창 닫으면 다시 못 봄 (재발급은 가능).
+
+⚠ Token 은 비밀번호 같은 것. GitHub / Slack / 공개 메모에 절대 X.
+
+---
+
+### Step 0-4. mcp.json 파일 만들기 (2분)
+
+Claude Code 가 시작할 때 읽는 설정 파일에 figma server 등록.
+
+**파일 위치** (Windows):
+
+```
+C:\Users\{본인계정}\.claude\mcp.json
+```
+
+**파일 위치** (Mac/Linux):
+
+```
+~/.claude/mcp.json
+```
+
+**방법 A — 파일 탐색기**:
+
+1. 탐색기 주소창에 `%USERPROFILE%\.claude` 입력 → 폴더 열림 (없으면 새로 만들기)
+2. 폴더 안에서 **새로 만들기 → 텍스트 문서** → 이름 `mcp.json` (확장자 `.txt` 아니라 `.json` 확실히)
+3. 메모장으로 열기
+
+**방법 B — PowerShell 한 줄**:
+
+```powershell
+notepad $env:USERPROFILE\.claude\mcp.json
+```
+
+파일 없다고 묻는 창 나오면 "예" 눌러 새로 생성.
+
+**파일 내용** (그대로 복사 + token 만 본인 값으로):
+
+```json
+{
+  "mcpServers": {
+    "figma": {
+      "command": "npx",
+      "args": ["-y", "figma-developer-mcp", "--stdio"],
+      "env": {
+        "FIGMA_API_KEY": "figd_여기에복사한token붙여넣기"
+      }
+    }
+  }
+}
+```
+
+저장 (`Ctrl+S`) 후 메모장 닫기.
+
+⚠ 이미 mcp.json 에 다른 server (예: notion, slack) 가 등록되어 있으면 — `mcpServers` 안에 `figma` 만 추가하면 됨. 통째로 덮어쓰지 말기.
+
+---
+
+### Step 0-5. Claude Code 재시작 + 등록 확인 (2분)
+
+1. 현재 열려 있는 Claude Code **완전히 종료** (창 닫기)
+2. 다시 Claude Code 실행
+3. 채팅창에서 `/mcp` 입력 + Enter
+4. **`figma` 가 list 에 보이고 상태가 `connected` 또는 `✓`** 이면 성공
+5. 실패 (`failed` 또는 안 보임) 시 → 아래 § 0-7 troubleshooting
+
+---
+
+### Step 0-6. 첫 검증 — Claude 에게 Figma URL 던지기 (3분)
+
+가장 간단한 test:
+
+1. 디자이너에게 받은 Figma URL 준비
+2. Claude 채팅창에 다음 입력:
+   ```
+   이 Figma 디자인 한 번 fetch 해서 어떤 컴포넌트인지 알려줘:
+   https://www.figma.com/design/abc.../...?node-id=1-234
+   ```
+3. Claude 가 `mcp__figma__*` tool 호출 → 디자인 정보 분석 후 응답.
+
+**성공 신호**: Claude 가 디자인 요소 (색/크기/텍스트) 를 정확히 묘사. tool 권한 prompt 가 처음 한 번 뜨면 **허용** 클릭.
+
+이게 되면 그 다음부턴 "이대로 만들어줘" 같은 요청 가능.
+
+---
+
+### Step 0-7. Troubleshooting
+
+| 증상                                            | 원인                              | 해결                                                                                                          |
+| ----------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `/mcp` 에 figma 안 보임                         | mcp.json 경로 잘못                | 경로 `%USERPROFILE%\.claude\mcp.json` 정확한지 / 파일명 `mcp.json.txt` 아닌지 확인                            |
+| `/mcp` 에 figma 가 `failed`                     | token 잘못 / npx 첫 download 실패 | token 끝에 공백 들어가지 않았는지 / 인터넷 연결 / `npx -y figma-developer-mcp --help` 직접 실행해서 에러 확인 |
+| Claude 가 figma tool 못 찾음                    | Claude Code 재시작 안 됨          | 작업 표시줄에서 완전 종료 후 다시 실행                                                                        |
+| Figma URL 으로 fetch 했는데 "permission denied" | View 권한 없음                    | 디자이너에게 link share 다시 요청 ("Anyone with the link can view")                                           |
+| token 분실                                      | 보안 정책상 재발급만 가능         | Step 0-3 다시 + 옛 token 은 Settings 에서 **Revoke**                                                          |
+
+---
+
+### 다음 할 일
+
+여기까지 됐으면 사용자 측 셋업 끝. 이제 **디자이너 측 셋업** 이 필요:
+
+1. 디자이너에게 본 문서의 **§3 (디자이너 측 셋업)** + **§4 (디자이너 측 약속)** 공유
+2. 디자이너가 Tokens Studio 설치 + variable 매니페스트 입력 + View-only link 공유
+3. 그 link 를 Claude 에게 던지면 자동 매핑
+
+디자이너 측 작업 끝나기 전엔 Claude 가 fetch 해도 raw hex 만 받음 — 작동은 하지만 ROI 낮음 (Claude 가 매번 hex → token 매핑). 디자이너 약속이 핵심.
 
 ---
 
