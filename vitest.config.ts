@@ -74,6 +74,8 @@ export default defineConfig({
         'src/features/notification/hooks/use-notification-inbox.ts',
         'src/features/notification/hooks/use-push-notification.ts',
         'src/features/ranking/hooks/use-ranking.ts',
+        'src/features/region/hooks/use-region.ts',
+        'src/features/settings/hooks/use-notification-settings.ts',
         'src/features/location/components/LocationPermissionPrompt.tsx',
         'src/features/tournament/hooks/use-tournament.ts',
         'src/features/tournament/utils/bracket.ts',
