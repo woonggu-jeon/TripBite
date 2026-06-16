@@ -69,16 +69,31 @@ Claude 가 Figma API 로 디자인 정보 fetch 하려면 token 이 필요.
 
 Claude Code 가 시작할 때 읽는 설정 파일에 figma server 등록.
 
-**파일 위치** (Windows):
+**위치 두 가지 — 본인 상황에 맞춰 선택**:
+
+| 위치                                                                         | 적용 범위          | 추천 케이스                           |
+| ---------------------------------------------------------------------------- | ------------------ | ------------------------------------- |
+| User-level — `~/.claude/mcp.json` (Windows `%USERPROFILE%\.claude\mcp.json`) | 모든 프로젝트 공통 | 다른 프로젝트에서도 figma 쓸 예정     |
+| Project-level — `.claude/mcp.json` (repo 안)                                 | 본 프로젝트만      | 이 프로젝트만 figma 사용 — token 격리 |
+
+Project-level 이 user-level 을 override. 본 프로젝트는 `.gitignore` 에 `.claude/` 등록되어 있어 project-level 도 token commit 위험 0.
+
+**파일 위치 — User-level** (Windows):
 
 ```
 C:\Users\{본인계정}\.claude\mcp.json
 ```
 
-**파일 위치** (Mac/Linux):
+**파일 위치 — User-level** (Mac/Linux):
 
 ```
 ~/.claude/mcp.json
+```
+
+**파일 위치 — Project-level** (어느 OS 든):
+
+```
+<repo>/.claude/mcp.json
 ```
 
 **방법 A — 파일 탐색기**:
@@ -97,7 +112,9 @@ notepad $env:USERPROFILE\.claude\mcp.json
 
 **방법 C — PowerShell 자동 생성 (한 번에)**:
 
-token 만 본인 값으로 바꿔서 그대로 실행. `.claude` 폴더 없으면 자동 생성 + mcp.json 도 자동 생성. 이미 있으면 덮어씌우니 다른 server 등록되어 있으면 사용 X.
+token 만 본인 값으로 바꿔서 그대로 실행. 폴더 없으면 자동 생성. 이미 있으면 덮어씌우니 다른 server 등록되어 있으면 사용 X.
+
+**User-level (`%USERPROFILE%\.claude\mcp.json`) — 모든 프로젝트 공통**:
 
 ```powershell
 $token = "figd_여기에본인token"
@@ -116,6 +133,27 @@ if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Ou
   }
 }
 "@ | Out-File -Encoding utf8 "$dir\mcp.json"
+```
+
+**Project-level (`<repo>/.claude/mcp.json`) — 본 프로젝트 한정**:
+
+```powershell
+# 현재 프로젝트 root 에서 실행
+$token = "figd_여기에본인token"
+if (-not (Test-Path ".claude")) { New-Item -ItemType Directory ".claude" -Force | Out-Null }
+@"
+{
+  "mcpServers": {
+    "figma": {
+      "command": "npx",
+      "args": ["-y", "figma-developer-mcp", "--stdio"],
+      "env": {
+        "FIGMA_API_KEY": "$token"
+      }
+    }
+  }
+}
+"@ | Out-File -Encoding utf8 ".claude\mcp.json"
 ```
 
 실행 후 메모장으로 열어 token 정상 들어갔는지 확인 권장.
