@@ -71,6 +71,7 @@ export default defineConfig({
         'src/features/auth/hooks/use-auth.ts',
         'src/features/letter/hooks/use-letters.ts',
         'src/features/mypage/hooks/use-mypage.ts',
+        'src/features/notification/hooks/use-notification-inbox.ts',
         'src/features/notification/hooks/use-push-notification.ts',
         'src/features/ranking/hooks/use-ranking.ts',
         'src/features/location/components/LocationPermissionPrompt.tsx',
