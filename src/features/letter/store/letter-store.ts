@@ -30,7 +30,12 @@ export const useLetterStore = create<LetterStoreState>()(
       clearLastSent: () => set({ lastSent: null }),
     }),
     {
-      name: 'letter',
+      // 2026-06-14: 'letter' → 'tripbite.letter' (prefix 통일).
+      // 다른 라이브러리/3rd-party storage key 와의 충돌 위험 제거. auth-store 의
+      // 'tripbite.auth' 패턴과 일관. 기존 사용자의 'letter' 키는 사용 안 됨
+      // (lastSent 가 휘발성 UX 신호라 마이그 없음 — 사용자가 letter/sent 재진입 시
+      // 정상 동작).
+      name: 'tripbite.letter',
       storage: createJSONStorage(() =>
         typeof window === 'undefined'
           ? {

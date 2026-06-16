@@ -60,6 +60,17 @@
 - **2026-06-12**: 인증 redirect 를 middleware (SSR) 로 일원화 — 3 회 hydration race 회귀 누적 (AuthGuard / AuthBootstrap / selector closure) 으로 클라 가드 비활성. middleware 가 SID cookie 존재 검증 (보호 경로 진입) + 인증된 사용자의 `/login`·`/signup` 재진입 차단 (안전 redirect param 가드) 모두 SSR 단계 처리. FOUC 0. 클라 가드 (AuthGuard / ProtectedScope / AuthBootstrap) 는 mount 0 으로 회귀 시 원복 위해 보존. mock 환경 (`USE_MSW=true`) 은 분기 skip — MSW 가 Set-Cookie 발급 안 함. useLogout / useDeleteAccount 도 useLogin 과 일관 hard nav (`window.location.assign('/')`).
 - **2026-06-12**: 충북 축제 캐러셀 3단계 폴백 — BE 가 단일 endpoint 안에서 `ongoing` (진행 중) → `upcoming` (30 일 이내) → `popular` (인기 여행지) 응답 결정. 응답 `{ type, items[] }`. FE 는 `type` 분기로 sectionTitle i18n + `upcoming` 시 D-day 뱃지 (좌상단, Deep Forest 톤). D-day 는 BE 가 KST 기준 `daysToStart` 서버 계산 — 클라 시계 의존 X. `DestinationCard.topLeftBadge` slot 신설.
 - **2026-06-12**: DTO alias 일괄 정리 — 30+ alias (`Letter=LetterDto`, `Destination=DestinationDto`, `User=UserDto`, `RegionContent=RegionContentDto`, `OngoingFestivals=OngoingFestivalsDto` 등) 모두 제거. 사용처 모두 `@/api/generated/schemas` 에서 직접 import + generated 명 (Dto 접미사) 직접 사용. features/region/types 폴더 자체 삭제. 자체 도메인 shape (`TournamentConfig`, `BracketMatch`, `RankedDestination`, `LetterListKind`, `OnboardingState` 등) 만 features/\*/types 에 잔존.
+- **2026-06-14**: 14 영역 광범위 자율 진단 (read-only) + low ROI 1건 처리:
+  - **letter store key prefix 통일** — `letter` → `tripbite.letter`. auth-store 의
+    `tripbite.auth` 와 일관. 3rd-party storage key 충돌 위험 0. lastSent 가
+    UX 신호라 마이그 없음.
+  - **진단 결과**: 14 영역 중 견고 11, 약점 3 (CSP enforce / letter key / dependency
+    major bumps), 즉시 위험 0. PWA SW / a11y / 모바일 / CI/CD / 운영 보안 / Storybook /
+    데이터 정합성 등 모두 견고. dependency major bumps (Next 16 / recharts 3 /
+    lucide 1 / hookform-resolvers 5) 는 RELEASE NOTES 사전 검토 필요한 별도 작업.
+  - **CSP enforce 전환 절차** (medium ROI) — `style-src 'unsafe-inline'` 잔존.
+    Pretendard self-host 후 대체 가능 검토 + Report-Only 단계 violation 로그 1주
+    sweep 후 토글 step. 별도 milestone.
 - **2026-06-14**: 자율 진단 후속 — Pretendard self-host + ProfileCard avatar 분기 + PPR 검증:
   - **Pretendard self-host (high ROI)** — `src/fonts/PretendardVariable.woff2` (~2MB variable font) + `next/font/local` (`--font-sans-loaded` CSS 변수). layout.tsx 의 jsdelivr CDN link + preconnect + SRI 제거. globals.scss 의 font stack 첫 자리에 `var(--font-sans-loaded)` 추가. zero CLS + 외부 의존 0 + render-blocking 해소.
   - **ProfileCard avatar 분기** — localPreview (object URL) 만 raw `<img>`, server avatar URL 은 `next/image` (fill + sizes=100px). avatar 80px 의 AVIF 절약 미미하나 정합성 측면.
