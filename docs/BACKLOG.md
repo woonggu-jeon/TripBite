@@ -60,6 +60,17 @@
 - **2026-06-12**: 인증 redirect 를 middleware (SSR) 로 일원화 — 3 회 hydration race 회귀 누적 (AuthGuard / AuthBootstrap / selector closure) 으로 클라 가드 비활성. middleware 가 SID cookie 존재 검증 (보호 경로 진입) + 인증된 사용자의 `/login`·`/signup` 재진입 차단 (안전 redirect param 가드) 모두 SSR 단계 처리. FOUC 0. 클라 가드 (AuthGuard / ProtectedScope / AuthBootstrap) 는 mount 0 으로 회귀 시 원복 위해 보존. mock 환경 (`USE_MSW=true`) 은 분기 skip — MSW 가 Set-Cookie 발급 안 함. useLogout / useDeleteAccount 도 useLogin 과 일관 hard nav (`window.location.assign('/')`).
 - **2026-06-12**: 충북 축제 캐러셀 3단계 폴백 — BE 가 단일 endpoint 안에서 `ongoing` (진행 중) → `upcoming` (30 일 이내) → `popular` (인기 여행지) 응답 결정. 응답 `{ type, items[] }`. FE 는 `type` 분기로 sectionTitle i18n + `upcoming` 시 D-day 뱃지 (좌상단, Deep Forest 톤). D-day 는 BE 가 KST 기준 `daysToStart` 서버 계산 — 클라 시계 의존 X. `DestinationCard.topLeftBadge` slot 신설.
 - **2026-06-12**: DTO alias 일괄 정리 — 30+ alias (`Letter=LetterDto`, `Destination=DestinationDto`, `User=UserDto`, `RegionContent=RegionContentDto`, `OngoingFestivals=OngoingFestivalsDto` 등) 모두 제거. 사용처 모두 `@/api/generated/schemas` 에서 직접 import + generated 명 (Dto 접미사) 직접 사용. features/region/types 폴더 자체 삭제. 자체 도메인 shape (`TournamentConfig`, `BracketMatch`, `RankedDestination`, `LetterListKind`, `OnboardingState` 등) 만 features/\*/types 에 잔존.
+- **2026-06-14**: Next 16 업그레이드 시도 → revert (Serwist 호환성 차단).
+  - 시도: `next@15.5.18 → 16.2.9` + eslint-config-next + bundle-analyzer 동일 major
+  - **빌드 fail**: `PageNotFoundError: Cannot find module for page: /_not-found`.
+    근본 원인 — Next 16 의 production build 가 Turbopack 강제, **Serwist 가
+    Turbopack 미지원** (open issue serwist/serwist#54).
+  - deprecation 감지: `experimental.typedRoutes` → `typedRoutes` 위치 이동.
+    `middleware` file convention → `proxy` 권장.
+  - **revert** 후 `.next` 클린 + `npm run build` 정상 (shared 104 kB).
+  - 재시도 시점 — Serwist 가 Turbopack 호환 (issue 해결) 또는 SW 라이브러리
+    교체 검토. 그때 PPR 도 활성 가능. 현재는 Next 15.5 stable + Serwist 9.5
+    조합 유지.
 - **2026-06-14**: 14 영역 광범위 자율 진단 (read-only) + low ROI 1건 처리:
   - **letter store key prefix 통일** — `letter` → `tripbite.letter`. auth-store 의
     `tripbite.auth` 와 일관. 3rd-party storage key 충돌 위험 0. lastSent 가
