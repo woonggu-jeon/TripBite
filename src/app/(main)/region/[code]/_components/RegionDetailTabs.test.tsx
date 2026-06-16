@@ -3,27 +3,25 @@ import { renderWithProviders } from '@/test-utils';
 import { RegionDetailTabs } from './RegionDetailTabs';
 
 describe('RegionDetailTabs', () => {
-  it('3 탭 (attraction / festival / experience) 노출 — local 미노출', () => {
+  it('4 탭 (all / attraction / festival / experience) 노출 — local 미노출', () => {
     const { container, queryByText } = renderWithProviders(
       <RegionDetailTabs code="cheongju" />,
     );
     const tabs = container.querySelectorAll('[role="tab"]');
-    expect(tabs.length).toBe(3);
-    // local 탭은 정책상 미노출 (BE swagger 의 enum cleanup 전까지 type 안전망)
+    expect(tabs.length).toBe(4);
     expect(queryByText('지역')).toBeNull();
   });
 
-  it('초기 active 탭 = attraction', () => {
+  it('초기 active 탭 = all', () => {
     const { container } = renderWithProviders(
       <RegionDetailTabs code="cheongju" />,
     );
     const selected = container.querySelector('[aria-selected="true"]');
-    // Tab 컴포넌트가 id 에 `tab-` prefix 자동 부여 — RegionDetailTabs.tsx 의
-    // id="region-attraction" → DOM 의 id="tab-region-attraction".
-    expect(selected?.getAttribute('id')).toBe('tab-region-attraction');
+    // Tab 컴포넌트가 id 에 `tab-` prefix 자동 부여 — id="region-all" → "tab-region-all".
+    expect(selected?.getAttribute('id')).toBe('tab-region-all');
   });
 
-  it('lazy mount — 초기엔 attraction panel 만 mount, 다른 탭 panel mount X', () => {
+  it('lazy mount — 초기엔 all panel 만 mount, 다른 탭 panel mount X', () => {
     const { container } = renderWithProviders(
       <RegionDetailTabs code="cheongju" />,
     );

@@ -21,7 +21,7 @@ export interface MediaThumbProps {
 /**
  * 카드 썸네일 — `secureImageUrl + next/image fill | emoji span` 패턴 한 곳에서.
  *
- * 5 사용처 (DestinationCard / MatchupCard / WinnerCard / RegionContentRow /
+ * 4 사용처 (DestinationCard / MatchupCard / WinnerCard /
  * RecommendationBanner.Slide) 가 동일 패턴 반복했던 것을 흡수.
  *
  * container 의 background/aspect-ratio/border-radius 등 시각 토큰은 호출 측

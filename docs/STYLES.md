@@ -364,7 +364,7 @@ import { MediaThumb } from '@/components/ui';
 - 있으면 `next/image fill` (alt="" + aria-hidden), 없으면 emoji span.
 - container 시각 토큰 (aspect-ratio / background gradient / border-radius) 는 호출 측 className.
 - `children` — accent dot / top-right slot 등 추가 노드 (container 안 absolute).
-- 사용처 5건 흡수 (DestinationCard/MatchupCard/WinnerCard/RegionContentRow/RecommendationBanner.Slide).
+- 사용처 4건 흡수 (DestinationCard/MatchupCard/WinnerCard/RecommendationBanner.Slide).
 
 ### RadioGroup + RadioOption — 카드형 / segmented radio
 

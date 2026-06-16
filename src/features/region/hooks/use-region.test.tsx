@@ -40,7 +40,7 @@ describe('useRegionContents — useInfiniteList wrapping', () => {
     server.use(
       http.get(`${apiUrl}/regions/cheongju/contents`, ({ request }) => {
         const url = new URL(request.url);
-        expect(url.searchParams.get('type')).toBe('TOURIST_SPOT');
+        expect(url.searchParams.get('type')).toBe('attraction');
         expect(url.searchParams.get('limit')).toBe('10');
         return HttpResponse.json({
           items: [
@@ -48,7 +48,7 @@ describe('useRegionContents — useInfiniteList wrapping', () => {
               id: 'c-1',
               title: '명승지',
               imageUrl: 'http://tong.visitkorea.or.kr/p.jpg',
-              category: 'TOURIST_SPOT',
+              category: 'attraction',
             },
           ],
           nextCursor: null,
@@ -57,7 +57,7 @@ describe('useRegionContents — useInfiniteList wrapping', () => {
     );
 
     const { result } = renderHookWithProviders(() =>
-      useRegionContents('cheongju', 'TOURIST_SPOT'),
+      useRegionContents('cheongju', 'attraction'),
     );
     await waitFor(() => expect(result.current.items.length).toBe(1));
     expect(result.current.hasNext).toBe(false);

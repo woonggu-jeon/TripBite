@@ -2,15 +2,17 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { useInfiniteList } from '@/features/list';
-import { regionApi } from '@/features/region/api/region';
+import {
+  regionApi,
+  type RegionContentFilter,
+} from '@/features/region/api/region';
 import { CACHE } from '@/lib/cache';
 import type { RegionCode } from '@/constants/regions';
-import type { DestinationCategory } from '@/api/generated/schemas';
 
 export const regionKeys = {
   all: ['region'] as const,
   summary: (code: RegionCode) => [...regionKeys.all, 'summary', code] as const,
-  contents: (code: RegionCode, type: DestinationCategory) =>
+  contents: (code: RegionCode, type: RegionContentFilter) =>
     [...regionKeys.all, 'contents', code, type] as const,
   ongoingFestivals: (code?: RegionCode) =>
     [...regionKeys.all, 'ongoing-festivals', code ?? 'all'] as const,
@@ -25,8 +27,8 @@ export function useRegionSummary(code: RegionCode) {
   });
 }
 
-/** 시군 상세 탭 — 관광지/축제/체험 무한 스크롤 */
-export function useRegionContents(code: RegionCode, type: DestinationCategory) {
+/** 시군 상세 탭 — 전체/관광지/축제/체험 무한 스크롤. 'all' 은 필터 미적용 (BE 통합 응답). */
+export function useRegionContents(code: RegionCode, type: RegionContentFilter) {
   return useInfiniteList({
     queryKey: regionKeys.contents(code, type),
     queryFn: ({ pageParam }) =>

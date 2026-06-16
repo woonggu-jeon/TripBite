@@ -22,6 +22,11 @@ interface DestinationCardProps {
   regionLabel: string;
   /** 메인 제목 */
   name: string;
+  /**
+   * 여행지명 하단 한 줄 설명 (RegionContentDto.summary 매핑).
+   * 한 줄 넘으면 ellipsis. 미지정 시 영역 자체 미노출 (카드 높이 그대로).
+   */
+  description?: string;
   /** 하단 보조 텍스트 (예: "10/14 — 10/16" 축제 기간) */
   caption?: string;
   /** 카드 좌상단 액센트 dot 색 (예: luckyColor). 미지정 시 미노출 */
@@ -59,6 +64,7 @@ export function DestinationCard({
   tone,
   regionLabel,
   name,
+  description,
   caption,
   accentDot,
   ariaLabel,
@@ -89,6 +95,7 @@ export function DestinationCard({
       <div className={styles.body}>
         <p className={styles.region}>{regionLabel}</p>
         <h3 className={styles.name}>{name}</h3>
+        {description && <p className={styles.description}>{description}</p>}
         {caption && <p className={styles.caption}>{caption}</p>}
       </div>
       {topRightAction && (
