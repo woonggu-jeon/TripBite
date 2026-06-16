@@ -111,9 +111,10 @@ const nextConfig = {
     //   - public — 모든 사용자에게 공유 가능 (user-specific 콘텐츠 없음)
     //
     // 적용 대상 — public + non-user-specific:
-    //   /region, /region/[code], /destination/[id]
+    //   /region, /region/[code], /destination/[id], /quiz, /ranking
     // 미적용 대상 — user-specific (cookie 기반 응답 다름):
     //   /mypage/*, /settings/*, /letter/*, /notifications, /tournament/*
+    //   /quiz/result, /quiz/share — 사용자별 결과 (user-specific)
     const CDN_CACHE = {
       key: 'Cache-Control',
       value: 'public, s-maxage=3600, stale-while-revalidate=86400',
@@ -127,6 +128,8 @@ const nextConfig = {
       { source: '/region', headers: [CDN_CACHE] },
       { source: '/region/:code', headers: [CDN_CACHE] },
       { source: '/destination/:id', headers: [CDN_CACHE] },
+      { source: '/quiz', headers: [CDN_CACHE] },
+      { source: '/ranking', headers: [CDN_CACHE] },
     ];
   },
 

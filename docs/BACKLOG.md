@@ -1,7 +1,7 @@
 # TripBite 후속 작업 백로그
 
 > 코드베이스 전수조사 후 정리한 잔존 / 개선 항목. 분기점마다 갱신.
-> 마지막 갱신: 2026-06-12
+> 마지막 갱신: 2026-06-14
 >
 > 작업량 표기: **S** (≤30분) · **M** (1-3시간) · **L** (반나절+)
 
@@ -60,6 +60,13 @@
 - **2026-06-12**: 인증 redirect 를 middleware (SSR) 로 일원화 — 3 회 hydration race 회귀 누적 (AuthGuard / AuthBootstrap / selector closure) 으로 클라 가드 비활성. middleware 가 SID cookie 존재 검증 (보호 경로 진입) + 인증된 사용자의 `/login`·`/signup` 재진입 차단 (안전 redirect param 가드) 모두 SSR 단계 처리. FOUC 0. 클라 가드 (AuthGuard / ProtectedScope / AuthBootstrap) 는 mount 0 으로 회귀 시 원복 위해 보존. mock 환경 (`USE_MSW=true`) 은 분기 skip — MSW 가 Set-Cookie 발급 안 함. useLogout / useDeleteAccount 도 useLogin 과 일관 hard nav (`window.location.assign('/')`).
 - **2026-06-12**: 충북 축제 캐러셀 3단계 폴백 — BE 가 단일 endpoint 안에서 `ongoing` (진행 중) → `upcoming` (30 일 이내) → `popular` (인기 여행지) 응답 결정. 응답 `{ type, items[] }`. FE 는 `type` 분기로 sectionTitle i18n + `upcoming` 시 D-day 뱃지 (좌상단, Deep Forest 톤). D-day 는 BE 가 KST 기준 `daysToStart` 서버 계산 — 클라 시계 의존 X. `DestinationCard.topLeftBadge` slot 신설.
 - **2026-06-12**: DTO alias 일괄 정리 — 30+ alias (`Letter=LetterDto`, `Destination=DestinationDto`, `User=UserDto`, `RegionContent=RegionContentDto`, `OngoingFestivals=OngoingFestivalsDto` 등) 모두 제거. 사용처 모두 `@/api/generated/schemas` 에서 직접 import + generated 명 (Dto 접미사) 직접 사용. features/region/types 폴더 자체 삭제. 자체 도메인 shape (`TournamentConfig`, `BracketMatch`, `RankedDestination`, `LetterListKind`, `OnboardingState` 등) 만 features/\*/types 에 잔존.
+- **2026-06-14**: Cold start UX 보강:
+  - `(main)/loading.tsx` 신설 — `/`, `/letter`, `/mypage`, `/notifications`, `/settings`, `/quiz`, `/ranking`, `/tournament` 등 (main) 그룹 모든 경로 공용 fallback. cold start 동안 흰 화면 → page-skeleton 으로 체감 ↑.
+  - `(auth)/loading.tsx` 신설 — `/login`, `/signup`, `/find-id`, `/forgot-password`, `/reset-password`, `/onboarding` 진입 시 form 형태 skeleton.
+  - CDN cache 확대 — `/quiz`, `/ranking` (public + non-user-specific) 추가. 기존 region/destination 외 2 페이지 더 CDN edge 캐싱.
+  - 미적용 대상 명시 — `/quiz/result`, `/quiz/share` 는 사용자별 결과라 cache 제외.
+  - i18n cookies() 의존으로 ISR 직접 사용은 여전히 차단 — loading.tsx + CDN cache 가 그 대안. BACKLOG `2026-06-10` ISR 항목의 후속.
+  - 검증: tsc 0 / vitest 192 passed (FestivalCarousel.test 의 stubResponse param type narrow).
 - **2026-06-12**: 보강 추가 패스 (전수 진단 medium ROI):
   - dependency safe patch — axios 1.16→1.17 / embla-carousel 8.3→8.6 (React 19 안정성 향상) / @tanstack/react-query 5.100→5.101.
   - npm audit — esbuild dev 한정 CVE 3건 (high) 확인. 운영 runtime 영향 0 (dev server 만 영향). vite 8 breaking change 동반이라 별도 milestone 후보.

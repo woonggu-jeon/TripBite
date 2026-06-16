@@ -8,7 +8,7 @@ import { FestivalCarousel } from './FestivalCarousel';
 
 const apiUrl = mockSeeds.apiUrl;
 
-function stubResponse(body: unknown) {
+function stubResponse(body: Record<string, unknown>) {
   server.use(
     http.get(`${apiUrl}/regions/ongoing-festivals`, () =>
       HttpResponse.json(body),
