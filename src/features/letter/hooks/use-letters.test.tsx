@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { act, waitFor } from '@testing-library/react';
 import { QueryClient } from '@tanstack/react-query';
 import { renderHookWithProviders } from '@/test-utils';
@@ -7,9 +7,14 @@ import { server } from '@/mocks/server';
 import { mockSeeds } from '@/mocks/handlers';
 import {
   letterKeys,
+  useDeleteLetter,
+  useLetter,
+  useLettersInfinite,
+  useSendLetter,
   useToggleLikeLetter,
   useToggleSaveLetter,
 } from './use-letters';
+import { useAuthStore } from '@/stores/auth-store';
 import type { LetterDto } from '@/api/generated/schemas';
 
 // handlers.ts 와 같은 base — test 환경에선 baseURL undefined 라 path-only 매칭.
@@ -163,5 +168,102 @@ describe('useToggleSaveLetter', () => {
     });
 
     expect(qc.getQueryData(letterKeys.detail('l-missing'))).toBeUndefined();
+  });
+});
+
+describe('useSendLetter', () => {
+  it('성공 시 sent list invalidateQueries 호출', async () => {
+    server.use(
+      http.post(`${apiUrl}/letters`, () =>
+        HttpResponse.json(makeLetter({ id: 'l-new' })),
+      ),
+    );
+    const qc = new QueryClient({
+      defaultOptions: { queries: { retry: false, gcTime: 0 } },
+    });
+    const invalidateSpy = vi.spyOn(qc, 'invalidateQueries');
+
+    const { result } = renderHookWithProviders(() => useSendLetter(), {
+      queryClient: qc,
+    });
+    await act(async () => {
+      await result.current.mutateAsync({
+        recipientUsername: 'friend',
+        body: '잘있어',
+      });
+    });
+
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: letterKeys.list('sent'),
+    });
+  });
+});
+
+describe('useDeleteLetter', () => {
+  it('성공 시 detail removeQueries + 4 list invalidateQueries 호출', async () => {
+    server.use(
+      http.delete(
+        `${apiUrl}/letters/:id`,
+        () => new HttpResponse(null, { status: 204 }),
+      ),
+    );
+    const qc = new QueryClient({
+      defaultOptions: { queries: { retry: false, gcTime: 0 } },
+    });
+    qc.setQueryData(letterKeys.detail('l-del'), makeLetter({ id: 'l-del' }));
+    const removeSpy = vi.spyOn(qc, 'removeQueries');
+    const invalidateSpy = vi.spyOn(qc, 'invalidateQueries');
+
+    const { result } = renderHookWithProviders(() => useDeleteLetter(), {
+      queryClient: qc,
+    });
+    await act(async () => {
+      await result.current.mutateAsync('l-del');
+    });
+
+    expect(removeSpy).toHaveBeenCalledWith({
+      queryKey: letterKeys.detail('l-del'),
+    });
+    // 4 list 모두 invalidate (received/sent/liked/saved)
+    for (const kind of ['received', 'sent', 'liked', 'saved'] as const) {
+      expect(invalidateSpy).toHaveBeenCalledWith({
+        queryKey: letterKeys.list(kind),
+      });
+    }
+  });
+});
+
+describe('enabled: isAuthenticated 가드', () => {
+  beforeEach(() => {
+    useAuthStore.getState().clearAuth();
+  });
+
+  it('useLettersInfinite — 비인증 시 query 비활성 (fetch 0)', () => {
+    let called = 0;
+    server.use(
+      http.get(`${apiUrl}/letters/received`, () => {
+        called++;
+        return HttpResponse.json({ items: [], nextCursor: null });
+      }),
+    );
+    const { result } = renderHookWithProviders(() =>
+      useLettersInfinite('received'),
+    );
+    // 비인증 → enabled false → fetchStatus 'idle' (pending X)
+    expect(result.current.fetchStatus).toBe('idle');
+    expect(called).toBe(0);
+  });
+
+  it('useLetter — id 있어도 비인증 시 query 비활성', () => {
+    let called = 0;
+    server.use(
+      http.get(`${apiUrl}/letters/:id`, () => {
+        called++;
+        return HttpResponse.json(makeLetter());
+      }),
+    );
+    const { result } = renderHookWithProviders(() => useLetter('l-1'));
+    expect(result.current.fetchStatus).toBe('idle');
+    expect(called).toBe(0);
   });
 });

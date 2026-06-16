@@ -79,13 +79,13 @@ export default defineConfig({
         'src/app/(main)/region/[code]/_components/RegionDetailTabs.tsx',
       ],
       // Threshold — 현실 baseline 의 5% 아래로 설정 (회귀 가드 + 일시적 측정 오차).
-      // 2026-06-14 baseline (use-auth test 추가 후):
-      //   Stmts 84.1% / Branches 73.5% / Funcs 79.3% / Lines 85.4%.
+      // 2026-06-14 baseline (use-auth + use-letters test 추가 후):
+      //   Stmts 87.1% / Branches 74.1% / Funcs 84.6% / Lines 88.5%.
       thresholds: {
-        statements: 78,
-        branches: 68,
-        functions: 73,
-        lines: 80,
+        statements: 82,
+        branches: 69,
+        functions: 79,
+        lines: 83,
       },
     },
     environment: 'happy-dom',
