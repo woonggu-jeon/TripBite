@@ -87,13 +87,38 @@ C:\Users\{본인계정}\.claude\mcp.json
 2. 폴더 안에서 **새로 만들기 → 텍스트 문서** → 이름 `mcp.json` (확장자 `.txt` 아니라 `.json` 확실히)
 3. 메모장으로 열기
 
-**방법 B — PowerShell 한 줄**:
+**방법 B — PowerShell 한 줄로 메모장 열기**:
 
 ```powershell
 notepad $env:USERPROFILE\.claude\mcp.json
 ```
 
 파일 없다고 묻는 창 나오면 "예" 눌러 새로 생성.
+
+**방법 C — PowerShell 자동 생성 (한 번에)**:
+
+token 만 본인 값으로 바꿔서 그대로 실행. `.claude` 폴더 없으면 자동 생성 + mcp.json 도 자동 생성. 이미 있으면 덮어씌우니 다른 server 등록되어 있으면 사용 X.
+
+```powershell
+$token = "figd_여기에본인token"
+$dir = "$env:USERPROFILE\.claude"
+if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+@"
+{
+  "mcpServers": {
+    "figma": {
+      "command": "npx",
+      "args": ["-y", "figma-developer-mcp", "--stdio"],
+      "env": {
+        "FIGMA_API_KEY": "$token"
+      }
+    }
+  }
+}
+"@ | Out-File -Encoding utf8 "$dir\mcp.json"
+```
+
+실행 후 메모장으로 열어 token 정상 들어갔는지 확인 권장.
 
 **파일 내용** (그대로 복사 + token 만 본인 값으로):
 
