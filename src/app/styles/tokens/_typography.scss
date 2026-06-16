@@ -61,9 +61,11 @@
   --font-weight-bold: 700;
   --font-weight-extrabold: 800;
 
-  /* Font stack — Pretendard 우선 + Pretendard-fallback (메트릭 매칭) + 시스템 */
+  /* Font stack — next/font/local 의 var(--font-sans-loaded) 우선 + 메트릭 fallback + 시스템.
+     next/font 가 build 시 hash 명 부여 ('--font-sans-loaded' → 실제 className 의 font-family). */
   --font-sans:
-    'Pretendard Variable', Pretendard, 'Pretendard-fallback', -apple-system,
-    BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, sans-serif;
+    var(--font-sans-loaded), 'Pretendard Variable', Pretendard,
+    'Pretendard-fallback', -apple-system, BlinkMacSystemFont,
+    'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
 }

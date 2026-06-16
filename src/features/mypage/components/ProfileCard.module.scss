@@ -84,6 +84,7 @@
 }
 
 .avatar {
+  position: relative; // next/image fill 자식의 absolute 기준
   width: 100px;
   height: 100px;
   border-radius: var(--radius-full);

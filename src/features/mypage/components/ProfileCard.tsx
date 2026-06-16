@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { User, X } from 'lucide-react';
 import { useMe } from '@/features/auth/hooks/use-auth';
@@ -112,12 +113,23 @@ export function ProfileCard() {
           aria-label={t('changeAvatar')}
         >
           <span className={styles.avatar}>
-            {avatarSrc ? (
-              // object URL 은 next/image 사용 부적합 → 일반 img.
+            {localPreview ? (
+              // 업로드 직후 client-side object URL (URL.createObjectURL) —
+              // next/image 부적합 (외부 host 가 아니라 blob:). 일반 img 정당.
               // eslint-disable-next-line @next/next/no-img-element
               <img
+                src={localPreview}
+                alt={t('avatarAlt', { nickname })}
+                className={styles.avatarImg}
+              />
+            ) : avatarSrc ? (
+              // server avatar URL (R2/CDN) — next/image 로 AVIF/WebP 변환 활용.
+              // fill + sizes 로 컨테이너(80px) 정합.
+              <Image
                 src={avatarSrc}
                 alt={t('avatarAlt', { nickname })}
+                fill
+                sizes="100px"
                 className={styles.avatarImg}
               />
             ) : (

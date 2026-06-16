@@ -89,6 +89,11 @@ const nextConfig = {
     staleTimes: { dynamic: 30, static: 180 },
     // <Link href>/router.push() 경로를 컴파일 시점에 검증 (오타로 깨진 링크 차단)
     typedRoutes: true,
+    // PPR (Partial Prerendering) 시도 결과 (2026-06-14):
+    //   `experimental.ppr = 'incremental'` → build error "can only be enabled
+    //   when using the latest canary version of Next.js". 우리 15.5.18 stable
+    //   에선 도입 불가. Next 16 stable 출시 후 재검토. 그때까지는 CDN cache +
+    //   loading.tsx 가 cold start 정책.
     optimizePackageImports: [
       'lucide-react',
       'recharts',

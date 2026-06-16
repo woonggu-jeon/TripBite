@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import localFont from 'next/font/local';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 import { Analytics } from '@vercel/analytics/next';
@@ -6,6 +7,24 @@ import { Providers } from './providers';
 import { getApiOrigin } from '@/lib/api-origin';
 import { JsonLd, webSiteOrganization } from '@/lib/json-ld';
 import './globals.scss';
+
+/**
+ * Pretendard 한글 웹폰트 — self-host (next/font/local).
+ *
+ * 이전: jsdelivr CDN dynamic-subset (CSS render-blocking + 외부 의존).
+ * 이후: variable woff2 단일 파일 self-host. next/font 가 build 시 inline
+ * @font-face + 자동 preload + zero CLS 보장.
+ *
+ * 한국어 사용자 첫 진입 1회 다운로드 (~2MB) 후 영구 캐시 → 다음 진입 0 비용.
+ * `--font-sans` CSS 변수로 globals.scss 의 font-family fallback chain 연결.
+ */
+const pretendard = localFont({
+  src: '../fonts/PretendardVariable.woff2',
+  display: 'swap',
+  preload: true,
+  variable: '--font-sans-loaded',
+  weight: '45 920',
+});
 
 /**
  * 다국어 메타데이터 — generateMetadata 에서 getTranslations 사용
@@ -102,36 +121,6 @@ export const viewport: Viewport = {
   interactiveWidget: 'resizes-content',
 };
 
-/**
- * 한글 웹폰트 설정 자리 (next/font)
- *
- * 실제 폰트 파일을 추가한 후 활성화:
- *   1) Pretendard 등 .woff2 파일을 public/fonts/ 또는 src/fonts/ 에 둠
- *   2) 아래 import 활성화 + className 적용
- *
- * Subset 권장:
- *   pyftsubset Pretendard-Variable.woff2 \
- *     --unicodes="U+AC00-D7AF,U+0020-007F,U+1100-11FF" \
- *     --output-file=Pretendard-KO.woff2
- *   → 한글+영문만 추출, ~500KB → ~120KB
- *
- * 또는 next/font/google 의 Noto Sans KR 사용 가능 (간편하나 폰트 크기 큼).
- *
- * 예시 (코멘트 풀어 사용):
- *
- * import localFont from 'next/font/local';
- *
- * const pretendard = localFont({
- *   src: '../fonts/Pretendard-KO.woff2',
- *   display: 'swap',              // FOIT 방지 — 시스템 폰트로 즉시 표시 후 교체
- *   preload: true,                // <link rel=preload> 자동
- *   variable: '--font-sans',      // globals.scss 의 --font-sans 와 매핑
- *   weight: '100 900',            // variable font
- * });
- *
- * → <html lang={locale} className={pretendard.variable}>
- */
-
 export default async function RootLayout({
   children,
 }: {
@@ -145,14 +134,14 @@ export default async function RootLayout({
   const apiUrl = apiOrigin || undefined;
 
   return (
-    <html lang={locale}>
+    <html lang={locale} className={pretendard.variable}>
       <head>
         {/*
           Resource hints — 첫 페인트 직후 외부 도메인 연결을 미리 시작.
           DNS 조회 + TLS handshake 비용을 critical path 에서 제거.
 
-          preconnect: DNS + TCP + TLS 까지 미리 (HTTP 첫 요청 즉시 시작 가능)
-          dns-prefetch: DNS 만 미리 (preconnect 미지원 브라우저 폴백)
+          Pretendard 는 self-host (next/font/local) 라 preconnect 불필요.
+          jsdelivr 의존 제거 (2026-06-14) — 외부 도메인 1 감소.
         */}
         <link rel="preconnect" href="https://tong.visitkorea.or.kr" />
         <link rel="dns-prefetch" href="https://tong.visitkorea.or.kr" />
@@ -166,42 +155,6 @@ export default async function RootLayout({
             <link rel="dns-prefetch" href={apiUrl} />
           </>
         )}
-
-        {/*
-          Pretendard — jsdelivr dynamic-subset
-            · unicode-range 로 한글/영문 chunk 자동 분할 다운로드
-            · 사용자가 보는 페이지 글리프 범위에 해당하는 woff2 만 받음
-            · preconnect + crossOrigin="anonymous" 로 critical path 영향 최소화
-            · CSS 자체는 첫 페인트를 막지 않도록 stylesheet 만 사용 (font-display:swap)
-
-          ⚠️ 폰트 파일 preload 는 의도적으로 안 함:
-            dynamic-subset 은 unicode-range 기반으로 여러 chunk 로 분할되어
-            어떤 파일이 필요한지 빌드 시점에 알 수 없음.
-            잘못된 chunk preload 는 비용 낭비.
-            preconnect 만으로도 충분히 빠르며, font-display:swap 으로 FOIT 방지.
-
-          Self-host 마이그레이션 시:
-            단일 파일이므로 <link rel="preload" as="font" type="font/woff2"
-                href="/fonts/Pretendard-KO.woff2" crossorigin /> 추가 가능.
-        */}
-        <link
-          rel="preconnect"
-          href="https://cdn.jsdelivr.net"
-          crossOrigin="anonymous"
-        />
-        {/* Pretendard CSS — jsdelivr CDN.
-            SRI: 운영 배포 전 NEXT_PUBLIC_PRETENDARD_SRI 환경변수에 SHA-384 해시
-            주입 (`curl -s "..." | openssl dgst -sha384 -binary | openssl base64 -A`).
-            미설정 시 integrity 속성 생략 — 호환 우선, 보안 약간 감소.
-            crossOrigin="anonymous" 는 SRI 동작에 필수. */}
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
-          crossOrigin="anonymous"
-          {...(process.env.NEXT_PUBLIC_PRETENDARD_SRI
-            ? { integrity: process.env.NEXT_PUBLIC_PRETENDARD_SRI }
-            : {})}
-        />
 
         {/* JSON-LD 구조화 데이터 — WebSite + Organization.
             search 박스 (potentialAction) 는 site search 미구현이라 omit.
