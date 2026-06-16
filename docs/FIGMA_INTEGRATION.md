@@ -241,6 +241,53 @@ if (-not (Test-Path ".claude")) { New-Item -ItemType Directory ".claude" -Force 
 
 ---
 
+### Step 0-8. 새 팀원 합류 시 (3분)
+
+repo 가 이미 셋업되어 있어서 새 팀원이 합류해도 처음부터 mcp.json 작성할 필요 없음. **본인 token 발급 + placeholder 교체** 만 하면 됨.
+
+**저장소 정책** (이미 적용됨):
+
+| 파일                          | git 상태            | 역할                                                               |
+| ----------------------------- | ------------------- | ------------------------------------------------------------------ |
+| `.claude/mcp.json.example`    | tracked (commit 됨) | 템플릿. `FIGMA_API_KEY: REPLACE_WITH_YOUR_FIGMA_TOKEN` placeholder |
+| `.claude/mcp.json`            | **gitignored**      | 본인 token 들어간 실제 설정. 절대 commit 안 됨                     |
+| `.claude/settings.local.json` | **gitignored**      | Claude Code local 설정                                             |
+
+`.gitignore` 가 `.claude/*` + `!.claude/mcp.json.example` 패턴으로 정밀화 — `.env.example` 정책과 동일.
+
+**새 팀원 합류 흐름** (Windows):
+
+```powershell
+# 1. repo clone 후 프로젝트 root 에서
+Copy-Item .claude\mcp.json.example .claude\mcp.json
+
+# 2. Figma 가입 + Step 0-3 따라 token 발급
+
+# 3. mcp.json 의 placeholder 한 줄 교체
+notepad .claude\mcp.json
+#   "FIGMA_API_KEY": "REPLACE_WITH_YOUR_FIGMA_TOKEN"
+#                    ↑ figd_본인token 으로 교체 → 저장
+
+# 4. Claude Code 재시작 + /mcp 확인
+```
+
+**Mac / Linux**:
+
+```bash
+cp .claude/mcp.json.example .claude/mcp.json
+# 그 다음 에디터로 placeholder 교체
+```
+
+PowerShell 한 줄 sed:
+
+```powershell
+(Get-Content .claude\mcp.json) -replace 'REPLACE_WITH_YOUR_FIGMA_TOKEN', 'figd_본인token여기' | Set-Content -Encoding utf8 .claude\mcp.json
+```
+
+⚠ Token 은 **본인 발급분만** 사용. 팀원 간 token 공유 절대 X. 각자 본인 Figma 계정 + 본인 token = 본인 mcp.json. Figma 측 audit log 가 token 별 access 추적이라 공유 시 누가 뭘 했는지 추적 불가.
+
+---
+
 ## 1. 큰 그림
 
 ```
@@ -505,6 +552,13 @@ Claude:     변경된 토큰만 diff 후 tokens/_*.scss 갱신 + commit
 
 - 새 primitive 추가 시 `*.stories.tsx` 같이 생성. 디자이너 검수 채널.
 
+### 8-6. mcp.json 의 token 보안
+
+- 실제 `.claude/mcp.json` 은 `.gitignore` 가 무시 — 절대 commit 안 됨.
+- `mcp.json.example` 만 트래킹 — placeholder `REPLACE_WITH_YOUR_FIGMA_TOKEN` 만 들어 있음.
+- 팀원 간 token 공유 X — 각자 본인 Figma 계정으로 발급. Figma audit log 는 token 별 추적.
+- token 분실/유출 의심 시 Figma Settings → Personal access tokens → **Revoke** 후 재발급.
+
 ---
 
 ## 9. 첫 시도 권장 시나리오
@@ -538,6 +592,12 @@ A. 본 프로젝트 빈도 (월 ~수 회 변경) 라면 불필요. 수동 export
 
 **Q. Anthropic official Figma MCP 나오면 어떻게?**
 A. `.claude/mcp.json` 에서 `figma-developer-mcp` → 새 server 명만 변경. 사용 흐름 동일.
+
+**Q. 새 팀원이 합류했을 때 figma MCP 셋업 어떻게?**
+A. `Copy-Item .claude\mcp.json.example .claude\mcp.json` (Mac/Linux 는 `cp`) 후 본인 Figma token 으로 placeholder 한 줄 교체. token 은 본인 Figma Settings 에서 직접 발급 — 팀원 간 공유 X (Figma audit log 가 token 별 추적). 자세히: §0-8.
+
+**Q. token 이 실수로 git 에 올라갈 위험은?**
+A. `.gitignore` 가 `.claude/*` + `!.claude/mcp.json.example` 패턴으로 정밀화 — 실제 `mcp.json` 은 무시, example 만 트래킹. `git check-ignore -v .claude/mcp.json` 으로 검증 가능.
 
 ---
 
