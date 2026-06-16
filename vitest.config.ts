@@ -72,6 +72,7 @@ export default defineConfig({
         'src/features/letter/hooks/use-letters.ts',
         'src/features/mypage/hooks/use-mypage.ts',
         'src/features/notification/hooks/use-push-notification.ts',
+        'src/features/ranking/hooks/use-ranking.ts',
         'src/features/location/components/LocationPermissionPrompt.tsx',
         'src/features/tournament/hooks/use-tournament.ts',
         'src/features/tournament/utils/bracket.ts',
