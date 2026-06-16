@@ -69,6 +69,15 @@ Claude 가 Figma API 로 디자인 정보 fetch 하려면 token 이 필요.
 
 Claude Code 가 시작할 때 읽는 설정 파일에 figma server 등록.
 
+> **팀원 합류 시 가장 빠른 길** — `.claude/mcp.json.example` 이 repo 에 commit 되어 있음. 복사 + token 만 교체:
+>
+> ```powershell
+> Copy-Item .claude\mcp.json.example .claude\mcp.json
+> # 그 다음 mcp.json 의 REPLACE_WITH_YOUR_FIGMA_TOKEN 자리를 본인 token 으로 교체
+> ```
+>
+> 실제 `mcp.json` 은 `.gitignore` 가 무시 (token 노출 0). example 만 트래킹.
+
 **위치 두 가지 — 본인 상황에 맞춰 선택**:
 
 | 위치                                                                         | 적용 범위          | 추천 케이스                           |
