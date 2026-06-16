@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { Carousel } from '@/features/carousel';
 import { secureImageUrl } from '@/lib/secure-image-url';
 import styles from './DestinationPhotos.module.scss';
@@ -14,7 +15,9 @@ import styles from './DestinationPhotos.module.scss';
  *
  * - imageUrl 은 base Destination 의 대표 사진. photos 는 추가 갤러리.
  * - mock 은 SVG data URL placeholder. 실 BE 는 CDN URL.
- * - aspect-ratio 고정으로 CLS 0.
+ * - aspect-ratio 는 wrap 이 정의 (CLS 0). next/image fill 이 그 안 채움.
+ * - 단일 hero 만 next/image (LCP 후보 — AVIF/WebP 변환 + priority 적용).
+ *   carousel slide 는 raw img 유지 — 각 slide 마다 dimension wrap 추가가 큰 변경.
  */
 export function DestinationPhotos({
   photos,
@@ -31,14 +34,15 @@ export function DestinationPhotos({
   if (!hasGallery && !safeImageUrl) return null;
 
   if (!hasGallery && safeImageUrl) {
-    // 대표 사진 단일 — carousel 없이 hero 한 장.
+    // 대표 사진 단일 — LCP 후보. next/image fill + priority 로 AVIF/WebP 변환 활용.
     return (
       <div className={styles.wrap}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={safeImageUrl}
           alt={alt}
-          loading="eager"
+          fill
+          priority
+          sizes="(max-width: 720px) 100vw, 720px"
           className={styles.image}
           draggable={false}
         />

@@ -1,5 +1,9 @@
+// next/image fill 모드 — wrap 이 dimension 정의. Carousel slide 의 raw img 도
+// 동일 selector 재사용 (fill 외 케이스는 .image 가 width/aspect-ratio 처리).
 .wrap {
+  position: relative; // next/image fill 필수
   width: 100%;
+  aspect-ratio: 3 / 2;
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--color-surface-soft);
@@ -8,14 +12,14 @@
 
 .image {
   width: 100%;
-  aspect-ratio: 3 / 2;
+  height: 100%;
   object-fit: cover;
   display: block;
   background: var(--color-surface-soft);
 }
 
 @media (max-width: 380px) {
-  .image {
+  .wrap {
     aspect-ratio: 4 / 3;
   }
 }

@@ -56,8 +56,10 @@ jobs:
         run: npm run build-storybook
 
       # === 번들 사이즈 회귀 가드 ===
+      # 이미 위 Build step 에서 .next production artifact 생성됨 → size-limit 만 실행.
+      # local 에서는 `npm run size` (build 자동 포함) 권장.
       - name: Bundle size limit
-        run: npm run size
+        run: npm run size:ci
 
       # === 보안 점검 ===
       - name: Dependency audit (high severity)
