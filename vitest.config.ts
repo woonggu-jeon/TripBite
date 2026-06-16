@@ -70,6 +70,7 @@ export default defineConfig({
         // features (test 있는 module 한정)
         'src/features/auth/hooks/use-auth.ts',
         'src/features/letter/hooks/use-letters.ts',
+        'src/features/mypage/hooks/use-mypage.ts',
         'src/features/notification/hooks/use-push-notification.ts',
         'src/features/location/components/LocationPermissionPrompt.tsx',
         'src/features/tournament/utils/bracket.ts',
