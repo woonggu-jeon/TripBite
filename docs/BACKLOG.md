@@ -60,6 +60,18 @@
 - **2026-06-12**: 인증 redirect 를 middleware (SSR) 로 일원화 — 3 회 hydration race 회귀 누적 (AuthGuard / AuthBootstrap / selector closure) 으로 클라 가드 비활성. middleware 가 SID cookie 존재 검증 (보호 경로 진입) + 인증된 사용자의 `/login`·`/signup` 재진입 차단 (안전 redirect param 가드) 모두 SSR 단계 처리. FOUC 0. 클라 가드 (AuthGuard / ProtectedScope / AuthBootstrap) 는 mount 0 으로 회귀 시 원복 위해 보존. mock 환경 (`USE_MSW=true`) 은 분기 skip — MSW 가 Set-Cookie 발급 안 함. useLogout / useDeleteAccount 도 useLogin 과 일관 hard nav (`window.location.assign('/')`).
 - **2026-06-12**: 충북 축제 캐러셀 3단계 폴백 — BE 가 단일 endpoint 안에서 `ongoing` (진행 중) → `upcoming` (30 일 이내) → `popular` (인기 여행지) 응답 결정. 응답 `{ type, items[] }`. FE 는 `type` 분기로 sectionTitle i18n + `upcoming` 시 D-day 뱃지 (좌상단, Deep Forest 톤). D-day 는 BE 가 KST 기준 `daysToStart` 서버 계산 — 클라 시계 의존 X. `DestinationCard.topLeftBadge` slot 신설.
 - **2026-06-12**: DTO alias 일괄 정리 — 30+ alias (`Letter=LetterDto`, `Destination=DestinationDto`, `User=UserDto`, `RegionContent=RegionContentDto`, `OngoingFestivals=OngoingFestivalsDto` 등) 모두 제거. 사용처 모두 `@/api/generated/schemas` 에서 직접 import + generated 명 (Dto 접미사) 직접 사용. features/region/types 폴더 자체 삭제. 자체 도메인 shape (`TournamentConfig`, `BracketMatch`, `RankedDestination`, `LetterListKind`, `OnboardingState` 등) 만 features/\*/types 에 잔존.
+- **2026-06-14**: 12 영역 자율 진단 후속 (자율 진단 한계 도달):
+  - **WinnerDetailPanel URL prefix 가드** — `r.value` 의 `website` 가
+    `https?://` 시작인지 강제 검증 (`/^https?:\/\//i.test`). javascript: URL
+    XSS 방어. BE 신뢰 source 라도 다층 방어.
+  - **providers.tsx 의 i18n 하드코딩 → key** — `'요청을 처리하지 못했어요.'` /
+    `'네트워크 오류가 발생했어요.'` 를 `errors.requestFailed` / `errors.network`
+    로 교체. `useRef(useTranslations(...))` 패턴으로 useState lazy init 의
+    closure stale 회피. i18n ko/en 양쪽 새 key 2 개 추가.
+  - **vitest coverage include 확장** (medium ROI 보류) — `features/letter/hooks`,
+    `features/tournament/utils`, `lib/cache.ts` 등 점진 확장 후보. 별도 작업.
+  - **자율 진단 한계 도달** — 12 영역 중 high ROI 보강 0, 즉시 위험 0.
+    남은 약점들은 운영 데이터 누적 + product 의사결정 + Next 16 안정화 의존.
 - **2026-06-14**: Next 16 업그레이드 시도 → revert (Serwist 호환성 차단).
   - 시도: `next@15.5.18 → 16.2.9` + eslint-config-next + bundle-analyzer 동일 major
   - **빌드 fail**: `PageNotFoundError: Cannot find module for page: /_not-found`.

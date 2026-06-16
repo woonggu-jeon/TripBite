@@ -789,6 +789,8 @@
   },
   "errors": {
     "generic": "Something went wrong",
+    "network": "A network error occurred.",
+    "requestFailed": "Couldn't process your request.",
     "tryAgainLater": "Please try again later.",
     "notFound": {
       "title": "404",

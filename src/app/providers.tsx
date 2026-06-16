@@ -9,7 +9,8 @@ import {
 import { toast } from '@/lib/toast';
 import { isAxiosError } from '@/services/interceptors/auth';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
 // 2026-06-12 — AuthBootstrap mount 비활성. 인증 redirect 는 middleware (SSR) +
@@ -112,6 +113,12 @@ if (typeof window !== 'undefined') {
 }
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  // queryCache.onError 안에서 i18n 메시지 사용 — useState lazy init 의 closure
+  // stale 회피 위해 ref 패턴. 매 호출 시 latest t.
+  const tErrors = useTranslations('errors');
+  const tErrorsRef = useRef(tErrors);
+  tErrorsRef.current = tErrors;
+
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -122,10 +129,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
         queryCache: new QueryCache({
           onError: (error) => {
             if (isAxiosError(error) && error.response?.status === 401) return;
+            const t = tErrorsRef.current;
             const message = isAxiosError(error)
               ? ((error.response?.data as { message?: string })?.message ??
-                '요청을 처리하지 못했어요.')
-              : '네트워크 오류가 발생했어요.';
+                t('requestFailed'))
+              : t('network');
             toast.error(message);
             // 운영 client-error endpoint 로 보고. dev 는 console 만.
             // 4xx (보통 검증 실패) 는 skip — server 측 정합 issue 가 아니라 사용자 입력.

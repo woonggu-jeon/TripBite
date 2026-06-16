@@ -146,7 +146,9 @@ export function WinnerDetailPanel({ detail, isLoading }: Props) {
       {hasRows && (
         <dl className={styles.rows}>
           {rows.map((r) => {
-            const isLink = r.key === 'website';
+            // website 인 경우 BE 응답이 http(s) prefix 인지 강제 검증 (javascript:
+            // 같은 URL scheme XSS 차단). BE 가 신뢰 source 라도 다층 방어.
+            const isLink = r.key === 'website' && /^https?:\/\//i.test(r.value);
             return (
               <div key={r.key} className={styles.row}>
                 <dt className={styles.rowLabel}>
