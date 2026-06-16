@@ -8,6 +8,10 @@ node_modules/
 # mcp.json.example 만 트래킹 — 팀원이 복사해서 본인 token 으로 채워 넣음.
 .claude/*
 !.claude/mcp.json.example
+# Claude Code project-level MCP config (project root) — token 포함이라 무시.
+# .mcp.json.example (있으면) 만 트래킹.
+.mcp.json
+!.mcp.json.example
 
 # testing
 coverage/

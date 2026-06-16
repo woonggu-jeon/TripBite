@@ -288,6 +288,66 @@ PowerShell 한 줄 sed:
 
 ---
 
+### Step 0-9. Token 갱신 / 회전 (필요 시)
+
+Figma token 은 다음 3 가지 케이스에 갱신:
+
+**케이스 A — 만료** (token 발급 시 설정한 expiration 도래):
+
+```powershell
+# 1) Figma 에서 새 token 발급 (Step 0-3 과 동일 절차)
+# 2) .mcp.json 의 FIGMA_API_KEY 값 교체
+notepad .mcp.json
+#    "FIGMA_API_KEY": "figd_OLD..." → 새 token 으로 한 줄 교체 → 저장
+# 3) VSCode 의 Claude Code 재시작
+#    (Command Palette → "Developer: Reload Window") 또는 VSCode 종료 후 재실행
+```
+
+PowerShell 한 줄로 값만 교체 (regex):
+
+```powershell
+$new = "figd_새token"
+(Get-Content .mcp.json) -replace '"FIGMA_API_KEY":\s*"figd_[^"]+"', "`"FIGMA_API_KEY`": `"$new`"" | Set-Content -Encoding utf8 .mcp.json
+```
+
+**케이스 B — 유출 의심** (token 이 채팅/메모/git/Slack 등 어디든 노출됐을 때):
+
+```
+1. https://www.figma.com/settings → Personal access tokens
+2. 의심 token 의 "Revoke" 클릭 — 즉시 무효화
+3. 새 token 발급 (동일 권한 — File content read-only)
+4. .mcp.json 의 값 교체 (위 케이스 A 와 동일)
+5. VSCode 재시작
+```
+
+Revoke 는 즉시 효력 발생 — 유출된 token 이 그 시점부터 사용 불가.
+
+**케이스 C — CLI 로 재등록** (file 안 건드리고 명령으로):
+
+```powershell
+claude mcp remove figma
+claude mcp add figma --scope project --env FIGMA_API_KEY=figd_새token -- npx -y figma-developer-mcp --stdio
+```
+
+VSCode 의 Claude Code 가 자동으로 `.mcp.json` 갱신 — 재시작 후 반영.
+
+**검증** (어느 케이스든):
+
+```powershell
+claude mcp list
+```
+
+`figma: ✔ connected` 면 갱신 완료.
+
+**만료 임박 알림 받는 법**:
+Figma 가 자동 알림 X. 대안:
+
+- 발급 시 **Expiration: no expiration** 선택 — 만료 걱정 0 (단 유출 시 수동 revoke 필요)
+- 본인 캘린더에 90일 만료일 등록
+- 또는 평소 `claude mcp list` 가 `figma: ✗ failed` 로 떨어지면 갱신 시점 인지
+
+---
+
 ## 1. 큰 그림
 
 ```
@@ -554,10 +614,10 @@ Claude:     변경된 토큰만 diff 후 tokens/_*.scss 갱신 + commit
 
 ### 8-6. mcp.json 의 token 보안
 
-- 실제 `.claude/mcp.json` 은 `.gitignore` 가 무시 — 절대 commit 안 됨.
-- `mcp.json.example` 만 트래킹 — placeholder `REPLACE_WITH_YOUR_FIGMA_TOKEN` 만 들어 있음.
+- 실제 `.mcp.json` (project root) / `.claude/mcp.json` 은 `.gitignore` 가 무시 — 절대 commit 안 됨.
+- `.claude/mcp.json.example` 만 트래킹 — placeholder `REPLACE_WITH_YOUR_FIGMA_TOKEN` 만 들어 있음.
 - 팀원 간 token 공유 X — 각자 본인 Figma 계정으로 발급. Figma audit log 는 token 별 추적.
-- token 분실/유출 의심 시 Figma Settings → Personal access tokens → **Revoke** 후 재발급.
+- token 분실/유출 의심 시 Figma Settings → Personal access tokens → **Revoke** 후 재발급. 갱신 절차는 §0-9 참조.
 
 ---
 
@@ -597,7 +657,13 @@ A. `.claude/mcp.json` 에서 `figma-developer-mcp` → 새 server 명만 변경.
 A. `Copy-Item .claude\mcp.json.example .claude\mcp.json` (Mac/Linux 는 `cp`) 후 본인 Figma token 으로 placeholder 한 줄 교체. token 은 본인 Figma Settings 에서 직접 발급 — 팀원 간 공유 X (Figma audit log 가 token 별 추적). 자세히: §0-8.
 
 **Q. token 이 실수로 git 에 올라갈 위험은?**
-A. `.gitignore` 가 `.claude/*` + `!.claude/mcp.json.example` 패턴으로 정밀화 — 실제 `mcp.json` 은 무시, example 만 트래킹. `git check-ignore -v .claude/mcp.json` 으로 검증 가능.
+A. `.gitignore` 가 `.claude/*` + `!.claude/mcp.json.example` + `.mcp.json` 패턴으로 정밀화 — 실제 `mcp.json` / `.mcp.json` 은 무시, example 만 트래킹. `git check-ignore -v .mcp.json` 으로 검증 가능.
+
+**Q. token 만료 / 유출 시 어떻게 갱신?**
+A. §0-9 참조. 3 가지 케이스 — 만료 (file 값 교체), 유출 의심 (Figma 에서 revoke + 재발급), CLI 재등록 (`claude mcp remove/add`). 어느 케이스든 `claude mcp list` 로 `✔ connected` 검증.
+
+**Q. token expiration 추천 — 90일 vs no expiration?**
+A. 본 워크플로우는 개인 dev 용이라 **no expiration + 유출 의심 시 즉시 revoke** 가 운영 비용 적음. 90일은 만료 시 매번 갱신 필요 → forget 시 figma fetch fail. 보안 정책상 강제라면 90일 + 캘린더 알림.
 
 ---
 
