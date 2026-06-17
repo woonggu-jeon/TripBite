@@ -14,6 +14,7 @@ export {
 export { PageSection } from './PageSection';
 export { Button, type ButtonVariant, type ButtonSize } from './button';
 export { DestinationCard, type DestinationCardTone } from './DestinationCard';
+export { DestinationCardSkeleton } from './DestinationCardSkeleton';
 export { ButtonGrid } from './ButtonGrid';
 export { TextField, type TextFieldProps } from './TextField';
 export { MediaThumb, type MediaThumbProps } from './MediaThumb';

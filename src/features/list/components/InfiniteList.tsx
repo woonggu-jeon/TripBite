@@ -33,6 +33,7 @@ export function InfiniteList<T>({
   onReachEnd,
   keyExtractor,
   renderItem,
+  renderSkeleton,
   emptyState,
   className,
   itemGap = 12,
@@ -45,6 +46,11 @@ export function InfiniteList<T>({
   onReachEnd: () => void;
   keyExtractor: (item: T, index: number) => string | number;
   renderItem: (item: T, index: number) => ReactNode;
+  /**
+   * 다음 페이지 fetching 중 placeholder. 카드 모양 매치 위해 호출 측에서 제공.
+   * 미지정 시 SkeletonList (기본 height 80) — row 형 list 기본값.
+   */
+  renderSkeleton?: () => ReactNode;
   emptyState?: ReactNode;
   className?: string;
   itemGap?: number;
@@ -78,10 +84,15 @@ export function InfiniteList<T>({
         <div key={keyExtractor(item, i)}>{renderItem(item, i)}</div>
       ))}
 
-      {/* 다음 페이지 fetching 중 placeholder */}
-      {isFetchingNext && (
-        <SkeletonList count={skeletonCount} height={80} radius="md" />
-      )}
+      {/* 다음 페이지 fetching 중 placeholder — 카드 모양 매치 위해 호출 측 override 가능 */}
+      {isFetchingNext &&
+        (renderSkeleton ? (
+          Array.from({ length: skeletonCount }, (_, i) => (
+            <div key={`sk-${i}`}>{renderSkeleton()}</div>
+          ))
+        ) : (
+          <SkeletonList count={skeletonCount} height={80} radius="md" />
+        ))}
 
       {/* 마지막 페이지 후에는 sentinel 렌더 안 함.
           columns > 1 일 때 sentinel 도 전체 폭 차지하도록 column span. */}

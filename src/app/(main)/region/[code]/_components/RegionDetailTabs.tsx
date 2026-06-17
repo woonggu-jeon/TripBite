@@ -18,7 +18,13 @@ import {
   type RegionContentFilter,
 } from '@/features/region/api/region';
 import { InfiniteList } from '@/features/list/components/InfiniteList';
-import { DestinationCard, TabList, Tab, TabPanel } from '@/components/ui';
+import {
+  DestinationCard,
+  DestinationCardSkeleton,
+  TabList,
+  Tab,
+  TabPanel,
+} from '@/components/ui';
 import styles from './RegionDetailTabs.module.scss';
 
 /**
@@ -210,6 +216,8 @@ function RegionContentPanel({
           description={i.description}
         />
       )}
+      renderSkeleton={() => <DestinationCardSkeleton />}
+      skeletonCount={4}
       emptyState={<p className={styles.empty}>{t(emptyKey)}</p>}
       columns={2}
     />
