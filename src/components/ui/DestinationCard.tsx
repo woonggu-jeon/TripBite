@@ -95,7 +95,18 @@ export function DestinationCard({
       <div className={styles.body}>
         <p className={styles.region}>{regionLabel}</p>
         <h3 className={styles.name}>{name}</h3>
-        {description && <p className={styles.description}>{description}</p>}
+        {/*
+          description 영역은 prop 유무와 무관하게 항상 렌더 — 카드 높이를
+          그리드 안에서 일관 유지하기 위함. 값 없으면 nbsp 로 한 줄 자리만
+          차지하고 시각상 비어 보임 (color: var(--color-muted) 라 nbsp 안 보임).
+          aria-hidden 으로 스크린리더에 빈 paragraph 노출 차단.
+        */}
+        <p
+          className={styles.description}
+          aria-hidden={description ? undefined : true}
+        >
+          {description || ' '}
+        </p>
         {caption && <p className={styles.caption}>{caption}</p>}
       </div>
       {topRightAction && (
