@@ -207,7 +207,7 @@ function RegionContentPanel({
           tone={tone}
           regionLabel={label}
           name={i.title}
-          description={i.summary}
+          description={i.description}
         />
       )}
       emptyState={<p className={styles.empty}>{t(emptyKey)}</p>}

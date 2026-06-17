@@ -34,7 +34,7 @@ export const regionContentSeeds = CHUNGBUK_REGIONS.flatMap((r) =>
         type,
         region: r.code,
         title: `${r.ko} ${TYPE_LABEL[type]} ${idx}`,
-        summary: `${r.ko} 의 ${TYPE_LABEL[type]} ${idx}번째 장소`,
+        description: `${r.ko} 의 ${TYPE_LABEL[type]} ${idx}번째 장소`,
         imageUrl: undefined as string | undefined,
       };
     }),
