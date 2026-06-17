@@ -3,7 +3,7 @@
 Figma MCP 를 통해 디자인을 Claude Code 가 직접 코드로 반영하는 환경 셋업.
 
 > SoT: 디자이너 측 Tokens Studio variable 명과 본 문서의 매핑 표.
-> 마지막 갱신: 2026-06-14
+> 마지막 갱신: 2026-06-17 (project MCP config 위치 `.claude/mcp.json` → `.mcp.json` 정정 + args 방식 권장)
 
 ---
 
@@ -69,52 +69,54 @@ Claude 가 Figma API 로 디자인 정보 fetch 하려면 token 이 필요.
 
 Claude Code 가 시작할 때 읽는 설정 파일에 figma server 등록.
 
-> **팀원 합류 시 가장 빠른 길** — `.claude/mcp.json.example` 이 repo 에 commit 되어 있음. 복사 + token 만 교체:
+> **팀원 합류 시 가장 빠른 길** — `.mcp.json.example` 이 repo 에 commit 되어 있음. 복사 + token 만 교체:
 >
 > ```powershell
-> Copy-Item .claude\mcp.json.example .claude\mcp.json
-> # 그 다음 mcp.json 의 REPLACE_WITH_YOUR_FIGMA_TOKEN 자리를 본인 token 으로 교체
+> Copy-Item .mcp.json.example .mcp.json
+> # 그 다음 .mcp.json 의 REPLACE_WITH_YOUR_FIGMA_TOKEN 자리를 본인 token 으로 교체
 > ```
 >
-> 실제 `mcp.json` 은 `.gitignore` 가 무시 (token 노출 0). example 만 트래킹.
+> 실제 `.mcp.json` 은 `.gitignore` 가 무시 (token 노출 0). `.mcp.json.example` 만 트래킹.
 
 **위치 두 가지 — 본인 상황에 맞춰 선택**:
 
-| 위치                                                                         | 적용 범위          | 추천 케이스                           |
-| ---------------------------------------------------------------------------- | ------------------ | ------------------------------------- |
-| User-level — `~/.claude/mcp.json` (Windows `%USERPROFILE%\.claude\mcp.json`) | 모든 프로젝트 공통 | 다른 프로젝트에서도 figma 쓸 예정     |
-| Project-level — `.claude/mcp.json` (repo 안)                                 | 본 프로젝트만      | 이 프로젝트만 figma 사용 — token 격리 |
+| 위치                                                                 | 적용 범위          | 추천 케이스                           |
+| -------------------------------------------------------------------- | ------------------ | ------------------------------------- |
+| User-level — `~/.claude.json` (Windows `%USERPROFILE%\.claude.json`) | 모든 프로젝트 공통 | 다른 프로젝트에서도 figma 쓸 예정     |
+| **Project-level — `.mcp.json` (repo root, 점 시작)**                 | 본 프로젝트만      | 이 프로젝트만 figma 사용 — token 격리 |
 
-Project-level 이 user-level 을 override. 본 프로젝트는 `.gitignore` 에 `.claude/` 등록되어 있어 project-level 도 token commit 위험 0.
+⚠ **Project-level 경로는 `.mcp.json` (프로젝트 루트, 점 시작)** 입니다 — `.claude/mcp.json` 이 아닙니다. Claude Code 가 실제 읽는 위치는 `.mcp.json`. 이전 가이드는 `.claude/mcp.json` 으로 안내했지만 그 파일은 Claude Code 가 안 읽음 (이번에 정정).
+
+Project-level 이 user-level 을 override. 본 프로젝트는 `.gitignore` 에 `.mcp.json` 등록되어 있어 token commit 위험 0.
 
 **파일 위치 — User-level** (Windows):
 
 ```
-C:\Users\{본인계정}\.claude\mcp.json
+C:\Users\{본인계정}\.claude.json
 ```
 
 **파일 위치 — User-level** (Mac/Linux):
 
 ```
-~/.claude/mcp.json
+~/.claude.json
 ```
 
 **파일 위치 — Project-level** (어느 OS 든):
 
 ```
-<repo>/.claude/mcp.json
+<repo>/.mcp.json
 ```
 
-**방법 A — 파일 탐색기**:
+**방법 A — 파일 탐색기** (project-level 권장):
 
-1. 탐색기 주소창에 `%USERPROFILE%\.claude` 입력 → 폴더 열림 (없으면 새로 만들기)
-2. 폴더 안에서 **새로 만들기 → 텍스트 문서** → 이름 `mcp.json` (확장자 `.txt` 아니라 `.json` 확실히)
+1. 탐색기에서 프로젝트 루트로 이동
+2. **새로 만들기 → 텍스트 문서** → 이름 `.mcp.json` (확장자 `.txt` 아니라 `.json` + 앞에 점 확실히)
 3. 메모장으로 열기
 
 **방법 B — PowerShell 한 줄로 메모장 열기**:
 
 ```powershell
-notepad $env:USERPROFILE\.claude\mcp.json
+notepad .mcp.json
 ```
 
 파일 없다고 묻는 창 나오면 "예" 눌러 새로 생성.
@@ -123,51 +125,65 @@ notepad $env:USERPROFILE\.claude\mcp.json
 
 token 만 본인 값으로 바꿔서 그대로 실행. 폴더 없으면 자동 생성. 이미 있으면 덮어씌우니 다른 server 등록되어 있으면 사용 X.
 
-**User-level (`%USERPROFILE%\.claude\mcp.json`) — 모든 프로젝트 공통**:
+**User-level (`%USERPROFILE%\.claude.json`) — 모든 프로젝트 공통**:
 
 ```powershell
 $token = "figd_여기에본인token"
-$dir = "$env:USERPROFILE\.claude"
-if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
 @"
 {
   "mcpServers": {
     "figma": {
       "command": "npx",
-      "args": ["-y", "figma-developer-mcp", "--stdio"],
-      "env": {
-        "FIGMA_API_KEY": "$token"
-      }
+      "args": ["-y", "figma-developer-mcp", "--stdio", "--figma-api-key", "$token"]
     }
   }
 }
-"@ | Out-File -Encoding utf8 "$dir\mcp.json"
+"@ | Out-File -Encoding utf8 "$env:USERPROFILE\.claude.json"
 ```
 
-**Project-level (`<repo>/.claude/mcp.json`) — 본 프로젝트 한정**:
+**Project-level (`<repo>/.mcp.json`) — 본 프로젝트 한정**:
 
 ```powershell
 # 현재 프로젝트 root 에서 실행
 $token = "figd_여기에본인token"
-if (-not (Test-Path ".claude")) { New-Item -ItemType Directory ".claude" -Force | Out-Null }
 @"
 {
   "mcpServers": {
     "figma": {
       "command": "npx",
-      "args": ["-y", "figma-developer-mcp", "--stdio"],
-      "env": {
-        "FIGMA_API_KEY": "$token"
-      }
+      "args": ["-y", "figma-developer-mcp", "--stdio", "--figma-api-key", "$token"]
     }
   }
 }
-"@ | Out-File -Encoding utf8 ".claude\mcp.json"
+"@ | Out-File -Encoding utf8 ".mcp.json"
 ```
+
+⚠ **`env` 블록 대신 `--figma-api-key` CLI flag 사용** — env 블록 방식은 Claude Code 가 좀비 stdio process 를 재사용할 때 새 token 이 자식 process 에 전달 안 되는 케이스 있음 (2026-06-17 디버깅에서 확인). args 의 flag 는 process command line 에 박혀 일관 동작. 새 팀원 합류 흐름도 `.mcp.json.example` 의 args 방식 따름.
 
 실행 후 메모장으로 열어 token 정상 들어갔는지 확인 권장.
 
 **파일 내용** (그대로 복사 + token 만 본인 값으로):
+
+```json
+{
+  "mcpServers": {
+    "figma": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "figma-developer-mcp",
+        "--stdio",
+        "--figma-api-key",
+        "figd_여기에복사한token붙여넣기"
+      ]
+    }
+  }
+}
+```
+
+⚠ env 블록 방식 (이전 가이드 안내) 도 동작하긴 하지만 stdio fork 시 좀비 process 가 옛 env 들고 살아남으면 새 token 이 안 박혀 403 발생. args flag 가 더 안전.
+
+(다음 섹션 참고용 옛 env 형식):
 
 ```json
 {
@@ -219,13 +235,17 @@ if (-not (Test-Path ".claude")) { New-Item -ItemType Directory ".claude" -Force 
 
 ### Step 0-7. Troubleshooting
 
-| 증상                                            | 원인                              | 해결                                                                                                          |
-| ----------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `/mcp` 에 figma 안 보임                         | mcp.json 경로 잘못                | 경로 `%USERPROFILE%\.claude\mcp.json` 정확한지 / 파일명 `mcp.json.txt` 아닌지 확인                            |
-| `/mcp` 에 figma 가 `failed`                     | token 잘못 / npx 첫 download 실패 | token 끝에 공백 들어가지 않았는지 / 인터넷 연결 / `npx -y figma-developer-mcp --help` 직접 실행해서 에러 확인 |
-| Claude 가 figma tool 못 찾음                    | Claude Code 재시작 안 됨          | 작업 표시줄에서 완전 종료 후 다시 실행                                                                        |
-| Figma URL 으로 fetch 했는데 "permission denied" | View 권한 없음                    | 디자이너에게 link share 다시 요청 ("Anyone with the link can view")                                           |
-| token 분실                                      | 보안 정책상 재발급만 가능         | Step 0-3 다시 + 옛 token 은 Settings 에서 **Revoke**                                                          |
+| 증상                                            | 원인                                          | 해결                                                                                                                                                                                                                                                                                  |
+| ----------------------------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/mcp` 에 figma 안 보임                         | mcp.json 경로 잘못                            | 경로 확인 — project-level 은 `<repo>/.mcp.json` (점 시작) / user-level 은 `~/.claude.json`. `.claude/mcp.json` 은 Claude Code 가 안 읽음                                                                                                                                              |
+| `/mcp` 에 figma 가 `failed`                     | token 잘못 / npx 첫 download 실패             | token 끝에 공백 들어가지 않았는지 / 인터넷 연결 / `npx -y figma-developer-mcp --help` 직접 실행해서 에러 확인                                                                                                                                                                         |
+| Claude 가 figma tool 못 찾음                    | Claude Code 재시작 안 됨                      | CLI 면 `/exit` 후 `claude` 다시 실행. VSCode 면 창 완전 종료 후 재실행                                                                                                                                                                                                                |
+| **fetch 마다 403 `Invalid token`**              | 좀비 stdio process 가 옛 env/token            | (a) `Get-CimInstance Win32_Process -Filter "Name='node.exe'"` 로 figma-mcp 좀비 확인 후 `Stop-Process -Force`. (b) `.mcp.json` 의 token 방식을 `env` → `--figma-api-key` flag 로 전환. (c) `/v1/me` 로 token 자체 검증: `curl -H "X-Figma-Token: $token" https://api.figma.com/v1/me` |
+| **fetch 마다 같은 token 인데 직접 호출은 200**  | mcp.json 의 env 가 자식 process 에 전달 안 됨 | args 방식 (`--figma-api-key` flag) 으로 전환 — process command line 에 박혀 일관 전달                                                                                                                                                                                                 |
+| **`/mcp` reconnect 해도 같은 증상**             | 좀비 process 가 옛 args 로 살아남음           | reconnect 는 process 재시작 X. CLI `/exit` 후 `claude` 재실행 또는 좀비 PID kill                                                                                                                                                                                                      |
+| Figma URL 으로 fetch 했는데 "permission denied" | View 권한 없음                                | 디자이너에게 link share 다시 요청 ("Anyone with the link can view")                                                                                                                                                                                                                   |
+| token 분실                                      | 보안 정책상 재발급만 가능                     | Step 0-3 다시 + 옛 token 은 Settings 에서 **Revoke**                                                                                                                                                                                                                                  |
+| PAT 발급했는데 `/v1/me` 도 403                  | scope 체크 누락                               | 2024 말부터 PAT 발급 시 scope checkbox 가 default unchecked. **File content: Read-only + Current user** 반드시 체크 후 재발급                                                                                                                                                         |
 
 ---
 
@@ -247,41 +267,40 @@ repo 가 이미 셋업되어 있어서 새 팀원이 합류해도 처음부터 m
 
 **저장소 정책** (이미 적용됨):
 
-| 파일                          | git 상태            | 역할                                                               |
-| ----------------------------- | ------------------- | ------------------------------------------------------------------ |
-| `.claude/mcp.json.example`    | tracked (commit 됨) | 템플릿. `FIGMA_API_KEY: REPLACE_WITH_YOUR_FIGMA_TOKEN` placeholder |
-| `.claude/mcp.json`            | **gitignored**      | 본인 token 들어간 실제 설정. 절대 commit 안 됨                     |
-| `.claude/settings.local.json` | **gitignored**      | Claude Code local 설정                                             |
+| 파일                          | git 상태            | 역할                                                                             |
+| ----------------------------- | ------------------- | -------------------------------------------------------------------------------- |
+| `.mcp.json.example`           | tracked (commit 됨) | 템플릿. args 방식 + `REPLACE_WITH_YOUR_FIGMA_TOKEN` placeholder                  |
+| `.mcp.json`                   | **gitignored**      | Claude Code 가 실제 읽는 project MCP config. 본인 token 박힘 — 절대 commit 안 됨 |
+| `.claude/settings.local.json` | **gitignored**      | Claude Code local 설정 (permissions / enabledMcpjsonServers 등)                  |
 
-`.gitignore` 가 `.claude/*` + `!.claude/mcp.json.example` 패턴으로 정밀화 — `.env.example` 정책과 동일.
+`.gitignore` 가 `.claude/*` + `.mcp.json` + `!.mcp.json.example` 패턴 — `.env.example` 정책과 동일.
 
 **새 팀원 합류 흐름** (Windows):
 
 ```powershell
 # 1. repo clone 후 프로젝트 root 에서
-Copy-Item .claude\mcp.json.example .claude\mcp.json
+Copy-Item .mcp.json.example .mcp.json
 
 # 2. Figma 가입 + Step 0-3 따라 token 발급
 
-# 3. mcp.json 의 placeholder 한 줄 교체
-notepad .claude\mcp.json
-#   "FIGMA_API_KEY": "REPLACE_WITH_YOUR_FIGMA_TOKEN"
-#                    ↑ figd_본인token 으로 교체 → 저장
+# 3. .mcp.json 의 placeholder 한 줄 교체
+notepad .mcp.json
+#   "REPLACE_WITH_YOUR_FIGMA_TOKEN" → figd_본인token 으로 교체 → 저장
 
-# 4. Claude Code 재시작 + /mcp 확인
+# 4. Claude Code 재시작 (CLI: /exit 후 claude 재실행, VSCode: 창 재시작) + /mcp 로 figma 확인
 ```
 
 **Mac / Linux**:
 
 ```bash
-cp .claude/mcp.json.example .claude/mcp.json
+cp .mcp.json.example .mcp.json
 # 그 다음 에디터로 placeholder 교체
 ```
 
 PowerShell 한 줄 sed:
 
 ```powershell
-(Get-Content .claude\mcp.json) -replace 'REPLACE_WITH_YOUR_FIGMA_TOKEN', 'figd_본인token여기' | Set-Content -Encoding utf8 .claude\mcp.json
+(Get-Content .mcp.json) -replace 'REPLACE_WITH_YOUR_FIGMA_TOKEN', 'figd_본인token여기' | Set-Content -Encoding utf8 .mcp.json
 ```
 
 ⚠ Token 은 **본인 발급분만** 사용. 팀원 간 token 공유 절대 X. 각자 본인 Figma 계정 + 본인 token = 본인 mcp.json. Figma 측 audit log 가 token 별 access 추적이라 공유 시 누가 뭘 했는지 추적 불가.

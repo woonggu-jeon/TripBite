@@ -1,0 +1,15 @@
+{
+  "_comment": "Claude Code MCP 설정 — 이 파일을 .mcp.json 으로 복사 + REPLACE_WITH_YOUR_FIGMA_TOKEN 자리에 본인 PAT 붙여넣기. 실제 .mcp.json 은 .gitignore 에 의해 commit 안 됨. 자세히: docs/FIGMA_INTEGRATION.md §0-4. args 방식 사용 이유 — env 블록은 npx stdio fork 시 자식 process 에 전달이 깨지는 케이스 있음 (Claude Code 좀비 process 재사용 등). --figma-api-key flag 는 process command line 에 박혀 일관 동작.",
+  "mcpServers": {
+    "figma": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "figma-developer-mcp",
+        "--stdio",
+        "--figma-api-key",
+        "REPLACE_WITH_YOUR_FIGMA_TOKEN"
+      ]
+    }
+  }
+}

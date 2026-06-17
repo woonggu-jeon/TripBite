@@ -188,8 +188,8 @@ describe('useSendLetter', () => {
     });
     await act(async () => {
       await result.current.mutateAsync({
-        recipientUsername: 'friend',
         body: '잘있어',
+        location: { label: '청주시 어딘가', regionCode: 'cheongju' },
       });
     });
 

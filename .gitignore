@@ -4,12 +4,10 @@ node_modules/
 .pnp.js
 .yarn/install-state.gz
 
-# Claude Code local state — local settings + actual mcp.json (token 포함) 무시.
-# mcp.json.example 만 트래킹 — 팀원이 복사해서 본인 token 으로 채워 넣음.
+# Claude Code local state.
+# Project-level MCP config 는 `.mcp.json` (프로젝트 루트) — Claude Code 표준.
+# `.mcp.json` 자체는 token 포함이라 무시, `.mcp.json.example` 만 트래킹.
 .claude/*
-!.claude/mcp.json.example
-# Claude Code project-level MCP config (project root) — token 포함이라 무시.
-# .mcp.json.example (있으면) 만 트래킹.
 .mcp.json
 !.mcp.json.example
 

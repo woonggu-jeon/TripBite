@@ -31,15 +31,17 @@ const {
 
 const apiUrl = mockSeeds.apiUrl;
 
+// UserDto: id/username/nickname/email/isOnboarded/homeRegion/avatarUrl(nullable)/travelType(nullable).
+// SignupDto 의 name/phone/birthDate 와 다름 (가입 입력 vs 사용자 응답).
 const mockUser = {
   id: 'u-1',
   username: 'tester',
-  name: '여행자',
   nickname: '여행자',
   email: 't@e.st',
-  phone: '01000000000',
-  birthDate: '1990-01-01',
   isOnboarded: true,
+  homeRegion: 'cheongju',
+  avatarUrl: null,
+  travelType: null,
 } as const;
 
 /** location.assign 만 spy — happy-dom URL parser 보존. */
@@ -160,7 +162,6 @@ describe('useSignup', () => {
     await result.current.mutateAsync({
       username: 'tester',
       password: '1234567890',
-      passwordConfirm: '1234567890',
       name: '여행자',
       email: 't@e.st',
       birthDate: '1990-01-01',
@@ -293,7 +294,7 @@ describe('useResetPassword', () => {
     const { result } = renderHookWithProviders(() => useResetPassword());
     await result.current.mutateAsync({
       token: 't-1',
-      newPassword: 'newpass1234',
+      password: 'newpass1234',
     });
 
     await waitFor(() => {

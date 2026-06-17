@@ -26,11 +26,10 @@ function makeSaved(id: string): SavedTournamentDto {
       name: `여행지${id}`,
       region: 'cheongju',
       category: 'attraction',
-      imageUrl: null,
     },
     savedAt: '2026-06-14T00:00:00Z',
     luckyColor: '#FBBF24',
-  } as SavedTournamentDto;
+  };
 }
 
 describe('useSavedTournaments / useTournamentHistory — enabled: isAuthenticated 가드', () => {
@@ -80,14 +79,9 @@ describe('useSaveTournament', () => {
     const { result } = renderHookWithProviders(() => useSaveTournament(), {
       queryClient: qc,
     });
+    // useSaveTournament 은 winnerId (string) 만 받음 — mypage saveToMypage 매핑.
     await act(async () => {
-      await result.current.mutateAsync({
-        winnerId: 'd-1',
-        runnerUpId: 'd-2',
-        matchesPlayed: 3,
-        category: 'attraction',
-        season: 'spring',
-      });
+      await result.current.mutateAsync('d-1');
     });
 
     expect(invalidateSpy).toHaveBeenCalledWith({
@@ -192,8 +186,7 @@ describe('useRecordTournament', () => {
         winnerId: 'd-1',
         runnerUpId: null,
         matchesPlayed: 3,
-        category: 'attraction',
-        season: 'spring',
+        tournamentSize: 8,
       });
     });
 
