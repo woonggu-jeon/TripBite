@@ -17,15 +17,13 @@ import { shuffleQuizOptions } from '@/features/ranking/utils/shuffle-options';
 import type { QuizOptionDto } from '@/api/generated/schemas';
 import styles from './TravelTypeQuiz.module.scss';
 
-const FINISHING_MS = 1200;
-
 /**
  * 여행 유형 테스트 진행 화면.
  *
  * 흐름:
  *   1) questions phase — 한 문항씩 노출, 옵션 선택 즉시 다음
- *   2) 마지막 답변 → submit.mutate → finishing phase
- *   3) finishing phase — celebration UI + 1.2s 후 /quiz/result 자동 이동
+ *   2) 마지막 답변 → submit.mutate → submitting phase (단일)
+ *   3) onSuccess 즉시 /quiz/result 이동 — 인위적 지연 없음
  *
  * 진행 표시:
  *   - 토너먼트 Bracket 와 동일한 segment 점선 형태
@@ -46,8 +44,6 @@ export function TravelTypeQuiz() {
 
   const [stepIdx, setStepIdx] = useState(0);
   const [answers, setAnswers] = useState<TravelTypeAnswer[]>([]);
-  // submit 성공 후 짧은 축하 phase → 결과 이동. 응답 직후 즉시 이동하지 않음.
-  const [finishing, setFinishing] = useState(false);
   // 옵션 순서 셔플 — 위치 편향 제거. quiz 세션 동안 stable (재셔플 X).
   // SSR/CSR mismatch 회피 위해 useEffect 안에서만 Math.random 사용.
   const [shuffledOptions, setShuffledOptions] = useState<
@@ -57,17 +53,6 @@ export function TravelTypeQuiz() {
     if (!quiz?.questions) return;
     setShuffledOptions(shuffleQuizOptions(quiz.questions));
   }, [quiz]);
-
-  // finishing 진입 시 router.replace 까지 타이머 — reduced-motion 시 단축
-  useEffect(() => {
-    if (!finishing) return;
-    const reduced =
-      typeof window !== 'undefined' &&
-      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    const delay = reduced ? 400 : FINISHING_MS;
-    const id = window.setTimeout(() => router.replace('/quiz/result'), delay);
-    return () => window.clearTimeout(id);
-  }, [finishing, router]);
 
   if (isLoading) {
     return (
@@ -97,17 +82,15 @@ export function TravelTypeQuiz() {
     );
   }
 
-  // submit 진행 중 or finishing — 결과 만드는 중 + celebration
-  if (submit.isPending || finishing) {
+  // submit 진행 중 — 결과 만드는 중 (응답 즉시 router.replace 라 단일 phase)
+  if (submit.isPending) {
     return (
       <div className={styles.finishing} role="status" aria-live="polite">
         <div className={styles.finishingGlow} aria-hidden />
         <div className={styles.finishingEmoji} aria-hidden>
-          {finishing ? '🎉' : '✨'}
+          ✨
         </div>
-        <p className={styles.finishingTitle}>
-          {finishing ? t('finishing.done') : t('finishing.making')}
-        </p>
+        <p className={styles.finishingTitle}>{t('finishing.making')}</p>
         <p className={styles.finishingHint}>{t('finishing.moving')}</p>
       </div>
     );
@@ -139,10 +122,10 @@ export function TravelTypeQuiz() {
       setStepIdx(stepIdx + 1);
       return;
     }
-    // 마지막 문항 — submit + finishing phase
+    // 마지막 문항 — submit 후 응답 즉시 result 이동
     haptic.success();
     submit.mutate(next, {
-      onSuccess: () => setFinishing(true),
+      onSuccess: () => router.replace('/quiz/result'),
     });
   };
 
