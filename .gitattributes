@@ -1,0 +1,31 @@
+# Line ending 일관화 — Windows core.autocrlf=true 환경에서도 안정.
+# 효과:
+#   - git index 안 모든 텍스트는 LF (저장 형식 통일)
+#   - working tree 도 LF 강제 (autocrlf 무관)
+#   - orval generate 가 LF 로 출력 → modified 가짜 표시 0
+#
+# Windows-specific 스크립트(.bat/.cmd/.ps1)는 CRLF 유지가 안전.
+
+* text=auto eol=lf
+
+# Windows-specific script — CRLF 유지 (해석기 호환)
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.ps1   text eol=crlf
+
+# Binary — diff 안 함, line ending 변환 안 함
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.webp  binary
+*.svg   text
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary
+*.eot   binary
+*.pdf   binary
+*.zip   binary
+*.gz    binary
