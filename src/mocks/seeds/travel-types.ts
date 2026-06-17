@@ -58,13 +58,15 @@ export const travelTypeQuizSeed: TravelTypeQuiz = {
       ],
     },
     {
+      // Q5 — Q3(사진) 와 중복되던 옛 "사진첩" 축 폐기, "소비" 축으로 교체.
+      // BE 가 시드 갱신 시 GET /quiz 응답 자동 동기. mock 도 일관성 위해 미리 반영.
       id: 'q5',
-      text: '여행 사진첩을 펼치면 가장 많은 사진은?',
+      text: '여행지에서 지갑이 가장 잘 열리는 순간은?',
       options: [
-        { id: 'q5-a', text: '액티비티 (서핑·트레킹)' },
-        { id: 'q5-b', text: '유적·미술관 내부' },
-        { id: 'q5-c', text: '풍경·셀카' },
-        { id: 'q5-d', text: '음식 클로즈업' },
+        { id: 'q5-a', text: '액티비티·체험을 예약할 때' },
+        { id: 'q5-b', text: '입장권·가이드 투어 비용' },
+        { id: 'q5-c', text: '분위기 좋은 숙소나 카페' },
+        { id: 'q5-d', text: '현지 맛집·먹거리' },
       ],
     },
   ],
