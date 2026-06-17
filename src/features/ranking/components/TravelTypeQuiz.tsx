@@ -13,6 +13,8 @@ import {
   useTravelTypeQuiz,
 } from '@/features/ranking/hooks/use-ranking';
 import type { TravelTypeAnswer } from '@/features/ranking/types';
+import { shuffleQuizOptions } from '@/features/ranking/utils/shuffle-options';
+import type { QuizOptionDto } from '@/api/generated/schemas';
 import styles from './TravelTypeQuiz.module.scss';
 
 const FINISHING_MS = 1200;
@@ -46,6 +48,15 @@ export function TravelTypeQuiz() {
   const [answers, setAnswers] = useState<TravelTypeAnswer[]>([]);
   // submit 성공 후 짧은 축하 phase → 결과 이동. 응답 직후 즉시 이동하지 않음.
   const [finishing, setFinishing] = useState(false);
+  // 옵션 순서 셔플 — 위치 편향 제거. quiz 세션 동안 stable (재셔플 X).
+  // SSR/CSR mismatch 회피 위해 useEffect 안에서만 Math.random 사용.
+  const [shuffledOptions, setShuffledOptions] = useState<
+    Record<string, QuizOptionDto[]>
+  >({});
+  useEffect(() => {
+    if (!quiz?.questions) return;
+    setShuffledOptions(shuffleQuizOptions(quiz.questions));
+  }, [quiz]);
 
   // finishing 진입 시 router.replace 까지 타이머 — reduced-motion 시 단축
   useEffect(() => {
@@ -188,7 +199,7 @@ export function TravelTypeQuiz() {
       <h2 className={styles.question}>{current.text}</h2>
 
       <RadioGroup label={current.text} className={styles.options}>
-        {current.options.map((opt) => {
+        {(shuffledOptions[current.id] ?? current.options).map((opt) => {
           const active = currentAnswer?.optionId === opt.id;
           return (
             <RadioOption
