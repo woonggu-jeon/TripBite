@@ -23,7 +23,7 @@ interface DestinationCardProps {
   /** 메인 제목 */
   name: string;
   /**
-   * 여행지명 하단 한 줄 설명 (RegionContentDto.summary 매핑).
+   * 여행지명 하단 한 줄 설명 (RegionContentDto.description 매핑).
    * 한 줄 넘으면 ellipsis. 미지정 시 영역 자체 미노출 (카드 높이 그대로).
    */
   description?: string;
