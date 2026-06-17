@@ -103,7 +103,7 @@ src/
 [인증 완료]
   /                        홈 (대시보드)
   /ranking                 여행지 랭킹 + Top5 + 시군
-  /region  /region/[code]  시군 그리드 + 상세 (관광/축제/체험)
+  /region  /region/[code]  시군 그리드 + 상세 (4탭: 전체/관광/축제/체험)
   /destination/[id]        여행지 상세 (Hero + WinnerDetailPanel)
   /tournament  /play  /result   토너먼트
   /letter (탭 4)  /compose  /sent  /[id]   다섯글자 편지

@@ -299,7 +299,7 @@ import { cardClasses } from '@/components/ui';
 
 ### DestinationCard — 여행지 카드 통일
 
-FestivalCarousel / RelatedDestinations / SavedTournaments tile 이 모두 동일 카드 사용.
+FestivalCarousel / RelatedDestinations / SavedTournaments tile / RegionDetailTabs (4탭 통합) 모두 동일 카드 사용.
 
 ```tsx
 import { DestinationCard } from '@/components/ui';
@@ -312,6 +312,7 @@ import { categoryEmoji } from '@/constants/emoji-map';
   tone={toneFor(d.region)} // red / amber / green / blue / violet
   regionLabel={regionKo}
   name={d.name}
+  description={d.summary} // 옵션 — 여행지명 하단 한 줄 ellipsis (RegionContentDto.summary 매핑)
   caption="10/14 — 10/16" // 옵션 — 축제 기간 등
   accentDot={luckyColor} // 옵션 — luckyColor dot 오버레이
 />;
@@ -320,6 +321,7 @@ import { categoryEmoji } from '@/constants/emoji-map';
 - region 톤은 `constants/region-tone.ts` 의 시군 → tone 매핑
 - emoji 매핑은 `constants/emoji-map.ts` 의 `categoryEmoji()` / `seasonEmoji()`
 - 360/480/desktop 별 aspect-ratio + emoji 사이즈 자동 분기
+- **`description`** — 여행지명 하단 한 줄 (`white-space: nowrap + text-overflow: ellipsis`). 미지정 시 영역 미노출, 지정 시 한 줄 초과분 잘림. caption 과 별도 (`caption` 은 날짜/기간 등 정형 보조 텍스트).
 
 ### TextField — 폼 텍스트 입력 (label + input + error + a11y)
 
@@ -436,7 +438,7 @@ import { TabList, Tab, TabPanel } from '@/components/ui';
 - `onPrefetch` — `pointerdown` + `focus` 둘 다 매핑 (모바일 터치 다운 ~ 클릭 발사 100~250ms 흡수 + 키보드 사용자도).
 - `mounted={false}` → DOM 자체 없음 (lazy). `mounted=true` + `selected=false` → `hidden`.
 - id 페이지 내 unique 면 OK (`tab-${id}` / `panel-${id}` 자동 매핑).
-- 사용처 2건 흡수 (`LetterIndex` 4탭+카운트 / `RegionDetailTabs` 카테고리). 디자인 교체 시 호출 측 SCSS 토큰만 수정.
+- 사용처 2건 흡수 (`LetterIndex` 4탭+카운트 / `RegionDetailTabs` 4탭 — 전체/관광지/축제/체험). 디자인 교체 시 호출 측 SCSS 토큰만 수정.
 
 ### Dialog — 모달 (backdrop + ESC + focus trap + a11y)
 
