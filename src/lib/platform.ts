@@ -37,8 +37,11 @@ export function isAndroid(): boolean {
  */
 export function isStandalone(): boolean {
   if (typeof window === 'undefined') return false;
-  const mediaStandalone = window.matchMedia?.('(display-mode: standalone)').matches;
-  const iosStandalone = (navigator as { standalone?: boolean }).standalone === true;
+  const mediaStandalone = window.matchMedia?.(
+    '(display-mode: standalone)',
+  ).matches;
+  const iosStandalone =
+    (navigator as { standalone?: boolean }).standalone === true;
   return Boolean(mediaStandalone || iosStandalone);
 }
 

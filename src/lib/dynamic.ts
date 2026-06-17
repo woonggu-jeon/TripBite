@@ -21,7 +21,9 @@ import type { ComponentType } from 'react';
  *   동적 로드가 필요한 컴포넌트는 'use client' 파일에서 wrap.
  */
 
-type Loader<P> = () => Promise<ComponentType<P> | { default: ComponentType<P> }>;
+type Loader<P> = () => Promise<
+  ComponentType<P> | { default: ComponentType<P> }
+>;
 
 export function clientOnly<P>(
   loader: Loader<P>,

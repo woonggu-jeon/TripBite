@@ -16,7 +16,11 @@ import { useUIStore, type ToastType } from '@/stores/ui-store';
  */
 type ToastOptions = { duration?: number };
 
-function show(type: ToastType, message: string, options?: ToastOptions): string {
+function show(
+  type: ToastType,
+  message: string,
+  options?: ToastOptions,
+): string {
   return useUIStore.getState().pushToast({
     type,
     message,
@@ -25,9 +29,13 @@ function show(type: ToastType, message: string, options?: ToastOptions): string 
 }
 
 export const toast = {
-  success: (message: string, options?: ToastOptions) => show('success', message, options),
-  error: (message: string, options?: ToastOptions) => show('error', message, options),
-  info: (message: string, options?: ToastOptions) => show('info', message, options),
-  warning: (message: string, options?: ToastOptions) => show('warning', message, options),
+  success: (message: string, options?: ToastOptions) =>
+    show('success', message, options),
+  error: (message: string, options?: ToastOptions) =>
+    show('error', message, options),
+  info: (message: string, options?: ToastOptions) =>
+    show('info', message, options),
+  warning: (message: string, options?: ToastOptions) =>
+    show('warning', message, options),
   dismiss: (id: string) => useUIStore.getState().dismissToast(id),
 };

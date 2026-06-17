@@ -21,10 +21,12 @@ import { useEffect, useState } from 'react';
  */
 export function useServiceWorkerUpdate() {
   const [hasUpdate, setHasUpdate] = useState(false);
-  const [registration, setRegistration] = useState<ServiceWorkerRegistration | null>(null);
+  const [registration, setRegistration] =
+    useState<ServiceWorkerRegistration | null>(null);
 
   useEffect(() => {
-    if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return;
+    if (typeof navigator === 'undefined' || !('serviceWorker' in navigator))
+      return;
 
     let cancelled = false;
 
@@ -40,7 +42,10 @@ export function useServiceWorkerUpdate() {
         const installing = reg.installing;
         if (!installing) return;
         installing.addEventListener('statechange', () => {
-          if (installing.state === 'installed' && navigator.serviceWorker.controller) {
+          if (
+            installing.state === 'installed' &&
+            navigator.serviceWorker.controller
+          ) {
             setHasUpdate(true);
           }
         });
@@ -54,11 +59,17 @@ export function useServiceWorkerUpdate() {
       refreshing = true;
       window.location.reload();
     }
-    navigator.serviceWorker.addEventListener('controllerchange', onControllerChange);
+    navigator.serviceWorker.addEventListener(
+      'controllerchange',
+      onControllerChange,
+    );
 
     return () => {
       cancelled = true;
-      navigator.serviceWorker.removeEventListener('controllerchange', onControllerChange);
+      navigator.serviceWorker.removeEventListener(
+        'controllerchange',
+        onControllerChange,
+      );
     };
   }, []);
 

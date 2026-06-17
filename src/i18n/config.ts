@@ -24,5 +24,7 @@ export const LOCALE_COOKIE = 'NEXT_LOCALE';
 
 /** 타입 가드 */
 export function isLocale(value: unknown): value is Locale {
-  return typeof value === 'string' && (locales as readonly string[]).includes(value);
+  return (
+    typeof value === 'string' && (locales as readonly string[]).includes(value)
+  );
 }

@@ -5,10 +5,9 @@ import { clientOnly } from '@/lib/dynamic';
 import { ChartSkeleton } from './ChartSkeleton';
 import type { PieChartProps } from './PieChartImpl';
 
-const PieChartLazy = clientOnly<PieChartProps>(
-  () => import('./PieChartImpl'),
-  { loading: () => <ChartSkeleton /> },
-);
+const PieChartLazy = clientOnly<PieChartProps>(() => import('./PieChartImpl'), {
+  loading: () => <ChartSkeleton />,
+});
 
 export function PieChart(props: PieChartProps) {
   const t = useTranslations('chart');

@@ -16,8 +16,12 @@ export function useOnline() {
     if (typeof navigator === 'undefined') return;
     setOnline(navigator.onLine);
 
-    function up() { setOnline(true); }
-    function down() { setOnline(false); }
+    function up() {
+      setOnline(true);
+    }
+    function down() {
+      setOnline(false);
+    }
     window.addEventListener('online', up);
     window.addEventListener('offline', down);
     return () => {

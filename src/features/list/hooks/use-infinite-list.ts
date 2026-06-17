@@ -20,7 +20,9 @@ export type PageResponse<T> = {
 
 type Options<T> = {
   queryKey: QueryKey;
-  queryFn: (params: { pageParam?: string | number | null }) => Promise<PageResponse<T>>;
+  queryFn: (params: {
+    pageParam?: string | number | null;
+  }) => Promise<PageResponse<T>>;
   /** 캐시 프로파일 선택 (default: 'normal') */
   cache?: CacheProfile;
   enabled?: boolean;

@@ -45,57 +45,59 @@ export function useGeolocation(options: Options = {}) {
   // 동시에 여러 번 호출되는 것 방지
   const inFlight = useRef(false);
 
-  const request = useCallback(
-    (): Promise<Coordinates | null> => {
-      if (typeof navigator === 'undefined' || !navigator.geolocation) {
-        setError({ code: 'unsupported' });
-        return Promise.resolve(null);
-      }
-      if (inFlight.current) return Promise.resolve(position);
-      inFlight.current = true;
-      setIsLoading(true);
-      setError(null);
+  const request = useCallback((): Promise<Coordinates | null> => {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      setError({ code: 'unsupported' });
+      return Promise.resolve(null);
+    }
+    if (inFlight.current) return Promise.resolve(position);
+    inFlight.current = true;
+    setIsLoading(true);
+    setError(null);
 
-      return new Promise((resolve) => {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            const coords: Coordinates = {
-              latitude: pos.coords.latitude,
-              longitude: pos.coords.longitude,
-              accuracy: pos.coords.accuracy,
-            };
-            setPosition(coords);
-            setIsLoading(false);
-            inFlight.current = false;
-            resolve(coords);
-          },
-          (err) => {
-            const mapped: GeolocationError = {
-              code:
-                err.code === err.PERMISSION_DENIED
-                  ? 'permission-denied'
-                  : err.code === err.POSITION_UNAVAILABLE
-                    ? 'unavailable'
-                    : err.code === err.TIMEOUT
-                      ? 'timeout'
-                      : 'unavailable',
-              rawMessage: err.message,
-            };
-            setError(mapped);
-            setIsLoading(false);
-            inFlight.current = false;
-            resolve(null);
-          },
-          {
-            enableHighAccuracy: options.enableHighAccuracy ?? false,
-            timeout: options.timeout ?? 10_000,
-            maximumAge: options.maximumAge ?? 60_000,
-          },
-        );
-      });
-    },
-    [options.enableHighAccuracy, options.maximumAge, options.timeout, position],
-  );
+    return new Promise((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const coords: Coordinates = {
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+            accuracy: pos.coords.accuracy,
+          };
+          setPosition(coords);
+          setIsLoading(false);
+          inFlight.current = false;
+          resolve(coords);
+        },
+        (err) => {
+          const mapped: GeolocationError = {
+            code:
+              err.code === err.PERMISSION_DENIED
+                ? 'permission-denied'
+                : err.code === err.POSITION_UNAVAILABLE
+                  ? 'unavailable'
+                  : err.code === err.TIMEOUT
+                    ? 'timeout'
+                    : 'unavailable',
+            rawMessage: err.message,
+          };
+          setError(mapped);
+          setIsLoading(false);
+          inFlight.current = false;
+          resolve(null);
+        },
+        {
+          enableHighAccuracy: options.enableHighAccuracy ?? false,
+          timeout: options.timeout ?? 10_000,
+          maximumAge: options.maximumAge ?? 60_000,
+        },
+      );
+    });
+  }, [
+    options.enableHighAccuracy,
+    options.maximumAge,
+    options.timeout,
+    position,
+  ]);
 
   return {
     permission: permission satisfies PermissionState,

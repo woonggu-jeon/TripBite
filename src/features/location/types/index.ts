@@ -15,10 +15,10 @@ export type Coordinates = {
 export type PermissionState = 'prompt' | 'granted' | 'denied' | 'unsupported';
 
 export type GeolocationErrorCode =
-  | 'permission-denied'  // 사용자가 거부
-  | 'unavailable'        // 기기/네트워크 문제
-  | 'timeout'            // 시간 초과
-  | 'unsupported';       // 브라우저 미지원
+  | 'permission-denied' // 사용자가 거부
+  | 'unavailable' // 기기/네트워크 문제
+  | 'timeout' // 시간 초과
+  | 'unsupported'; // 브라우저 미지원
 
 export type GeolocationError = {
   code: GeolocationErrorCode;
