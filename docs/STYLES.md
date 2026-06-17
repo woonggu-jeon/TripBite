@@ -302,7 +302,7 @@ import { cardClasses } from '@/components/ui';
 FestivalCarousel / RelatedDestinations / SavedTournaments tile / RegionDetailTabs (4탭 통합) 모두 동일 카드 사용.
 
 ```tsx
-import { DestinationCard } from '@/components/ui';
+import { DestinationCard, DestinationCardSkeleton } from '@/components/ui';
 import { toneFor } from '@/constants/region-tone';
 import { categoryEmoji } from '@/constants/emoji-map';
 
@@ -312,7 +312,7 @@ import { categoryEmoji } from '@/constants/emoji-map';
   tone={toneFor(d.region)} // red / amber / green / blue / violet
   regionLabel={regionKo}
   name={d.name}
-  description={d.summary} // 옵션 — 여행지명 하단 한 줄 ellipsis (RegionContentDto.summary 매핑)
+  description={d.description} // 옵션 — 여행지명 하단 한 줄 ellipsis (RegionContentDto.description 매핑)
   caption="10/14 — 10/16" // 옵션 — 축제 기간 등
   accentDot={luckyColor} // 옵션 — luckyColor dot 오버레이
 />;
@@ -321,7 +321,8 @@ import { categoryEmoji } from '@/constants/emoji-map';
 - region 톤은 `constants/region-tone.ts` 의 시군 → tone 매핑
 - emoji 매핑은 `constants/emoji-map.ts` 의 `categoryEmoji()` / `seasonEmoji()`
 - 360/480/desktop 별 aspect-ratio + emoji 사이즈 자동 분기
-- **`description`** — 여행지명 하단 한 줄 (`white-space: nowrap + text-overflow: ellipsis`). 미지정 시 영역 미노출, 지정 시 한 줄 초과분 잘림. caption 과 별도 (`caption` 은 날짜/기간 등 정형 보조 텍스트).
+- **`description`** — 여행지명 하단 한 줄 (`white-space: nowrap + text-overflow: ellipsis`). prop 유무와 무관하게 **항상 영역 reserve** (값 없으면 nbsp 자리, color: muted 라 시각상 빈 영역). grid 안 카드 높이 일관 보장 + a11y 차원 `aria-hidden` 으로 빈 paragraph 노출 차단. caption 과 별도 (`caption` 은 날짜/기간 등 정형 보조 텍스트).
+- **`DestinationCardSkeleton`** — 카드와 동일한 `.card + .body` 구조 (image aspect-square + region eyebrow + name 3줄 min + description 1줄). InfiniteList 의 `renderSkeleton` prop 으로 전달 시 fetch ↔ 카드 전환 시 CLS 0. RegionDetailTabs 가 사용 예 (`renderSkeleton={() => <DestinationCardSkeleton />}` + `skeletonCount={4}`).
 
 ### TextField — 폼 텍스트 입력 (label + input + error + a11y)
 
