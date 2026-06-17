@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { TrendingUp } from 'lucide-react';
 import { Skeleton } from '@/components/feedback/Skeleton';
+import { MediaThumb } from '@/components/ui';
 import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import { useRegionSummary } from '@/features/region/hooks/use-region';
 import styles from './RegionHero.module.scss';
@@ -27,7 +28,7 @@ const REGION_EMOJI: Record<RegionCode, string> = {
  * 시군 상세 페이지 (/region/[code]) 의 상단 hero.
  *
  * 표시:
- *   - 시군 emoji (대표 특산물 / 풍경)
+ *   - heroImage (TourAPI) 있으면 노출, 없으면 emoji fallback
  *   - 시군명 (ko)
  *   - 설명 (서버 응답 or fallback)
  *   - 인기도 chip (popularity 값 0-100)
@@ -35,7 +36,7 @@ const REGION_EMOJI: Record<RegionCode, string> = {
  * 데이터: `useRegionSummary(code)` → GET /regions/:code/summary.
  * 로딩 시 Skeleton, 실패 시 emoji + 시군명만 (graceful degradation).
  *
- * 디자이너 시안 받으면 emoji → SVG / hero image 로 교체.
+ * heroImage 의 http→https 정규화는 regionApi.getSummary 가 처리.
  */
 export function RegionHero({ code }: { code: RegionCode }) {
   const t = useTranslations('region.hero');
@@ -56,13 +57,20 @@ export function RegionHero({ code }: { code: RegionCode }) {
 
   const description = data?.description ?? t('fallbackDescription', { name });
   const popularity = data?.popularity;
+  const heroImage = data?.heroImage;
 
   return (
     <section className={styles.wrap} aria-label={name}>
       <div className={styles.bg} aria-hidden />
       <div className={styles.content}>
-        <div className={styles.emojiWrap} aria-hidden>
-          <span className={styles.emoji}>{emoji}</span>
+        <div className={styles.thumbWrap} aria-hidden>
+          <MediaThumb
+            src={heroImage}
+            emoji={emoji}
+            sizes="64px"
+            className={styles.thumb}
+            emojiClassName={styles.emoji}
+          />
         </div>
         <div className={styles.body}>
           {/* SubHeader 가 페이지 h1 — Hero 는 h2 로 위계 보존 */}

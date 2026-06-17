@@ -4,7 +4,7 @@ import {
   regionControllerSummaryV1,
 } from '@/api/generated/regions/regions';
 import type { RegionCode } from '@/constants/regions';
-import { normalizeImageField } from '@/lib/secure-image-url';
+import { normalizeImageField, secureImageUrl } from '@/lib/secure-image-url';
 import type {
   DestinationCategory,
   RegionContentDto,
@@ -39,7 +39,15 @@ export type RegionContentFilter = DestinationCategory | 'all';
  *     → { type: ongoing|upcoming|popular, items[] } — BE 가 3단계 폴백 후 결정.
  */
 export const regionApi = {
-  getSummary: (code: RegionCode) => regionControllerSummaryV1(code),
+  // heroImage 는 TourAPI 원본 http URL 일 수 있음 → next.config remotePatterns
+  // (https 만 허용) 통과 위해 https 정규화 (BE 안전망). secure-image-url 의
+  // HTTPS_FORCE_HOSTS 에 tong.visitkorea.or.kr 등록돼 자동 처리.
+  getSummary: async (code: RegionCode) => {
+    const res = await regionControllerSummaryV1(code);
+    return res.heroImage
+      ? { ...res, heroImage: secureImageUrl(res.heroImage) }
+      : res;
+  },
 
   listContents: async (
     code: RegionCode,
