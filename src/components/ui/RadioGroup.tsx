@@ -39,6 +39,12 @@ export interface RadioOptionProps {
    * 남는 케이스에 사용. 기본 false.
    */
   blurOnClick?: boolean;
+  /**
+   * 이미 선택된 옵션 재클릭 시에도 onSelect 호출 허용. 기본 false (idempotent).
+   * 사용: TravelTypeQuiz — progress 점프 후 같은 답으로 다음 단계 진행하는
+   * confirm 시나리오. 일반 라디오 (CategoryFilter / SeasonSelector 등) 는 그대로.
+   */
+  allowReselect?: boolean;
   disabled?: boolean;
   children: ReactNode;
   /** 옵션 자체 aria-label (label 텍스트가 visible 이 아닐 때만). */
@@ -56,14 +62,16 @@ export function RadioOption({
   onSelect,
   className,
   blurOnClick,
+  allowReselect = false,
   disabled = false,
   children,
   'aria-label': ariaLabel,
 }: RadioOptionProps) {
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     if (disabled) return;
-    // 이미 선택된 옵션 재클릭은 idempotent — haptic / onSelect 모두 skip (Tab 과 동일).
-    if (checked) return;
+    // 이미 선택된 옵션 재클릭은 기본 idempotent (Tab 동작과 동일). allowReselect
+    // opt-in 시엔 onSelect 다시 호출 — quiz progress 점프 후 confirm 등.
+    if (checked && !allowReselect) return;
     haptic.tap();
     if (blurOnClick) e.currentTarget.blur();
     onSelect();

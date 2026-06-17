@@ -209,6 +209,9 @@ export function TravelTypeQuiz() {
               // ios safari 안전망 — tap 후 focus 가 button 에 남으면 다음 question
               // 의 같은 위치 옵션이 강조된 듯 보임. Bracket fix 와 동일.
               blurOnClick
+              // progress segment 로 이전 문항 점프 후 같은 답 재클릭 시에도
+              // 다음 단계로 진행 (confirm 시나리오) — 기본 idempotent 무시.
+              allowReselect
               className={`${styles.option} ${active ? styles.optionActive : ''}`}
             >
               {opt.text}
