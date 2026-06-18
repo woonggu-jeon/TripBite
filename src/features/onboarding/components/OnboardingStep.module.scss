@@ -72,3 +72,24 @@
   color: var(--color-muted);
   margin: 0;
 }
+
+// 위치 확인 / onboarding mutation 진행 중 전환 화면 — spinner + 안내 문구.
+// "허용" 클릭 후 prompt 그대로 머무는 어색함 해소.
+.resolving {
+  display: grid;
+  place-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6) 0;
+  min-height: 180px;
+}
+
+.spinner {
+  animation: spin 0.8s linear infinite;
+  color: var(--color-primary);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
