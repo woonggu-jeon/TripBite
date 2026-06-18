@@ -167,9 +167,17 @@ export function SignupForm() {
       : usernameStatus === 'invalid'
         ? tErr('usernameInvalid')
         : undefined;
+  // pattern 통과한 값이 입력됐을 때만 idle 안내 ("중복확인을 해주세요") 노출.
+  // 빈 값/regex 미통과면 placeholder 만 보이고 hint X.
+  const usernameValidShape = USERNAME_REGEX.test(usernameValue);
   const usernameHint =
     !usernameError &&
-    renderHint({ status: usernameStatus, t, field: 'username' });
+    renderHint({
+      status: usernameStatus,
+      t,
+      field: 'username',
+      showIdle: usernameValidShape,
+    });
   const emailError = errors.email
     ? tErr(errors.email.message as Parameters<typeof tErr>[0])
     : emailStatus === 'taken'
@@ -177,8 +185,15 @@ export function SignupForm() {
       : emailStatus === 'invalid'
         ? tErr('emailInvalid')
         : undefined;
+  const emailValidShape = EMAIL_LIKE_REGEX.test(emailValue);
   const emailHint =
-    !emailError && renderHint({ status: emailStatus, t, field: 'email' });
+    !emailError &&
+    renderHint({
+      status: emailStatus,
+      t,
+      field: 'email',
+      showIdle: emailValidShape,
+    });
 
   const allFilled =
     !!usernameValue &&
@@ -323,13 +338,16 @@ function renderHint({
   status,
   t,
   field,
+  showIdle,
 }: {
   status: CheckStatus;
   t: (k: string) => string;
   field: 'username' | 'email';
+  /** idle 안내 표시 여부 — 값이 pattern 통과한 후에만 true. */
+  showIdle: boolean;
 }): ReactNode {
   if (status === 'checking') return t(`${field}Checking`);
   if (status === 'available') return t(`${field}Available`);
-  if (status === 'idle') return t(`${field}CheckPrompt`);
+  if (status === 'idle' && showIdle) return t(`${field}CheckPrompt`);
   return undefined;
 }
