@@ -1,6 +1,6 @@
 # 테스트 가이드
 
-vitest 단위 (236 cases / 39 files, +3 skipped) + Playwright E2E (6 플랫폼, 420 cases) + axe-core a11y + toHaveScreenshot 시각 회귀.
+vitest 단위 (240 cases / 39 files, +3 skipped) + Playwright E2E (6 플랫폼, 420 cases) + axe-core a11y + toHaveScreenshot 시각 회귀.
 
 > 실행 결과 / 갱신 이력은 `git log` 참조 (commit message 가 source of truth).
 

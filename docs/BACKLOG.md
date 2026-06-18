@@ -60,6 +60,28 @@
 - **2026-06-12**: 인증 redirect 를 middleware (SSR) 로 일원화 — 3 회 hydration race 회귀 누적 (AuthGuard / AuthBootstrap / selector closure) 으로 클라 가드 비활성. middleware 가 SID cookie 존재 검증 (보호 경로 진입) + 인증된 사용자의 `/login`·`/signup` 재진입 차단 (안전 redirect param 가드) 모두 SSR 단계 처리. FOUC 0. 클라 가드 (AuthGuard / ProtectedScope / AuthBootstrap) 는 mount 0 으로 회귀 시 원복 위해 보존. mock 환경 (`USE_MSW=true`) 은 분기 skip — MSW 가 Set-Cookie 발급 안 함. useLogout / useDeleteAccount 도 useLogin 과 일관 hard nav (`window.location.assign('/')`).
 - **2026-06-12**: 충북 축제 캐러셀 3단계 폴백 — BE 가 단일 endpoint 안에서 `ongoing` (진행 중) → `upcoming` (30 일 이내) → `popular` (인기 여행지) 응답 결정. 응답 `{ type, items[] }`. FE 는 `type` 분기로 sectionTitle i18n + `upcoming` 시 D-day 뱃지 (좌상단, Deep Forest 톤). D-day 는 BE 가 KST 기준 `daysToStart` 서버 계산 — 클라 시계 의존 X. `DestinationCard.topLeftBadge` slot 신설.
 - **2026-06-12**: DTO alias 일괄 정리 — 30+ alias (`Letter=LetterDto`, `Destination=DestinationDto`, `User=UserDto`, `RegionContent=RegionContentDto`, `OngoingFestivals=OngoingFestivalsDto` 등) 모두 제거. 사용처 모두 `@/api/generated/schemas` 에서 직접 import + generated 명 (Dto 접미사) 직접 사용. features/region/types 폴더 자체 삭제. 자체 도메인 shape (`TournamentConfig`, `BracketMatch`, `RankedDestination`, `LetterListKind`, `OnboardingState` 등) 만 features/\*/types 에 잔존.
+- **2026-06-18**: Image perf Phase 1 + artillery loadtest 셋업:
+  - **next.config.js** — deviceSizes 7 → 3 (640/1080/1920), imageSizes 8 → 4 (64/128/256/512). 한 이미지당 variant 수 ~60% 감소 → Vercel image transformation 호출 절감 + cache hit ratio ↑.
+  - **src/app/sw.ts** — `/_next/image?url=...tong.visitkorea...` 패턴 신규 matcher (CacheFirst 30일, maxEntries 500). 재방문 / 탭 전환 시 Vercel transform 호출 0. 기존 TourAPI 원본 URL matcher 는 unoptimized / SSR raw 케이스용으로 유지.
+  - **artillery 부하 테스트 셋업** — devDep `artillery` + `loadtest/scenarios.yml` (4 phase × 6 시나리오, 동접 ~250 시뮬레이션) + scripts (`loadtest` / `loadtest:report`). `loadtest/report.*` gitignore.
+  - 동접 200-300 운영 대비 — 추정 월 image transformation 240-960만 vs Vercel Pro 5000장/월 한도 대응 Phase 1.
+  - **docs/PERF_IMAGE_STRATEGY.md** — 옵션 5가지 (A-E) + phase 계획 + 의사결정 체크리스트 문서.
+- **2026-06-18**: 회원가입 4필드 단순화 (BE 갱신 정합):
+  - BE SignupDto 변경 (`{ username/password/nickname/email }` 4 필드. `name/birthDate/phone` 제거) 반영. orval regenerate 후 schema 정합.
+  - **signup.ts schema** — username `^[a-zA-Z0-9]{4,20}$` (underscore 제거), password 영문+숫자+특문 10-72 강도, nickname `^[가-힣a-zA-Z0-9]{2,10}$`, passwordConfirm superRefine. **useSignup 의 2-step chain 제거** (직전 임시 우회) → 단순 `authApi.signup(data)`.
+  - **SignupForm** — legacy placeholder 박는 임시 코드 제거. 화면 5 필드 노출. **username 중복확인** — debounced 400ms `GET /auth/check-username` 자동 호출, `확인 중 / 사용 가능 / 이미 사용 중` 인라인 표시, taken 시 submit 차단.
+  - **find-id** — `{ name, email }` → `{ email }` 단일 필드 (BE FindIdDto 단순화).
+  - `authApi.checkUsername` 추가. i18n 옛 키 (name/birthDate/phone/nameRequired) 정리, 신규 (usernameTaken/Checking/Available, passwordWeak) 추가. signup.test +12 cases / find-id.test 갱신.
+  - **BE 요청서 archive** — `docs/BE_REQUEST_signup_simplify.md` 삭제 (BE 처리 완료).
+- **2026-06-17**: 페이지별 customize loading.tsx — 총 17 페이지:
+  - 직전 6 (mypage/notifications/letter/quiz/ranking/tournament-play) + 신규 11 (letter/[id], letter/compose, letter/sent, mypage/saved-tournaments, mypage/stamps, quiz/result, quiz/share, tournament, tournament/result, settings, region) 페이지별 layout-매칭 skeleton. (main) generic fallback 자동 override.
+  - 효과: BE 응답 도착 시점 layout shift 최소.
+  - policy/\* / offline 등 정적 페이지는 fallback 불필요로 제외.
+- **2026-06-17**: 회원가입 + i18n + UX 폴리시:
+  - **signup nickname/passwordConfirm 추가** (직전 BE 갱신 전 임시 2-step chain). RadioOption `allowReselect` opt-in — quiz progress 점프 후 같은 답 재선택 시 다음 단계 진행.
+  - **TravelTypeQuiz 단일 phase 화** — submit pending → "결과 만드는 중" → onSuccess 즉시 router.replace. 인위적 1.2s finishing celebration 제거.
+  - **i18n emailPlaceholder** — "비번찾기에 사용" 부연 제거.
+- **2026-06-17**: RN 포팅 / Cross-platform 전략 검토 — `docs/RN_MIGRATION_PLAN.md` 신설. 5 시나리오 비교 (그대로 / monorepo / Tamagui / Capacitor / RN Web 통합) + Tamagui 도입 깊이 3단계 + 의사결정 체크리스트.
 - **2026-06-17**: RegionHero heroImage 노출 + DestinationCard description/skeleton 보강:
   - **RegionHero heroImage 표시** — BE 가 RegionSummary 응답에 heroImage URL 보내고 있는데 컴포넌트가 사용 안 하던 미구현 상태였음. `MediaThumb` 로 heroImage / emoji 분기 (heroImage 있으면 next/image, 없으면 emoji fallback). regionApi.getSummary 가 http→https 정규화 추가 (HTTPS_FORCE_HOSTS=tong.visitkorea.or.kr).
   - **DestinationCard description 영역 항상 reserve** — 직전 `{description && <p>}` conditional 렌더라 prop 없는 카드가 한 줄 짧아져 grid 정렬 깨지던 문제. `description || nbsp` + `aria-hidden` 으로 영역 reserved + 시각상 빈 자리. region 4탭 grid 의 백필 안 된 항목과 채워진 항목 섞일 때도 정렬 유지.
