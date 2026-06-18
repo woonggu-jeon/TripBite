@@ -122,7 +122,7 @@
       "passwordConfirm": "비밀번호 확인",
       "passwordConfirmPlaceholder": "비밀번호를 한 번 더 입력하세요",
       "email": "이메일",
-      "emailPlaceholder": "you@example.com (비번찾기에 사용)",
+      "emailPlaceholder": "you@example.com",
       "submit": "가입하기",
       "submitting": "가입 중...",
       "failed": "회원가입에 실패했습니다.",
