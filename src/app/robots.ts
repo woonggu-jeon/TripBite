@@ -44,6 +44,10 @@ export default function robots(): MetadataRoute.Robots {
           '/settings',
           '/letter/compose',
           '/letter/', // 상세는 사용자별이라 제외
+          '/quiz/result', // 사용자별 결과 — HTML meta robots noindex 와 이중 가드
+          '/quiz/share', // 사용자별 공유 카드 — HTML meta robots noindex 와 이중 가드
+          '/tournament/play', // 진행 중 상태 의존
+          '/tournament/result', // 사용자별 우승지
           '/dev/',
           '/offline',
         ],

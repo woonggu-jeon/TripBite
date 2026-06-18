@@ -1,7 +1,7 @@
 # TripBite 후속 작업 백로그
 
 > 코드베이스 전수조사 후 정리한 잔존 / 개선 항목. 분기점마다 갱신.
-> 마지막 갱신: 2026-06-18
+> 마지막 갱신: 2026-06-18 (운영 readiness audit + 0-OPS 신설)
 >
 > 작업량 표기: **S** (≤30분) · **M** (1-3시간) · **L** (반나절+)
 
@@ -232,12 +232,49 @@
 
 ## 우선 순위 한눈에
 
-| Phase      | 영역                                 | 의존성               | 상태      |
-| ---------- | ------------------------------------ | -------------------- | --------- |
-| **3**      | BE 연동 (orval 마이그 + enum 정합)   | NestJS               | ✅ 완료   |
-| **4**      | 푸시 알림 운영 진입                  | NestJS web-push + DB | 진행 중   |
-| **5 잔여** | CSP enforce / 정책 본문 / rate limit | 백엔드 + 법무        | 대기      |
-| **6**      | UX 개선 / 새 기능 / 새 화면 / 테스트 | —                    | 신규 요청 |
+| Phase      | 영역                                               | 의존성               | 상태           |
+| ---------- | -------------------------------------------------- | -------------------- | -------------- |
+| **0-OPS**  | 운영 배포 차단 (동의 통합 + 정책 본문 + 책임자)    | BE + 법무            | ⛔ **차단**    |
+| **3**      | BE 연동 (orval 마이그 + enum 정합)                 | NestJS               | ✅ 완료        |
+| **4**      | 푸시 알림 운영 진입                                | NestJS web-push + DB | 진행 중        |
+| **5 잔여** | CSP enforce / rate limit                           | 백엔드               | 대기           |
+| **6**      | UX 개선 / 새 기능 / 새 화면 / 테스트               | —                    | 신규 요청      |
+| **6-OPS**  | Sentry 도입 / /support 페이지 / Alerting / CAPTCHA | 운영 안정화          | 보강 (배포 후) |
+
+---
+
+## 0-OPS. 운영 배포 차단 — Critical 3건 (2026-06-18 audit)
+
+> `BE_REQUEST_signup_consent_integration.md` 작성 (저장소 외 보관). BE / 법무 결정 후 FE 정합 작업.
+
+### Critical (배포 차단)
+
+- **회원가입 동의 통합** — `ConsentBlock` 컴포넌트는 구현됐으나 `SignupForm` 미통합 + BE `SignupDto` 에 `consents` 필드 없음. 정보통신망법 / 개인정보보호법 위반 가능성. 5 type 정합 (age14 필수 / terms 필수 / privacy 필수 / location 선택 / marketing 선택). BE 회신 후 FE 작업.
+- **약관 / 개인정보처리방침 본문** — `/policy/terms` / `/policy/privacy` 가 placeholder ("제1조~제5조" 자리잡이). 법무 검토 본문 + 정책 버전 관리 + 변경 시 재동의 정책 결정 필요.
+- **개인정보보호책임자 placeholder** — `privacy@example.com` 미교체. 실 책임자 (이름 / 이메일 / 전화) + 사업자 정보 + 처리 위탁 list 필요.
+
+### High (운영 후 빠른 보강)
+
+- **Sentry 미사용** — `NEXT_PUBLIC_SENTRY_DSN` env 정의만 + 코드 import 0건. 현재 `/api/client-error` → Vercel logs grep 만 의존. grouping / alert / breadcrumb 부재. 도입 또는 운영 모니터링 정책 명문화 결정.
+- **사용자 지원 페이지** — `/support`, `/contact`, `/help` 0건 + mailto: 0건. 사용자 문의 / 사고 신고 채널 부재. 최소: `/support` 페이지 + mailto:`<책임자 이메일>` + FAQ.
+- **운영 도메인 확정** — `NEXT_PUBLIC_SITE_URL` 의 fallback 이 Vercel preview URL (`https://trip-bite-mxue.vercel.app`). 실 custom domain 확정 + env 갱신 필요. sitemap / OG / JSON-LD / manifest 모두 의존.
+
+### Medium (운영 안정화 후)
+
+- **Alerting 자동화** — Vercel deployment fail / error rate / Web Vitals 임계 초과 시 Slack webhook 등 통지 부재. 사고 대응 지연.
+- **CAPTCHA 미도입** — signup / login / forgot-password 의 봇 방어 BE rate-limit + Cloudflare 만 의존. reCAPTCHA v3 또는 Cloudflare Turnstile 검토.
+- **Secret rotation SOP** — VAPID / Vercel Deploy Hook URL 등 rotation 절차 문서 부재.
+- **만 14세 보호자 동의** — 현재 `ConsentBlock` 의 `age14` 필수 동의로 처리 (= 미동의 시 가입 차단). 보호자 동의 메커니즘은 cost 대비 미도입. 법무 재논의 시 복원 가능 (AgeConfirmStep 보존).
+- **Destination sitemap 동적 생성** — `sitemap.ts:11` BE destination 88+ entry 미포함. BE 합류 후 추가.
+
+### Low
+
+- Settings 페이지 version display UI 명시 (`/api/health` 만 있고 사용자 가시 UI 미구현)
+- Push subscription expiration cleanup (BE 영역)
+- ~~Quiz/Tournament JSON-LD 보강~~ — **검토 후 보류 (2026-06-18)**: tournament/play·result 는 noindex 라 무의미, quiz·tournament main 은 schema.org Quiz / Game 타입과 의미 부정합. fix 가치 0.
+- ~~i18n alternates 보강~~ — **이미 0-SEO 섹션에 보류 결정 (2026-06-14)**: cookie 기반 i18n + 이전 시도 회귀 (commit 8f0d83c). 영어권 유입 분석 후 도입.
+- ~~`deploy.yml:84` Vercel response echo 마스킹~~ — **검토 후 보류 (2026-06-18)**: `$DEPLOY_HOOK` (secret URL) 자체는 echo 안 됨. Vercel response 형태 `{job:{id,state,...}}` 에 secret 포함 없음 + GitHub Actions 가 secret 자동 mask. 마스킹 시 디버깅 가시성 손실 trade-off.
+- ✅ **quiz/result, quiz/share noindex 적용 (2026-06-18)** — 사용자별 결과 / 공유 카드의 검색 노출 차단 (HTML meta robots + robots.ts disallow 이중 가드). tournament/play·result 와 동일 정책. 부가 발견 항목.
 
 ---
 
