@@ -74,7 +74,11 @@ export function useTournamentCandidates(config: TournamentConfig | null) {
             tournamentSize: config.tournamentSize,
           })
         : ['tournament', 'candidates', 'idle'],
-    queryFn: () => tournamentApi.fetchCandidates(config!),
+    // enabled 가드가 config 유효 보장 — narrow 후 queryFn 호출.
+    queryFn: () => {
+      if (!config) throw new Error('tournament config missing');
+      return tournamentApi.fetchCandidates(config);
+    },
     enabled,
     ...CACHE.session, // 한 세션 동안 고정 (Infinity + 1h gc)
   });
@@ -117,7 +121,10 @@ export function useRecordTournament() {
 export function useTournamentRecord(id: string | null | undefined) {
   return useQuery({
     queryKey: id ? tournamentKeys.record(id) : ['tournament', 'record', 'idle'],
-    queryFn: () => tournamentApi.getRecord(id!),
+    queryFn: () => {
+      if (!id) throw new Error('record id missing');
+      return tournamentApi.getRecord(id);
+    },
     enabled: !!id,
     ...CACHE.slow,
   });
@@ -174,7 +181,10 @@ export function useDestinationDetail(id: string | undefined) {
     queryKey: id
       ? tournamentKeys.destinationDetail(id)
       : ['tournament', 'destination', 'idle'],
-    queryFn: () => tournamentApi.getDestinationDetail(id!),
+    queryFn: () => {
+      if (!id) throw new Error('destination id missing');
+      return tournamentApi.getDestinationDetail(id);
+    },
     enabled: !!id,
     ...CACHE.slow,
   });
@@ -189,7 +199,10 @@ export function useRelatedDestinations(id: string | undefined) {
     queryKey: id
       ? tournamentKeys.destinationRelated(id)
       : ['tournament', 'destination', 'idle', 'related'],
-    queryFn: () => tournamentApi.getRelatedDestinations(id!),
+    queryFn: () => {
+      if (!id) throw new Error('destination id missing');
+      return tournamentApi.getRelatedDestinations(id);
+    },
     enabled: !!id,
     ...CACHE.slow,
   });

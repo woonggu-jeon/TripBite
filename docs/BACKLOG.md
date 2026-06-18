@@ -285,8 +285,8 @@
 ### CI 차단 위험 (HIGH — 단기 결정)
 
 - ✅ **vitest branches threshold 충족 (2026-06-18)** — 67.39 → 71.49% (+4.1%). `use-auth.test.tsx` 의 useMe (initialData / 401 retry skip / 5xx 1회 retry) + useChangePassword + `use-letters.test.tsx` 의 useLetter 빈 id 분기 + useLettersInfinite kind 별 분기 + hasNextPage. vitest 250 → 261 (+11). All Stmts 85.58→88.35 / Branches 67.39→71.49 / Funcs 81.56→86.34 / Lines 86.51→89.03.
-- **TournamentPlayClient unit test 부재** — 최근 1달 24회 변경. 사용자 핵심 흐름 (매치 진행 / 우승자 결정). 작업 1.5h. 보류 — 별도 turn.
-- **TournamentResultClient unit test 부재** — 최근 19회 변경. 결과 / 저장 / 공유. 작업 1h. 보류 — 별도 turn.
+- **TournamentPlayClient unit test 부재** — 최근 1달 24회 변경. 사용자 핵심 흐름 (매치 진행 / 우승자 결정). 작업 1.5h. 보류 — **client component test 인프라 0건 (재검토 2026-06-18)**. 새 mock 인프라 (store/query/router/intl provider + 5+ child mock) 신설 비용 > test 효용. e2e (`tournament-full.spec.ts`) 가 cover 중.
+- **TournamentResultClient unit test 부재** — 최근 19회 변경. 결과 / 저장 / 공유. 작업 1h. 보류 — 동일 사유.
 
 ### UX 보강 (MEDIUM)
 
@@ -297,8 +297,8 @@
 ### 테스트 보강 (MEDIUM)
 
 - **시각회귀 baseline 확장** — `/tournament`, `/quiz`, `/policy/terms`, `/policy/privacy`, `/settings` 추가. 24+ 새 baseline 생성 → 시각적 변경 검토 + git LFS 영향 검토. 보류 — Playwright 실행 환경.
-- **회원가입 → onboarding → 홈 진입 e2e 흐름 신설** — MSW handler 재사용. ~60 line. 보류 — 별도 turn.
-- **Fixed delay → waitFor 개선** — `e2e/visual.spec.ts:46`, `e2e/a11y.spec.ts:27` 의 `waitForTimeout(1200/800)` → `waitForLoadState('networkidle')` 또는 `waitForSelector`. flaky 완화 vs stabilization risk trade-off. 보류.
+- ✅ **회원가입 → onboarding → 홈 진입 e2e (2026-06-18)** — `e2e/signup-flow.spec.ts` 신설. /signup 4 필드 입력 + 중복확인 클릭 (MSW available 응답) + 제출 → /onboarding 자동 진입 + ConceptStep → LocationStep → 홈. MSW signup `{ user: mockUser }` 정합. CI 실 실행 시 selector / wait 패턴 보정 가능 (보수 작성).
+- **Fixed delay → waitFor 개선** — `e2e/visual.spec.ts:46`, `e2e/a11y.spec.ts:27` 의 `waitForTimeout(1200/800)` → `waitForLoadState('networkidle')` 또는 `waitForSelector`. 보류 — **재검토 2026-06-18: stabilization vs flaky 양방향 risk**. visual baseline 의 ms 단위 변동 흡수가 hard wait 의 본 목적. 변경 시 baseline diff 흔들림 가능 (검증 환경 영향). 진정한 사이드이펙트 0 아님.
 - **실 BE 통합 e2e 자동화** — task #424 의 "BE 배포 후 smoke" 를 GitHub Actions staging job 으로 자동화. 작업 2h. 보류 — staging URL 필요.
 - ✅ **FestivalCarousel edge case test (2026-06-18)** — API 5xx isError 분기 / unknown id emoji fallback / regionLabel 누락 fallback +3 cases. coverage 41 → 향상.
 
@@ -310,7 +310,7 @@
 ### 코드 정리 (LOW)
 
 - ✅ **`providers.tsx:134` cast 정리 (2026-06-18)** — `(error.response?.data as { message?: string })?.message` → `error.normalized?.message` (attachErrorNormalizeInterceptor 이미 부착 중).
-- **`use-tournament.ts` `!` assertion 4건** — `enabled` 조건 검증 후 사용이라 안전하지만 명시적 가드로 refactor 가능 (style preference). 보류.
+- ✅ **`use-tournament.ts` `!` assertion 4건 → 명시 가드 (2026-06-18)** — fetchCandidates / getRecord / getDestinationDetail / getRelatedDestinations 모두 `if (!x) throw new Error(...)` 패턴. enabled 가드 정합 유지 + non-null assertion 제거. 41 test 통과.
 
 ### dev/build 의존성 vuln (LOW — production 영향 0)
 
