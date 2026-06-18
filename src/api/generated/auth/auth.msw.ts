@@ -32,6 +32,8 @@ export const getAuthControllerSignupV1ResponseMock = (overrideResponse: Partial<
 
 export const getAuthControllerCheckUsernameV1ResponseMock = (overrideResponse: Partial<Extract<CheckAvailabilityDto, object>> = {}): CheckAvailabilityDto => ({available: faker.datatype.boolean(), ...overrideResponse})
 
+export const getAuthControllerCheckEmailV1ResponseMock = (overrideResponse: Partial<Extract<CheckAvailabilityDto, object>> = {}): CheckAvailabilityDto => ({available: faker.datatype.boolean(), ...overrideResponse})
+
 export const getAuthControllerLoginV1ResponseMock = (overrideResponse: Partial<Extract<LoginResponseDto, object>> = {}): LoginResponseDto => ({success: faker.datatype.boolean(), ...overrideResponse})
 
 export const getAuthControllerFindIdV1ResponseMock = (overrideResponse: Partial<Extract<FindIdResponseDto, object>> = {}): FindIdResponseDto => ({username: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), ...overrideResponse})
@@ -56,6 +58,18 @@ export const getAuthControllerCheckUsernameV1MockHandler = (overrideResponse?: C
     return HttpResponse.json(overrideResponse !== undefined
     ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
     : getAuthControllerCheckUsernameV1ResponseMock(),
+      { status: 200
+      })
+  }, options)
+}
+
+export const getAuthControllerCheckEmailV1MockHandler = (overrideResponse?: CheckAvailabilityDto | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<CheckAvailabilityDto> | CheckAvailabilityDto), options?: RequestHandlerOptions) => {
+  return http.get('*/v1/auth/check-email', async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+
+
+    return HttpResponse.json(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getAuthControllerCheckEmailV1ResponseMock(),
       { status: 200
       })
   }, options)
@@ -117,6 +131,7 @@ export const getAuthControllerLogoutV1MockHandler = (overrideResponse?: void | (
 export const getAuthMock = () => [
   getAuthControllerSignupV1MockHandler(),
   getAuthControllerCheckUsernameV1MockHandler(),
+  getAuthControllerCheckEmailV1MockHandler(),
   getAuthControllerLoginV1MockHandler(),
   getAuthControllerFindIdV1MockHandler(),
   getAuthControllerForgotPasswordV1MockHandler(),

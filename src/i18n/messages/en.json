@@ -137,6 +137,8 @@
         "usernameInvalid": "Username must be 4-20 letters/digits.",
         "usernameTaken": "This username is already taken.",
         "usernameVerifyRequired": "Please verify username availability.",
+        "emailTaken": "This email is already in use.",
+        "emailVerifyRequired": "Please verify email availability.",
         "nicknameTooShort": "Nickname must be at least 2 characters.",
         "nicknameTooLong": "Nickname must be 10 characters or fewer.",
         "nicknameInvalid": "Nickname can contain Korean, letters, and digits only.",

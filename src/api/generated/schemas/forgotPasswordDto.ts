@@ -6,5 +6,10 @@
  */
 
 export interface ForgotPasswordDto {
+  /**
+     * @minLength 1
+     * @maxLength 30
+     */
+  username: string;
   email: string;
 }

@@ -8,6 +8,7 @@
 export * from './applyTravelTypeDto';
 export * from './appNotificationDto';
 export * from './appNotificationType';
+export * from './authControllerCheckEmailV1Params';
 export * from './authControllerCheckUsernameV1Params';
 export * from './avatarResponseDto';
 export * from './changePasswordDto';

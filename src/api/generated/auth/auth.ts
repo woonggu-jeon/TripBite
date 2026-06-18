@@ -25,6 +25,7 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AuthControllerCheckEmailV1Params,
   AuthControllerCheckUsernameV1Params,
   CheckAvailabilityDto,
   ErrorDto,
@@ -277,6 +278,163 @@ export function useAuthControllerCheckUsernameV1<TData = Awaited<ReturnType<type
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getAuthControllerCheckUsernameV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+export const authControllerCheckEmailV1 = (
+    params: AuthControllerCheckEmailV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalMutator<CheckAvailabilityDto>(
+      {url: `/v1/auth/check-email`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getAuthControllerCheckEmailV1InfiniteQueryKey = (params?: AuthControllerCheckEmailV1Params,) => {
+    return [
+    'infinite', `/v1/auth/check-email`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+export const getAuthControllerCheckEmailV1QueryKey = (params?: AuthControllerCheckEmailV1Params,) => {
+    return [
+    `/v1/auth/check-email`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getAuthControllerCheckEmailV1InfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof authControllerCheckEmailV1>>>, TError = ErrorDto>(params: AuthControllerCheckEmailV1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerCheckEmailV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAuthControllerCheckEmailV1InfiniteQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerCheckEmailV1>>> = ({ signal }) => authControllerCheckEmailV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerCheckEmailV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AuthControllerCheckEmailV1InfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof authControllerCheckEmailV1>>>
+export type AuthControllerCheckEmailV1InfiniteQueryError = ErrorDto
+
+
+export function useAuthControllerCheckEmailV1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof authControllerCheckEmailV1>>>, TError = ErrorDto>(
+ params: AuthControllerCheckEmailV1Params, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerCheckEmailV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerCheckEmailV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerCheckEmailV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerCheckEmailV1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof authControllerCheckEmailV1>>>, TError = ErrorDto>(
+ params: AuthControllerCheckEmailV1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerCheckEmailV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerCheckEmailV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerCheckEmailV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerCheckEmailV1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof authControllerCheckEmailV1>>>, TError = ErrorDto>(
+ params: AuthControllerCheckEmailV1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerCheckEmailV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useAuthControllerCheckEmailV1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof authControllerCheckEmailV1>>>, TError = ErrorDto>(
+ params: AuthControllerCheckEmailV1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerCheckEmailV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAuthControllerCheckEmailV1InfiniteQueryOptions(params,options)
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+export const getAuthControllerCheckEmailV1QueryOptions = <TData = Awaited<ReturnType<typeof authControllerCheckEmailV1>>, TError = ErrorDto>(params: AuthControllerCheckEmailV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerCheckEmailV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAuthControllerCheckEmailV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerCheckEmailV1>>> = ({ signal }) => authControllerCheckEmailV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerCheckEmailV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AuthControllerCheckEmailV1QueryResult = NonNullable<Awaited<ReturnType<typeof authControllerCheckEmailV1>>>
+export type AuthControllerCheckEmailV1QueryError = ErrorDto
+
+
+export function useAuthControllerCheckEmailV1<TData = Awaited<ReturnType<typeof authControllerCheckEmailV1>>, TError = ErrorDto>(
+ params: AuthControllerCheckEmailV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerCheckEmailV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerCheckEmailV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerCheckEmailV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerCheckEmailV1<TData = Awaited<ReturnType<typeof authControllerCheckEmailV1>>, TError = ErrorDto>(
+ params: AuthControllerCheckEmailV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerCheckEmailV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerCheckEmailV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerCheckEmailV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerCheckEmailV1<TData = Awaited<ReturnType<typeof authControllerCheckEmailV1>>, TError = ErrorDto>(
+ params: AuthControllerCheckEmailV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerCheckEmailV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useAuthControllerCheckEmailV1<TData = Awaited<ReturnType<typeof authControllerCheckEmailV1>>, TError = ErrorDto>(
+ params: AuthControllerCheckEmailV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerCheckEmailV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAuthControllerCheckEmailV1QueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

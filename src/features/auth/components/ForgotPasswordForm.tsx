@@ -32,10 +32,9 @@ export function ForgotPasswordForm() {
 
   const onSubmit = handleSubmit(async (values) => {
     try {
-      // BE ForgotPasswordDto 가 아직 { email } 만 받음 — FE 폼은 username/email
-      // 둘 다 검증하지만 mutation 호출 시 email 만 전달. BE 갱신
-      // (docs/BE_REQUEST_auth_check_email.md §2) 후 둘 다 전송으로 변경.
-      await forgot({ email: values.email });
+      // BE ForgotPasswordDto = { username, email } — 둘 다 일치 시에만 reset
+      // 링크 발송 (BE 보안 정책). 미일치 시에도 동일 안내 (열거 방지).
+      await forgot(values);
     } catch {
       /* swallow — 동일 안내 (열거 방지) */
     }

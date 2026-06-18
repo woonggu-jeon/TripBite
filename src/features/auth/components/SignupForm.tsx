@@ -40,6 +40,20 @@ import styles from './AuthForm.module.scss';
 type CheckStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid';
 
 const USERNAME_REGEX = /^[a-zA-Z0-9]{4,20}$/;
+// 간이 이메일 형식 — check-email 버튼 enable 조건. 정밀 검증은 zod 가 담당.
+const EMAIL_LIKE_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+type BeErrorCode =
+  | 'AUTH_USERNAME_TAKEN'
+  | 'AUTH_EMAIL_TAKEN'
+  | 'AUTH_PASSWORD_WEAK'
+  | 'VALIDATION';
+
+function extractErrorCode(err: unknown): BeErrorCode | null {
+  if (!isAxiosError(err)) return null;
+  const data = err.response?.data as { code?: string } | undefined;
+  return (data?.code as BeErrorCode) ?? null;
+}
 
 export function SignupForm() {
   const t = useTranslations('auth.signup');
@@ -93,8 +107,17 @@ export function SignupForm() {
   };
 
   const handleCheckEmail = async () => {
-    // BE check-email endpoint 신설 후 활성 (docs/BE_REQUEST_auth_check_email.md §1)
-    // 현재는 버튼 disabled — signup 시 409 AUTH_EMAIL_TAKEN 으로 처리.
+    if (!EMAIL_LIKE_REGEX.test(emailValue)) {
+      setEmailStatus('invalid');
+      return;
+    }
+    setEmailStatus('checking');
+    try {
+      const res = await authApi.checkEmail(emailValue);
+      setEmailStatus(res.available ? 'available' : 'taken');
+    } catch {
+      setEmailStatus('idle');
+    }
   };
 
   const onSubmit = handleSubmit(async (values) => {
@@ -102,11 +125,32 @@ export function SignupForm() {
       setError('username', { message: 'usernameVerifyRequired' });
       return;
     }
+    if (emailStatus !== 'available') {
+      setError('email', { message: 'emailVerifyRequired' });
+      return;
+    }
     try {
       const { passwordConfirm: _unused, ...payload } = values;
       void _unused;
       await signup(payload);
     } catch (err) {
+      // BE 가 가입 시점 최종 차단 (사용자가 중복확인 후 누군가 같은 id/email 로
+      // 선점한 race) — code 로 분기해 정확한 필드에 인라인 에러.
+      const code = extractErrorCode(err);
+      if (code === 'AUTH_USERNAME_TAKEN') {
+        setUsernameStatus('taken');
+        setError('username', { message: 'usernameTaken' });
+        return;
+      }
+      if (code === 'AUTH_EMAIL_TAKEN') {
+        setEmailStatus('taken');
+        setError('email', { message: 'emailTaken' });
+        return;
+      }
+      if (code === 'AUTH_PASSWORD_WEAK') {
+        setError('password', { message: 'passwordWeak' });
+        return;
+      }
       const message = isAxiosError(err)
         ? ((err.response?.data as { message?: string })?.message ?? t('failed'))
         : t('failed');
@@ -119,12 +163,7 @@ export function SignupForm() {
     t,
     field: 'username',
   });
-  const emailHint = renderHint({
-    status: emailStatus,
-    t,
-    field: 'email',
-    extra: t('emailCheckPending'),
-  });
+  const emailHint = renderHint({ status: emailStatus, t, field: 'email' });
 
   const allFilled =
     !!usernameValue &&
@@ -133,10 +172,13 @@ export function SignupForm() {
     !!watch('passwordConfirm') &&
     !!emailValue;
 
-  // submit 가능 조건: 5 필드 입력 + zod valid + username 'available'.
-  // 이메일 'available' 조건은 BE check-email 준비 후 추가.
+  // submit 가능 조건: 5 필드 입력 + zod valid + username/email 둘 다 'available'.
   const submitDisabled =
-    isSubmitting || !allFilled || !isValid || usernameStatus !== 'available';
+    isSubmitting ||
+    !allFilled ||
+    !isValid ||
+    usernameStatus !== 'available' ||
+    emailStatus !== 'available';
 
   return (
     <form onSubmit={onSubmit} noValidate className={styles.form}>
@@ -222,7 +264,11 @@ export function SignupForm() {
         {...register('email', { onChange: onEmailInputChange })}
         checkLabel={t('checkButton')}
         checkPending={emailStatus === 'checking'}
-        checkDisabled // BE check-email 대기 — 항상 disabled
+        checkDisabled={
+          emailStatus === 'checking' ||
+          emailStatus === 'available' ||
+          !EMAIL_LIKE_REGEX.test(emailValue)
+        }
         onCheckClick={handleCheckEmail}
       />
 

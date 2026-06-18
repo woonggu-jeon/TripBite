@@ -137,6 +137,8 @@
         "usernameInvalid": "아이디는 영문/숫자 4~20자여야 해요.",
         "usernameTaken": "이미 사용 중인 아이디예요.",
         "usernameVerifyRequired": "아이디 중복확인을 해주세요.",
+        "emailTaken": "이미 사용 중인 이메일이에요.",
+        "emailVerifyRequired": "이메일 중복확인을 해주세요.",
         "nicknameTooShort": "닉네임은 2자 이상이어야 해요.",
         "nicknameTooLong": "닉네임은 10자 이하여야 해요.",
         "nicknameInvalid": "닉네임은 한글/영문/숫자만 가능해요.",

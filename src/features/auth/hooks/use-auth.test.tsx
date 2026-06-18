@@ -317,7 +317,7 @@ describe('useForgotPassword / useFindId — mutation only (분기 없음)', () =
     );
 
     const { result } = renderHookWithProviders(() => useForgotPassword());
-    await result.current.mutateAsync({ email: 't@e.st' });
+    await result.current.mutateAsync({ username: 'tester01', email: 't@e.st' });
 
     expect(calls).toHaveLength(1);
   });
