@@ -237,10 +237,23 @@ export const handlers = [
     setMockSignedIn(true);
     return HttpResponse.json({ success: true });
   }),
-  http.post(
-    `${apiUrl}/auth/signup`,
-    () => new HttpResponse(null, { status: 201 }),
-  ),
+  // signup — BE 가 SID cookie + SignupResponseDto { user } atomic 발급.
+  // mock 도 정합: setMockSignedIn(true) + mockUser 반환. 빈 응답은 use-auth.ts
+  // 가 setAuth 실패해 store 미초기화 → 회귀.
+  http.post(`${apiUrl}/auth/signup`, () => {
+    setMockSignedIn(true);
+    return HttpResponse.json({ user: mockUser }, { status: 201 });
+  }),
+  // 회원가입 중복확인 — username/email 길이 등 검증 후 available 응답.
+  // 'tester01' / 't@e.com' 만 taken 으로 시뮬 (mockUser 정합), 나머지 available.
+  http.get(`${apiUrl}/auth/check-username`, ({ request }) => {
+    const username = new URL(request.url).searchParams.get('username') ?? '';
+    return HttpResponse.json({ available: username !== 'tester01' });
+  }),
+  http.get(`${apiUrl}/auth/check-email`, ({ request }) => {
+    const email = new URL(request.url).searchParams.get('email') ?? '';
+    return HttpResponse.json({ available: email !== 't@e.com' });
+  }),
   http.post(
     `${apiUrl}/auth/forgot-password`,
     () => new HttpResponse(null, { status: 204 }),

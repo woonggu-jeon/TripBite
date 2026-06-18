@@ -538,7 +538,8 @@
         "empty": "Please enter content.",
         "maxLength": "Up to 5 characters allowed.",
         "invalidChar": "Disallowed characters detected.",
-        "locationRequired": "Location permission is required to send a letter."
+        "locationRequired": "Location permission is required to send a letter.",
+        "sendFailed": "Failed to send the letter. Please try again in a moment."
       }
     },
     "detail": {

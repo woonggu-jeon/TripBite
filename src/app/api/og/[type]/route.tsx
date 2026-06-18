@@ -112,7 +112,8 @@ export async function GET(
   const fontData = await getPretendard();
 
   try {
-    switch (type as OgType) {
+    const ogType = type as OgType;
+    switch (ogType) {
       case 'tournament':
         return renderTournament(searchParams, fontData);
       case 'quiz':
@@ -123,6 +124,13 @@ export async function GET(
         return renderRegion(searchParams, fontData);
       case 'master':
         return renderMaster(searchParams, fontData);
+      default: {
+        // exhaustive guard — OgType 확장 시 신규 case 누락 catch.
+        const _exhaustive: never = ogType;
+        return new Response(`unknown og type: ${_exhaustive as string}`, {
+          status: 400,
+        });
+      }
     }
   } catch (err) {
     // Satori 가 unsupported CSS / 누락 element 만나면 throw.

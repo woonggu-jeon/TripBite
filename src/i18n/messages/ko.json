@@ -538,7 +538,8 @@
         "empty": "내용을 입력해주세요.",
         "maxLength": "최대 5글자까지 입력할 수 있어요.",
         "invalidChar": "허용되지 않는 문자가 포함되어 있어요.",
-        "locationRequired": "위치 권한을 허용해야 편지를 보낼 수 있어요."
+        "locationRequired": "위치 권한을 허용해야 편지를 보낼 수 있어요.",
+        "sendFailed": "편지를 보내지 못했어요. 잠시 후 다시 시도해주세요."
       }
     },
     "detail": {

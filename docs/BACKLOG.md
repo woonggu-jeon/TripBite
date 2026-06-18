@@ -278,6 +278,46 @@
 
 ---
 
+## 0-AUDIT. 2026-06-18 전반 audit — 사용자 결정 영역 (사이드이펙트 있음)
+
+> 4-dimension audit (TypeScript / loading·error·empty / API contract / 테스트) 결과 중 사이드이펙트 없이 fix 완료한 항목은 commit `<TBD>` 에 반영. 아래는 작업 cost 또는 디자인 결정이 필요해 사용자 confirm 후 진행.
+
+### CI 차단 위험 (HIGH — 단기 결정)
+
+- **vitest branches 67.55% < threshold 69%** — `npm run test:coverage` 실측. CI 통과 불가. fix 방안: `use-tournament.ts` 의 edge case test 추가 (~30 line). 작업 cost 30분. 사이드이펙트: test 추가만, 0.
+- **TournamentPlayClient unit test 부재** — 최근 1달 24회 변경. 사용자 핵심 흐름 (매치 진행 / 우승자 결정). 작업 1.5h.
+- **TournamentResultClient unit test 부재** — 최근 19회 변경. 결과 / 저장 / 공유. 작업 1h.
+
+### UX 보강 (MEDIUM)
+
+- **loading.tsx 5개 추가** — destination/[id], tournament/result, quiz, mypage/saved-tournaments, mypage/stamps. skeleton 디자인 결정 필요 (실 콘텐츠와 같은 높이/모양).
+- **무한스크롤 end 메시지** — `InfiniteList` 끝났을 때 "더 이상 없어요" 명시. i18n 키 추가 + 컴포넌트 변경.
+- **`useRecordTournament` onError 토스트** — 현재 의도적 silent fail 주석. 사용자가 토너먼트 결과 저장 실패를 모름 vs 결과 화면 진입 자체 막지 않는 의도와 trade-off. 정책 결정 필요.
+
+### 테스트 보강 (MEDIUM)
+
+- **시각회귀 baseline 확장** — `/tournament`, `/quiz`, `/policy/terms`, `/policy/privacy`, `/settings` 추가. 24+ 새 baseline 생성 → 시각적 변경 검토 + git LFS 영향 검토.
+- **회원가입 → onboarding → 홈 진입 e2e 흐름 신설** — MSW handler 재사용. ~60 line.
+- **Fixed delay → waitFor 개선** — `e2e/visual.spec.ts:46`, `e2e/a11y.spec.ts:27` 의 `waitForTimeout(1200/800)` → `waitForLoadState('networkidle')` 또는 `waitForSelector`. flaky 완화 vs stabilization risk trade-off.
+- **실 BE 통합 e2e 자동화** — task #424 의 "BE 배포 후 smoke" 를 GitHub Actions staging job 으로 자동화. 작업 2h.
+- **FestivalCarousel edge case test** — 현재 41% branch coverage. fallback / error 분기 추가 ~20 line.
+
+### API contract (LOW — orval 재생성 필요)
+
+- **POST signup useQuery 패턴** — orval generated 의 `useAuthControllerSignupV1` 가 POST 인데 useQuery hook 생성. 실 사용은 useMutation 으로 재포장 (use-auth.ts:102). orval config 의 `method: post → mutation override` 필요.
+- **MSW login handler 의 error code 분기** — 현재 항상 success. AUTH_ACCOUNT_LOCKED / RATE_LIMIT / AUTH_INVALID_CREDENTIALS dev 분기 추가 (mock only, 운영 영향 0).
+
+### 코드 정리 (LOW)
+
+- **`providers.tsx:134` cast 중복** — `(error.response?.data as { message?: string })?.message` 를 `error.normalized.message` 직접 사용 (interceptor 이미 적용 중).
+- **`use-tournament.ts` `!` assertion 4건** — `enabled` 조건 검증 후 사용이라 안전하지만 명시적 가드로 refactor 가능 (style preference).
+
+### dev/build 의존성 vuln (LOW — production 영향 0)
+
+- `npm audit` 19 vuln (1 low + 18 moderate) — esbuild Windows dev server (`GHSA-g7r4-m6w7-qqqr`), `js-yaml` (artillery devDep), `@opentelemetry/core`. 모두 dev tool, production bundle 영향 0. dependabot 또는 수동 갱신 시 정리.
+
+---
+
 ## 0-SEO. 보류 SEO 보강 — 의존성/데이터 충족 시 진행
 
 - **hreflang alternates + URL-based locale** (L, 8-12 시간) — `layout.tsx` generateMetadata 에 `alternates.languages` 추가 + next-intl routing 변경 (`defineRouting` + middleware locale prefix + 32+ Link/router import 교체). 현재 cookie 기반 locale → URL prefix 도입 시 부수 효과로 `cookies()` 의존 제거 → **static generation / ISR 직접 사용 가능 → cold start 추가 개선**. 다만 한 번 시도 후 revert 경험 (commit `8f0d83c` 의 Option A — `app/[locale]/...` segment 요구로 모든 페이지 404). 영어권 유입 비중이 의미 있게 늘 때 (analytics 확인 후) 도입. **2026-06-14 결정: 보류** — 본 작업 비용 (1.5일 + 회귀 risk) 대비 한국 시장 한정 단계에선 ROI 낮음. cold start 는 loading.tsx + CDN cache 로 우선 cover.

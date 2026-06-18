@@ -75,7 +75,12 @@ function pickMessage(
   }
   if (statusText && status && status >= 400)
     return GENERIC_MESSAGE[code] ?? statusText;
-  return GENERIC_MESSAGE[code] ?? GENERIC_MESSAGE.UNKNOWN!;
+  // UNKNOWN 은 항상 존재 (정적 객체) — noUncheckedIndexedAccess 가드용 fallback.
+  return (
+    GENERIC_MESSAGE[code] ??
+    GENERIC_MESSAGE.UNKNOWN ??
+    '알 수 없는 오류가 발생했어요.'
+  );
 }
 
 export function attachErrorNormalizeInterceptor(instance: AxiosInstance) {
