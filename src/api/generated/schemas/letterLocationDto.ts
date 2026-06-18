@@ -11,7 +11,15 @@ export interface LetterLocationDto {
      * @maxLength 100
      */
   label: string;
+  /**
+     * @minLength 1
+     * @maxLength 30
+     */
   region?: string;
+  /**
+     * @minLength 1
+     * @maxLength 30
+     */
   regionCode?: string;
   /**
      * @minimum -90
