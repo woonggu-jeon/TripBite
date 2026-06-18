@@ -236,16 +236,23 @@ export function SignupForm() {
             className={
               usernameStatus === 'available' ? styles.verifiedButton : undefined
             }
+            leadingIcon={
+              usernameStatus === 'checking' ? (
+                <Loader2
+                  size={14}
+                  className={styles.checkSpinner}
+                  aria-hidden
+                />
+              ) : usernameStatus === 'available' ? (
+                <Check size={14} aria-hidden />
+              ) : undefined
+            }
           >
-            {usernameStatus === 'checking' ? (
-              <Loader2 size={14} className={styles.checkSpinner} aria-hidden />
-            ) : usernameStatus === 'available' ? (
-              <>
-                <Check size={14} aria-hidden /> {t('checkDone')}
-              </>
-            ) : (
-              t('checkButton')
-            )}
+            {usernameStatus === 'checking'
+              ? ''
+              : usernameStatus === 'available'
+                ? t('checkDone')
+                : t('checkButton')}
           </Button>
         }
         {...register('username', { onChange: onUsernameInputChange })}
@@ -315,16 +322,23 @@ export function SignupForm() {
             className={
               emailStatus === 'available' ? styles.verifiedButton : undefined
             }
+            leadingIcon={
+              emailStatus === 'checking' ? (
+                <Loader2
+                  size={14}
+                  className={styles.checkSpinner}
+                  aria-hidden
+                />
+              ) : emailStatus === 'available' ? (
+                <Check size={14} aria-hidden />
+              ) : undefined
+            }
           >
-            {emailStatus === 'checking' ? (
-              <Loader2 size={14} className={styles.checkSpinner} aria-hidden />
-            ) : emailStatus === 'available' ? (
-              <>
-                <Check size={14} aria-hidden /> {t('checkDone')}
-              </>
-            ) : (
-              t('checkButton')
-            )}
+            {emailStatus === 'checking'
+              ? ''
+              : emailStatus === 'available'
+                ? t('checkDone')
+                : t('checkButton')}
           </Button>
         }
         {...register('email', { onChange: onEmailInputChange })}
