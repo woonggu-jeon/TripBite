@@ -140,17 +140,40 @@ export function touristAttraction({
 }
 
 /**
+ * JSON-LD 안전 직렬화 — `<script>` 안 dangerouslySetInnerHTML 용.
+ *
+ * data 가 사용자 입력 (BE 응답의 destination name, letter body 등) 을 포함하면
+ * `</script>` / `<` / `>` / `&` 가 그대로 들어가 script tag 가 깨지거나 XSS 가
+ * 가능. Google JSON-LD 가이드 + OWASP 권장 — 다음 문자를 unicode escape:
+ *   - LT/GT → script tag boundary 보호
+ *   - AMP → HTML entity 회피
+ *   - U+2028 / U+2029 (line/paragraph separator) → JSON parser 안전망
+ *
+ * 결과는 JSON-LD spec 상 valid (JSON 의 unicode escape 는 허용).
+ */
+export function serializeJsonLd(data: JsonLdValue): string {
+  return JSON.stringify(data)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
+}
+
+/**
  * `<script type="application/ld+json">` 렌더 — Server Component.
  *
  * BLOCK_INDEXING 모드면 미렌더 (mock/QA 빌드가 검색엔진에 색인되지 않도록).
  * 여러 schema 가 동시에 필요하면 JsonLd 를 여러 번 사용해도 무방.
+ *
+ * XSS 안전망: serializeJsonLd 가 LT/GT/AMP/U+2028/U+2029 를 unicode escape.
  */
 export function JsonLd({ data }: { data: JsonLdValue }) {
   if (BLOCK_INDEXING) return null;
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(data) }}
     />
   );
 }

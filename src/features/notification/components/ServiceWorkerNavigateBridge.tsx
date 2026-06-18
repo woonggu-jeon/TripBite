@@ -25,6 +25,10 @@ export function ServiceWorkerNavigateBridge() {
       if (!data || data.type !== 'NAVIGATE') return;
       const link = data.link;
       if (typeof link !== 'string' || link.length === 0) return;
+      // open-redirect / javascript: 스킴 차단 — internal path 만 허용.
+      // BE push payload 의 link 도 동일 정책 (다층 방어, login/onboarding 의
+      // safeRedirectParam 과 동일 규칙).
+      if (!link.startsWith('/') || link.startsWith('//')) return;
       // typedRoutes 의 정적 분석 외 (서버/SW 가 임의로 보낸 path) — cast.
       router.push(link as Parameters<typeof router.push>[0]);
     };

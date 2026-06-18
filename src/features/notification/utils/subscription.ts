@@ -133,9 +133,15 @@ export async function triggerMockPush(payload: {
       tag: payload.tag,
     });
     if (payload.link) {
+      // open-redirect / javascript: 스킴 차단 — internal path 만 허용.
+      // mock 도구라 입력 source 가 dev 콘솔이지만 실제 push 와 동일 가드 적용
+      // (defense in depth, login/onboarding 의 safeRedirectParam 과 동일 규칙).
+      const link = payload.link;
+      const safeLink =
+        link.startsWith('/') && !link.startsWith('//') ? link : '/';
       n.onclick = () => {
         window.focus();
-        window.location.href = payload.link!;
+        window.location.href = safeLink;
         n.close();
       };
     }

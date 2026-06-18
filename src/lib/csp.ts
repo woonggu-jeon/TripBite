@@ -26,10 +26,14 @@ export function buildCsp(nonce: string): string {
   return [
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ''}`,
-    // jsdelivr — Pretendard 폰트 CSS (style은 nonce 미적용, unsafe-inline 유지)
-    "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
+    // React inline style (140건+) 때문에 'unsafe-inline' 유지 — DOM style
+    // attribute 는 nonce 부여 불가. script-src 의 nonce+strict-dynamic 이 XSS
+    // 핵심 방어, style injection 은 위험 작음. enforce 전환 시에도 동일.
+    // jsdelivr 제거 (2026-06-18) — Pretendard self-host 이후 브라우저 사용 0.
+    // OG route 의 jsdelivr fetch 는 서버측 (edge runtime) 이라 CSP 무관.
+    "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https://tong.visitkorea.or.kr",
-    "font-src 'self' data: https://cdn.jsdelivr.net",
+    "font-src 'self' data:",
     // connect-src: 백엔드 + Vercel Speed Insights / Analytics.
     `connect-src 'self' ${apiUrl} https://vitals.vercel-insights.com`.trim(),
     "worker-src 'self'",

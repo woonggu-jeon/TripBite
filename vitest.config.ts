@@ -44,6 +44,7 @@ export default defineConfig({
       include: [
         // lib (순수 함수 / 유틸)
         'src/lib/async.ts',
+        'src/lib/json-ld.tsx',
         'src/lib/client-error-reporter.ts',
         'src/lib/clipboard.ts',
         'src/lib/csp.ts',

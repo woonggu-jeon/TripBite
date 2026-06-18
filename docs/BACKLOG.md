@@ -1,7 +1,7 @@
 # TripBite 후속 작업 백로그
 
 > 코드베이스 전수조사 후 정리한 잔존 / 개선 항목. 분기점마다 갱신.
-> 마지막 갱신: 2026-06-14
+> 마지막 갱신: 2026-06-18
 >
 > 작업량 표기: **S** (≤30분) · **M** (1-3시간) · **L** (반나절+)
 
@@ -49,6 +49,8 @@
 - **2026-06-10**: 저장/삭제 mutation 누락 toast 보강 — `LetterActions` 편지 삭제 success/error toast, `TournamentPlayClient` record mutation 실패 silent → toast 명시. i18n: `letter.detail.deletedToast` / `deleteFailedToast` / `tournament.play.recordFailedToast` (ko + en).
 - **2026-06-10**: SEO 보강 sweep — `/region/[code]`, `/destination/[id]` metadata 에 `alternates.canonical` + `openGraph.url` 추가 (query 중복 정규화). `tournament/{play,result}/page.tsx` 정적 metadata → `generateMetadata` + i18n + `robots:noindex` (store 의존, 사용자별 결과). BreadcrumbList JSON-LD (region 3-level, destination 4-level). heading 위계 fix — `RegionHero` / `DestinationDetailClient` h1→h2 (SubHeader 가 페이지 h1). `next-seo` 검토 결과 비추천 (App Router native 가 cover).
 - **2026-06-10**: `lib/json-ld.tsx` helper 신설 — `breadcrumbList` / `webSiteOrganization` / `touristAttraction` factory + `<JsonLd>` 컴포넌트 (BLOCK_INDEXING 자체 처리). 3 inline `<script type="application/ld+json">` (layout/region/destination) 일괄 흡수.
+- **2026-06-18**: `lib/json-ld.tsx` 에 `serializeJsonLd()` 추가 — JSON-LD 직렬화 시 LT/GT/AMP/U+2028/U+2029 unicode escape. `<script>` 안 `dangerouslySetInnerHTML` 의 XSS 안전망 (Google JSON-LD 가이드 + OWASP). `JsonLd` 컴포넌트가 사용. 신규 `json-ld.test.ts` 6 cases (vitest 245 → 248).
+- **2026-06-18**: 7-dimension 보안 audit (XSS / auth·CSRF / open-redirect / secret leak / CSP·헤더 / supply chain / storage·PWA). 결과: 표준 권장 대부분 충족 (HttpOnly SID, CSP nonce+strict-dynamic, X-Frame-Options DENY, frame-ancestors 'none', SameSite=Lax, Origin 검증, npm audit 0 vuln). 즉시 처리 — (1) push notification link open-redirect 가드 (`ServiceWorkerNavigateBridge` + `triggerMockPush`): `/` 시작 + `//` 차단. (2) CSP/SW jsdelivr 제거 — Pretendard self-host 이후 브라우저 사용 0, 외부 origin 1개 감소. (3) `lib/json-ld.tsx` 의 `serializeJsonLd()` 도입 (LT/GT/AMP/U+2028/U+2029 unicode escape) + 6 test. csp.ts 의 `style-src 'unsafe-inline'` 은 React inline `style={{}}` 140건/57file 마이그레이션 비용 큼 + script-src nonce+strict-dynamic 으로 XSS 핵심 방어되므로 유지. BE 영역 후속 — `docs/BE_REQUEST_security_audit_followup.md` 작성 (SID cookie 속성 운영 확인 / X-Requested-With 거부 정책 / CSRF token 도입 여부 / login timing 일정화 / rate-limit 명문화 / `AUTH_ACCOUNT_LOCKED` 정책). 잔여 FE 추후 — `safeRedirectParam` helper 추출 (login/onboarding/SW bridge/mockPush 4곳 중복), SW message origin 검증 (MEDIUM, scope same-origin), OG route 의 jsdelivr Pretendard 서버 fetch self-host 전환 (성능).
 - **2026-06-10**: Event JSON-LD — `DestinationDetailDto.eventStart/eventEnd` BE 반영 (`docs/BE_REQUEST_FESTIVAL_DATES.md` 전달). `touristAttraction()` 이 Festival + startDate 시 schema.org Event 분기 (startDate/endDate/location.Place). `/destination/[id]` SSR 에서 `tournamentApi.getDestinationDetail(id)` fetch 로 schema 보강 (실패 시 graceful fallback). mock handler 가 category=festival 일 때 deterministic date 응답 (dev 검증).
 - **2026-06-10**: dead infra 청소 — `src/lib/blur.ts` (`getBlurDataURL`) + `plaiceholder` devDep 삭제. 호출 0건 + LCP 후보 `DestinationPhotos` 가 raw `<img>` 라 적용 비용 > 효과. 필요 시 38줄 재작성. §3 인프라 항목 폐기.
 - **2026-06-11**: orval generated commit — `src/api/generated/` 의 `.gitignore` 해제 + 121 파일 commit. 운영 BE 의 `/v1/docs-json` 비노출 (Swagger 보안) 으로 Vercel build prebuild 가 실패하던 회귀 대응. `predev`/`prebuild` 가 `generate:api || echo skip` fail-soft 로 — fetch 실패 시 cached generated 사용. BE swagger 변경 시 FE 가 `npm run generate:api && git commit src/api/generated/` 흐름.

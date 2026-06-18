@@ -13,8 +13,9 @@ import {
  * Serwist Service Worker (next-pwa 대체)
  *
  * 캐시 전략:
- *   - 외부 도메인(jsdelivr 폰트, TourAPI 이미지) + /icons.svg → 커스텀 명시
- *   - Next 내부(RSC/navigation/_next/static/기타 이미지) → defaultCache 위임
+ *   - 외부 도메인 (TourAPI 이미지) + /icons.svg → 커스텀 명시
+ *   - Next 내부 (RSC/navigation/_next/static/기타 이미지) → defaultCache 위임
+ *   - Pretendard 는 self-host (next/font/local) — defaultCache 가 _next/static 으로 cover
  *
  * 업데이트 흐름:
  *   skipWaiting:false — 새 SW는 대기. PwaUpdateBanner가 SKIP_WAITING 메시지 →
@@ -41,17 +42,9 @@ const serwist = new Serwist({
   clientsClaim: true,
   navigationPreload: true,
   runtimeCaching: [
-    {
-      // jsdelivr Pretendard 폰트 — CacheFirst 1년
-      matcher: /^https:\/\/cdn\.jsdelivr\.net\/.+\.(?:woff2?|css)$/i,
-      handler: new CacheFirst({
-        cacheName: 'pretendard-fonts',
-        plugins: [
-          new ExpirationPlugin({ maxEntries: 30, maxAgeSeconds: YEAR }),
-          new CacheableResponsePlugin({ statuses: [0, 200] }),
-        ],
-      }),
-    },
+    // jsdelivr Pretendard matcher 제거 (2026-06-18) — Pretendard self-host
+    // (next/font/local) 이후 브라우저가 jsdelivr 에 가지 않음. defaultCache 가
+    // /_next/static 의 폰트 파일을 cover.
     {
       // SVG sprite — CacheFirst 1년
       matcher: /\/icons\.svg$/i,
