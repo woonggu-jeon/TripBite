@@ -4,7 +4,9 @@ import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { ConceptStep } from '@/features/onboarding/components/ConceptStep';
-import { AgeConfirmStep } from '@/features/onboarding/components/AgeConfirmStep';
+// 만 14세 확인 step 미노출 (사용자 요청, 2026-06-18). 정보통신망법 / 개인정보보호법
+// 정책 재논의 시 복원 가능 — 아래 step 2 분기 + TOTAL_STEPS 만 되돌리면 됨.
+// import { AgeConfirmStep } from '@/features/onboarding/components/AgeConfirmStep';
 import { LocationStep } from '@/features/onboarding/components/LocationStep';
 import { useCompleteOnboarding } from '@/features/onboarding/hooks/use-onboarding';
 import { useAuthStore } from '@/stores/auth-store';
@@ -12,21 +14,22 @@ import { useLocationStore } from '@/stores/location-store';
 import styles from './OnboardingFlow.module.scss';
 
 /**
- * 3-step 온보딩 상태머신 (닉네임 step 미노출)
+ * 2-step 온보딩 상태머신 (닉네임 / 만 14세 step 모두 미노출)
  *
  * URL은 /onboarding 하나로 유지 (뒤로가기 = step--; 첫 step에서 router.back)
  *
- * 흐름: ConceptStep(1) → AgeConfirmStep(2, 만 14세 확인) → LocationStep(3)
+ * 흐름: ConceptStep(1) → LocationStep(2)
  *
  * 변경 이력:
- *   - 닉네임 단계는 일단 미노출 — 서버가 기본 닉네임을 자동 부여 가정.
- *     `NicknameStep` 컴포넌트 / `nicknameSchema` 자체는 보존되어 추후 재노출 가능.
- *   - 만 14세 확인 step 추가 (정보통신망법 / 개인정보보호법) — 미체크 시 다음 disabled.
- *   - step 3 (LocationStep) 완료/건너뛰기 시 즉시 finishOnboarding 호출.
+ *   - 닉네임 단계 미노출 — 서버가 기본 닉네임 자동 부여 가정. `NicknameStep` 보존.
+ *   - 만 14세 확인 step 미노출 (2026-06-18) — 정책 재논의 시 복원. AgeConfirmStep
+ *     컴포넌트 / i18n 키 보존. 복원 절차: AgeConfirmStep import 살리고 step 2/3
+ *     분기 + TOTAL_STEPS = 3.
+ *   - LocationStep 완료/건너뛰기 시 즉시 finishOnboarding 호출.
  *   - nickname 은 빈 문자열로 전송 — mock handler / 실 백엔드가 누락 시 기본값 사용.
  */
-type Step = 1 | 2 | 3;
-const TOTAL_STEPS = 3;
+type Step = 1 | 2;
+const TOTAL_STEPS = 2;
 
 export function OnboardingFlow() {
   const t = useTranslations('onboarding');
@@ -87,8 +90,10 @@ export function OnboardingFlow() {
 
       <div className={styles.body}>
         {step === 1 && <ConceptStep onNext={goNext} />}
-        {step === 2 && <AgeConfirmStep onNext={goNext} onPrev={goPrev} />}
-        {step === 3 && (
+        {/* step === 2 (이전 AgeConfirmStep 자리) — 만 14세 확인 미노출. 복원 시:
+            {step === 2 && <AgeConfirmStep onNext={goNext} onPrev={goPrev} />}
+            {step === 3 && <LocationStep ... />} 로 되돌리고 TOTAL_STEPS = 3. */}
+        {step === 2 && (
           <LocationStep
             onNext={finishOnboarding}
             onSkip={finishOnboarding}
