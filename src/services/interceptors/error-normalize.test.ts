@@ -80,4 +80,22 @@ describe('error-normalize interceptor', () => {
     expect(e.normalized?.code).toBe('NETWORK');
     expect(e.normalized?.message).toContain('네트워크');
   });
+
+  it('403 + BE code=CSRF → 사용자 친화 메시지', async () => {
+    // BE 의 CsrfGuard 가 X-Requested-With 부재 시 응답하는 형태.
+    const e = await runReject(makeError(403, { code: 'CSRF' }));
+    expect(e.normalized?.code).toBe('CSRF');
+    expect(e.normalized?.message).toContain('새로고침');
+  });
+
+  it('429 + BE code=AUTH_ACCOUNT_LOCKED → BE code 보존 (LoginForm 분기용)', async () => {
+    const e = await runReject(
+      makeError(429, {
+        code: 'AUTH_ACCOUNT_LOCKED',
+        message: '계정이 잠겼어요',
+      }),
+    );
+    expect(e.normalized?.code).toBe('AUTH_ACCOUNT_LOCKED');
+    expect(e.normalized?.message).toBe('계정이 잠겼어요');
+  });
 });

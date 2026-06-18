@@ -7,7 +7,7 @@ import type { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
  *   { code: string, message: string, details?: unknown }
  *
  * 본 interceptor 는 모든 axios 응답 에러에 normalized 속성을 부여:
- *   - err.normalized.code     — 에러 코드 (예: 'AUTH_INVALID_CREDENTIAL')
+ *   - err.normalized.code     — 에러 코드 (예: 'AUTH_INVALID_CREDENTIALS')
  *   - err.normalized.message  — 사용자 노출용 메시지
  *
  * 호출처는 isAxiosError(err) 후 err.normalized 만 보면 됨 — 응답 body 형태 변경에
@@ -45,6 +45,10 @@ const STATUS_CODE: Record<number, string> = {
 const GENERIC_MESSAGE: Record<string, string> = {
   AUTH: '로그인이 필요해요.',
   FORBIDDEN: '접근 권한이 없어요.',
+  // BE 의 CsrfGuard 가 X-Requested-With 헤더 부재 시 403 CSRF — axios 가 전역
+  // 전송 (client.ts:33) 하므로 정상 흐름에선 도달 불가. 도달 시 인터셉터 누락
+  // 또는 일부 환경의 헤더 strip 가능성 — 사용자 친화 메시지 + 재시도 유도.
+  CSRF: '요청이 안전하게 전달되지 않았어요. 새로고침 후 다시 시도해주세요.',
   NOT_FOUND: '요청한 정보를 찾을 수 없어요.',
   CONFLICT: '이미 처리된 요청이에요.',
   VALIDATION: '입력값을 확인해주세요.',
