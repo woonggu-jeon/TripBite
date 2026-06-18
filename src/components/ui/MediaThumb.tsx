@@ -1,5 +1,7 @@
+'use client';
+
 import Image from 'next/image';
-import { type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { secureImageUrl } from '@/lib/secure-image-url';
 import styles from './MediaThumb.module.scss';
 
@@ -26,6 +28,11 @@ export interface MediaThumbProps {
  *
  * container 의 background/aspect-ratio/border-radius 등 시각 토큰은 호출 측
  * SCSS 가 책임 (사용처마다 56px fixed / 96px / aspect-square 등 다양).
+ *
+ * 안전망:
+ *   - src 가 빈 string ("") 도 emoji fallback (null/undefined 와 동일 처리)
+ *   - 이미지 load 실패 (next/image 400/404, TourAPI origin 404, encoding 오류
+ *     등) 시 onError 트리거 → emoji fallback 으로 자동 전환
  */
 export function MediaThumb({
   src,
@@ -35,11 +42,20 @@ export function MediaThumb({
   emojiClassName,
   children,
 }: MediaThumbProps) {
-  const safe = secureImageUrl(src);
+  const [errored, setErrored] = useState(false);
+  const safe = secureImageUrl(src && src.length > 0 ? src : undefined);
+  const showImage = safe && !errored;
   return (
     <div className={className} aria-hidden>
-      {safe ? (
-        <Image src={safe} alt="" fill sizes={sizes} className={styles.photo} />
+      {showImage ? (
+        <Image
+          src={safe}
+          alt=""
+          fill
+          sizes={sizes}
+          className={styles.photo}
+          onError={() => setErrored(true)}
+        />
       ) : (
         <span className={emojiClassName ?? styles.emoji}>{emoji}</span>
       )}
