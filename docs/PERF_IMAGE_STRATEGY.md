@@ -7,7 +7,7 @@
 
 ## 진행 상태
 
-- [x] **B. deviceSizes/imageSizes 단순화** — 7×8 → 3×4 (`next.config.js`)
+- [x] **B. deviceSizes/imageSizes 단순화** — 7×8 → 3×6 (`next.config.js`). 초기 3×4 였으나 96 누락이 RecommendationBanner `w=96` 요청 400 원인 — 6개 (`64/96/128/256/384/512`)로 보강
 - [x] **A. SW cache 의 `/_next/image` 패턴 추가** — CacheFirst 30일, maxEntries 500 (`src/app/sw.ts`)
 - [x] **artillery loadtest 셋업** — `npm run loadtest` / `npm run loadtest:report`
 - [ ] C. sizes prop 정밀화 — 현재 점검 결과 대부분 적절, 큰 임팩트 없어 skip

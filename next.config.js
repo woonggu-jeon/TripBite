@@ -78,11 +78,13 @@ const nextConfig = {
   images: {
     remotePatterns: [{ protocol: 'https', hostname: 'tong.visitkorea.or.kr' }],
     formats: ['image/avif', 'image/webp'],
-    // variant 수 절감 (한 이미지당 deviceSizes×imageSizes = 12 → 변환 호출 ↓)
-    // 카드 (50-200px) + grid (200-300px) + hero (640-1080px) 범위 cover.
-    // 정확한 size 매칭 trade-off (약간 큰 이미지 다운로드 가능) 수용.
+    // variant 수 절감 + 우리 sizes prop 의 실 width cover.
+    // sizes prop 사용처 widths: 40/64/72/80/96/100/120/160/200/720
+    //   → 64/96/128/256/384/512 안에서 round-up 매칭 (next/image 가 imageSizes
+    //     외 width 요청 시 400 반환 — 96 누락이 RecommendationBanner 400 원인).
+    // 변환 호출 절감 효과는 직전 [16/32/48/64/96/128/256/384] (8개) → 6개로 유지.
     deviceSizes: [640, 1080, 1920],
-    imageSizes: [64, 128, 256, 512],
+    imageSizes: [64, 96, 128, 256, 384, 512],
     minimumCacheTTL: 60 * 60 * 24 * 60,
   },
   compress: true,
