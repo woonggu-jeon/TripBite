@@ -115,6 +115,12 @@
       "usernamePlaceholder": "letters/digits 4-20",
       "usernameChecking": "Checking...",
       "usernameAvailable": "Username is available.",
+      "usernameCheckPrompt": "Please check availability.",
+      "emailChecking": "Checking...",
+      "emailAvailable": "Email is available.",
+      "emailCheckPrompt": "Please check availability.",
+      "emailCheckPending": "Email check coming soon.",
+      "checkButton": "Check",
       "nickname": "Nickname",
       "nicknamePlaceholder": "Korean/letters/digits 2-10",
       "password": "Password",
@@ -130,6 +136,7 @@
       "errors": {
         "usernameInvalid": "Username must be 4-20 letters/digits.",
         "usernameTaken": "This username is already taken.",
+        "usernameVerifyRequired": "Please verify username availability.",
         "nicknameTooShort": "Nickname must be at least 2 characters.",
         "nicknameTooLong": "Nickname must be 10 characters or fewer.",
         "nicknameInvalid": "Nickname can contain Korean, letters, and digits only.",
@@ -144,6 +151,8 @@
     "forgotPassword": {
       "title": "Forgot password",
       "description": "We'll email you a reset link.",
+      "username": "Username",
+      "usernamePlaceholder": "Your username",
       "email": "Email",
       "submit": "Send reset link",
       "submitting": "Sending...",
@@ -151,6 +160,7 @@
       "sentDescription": "If an account exists, a reset link has been sent.",
       "toLogin": "Back to sign in",
       "errors": {
+        "usernameInvalid": "Username must be 4-20 letters/digits.",
         "emailInvalid": "Please enter a valid email."
       }
     },

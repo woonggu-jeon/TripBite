@@ -6,13 +6,24 @@ import {
 } from './password-reset';
 
 describe('forgotPasswordSchema', () => {
-  it('유효 이메일 통과', () => {
-    expect(forgotPasswordSchema.safeParse({ email: 'a@b.com' }).success).toBe(
-      true,
-    );
+  const valid = { username: 'tester01', email: 'a@b.com' };
+  it('username + email 통과', () => {
+    expect(forgotPasswordSchema.safeParse(valid).success).toBe(true);
   });
   it('잘못된 이메일 거부', () => {
-    expect(forgotPasswordSchema.safeParse({ email: 'x' }).success).toBe(false);
+    expect(
+      forgotPasswordSchema.safeParse({ ...valid, email: 'x' }).success,
+    ).toBe(false);
+  });
+  it('잘못된 아이디 (특수문자 포함) 거부', () => {
+    expect(
+      forgotPasswordSchema.safeParse({ ...valid, username: 'a@b' }).success,
+    ).toBe(false);
+  });
+  it('아이디 4자 미만 거부', () => {
+    expect(
+      forgotPasswordSchema.safeParse({ ...valid, username: 'abc' }).success,
+    ).toBe(false);
   });
 });
 

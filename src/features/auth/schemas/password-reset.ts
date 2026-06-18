@@ -8,7 +8,10 @@ import { z } from 'zod';
  *
  * 에러 메시지는 i18n 키(auth.forgotPassword.* / auth.resetPassword.*).
  */
+// FE 폼은 username + email 둘 다 검증. BE 가 ForgotPasswordDto 에 username 추가
+// 전엔 mutation 호출 시 email 만 전달 (BE 갱신 후 둘 다 전송으로 변경).
 export const forgotPasswordSchema = z.object({
+  username: z.string().regex(/^[a-zA-Z0-9]{4,20}$/, 'usernameInvalid'),
   email: z.string().email('emailInvalid'),
 });
 

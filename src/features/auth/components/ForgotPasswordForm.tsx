@@ -27,12 +27,15 @@ export function ForgotPasswordForm() {
     formState: { errors },
   } = useForm<ForgotPasswordValues>({
     resolver: zodResolver(forgotPasswordSchema),
-    defaultValues: { email: '' },
+    defaultValues: { username: '', email: '' },
   });
 
   const onSubmit = handleSubmit(async (values) => {
     try {
-      await forgot(values);
+      // BE ForgotPasswordDto 가 아직 { email } 만 받음 — FE 폼은 username/email
+      // 둘 다 검증하지만 mutation 호출 시 email 만 전달. BE 갱신
+      // (docs/BE_REQUEST_auth_check_email.md §2) 후 둘 다 전송으로 변경.
+      await forgot({ email: values.email });
     } catch {
       /* swallow — 동일 안내 (열거 방지) */
     }
@@ -56,10 +59,25 @@ export function ForgotPasswordForm() {
       <p className={styles.subtitle}>{t('description')}</p>
 
       <TextField
+        id="username"
+        type="text"
+        autoComplete="username"
+        label={t('username')}
+        placeholder={t('usernamePlaceholder')}
+        errorMessage={
+          errors.username
+            ? tErr(errors.username.message as Parameters<typeof tErr>[0])
+            : undefined
+        }
+        {...register('username')}
+      />
+
+      <TextField
         id="email"
         type="email"
         autoComplete="email"
         label={t('email')}
+        placeholder="you@example.com"
         errorMessage={
           errors.email
             ? tErr(errors.email.message as Parameters<typeof tErr>[0])

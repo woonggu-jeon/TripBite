@@ -115,6 +115,12 @@
       "usernamePlaceholder": "영문/숫자 4~20자",
       "usernameChecking": "확인 중...",
       "usernameAvailable": "사용 가능한 아이디예요.",
+      "usernameCheckPrompt": "중복확인을 해주세요.",
+      "emailChecking": "확인 중...",
+      "emailAvailable": "사용 가능한 이메일이에요.",
+      "emailCheckPrompt": "중복확인을 해주세요.",
+      "emailCheckPending": "이메일 중복확인은 곧 지원됩니다.",
+      "checkButton": "중복확인",
       "nickname": "닉네임",
       "nicknamePlaceholder": "한글/영문/숫자 2~10자",
       "password": "비밀번호",
@@ -130,6 +136,7 @@
       "errors": {
         "usernameInvalid": "아이디는 영문/숫자 4~20자여야 해요.",
         "usernameTaken": "이미 사용 중인 아이디예요.",
+        "usernameVerifyRequired": "아이디 중복확인을 해주세요.",
         "nicknameTooShort": "닉네임은 2자 이상이어야 해요.",
         "nicknameTooLong": "닉네임은 10자 이하여야 해요.",
         "nicknameInvalid": "닉네임은 한글/영문/숫자만 가능해요.",
@@ -143,7 +150,9 @@
     },
     "forgotPassword": {
       "title": "비밀번호 찾기",
-      "description": "가입한 이메일로 재설정 링크를 보내드려요.",
+      "description": "가입한 아이디와 이메일로 재설정 링크를 보내드려요.",
+      "username": "아이디",
+      "usernamePlaceholder": "가입 아이디",
       "email": "이메일",
       "submit": "재설정 링크 받기",
       "submitting": "전송 중...",
@@ -151,6 +160,7 @@
       "sentDescription": "입력하신 이메일로 비밀번호 재설정 링크를 보냈어요. (가입된 계정인 경우)",
       "toLogin": "로그인으로 돌아가기",
       "errors": {
+        "usernameInvalid": "아이디는 영문/숫자 4~20자여야 해요.",
         "emailInvalid": "올바른 이메일 형식이 아니에요."
       }
     },
