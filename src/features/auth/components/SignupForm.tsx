@@ -14,17 +14,21 @@ import { Button, TextField } from '@/components/ui';
 import styles from './AuthForm.module.scss';
 
 /**
- * 회원가입 폼 — 이름/아이디/비번(10+)/생년월일/이메일/폰 (전부 필수)
+ * 회원가입 폼 — 4 필수 + 비번 확인: 아이디 / 비번+확인 / 닉네임 / 이메일.
+ *
+ * 임시 처리: BE SignupDto 가 아직 name/birthDate/phone 을 필수로 받아
+ * defaultValues 에 placeholder 값을 박아 통과시킴 (사용자 입력 X). BE 가
+ * 해당 필드 옵셔널화 (docs/BE_REQUEST_signup_simplify.md §2) 후
+ * `BE_REQUIRES_LEGACY_FIELDS` 를 false 로 토글 + defaultValues placeholder 제거.
  */
+const BE_REQUIRES_LEGACY_FIELDS = true;
+
 const FIELDS = [
-  { name: 'name', type: 'text', autoComplete: 'name' },
   { name: 'username', type: 'text', autoComplete: 'username' },
   { name: 'nickname', type: 'text', autoComplete: 'nickname' },
   { name: 'password', type: 'password', autoComplete: 'new-password' },
   { name: 'passwordConfirm', type: 'password', autoComplete: 'new-password' },
-  { name: 'birthDate', type: 'date', autoComplete: 'bday' },
   { name: 'email', type: 'email', autoComplete: 'email' },
-  { name: 'phone', type: 'tel', autoComplete: 'tel' },
 ] as const;
 
 export function SignupForm() {
@@ -40,20 +44,27 @@ export function SignupForm() {
   } = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
-      name: '',
+      // 사용자 입력 5 필드 (UI 노출)
       username: '',
       nickname: '',
       password: '',
       passwordConfirm: '',
-      birthDate: '',
       email: '',
-      phone: '',
+      // BE 가 아직 필수로 받는 3 필드 — placeholder 값으로 통과.
+      // name 은 onSubmit 직전에 nickname 값으로 동기 (가입 후 mypage 에서 수정 가능).
+      name: BE_REQUIRES_LEGACY_FIELDS ? '회원' : '',
+      birthDate: BE_REQUIRES_LEGACY_FIELDS ? '2000-01-01' : '',
+      phone: BE_REQUIRES_LEGACY_FIELDS ? '010-0000-0000' : '',
     },
   });
 
   const onSubmit = handleSubmit(async (values) => {
     try {
-      await signup(values);
+      // name 은 nickname 으로 동기 — 가입 후 mypage 에서 수정 가능 (또는 BE 옵셔널화 후 폼에서 제거)
+      const payload = BE_REQUIRES_LEGACY_FIELDS
+        ? { ...values, name: values.nickname }
+        : values;
+      await signup(payload);
     } catch (err) {
       const message = isAxiosError(err)
         ? ((err.response?.data as { message?: string })?.message ?? t('failed'))
