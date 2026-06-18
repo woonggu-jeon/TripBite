@@ -8,6 +8,7 @@ import {
 } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { authApi } from '@/features/auth/api/auth';
+import { onboardingApi } from '@/features/onboarding/api/onboarding';
 import { useAuthStore } from '@/stores/auth-store';
 import type {
   LoginDto,
@@ -98,7 +99,17 @@ export function useSignup() {
   const setAuth = useAuthStore((s) => s.setAuth);
 
   return useMutation({
-    mutationFn: (data: SignupDto) => authApi.signup(data),
+    // BE SignupDto 가 nickname 안 받음 — UserDto 응답에만 있음. FE 가 입력받은
+    // nickname 을 signup 직후 complete-onboarding 으로 patch 하는 2-step.
+    // BE 가 SignupDto 에 nickname 추가 시 본 chain 한 줄 합치고 patch 제거 가능.
+    mutationFn: async (data: SignupDto & { nickname?: string }) => {
+      const { nickname, ...signupData } = data;
+      const response = await authApi.signup(signupData);
+      if (nickname) {
+        await onboardingApi.complete({ nickname });
+      }
+      return response;
+    },
     onSuccess: (response) => {
       // BE 가 가입 + 세션 발급을 atomic 처리 — Set-Cookie: SID + { user: UserDto }.
       // FE 는 별도 login/me 호출 불필요 — 응답의 user 그대로 store / cache hydrate.

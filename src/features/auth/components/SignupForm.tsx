@@ -19,7 +19,9 @@ import styles from './AuthForm.module.scss';
 const FIELDS = [
   { name: 'name', type: 'text', autoComplete: 'name' },
   { name: 'username', type: 'text', autoComplete: 'username' },
+  { name: 'nickname', type: 'text', autoComplete: 'nickname' },
   { name: 'password', type: 'password', autoComplete: 'new-password' },
+  { name: 'passwordConfirm', type: 'password', autoComplete: 'new-password' },
   { name: 'birthDate', type: 'date', autoComplete: 'bday' },
   { name: 'email', type: 'email', autoComplete: 'email' },
   { name: 'phone', type: 'tel', autoComplete: 'tel' },
@@ -40,7 +42,9 @@ export function SignupForm() {
     defaultValues: {
       name: '',
       username: '',
+      nickname: '',
       password: '',
+      passwordConfirm: '',
       birthDate: '',
       email: '',
       phone: '',

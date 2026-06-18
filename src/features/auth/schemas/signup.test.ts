@@ -4,7 +4,9 @@ import { signupSchema } from './signup';
 const valid = {
   name: '홍길동',
   username: 'tester_01',
+  nickname: '여행자',
   password: '1234567890',
+  passwordConfirm: '1234567890',
   birthDate: '1990-01-01',
   email: 'a@b.com',
   phone: '010-1234-5678',
@@ -55,5 +57,24 @@ describe('signupSchema', () => {
     expect(signupSchema.safeParse({ ...valid, name: '   ' }).success).toBe(
       false,
     );
+  });
+
+  it('닉네임 2자 미만 거부', () => {
+    expect(signupSchema.safeParse({ ...valid, nickname: '여' }).success).toBe(
+      false,
+    );
+  });
+
+  it('닉네임 10자 초과 거부', () => {
+    expect(
+      signupSchema.safeParse({ ...valid, nickname: '12345678901' }).success,
+    ).toBe(false);
+  });
+
+  it('비밀번호 확인 불일치 거부', () => {
+    expect(
+      signupSchema.safeParse({ ...valid, passwordConfirm: 'different00' })
+        .success,
+    ).toBe(false);
   });
 });

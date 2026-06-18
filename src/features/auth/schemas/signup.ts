@@ -14,23 +14,44 @@ const BIRTH_DATE = /^\d{4}-\d{2}-\d{2}$/;
 // 010-1234-5678 / 01012345678 / 010-12345678 등 허용
 const PHONE = /^01[016789]-?\d{3,4}-?\d{4}$/;
 
-export const signupSchema = z.object({
-  name: z
-    .string()
-    .transform((s) => s.trim())
-    .refine((v) => graphemeLength(v) >= 1, 'nameRequired')
-    .refine((v) => graphemeLength(v) <= 30, 'nameTooLong')
-    .refine(textGuards.noControl, 'nameInvalid')
-    .refine(textGuards.noHtml, 'nameInvalid'),
-  username: z.string().regex(USERNAME, 'usernameInvalid'),
-  password: z
-    .string()
-    .min(10, 'passwordMin')
-    .max(72, 'passwordMax')
-    .refine(textGuards.noControl, 'passwordInvalid'),
-  birthDate: z.string().regex(BIRTH_DATE, 'birthDateInvalid'),
-  email: z.string().email('emailInvalid'),
-  phone: z.string().regex(PHONE, 'phoneInvalid'),
-});
+export const signupSchema = z
+  .object({
+    name: z
+      .string()
+      .transform((s) => s.trim())
+      .refine((v) => graphemeLength(v) >= 1, 'nameRequired')
+      .refine((v) => graphemeLength(v) <= 30, 'nameTooLong')
+      .refine(textGuards.noControl, 'nameInvalid')
+      .refine(textGuards.noHtml, 'nameInvalid'),
+    username: z.string().regex(USERNAME, 'usernameInvalid'),
+    // 닉네임 — 2~10자 (BE UserDto.nickname). signup 직후 complete-onboarding
+    // patch 로 설정. BE 가 SignupDto 에 nickname 추가하면 1-step 로 단순화 가능.
+    nickname: z
+      .string()
+      .transform((s) => s.trim())
+      .refine((v) => graphemeLength(v) >= 2, 'nicknameTooShort')
+      .refine((v) => graphemeLength(v) <= 10, 'nicknameTooLong')
+      .refine(textGuards.noControl, 'nicknameInvalid')
+      .refine(textGuards.noHtml, 'nicknameInvalid'),
+    password: z
+      .string()
+      .min(10, 'passwordMin')
+      .max(72, 'passwordMax')
+      .refine(textGuards.noControl, 'passwordInvalid'),
+    // 비밀번호 확인 — 클라이언트 단순 일치 검증. BE 로 안 보냄.
+    passwordConfirm: z.string(),
+    birthDate: z.string().regex(BIRTH_DATE, 'birthDateInvalid'),
+    email: z.string().email('emailInvalid'),
+    phone: z.string().regex(PHONE, 'phoneInvalid'),
+  })
+  .superRefine((data, ctx) => {
+    if (data.password !== data.passwordConfirm) {
+      ctx.addIssue({
+        path: ['passwordConfirm'],
+        code: 'custom',
+        message: 'passwordMismatch',
+      });
+    }
+  });
 
 export type SignupFormValues = z.infer<typeof signupSchema>;
