@@ -86,3 +86,33 @@
 
 // TextField 의 suffix slot 으로 중복확인 버튼 직접 inline 배치 (TextField.module.scss
 // 의 .inputRow / .suffix). 별도 wrapping class 불필요.
+
+// 중복확인 완료 상태 — 버튼 색을 success 톤으로 (border + text). disabled 상태
+// 유지하면서 시각만 verified 표현. design system 에 success variant 추가 전엔
+// 본 클래스로 처리.
+.verifiedButton {
+  border-color: var(--color-success, #22c55e) !important;
+  color: var(--color-success, #22c55e) !important;
+  background: color-mix(
+    in srgb,
+    var(--color-success, #22c55e) 8%,
+    transparent
+  ) !important;
+  opacity: 1 !important; // disabled 의 dim 무효화 — verified 는 강조 의도
+  cursor: default;
+
+  & svg {
+    color: var(--color-success, #22c55e);
+  }
+}
+
+// 중복확인 진행 중 스피너 — Button 안에서 lucide Loader2 회전.
+.checkSpinner {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,10 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, type ReactNode } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
+import { Check, Loader2 } from 'lucide-react';
 import { useSignup } from '@/features/auth/hooks/use-auth';
 import { authApi } from '@/features/auth/api/auth';
 import {
@@ -12,6 +13,7 @@ import {
   type SignupFormValues,
 } from '@/features/auth/schemas/signup';
 import { isAxiosError } from '@/services/interceptors/auth';
+import { toast } from '@/lib/toast';
 import { Button, TextField } from '@/components/ui';
 import styles from './AuthForm.module.scss';
 
@@ -101,8 +103,11 @@ export function SignupForm() {
     try {
       const res = await authApi.checkUsername(usernameValue);
       setUsernameStatus(res.available ? 'available' : 'taken');
-    } catch {
+    } catch (err) {
       setUsernameStatus('idle');
+      if (isAxiosError(err) && err.response?.status === 429) {
+        toast.error(tErr('rateLimit'));
+      }
     }
   };
 
@@ -115,8 +120,11 @@ export function SignupForm() {
     try {
       const res = await authApi.checkEmail(emailValue);
       setEmailStatus(res.available ? 'available' : 'taken');
-    } catch {
+    } catch (err) {
       setEmailStatus('idle');
+      if (isAxiosError(err) && err.response?.status === 429) {
+        toast.error(tErr('rateLimit'));
+      }
     }
   };
 
@@ -168,16 +176,12 @@ export function SignupForm() {
         ? tErr('usernameInvalid')
         : undefined;
   // pattern 통과한 값이 입력됐을 때만 idle 안내 ("중복확인을 해주세요") 노출.
-  // 빈 값/regex 미통과면 placeholder 만 보이고 hint X.
+  // checking/available 시 hint X — 그 상태는 버튼 자체가 표현 (spinner / 확인 완료).
   const usernameValidShape = USERNAME_REGEX.test(usernameValue);
   const usernameHint =
-    !usernameError &&
-    renderHint({
-      status: usernameStatus,
-      t,
-      field: 'username',
-      showIdle: usernameValidShape,
-    });
+    !usernameError && usernameStatus === 'idle' && usernameValidShape
+      ? t('usernameCheckPrompt')
+      : undefined;
   const emailError = errors.email
     ? tErr(errors.email.message as Parameters<typeof tErr>[0])
     : emailStatus === 'taken'
@@ -187,13 +191,9 @@ export function SignupForm() {
         : undefined;
   const emailValidShape = EMAIL_LIKE_REGEX.test(emailValue);
   const emailHint =
-    !emailError &&
-    renderHint({
-      status: emailStatus,
-      t,
-      field: 'email',
-      showIdle: emailValidShape,
-    });
+    !emailError && emailStatus === 'idle' && emailValidShape
+      ? t('emailCheckPrompt')
+      : undefined;
 
   const allFilled =
     !!usernameValue &&
@@ -227,15 +227,25 @@ export function SignupForm() {
             type="button"
             variant="secondary"
             size="sm"
-            loading={usernameStatus === 'checking'}
             disabled={
               usernameStatus === 'checking' ||
               usernameStatus === 'available' ||
               !USERNAME_REGEX.test(usernameValue)
             }
             onClick={handleCheckUsername}
+            className={
+              usernameStatus === 'available' ? styles.verifiedButton : undefined
+            }
           >
-            {t('checkButton')}
+            {usernameStatus === 'checking' ? (
+              <Loader2 size={14} className={styles.checkSpinner} aria-hidden />
+            ) : usernameStatus === 'available' ? (
+              <>
+                <Check size={14} aria-hidden /> {t('checkDone')}
+              </>
+            ) : (
+              t('checkButton')
+            )}
           </Button>
         }
         {...register('username', { onChange: onUsernameInputChange })}
@@ -296,15 +306,25 @@ export function SignupForm() {
             type="button"
             variant="secondary"
             size="sm"
-            loading={emailStatus === 'checking'}
             disabled={
               emailStatus === 'checking' ||
               emailStatus === 'available' ||
               !EMAIL_LIKE_REGEX.test(emailValue)
             }
             onClick={handleCheckEmail}
+            className={
+              emailStatus === 'available' ? styles.verifiedButton : undefined
+            }
           >
-            {t('checkButton')}
+            {emailStatus === 'checking' ? (
+              <Loader2 size={14} className={styles.checkSpinner} aria-hidden />
+            ) : emailStatus === 'available' ? (
+              <>
+                <Check size={14} aria-hidden /> {t('checkDone')}
+              </>
+            ) : (
+              t('checkButton')
+            )}
           </Button>
         }
         {...register('email', { onChange: onEmailInputChange })}
@@ -332,22 +352,4 @@ export function SignupForm() {
       </Link>
     </form>
   );
-}
-
-function renderHint({
-  status,
-  t,
-  field,
-  showIdle,
-}: {
-  status: CheckStatus;
-  t: (k: string) => string;
-  field: 'username' | 'email';
-  /** idle 안내 표시 여부 — 값이 pattern 통과한 후에만 true. */
-  showIdle: boolean;
-}): ReactNode {
-  if (status === 'checking') return t(`${field}Checking`);
-  if (status === 'available') return t(`${field}Available`);
-  if (status === 'idle' && showIdle) return t(`${field}CheckPrompt`);
-  return undefined;
 }
