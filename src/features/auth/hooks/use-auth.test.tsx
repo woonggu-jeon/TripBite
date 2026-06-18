@@ -27,6 +27,8 @@ const {
   useResetPassword,
   useForgotPassword,
   useFindId,
+  useMe,
+  useChangePassword,
 } = await import('./use-auth');
 
 const apiUrl = mockSeeds.apiUrl;
@@ -299,6 +301,89 @@ describe('useResetPassword', () => {
       expect(useAuthStore.getState().isAuthenticated).toBe(false);
     });
     expect(router.replace).toHaveBeenCalledWith('/login?reset=success');
+  });
+});
+
+describe('useMe', () => {
+  beforeEach(() => {
+    useAuthStore.getState().clearAuth();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('persisted user 있으면 initialData 로 즉시 success + 백그라운드 refetch', async () => {
+    useAuthStore.getState().setAuth(mockUser);
+    let fetchCount = 0;
+    const refreshed = { ...mockUser, nickname: '갱신됨' };
+    server.use(
+      http.get(`${apiUrl}/me`, () => {
+        fetchCount += 1;
+        return HttpResponse.json(refreshed);
+      }),
+    );
+
+    const { result } = renderHookWithProviders(() => useMe());
+    // initialData hydrate — mount 즉시 user 있음
+    expect(result.current.data?.nickname).toBe('여행자');
+    // 백그라운드 refetch (initialDataUpdatedAt=0 으로 즉시 stale)
+    await waitFor(() => expect(result.current.data?.nickname).toBe('갱신됨'));
+    expect(fetchCount).toBe(1);
+  });
+
+  it('401 응답 시 retry 안 함 (failureCount=0 + 401 분기)', async () => {
+    let fetchCount = 0;
+    server.use(
+      http.get(`${apiUrl}/me`, () => {
+        fetchCount += 1;
+        return new HttpResponse(null, { status: 401 });
+      }),
+    );
+
+    const { result } = renderHookWithProviders(() => useMe());
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(fetchCount).toBe(1); // retry 0
+  });
+
+  it('5xx 응답 시 1회 retry (failureCount<1 분기)', async () => {
+    let fetchCount = 0;
+    server.use(
+      http.get(`${apiUrl}/me`, () => {
+        fetchCount += 1;
+        return new HttpResponse(null, { status: 500 });
+      }),
+    );
+
+    const { result } = renderHookWithProviders(() => useMe());
+    await waitFor(() => expect(result.current.isError).toBe(true), {
+      timeout: 3000,
+    });
+    expect(fetchCount).toBe(2); // 초기 + retry 1
+  });
+});
+
+describe('useChangePassword', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('POST /me/change-password 호출', async () => {
+    const calls: unknown[] = [];
+    server.use(
+      http.post(`${apiUrl}/me/change-password`, async ({ request }) => {
+        calls.push(await request.json());
+        return new HttpResponse(null, { status: 204 });
+      }),
+    );
+
+    const { result } = renderHookWithProviders(() => useChangePassword());
+    await result.current.mutateAsync({
+      currentPassword: 'old-pass-1234',
+      newPassword: 'new-pass-1234',
+    });
+
+    expect(calls).toHaveLength(1);
   });
 });
 

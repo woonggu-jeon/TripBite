@@ -35,6 +35,7 @@ export function InfiniteList<T>({
   renderItem,
   renderSkeleton,
   emptyState,
+  endMessage,
   className,
   itemGap = 12,
   skeletonCount = 3,
@@ -52,6 +53,12 @@ export function InfiniteList<T>({
    */
   renderSkeleton?: () => ReactNode;
   emptyState?: ReactNode;
+  /**
+   * 마지막 페이지 도달 시 (items > 0 && hasNext === false) 노출 메시지.
+   * 호출 측이 i18n 적용된 ReactNode 로 전달 — "더 이상 없어요" 등.
+   * 미지정 시 미노출 (backward compat).
+   */
+  endMessage?: ReactNode;
   className?: string;
   itemGap?: number;
   skeletonCount?: number;
@@ -105,6 +112,23 @@ export function InfiniteList<T>({
             gridColumn: columns > 1 ? `1 / -1` : undefined,
           }}
         />
+      )}
+
+      {/* end message — 더 이상 페이지 없음을 명시 (호출 측이 i18n 전달). */}
+      {!hasNext && !isFetchingNext && items.length > 0 && endMessage && (
+        <div
+          role="status"
+          aria-live="polite"
+          style={{
+            gridColumn: columns > 1 ? `1 / -1` : undefined,
+            textAlign: 'center',
+            padding: '16px 0',
+            fontSize: 'var(--font-caption)',
+            color: 'var(--color-muted)',
+          }}
+        >
+          {endMessage}
+        </div>
       )}
     </div>
   );

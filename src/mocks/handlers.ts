@@ -233,7 +233,37 @@ const unauthorized = () => new HttpResponse(null, { status: 401 });
 
 export const handlers = [
   // ===== Auth =====
-  http.post(`${apiUrl}/auth/login`, () => {
+  // login — dev/mock 분기:
+  //   username = 'locked'  → 429 AUTH_ACCOUNT_LOCKED (계정 잠금 UX 검증)
+  //   username = 'limited' → 429 RATE_LIMIT (IP rate-limit UX 검증)
+  //   username = 'wrong'   → 401 AUTH_INVALID_CREDENTIALS
+  //   그 외                  → 200 success (정상 로그인)
+  http.post(`${apiUrl}/auth/login`, async ({ request }) => {
+    const body = (await request.json().catch(() => ({}))) as {
+      username?: string;
+    };
+    const username = body.username ?? '';
+    if (username === 'locked') {
+      return HttpResponse.json(
+        { code: 'AUTH_ACCOUNT_LOCKED', message: '계정이 잠겼어요' },
+        { status: 429 },
+      );
+    }
+    if (username === 'limited') {
+      return HttpResponse.json(
+        { code: 'RATE_LIMIT', message: '잠시 후 다시 시도해주세요' },
+        { status: 429 },
+      );
+    }
+    if (username === 'wrong') {
+      return HttpResponse.json(
+        {
+          code: 'AUTH_INVALID_CREDENTIALS',
+          message: '아이디/비밀번호가 일치하지 않아요',
+        },
+        { status: 401 },
+      );
+    }
     setMockSignedIn(true);
     return HttpResponse.json({ success: true });
   }),

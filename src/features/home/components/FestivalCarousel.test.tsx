@@ -80,4 +80,51 @@ describe('FestivalCarousel — 3단계 폴백 응답 분기', () => {
       ).toBeNull();
     });
   });
+
+  it('API 5xx 에러 → section 미노출 (isError 분기)', async () => {
+    server.use(
+      http.get(`${apiUrl}/regions/ongoing-festivals`, () =>
+        HttpResponse.json(null, { status: 500 }),
+      ),
+    );
+
+    const { container } = renderWithProviders(<FestivalCarousel />);
+    await waitFor(() => {
+      expect(
+        container.querySelector('[data-widget="ongoing-festivals"]'),
+      ).toBeNull();
+    });
+  });
+
+  it('알려지지 않은 festival id → 기본 emoji 🎉 사용 (emojiFor fallback)', async () => {
+    stubResponse({
+      type: 'popular',
+      items: [
+        sampleItem({
+          id: 'unknown-festival-xyz',
+          name: '알 수 없는 축제',
+          daysToStart: undefined,
+        }),
+      ],
+    });
+
+    const { findByText } = renderWithProviders(<FestivalCarousel />);
+    // 기본 fallback emoji 노출 검증 (ID_EMOJI 미등록 id)
+    expect(await findByText('🎉')).toBeInTheDocument();
+  });
+
+  it('regionLabel 누락 시 fallback 동작 (regionLabelOf cheongju fallback)', async () => {
+    stubResponse({
+      type: 'ongoing',
+      items: [sampleItem({ regionLabel: undefined, daysToStart: undefined })],
+    });
+
+    const { container } = renderWithProviders(<FestivalCarousel />);
+    // 섹션 자체 렌더링 (regionLabel 없어도 fallback) — section 미노출 안 됨 검증
+    await waitFor(() => {
+      expect(
+        container.querySelector('[data-widget="ongoing-festivals"]'),
+      ).toBeInTheDocument();
+    });
+  });
 });

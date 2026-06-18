@@ -130,9 +130,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
           onError: (error) => {
             if (isAxiosError(error) && error.response?.status === 401) return;
             const t = tErrorsRef.current;
+            // attachErrorNormalizeInterceptor 가 error.normalized 부착 — cast 우회.
             const message = isAxiosError(error)
-              ? ((error.response?.data as { message?: string })?.message ??
-                t('requestFailed'))
+              ? (error.normalized?.message ?? t('requestFailed'))
               : t('network');
             toast.error(message);
             // 운영 client-error endpoint 로 보고. dev 는 console 만.

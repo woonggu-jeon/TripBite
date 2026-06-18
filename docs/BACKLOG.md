@@ -284,33 +284,33 @@
 
 ### CI 차단 위험 (HIGH — 단기 결정)
 
-- **vitest branches 67.55% < threshold 69%** — `npm run test:coverage` 실측. CI 통과 불가. fix 방안: `use-tournament.ts` 의 edge case test 추가 (~30 line). 작업 cost 30분. 사이드이펙트: test 추가만, 0.
-- **TournamentPlayClient unit test 부재** — 최근 1달 24회 변경. 사용자 핵심 흐름 (매치 진행 / 우승자 결정). 작업 1.5h.
-- **TournamentResultClient unit test 부재** — 최근 19회 변경. 결과 / 저장 / 공유. 작업 1h.
+- ✅ **vitest branches threshold 충족 (2026-06-18)** — 67.39 → 71.49% (+4.1%). `use-auth.test.tsx` 의 useMe (initialData / 401 retry skip / 5xx 1회 retry) + useChangePassword + `use-letters.test.tsx` 의 useLetter 빈 id 분기 + useLettersInfinite kind 별 분기 + hasNextPage. vitest 250 → 261 (+11). All Stmts 85.58→88.35 / Branches 67.39→71.49 / Funcs 81.56→86.34 / Lines 86.51→89.03.
+- **TournamentPlayClient unit test 부재** — 최근 1달 24회 변경. 사용자 핵심 흐름 (매치 진행 / 우승자 결정). 작업 1.5h. 보류 — 별도 turn.
+- **TournamentResultClient unit test 부재** — 최근 19회 변경. 결과 / 저장 / 공유. 작업 1h. 보류 — 별도 turn.
 
 ### UX 보강 (MEDIUM)
 
-- **loading.tsx 5개 추가** — destination/[id], tournament/result, quiz, mypage/saved-tournaments, mypage/stamps. skeleton 디자인 결정 필요 (실 콘텐츠와 같은 높이/모양).
-- **무한스크롤 end 메시지** — `InfiniteList` 끝났을 때 "더 이상 없어요" 명시. i18n 키 추가 + 컴포넌트 변경.
-- **`useRecordTournament` onError 토스트** — 현재 의도적 silent fail 주석. 사용자가 토너먼트 결과 저장 실패를 모름 vs 결과 화면 진입 자체 막지 않는 의도와 trade-off. 정책 결정 필요.
+- **loading.tsx 5개 추가** — destination/[id], tournament/result, quiz, mypage/saved-tournaments, mypage/stamps. skeleton 디자인 결정 필요 (실 콘텐츠와 같은 높이/모양). 보류 — 디자인 결정.
+- ✅ **무한스크롤 end 메시지 prop 추가 (2026-06-18)** — `InfiniteList` 에 optional `endMessage?: ReactNode` prop 신설. `!hasNext && !isFetchingNext && items.length > 0 && endMessage` 일 때 role="status" + aria-live="polite" 로 노출. 사용처가 i18n 메시지 전달 (backward compat). 호출처 i18n 적용은 추후 별도 작업.
+- **`useRecordTournament` onError 토스트** — 현재 의도적 silent fail 주석. 사용자가 토너먼트 결과 저장 실패를 모름 vs 결과 화면 진입 자체 막지 않는 의도와 trade-off. 정책 결정 필요. 보류.
 
 ### 테스트 보강 (MEDIUM)
 
-- **시각회귀 baseline 확장** — `/tournament`, `/quiz`, `/policy/terms`, `/policy/privacy`, `/settings` 추가. 24+ 새 baseline 생성 → 시각적 변경 검토 + git LFS 영향 검토.
-- **회원가입 → onboarding → 홈 진입 e2e 흐름 신설** — MSW handler 재사용. ~60 line.
-- **Fixed delay → waitFor 개선** — `e2e/visual.spec.ts:46`, `e2e/a11y.spec.ts:27` 의 `waitForTimeout(1200/800)` → `waitForLoadState('networkidle')` 또는 `waitForSelector`. flaky 완화 vs stabilization risk trade-off.
-- **실 BE 통합 e2e 자동화** — task #424 의 "BE 배포 후 smoke" 를 GitHub Actions staging job 으로 자동화. 작업 2h.
-- **FestivalCarousel edge case test** — 현재 41% branch coverage. fallback / error 분기 추가 ~20 line.
+- **시각회귀 baseline 확장** — `/tournament`, `/quiz`, `/policy/terms`, `/policy/privacy`, `/settings` 추가. 24+ 새 baseline 생성 → 시각적 변경 검토 + git LFS 영향 검토. 보류 — Playwright 실행 환경.
+- **회원가입 → onboarding → 홈 진입 e2e 흐름 신설** — MSW handler 재사용. ~60 line. 보류 — 별도 turn.
+- **Fixed delay → waitFor 개선** — `e2e/visual.spec.ts:46`, `e2e/a11y.spec.ts:27` 의 `waitForTimeout(1200/800)` → `waitForLoadState('networkidle')` 또는 `waitForSelector`. flaky 완화 vs stabilization risk trade-off. 보류.
+- **실 BE 통합 e2e 자동화** — task #424 의 "BE 배포 후 smoke" 를 GitHub Actions staging job 으로 자동화. 작업 2h. 보류 — staging URL 필요.
+- ✅ **FestivalCarousel edge case test (2026-06-18)** — API 5xx isError 분기 / unknown id emoji fallback / regionLabel 누락 fallback +3 cases. coverage 41 → 향상.
 
 ### API contract (LOW — orval 재생성 필요)
 
-- **POST signup useQuery 패턴** — orval generated 의 `useAuthControllerSignupV1` 가 POST 인데 useQuery hook 생성. 실 사용은 useMutation 으로 재포장 (use-auth.ts:102). orval config 의 `method: post → mutation override` 필요.
-- **MSW login handler 의 error code 분기** — 현재 항상 success. AUTH_ACCOUNT_LOCKED / RATE_LIMIT / AUTH_INVALID_CREDENTIALS dev 분기 추가 (mock only, 운영 영향 0).
+- **POST signup useQuery 패턴** — orval generated 의 `useAuthControllerSignupV1` 가 POST 인데 useQuery hook 생성. 실 사용은 useMutation 으로 재포장 (use-auth.ts:102). orval config 의 `method: post → mutation override` 필요. 보류 — orval config 재생성 비용.
+- ✅ **MSW login handler error code 분기 (2026-06-18)** — username 'locked' → 429 AUTH_ACCOUNT_LOCKED, 'limited' → 429 RATE_LIMIT, 'wrong' → 401 AUTH_INVALID_CREDENTIALS, 그 외 정상 로그인. dev/mock 만 (운영 영향 0).
 
 ### 코드 정리 (LOW)
 
-- **`providers.tsx:134` cast 중복** — `(error.response?.data as { message?: string })?.message` 를 `error.normalized.message` 직접 사용 (interceptor 이미 적용 중).
-- **`use-tournament.ts` `!` assertion 4건** — `enabled` 조건 검증 후 사용이라 안전하지만 명시적 가드로 refactor 가능 (style preference).
+- ✅ **`providers.tsx:134` cast 정리 (2026-06-18)** — `(error.response?.data as { message?: string })?.message` → `error.normalized?.message` (attachErrorNormalizeInterceptor 이미 부착 중).
+- **`use-tournament.ts` `!` assertion 4건** — `enabled` 조건 검증 후 사용이라 안전하지만 명시적 가드로 refactor 가능 (style preference). 보류.
 
 ### dev/build 의존성 vuln (LOW — production 영향 0)
 

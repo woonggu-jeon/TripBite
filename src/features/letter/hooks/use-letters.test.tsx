@@ -266,4 +266,92 @@ describe('enabled: isAuthenticated 가드', () => {
     expect(result.current.fetchStatus).toBe('idle');
     expect(called).toBe(0);
   });
+
+  it('useLetter — id 빈 문자열이면 query 비활성 (`!!id` 분기)', () => {
+    useAuthStore.getState().setAuth({
+      id: 'u-1',
+      username: 'tester',
+      nickname: '여행자',
+      email: 't@e.st',
+      isOnboarded: true,
+      homeRegion: 'cheongju',
+      avatarUrl: null,
+      travelType: null,
+    });
+    let called = 0;
+    server.use(
+      http.get(`${apiUrl}/letters/:id`, () => {
+        called++;
+        return HttpResponse.json(makeLetter());
+      }),
+    );
+    const { result } = renderHookWithProviders(() => useLetter(''));
+    expect(result.current.fetchStatus).toBe('idle');
+    expect(called).toBe(0);
+  });
+});
+
+describe('useLettersInfinite — kind 별 분기', () => {
+  beforeEach(() => {
+    useAuthStore.getState().setAuth({
+      id: 'u-1',
+      username: 'tester',
+      nickname: '여행자',
+      email: 't@e.st',
+      isOnboarded: true,
+      homeRegion: 'cheongju',
+      avatarUrl: null,
+      travelType: null,
+    });
+  });
+
+  it('sent kind — CACHE.user 프로필 분기 + fetch 성공', async () => {
+    server.use(
+      http.get(`${apiUrl}/letters/sent`, () =>
+        HttpResponse.json({
+          items: [makeLetter()],
+          nextCursor: null,
+        }),
+      ),
+    );
+    const { result } = renderHookWithProviders(() =>
+      useLettersInfinite('sent'),
+    );
+    await waitFor(() =>
+      expect(result.current.data?.pages[0]?.items).toHaveLength(1),
+    );
+  });
+
+  it('saved kind — CACHE.user 분기 동일', async () => {
+    server.use(
+      http.get(`${apiUrl}/letters/saved`, () =>
+        HttpResponse.json({
+          items: [makeLetter(), makeLetter()],
+          nextCursor: null,
+        }),
+      ),
+    );
+    const { result } = renderHookWithProviders(() =>
+      useLettersInfinite('saved'),
+    );
+    await waitFor(() =>
+      expect(result.current.data?.pages[0]?.items).toHaveLength(2),
+    );
+  });
+
+  it('nextCursor 가 있으면 hasNextPage true', async () => {
+    server.use(
+      http.get(`${apiUrl}/letters/received`, () =>
+        HttpResponse.json({
+          items: [makeLetter()],
+          nextCursor: 5, // 다음 페이지 있음
+        }),
+      ),
+    );
+    const { result } = renderHookWithProviders(() =>
+      useLettersInfinite('received'),
+    );
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.hasNextPage).toBe(true);
+  });
 });
