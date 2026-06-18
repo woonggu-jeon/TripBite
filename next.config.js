@@ -78,8 +78,11 @@ const nextConfig = {
   images: {
     remotePatterns: [{ protocol: 'https', hostname: 'tong.visitkorea.or.kr' }],
     formats: ['image/avif', 'image/webp'],
-    deviceSizes: [360, 640, 750, 828, 1080, 1200, 1920],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // variant 수 절감 (한 이미지당 deviceSizes×imageSizes = 12 → 변환 호출 ↓)
+    // 카드 (50-200px) + grid (200-300px) + hero (640-1080px) 범위 cover.
+    // 정확한 size 매칭 trade-off (약간 큰 이미지 다운로드 가능) 수용.
+    deviceSizes: [640, 1080, 1920],
+    imageSizes: [64, 128, 256, 512],
     minimumCacheTTL: 60 * 60 * 24 * 60,
   },
   compress: true,

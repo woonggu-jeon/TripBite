@@ -35,7 +35,9 @@
     "kill:3901": "node scripts/kill-port.mjs 3901",
     "dev:restart": "npm run kill:3900 && npm run dev",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "loadtest": "artillery run loadtest/scenarios.yml",
+    "loadtest:report": "artillery run --output loadtest/report.json loadtest/scenarios.yml && artillery report --output loadtest/report.html loadtest/report.json"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -82,6 +84,7 @@
     "@vitejs/plugin-react": "^4.7.0",
     "@vitest/coverage-v8": "^4.1.8",
     "ajv": "^8.20.0",
+    "artillery": "^2.0.33",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.0.0",
     "eslint-config-next": "^15.0.0",

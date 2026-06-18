@@ -61,7 +61,22 @@ const serwist = new Serwist({
       }),
     },
     {
-      // TourAPI 이미지 — CacheFirst 30일
+      // next/image 가 최적화한 TourAPI 이미지 — CacheFirst 30일.
+      // Vercel image optimization 한도 절감의 핵심: 재방문/탭 전환 시 transform
+      // 호출 0. URL 형태: /_next/image?url=https%3A//tong.visitkorea.or.kr/...
+      matcher: ({ url }: { url: URL }) =>
+        url.pathname === '/_next/image' &&
+        url.searchParams.get('url')?.includes('tong.visitkorea') === true,
+      handler: new CacheFirst({
+        cacheName: 'next-optimized-tour',
+        plugins: [
+          new ExpirationPlugin({ maxEntries: 500, maxAgeSeconds: MONTH }),
+          new CacheableResponsePlugin({ statuses: [0, 200] }),
+        ],
+      }),
+    },
+    {
+      // TourAPI 이미지 원본 (unoptimized 또는 SSR raw 케이스) — CacheFirst 30일
       matcher:
         /^https:\/\/tong\.visitkorea\.or\.kr\/.+\.(?:jpe?g|png|webp|avif)$/i,
       handler: new CacheFirst({

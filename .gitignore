@@ -16,6 +16,10 @@ coverage/
 playwright-report/
 test-results/
 /blob-report/
+
+# load test 산출물 (artillery)
+loadtest/report.json
+loadtest/report.html
 .playwright/
 
 # next.js
