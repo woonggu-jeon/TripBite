@@ -61,7 +61,8 @@ export function useMe(
 }
 
 export function useLogin(options?: { redirectTo?: string }) {
-  const router = useRouter();
+  // useRouter() 미사용 — hard nav (window.location.assign) 로 group 교체.
+  // 사유: (auth) → (main) router.replace + refresh race 회귀 (아래 주석 참조).
   const queryClient = useQueryClient();
   const setAuth = useAuthStore((s) => s.setAuth);
 

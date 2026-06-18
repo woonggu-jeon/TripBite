@@ -95,8 +95,7 @@ describe('TabList / Tab / TabPanel', () => {
         content
       </TabPanel>,
     );
-    const panel = screen.getByText('content', { selector: 'div *, div' });
-    // closest tabpanel
+    // hidden=true (DOM 의 hidden 속성) — role query 가 hidden 노드까지 포함
     const tabpanel = screen.getByRole('tabpanel', { hidden: true });
     expect(tabpanel).toHaveAttribute('hidden');
   });
