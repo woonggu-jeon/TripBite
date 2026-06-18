@@ -17,6 +17,12 @@ export interface TextFieldProps extends Omit<
   visuallyHiddenLabel?: boolean;
   /** 보조 설명 — invalid 가 아닐 때만 노출. aria-describedby 로 자동 연결. */
   hint?: ReactNode;
+  /**
+   * input 우측에 inline 배치되는 슬롯 — 중복확인 버튼 등. label / error 행과
+   * 무관하게 input row 와 같은 줄에 정렬되어 시각 안정. (호출 측에서 button 의
+   * type="button" 명시 — submit 차단.)
+   */
+  suffix?: ReactNode;
 }
 
 /**
@@ -34,6 +40,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       errorMessage,
       visuallyHiddenLabel,
       hint,
+      suffix,
       type = 'text',
       className,
       ...rest
@@ -56,15 +63,34 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
             {label}
           </label>
         )}
-        <input
-          ref={ref}
-          id={id}
-          type={type}
-          aria-invalid={invalid ? true : undefined}
-          aria-describedby={describedBy}
-          className={className ? `${styles.input} ${className}` : styles.input}
-          {...rest}
-        />
+        {suffix ? (
+          <div className={styles.inputRow}>
+            <input
+              ref={ref}
+              id={id}
+              type={type}
+              aria-invalid={invalid ? true : undefined}
+              aria-describedby={describedBy}
+              className={
+                className ? `${styles.input} ${className}` : styles.input
+              }
+              {...rest}
+            />
+            <div className={styles.suffix}>{suffix}</div>
+          </div>
+        ) : (
+          <input
+            ref={ref}
+            id={id}
+            type={type}
+            aria-invalid={invalid ? true : undefined}
+            aria-describedby={describedBy}
+            className={
+              className ? `${styles.input} ${className}` : styles.input
+            }
+            {...rest}
+          />
+        )}
         {hint && !invalid && (
           <p id={hintId} className={styles.hint}>
             {hint}

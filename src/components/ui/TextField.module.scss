@@ -62,3 +62,24 @@
   color: var(--color-danger);
   margin: 0;
 }
+
+// suffix (예: 중복확인 버튼) 사용 시 — input 과 같은 row 에 inline 배치.
+// label/hint/error 행과 무관해 input 정렬 시각 안정.
+.inputRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-2);
+  align-items: stretch;
+}
+
+.suffix {
+  // button 의 외곽이 input 과 같은 높이로 stretch — visual baseline 정합.
+  // button 자체 padding 은 그대로, 높이만 맞춤.
+  display: flex;
+  align-items: stretch;
+  white-space: nowrap;
+}
+
+.suffix > * {
+  height: 100%;
+}

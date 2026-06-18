@@ -158,12 +158,27 @@ export function SignupForm() {
     }
   });
 
-  const usernameHint = renderHint({
-    status: usernameStatus,
-    t,
-    field: 'username',
-  });
-  const emailHint = renderHint({ status: emailStatus, t, field: 'email' });
+  // 메시지 우선순위: zod errors > check status taken/invalid > hint (idle/checking/available).
+  // taken/invalid 는 hint 가 아니라 errorMessage 로 빨간색 노출 (사용자 명확 인지).
+  const usernameError = errors.username
+    ? tErr(errors.username.message as Parameters<typeof tErr>[0])
+    : usernameStatus === 'taken'
+      ? tErr('usernameTaken')
+      : usernameStatus === 'invalid'
+        ? tErr('usernameInvalid')
+        : undefined;
+  const usernameHint =
+    !usernameError &&
+    renderHint({ status: usernameStatus, t, field: 'username' });
+  const emailError = errors.email
+    ? tErr(errors.email.message as Parameters<typeof tErr>[0])
+    : emailStatus === 'taken'
+      ? tErr('emailTaken')
+      : emailStatus === 'invalid'
+        ? tErr('emailInvalid')
+        : undefined;
+  const emailHint =
+    !emailError && renderHint({ status: emailStatus, t, field: 'email' });
 
   const allFilled =
     !!usernameValue &&
@@ -184,27 +199,31 @@ export function SignupForm() {
     <form onSubmit={onSubmit} noValidate className={styles.form}>
       <h1 className={styles.title}>{t('title')}</h1>
 
-      <FieldWithCheck
+      <TextField
         id="username"
         type="text"
         autoComplete="username"
         label={t('username')}
         placeholder={t('usernamePlaceholder')}
-        errorMessage={
-          errors.username
-            ? tErr(errors.username.message as Parameters<typeof tErr>[0])
-            : undefined
+        errorMessage={usernameError}
+        hint={usernameHint || undefined}
+        suffix={
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            loading={usernameStatus === 'checking'}
+            disabled={
+              usernameStatus === 'checking' ||
+              usernameStatus === 'available' ||
+              !USERNAME_REGEX.test(usernameValue)
+            }
+            onClick={handleCheckUsername}
+          >
+            {t('checkButton')}
+          </Button>
         }
-        hint={usernameHint}
         {...register('username', { onChange: onUsernameInputChange })}
-        checkLabel={t('checkButton')}
-        checkPending={usernameStatus === 'checking'}
-        checkDisabled={
-          usernameStatus === 'checking' ||
-          usernameStatus === 'available' ||
-          !USERNAME_REGEX.test(usernameValue)
-        }
-        onCheckClick={handleCheckUsername}
       />
 
       <TextField
@@ -249,27 +268,31 @@ export function SignupForm() {
         {...register('passwordConfirm')}
       />
 
-      <FieldWithCheck
+      <TextField
         id="email"
         type="email"
         autoComplete="email"
         label={t('email')}
         placeholder={t('emailPlaceholder')}
-        errorMessage={
-          errors.email
-            ? tErr(errors.email.message as Parameters<typeof tErr>[0])
-            : undefined
+        errorMessage={emailError}
+        hint={emailHint || undefined}
+        suffix={
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            loading={emailStatus === 'checking'}
+            disabled={
+              emailStatus === 'checking' ||
+              emailStatus === 'available' ||
+              !EMAIL_LIKE_REGEX.test(emailValue)
+            }
+            onClick={handleCheckEmail}
+          >
+            {t('checkButton')}
+          </Button>
         }
-        hint={emailHint}
         {...register('email', { onChange: onEmailInputChange })}
-        checkLabel={t('checkButton')}
-        checkPending={emailStatus === 'checking'}
-        checkDisabled={
-          emailStatus === 'checking' ||
-          emailStatus === 'available' ||
-          !EMAIL_LIKE_REGEX.test(emailValue)
-        }
-        onCheckClick={handleCheckEmail}
       />
 
       {errors.root && (
@@ -296,54 +319,17 @@ export function SignupForm() {
   );
 }
 
-/**
- * TextField + 우측 "중복확인" 버튼 인라인. RHF register 결과 그대로 input 에 전달.
- */
-type FieldWithCheckProps = React.ComponentProps<typeof TextField> & {
-  checkLabel: string;
-  checkPending: boolean;
-  checkDisabled: boolean;
-  onCheckClick: () => void;
-};
-
-function FieldWithCheck({
-  checkLabel,
-  checkPending,
-  checkDisabled,
-  onCheckClick,
-  ...textFieldProps
-}: FieldWithCheckProps) {
-  return (
-    <div className={styles.fieldWithCheck}>
-      <TextField {...textFieldProps} />
-      <Button
-        type="button"
-        variant="secondary"
-        size="sm"
-        loading={checkPending}
-        disabled={checkDisabled}
-        onClick={onCheckClick}
-        className={styles.checkButton}
-      >
-        {checkLabel}
-      </Button>
-    </div>
-  );
-}
-
 function renderHint({
   status,
   t,
   field,
-  extra,
 }: {
   status: CheckStatus;
   t: (k: string) => string;
   field: 'username' | 'email';
-  extra?: string;
 }): ReactNode {
   if (status === 'checking') return t(`${field}Checking`);
   if (status === 'available') return t(`${field}Available`);
-  if (status === 'idle') return extra ?? t(`${field}CheckPrompt`);
+  if (status === 'idle') return t(`${field}CheckPrompt`);
   return undefined;
 }

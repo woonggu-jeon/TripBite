@@ -84,20 +84,5 @@
   color: var(--color-fg);
 }
 
-// TextField + 우측 "중복확인" 버튼 — signup 의 username/email 중복확인용.
-// TextField 가 label/hint 를 위/아래로 쌓는 구조라 wrapping div 가 grid 로 위치 잡고
-// button 은 input 우측 정렬. 모바일에서도 한 줄에 들어가도록 button 폭 fixed.
-.fieldWithCheck {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: end;
-  gap: var(--space-2);
-}
-
-.checkButton {
-  white-space: nowrap;
-  // input 의 시각 정렬 위해 label/hint 가 차지하는 공간만큼 본 button 도 위치 보정.
-  // TextField 가 label + input + error/hint 의 3-row grid 라 button 은 input row 와 맞춤.
-  align-self: center;
-  margin-top: 0;
-}
+// TextField 의 suffix slot 으로 중복확인 버튼 직접 inline 배치 (TextField.module.scss
+// 의 .inputRow / .suffix). 별도 wrapping class 불필요.
