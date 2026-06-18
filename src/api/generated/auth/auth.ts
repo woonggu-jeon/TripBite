@@ -5,21 +5,28 @@
  * OpenAPI spec version: 1.0
  */
 import {
+  useInfiniteQuery,
   useQuery
 } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
+  DefinedUseInfiniteQueryResult,
   DefinedUseQueryResult,
+  InfiniteData,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseInfiniteQueryOptions,
+  UseInfiniteQueryResult,
   UseQueryOptions,
   UseQueryResult
 } from '@tanstack/react-query';
 
 import type {
+  AuthControllerCheckUsernameV1Params,
+  CheckAvailabilityDto,
   ErrorDto,
   FindIdDto,
   FindIdResponseDto,
@@ -113,6 +120,163 @@ export function useAuthControllerSignupV1<TData = Awaited<ReturnType<typeof auth
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getAuthControllerSignupV1QueryOptions(signupDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+export const authControllerCheckUsernameV1 = (
+    params: AuthControllerCheckUsernameV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalMutator<CheckAvailabilityDto>(
+      {url: `/v1/auth/check-username`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getAuthControllerCheckUsernameV1InfiniteQueryKey = (params?: AuthControllerCheckUsernameV1Params,) => {
+    return [
+    'infinite', `/v1/auth/check-username`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+export const getAuthControllerCheckUsernameV1QueryKey = (params?: AuthControllerCheckUsernameV1Params,) => {
+    return [
+    `/v1/auth/check-username`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getAuthControllerCheckUsernameV1InfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof authControllerCheckUsernameV1>>>, TError = ErrorDto>(params: AuthControllerCheckUsernameV1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerCheckUsernameV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAuthControllerCheckUsernameV1InfiniteQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerCheckUsernameV1>>> = ({ signal }) => authControllerCheckUsernameV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerCheckUsernameV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AuthControllerCheckUsernameV1InfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof authControllerCheckUsernameV1>>>
+export type AuthControllerCheckUsernameV1InfiniteQueryError = ErrorDto
+
+
+export function useAuthControllerCheckUsernameV1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof authControllerCheckUsernameV1>>>, TError = ErrorDto>(
+ params: AuthControllerCheckUsernameV1Params, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerCheckUsernameV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerCheckUsernameV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerCheckUsernameV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerCheckUsernameV1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof authControllerCheckUsernameV1>>>, TError = ErrorDto>(
+ params: AuthControllerCheckUsernameV1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerCheckUsernameV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerCheckUsernameV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerCheckUsernameV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerCheckUsernameV1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof authControllerCheckUsernameV1>>>, TError = ErrorDto>(
+ params: AuthControllerCheckUsernameV1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerCheckUsernameV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useAuthControllerCheckUsernameV1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof authControllerCheckUsernameV1>>>, TError = ErrorDto>(
+ params: AuthControllerCheckUsernameV1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof authControllerCheckUsernameV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAuthControllerCheckUsernameV1InfiniteQueryOptions(params,options)
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+export const getAuthControllerCheckUsernameV1QueryOptions = <TData = Awaited<ReturnType<typeof authControllerCheckUsernameV1>>, TError = ErrorDto>(params: AuthControllerCheckUsernameV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerCheckUsernameV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAuthControllerCheckUsernameV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerCheckUsernameV1>>> = ({ signal }) => authControllerCheckUsernameV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authControllerCheckUsernameV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AuthControllerCheckUsernameV1QueryResult = NonNullable<Awaited<ReturnType<typeof authControllerCheckUsernameV1>>>
+export type AuthControllerCheckUsernameV1QueryError = ErrorDto
+
+
+export function useAuthControllerCheckUsernameV1<TData = Awaited<ReturnType<typeof authControllerCheckUsernameV1>>, TError = ErrorDto>(
+ params: AuthControllerCheckUsernameV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerCheckUsernameV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerCheckUsernameV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerCheckUsernameV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerCheckUsernameV1<TData = Awaited<ReturnType<typeof authControllerCheckUsernameV1>>, TError = ErrorDto>(
+ params: AuthControllerCheckUsernameV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerCheckUsernameV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authControllerCheckUsernameV1>>,
+          TError,
+          Awaited<ReturnType<typeof authControllerCheckUsernameV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthControllerCheckUsernameV1<TData = Awaited<ReturnType<typeof authControllerCheckUsernameV1>>, TError = ErrorDto>(
+ params: AuthControllerCheckUsernameV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerCheckUsernameV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useAuthControllerCheckUsernameV1<TData = Awaited<ReturnType<typeof authControllerCheckUsernameV1>>, TError = ErrorDto>(
+ params: AuthControllerCheckUsernameV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerCheckUsernameV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAuthControllerCheckUsernameV1QueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

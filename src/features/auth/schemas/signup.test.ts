@@ -2,14 +2,11 @@ import { describe, it, expect } from 'vitest';
 import { signupSchema } from './signup';
 
 const valid = {
-  name: '홍길동',
-  username: 'tester_01',
+  username: 'tester01',
   nickname: '여행자',
-  password: '1234567890',
-  passwordConfirm: '1234567890',
-  birthDate: '1990-01-01',
+  password: 'Abcd1234!@',
+  passwordConfirm: 'Abcd1234!@',
   email: 'a@b.com',
-  phone: '010-1234-5678',
 };
 
 describe('signupSchema', () => {
@@ -23,38 +20,40 @@ describe('signupSchema', () => {
     );
   });
 
-  it('비밀번호 10자 미만 거부', () => {
+  it('아이디 underscore 거부 (BE pattern 변경 — 영문/숫자만)', () => {
     expect(
-      signupSchema.safeParse({ ...valid, password: '123456789' }).success,
+      signupSchema.safeParse({ ...valid, username: 'tester_01' }).success,
     ).toBe(false);
   });
 
-  it('생년월일 형식(YYYY-MM-DD) 아니면 거부', () => {
+  it('비밀번호 10자 미만 거부', () => {
     expect(
-      signupSchema.safeParse({ ...valid, birthDate: '1990/01/01' }).success,
+      signupSchema.safeParse({ ...valid, password: 'Abc1!' }).success,
+    ).toBe(false);
+  });
+
+  it('비밀번호 강도 미달 거부 (특문 없음)', () => {
+    expect(
+      signupSchema.safeParse({
+        ...valid,
+        password: 'Abcdefgh12',
+        passwordConfirm: 'Abcdefgh12',
+      }).success,
+    ).toBe(false);
+  });
+
+  it('비밀번호 강도 미달 거부 (숫자 없음)', () => {
+    expect(
+      signupSchema.safeParse({
+        ...valid,
+        password: 'Abcdefgh!@',
+        passwordConfirm: 'Abcdefgh!@',
+      }).success,
     ).toBe(false);
   });
 
   it('잘못된 이메일 거부', () => {
     expect(signupSchema.safeParse({ ...valid, email: 'no' }).success).toBe(
-      false,
-    );
-  });
-
-  it('잘못된 휴대폰 번호 거부', () => {
-    expect(signupSchema.safeParse({ ...valid, phone: '123' }).success).toBe(
-      false,
-    );
-  });
-
-  it('하이픈 없는 폰번호도 허용', () => {
-    expect(
-      signupSchema.safeParse({ ...valid, phone: '01012345678' }).success,
-    ).toBe(true);
-  });
-
-  it('이름 공백만 거부', () => {
-    expect(signupSchema.safeParse({ ...valid, name: '   ' }).success).toBe(
       false,
     );
   });
@@ -71,9 +70,21 @@ describe('signupSchema', () => {
     ).toBe(false);
   });
 
+  it('닉네임 특수문자 포함 거부', () => {
+    expect(
+      signupSchema.safeParse({ ...valid, nickname: '여행자@' }).success,
+    ).toBe(false);
+  });
+
+  it('닉네임 한글+영문+숫자 혼합 허용', () => {
+    expect(
+      signupSchema.safeParse({ ...valid, nickname: 'A1여행자' }).success,
+    ).toBe(true);
+  });
+
   it('비밀번호 확인 불일치 거부', () => {
     expect(
-      signupSchema.safeParse({ ...valid, passwordConfirm: 'different00' })
+      signupSchema.safeParse({ ...valid, passwordConfirm: 'Different1!@' })
         .success,
     ).toBe(false);
   });

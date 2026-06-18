@@ -160,12 +160,10 @@ describe('useSignup', () => {
 
     const { result } = renderHookWithProviders(() => useSignup());
     await result.current.mutateAsync({
-      username: 'tester',
-      password: '1234567890',
-      name: '여행자',
+      username: 'tester01',
+      password: 'Abcd1234!@',
+      nickname: '여행자',
       email: 't@e.st',
-      birthDate: '1990-01-01',
-      phone: '01000000000',
     });
 
     await waitFor(() => {
@@ -333,7 +331,6 @@ describe('useForgotPassword / useFindId — mutation only (분기 없음)', () =
 
     const { result } = renderHookWithProviders(() => useFindId());
     const res = await result.current.mutateAsync({
-      name: '여행자',
       email: 't@e.st',
     });
 

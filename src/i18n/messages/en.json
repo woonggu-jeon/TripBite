@@ -83,7 +83,6 @@
     },
     "findId": {
       "title": "Find username",
-      "name": "Name",
       "email": "Email",
       "submit": "Find username",
       "submitting": "Searching...",
@@ -91,7 +90,6 @@
       "notFound": "No matching account found.",
       "toLogin": "Back to sign in",
       "errors": {
-        "nameRequired": "Please enter your name.",
         "emailInvalid": "Please enter a valid email."
       }
     },
@@ -113,41 +111,34 @@
     },
     "signup": {
       "title": "Create account",
-      "name": "Name",
-      "namePlaceholder": "Full name",
       "username": "Username",
-      "usernamePlaceholder": "letters/digits/_ 4-20",
+      "usernamePlaceholder": "letters/digits 4-20",
+      "usernameChecking": "Checking...",
+      "usernameAvailable": "Username is available.",
       "nickname": "Nickname",
-      "nicknamePlaceholder": "2-10 characters",
+      "nicknamePlaceholder": "Korean/letters/digits 2-10",
       "password": "Password",
-      "passwordPlaceholder": "10+ characters",
+      "passwordPlaceholder": "Letters + digits + symbol, 10+",
       "passwordConfirm": "Confirm password",
       "passwordConfirmPlaceholder": "Re-enter your password",
-      "birthDate": "Date of birth",
-      "birthDatePlaceholder": "",
       "email": "Email",
-      "emailPlaceholder": "you@example.com",
-      "phone": "Phone",
-      "phonePlaceholder": "010-1234-5678",
+      "emailPlaceholder": "you@example.com (for password reset)",
       "submit": "Sign up",
       "submitting": "Creating...",
       "failed": "Sign-up failed.",
       "toLogin": "Already have an account? Sign in",
       "errors": {
-        "nameRequired": "Please enter your name.",
-        "nameTooLong": "Name is too long.",
-        "nameInvalid": "Contains disallowed characters.",
-        "usernameInvalid": "Username must be 4-20 letters/digits/underscore.",
+        "usernameInvalid": "Username must be 4-20 letters/digits.",
+        "usernameTaken": "This username is already taken.",
         "nicknameTooShort": "Nickname must be at least 2 characters.",
         "nicknameTooLong": "Nickname must be 10 characters or fewer.",
-        "nicknameInvalid": "Contains disallowed characters.",
+        "nicknameInvalid": "Nickname can contain Korean, letters, and digits only.",
         "passwordMin": "Password must be at least 10 characters.",
         "passwordMax": "Password is too long.",
+        "passwordWeak": "Must include letters, digits, and a symbol.",
         "passwordInvalid": "Contains disallowed characters.",
         "passwordMismatch": "Passwords do not match.",
-        "birthDateInvalid": "Please select your date of birth.",
-        "emailInvalid": "Please enter a valid email.",
-        "phoneInvalid": "Please enter a valid phone number."
+        "emailInvalid": "Please enter a valid email."
       }
     },
     "forgotPassword": {

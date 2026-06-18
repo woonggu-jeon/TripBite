@@ -83,7 +83,6 @@
     },
     "findId": {
       "title": "아이디 찾기",
-      "name": "이름",
       "email": "이메일",
       "submit": "아이디 찾기",
       "submitting": "조회 중...",
@@ -91,7 +90,6 @@
       "notFound": "일치하는 계정을 찾을 수 없어요.",
       "toLogin": "로그인으로 돌아가기",
       "errors": {
-        "nameRequired": "이름을 입력해주세요.",
         "emailInvalid": "올바른 이메일 형식이 아니에요."
       }
     },
@@ -113,41 +111,34 @@
     },
     "signup": {
       "title": "회원가입",
-      "name": "이름",
-      "namePlaceholder": "실명",
       "username": "아이디",
-      "usernamePlaceholder": "영문/숫자/_ 4~20자",
+      "usernamePlaceholder": "영문/숫자 4~20자",
+      "usernameChecking": "확인 중...",
+      "usernameAvailable": "사용 가능한 아이디예요.",
       "nickname": "닉네임",
-      "nicknamePlaceholder": "2~10자",
+      "nicknamePlaceholder": "한글/영문/숫자 2~10자",
       "password": "비밀번호",
-      "passwordPlaceholder": "10자 이상",
+      "passwordPlaceholder": "영문+숫자+특수문자 10자 이상",
       "passwordConfirm": "비밀번호 확인",
       "passwordConfirmPlaceholder": "비밀번호를 한 번 더 입력하세요",
-      "birthDate": "생년월일",
-      "birthDatePlaceholder": "",
       "email": "이메일",
-      "emailPlaceholder": "you@example.com",
-      "phone": "휴대폰 번호",
-      "phonePlaceholder": "010-1234-5678",
+      "emailPlaceholder": "you@example.com (비번찾기에 사용)",
       "submit": "가입하기",
       "submitting": "가입 중...",
       "failed": "회원가입에 실패했습니다.",
       "toLogin": "이미 계정이 있으신가요? 로그인",
       "errors": {
-        "nameRequired": "이름을 입력해주세요.",
-        "nameTooLong": "이름이 너무 깁니다.",
-        "nameInvalid": "허용되지 않는 문자가 포함되어 있어요.",
-        "usernameInvalid": "아이디는 영문/숫자/_ 4~20자여야 해요.",
+        "usernameInvalid": "아이디는 영문/숫자 4~20자여야 해요.",
+        "usernameTaken": "이미 사용 중인 아이디예요.",
         "nicknameTooShort": "닉네임은 2자 이상이어야 해요.",
         "nicknameTooLong": "닉네임은 10자 이하여야 해요.",
-        "nicknameInvalid": "허용되지 않는 문자가 포함되어 있어요.",
+        "nicknameInvalid": "닉네임은 한글/영문/숫자만 가능해요.",
         "passwordMin": "비밀번호는 10자 이상이어야 해요.",
         "passwordMax": "비밀번호가 너무 깁니다.",
+        "passwordWeak": "영문, 숫자, 특수문자를 모두 포함해야 해요.",
         "passwordInvalid": "허용되지 않는 문자가 포함되어 있어요.",
         "passwordMismatch": "비밀번호가 일치하지 않아요.",
-        "birthDateInvalid": "생년월일을 선택해주세요.",
-        "emailInvalid": "올바른 이메일 형식이 아니에요.",
-        "phoneInvalid": "올바른 휴대폰 번호 형식이 아니에요."
+        "emailInvalid": "올바른 이메일 형식이 아니에요."
       }
     },
     "forgotPassword": {

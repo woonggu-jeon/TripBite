@@ -6,25 +6,18 @@
  */
 
 export interface SignupDto {
-  /**
-     * @minLength 1
-     * @maxLength 30
-     */
-  name: string;
-  /** @pattern ^[a-zA-Z0-9_]{4,20}$ */
+  /** @pattern ^[a-zA-Z0-9]{4,20}$ */
   username: string;
   /**
      * @minLength 10
      * @maxLength 72
      */
   password: string;
-  /** @pattern ^\d{4}-\d{2}-\d{2}$ */
-  birthDate: string;
+  /** @pattern ^[가-힣a-zA-Z0-9]{2,10}$ */
+  nickname: string;
   /**
      * @minLength 1
      * @maxLength 255
      */
   email: string;
-  /** @pattern ^01[016789]-?\d{3,4}-?\d{4}$ */
-  phone: string;
 }

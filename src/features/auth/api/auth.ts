@@ -1,4 +1,5 @@
 import {
+  authControllerCheckUsernameV1,
   authControllerFindIdV1,
   authControllerForgotPasswordV1,
   authControllerLoginV1,
@@ -25,6 +26,9 @@ import {
 export const authApi = {
   login: authControllerLoginV1,
   signup: authControllerSignupV1,
+  // username 중복확인 — debounced 호출용. nickname 은 unique 정책 없어 endpoint 없음.
+  checkUsername: (username: string) =>
+    authControllerCheckUsernameV1({ username }),
   forgotPassword: authControllerForgotPasswordV1,
   resetPassword: authControllerResetPasswordV1,
   changePassword: meControllerChangePasswordV1,

@@ -14,11 +14,10 @@ import { Button, TextField } from '@/components/ui';
 import styles from './AuthForm.module.scss';
 
 /**
- * 아이디 찾기 — 이름 + 가입 이메일 매칭 → 마스킹 아이디를 화면에 표시.
+ * 아이디 찾기 — 가입 이메일만으로 매칭 → 마스킹 아이디를 화면에 표시.
  * 백엔드가 마스킹(tes***01) 처리. 미존재 시에도 동일 안내(열거 방지).
  */
 const FIELDS = [
-  { name: 'name', type: 'text', autoComplete: 'name' },
   { name: 'email', type: 'email', autoComplete: 'email' },
 ] as const;
 
@@ -34,7 +33,7 @@ export function FindIdForm() {
     formState: { errors, isSubmitting },
   } = useForm<FindIdValues>({
     resolver: zodResolver(findIdSchema),
-    defaultValues: { name: '', email: '' },
+    defaultValues: { email: '' },
   });
 
   const onSubmit = handleSubmit(async (values) => {

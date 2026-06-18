@@ -5,6 +5,6 @@
  * OpenAPI spec version: 1.0
  */
 
-export interface FindIdDto {
-  email: string;
-}
+export type AuthControllerCheckUsernameV1Params = {
+username: string;
+};
