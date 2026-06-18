@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSearchParams } from 'next/navigation';
@@ -53,14 +54,34 @@ export function LoginForm() {
 
   const { mutateAsync: login } = useLogin({ redirectTo: redirect });
 
+  // 계정 잠금 상태 — 비밀번호 찾기 링크 강조 노출용 별도 state.
+  const [accountLocked, setAccountLocked] = useState(false);
+
   const onSubmit = handleSubmit(async (values) => {
     try {
+      setAccountLocked(false);
       await login(values);
     } catch (err) {
-      const message = isAxiosError(err)
-        ? ((err.response?.data as { message?: string })?.message ?? t('failed'))
-        : t('unknown');
-      setError('root', { message });
+      // BE 응답 code 로 분기 — 같은 429 라도 RATE_LIMIT (IP) vs
+      // AUTH_ACCOUNT_LOCKED (계정 잠금) 안내 다름.
+      if (isAxiosError(err)) {
+        const data = err.response?.data as
+          | { code?: string; message?: string }
+          | undefined;
+        if (data?.code === 'AUTH_ACCOUNT_LOCKED') {
+          setAccountLocked(true);
+          setError('root', { message: t('accountLocked') });
+          return;
+        }
+        if (data?.code === 'RATE_LIMIT') {
+          setError('root', { message: t('rateLimit') });
+          return;
+        }
+        const message = data?.message ?? t('failed');
+        setError('root', { message });
+        return;
+      }
+      setError('root', { message: t('unknown') });
     }
   });
 
@@ -89,9 +110,14 @@ export function LoginForm() {
       ))}
 
       {errors.root && (
-        <p className={styles.error} role="alert">
-          {errors.root.message}
-        </p>
+        <div role="alert" className={styles.error}>
+          <p>{errors.root.message}</p>
+          {accountLocked && (
+            <Link href="/forgot-password" className={styles.errorLink}>
+              {t('forgotPasswordCta')}
+            </Link>
+          )}
+        </div>
       )}
 
       <Button

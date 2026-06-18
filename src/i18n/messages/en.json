@@ -77,6 +77,9 @@
       "passwordRequired": "Please enter your password.",
       "failed": "Sign-in failed.",
       "unknown": "Something went wrong.",
+      "accountLocked": "Too many failed attempts. Your account is temporarily locked. Try again later or reset your password.",
+      "rateLimit": "Too many requests. Please try again shortly.",
+      "forgotPasswordCta": "Reset password",
       "toSignup": "Sign up",
       "toForgot": "Forgot password?",
       "toFindId": "Find username"
