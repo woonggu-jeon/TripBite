@@ -129,7 +129,7 @@ src/
 | [ENVIRONMENT.md](docs/ENVIRONMENT.md)               | 모든 env 변수 일람 + 환경별 매트릭스 + Vercel/GitHub 등록 + 트러블슈팅      |
 | [DEPLOY.md](docs/DEPLOY.md)                         | main → production 승인 배포 + Vercel deploymentEnabled                      |
 | [STYLES.md](docs/STYLES.md)                         | 디자인 토큰 + Primitive (Card/Button/TextField/MediaThumb/RadioGroup/...)   |
-| [TESTING.md](docs/TESTING.md)                       | Vitest 177 cases / Playwright 6 플랫폼 / axe / 시각 회귀                    |
+| [TESTING.md](docs/TESTING.md)                       | Vitest 250 cases / Playwright 6 플랫폼 / axe / 시각 회귀                    |
 | [BACKLOG.md](docs/BACKLOG.md)                       | 후속 작업 백로그                                                            |
 | [I18N_EDGE_CONFIG.md](docs/I18N_EDGE_CONFIG.md)     | i18n 외부 스토리지 마이그 계획 (운영 안정 후)                               |
 | [MOCK_IN_PRODUCTION.md](docs/MOCK_IN_PRODUCTION.md) | 운영 mock 시나리오 (데모/QA)                                                |

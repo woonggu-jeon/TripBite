@@ -62,7 +62,7 @@ children/render 만 쓰는 경우 `satisfies` 가 `args` 를 강제하므로 `co
 
 1. **build-storybook** — 빌드 통과 게이트 (CI)
 2. **Playwright e2e (`toHaveScreenshot`)** — 컴포넌트 시각 회귀
-3. **Vitest 단위 테스트 (177 case)** — 컴포넌트 동작 검증
+3. **Vitest 단위 테스트 (250 case)** — 컴포넌트 동작 검증
 
 → Story-as-test 는 중복. `vitest.config.ts` 의 `exclude` 에 `**/*.stories.*` 명시.
 
