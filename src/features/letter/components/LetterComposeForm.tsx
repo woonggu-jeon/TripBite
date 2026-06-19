@@ -89,10 +89,11 @@ export function LetterComposeForm() {
       // disabled 가 막지만 DevTools 우회 안전망으로 한 번 더 검증.
       if (!resolved) {
         haptic.tap();
+        // duration 명시 생략 — toast.ts 의 type 별 default (warning=3000ms)
+        // 사용. 2500ms 단축 시 위치 권한 안내를 못 보고 지나칠 가능성.
         pushToast({
           type: 'warning',
           message: tErr('locationRequired'),
-          duration: 2500,
         });
         return;
       }
