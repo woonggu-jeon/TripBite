@@ -18,6 +18,7 @@ import { useLocationStore } from '@/stores/location-store';
 import { useUIStore } from '@/stores/ui-store';
 import { Button } from '@/components/ui';
 import { haptic } from '@/lib/haptic';
+import { track } from '@/features/analytics';
 import { PinLikeInput } from './PinLikeInput';
 import styles from './LetterComposeForm.module.scss';
 
@@ -126,6 +127,8 @@ export function LetterComposeForm() {
         location: { label: resolved.label },
         sentAt: created?.createdAt ?? new Date().toISOString(),
       });
+      // analytics — PII 제외 (length 만). TrackEventMap 정의 정합.
+      track('letter.sent', { length: graphemeLength(values.body) });
       // 서버가 letter id 반환 시 deep-link 로 push — 새로고침/공유 가능.
       router.push(
         created?.id
@@ -135,13 +138,13 @@ export function LetterComposeForm() {
     },
     // invalid submit — 인라인 에러 대신 toast 로 안내. 첫 에러 메시지만 표시.
     (formErrors) => {
-      haptic.tap();
+      // 폼 검증 실패 — tap → warning 으로 사용자 피드백 신호 강화 (Round 6 audit).
+      haptic.warning();
       const first = formErrors.body?.message;
       if (first) {
         pushToast({
           type: 'warning',
           message: tErr(first as Parameters<typeof tErr>[0]),
-          duration: 2500,
         });
       }
     },
