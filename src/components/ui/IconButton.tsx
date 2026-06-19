@@ -1,4 +1,5 @@
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
+import { Loader2 } from 'lucide-react';
 import styles from './IconButton.module.scss';
 
 /**
@@ -12,6 +13,9 @@ import styles from './IconButton.module.scss';
  * size: sm(32) / md(40, default) / lg(44)
  *
  * aria-label 필수 — 아이콘만 있는 버튼은 스크린리더에 의미 전달 필요.
+ *
+ * loading prop — Button primitive 와 일관성 (2026-06-19 audit). spinner
+ * (Loader2) 로 children 대체 + disabled + aria-busy. 옵션 (backward compat).
  */
 export type IconButtonVariant = 'ghost' | 'solid' | 'outline';
 export type IconButtonSize = 'sm' | 'md' | 'lg';
@@ -21,11 +25,24 @@ interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: IconButtonSize;
   'aria-label': string;
   children: ReactNode;
+  /** 로딩 중 spinner 노출 + disabled + aria-busy. Button primitive 정합. */
+  loading?: boolean;
 }
+
+const SPINNER_SIZE: Record<IconButtonSize, number> = { sm: 14, md: 16, lg: 18 };
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
   function IconButton(
-    { variant = 'ghost', size = 'md', className, children, type, ...rest },
+    {
+      variant = 'ghost',
+      size = 'md',
+      className,
+      children,
+      type,
+      loading,
+      disabled,
+      ...rest
+    },
     ref,
   ) {
     const cls = [
@@ -37,8 +54,15 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
       .filter(Boolean)
       .join(' ');
     return (
-      <button ref={ref} type={type ?? 'button'} className={cls} {...rest}>
-        {children}
+      <button
+        ref={ref}
+        type={type ?? 'button'}
+        className={cls}
+        disabled={loading || disabled}
+        aria-busy={loading || undefined}
+        {...rest}
+      >
+        {loading ? <Loader2 size={SPINNER_SIZE[size]} aria-hidden /> : children}
       </button>
     );
   },

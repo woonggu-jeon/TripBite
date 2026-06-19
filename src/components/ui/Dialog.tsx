@@ -25,6 +25,9 @@ export interface DialogProps {
   showCloseButton?: boolean;
   /** title 위 중앙 아이콘 (옵션) — LocationPermissionPrompt 같은 알림형. */
   icon?: ReactNode;
+  /** dialog wrapper 에 추가 className — primitive 스타일 override / 도메인
+   *  variant 커스터마이즈 용. backdrop 은 그대로 유지. */
+  className?: string;
 }
 
 /**
@@ -44,6 +47,7 @@ export function Dialog({
   actions,
   showCloseButton,
   icon,
+  className,
 }: DialogProps) {
   const ref = useRef<HTMLDivElement>(null);
   const tCommon = useTranslations('common');
@@ -78,7 +82,7 @@ export function Dialog({
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={descId}
-        className={styles.dialog}
+        className={className ? `${styles.dialog} ${className}` : styles.dialog}
         onClick={(e) => e.stopPropagation()}
       >
         {icon ? (
