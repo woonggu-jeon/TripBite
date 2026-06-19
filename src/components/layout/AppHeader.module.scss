@@ -35,13 +35,14 @@
   justify-content: flex-end;
 }
 
+// Apple HIG 44x44 minimum touch target — 2026-06-19 audit 결과 40→44.
 .iconButton {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-md);
   color: var(--color-fg);
   transition:

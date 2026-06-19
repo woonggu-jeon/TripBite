@@ -83,7 +83,10 @@ export const tournamentApi = {
       tournamentSize: number;
     },
     idempotencyKey?: string,
+    signal?: AbortSignal,
   ): Promise<TournamentRecordDto> => {
+    const headers: Record<string, string> = {};
+    if (idempotencyKey) headers['Idempotency-Key'] = idempotencyKey;
     const res = await api.post<TournamentRecordDto>(
       '/v1/tournaments',
       {
@@ -92,9 +95,10 @@ export const tournamentApi = {
         matchesPlayed: input.matchesPlayed,
         tournamentSize: input.tournamentSize,
       },
-      idempotencyKey
-        ? { headers: { 'Idempotency-Key': idempotencyKey } }
-        : undefined,
+      {
+        headers: Object.keys(headers).length > 0 ? headers : undefined,
+        signal,
+      },
     );
     return res.data;
   },

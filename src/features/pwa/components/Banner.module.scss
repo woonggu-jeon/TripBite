@@ -52,12 +52,13 @@
 }
 
 // 닫기 버튼 — 명확한 hit target. banner 가 좁아 36px (44 권장이지만 banner 높이 한계)
+// Apple HIG 44x44 minimum touch target — 2026-06-19 audit 결과 36→44.
 .close {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   color: inherit;
   opacity: 0.8;
   border-radius: var(--radius-md);

@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { rankingApi } from '@/features/ranking/api/ranking';
 import { CACHE } from '@/lib/cache';
 import { useAuthStore } from '@/stores/auth-store';
+import { mypageKeys } from '@/features/mypage/hooks/use-mypage';
 import type { RankingType, TravelTypeAnswer } from '@/features/ranking/types';
 import type { DestinationCategory } from '@/api/generated/schemas';
 import type { TravelTypeCode } from '@/api/generated/schemas';
@@ -85,7 +86,9 @@ export function useSetMyTravelType() {
     mutationFn: (code: TravelTypeCode) => rankingApi.setMyTravelType(code),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: rankingKeys.travelType() });
-      qc.invalidateQueries({ queryKey: ['mypage', 'summary'] });
+      // mypage summary 응답에 travelType 포함 → 갱신 필요. raw array 대신
+      // mypageKeys.summary() 사용 — 신규 keys 변경 시 자동 추적.
+      qc.invalidateQueries({ queryKey: mypageKeys.summary() });
     },
   });
 }

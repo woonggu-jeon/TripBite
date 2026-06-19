@@ -16,6 +16,9 @@
 .dialog {
   width: 100%;
   max-width: 360px;
+  // iOS Safari 가상 키보드 등장 시 가시성 — svh (smallest viewport) 우선,
+  // dvh 미지원 브라우저 fallback. 2026-06-19 audit 보강.
+  max-height: calc(100svh - var(--space-8));
   max-height: calc(100dvh - var(--space-8));
   overflow-y: auto;
   // dialog 내부 스크롤이 backdrop / body 로 chain 되지 않도록 — iOS Safari 의

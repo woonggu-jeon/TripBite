@@ -19,6 +19,9 @@
   // iOS Safari — 수직 스크롤은 OS 단으로, 수평 swipe 만 embla 가 잡도록 명시.
   // 손가락 제스처의 떨림/충돌 감소.
   touch-action: pan-y;
+  // carousel 수평 swipe 가 끝까지 갔을 때 page 의 history pop / pull-to-refresh
+  // 로 연쇄되지 않도록. 2026-06-19 audit.
+  overscroll-behavior: contain;
   // GPU 레이어 promote — ios safari 의 sub-pixel rounding jitter 안정화.
   // embla 의 transform 이 매 frame 새로 적용되는데, 레이어가 promote 안 되면
   // 매번 compositor 가 다시 paint → 떨림.
@@ -75,6 +78,11 @@
       background: var(--color-bg);
     }
   }
+  // 키보드 사용자 시각 피드백 — 2026-06-19 audit.
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+  }
 }
 
 .prev {
@@ -100,6 +108,11 @@
   transition:
     width var(--motion-base) ease,
     background var(--motion-base) ease;
+  // 키보드 사용자 시각 피드백 — 2026-06-19 audit. offset 음수로 내부 outline.
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: 3px;
+  }
 }
 
 .dotActive {
