@@ -78,6 +78,33 @@
   background: var(--color-bg);
   border: 1.5px solid var(--color-border);
   border-radius: var(--radius-md);
+  color: var(--color-fg);
+  text-decoration: none;
+  transition:
+    border-color var(--motion-base) ease,
+    transform var(--motion-fast) ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--color-primary-border);
+    }
+  }
+  &:active {
+    transform: scale(0.99);
+  }
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recommendItem {
+    transition: none;
+    &:active {
+      transform: none;
+    }
+  }
 }
 
 .recEmoji {

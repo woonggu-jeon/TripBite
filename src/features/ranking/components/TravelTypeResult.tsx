@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Share2, RotateCcw, BadgeCheck } from 'lucide-react';
@@ -140,24 +141,35 @@ export function TravelTypeResult() {
               const regionLabel = region?.ko ?? d.region;
               const safeImg = secureImageUrl(d.imageUrl);
               return (
-                <li key={d.id} className={styles.recommendItem}>
-                  <span className={styles.recEmoji} aria-hidden>
-                    {safeImg ? (
-                      <Image
-                        src={safeImg}
-                        alt=""
-                        fill
-                        sizes="40px"
-                        className={styles.recPhoto}
-                      />
-                    ) : (
-                      categoryEmoji(d.category)
-                    )}
-                  </span>
-                  <div className={styles.recText}>
-                    <p className={styles.recName}>{d.name}</p>
-                    <p className={styles.recMeta}>{regionLabel}</p>
-                  </div>
+                <li key={d.id}>
+                  {/* 추천 카드 → 여행지 상세로 진입. DestinationCard 패턴 동일.
+                      prefetch=false — TanStack Query 가 /destination/[id] 진입
+                      후 데이터 fetch (over-prefetch 회피, [[rendering-speed-first]]). */}
+                  <Link
+                    href={`/destination/${d.id}`}
+                    prefetch={false}
+                    aria-label={`${d.name} · ${regionLabel}`}
+                    className={styles.recommendItem}
+                    onClick={() => haptic.tap()}
+                  >
+                    <span className={styles.recEmoji} aria-hidden>
+                      {safeImg ? (
+                        <Image
+                          src={safeImg}
+                          alt=""
+                          fill
+                          sizes="40px"
+                          className={styles.recPhoto}
+                        />
+                      ) : (
+                        categoryEmoji(d.category)
+                      )}
+                    </span>
+                    <div className={styles.recText}>
+                      <p className={styles.recName}>{d.name}</p>
+                      <p className={styles.recMeta}>{regionLabel}</p>
+                    </div>
+                  </Link>
                 </li>
               );
             })}
