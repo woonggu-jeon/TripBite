@@ -7,6 +7,10 @@
 import type { SubscribeKeysDto } from './subscribeKeysDto';
 
 export interface SubscribeDto {
+  /**
+     * @minLength 1
+     * @maxLength 1000
+     */
   endpoint: string;
   keys: SubscribeKeysDto;
 }

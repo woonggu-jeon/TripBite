@@ -14,6 +14,7 @@ export * from './avatarResponseDto';
 export * from './changePasswordDto';
 export * from './checkAvailabilityDto';
 export * from './completeOnboardingDto';
+export * from './completeOnboardingDtoHomeRegion';
 export * from './composeLetterDto';
 export * from './consentInputDto';
 export * from './consentStatusDto';

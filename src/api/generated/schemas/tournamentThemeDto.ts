@@ -6,6 +6,14 @@
  */
 
 export interface TournamentThemeDto {
+  /**
+     * @minLength 1
+     * @maxLength 30
+     */
   kind?: string;
+  /**
+     * @minLength 1
+     * @maxLength 30
+     */
   value?: string;
 }

@@ -6,6 +6,14 @@
  */
 
 export interface QuizAnswerDto {
+  /**
+     * @minLength 1
+     * @maxLength 20
+     */
   questionId: string;
+  /**
+     * @minLength 1
+     * @maxLength 20
+     */
   optionId: string;
 }

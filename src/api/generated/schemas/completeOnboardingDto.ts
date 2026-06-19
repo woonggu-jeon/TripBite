@@ -4,6 +4,7 @@
  * TripBite API
  * OpenAPI spec version: 1.0
  */
+import type { CompleteOnboardingDtoHomeRegion } from './completeOnboardingDtoHomeRegion';
 
 export interface CompleteOnboardingDto {
   /**
@@ -11,9 +12,5 @@ export interface CompleteOnboardingDto {
      * @maxLength 50
      */
   nickname?: string;
-  /**
-     * @minLength 1
-     * @maxLength 30
-     */
-  homeRegion?: string;
+  homeRegion?: CompleteOnboardingDtoHomeRegion;
 }

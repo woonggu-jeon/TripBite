@@ -7,6 +7,9 @@
 import type { QuizAnswerDto } from './quizAnswerDto';
 
 export interface SubmitQuizDto {
-  /** @minItems 1 */
+  /**
+     * @minItems 1
+     * @maxItems 20
+     */
   answers: QuizAnswerDto[];
 }

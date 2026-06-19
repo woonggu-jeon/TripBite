@@ -7,11 +7,25 @@
 import type { TournamentThemeDto } from './tournamentThemeDto';
 
 export interface RecordTournamentDto {
+  /**
+     * @minLength 1
+     * @maxLength 50
+     */
   winnerId: string;
+  /**
+     * @minLength 1
+     * @maxLength 50
+     */
   runnerUpId?: string;
-  /** @minimum 0 */
+  /**
+     * @minimum 0
+     * @maximum 1000
+     */
   matchesPlayed: number;
-  /** @minimum 2 */
+  /**
+     * @minimum 2
+     * @maximum 256
+     */
   tournamentSize: number;
   theme?: TournamentThemeDto;
 }

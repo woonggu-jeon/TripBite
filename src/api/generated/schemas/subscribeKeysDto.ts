@@ -6,6 +6,14 @@
  */
 
 export interface SubscribeKeysDto {
+  /**
+     * @minLength 1
+     * @maxLength 200
+     */
   p256dh: string;
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
   auth: string;
 }

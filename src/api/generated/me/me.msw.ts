@@ -72,7 +72,7 @@ export const getMeControllerUploadAvatarV1MockHandler = (overrideResponse?: Avat
     return HttpResponse.json(overrideResponse !== undefined
     ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
     : getMeControllerUploadAvatarV1ResponseMock(),
-      { status: 200
+      { status: 201
       })
   }, options)
 }
