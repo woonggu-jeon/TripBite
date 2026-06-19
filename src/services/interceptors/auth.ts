@@ -73,8 +73,13 @@ export function attachAuthInterceptor(instance: AxiosInstance) {
         isOnProtectedPath() &&
         typeof window !== 'undefined'
       ) {
-        // store import 시 순환참조 위험 → 직접 redirect
-        window.location.href = '/login';
+        // store import 시 순환참조 위험 → 직접 redirect.
+        // 현재 path 를 redirect query 로 보존 — 로그인 후 복귀 (login/onboarding
+        // 의 safeRedirectParam 가 `/` 시작 + `//` 차단 검증 후 사용).
+        const path = window.location.pathname + window.location.search;
+        const safe =
+          path && path.startsWith('/') && !path.startsWith('//') ? path : '/';
+        window.location.href = `/login?redirect=${encodeURIComponent(safe)}`;
       }
       return Promise.reject(error);
     },
