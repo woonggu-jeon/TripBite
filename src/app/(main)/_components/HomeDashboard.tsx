@@ -27,6 +27,11 @@ export async function HomeDashboard() {
 
   return (
     <div className={styles.grid}>
+      {/* a11y heading 위계 — 홈 페이지 h1. SubHeader 미사용 페이지 (main layout 의
+          AppHeader 만 사용) 이므로 sr-only h1 으로 페이지 제목 제공. screen reader
+          가 페이지 구조 인식, 시각적 영향 0. 2026-06-19 audit Round 25. */}
+      <h1 className={styles.srOnly}>{t('weatherRecommendation')}</h1>
+
       {/* 1) 오늘의 추천 — RecommendationBanner 만 노출 (날씨 위젯 미노출). */}
       <section
         data-widget="weather-recommendation"

@@ -53,6 +53,8 @@ export function MediaThumb({
           alt=""
           fill
           sizes={sizes}
+          // explicit quality (default 75 동일) — 의도 명시 (2026-06-19 audit).
+          quality={75}
           className={styles.photo}
           onError={() => setErrored(true)}
         />

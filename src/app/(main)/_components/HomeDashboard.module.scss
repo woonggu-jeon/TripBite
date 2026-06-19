@@ -103,3 +103,18 @@
 }
 
 // fluid clamp() 가 단계별 media query 대체.
+
+// sr-only — 스크린리더 전용 h1 (시각적 미노출). 2026-06-19 audit Round 25.
+// 페이지 heading 위계 보장 (h1 → h2 → h3) — visual hierarchy 유지하면서
+// screen reader 가 페이지 구조 명확 인식.
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

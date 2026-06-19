@@ -40,7 +40,9 @@ export function useNotificationInboxInfinite() {
     queryFn: ({ pageParam }) =>
       notificationInboxApi.getPage({ cursor: pageParam, limit: 20 }),
     initialPageParam: null,
-    getNextPageParam: (last) => last.nextCursor ?? undefined,
+    // null 만 undefined 변환 (cursor 0 같은 valid cursor 보존). 2026-06-19 audit.
+    getNextPageParam: (last) =>
+      last.nextCursor === null ? undefined : last.nextCursor,
     staleTime: profile.staleTime,
     gcTime: profile.gcTime,
     refetchOnWindowFocus: true,
