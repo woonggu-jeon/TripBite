@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Share2, RotateCcw, BadgeCheck } from 'lucide-react';
+import { Share2, RotateCcw, BadgeCheck, ChevronRight } from 'lucide-react';
 import { haptic } from '@/lib/haptic';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { EmptyState } from '@/components/feedback/EmptyState';
@@ -169,6 +169,11 @@ export function TravelTypeResult() {
                       <p className={styles.recName}>{d.name}</p>
                       <p className={styles.recMeta}>{regionLabel}</p>
                     </div>
+                    <ChevronRight
+                      size={20}
+                      aria-hidden
+                      className={styles.chevron}
+                    />
                   </Link>
                 </li>
               );

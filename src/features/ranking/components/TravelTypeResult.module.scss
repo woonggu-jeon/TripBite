@@ -71,7 +71,7 @@
 
 .recommendItem {
   display: grid;
-  grid-template-columns: 40px 1fr;
+  grid-template-columns: 40px 1fr auto;
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 0.875rem;
@@ -96,6 +96,12 @@
     outline: var(--focus-outline);
     outline-offset: var(--focus-outline-offset);
   }
+}
+
+// chevron — StampBookBanner 패턴 정합 (color: inherit + opacity 0.7).
+.chevron {
+  color: inherit;
+  opacity: 0.7;
 }
 
 @media (prefers-reduced-motion: reduce) {
