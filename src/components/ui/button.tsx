@@ -24,17 +24,7 @@ import styles from './Button.module.scss';
  * 기존 컴포넌트의 .primary/.secondary 클래스 대체용. 자체 SCSS 의 padding/radius/
  * transition 반복 제거.
  */
-export type ButtonVariant =
-  | 'primary'
-  | 'secondary'
-  | 'ghost'
-  | 'danger'
-  // Figma 디자인 시스템 시도 (feat/figma-button-test, 2026-06-19) — size=52px /
-  // radius=12px / Pretendard Medium 16px / center. 기존 variant 와 별개로
-  // 사용해 시각 비교. 원복 시 본 union + .v-figma-* SCSS 만 삭제.
-  | 'figma-green-solid'
-  | 'figma-green-line'
-  | 'figma-gray-line';
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
