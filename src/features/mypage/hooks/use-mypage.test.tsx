@@ -6,6 +6,7 @@ import { server } from '@/mocks/server';
 import { mockSeeds } from '@/mocks/handlers';
 import { renderHookWithProviders } from '@/test-utils';
 import { useAuthStore } from '@/stores/auth-store';
+import { authKeys } from '@/features/auth/hooks/use-auth';
 import {
   mypageKeys,
   useMypage,
@@ -79,7 +80,7 @@ describe('useUpdateNickname', () => {
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: mypageKeys.summary(),
     });
-    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['auth', 'me'] });
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: authKeys.me() });
   });
 });
 
@@ -107,7 +108,7 @@ describe('useUpdateAvatar', () => {
 
     // axios FormData interceptor 가 Content-Type 직접 unset → 브라우저가 multipart boundary 자동 부여.
     expect(receivedContentType).toMatch(/multipart\/form-data/);
-    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['auth', 'me'] });
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: authKeys.me() });
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: mypageKeys.summary(),
     });
@@ -134,7 +135,7 @@ describe('useRemoveAvatar', () => {
       await result.current.mutateAsync();
     });
 
-    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['auth', 'me'] });
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: authKeys.me() });
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: mypageKeys.summary(),
     });

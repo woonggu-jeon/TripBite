@@ -84,7 +84,9 @@ export const useTournamentStore = create<TournamentState & TournamentActions>()(
         set({ config: null, winner: null, runnerUp: null, matchesPlayed: 0 }),
     }),
     {
-      name: 'tournament',
+      // 다른 store 와 prefix 정합 ('tripbite.*'). 3rd-party storage key 충돌
+      // 회피 (auth/ui/letter 와 동일 패턴). sessionStorage 라 탭 닫힘 시 무손실.
+      name: 'tripbite.tournament',
       storage: createJSONStorage(() =>
         typeof window === 'undefined'
           ? // SSR no-op

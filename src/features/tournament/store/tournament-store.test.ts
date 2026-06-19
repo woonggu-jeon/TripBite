@@ -83,7 +83,7 @@ describe('tournament-store', () => {
       runnerUp: makeDest(2),
       matchesPlayed: 3,
     });
-    const raw = sessionStorage.getItem('tournament');
+    const raw = sessionStorage.getItem('tripbite.tournament');
     expect(raw).toBeTruthy();
     const parsed = JSON.parse(raw!);
     // zustand persist 포맷: { state: {...}, version: 0 }
@@ -94,7 +94,7 @@ describe('tournament-store', () => {
 
   it('partialize — 액션 함수는 sessionStorage 에 안 들어감', () => {
     useTournamentStore.getState().setConfig(BASE_CONFIG);
-    const raw = sessionStorage.getItem('tournament');
+    const raw = sessionStorage.getItem('tripbite.tournament');
     const parsed = JSON.parse(raw!);
     expect(parsed.state.setConfig).toBeUndefined();
     expect(parsed.state.reset).toBeUndefined();

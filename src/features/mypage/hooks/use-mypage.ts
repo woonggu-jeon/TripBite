@@ -79,7 +79,7 @@ export function useUpdateAvatar() {
   return useMutation({
     mutationFn: (file: File) => mypageApi.updateAvatar(file),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['auth', 'me'] });
+      qc.invalidateQueries({ queryKey: authKeys.me() });
       qc.invalidateQueries({ queryKey: mypageKeys.summary() });
     },
   });
@@ -93,7 +93,7 @@ export function useRemoveAvatar() {
   return useMutation({
     mutationFn: () => mypageApi.removeAvatar(),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['auth', 'me'] });
+      qc.invalidateQueries({ queryKey: authKeys.me() });
       qc.invalidateQueries({ queryKey: mypageKeys.summary() });
     },
   });
