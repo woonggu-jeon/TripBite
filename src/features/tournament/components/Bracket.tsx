@@ -173,13 +173,19 @@ export function Bracket({ destinations, onComplete }: BracketProps) {
   const match = round.matches[state.currentMatchIndex];
   if (!match) return null;
 
-  // 전체 진행도 = 결정된 매치 / (N-1) — segment 단위 점선 표시
-  const totalMatchesNeeded = Math.max(1, destinations.length - 1);
-  const decided = state.rounds
-    .flatMap((r) => r.matches)
-    .filter((m) => m.winner !== undefined).length;
-  const progress = Math.min(100, (decided / totalMatchesNeeded) * 100);
-  const segments = Array.from({ length: totalMatchesNeeded });
+  // 진행도 — 라운드 안 매치 수 기준 (32강=16, 16강=8, 8강=4, 4강=2).
+  // 결승(1 매치)은 segment 자체 의미 없음 → 숨김. 사용자 요청 (2026-06-19) —
+  // 전체 N-1 (32강=31개) 으로 표시하면 너무 많아 부담. roundLabel + matchCount
+  // 가 이미 라운드 진입 신호 + 매치 진행 신호 동시 제공.
+  const roundMatchCount = round.matches.length;
+  const decidedInRound = round.matches.filter(
+    (m) => m.winner !== undefined,
+  ).length;
+  const showProgress = roundMatchCount > 1;
+  const progress = showProgress
+    ? Math.min(100, (decidedInRound / roundMatchCount) * 100)
+    : 0;
+  const segments = Array.from({ length: roundMatchCount });
 
   return (
     <div className={styles.wrap}>
@@ -196,26 +202,28 @@ export function Bracket({ destinations, onComplete }: BracketProps) {
             })}
           </span>
         </p>
-        <div
-          className={styles.progressBar}
-          role="progressbar"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={Math.round(progress)}
-          aria-label={t('progressLabel')}
-        >
-          {segments.map((_, i) => (
-            <span
-              key={i}
-              aria-hidden
-              className={
-                i < decided
-                  ? `${styles.progressSeg} ${styles.progressSegDone}`
-                  : styles.progressSeg
-              }
-            />
-          ))}
-        </div>
+        {showProgress && (
+          <div
+            className={styles.progressBar}
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(progress)}
+            aria-label={t('progressLabel')}
+          >
+            {segments.map((_, i) => (
+              <span
+                key={i}
+                aria-hidden
+                className={
+                  i < decidedInRound
+                    ? `${styles.progressSeg} ${styles.progressSegDone}`
+                    : styles.progressSeg
+                }
+              />
+            ))}
+          </div>
+        )}
       </header>
 
       <div className={styles.matchup}>
