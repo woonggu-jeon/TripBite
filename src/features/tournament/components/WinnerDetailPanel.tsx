@@ -34,7 +34,7 @@ function ExpandableSummary({ text }: { text: string }) {
     <div className={styles.summaryWrap}>
       <p
         ref={ref}
-        className={`${styles.summary} ${expanded ? styles.expanded : styles.clamped}`}
+        className={`${styles.summary} ${expanded ? '' : styles.clamped}`}
       >
         {text}
       </p>

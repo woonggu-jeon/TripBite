@@ -21,15 +21,12 @@
   margin: 0;
 }
 
+// expanded 상태는 .clamped 미적용으로 표현 — 빈 .expanded class 제거.
 .clamped {
   display: -webkit-box;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-.expanded {
-  // 풀 표시
 }
 
 .expandToggle {
