@@ -1,6 +1,20 @@
+import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { LetterDetailClient } from './_components/LetterDetailClient';
+
+/**
+ * 편지 상세 noindex — robots.ts disallow (`/letter/`) 와 이중 가드.
+ * 받은 편지 본문 (5글자 + 개인 location label) 검색 노출 방지.
+ * 2026-06-19 Round 17 audit.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('letter.detail');
+  return {
+    title: t('title'),
+    robots: { index: false, follow: false },
+  };
+}
 
 /**
  * 편지 상세 페이지 (/letter/[id])
