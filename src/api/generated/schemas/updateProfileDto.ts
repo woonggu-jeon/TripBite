@@ -6,9 +6,5 @@
  */
 
 export interface UpdateProfileDto {
-  /**
-     * @minLength 1
-     * @maxLength 50
-     */
   nickname: string;
 }

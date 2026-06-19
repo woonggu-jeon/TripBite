@@ -13,7 +13,6 @@ export interface SignupDto {
      * @maxLength 72
      */
   password: string;
-  /** @pattern ^[가-힣a-zA-Z0-9]{2,10}$ */
   nickname: string;
   /**
      * @minLength 1

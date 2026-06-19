@@ -7,10 +7,6 @@
 import type { CompleteOnboardingDtoHomeRegion } from './completeOnboardingDtoHomeRegion';
 
 export interface CompleteOnboardingDto {
-  /**
-     * @minLength 1
-     * @maxLength 50
-     */
   nickname?: string;
   homeRegion?: CompleteOnboardingDtoHomeRegion;
 }
