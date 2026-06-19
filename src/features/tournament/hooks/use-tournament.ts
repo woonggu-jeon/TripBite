@@ -102,11 +102,24 @@ export function useSavedTournaments() {
  * 없으면 게스트 익명 기록 (랭킹 집계엔 반영). 401 응답 없음 — useRequireAuth 불필요.
  *
  * 실패해도 결과 화면 진입 자체를 막지 않음 (silent fail). retry 정책 없음.
+ *
+ * Idempotency-Key (BE 합의 2026-06-19): mutate 호출 1회 = UUID 1개. 24h 내
+ * 같은 키 = BE 가 동일 결과 반환 → 네트워크 재시도 / 더블탭 시 랭킹 이중
+ * 카운트 방지. 더블탭 자체는 호출처 (TournamentResultClient) 의 isPending /
+ * isSuccess 가드로 1차 차단. mutation retry 는 기본 0 (default) — 같은 키
+ * 재사용 시나리오는 사용자 의도적 재시도 (mutate 재호출 = 새 UUID, 다른
+ * 트랜잭션) 외엔 없음.
  */
 export function useRecordTournament() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: tournamentApi.recordResult,
+    mutationFn: (input: Parameters<typeof tournamentApi.recordResult>[0]) => {
+      const idempotencyKey =
+        typeof crypto !== 'undefined' && 'randomUUID' in crypto
+          ? crypto.randomUUID()
+          : undefined;
+      return tournamentApi.recordResult(input, idempotencyKey);
+    },
     onSuccess: (record) => {
       qc.setQueryData(tournamentKeys.record(record.id), record);
       qc.invalidateQueries({ queryKey: tournamentKeys.history() });

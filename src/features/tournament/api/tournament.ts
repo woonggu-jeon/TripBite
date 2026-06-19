@@ -9,10 +9,8 @@ import {
   mypageControllerRemoveSavedV1,
   mypageControllerSaveV1,
 } from '@/api/generated/mypage/mypage';
-import {
-  tournamentControllerGetV1,
-  tournamentControllerRecordV1,
-} from '@/api/generated/tournaments/tournaments';
+import { tournamentControllerGetV1 } from '@/api/generated/tournaments/tournaments';
+import { api } from '@/services/api/client';
 import {
   normalizeImageField,
   normalizePhotosField,
@@ -20,6 +18,7 @@ import {
 import type {
   DestinationDto,
   DestinationDetailDto,
+  TournamentRecordDto,
 } from '@/api/generated/schemas';
 import type { TournamentConfig } from '@/features/tournament/types';
 
@@ -67,18 +66,38 @@ export const tournamentApi = {
     return res.map(normalizeImageField);
   },
 
-  recordResult: (input: {
-    winnerId: string;
-    runnerUpId: string | null;
-    matchesPlayed: number;
-    tournamentSize: number;
-  }) =>
-    tournamentControllerRecordV1({
-      winnerId: input.winnerId,
-      runnerUpId: input.runnerUpId ?? undefined,
-      matchesPlayed: input.matchesPlayed,
-      tournamentSize: input.tournamentSize,
-    }),
+  /**
+   * 토너먼트 결과 기록.
+   *
+   * Idempotency-Key (BE 합의 2026-06-19): 호출 1회 = UUID 1개 → 같은 키 24h 내
+   * 동일 결과 반환 → 네트워크 재시도 / 더블탭에도 랭킹 이중 카운트 방지.
+   * generated `tournamentControllerRecordV1` 는 axios config override 불가
+   * (signal 만 받음) — generated 우회 후 axios 직접 호출. 다른 endpoint 는
+   * generated 그대로.
+   */
+  recordResult: async (
+    input: {
+      winnerId: string;
+      runnerUpId: string | null;
+      matchesPlayed: number;
+      tournamentSize: number;
+    },
+    idempotencyKey?: string,
+  ): Promise<TournamentRecordDto> => {
+    const res = await api.post<TournamentRecordDto>(
+      '/v1/tournaments',
+      {
+        winnerId: input.winnerId,
+        runnerUpId: input.runnerUpId ?? undefined,
+        matchesPlayed: input.matchesPlayed,
+        tournamentSize: input.tournamentSize,
+      },
+      idempotencyKey
+        ? { headers: { 'Idempotency-Key': idempotencyKey } }
+        : undefined,
+    );
+    return res.data;
+  },
 
   getRecord: (id: string) => tournamentControllerGetV1(id),
 

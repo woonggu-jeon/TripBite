@@ -197,4 +197,36 @@ describe('useRecordTournament', () => {
       queryKey: tournamentKeys.history(),
     });
   });
+
+  it('Idempotency-Key 헤더 전송 (BE dedup — 랭킹 이중 카운트 방지)', async () => {
+    let capturedKey: string | null = null;
+    server.use(
+      http.post(`${apiUrl}/tournaments`, ({ request }) => {
+        capturedKey = request.headers.get('Idempotency-Key');
+        return HttpResponse.json({
+          id: 'rec-idem',
+          winner: { id: 'd-1', name: '우승지', region: 'cheongju' },
+          runnerUp: null,
+          matchesPlayed: 3,
+          tournamentSize: 8,
+          completedAt: '2026-06-19T00:00:00Z',
+        });
+      }),
+    );
+
+    const { result } = renderHookWithProviders(() => useRecordTournament());
+    await act(async () => {
+      await result.current.mutateAsync({
+        winnerId: 'd-1',
+        runnerUpId: null,
+        matchesPlayed: 3,
+        tournamentSize: 8,
+      });
+    });
+
+    // crypto.randomUUID() 가 happy-dom 에 존재 — UUID 형식 검증.
+    expect(capturedKey).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    );
+  });
 });
