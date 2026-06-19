@@ -1,9 +1,10 @@
 // Fluid 반응형 — 320px (S8/Fold 닫힘) ~ 1280px+ desktop 까지 viewport 따라 자연스럽게.
 // clamp(min, preferred, max) 한 줄로 단계별 media query 대체.
+// width/margin 미지정 — 부모 (.contentInner) 의 --content-pad / --content-max 가
+// 이미 양옆 padding + 최대폭 cap 처리. 92% 로 또 좁히면 banner 만 다른 위젯
+// (FestivalCarousel/HomeQuickActions) 대비 들여쓰기처럼 보임 (2026-06-19 수정).
 .wrap {
-  // 화면 폭의 92% 사용 — 320px 에서 ~294px, 581px+ 에서 580px 로 cap.
-  width: min(92%, 580px);
-  margin: 0 auto;
+  width: 100%;
 }
 
 .slide {
