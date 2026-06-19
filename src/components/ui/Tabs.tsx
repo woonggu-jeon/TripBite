@@ -1,6 +1,6 @@
 'use client';
 
-import { type ReactNode } from 'react';
+import { type KeyboardEvent, type ReactNode } from 'react';
 import { haptic } from '@/lib/haptic';
 
 /**
@@ -51,9 +51,62 @@ export interface TabListProps {
   children: ReactNode;
 }
 
+/**
+ * 화살표 키 네비게이션 — ARIA APG tabs 패턴 (horizontal).
+ *   - ArrowLeft  → 이전 tab focus + click (mutation)
+ *   - ArrowRight → 다음 tab focus + click
+ *   - Home/End   → 첫 / 마지막 tab
+ * roving tabindex 는 미도입 (모든 tab Tab 키로 진입 가능 유지) — 단순 추가
+ * 인터랙션. focus 이동 + 자동 onSelect 호출은 ARIA APG 의 automatic activation
+ * 패턴 정합.
+ */
+function handleTabListKeyDown(e: KeyboardEvent<HTMLDivElement>) {
+  const key = e.key;
+  if (
+    key !== 'ArrowLeft' &&
+    key !== 'ArrowRight' &&
+    key !== 'Home' &&
+    key !== 'End'
+  )
+    return;
+  const tabs = Array.from(
+    e.currentTarget.querySelectorAll<HTMLButtonElement>(
+      'button[role="tab"]:not([disabled])',
+    ),
+  );
+  if (tabs.length === 0) return;
+  const activeEl = document.activeElement as HTMLButtonElement | null;
+  const currentIndex = activeEl ? tabs.indexOf(activeEl) : -1;
+  let nextIndex: number;
+  if (key === 'Home') nextIndex = 0;
+  else if (key === 'End') nextIndex = tabs.length - 1;
+  else if (key === 'ArrowLeft')
+    nextIndex = currentIndex <= 0 ? tabs.length - 1 : currentIndex - 1;
+  else
+    nextIndex =
+      currentIndex < 0 || currentIndex === tabs.length - 1
+        ? 0
+        : currentIndex + 1;
+  e.preventDefault();
+  const target = tabs[nextIndex];
+  if (target) {
+    target.focus();
+    target.click();
+  }
+}
+
 export function TabList({ ariaLabel, className, children }: TabListProps) {
   return (
-    <div role="tablist" aria-label={ariaLabel} className={className}>
+    <div
+      role="tablist"
+      aria-label={ariaLabel}
+      className={className}
+      onKeyDown={handleTabListKeyDown}
+      // jsx-a11y/interactive-supports-focus 충족용. ARIA APG 상 tablist 자체는
+      // focusable 필요 없지만 (자식 button 이 focus 받음), eslint rule 보수.
+      // -1 로 Tab 키 진입 안 함 + 자식 button focus 그대로 유지.
+      tabIndex={-1}
+    >
       {children}
     </div>
   );

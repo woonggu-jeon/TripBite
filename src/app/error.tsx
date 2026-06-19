@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
+import { useQueryClient } from '@tanstack/react-query';
 
 /**
  * App Router Error Boundary
@@ -15,10 +16,20 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const queryClient = useQueryClient();
+
   useEffect(() => {
     // 운영 — Vercel Analytics 가 vitals/페이지뷰만 수집. error tracking 미도입.
     console.error('[App Error]', error);
   }, [error]);
+
+  // reset() 만 호출 시 같은 query cache 가 fail 상태로 남아 재시도 시 동일
+  // 에러 재발 가능. resetQueries 로 cache 초기화 + reset 으로 segment remount.
+  // 2026-06-19 audit.
+  const handleReset = () => {
+    queryClient.resetQueries();
+    reset();
+  };
 
   return (
     <main
@@ -41,7 +52,7 @@ export default function GlobalError({
       </p>
       <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
         <button
-          onClick={reset}
+          onClick={handleReset}
           style={{
             padding: '0.75rem 1.5rem',
             background: 'var(--color-primary)',

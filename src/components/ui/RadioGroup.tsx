@@ -1,6 +1,6 @@
 'use client';
 
-import { type ReactNode, type MouseEvent } from 'react';
+import { type KeyboardEvent, type ReactNode, type MouseEvent } from 'react';
 import { haptic } from '@/lib/haptic';
 
 export interface RadioGroupProps {
@@ -18,9 +18,62 @@ export interface RadioGroupProps {
  * ThemeSection / TravelTypeQuiz) 가 동일한 wrapper 패턴 반복했던 것을 흡수.
  * 각 옵션은 [[RadioOption]] 으로 감싼다.
  */
+/**
+ * 화살표 키 네비게이션 — ARIA APG radiogroup 패턴.
+ *   - ArrowLeft/Up   → 이전 옵션 focus + select
+ *   - ArrowRight/Down → 다음 옵션 focus + select
+ *   - Home/End        → 첫 / 마지막 옵션
+ * disabled radio 는 skip. roving tabindex 미도입 (모든 옵션 Tab 진입 유지).
+ */
+function handleRadioGroupKeyDown(e: KeyboardEvent<HTMLDivElement>) {
+  const key = e.key;
+  if (
+    key !== 'ArrowLeft' &&
+    key !== 'ArrowRight' &&
+    key !== 'ArrowUp' &&
+    key !== 'ArrowDown' &&
+    key !== 'Home' &&
+    key !== 'End'
+  )
+    return;
+  const options = Array.from(
+    e.currentTarget.querySelectorAll<HTMLButtonElement>(
+      'button[role="radio"]:not([disabled])',
+    ),
+  );
+  if (options.length === 0) return;
+  const activeEl = document.activeElement as HTMLButtonElement | null;
+  const currentIndex = activeEl ? options.indexOf(activeEl) : -1;
+  let nextIndex: number;
+  if (key === 'Home') nextIndex = 0;
+  else if (key === 'End') nextIndex = options.length - 1;
+  else if (key === 'ArrowLeft' || key === 'ArrowUp')
+    nextIndex = currentIndex <= 0 ? options.length - 1 : currentIndex - 1;
+  else
+    nextIndex =
+      currentIndex < 0 || currentIndex === options.length - 1
+        ? 0
+        : currentIndex + 1;
+  e.preventDefault();
+  const target = options[nextIndex];
+  if (target) {
+    target.focus();
+    target.click();
+  }
+}
+
 export function RadioGroup({ label, className, children }: RadioGroupProps) {
   return (
-    <div role="radiogroup" aria-label={label} className={className}>
+    <div
+      role="radiogroup"
+      aria-label={label}
+      className={className}
+      onKeyDown={handleRadioGroupKeyDown}
+      // jsx-a11y/interactive-supports-focus 충족용. ARIA APG 상 radiogroup
+      // 자체는 focusable 필요 없지만 (자식 button 이 focus 받음), eslint
+      // rule 보수. -1 로 Tab 키 진입 안 함 + 자식 button focus 그대로 유지.
+      tabIndex={-1}
+    >
       {children}
     </div>
   );
