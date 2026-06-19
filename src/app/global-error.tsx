@@ -7,6 +7,10 @@
  *   - 세그먼트별 error.tsx(/letter/error.tsx 등)는 그 세그먼트만 격리.
  *   - 이 파일은 root layout 자체가 깨졌을 때 (예: Providers/QueryClient 마운트 실패) 최후 폴백.
  *   - global-error는 root layout을 대체하므로 <html>/<body> 직접 렌더 필요.
+ *
+ * 토큰 동기화 주의 (2026-06-19): CSS variables 미동작 (root layout 파괴) →
+ * inline style 의 hex 직접. _color.scss 토큰 변경 시 본 file 도 수동 갱신.
+ *   - fg #151515 / muted #393939 / border #c6c6c6 / bg #ffffff
  */
 export default function GlobalError({
   error,
@@ -28,7 +32,7 @@ export default function GlobalError({
           fontFamily:
             '-apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif',
           background: '#fff',
-          color: '#0a0a0a',
+          color: '#151515',
         }}
       >
         <main style={{ maxWidth: 360, textAlign: 'center' }}>
@@ -38,7 +42,7 @@ export default function GlobalError({
           <p
             style={{
               fontSize: '0.875rem',
-              color: '#6b7280',
+              color: '#393939',
               marginBottom: 24,
             }}
           >
@@ -57,7 +61,7 @@ export default function GlobalError({
               onClick={() => reset()}
               style={{
                 padding: '0.75rem 1.25rem',
-                background: '#0a0a0a',
+                background: '#151515',
                 color: '#fff',
                 border: 0,
                 borderRadius: 8,
@@ -77,8 +81,8 @@ export default function GlobalError({
               style={{
                 padding: '0.75rem 1.25rem',
                 background: '#fff',
-                color: '#0a0a0a',
-                border: '1px solid #e5e7eb',
+                color: '#151515',
+                border: '1px solid #c6c6c6',
                 borderRadius: 8,
                 fontWeight: 600,
                 cursor: 'pointer',
