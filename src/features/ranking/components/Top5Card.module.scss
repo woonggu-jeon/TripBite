@@ -51,14 +51,19 @@
 
 // 메달 색상 — 디자이너 신규 토큰 (--medal-gold/silver/bronze) 단일 hex 기반.
 // gradient 시작 = 토큰 자체, 끝 = 토큰을 fg 와 mix 해 어둡게 → 단계감 자연스럽게.
-// 글자 색은 메달 톤과 contrast 4.5+ 충족 — 짙은 텍스트 정합.
+//
+// 글자 색은 mode-invariant 진한 hex (#422006/#1f2937/#431407) 고정 — 메달은
+// 밝은 톤이라 light/dark 무관 어두운 텍스트가 contrast 충족 (gold 7:1, silver
+// 9:1, bronze 5:1). 토큰화 시 dark mode 의 --color-fg(#fafafa) 가 silver 위
+// 1.1:1 로 떨어지는 회귀 (2026-06-19 R6 audit). 디자이너 dark medal spec /
+// medal-text-* 토큰 도착 시 토큰화 (BACKLOG).
 .rank1 .rank {
   background: linear-gradient(
     135deg,
     var(--medal-gold),
     color-mix(in srgb, var(--medal-gold) 70%, var(--color-fg))
   );
-  color: var(--color-on-strong, #ffffff);
+  color: #422006;
 }
 .rank2 .rank {
   background: linear-gradient(
@@ -66,7 +71,7 @@
     var(--medal-silver),
     color-mix(in srgb, var(--medal-silver) 70%, var(--color-fg))
   );
-  color: var(--color-fg);
+  color: #1f2937;
 }
 .rank3 .rank {
   background: linear-gradient(
@@ -74,7 +79,7 @@
     var(--medal-bronze),
     color-mix(in srgb, var(--medal-bronze) 70%, var(--color-fg))
   );
-  color: var(--color-on-strong, #ffffff);
+  color: #431407;
 }
 
 .body {
