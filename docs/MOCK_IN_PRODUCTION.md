@@ -56,7 +56,7 @@ axios `baseURL` 이 `/api/backend` 로 자동 분기 (`src/services/api/client.t
 | 컴포넌트          | 역할                                                                                                                    |
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | `MockModeBanner`  | "DEMO" chip — 운영 모드와 시각 구분                                                                                     |
-| `MockPushTrigger` | 📬 새 편지 도착 시뮬레이션 버튼                                                                                         |
+| `MockPushTrigger` | 📬 새 편지 도착 시뮬레이션 버튼 — 내부 endpoint `POST /__mock/letter-arrive` 호출 (handlers.ts dev-only)                |
 | `MockAuthToggle`  | LogIn/LogOut 토글 — `mockSignedIn` state 뒤집어 비로그인 흐름 (requireAuth confirm / 보호 페이지 redirect 등) 검증 가능 |
 
 mock 의 `mockSignedIn` 모듈 state (`src/mocks/handlers.ts`) 가 `POST /auth/login` / `POST /auth/logout` 으로 토글되어 `/me`, `/mypage*`, `/letters*`, `/notifications` 등 보호 endpoint 가 401 분기. mock 환경에선 middleware 가 SID 검사 skip 이므로, 보호 경로 진입 시 page mount 후 useMe / 다른 query 의 401 응답 → interceptor (mock skip) → MockAuthToggle 의 사용자 토글이 UX 진입점.
