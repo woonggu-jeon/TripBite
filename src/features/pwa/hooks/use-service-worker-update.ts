@@ -29,27 +29,41 @@ export function useServiceWorkerUpdate() {
       return;
 
     let cancelled = false;
+    let regForCleanup: ServiceWorkerRegistration | null = null;
+    let installingForCleanup: ServiceWorker | null = null;
+
+    // 매 updatefound 시 installing 이 새 객체 → 직전 statechange listener 명시적
+    // 제거 후 새 listener 등록. ref-style 추적으로 메모리 누수 방지 (2026-06-19 audit).
+    function onStateChange() {
+      if (!installingForCleanup) return;
+      if (
+        installingForCleanup.state === 'installed' &&
+        navigator.serviceWorker.controller
+      ) {
+        setHasUpdate(true);
+      }
+    }
+    function onUpdateFound() {
+      if (!regForCleanup) return;
+      // 직전 installing 의 listener 정리
+      if (installingForCleanup) {
+        installingForCleanup.removeEventListener('statechange', onStateChange);
+      }
+      installingForCleanup = regForCleanup.installing;
+      if (!installingForCleanup) return;
+      installingForCleanup.addEventListener('statechange', onStateChange);
+    }
 
     navigator.serviceWorker.getRegistration().then((reg) => {
       if (cancelled || !reg) return;
+      regForCleanup = reg;
       setRegistration(reg);
 
       // 이미 대기 중인 SW
       if (reg.waiting) setHasUpdate(true);
 
       // 새 SW 설치 중 감지
-      reg.addEventListener('updatefound', () => {
-        const installing = reg.installing;
-        if (!installing) return;
-        installing.addEventListener('statechange', () => {
-          if (
-            installing.state === 'installed' &&
-            navigator.serviceWorker.controller
-          ) {
-            setHasUpdate(true);
-          }
-        });
-      });
+      reg.addEventListener('updatefound', onUpdateFound);
     });
 
     // controller 가 바뀌면 (skipWaiting 후) reload
@@ -70,6 +84,12 @@ export function useServiceWorkerUpdate() {
         'controllerchange',
         onControllerChange,
       );
+      if (regForCleanup) {
+        regForCleanup.removeEventListener('updatefound', onUpdateFound);
+      }
+      if (installingForCleanup) {
+        installingForCleanup.removeEventListener('statechange', onStateChange);
+      }
     };
   }, []);
 

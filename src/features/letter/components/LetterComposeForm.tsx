@@ -57,9 +57,12 @@ export function LetterComposeForm() {
     if (resolved || autoTriggered.current) return;
     if (permission === 'denied') return; // denied 는 사용자 명시 클릭 필요
     autoTriggered.current = true;
-    void resolve().then((r) => {
-      if (r) setResolved(r);
-    });
+    void resolve()
+      .then((r) => {
+        if (r) setResolved(r);
+      })
+      // unhandled rejection 회피 — resolve 가 내부 try-catch 처리하지만 안전망.
+      .catch(() => {});
   }, [permission, resolved, resolve, setResolved]);
 
   const handleRequestLocation = async () => {
