@@ -18,7 +18,6 @@ src/app/
     │   ├── _motion.scss      duration + ease
     │   └── _misc.scss        radius + opacity + border-width
     ├── _accents.scss         시즌별 + 카테고리 accent
-    ├── _chart.scss           chart series 1~8
     ├── _dark.scss            dark mode override
     ├── _responsive.scss      mobile viewport @media 토큰 축소
     ├── _fonts.scss           Pretendard fallback @font-face
@@ -58,7 +57,7 @@ src/app/
 | colored bg 위 흰 텍스트     | `var(--color-on-strong)` (success/danger/banner badge 등)                                                                                                 |
 | 추천 시즌별 accent (5종)    | `var(--accent-spring/summer/autumn/winter/festival)` (+ grad-start/end). 베이스 톤은 흰 배경 WCAG AA 4.5:1+ 보장. grad-start/-end 는 배경 그라데이션 전용 |
 | 축제 카테고리 색 (5종)      | `var(--accent-red/amber/green/blue/violet)` — 텍스트로도 안전한 darker 톤 (4.5:1+)                                                                        |
-| 차트 시리즈 (1~8)           | `var(--chart-1)` ~ `var(--chart-8)`                                                                                                                       |
+| 메달 색 (Top5)              | `var(--medal-gold/silver/bronze)` — 단일 hex (디자이너 spec). gradient 는 `color-mix(70%, fg)` 로 grad-end 자동. 글자는 mode-invariant 진한 hex 고정      |
 
 ### Radius
 
@@ -693,7 +692,7 @@ iOS Safari / PWA 의 native button rendering 이 일부 border 속성을 무시�
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Color              | `--color-bg/-fg/-muted/-border/-primary*/-surface*/-divider/-hover*/-overlay/-glass`, `--color-letter-*`                                                                   |
 | Accent             | `--accent-{spring/summer/autumn/winter/festival}` + grad, `--accent-{red/amber/green/blue/violet}`                                                                         |
-| Chart              | `--chart-1 ~ -8`                                                                                                                                                           |
+| Medal              | `--medal-{gold/silver/bronze}` — Top5Card 전용. dark mode override 미정의 (디자이너 spec 대기), 글자색은 mode-invariant 진한 hex                                           |
 | Shadow             | `--shadow-{sm/md/lg/card/card-strong/pop/emphasis}`, `--drop-shadow-{icon/xs/sm/md/lg/petal}`                                                                              |
 | Motion             | `--motion-{fast/base/slow/emphasis}`, `--ease-{out/spring}`                                                                                                                |
 | Spacing            | `--space-1 ~ -12` (4px grid)                                                                                                                                               |
