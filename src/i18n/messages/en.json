@@ -161,6 +161,7 @@
       "username": "Username",
       "usernamePlaceholder": "Your username",
       "email": "Email",
+      "emailPlaceholder": "you@example.com",
       "submit": "Send reset link",
       "submitting": "Sending...",
       "sentTitle": "Check your email",

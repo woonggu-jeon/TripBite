@@ -161,6 +161,7 @@
       "username": "아이디",
       "usernamePlaceholder": "가입 아이디",
       "email": "이메일",
+      "emailPlaceholder": "you@example.com",
       "submit": "재설정 링크 받기",
       "submitting": "전송 중...",
       "sentTitle": "메일을 확인해주세요",

@@ -76,7 +76,7 @@ export function ForgotPasswordForm() {
         type="email"
         autoComplete="email"
         label={t('email')}
-        placeholder="you@example.com"
+        placeholder={t('emailPlaceholder')}
         errorMessage={
           errors.email
             ? tErr(errors.email.message as Parameters<typeof tErr>[0])
