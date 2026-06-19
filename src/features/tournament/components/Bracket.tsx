@@ -202,7 +202,10 @@ export function Bracket({ destinations, onComplete }: BracketProps) {
             })}
           </span>
         </p>
-        {showProgress && (
+        {/* 결승(1 매치) 은 progress 의미 없어 segment 미렌더 — 다만 .progressBar
+            의 height:6px + .head 의 gap 0.5rem 은 유지 (빈 placeholder) 해서
+            라운드 전환 시 카드 위치가 위로 올라오는 layout shift 회피. */}
+        {showProgress ? (
           <div
             className={styles.progressBar}
             role="progressbar"
@@ -223,6 +226,8 @@ export function Bracket({ destinations, onComplete }: BracketProps) {
               />
             ))}
           </div>
+        ) : (
+          <div className={styles.progressBar} aria-hidden />
         )}
       </header>
 
