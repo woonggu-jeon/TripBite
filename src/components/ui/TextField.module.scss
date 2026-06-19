@@ -32,7 +32,9 @@
   border-radius: var(--radius-md);
   background: var(--color-bg);
   color: var(--color-fg);
-  font-size: var(--font-body-sm);
+  // iOS Safari auto-zoom 차단 — input focus 시 font-size 16px 미만이면 viewport
+  // zoom in. --font-body-sm (15px) 대신 1rem (16px) 명시 (2026-06-19 audit).
+  font-size: 1rem;
   outline: none;
   transition: border-color var(--motion-base) ease;
 
