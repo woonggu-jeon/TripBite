@@ -328,7 +328,6 @@
       "empty": "No rankings this week yet"
     },
     "chart": {
-      "winsLabel": "Wins",
       "loading": "Loading chart...",
       "error": "Couldn't load chart",
       "retry": "Try again",

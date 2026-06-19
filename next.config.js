@@ -101,7 +101,6 @@ const nextConfig = {
     //   loading.tsx 가 cold start 정책.
     optimizePackageImports: [
       'lucide-react',
-      'recharts',
       'embla-carousel-react',
       'next-intl',
       // TanStack Query — Provider 외 hook 별 import tree-shake 보강.

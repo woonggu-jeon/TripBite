@@ -12,7 +12,6 @@
  *   styles/tokens/_motion.scss      — duration + ease
  *   styles/tokens/_misc.scss        — radius + opacity + border-width
  *   styles/_accents.scss            — 시즌별 + 카테고리 accent
- *   styles/_chart.scss              — chart series 1~8
  *   styles/_dark.scss               — dark mode override
  *   styles/_responsive.scss         — mobile viewport @media 토큰 축소
  *   styles/_fonts.scss              — Pretendard fallback @font-face
@@ -27,7 +26,6 @@
 @use './styles/tokens/motion';
 @use './styles/tokens/misc';
 @use './styles/accents';
-@use './styles/chart';
 @use './styles/dark';
 @use './styles/responsive';
 @use './styles/fonts';

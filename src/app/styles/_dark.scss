@@ -71,15 +71,6 @@
   --accent-green: #4ade80;
   --accent-blue: #60a5fa;
   --accent-violet: #a78bfa;
-
-  /* 차트 — dark 에서 시리즈 색 밝게 (tailwind 500 → 400) */
-  --chart-2: #60a5fa; /* blue */
-  --chart-3: #34d399; /* emerald */
-  --chart-4: #fbbf24; /* amber */
-  --chart-5: #f87171; /* red */
-  --chart-6: #a78bfa; /* violet */
-  --chart-7: #f472b6; /* pink */
-  --chart-8: #2dd4bf; /* teal */
 }
 
 /* 사용자 system 선호 다크 — 명시 light 선택이 아니면 적용. */
