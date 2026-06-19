@@ -20,6 +20,8 @@ export function relativeTimeToken(isoOrDate: string | Date): RelativeTimeToken {
     typeof isoOrDate === 'string'
       ? new Date(isoOrDate).getTime()
       : isoOrDate.getTime();
+  // invalid ISO ("2026-13-45" 등) 시 NaN — 'date' fallback (호출자가 형식 처리).
+  if (!Number.isFinite(t)) return { kind: 'date' };
   const diff = Date.now() - t;
   const s = Math.max(0, Math.floor(diff / 1000));
   if (s < 60) return { kind: 'justNow' };

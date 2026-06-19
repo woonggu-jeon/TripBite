@@ -28,6 +28,8 @@ import styles from './LetterDetailClient.module.scss';
 
 function formatKoreanDate(iso: string): string {
   const d = new Date(iso);
+  // invalid date 가드 — 사용자에게 "NaN.NaN.NaN" 노출 회피, 원본 iso 그대로.
+  if (Number.isNaN(d.getTime())) return iso;
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
