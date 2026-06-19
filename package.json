@@ -40,7 +40,7 @@
     "loadtest:report": "artillery run --output loadtest/report.json loadtest/scenarios.yml && artillery report --output loadtest/report.html loadtest/report.json"
   },
   "dependencies": {
-    "@hookform/resolvers": "^3.9.0",
+    "@hookform/resolvers": "^5.4.0",
     "@serwist/next": "^9.5.11",
     "@tanstack/react-query": "^5.101.0",
     "@tanstack/react-query-devtools": "^5.101.0",
