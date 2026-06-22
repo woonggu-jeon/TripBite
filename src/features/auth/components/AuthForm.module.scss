@@ -80,6 +80,31 @@
   margin-top: var(--space-2);
 }
 
+// Figma LOGIN · A 의 links — "회원가입 · 아이디 찾기 · 비밀번호 찾기" 가운데 정렬.
+// 사이에 2x2 ellipsis dot (--color-border 톤) 구분자. SemiBold 12px muted.
+.footLinks {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding-top: var(--space-5);
+  font-size: var(--font-label);
+}
+
+.footLink {
+  color: var(--color-muted);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-snug);
+}
+
+.footDot {
+  display: inline-block;
+  width: 2px;
+  height: 2px;
+  border-radius: var(--radius-full);
+  background: #c2c2c2;
+}
+
 // FindId 결과 표시 등에 쓰는 가운데 정렬 form
 .center {
   text-align: center;

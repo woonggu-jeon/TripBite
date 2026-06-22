@@ -129,18 +129,20 @@ export function LoginForm() {
         {isSubmitting ? t('submitting') : t('submit')}
       </Button>
 
-      <div className={styles.foot}>
-        <Link href="/signup" className={styles.footLinkPrimary}>
+      {/* Figma LOGIN · A — 3 link 가운데 정렬 + ellipsis dot 구분.
+          기존 좌측 회원가입 / 우측 분리 layout 폐기. */}
+      <div className={styles.footLinks}>
+        <Link href="/signup" className={styles.footLink}>
           {t('toSignup')}
         </Link>
-        <span className={styles.footRight}>
-          <Link href="/find-id" className={styles.footLinkMuted}>
-            {t('toFindId')}
-          </Link>
-          <Link href="/forgot-password" className={styles.footLinkMuted}>
-            {t('toForgot')}
-          </Link>
-        </span>
+        <span aria-hidden className={styles.footDot} />
+        <Link href="/find-id" className={styles.footLink}>
+          {t('toFindId')}
+        </Link>
+        <span aria-hidden className={styles.footDot} />
+        <Link href="/forgot-password" className={styles.footLink}>
+          {t('toForgot')}
+        </Link>
       </div>
     </form>
   );
