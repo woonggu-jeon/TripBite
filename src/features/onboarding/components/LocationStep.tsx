@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Loader2 } from 'lucide-react';
 import { useGeolocation, usePermissionState } from '@/features/location';
 import { locationApi } from '@/features/location/api/location';
 import { useLocationStore } from '@/stores/location-store';
@@ -46,11 +45,9 @@ export function LocationStep({
 }) {
   const t = useTranslations('location');
   const permission = usePermissionState();
-  const { request: requestGps, isLoading, error } = useGeolocation();
+  const { request: requestGps, isLoading } = useGeolocation();
   const setResolved = useLocationStore((s) => s.setResolved);
-  const [status, setStatus] = useState<
-    'idle' | 'resolving' | 'finishing' | 'resolved' | 'failed'
-  >('idle');
+  const [retryNeeded, setRetryNeeded] = useState(false);
   const grantedAutoTriggered = useRef(false);
 
   /**
@@ -84,17 +81,15 @@ export function LocationStep({
   useEffect(() => {
     if (permission !== 'granted' || grantedAutoTriggered.current) return;
     grantedAutoTriggered.current = true;
-    setStatus('resolving');
     void (async () => {
       const ok = await resolveAndProceed();
       if (ok) {
         track('onboarding.location_allowed');
-        // mutation isPending 까지 spinner 유지 — finishing 으로 전환.
-        setStatus('finishing');
-        await onNext?.();
-        setStatus('resolved');
+        // fire-and-forget — 다음 화면 즉시 진입, finishOnboarding 의 mutation /
+        // router.replace 는 background. spinner 안 보임 (사용자 요청).
+        void onNext?.();
       } else {
-        setStatus('failed');
+        setRetryNeeded(true);
       }
     })();
     // resolveAndProceed 는 closure stable 가정 (props 변경 시만 재실행).
@@ -102,44 +97,30 @@ export function LocationStep({
   }, [permission, onNext]);
 
   async function handleAccept() {
-    setStatus('resolving');
+    // "허용하기" 클릭 → OS prompt → 허용 → coords 받자마자 다음 화면.
+    // setStatus 안 함 — spinner 화면 안 보임. OS prompt 동안은 기존 Walk 4
+    // UI 그대로 (사용자 시각에는 OS dialog 가 가림).
     const ok = await resolveAndProceed();
     if (ok) {
       track('onboarding.location_allowed');
-      setStatus('finishing');
-      await onNext?.();
-      setStatus('resolved');
+      void onNext?.(); // fire-and-forget
     } else {
       track('onboarding.location_skipped');
-      setStatus('failed');
-      await (onSkip ?? onNext)?.();
+      setRetryNeeded(true);
+      void (onSkip ?? onNext)?.();
     }
   }
 
-  async function handleSkip() {
+  function handleSkip() {
     track('onboarding.location_skipped');
-    setStatus('finishing');
-    await (onSkip ?? onNext)?.();
-    setStatus('resolved');
-  }
-
-  // resolve 또는 finishOnboarding mutation 진행 중 — 권한 상태 무관 공통 화면.
-  const isWorking =
-    status === 'resolving' || status === 'finishing' || isLoading;
-  if (isWorking) {
-    return (
-      <div className={`${styles.step} ${styles.resolving}`}>
-        <Loader2 className={styles.spinner} size={32} aria-hidden />
-        <p className={styles.tagline}>{t('resolving')}</p>
-      </div>
-    );
+    void (onSkip ?? onNext)?.();
   }
 
   // Figma "Walk 4 · 위치 권한 동의" — WalkStep 패턴 동일 layout (header +
-  // illustArea + body{copy + foot}). permission 상태 (prompt/granted/denied)
-  // 무관 동일 layout, 본문 / button 만 분기.
+  // illustArea + body{copy + foot}). spinner 분기 폐기 (사용자 요청 2026-06-22)
+  // — 허용 직후 즉시 다음 화면 진입, OS prompt 외 별도 대기 화면 없음.
   const isDenied = permission === 'denied';
-  const isGrantedRetry = permission === 'granted' && status === 'failed';
+  const isGrantedRetry = permission === 'granted' && retryNeeded;
 
   return (
     <div className={styles.step}>

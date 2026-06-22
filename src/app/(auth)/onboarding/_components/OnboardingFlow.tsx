@@ -53,7 +53,7 @@ export function OnboardingFlow() {
     setStep((s) => (s < TOTAL_STEPS ? ((s + 1) as Step) : s));
   const goPrev = () => setStep((s) => (s > 1 ? ((s - 1) as Step) : s));
 
-  async function finishOnboarding() {
+  function finishOnboarding() {
     if (isPending) return;
     // 디바이스 신호 — middleware 가 다음 진입부터 SSR 단계에서 skip 판정 (FOUC 회피).
     // 1년 max-age, SameSite=Lax (same-site 충분, cross-origin 진입 무관).
@@ -62,9 +62,11 @@ export function OnboardingFlow() {
       document.cookie =
         'tripbite.visited=1; max-age=31536000; path=/; SameSite=Lax';
     }
-    // 인증 사용자만 백엔드 onboarding API 호출 (비인증 사용자는 로그인 후 별도).
+    // 인증 사용자: BE onboarding API fire-and-forget (사용자 요청 — 허용 직후
+    // 즉시 다음 화면 진입, mutation 은 background. 실패 시 다음 화면에서 재시도
+    // 가능, rendering-speed-first 정합).
     if (isAuthenticated) {
-      await complete({
+      void complete({
         regionCode: resolvedLocation?.regionCode,
       });
     }
