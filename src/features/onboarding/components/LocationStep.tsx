@@ -5,9 +5,10 @@ import { useTranslations } from 'next-intl';
 import { Loader2 } from 'lucide-react';
 import {
   LocationPermissionPrompt,
-  useResolveLocation,
+  useGeolocation,
   usePermissionState,
 } from '@/features/location';
+import { locationApi } from '@/features/location/api/location';
 import { useLocationStore } from '@/stores/location-store';
 import { track } from '@/features/analytics';
 import { Button } from '@/components/ui';
@@ -24,11 +25,14 @@ import styles from './OnboardingStep.module.scss';
  * iOS 정책 — getCurrentPosition 은 사용자 액션 직후만. granted 상태의 mount-time
  * 호출은 prompt 가 안 떠서 위반 X. 그 외 상태는 버튼 클릭으로 트리거.
  *
- * UX — "허용" 클릭 → 브라우저 dialog → resolve (GPS + reverse geocode) → onNext
- * 까지 수백 ms ~ 수 초. 그 사이 `LocationPermissionPrompt` 그대로 두면 사용자가
- * "허용했는데 아무 반응 없음" 으로 느껴 어색. status === 'resolving' 또는
- * 'finishing' (= 부모의 mutation isPending) 동안은 spinner + "위치를 가져오는
- * 중..." 화면으로 prompt 를 교체.
+ * **Fast-path (2026-06-22 사용자 요청)**:
+ *   GPS 좌표 받자마자 즉시 다음 화면 진입 (reverse geocode 대기 X). BE
+ *   reverse 는 background fire-and-forget — 완료 시 location-store 의 label/
+ *   regionCode 자연 갱신. 사용자는 "허용" 직후 곧바로 다음 step 으로 진행.
+ *   spinner "가져오는 중..." 화면 거의 안 보임 (onNext 의 mutation 완료까지만).
+ *   useResolveLocation 의 기존 동작 (reverse 까지 완료 후 반환) 은 다른 사용처
+ *   (LetterComposeForm) 가 의존 — 거기는 변경 X. 본 step 만 LocationStep 안에서
+ *   useGeolocation + locationApi.reverseGeocode 직접 조합.
  */
 export function LocationStep({
   currentStep,
@@ -45,21 +49,48 @@ export function LocationStep({
 }) {
   const t = useTranslations('location');
   const permission = usePermissionState();
-  const { resolve, isLoading, error } = useResolveLocation();
+  const { request: requestGps, isLoading, error } = useGeolocation();
   const setResolved = useLocationStore((s) => s.setResolved);
   const [status, setStatus] = useState<
     'idle' | 'resolving' | 'finishing' | 'resolved' | 'failed'
   >('idle');
   const grantedAutoTriggered = useRef(false);
 
+  /**
+   * GPS 좌표 받자마자 store hydrate + 다음 step 진입.
+   * BE reverse geocode 는 background — 완료 시 store 갱신 (label/regionCode).
+   * 실패해도 좌표 fallback label 유지.
+   */
+  async function resolveAndProceed(): Promise<boolean> {
+    const coords = await requestGps();
+    if (!coords) return false;
+
+    const initial = {
+      latitude: coords.latitude,
+      longitude: coords.longitude,
+      accuracy: coords.accuracy,
+      label: `${coords.latitude.toFixed(3)}, ${coords.longitude.toFixed(3)}`,
+    };
+    setResolved(initial);
+
+    // background reverse — 사용자는 다음 화면 진행. 완료 시 자연 갱신.
+    void locationApi
+      .reverseGeocode(coords)
+      .then((result) => setResolved(result))
+      .catch(() => {
+        /* 좌표 fallback 유지 */
+      });
+
+    return true;
+  }
+
   useEffect(() => {
     if (permission !== 'granted' || grantedAutoTriggered.current) return;
     grantedAutoTriggered.current = true;
     setStatus('resolving');
     void (async () => {
-      const r = await resolve();
-      if (r) {
-        setResolved(r);
+      const ok = await resolveAndProceed();
+      if (ok) {
         track('onboarding.location_allowed');
         // mutation isPending 까지 spinner 유지 — finishing 으로 전환.
         setStatus('finishing');
@@ -69,13 +100,14 @@ export function LocationStep({
         setStatus('failed');
       }
     })();
-  }, [permission, resolve, setResolved, onNext]);
+    // resolveAndProceed 는 closure stable 가정 (props 변경 시만 재실행).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [permission, onNext]);
 
   async function handleAccept() {
     setStatus('resolving');
-    const r = await resolve();
-    if (r) {
-      setResolved(r);
+    const ok = await resolveAndProceed();
+    if (ok) {
       track('onboarding.location_allowed');
       setStatus('finishing');
       await onNext?.();
