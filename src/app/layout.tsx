@@ -161,9 +161,19 @@ export async function generateMetadata(): Promise<Metadata> {
       ],
     },
     formatDetection: { telephone: false },
+    // 디자이너 신규 trip-bite-logo.svg 기반 favicon 일괄 생성 (2026-06-19).
+    // scripts/generate-favicon.mjs — 32/180/192/512 PNG + favicon.ico.
+    // SVG icon 우선 (모던 브라우저, 가볍고 화질 좋음), PNG fallback (iOS Safari /
+    // 구형 브라우저).
     icons: {
-      icon: '/icons/icon-192x192.png',
-      apple: '/icons/icon-192x192.png',
+      icon: [
+        { url: '/images/auth/trip-bite-logo.svg', type: 'image/svg+xml' },
+        { url: '/icons/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+        { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+        { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+      ],
+      apple: '/icons/apple-touch-icon.png',
+      shortcut: '/favicon.ico',
     },
   };
 }

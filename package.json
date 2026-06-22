@@ -17,6 +17,7 @@
     "generate:api": "orval --config ./orval.config.ts",
     "build:icons": "node scripts/build-icons.mjs",
     "gen:splash": "node scripts/generate-ios-splash.mjs",
+    "gen:favicon": "node scripts/generate-favicon.mjs",
     "prepare": "husky || true",
     "analyze": "ANALYZE=true next build",
     "test": "vitest",
