@@ -60,20 +60,32 @@ function isOnProtectedPath(): boolean {
 export function attachAuthInterceptor(instance: AxiosInstance) {
   instance.interceptors.response.use(
     (response) => response,
-    (error: AxiosError) => {
-      // 401 만 hard redirect 대상. 그 외는 그대로 throw.
+    async (error: AxiosError) => {
+      // 401 만 처리 대상. 그 외는 그대로 throw.
       if (!error.response || error.response.status !== 401) {
         return Promise.reject(error);
       }
 
       const isMock = process.env.NEXT_PUBLIC_USE_MSW === 'true';
+      const onAuthPage = isAlreadyOnAuthPage();
+
+      // **public 경로에서 401 자동 로그아웃 처리 (2026-06-19)** — 탈퇴/세션만료
+      // 사용자가 홈/시군 등 public 페이지에서 background polling 으로 401 받을
+      // 때, store 의 user 가 stale 유지되어 AppHeader 가 거짓말함. clearAuth 로
+      // UI 를 즉시 비로그인 상태로 동기화. 보호 경로는 어차피 아래 hard redirect.
+      // auth 페이지 / mock 환경은 skip (무한 루프 / mock UX 자체 처리).
+      if (!isMock && !onAuthPage && typeof window !== 'undefined') {
+        // dynamic import 로 순환참조 회피 (interceptor → store).
+        const { useAuthStore } = await import('@/stores/auth-store');
+        useAuthStore.getState().clearAuth();
+      }
+
       if (
         !isMock &&
-        !isAlreadyOnAuthPage() &&
+        !onAuthPage &&
         isOnProtectedPath() &&
         typeof window !== 'undefined'
       ) {
-        // store import 시 순환참조 위험 → 직접 redirect.
         // 현재 path 를 redirect query 로 보존 — 로그인 후 복귀 (login/onboarding
         // 의 safeRedirectParam 가 `/` 시작 + `//` 차단 검증 후 사용).
         const path = window.location.pathname + window.location.search;
