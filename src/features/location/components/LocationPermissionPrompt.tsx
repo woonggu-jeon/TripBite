@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui';
+import { OnboardingProgress } from '@/features/onboarding/components/OnboardingProgress';
 import styles from './LocationPermissionPrompt.module.scss';
 
 /**
@@ -24,9 +25,12 @@ import styles from './LocationPermissionPrompt.module.scss';
 export function LocationPermissionPrompt({
   onAccept,
   onSkip,
+  progress,
 }: {
   onAccept: () => void;
   onSkip?: () => void;
+  /** Onboarding 안에서 사용 시 dots 표시 (button 바로 위). 단독 사용 시 생략. */
+  progress?: { current: number; total: number };
 }) {
   const t = useTranslations('location.permission');
 
@@ -50,8 +54,15 @@ export function LocationPermissionPrompt({
         {t('title')}
       </h3>
       <p className={styles.description}>{t('description')}</p>
-      {/* Figma button stack — column gap 11px. primary 위 / skip 아래. */}
+      {/* Figma button stack — column gap 11px. primary 위 / skip 아래.
+          onboarding 안에선 dots progress 가 허용 button 바로 위. */}
       <div className={styles.actions}>
+        {progress && (
+          <OnboardingProgress
+            current={progress.current}
+            total={progress.total}
+          />
+        )}
         <Button variant="primary" size="lg" fullWidth onClick={onAccept}>
           {t('request')}
         </Button>

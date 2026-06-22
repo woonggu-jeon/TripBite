@@ -67,14 +67,16 @@
   color: #f0997b;
 }
 
-// body: 320h, padding 40 20 0, column space-between.
+// body: padding 40 20 28, flex column space-between (copy 상단 / foot 하단).
+// height fixed 폐기 — 모바일 viewport (특히 iOS 작은 height) overflow 회피.
 .body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-self: stretch;
-  height: 320px;
-  padding: 40px 20px 0;
+  flex: 1;
+  padding: 40px 20px 28px;
+  gap: 32px;
 }
 
 // 상단 copy: title + tagline gap 12.
@@ -82,6 +84,14 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+// 하단 foot: OnboardingProgress + Button (gap 32, Figma "Walk · b4fdaafd").
+.foot {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  align-self: stretch;
 }
 
 .title {

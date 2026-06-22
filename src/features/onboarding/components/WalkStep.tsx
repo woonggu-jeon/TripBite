@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui';
+import { OnboardingProgress } from './OnboardingProgress';
 import styles from './WalkStep.module.scss';
 
 /**
@@ -27,12 +28,17 @@ const ILLUSTS: Record<WalkStepKind, { src: string; overlay?: string }> = {
 
 export function WalkStep({
   kind,
+  currentStep,
+  totalSteps,
   onNext,
 }: {
   kind: WalkStepKind;
+  currentStep: number;
+  totalSteps: number;
   onNext: () => void;
 }) {
   const t = useTranslations(`onboarding.walk.${kind}`);
+  const tNav = useTranslations('onboarding');
   const illust = ILLUSTS[kind];
 
   return (
@@ -62,9 +68,13 @@ export function WalkStep({
           <h2 className={styles.title}>{t('title')}</h2>
           <p className={styles.tagline}>{t('tagline')}</p>
         </div>
-        <Button variant="primary" size="lg" fullWidth onClick={onNext}>
-          {useTranslations('onboarding')('next')}
-        </Button>
+        {/* Figma 정합 — dots progress 가 button 바로 위 (gap 32). */}
+        <div className={styles.foot}>
+          <OnboardingProgress current={currentStep} total={totalSteps} />
+          <Button variant="primary" size="lg" fullWidth onClick={onNext}>
+            {tNav('next')}
+          </Button>
+        </div>
       </div>
     </div>
   );

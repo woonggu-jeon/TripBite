@@ -73,29 +73,38 @@ export function OnboardingFlow() {
 
   return (
     <div className={styles.wrap}>
-      {/* 진행도 */}
-      <div
-        className={styles.progress}
-        aria-label={`Step ${step}/${TOTAL_STEPS}`}
-      >
-        {Array.from({ length: TOTAL_STEPS }).map((_, i) => {
-          const n = i + 1;
-          return (
-            <span
-              key={n}
-              className={`${styles.dot} ${n <= step ? styles.dotActive : ''}`}
-              aria-hidden
-            />
-          );
-        })}
-      </div>
-
+      {/* Figma 정합 (2026-06-22) — 상단 .progress 폐기, 각 step 컴포넌트가 본인
+          button 바로 위에 OnboardingProgress 표시 (Walk body 하단 / Location 의
+          허용 button 위). */}
       <div className={styles.body}>
-        {step === 1 && <WalkStep kind="tournament" onNext={goNext} />}
-        {step === 2 && <WalkStep kind="letter" onNext={goNext} />}
-        {step === 3 && <WalkStep kind="stamp" onNext={goNext} />}
+        {step === 1 && (
+          <WalkStep
+            kind="tournament"
+            currentStep={step}
+            totalSteps={TOTAL_STEPS}
+            onNext={goNext}
+          />
+        )}
+        {step === 2 && (
+          <WalkStep
+            kind="letter"
+            currentStep={step}
+            totalSteps={TOTAL_STEPS}
+            onNext={goNext}
+          />
+        )}
+        {step === 3 && (
+          <WalkStep
+            kind="stamp"
+            currentStep={step}
+            totalSteps={TOTAL_STEPS}
+            onNext={goNext}
+          />
+        )}
         {step === 4 && (
           <LocationStep
+            currentStep={step}
+            totalSteps={TOTAL_STEPS}
             onNext={finishOnboarding}
             onSkip={finishOnboarding}
             onPrev={goPrev}

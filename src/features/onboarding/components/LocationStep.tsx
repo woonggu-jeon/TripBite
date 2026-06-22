@@ -31,10 +31,14 @@ import styles from './OnboardingStep.module.scss';
  * 중..." 화면으로 prompt 를 교체.
  */
 export function LocationStep({
+  currentStep,
+  totalSteps,
   onNext,
   onPrev,
   onSkip,
 }: {
+  currentStep?: number;
+  totalSteps?: number;
   onNext?: () => void | Promise<void>;
   onPrev?: () => void;
   onSkip?: () => void | Promise<void>;
@@ -144,7 +148,15 @@ export function LocationStep({
 
   return (
     <div className={styles.step}>
-      <LocationPermissionPrompt onAccept={handleAccept} onSkip={handleSkip} />
+      <LocationPermissionPrompt
+        onAccept={handleAccept}
+        onSkip={handleSkip}
+        progress={
+          currentStep && totalSteps
+            ? { current: currentStep, total: totalSteps }
+            : undefined
+        }
+      />
       {onPrev && (
         <div className={`${styles.actions} ${styles.actionsCenter}`}>
           <Button variant="ghost" onClick={onPrev} disabled={isLoading}>

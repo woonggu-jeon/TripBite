@@ -1,0 +1,30 @@
+// Figma "Walk 1/2/3 + 위치권한" dots — 8x8 round + 22x8 pill (active).
+// gap 7, 가운데 정렬. width transition 으로 active 전환 부드럽게.
+.progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-border);
+  transition:
+    width var(--motion-base) ease,
+    background var(--motion-base) ease;
+}
+
+.dotActive {
+  width: 22px;
+  background: var(--color-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot {
+    transition: none;
+  }
+}
