@@ -78,11 +78,13 @@ export function LoginForm() {
 
   return (
     <form onSubmit={onSubmit} className={styles.form} noValidate>
-      {/* Figma LOGIN · A — 상단 logo 블록 (40x37 icon + "여행한입" + tagline).
-          page h1 은 SEO/sr 용으로 페이지 metadata 가 처리, 본 폼 안의 h1 은
-          시각 강조용 logo title. .card wrapper border 는 Figma 없음 → 제거. */}
+      {/* Figma LOGIN · A — 상단 logo 블록 (#3355:184). column gap 8 +
+          padding-bottom 40. 안의 trip-bite-logo INSTANCE 는 column stack
+          (gap 4) — icon 위 / "여행한입" 텍스트 아래. tagline 별도 row.
+          page h1 = "여행한입" 으로 의미 변환 (Figma 디자인 그대로). 페이지
+          타이틀 "로그인" 은 generateMetadata 가 처리. */}
       <div className={styles.loginLogo}>
-        <div className={styles.loginLogoRow}>
+        <div className={styles.loginLogoStack}>
           <Image
             src="/images/auth/trip-bite-logo.svg"
             alt=""

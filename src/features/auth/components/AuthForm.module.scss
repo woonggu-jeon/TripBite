@@ -180,20 +180,25 @@
   margin: 0;
 }
 
-// Figma LOGIN · A 상단 logo 블록 — 40x37 icon + "여행한입" 텍스트 + tagline.
-// column align center, gap 8, padding-bottom 40 (form 과 간격).
+// Figma LOGIN · A 상단 logo 블록 (#3355:184).
+// 외곽: column, align center, gap 8px, padding-bottom 40px.
+//   └ trip-bite-logo (column frame, gap 4px) — icon 위, "여행한입" 아래.
+//   └ tagline 텍스트 (Regular 14 muted).
 .loginLogo {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-2);
-  padding-bottom: var(--space-8);
+  gap: 8px;
+  padding-bottom: 40px;
 }
 
-.loginLogoRow {
+// trip-bite-logo INSTANCE 의 inner column frame (#I3357:374;3357:401).
+// icon (40x37) 과 "여행한입" 텍스트 사이 4px gap.
+.loginLogoStack {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 4px;
 }
 
 .loginLogoIcon {
@@ -202,17 +207,19 @@
 }
 
 .loginLogoText {
-  font-size: 1.25rem; // 20px — Figma ExtraBold
+  font-size: 1.25rem; // 20px — Figma Pretendard ExtraBold
   font-weight: var(--font-weight-extrabold);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: 0;
   color: var(--color-fg);
+  margin: 0;
+  line-height: 1; // icon 과 baseline 정합
 }
 
 .loginTagline {
-  font-size: 0.875rem; // 14px — Figma Regular
+  font-size: 0.875rem; // 14px — Figma Pretendard Regular
   font-weight: var(--font-weight-regular);
   color: var(--color-muted);
-  line-height: var(--line-tight);
+  line-height: 1.3em;
   margin: 0;
 }
 
