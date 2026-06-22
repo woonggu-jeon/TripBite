@@ -102,12 +102,14 @@ export function OnboardingFlow() {
           />
         )}
         {step === 4 && (
+          // Figma "Walk 4 · 위치 권한 동의" — 하단 "이전" 없음 (forward-only
+          // flow). onPrev 미전달 → LocationStep 의 ghost back button 미렌더.
+          // goPrev 함수는 회귀 복원 위해 보존.
           <LocationStep
             currentStep={step}
             totalSteps={TOTAL_STEPS}
             onNext={finishOnboarding}
             onSkip={finishOnboarding}
-            onPrev={goPrev}
           />
         )}
       </div>
