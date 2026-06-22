@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -54,13 +53,13 @@ export function SignupCompleteView() {
       {/* hero 의 sp / title 폰트가 FindId/FindPw 와 미세 다름 (Figma) —
           .heroSignupComplete modifier 로 sp 26 + title 23px override. */}
       <div className={`${styles.hero} ${styles.heroSignupComplete}`}>
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           src="/images/auth/signup-complete-check.svg"
           alt=""
           width={96}
           height={96}
           className={styles.heroIcon}
-          priority
         />
         <h1 className={styles.heroTitle}>{t('title')}</h1>
         <p className={styles.heroDescription}>{t('description')}</p>

@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -57,13 +56,13 @@ export function ForgotPasswordForm() {
     <form onSubmit={onSubmit} noValidate className={styles.form}>
       {/* Figma 비밀번호 찾기 hero — 84px icon + 제목 + 설명. */}
       <div className={styles.hero}>
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           src="/images/auth/find-pw-hero.svg"
           alt=""
           width={84}
           height={84}
           className={styles.heroIcon}
-          priority
         />
         <h1 className={styles.heroTitle}>{t('heroTitle')}</h1>
         <p className={styles.heroDescription}>{t('description')}</p>

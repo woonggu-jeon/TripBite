@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui';
 import styles from './LocationPermissionPrompt.module.scss';
@@ -37,14 +36,15 @@ export function LocationPermissionPrompt({
       role="dialog"
       aria-labelledby="loc-perm-title"
     >
-      {/* Figma 위치 권한 동의 hero — 116px SVG icon. lucide MapPin 대체. */}
-      <Image
+      {/* Figma 위치 권한 동의 hero — 116px SVG icon. lucide MapPin 대체.
+          SVG 는 native <img> — next/image 의 hydration 지연 회피. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
         src="/images/auth/location-hero.svg"
         alt=""
         width={116}
         height={116}
         className={styles.icon}
-        priority
       />
       <h3 id="loc-perm-title" className={styles.title}>
         {t('title')}
