@@ -10,6 +10,7 @@
   /* 디자이너 spec (2026-06-19) — Figma button 정합용 + pill button. */
   --radius-card: 14px; /* 카드 12~16 사이 권장값 */
   --radius-pill: 26px; /* 버튼 pill 24~28 */
+  --radius-input: 10px; /* 입력 폼 box — 디자이너 spec (LOGIN 13px 은 미완 → 10px 통일) */
 
   /* Opacity scale — 명확한 의미만. 컴포넌트 unique 미세 조정은 raw 유지. */
   --opacity-disabled: 0.45;
