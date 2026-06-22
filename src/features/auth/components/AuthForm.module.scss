@@ -8,6 +8,10 @@
   gap: var(--space-6);
   width: 100%;
   max-width: 360px;
+  // AuthLayout column variant (flex column, align-items stretch default) 에서
+  // 좌측 정렬 회귀 회피. center variant 는 부모가 justify-content: center 라
+  // 어차피 가운데 → margin: 0 auto 무영향 (의도 그대로).
+  margin: 0 auto;
 }
 
 // 카드 형태 form (Login 처럼 카드 wrap)
