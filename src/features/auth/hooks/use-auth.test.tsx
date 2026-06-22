@@ -153,7 +153,7 @@ describe('useSignup', () => {
     vi.restoreAllMocks();
   });
 
-  it('atomic 응답의 user 로 setAuth + router.replace("/onboarding")', async () => {
+  it('atomic 응답의 user 로 setAuth + router.replace("/signup/complete")', async () => {
     server.use(
       http.post(`${apiUrl}/auth/signup`, () =>
         HttpResponse.json({ user: mockUser }),
@@ -171,7 +171,7 @@ describe('useSignup', () => {
     await waitFor(() => {
       expect(useAuthStore.getState().isAuthenticated).toBe(true);
     });
-    expect(router.replace).toHaveBeenCalledWith('/onboarding');
+    expect(router.replace).toHaveBeenCalledWith('/signup/complete');
   });
 });
 
