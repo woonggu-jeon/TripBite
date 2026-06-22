@@ -10,4 +10,5 @@ export interface UpdateNotificationSettingsDto {
   inAppEnabled?: boolean;
   letterReceived?: boolean;
   letterLiked?: boolean;
+  receiveLetters?: boolean;
 }

@@ -105,8 +105,10 @@ export function useSignup() {
       // FE 는 별도 login/me 호출 불필요 — 응답의 user 그대로 store / cache hydrate.
       setAuth(response.user);
       queryClient.setQueryData(authKeys.me(), response.user);
-      // 첫 가입 → onboarding 으로. middleware 의 visited cookie redirect 와 일치.
-      router.replace('/onboarding');
+      // 가입 성공 → /signup/complete (Figma 디자인 정합, 2026-06-19).
+      // complete 페이지의 CTA 버튼이 /onboarding 진입 — middleware 의 visited
+      // cookie redirect 와 일치.
+      router.replace('/signup/complete');
       router.refresh();
     },
   });

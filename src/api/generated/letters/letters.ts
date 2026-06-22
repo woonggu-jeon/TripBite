@@ -32,7 +32,8 @@ import type {
   LetterControllerSavedV1Params,
   LetterControllerSentV1Params,
   LetterDto,
-  LetterPageDto
+  LetterPageDto,
+  ReportLetterDto
 } from '../schemas';
 
 import { orvalMutator } from '../../../services/api/orval-mutator';
@@ -1159,6 +1160,101 @@ export function useLetterControllerSaveV1<TData = Awaited<ReturnType<typeof lett
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getLetterControllerSaveV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+export const letterControllerReportV1 = (
+    id: string,
+    reportLetterDto: ReportLetterDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalMutator<void>(
+      {url: `/v1/letters/${id}/report`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: reportLetterDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getLetterControllerReportV1QueryKey = (id: string,
+    reportLetterDto?: ReportLetterDto,) => {
+    return [
+    'POST', `/v1/letters/${id}/report`, reportLetterDto
+    ] as const;
+    }
+
+
+export const getLetterControllerReportV1QueryOptions = <TData = Awaited<ReturnType<typeof letterControllerReportV1>>, TError = ErrorDto>(id: string,
+    reportLetterDto: ReportLetterDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof letterControllerReportV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getLetterControllerReportV1QueryKey(id,reportLetterDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof letterControllerReportV1>>> = ({ signal }) => letterControllerReportV1(id,reportLetterDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof letterControllerReportV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type LetterControllerReportV1QueryResult = NonNullable<Awaited<ReturnType<typeof letterControllerReportV1>>>
+export type LetterControllerReportV1QueryError = ErrorDto
+
+
+export function useLetterControllerReportV1<TData = Awaited<ReturnType<typeof letterControllerReportV1>>, TError = ErrorDto>(
+ id: string,
+    reportLetterDto: ReportLetterDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof letterControllerReportV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof letterControllerReportV1>>,
+          TError,
+          Awaited<ReturnType<typeof letterControllerReportV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useLetterControllerReportV1<TData = Awaited<ReturnType<typeof letterControllerReportV1>>, TError = ErrorDto>(
+ id: string,
+    reportLetterDto: ReportLetterDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof letterControllerReportV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof letterControllerReportV1>>,
+          TError,
+          Awaited<ReturnType<typeof letterControllerReportV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useLetterControllerReportV1<TData = Awaited<ReturnType<typeof letterControllerReportV1>>, TError = ErrorDto>(
+ id: string,
+    reportLetterDto: ReportLetterDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof letterControllerReportV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useLetterControllerReportV1<TData = Awaited<ReturnType<typeof letterControllerReportV1>>, TError = ErrorDto>(
+ id: string,
+    reportLetterDto: ReportLetterDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof letterControllerReportV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getLetterControllerReportV1QueryOptions(id,reportLetterDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

@@ -74,6 +74,7 @@ export * from './regionContentPageDto';
 export * from './regionControllerContentsV1Params';
 export * from './regionControllerOngoingFestivalsV1Params';
 export * from './regionSummaryDto';
+export * from './reportLetterDto';
 export * from './resetPasswordDto';
 export * from './resolvedLocationDto';
 export * from './reverseGeocodeDto';

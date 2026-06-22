@@ -93,7 +93,11 @@
       "email": "Email",
       "submit": "Find username",
       "submitting": "Searching...",
-      "resultTitle": "Result",
+      "resultTitle": "Username found",
+      "resultEmailHint": "Account registered with {maskedEmail}.",
+      "resultCardLabel": "Your username",
+      "resultLoginCta": "Go to login",
+      "resultToForgot": "Forgot password",
       "notFound": "No matching account found.",
       "toLogin": "Back to sign in",
       "errors": {
@@ -118,6 +122,11 @@
     },
     "signup": {
       "title": "Create account",
+      "complete": {
+        "title": "Welcome aboard!",
+        "description": "Start your Chungbuk journey\nwith TripBite now.",
+        "cta": "Get started"
+      },
       "username": "Username",
       "usernamePlaceholder": "letters/digits 4-20",
       "usernameChecking": "Checking...",

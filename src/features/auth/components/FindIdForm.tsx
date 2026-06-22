@@ -22,11 +22,27 @@ const FIELDS = [
   { name: 'email', type: 'email', autoComplete: 'email' },
 ] as const;
 
+/**
+ * 이메일 마스킹 — local-part 첫 2자 + "****" + "@domain".
+ * 예: "hi@tripbite.kr" → "hi****@tripbite.kr"
+ *     "tester@gmail.com" → "te****@gmail.com"
+ * @ 없는 입력 → 그대로 (BE 가 검증 단계라 실 도달 가능성 낮음).
+ */
+function maskEmail(email: string): string {
+  const at = email.indexOf('@');
+  if (at < 0) return email;
+  const local = email.slice(0, at);
+  const domain = email.slice(at);
+  const visible = local.slice(0, 2);
+  return `${visible}****${domain}`;
+}
+
 export function FindIdForm() {
   const t = useTranslations('auth.findId');
   const tErr = useTranslations('auth.findId.errors');
   const { mutateAsync: findId } = useFindId();
   const [result, setResult] = useState<string | null | undefined>(undefined);
+  const [submittedEmail, setSubmittedEmail] = useState('');
 
   const {
     register,
@@ -38,6 +54,7 @@ export function FindIdForm() {
   });
 
   const onSubmit = handleSubmit(async (values) => {
+    setSubmittedEmail(values.email);
     try {
       const res = await findId(values);
       setResult(res.username);
@@ -47,17 +64,44 @@ export function FindIdForm() {
   });
 
   if (result !== undefined) {
+    // Figma "아이디 찾기 결과" 정합 — 마스킹 이메일 + 카드 + 로그인 CTA + 비번 찾기 link.
+    // BE 응답에 maskedEmail 없어서 사용자 입력 email 을 client-side 에서 mask.
     return (
-      <div className={`${styles.form} ${styles.center}`}>
-        <h1 className={styles.title}>{t('resultTitle')}</h1>
+      <div className={styles.form}>
+        <h1 className={styles.heroTitle}>{t('resultTitle')}</h1>
         {result ? (
-          <p className={styles.resultId}>{result}</p>
+          <>
+            <p className={styles.resultEmailHint}>
+              {t('resultEmailHint', { maskedEmail: maskEmail(submittedEmail) })}
+            </p>
+            <div className={styles.resultCard}>
+              <p className={styles.resultCardLabel}>{t('resultCardLabel')}</p>
+              <p className={styles.resultCardValue}>{result}</p>
+            </div>
+            <Link
+              href="/login"
+              className={styles.footLinkBack}
+              style={{ display: 'block' }}
+            >
+              {/* primary color CTA 버튼 대신 link 로 → /login. 자동 로그인 X 가정. */}
+              {t('resultLoginCta')}
+            </Link>
+            <Link
+              href="/forgot-password"
+              className={styles.footLink}
+              style={{ display: 'block', textAlign: 'center' }}
+            >
+              {t('resultToForgot')}
+            </Link>
+          </>
         ) : (
-          <p className={styles.subtitle}>{t('notFound')}</p>
+          <>
+            <p className={styles.heroDescription}>{t('notFound')}</p>
+            <Link href="/login" className={styles.footLinkBack}>
+              {t('toLogin')}
+            </Link>
+          </>
         )}
-        <Link href="/login" className={styles.footLinkPrimary}>
-          {t('toLogin')}
-        </Link>
       </div>
     );
   }

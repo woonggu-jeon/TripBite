@@ -93,7 +93,11 @@
       "email": "이메일",
       "submit": "아이디 찾기",
       "submitting": "조회 중...",
-      "resultTitle": "조회 결과",
+      "resultTitle": "아이디를 찾았어요",
+      "resultEmailHint": "{maskedEmail} 로 가입된 계정이에요.",
+      "resultCardLabel": "내 아이디",
+      "resultLoginCta": "로그인하기",
+      "resultToForgot": "비밀번호 찾기",
       "notFound": "일치하는 계정을 찾을 수 없어요.",
       "toLogin": "로그인으로 돌아가기",
       "errors": {
@@ -118,6 +122,11 @@
     },
     "signup": {
       "title": "회원가입",
+      "complete": {
+        "title": "회원가입 완료!",
+        "description": "이제 여행 한입에서\n충북 여행을 시작해보세요.",
+        "cta": "시작하기"
+      },
       "username": "아이디",
       "usernamePlaceholder": "영문/숫자 4~20자",
       "usernameChecking": "확인 중...",

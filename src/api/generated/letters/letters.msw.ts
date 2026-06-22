@@ -144,6 +144,16 @@ export const getLetterControllerSaveV1MockHandler = (overrideResponse?: LetterDt
       })
   }, options)
 }
+
+export const getLetterControllerReportV1MockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
+  return http.post('*/v1/letters/:id/report', async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
+
+    return new HttpResponse(null,
+      { status: 204
+      })
+  }, options)
+}
 export const getLettersMock = () => [
   getLetterControllerComposeV1MockHandler(),
   getLetterControllerReceivedV1MockHandler(),
@@ -153,5 +163,6 @@ export const getLettersMock = () => [
   getLetterControllerGetV1MockHandler(),
   getLetterControllerRemoveV1MockHandler(),
   getLetterControllerLikeV1MockHandler(),
-  getLetterControllerSaveV1MockHandler()
+  getLetterControllerSaveV1MockHandler(),
+  getLetterControllerReportV1MockHandler()
 ]
