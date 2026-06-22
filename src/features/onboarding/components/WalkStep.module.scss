@@ -1,0 +1,108 @@
+// Figma "Walk 1/2/3" — illustArea 360h + body 320h column space-between.
+.step {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  align-self: stretch;
+}
+
+// illustArea: bg tone 별 + 360h + 가운데 일러스트.
+.illustArea {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-self: stretch;
+  height: 360px;
+}
+
+// Figma bg tone — walk 별 다른 파스텔.
+.bg-tournament {
+  background: #f6efde;
+}
+.bg-letter {
+  background: #fbefe7;
+}
+.bg-stamp {
+  background: #eaf6ef;
+}
+
+// illust frame 232x190 — overlay 가 absolute 잡힐 컨테이너.
+.illust {
+  position: relative;
+  width: 232px;
+  height: 190px;
+}
+
+.illustImg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+// Figma 일러스트 위 텍스트 overlay (VS / 충북).
+// 좌표는 Figma 의 locationRelativeToParent 기준 — 일러스트 안에서 가운데 근처.
+.overlay {
+  position: absolute;
+  font-family: var(--font-sans-loaded, inherit);
+  font-weight: 800;
+  line-height: 1.3em;
+  pointer-events: none;
+}
+
+.overlay-tournament {
+  // Figma: VS Inter ExtraBold 15 white, x:105 y:108.5
+  top: 108.5px;
+  left: 105px;
+  width: 22px;
+  font-size: 15px;
+  color: #ffffff;
+}
+
+.overlay-stamp {
+  // Figma: 충북 Inter ExtraBold 17 #F0997B, x:131.5 y:131
+  top: 131px;
+  left: 131.5px;
+  width: 32px;
+  font-size: 17px;
+  color: #f0997b;
+}
+
+// body: 320h, padding 40 20 0, column space-between.
+.body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-self: stretch;
+  height: 320px;
+  padding: 40px 20px 0;
+}
+
+// 상단 copy: title + tagline gap 12.
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.title {
+  // Figma Title/B_24_130% — Pretendard Bold 24 line 1.3 letter-spacing -0.02em.
+  font-family: var(--font-sans-loaded, inherit);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.3em;
+  letter-spacing: -0.02em;
+  color: var(--color-fg);
+  margin: 0;
+  white-space: pre-line;
+}
+
+.tagline {
+  // Figma Basic Body/R_14_140% — Pretendard Regular 14 line 1.4 -0.02em.
+  font-family: var(--font-sans-loaded, inherit);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.4em;
+  letter-spacing: -0.02em;
+  color: var(--color-muted);
+  margin: 0;
+}

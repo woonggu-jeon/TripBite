@@ -212,6 +212,20 @@
     "title": "Welcome",
     "next": "Next",
     "back": "Back",
+    "walk": {
+      "tournament": {
+        "title": "Pick Chungbuk spots\nwith a bracket",
+        "tagline": "Meet today's last-standing winner through 1:1 face-offs"
+      },
+      "letter": {
+        "title": "Just five letters,\nreach someone",
+        "tagline": "Tiny anonymous notes land on a random traveler's doorstep"
+      },
+      "stamp": {
+        "title": "Collect 11 cities,\ncomplete your map",
+        "tagline": "Save a destination — and one stamp lands in your book"
+      }
+    },
     "concept": {
       "title": "Discover Chungbuk anew",
       "description": "Pick a destination via bracket, share your heart in five letters."
