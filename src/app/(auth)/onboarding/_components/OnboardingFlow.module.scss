@@ -7,22 +7,35 @@
   margin: 0 auto;
 }
 
+// Figma "위치 권한 동의" dots 정합 (2026-06-19) — 8x8 round 일반 + 22x8 pill
+// active. 기존 24x4 막대 폐기. width transition 으로 active 전환 시 부드럽게.
 .progress {
   display: flex;
-  gap: 6px;
+  gap: 7px;
   justify-content: center;
+  align-items: center;
   padding-bottom: var(--space-6);
 }
 
 .dot {
-  width: 24px;
-  height: 4px;
+  width: 8px;
+  height: 8px;
   border-radius: var(--radius-full);
   background: var(--color-border);
+  transition:
+    width var(--motion-base) ease,
+    background var(--motion-base) ease;
 }
 
 .dotActive {
-  background: var(--color-fg);
+  width: 22px;
+  background: var(--color-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot {
+    transition: none;
+  }
 }
 
 .body {
