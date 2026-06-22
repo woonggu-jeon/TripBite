@@ -32,7 +32,10 @@
 
 .input {
   width: 100%;
-  padding: var(--space-3);
+  // Figma input box 정합 (FindId/FindPw 기준 — LOGIN 50/13px 은 미완) —
+  // height 46 fixed + padding 0 14. radius 는 --radius-input 10px.
+  height: 46px;
+  padding: 0 14px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-input);
   background: var(--color-bg);

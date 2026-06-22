@@ -109,17 +109,20 @@
 
 // Figma FindId/ForgotPw hero — 84px icon + 제목 + 설명 (가운데 정렬).
 // title ExtraBold 22 + description Regular 14 (1.55em line, 줄바꿈 keep).
+// sp icon→title 22 / title→desc 12 (Figma g block). uniform gap 대신 개별
+// margin 으로 정합 — flex/grid row gap 은 단일 값만 가능.
 .hero {
-  display: grid;
-  justify-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  gap: var(--space-3);
   padding: var(--space-6) 0 var(--space-4);
 }
 
 .heroIcon {
   width: 84px;
   height: 84px;
+  margin-bottom: 22px; // Figma sp icon→title
 }
 
 .heroTitle {
@@ -127,7 +130,7 @@
   font-weight: var(--font-weight-extrabold);
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
-  margin: 0;
+  margin: 0 0 12px; // Figma sp title→description
 }
 
 .heroDescription {
@@ -136,6 +139,20 @@
   color: var(--color-muted);
   white-space: pre-line; // \n 줄바꿈 보존 (i18n value)
   margin: 0;
+}
+
+// 회원가입 완료 화면 전용 hero 변형 — sp icon→title 26 / title 23px.
+// Figma "회원가입 완료" 노드 정합 (다른 hero 와 sp 미세 차이).
+// 본 modifier 는 .hero 와 같이 사용 — sp/font 만 override.
+.heroSignupComplete {
+  .heroIcon {
+    width: 96px;
+    height: 96px;
+    margin-bottom: 26px;
+  }
+  .heroTitle {
+    font-size: 1.4375rem; // 23px — Figma spec
+  }
 }
 
 // 단일 link "로그인으로 돌아가기" — primary 색 SemiBold 가운데 정렬.

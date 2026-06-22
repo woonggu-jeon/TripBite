@@ -21,7 +21,9 @@ export function SignupCompleteView() {
 
   return (
     <div className={`${styles.form} ${styles.center}`}>
-      <div className={styles.hero}>
+      {/* hero 의 sp / title 폰트가 FindId/FindPw 와 미세 다름 (Figma) —
+          .heroSignupComplete modifier 로 sp 26 + title 23px override. */}
+      <div className={`${styles.hero} ${styles.heroSignupComplete}`}>
         <Image
           src="/images/auth/signup-complete-check.svg"
           alt=""
