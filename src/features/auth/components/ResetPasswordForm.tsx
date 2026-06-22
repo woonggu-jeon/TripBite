@@ -11,7 +11,7 @@ import {
   type ResetPasswordValues,
 } from '@/features/auth/schemas/password-reset';
 import { isAxiosError } from '@/services/interceptors/auth';
-import { Button, TextField } from '@/components/ui';
+import { Button, PasswordField, TextField } from '@/components/ui';
 import styles from './AuthForm.module.scss';
 
 /**
@@ -70,10 +70,9 @@ export function ResetPasswordForm() {
       <input type="hidden" {...register('token')} />
 
       {FIELDS.map((f) => (
-        <TextField
+        <PasswordField
           key={f.name}
           id={f.name}
-          type="password"
           autoComplete={f.auto}
           label={t(f.name)}
           errorMessage={

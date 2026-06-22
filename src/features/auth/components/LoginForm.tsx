@@ -12,7 +12,7 @@ import {
   type LoginFormValues,
 } from '@/features/auth/schemas/login';
 import { isAxiosError } from '@/services/interceptors/auth';
-import { Button, TextField } from '@/components/ui';
+import { Button, PasswordField, TextField } from '@/components/ui';
 import styles from './AuthForm.module.scss';
 
 /**
@@ -21,16 +21,6 @@ import styles from './AuthForm.module.scss';
  * 정적 UI 텍스트는 모두 useTranslations 로 처리.
  * Zod 메시지는 i18n 키만 반환 → 컴포넌트에서 t() 로 변환.
  */
-type LoginField = {
-  name: 'username' | 'password';
-  type: 'text' | 'password';
-  autoComplete: 'username' | 'current-password';
-};
-
-const FIELDS: readonly LoginField[] = [
-  { name: 'username', type: 'text', autoComplete: 'username' },
-  { name: 'password', type: 'password', autoComplete: 'current-password' },
-] as const;
 
 export function LoginForm() {
   const t = useTranslations('auth.login');
@@ -93,21 +83,29 @@ export function LoginForm() {
     >
       <h1 className={styles.title}>{t('title')}</h1>
 
-      {FIELDS.map((f) => (
-        <TextField
-          key={f.name}
-          id={f.name}
-          type={f.type}
-          autoComplete={f.autoComplete}
-          label={t(f.name)}
-          errorMessage={
-            errors[f.name]
-              ? t(errors[f.name]?.message as Parameters<typeof t>[0])
-              : undefined
-          }
-          {...register(f.name)}
-        />
-      ))}
+      <TextField
+        id="username"
+        type="text"
+        autoComplete="username"
+        label={t('username')}
+        errorMessage={
+          errors.username
+            ? t(errors.username.message as Parameters<typeof t>[0])
+            : undefined
+        }
+        {...register('username')}
+      />
+      <PasswordField
+        id="password"
+        autoComplete="current-password"
+        label={t('password')}
+        errorMessage={
+          errors.password
+            ? t(errors.password.message as Parameters<typeof t>[0])
+            : undefined
+        }
+        {...register('password')}
+      />
 
       {errors.root && (
         <div role="alert" className={styles.error}>

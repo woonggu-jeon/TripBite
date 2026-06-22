@@ -14,7 +14,7 @@ import {
 } from '@/features/auth/schemas/signup';
 import { isAxiosError } from '@/services/interceptors/auth';
 import { toast } from '@/lib/toast';
-import { Button, TextField } from '@/components/ui';
+import { Button, PasswordField, TextField } from '@/components/ui';
 import styles from './AuthForm.module.scss';
 
 /**
@@ -272,9 +272,8 @@ export function SignupForm() {
         {...register('nickname')}
       />
 
-      <TextField
+      <PasswordField
         id="password"
-        type="password"
         autoComplete="new-password"
         label={t('password')}
         placeholder={t('passwordPlaceholder')}
@@ -286,9 +285,8 @@ export function SignupForm() {
         {...register('password')}
       />
 
-      <TextField
+      <PasswordField
         id="passwordConfirm"
-        type="password"
         autoComplete="new-password"
         label={t('passwordConfirm')}
         placeholder={t('passwordConfirmPlaceholder')}

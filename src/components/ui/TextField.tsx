@@ -23,6 +23,12 @@ export interface TextFieldProps extends Omit<
    * type="button" 명시 — submit 차단.)
    */
   suffix?: ReactNode;
+  /**
+   * input **내부 우측** overlay slot — 비밀번호 visibility 토글(eye) 등. input
+   * 의 padding-right 가 자동으로 늘어 텍스트와 겹치지 않음. 호출 측에서 button
+   * 의 type="button" + aria-label 명시.
+   */
+  trailingAdornment?: ReactNode;
 }
 
 /**
@@ -41,6 +47,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       visuallyHiddenLabel,
       hint,
       suffix,
+      trailingAdornment,
       type = 'text',
       className,
       ...rest
@@ -52,6 +59,37 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     const hintId = hint && !invalid ? `${id}-hint` : undefined;
     const describedBy =
       [errorId, hintId].filter(Boolean).join(' ') || undefined;
+
+    const inputClassName = [
+      styles.input,
+      trailingAdornment ? styles.inputWithAdornment : '',
+      className ?? '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+
+    const inputEl = (
+      <input
+        ref={ref}
+        id={id}
+        type={type}
+        aria-invalid={invalid ? true : undefined}
+        aria-describedby={describedBy}
+        className={inputClassName}
+        {...rest}
+      />
+    );
+
+    // trailingAdornment 가 있으면 input 을 position:relative wrapper 로 감싸
+    // button overlay. suffix 와 trailingAdornment 는 의미가 달라 함께 사용 가능.
+    const inputWithAdornment = trailingAdornment ? (
+      <div className={styles.inputAdornmentWrap}>
+        {inputEl}
+        <div className={styles.trailingAdornment}>{trailingAdornment}</div>
+      </div>
+    ) : (
+      inputEl
+    );
 
     return (
       <div className={styles.field}>
@@ -65,31 +103,11 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
         )}
         {suffix ? (
           <div className={styles.inputRow}>
-            <input
-              ref={ref}
-              id={id}
-              type={type}
-              aria-invalid={invalid ? true : undefined}
-              aria-describedby={describedBy}
-              className={
-                className ? `${styles.input} ${className}` : styles.input
-              }
-              {...rest}
-            />
+            {inputWithAdornment}
             <div className={styles.suffix}>{suffix}</div>
           </div>
         ) : (
-          <input
-            ref={ref}
-            id={id}
-            type={type}
-            aria-invalid={invalid ? true : undefined}
-            aria-describedby={describedBy}
-            className={
-              className ? `${styles.input} ${className}` : styles.input
-            }
-            {...rest}
-          />
+          inputWithAdornment
         )}
         {hint && !invalid && (
           <p id={hintId} className={styles.hint}>

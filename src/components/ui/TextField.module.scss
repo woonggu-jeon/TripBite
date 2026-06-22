@@ -85,3 +85,31 @@
 .suffix > * {
   height: 100%;
 }
+
+// trailingAdornment — input 내부 우측 overlay (password visibility toggle 등).
+// input padding-right 를 늘려 텍스트와 겹치지 않게.
+.inputAdornmentWrap {
+  position: relative;
+}
+
+.inputWithAdornment {
+  // 우측 44px 확보 — Apple HIG touch target. 아이콘 buton 자체 width 36 + 좌우
+  // 여백.
+  padding-right: 2.75rem;
+}
+
+.trailingAdornment {
+  position: absolute;
+  // input 의 우측 padding 안 가운데 정렬.
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  // input 자체 click 영역 침범 안 함 (button 만 click 가능).
+  pointer-events: none;
+
+  > * {
+    pointer-events: auto;
+  }
+}

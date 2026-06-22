@@ -10,7 +10,7 @@ import {
 } from '@/features/auth/schemas/password-reset';
 import { isAxiosError } from '@/services/interceptors/auth';
 import { toast } from '@/lib/toast';
-import { Button, TextField } from '@/components/ui';
+import { Button, PasswordField } from '@/components/ui';
 import styles from './AuthForm.module.scss';
 
 /**
@@ -63,10 +63,9 @@ export function ChangePasswordForm({ onDone }: { onDone?: () => void }) {
   return (
     <form onSubmit={onSubmit} noValidate className={styles.form}>
       {FIELDS.map((f) => (
-        <TextField
+        <PasswordField
           key={f.name}
           id={f.name}
-          type="password"
           autoComplete={f.auto}
           label={t(f.name)}
           errorMessage={

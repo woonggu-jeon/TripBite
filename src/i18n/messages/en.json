@@ -10,6 +10,8 @@
     "edit": "Edit",
     "confirm": "OK",
     "close": "Close",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "loading": "Loading...",
     "submit": "Submit",
     "submitting": "Processing...",
