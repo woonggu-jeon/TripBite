@@ -68,7 +68,7 @@
 - [ ] 일반 Safari 탭에서 사이트 진입 → 헤더에 install banner 자동 노출
 - [ ] InstallPromptBanner 의 iOS 가이드 텍스트 노출: "공유 → 홈 화면에 추가"
 - [ ] Share 버튼 → 홈 화면에 추가 → 홈 아이콘 정상 생성 (manifest 의 icon-192/512)
-- [ ] 홈 아이콘 → 앱 진입 → splash screen 표시 (manifest background_color)
+- [ ] 홈 아이콘 → 앱 진입 → splash screen 표시 (`apple-touch-startup-image` + 디바이스별 PNG `/public/splash/*.png`, 디자인 로고 center + #ffffff 배경). 디바이스 매트릭스 추가 시 `scripts/generate-ios-splash.mjs` 의 DEVICES + `layout.tsx` 의 `startupImage` 동시 갱신.
 - [ ] standalone 모드 표시 (URL bar 없음, 전체 화면)
 
 ### C-2. iOS PWA 진입 후

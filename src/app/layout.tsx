@@ -87,6 +87,78 @@ export async function generateMetadata(): Promise<Metadata> {
       capable: true,
       statusBarStyle: 'black-translucent',
       title: t('logo'),
+      // iOS PWA splash 이미지 — iOS Safari 는 manifest 의 background_color/
+      // icons 로 splash 자동 생성 X. 디바이스별 media query 로 portrait splash
+      // PNG 매칭. 이미지는 scripts/generate-ios-splash.mjs 로 생성 (sharp 기반,
+      // public/splash/*.png). 디바이스 매트릭스 추가 시 스크립트의 DEVICES +
+      // 본 startupImage 동시 갱신.
+      startupImage: [
+        {
+          url: '/splash/iphone-se.png',
+          media:
+            '(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)',
+        },
+        {
+          url: '/splash/iphone-8-plus.png',
+          media:
+            '(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
+        },
+        {
+          url: '/splash/iphone-x-xs-11pro.png',
+          media:
+            '(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
+        },
+        {
+          url: '/splash/iphone-xr-11.png',
+          media:
+            '(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)',
+        },
+        {
+          url: '/splash/iphone-11pro-max.png',
+          media:
+            '(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
+        },
+        {
+          url: '/splash/iphone-12-mini.png',
+          media:
+            '(device-width: 360px) and (device-height: 780px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
+        },
+        {
+          url: '/splash/iphone-12-13-14.png',
+          media:
+            '(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
+        },
+        {
+          url: '/splash/iphone-14-pro-max.png',
+          media:
+            '(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
+        },
+        {
+          url: '/splash/iphone-15-pro-max.png',
+          media:
+            '(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)',
+        },
+        {
+          url: '/splash/ipad-mini.png',
+          media:
+            '(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)',
+        },
+        {
+          url: '/splash/ipad.png',
+          media:
+            '(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)',
+        },
+        {
+          url: '/splash/ipad-pro-11.png',
+          media:
+            '(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)',
+        },
+        {
+          url: '/splash/ipad-pro-12_9.png',
+          media:
+            '(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)',
+        },
+      ],
     },
     formatDetection: { telephone: false },
     icons: {
