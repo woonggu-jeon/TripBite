@@ -1,7 +1,7 @@
 'use client';
 
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { MapPin } from 'lucide-react';
 import { Button } from '@/components/ui';
 import styles from './LocationPermissionPrompt.module.scss';
 
@@ -37,20 +37,29 @@ export function LocationPermissionPrompt({
       role="dialog"
       aria-labelledby="loc-perm-title"
     >
-      <MapPin size={28} className={styles.icon} />
+      {/* Figma 위치 권한 동의 hero — 116px SVG icon. lucide MapPin 대체. */}
+      <Image
+        src="/images/auth/location-hero.svg"
+        alt=""
+        width={116}
+        height={116}
+        className={styles.icon}
+        priority
+      />
       <h3 id="loc-perm-title" className={styles.title}>
         {t('title')}
       </h3>
       <p className={styles.description}>{t('description')}</p>
+      {/* Figma button stack — column gap 11px. primary 위 / skip 아래. */}
       <div className={styles.actions}>
+        <Button variant="primary" size="lg" fullWidth onClick={onAccept}>
+          {t('request')}
+        </Button>
         {onSkip && (
-          <Button variant="ghost" onClick={onSkip}>
+          <Button variant="ghost" size="lg" fullWidth onClick={onSkip}>
             {t('skip')}
           </Button>
         )}
-        <Button variant="primary" onClick={onAccept}>
-          {t('request')}
-        </Button>
       </div>
     </div>
   );
