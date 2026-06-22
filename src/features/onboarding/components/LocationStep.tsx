@@ -148,9 +148,20 @@ export function LocationStep({
 
   return (
     <div className={styles.step}>
+      {/* Figma "Walk 4 · 위치 권한 동의" — 우상단 header 에 "건너뛰기" text link.
+          LocationPermissionPrompt 의 skip button 제거 (onSkip 미전달). */}
+      <header className={styles.locationHeader}>
+        <button
+          type="button"
+          className={styles.skipLink}
+          onClick={handleSkip}
+          disabled={isLoading}
+        >
+          {t('permission.skip')}
+        </button>
+      </header>
       <LocationPermissionPrompt
         onAccept={handleAccept}
-        onSkip={handleSkip}
         progress={
           currentStep && totalSteps
             ? { current: currentStep, total: totalSteps }
