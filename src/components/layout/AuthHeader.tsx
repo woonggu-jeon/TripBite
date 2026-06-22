@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import type { Route } from 'next';
 import { useTranslations } from 'next-intl';
 import { ChevronLeft } from 'lucide-react';
 import { haptic } from '@/lib/haptic';
@@ -21,7 +22,11 @@ import styles from './AuthHeader.module.scss';
  *     <FindIdForm />
  *   </AuthLayout>
  */
-export function AuthHeader({ fallbackHref = '/' }: { fallbackHref?: string }) {
+export function AuthHeader({
+  fallbackHref = '/' as Route,
+}: {
+  fallbackHref?: Route;
+}) {
   const router = useRouter();
   const t = useTranslations('common');
 
