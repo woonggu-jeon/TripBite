@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -63,7 +64,19 @@ export function FindIdForm() {
 
   return (
     <form onSubmit={onSubmit} noValidate className={styles.form}>
-      <h1 className={styles.title}>{t('title')}</h1>
+      {/* Figma 아이디 찾기 hero — 84px icon + 제목 + 설명. */}
+      <div className={styles.hero}>
+        <Image
+          src="/images/auth/find-id-hero.svg"
+          alt=""
+          width={84}
+          height={84}
+          className={styles.heroIcon}
+          priority
+        />
+        <h1 className={styles.heroTitle}>{t('heroTitle')}</h1>
+        <p className={styles.heroDescription}>{t('heroDescription')}</p>
+      </div>
 
       {FIELDS.map((f) => (
         <TextField
@@ -92,7 +105,7 @@ export function FindIdForm() {
         {isSubmitting ? t('submitting') : t('submit')}
       </Button>
 
-      <Link href="/login" className={styles.footCenter}>
+      <Link href="/login" className={styles.footLinkBack}>
         {t('toLogin')}
       </Link>
     </form>

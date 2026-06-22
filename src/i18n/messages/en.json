@@ -88,6 +88,8 @@
     },
     "findId": {
       "title": "Find username",
+      "heroTitle": "Forgot your username?",
+      "heroDescription": "Enter the email you used to sign up\nand we'll find your username.",
       "email": "Email",
       "submit": "Find username",
       "submitting": "Searching...",
@@ -159,6 +161,7 @@
     },
     "forgotPassword": {
       "title": "Forgot password",
+      "heroTitle": "Forgot your password?",
       "description": "We'll email you a reset link.",
       "username": "Username",
       "usernamePlaceholder": "Your username",

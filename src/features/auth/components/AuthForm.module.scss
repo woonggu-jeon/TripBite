@@ -105,6 +105,48 @@
   background: #c2c2c2;
 }
 
+// Figma FindId/ForgotPw hero — 84px icon + 제목 + 설명 (가운데 정렬).
+// title ExtraBold 22 + description Regular 14 (1.55em line, 줄바꿈 keep).
+.hero {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: var(--space-3);
+  padding: var(--space-6) 0 var(--space-4);
+}
+
+.heroIcon {
+  width: 84px;
+  height: 84px;
+}
+
+.heroTitle {
+  font-size: 1.375rem; // 22px — Figma spec
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
+  margin: 0;
+}
+
+.heroDescription {
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--color-muted);
+  white-space: pre-line; // \n 줄바꿈 보존 (i18n value)
+  margin: 0;
+}
+
+// 단일 link "로그인으로 돌아가기" — primary 색 SemiBold 가운데 정렬.
+.footLinkBack {
+  display: inline-flex;
+  justify-content: center;
+  padding-top: var(--space-3);
+  color: var(--color-primary);
+  font-size: var(--font-label);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-tight);
+}
+
 // FindId 결과 표시 등에 쓰는 가운데 정렬 form
 .center {
   text-align: center;
