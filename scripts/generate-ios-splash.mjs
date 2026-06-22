@@ -25,7 +25,9 @@ import { dirname, resolve } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
-const SOURCE = resolve(ROOT, 'public/icons/icon-512x512.png');
+// 디자이너 Figma SPLASH 노드의 trip-bite-logo SVG (2026-06-19) — Phase G.
+// sharp 가 SVG → PNG 자동 raster. 이전 PNG (icon-512x512) 보다 brand 정합.
+const SOURCE = resolve(ROOT, 'public/images/auth/trip-bite-logo.svg');
 const OUT_DIR = resolve(ROOT, 'public/splash');
 const BACKGROUND = '#ffffff';
 
