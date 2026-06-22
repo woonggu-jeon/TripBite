@@ -3,16 +3,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Loader2 } from 'lucide-react';
-import {
-  LocationPermissionPrompt,
-  useGeolocation,
-  usePermissionState,
-} from '@/features/location';
+import { useGeolocation, usePermissionState } from '@/features/location';
 import { locationApi } from '@/features/location/api/location';
 import { useLocationStore } from '@/stores/location-store';
 import { track } from '@/features/analytics';
 import { Button } from '@/components/ui';
-import styles from './OnboardingStep.module.scss';
+import { OnboardingProgress } from './OnboardingProgress';
+import styles from './LocationStep.module.scss';
 
 /**
  * <LocationStep /> — 온보딩 step 2
@@ -133,56 +130,21 @@ export function LocationStep({
     return (
       <div className={`${styles.step} ${styles.resolving}`}>
         <Loader2 className={styles.spinner} size={32} aria-hidden />
-        <p className={styles.description}>{t('resolving')}</p>
+        <p className={styles.tagline}>{t('resolving')}</p>
       </div>
     );
   }
 
-  if (permission === 'denied') {
-    return (
-      <div className={styles.step}>
-        <p className={styles.description}>{t('permission.denied')}</p>
-        <p className={styles.description}>{t('permission.openSettings')}</p>
-        <div className={`${styles.actions} ${styles.actionsRow}`}>
-          {onPrev && (
-            <Button variant="secondary" onClick={onPrev}>
-              {t('back')}
-            </Button>
-          )}
-          <Button variant="primary" onClick={handleSkip} disabled={isLoading}>
-            {t('permission.skip')}
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  if (permission === 'granted') {
-    // 자동 resolve 실패 시 retry. 정상 흐름은 useEffect 가 즉시 finishing 으로
-    // 전환해 위 isWorking 분기에 잡힘.
-    return (
-      <div className={styles.step}>
-        <p className={styles.description}>{t('resolving')}</p>
-        {status === 'failed' && error && (
-          <div className={`${styles.actions} ${styles.actionsCenter}`}>
-            <Button
-              variant="primary"
-              onClick={handleAccept}
-              disabled={isLoading}
-            >
-              {t('retry')}
-            </Button>
-          </div>
-        )}
-      </div>
-    );
-  }
+  // Figma "Walk 4 · 위치 권한 동의" — WalkStep 패턴 동일 layout (header +
+  // illustArea + body{copy + foot}). permission 상태 (prompt/granted/denied)
+  // 무관 동일 layout, 본문 / button 만 분기.
+  const isDenied = permission === 'denied';
+  const isGrantedRetry = permission === 'granted' && status === 'failed';
 
   return (
     <div className={styles.step}>
-      {/* Figma "Walk 4 · 위치 권한 동의" — 우상단 header 에 "건너뛰기" text link.
-          LocationPermissionPrompt 의 skip button 제거 (onSkip 미전달). */}
-      <header className={styles.locationHeader}>
+      {/* 우상단 "건너뛰기" text link — Figma Walk 4 header. */}
+      <header className={styles.header}>
         <button
           type="button"
           className={styles.skipLink}
@@ -192,21 +154,60 @@ export function LocationStep({
           {t('permission.skip')}
         </button>
       </header>
-      <LocationPermissionPrompt
-        onAccept={handleAccept}
-        progress={
-          currentStep && totalSteps
-            ? { current: currentStep, total: totalSteps }
-            : undefined
-        }
-      />
-      {onPrev && (
-        <div className={`${styles.actions} ${styles.actionsCenter}`}>
-          <Button variant="ghost" onClick={onPrev} disabled={isLoading}>
-            {t('back')}
-          </Button>
+
+      {/* 360h illustArea — 116x116 location-hero SVG (다른 Walk 와 동일 비율). */}
+      <div className={styles.illustArea}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/auth/location-hero.svg"
+          alt=""
+          width={116}
+          height={116}
+          className={styles.icon}
+        />
+      </div>
+
+      {/* body — copy + foot (progress + button). Walk 1/2/3 패턴 동일. */}
+      <div className={styles.body}>
+        <div className={styles.copy}>
+          <h2 className={styles.title}>
+            {isDenied ? t('permission.denied') : t('permission.title')}
+          </h2>
+          <p className={styles.tagline}>
+            {isDenied
+              ? t('permission.openSettings')
+              : t('permission.description')}
+          </p>
         </div>
-      )}
+        <div className={styles.foot}>
+          {currentStep && totalSteps && (
+            <OnboardingProgress current={currentStep} total={totalSteps} />
+          )}
+          {isDenied ? (
+            // denied — 다시 시도 의미 없음 (브라우저 차단). "건너뛰기" 만 primary.
+            <Button
+              variant="primary"
+              size="lg"
+              fullWidth
+              onClick={handleSkip}
+              disabled={isLoading}
+            >
+              {t('permission.skip')}
+            </Button>
+          ) : (
+            // prompt / granted-retry — 허용 (또는 retry) primary.
+            <Button
+              variant="primary"
+              size="lg"
+              fullWidth
+              onClick={handleAccept}
+              disabled={isLoading}
+            >
+              {isGrantedRetry ? t('retry') : t('permission.request')}
+            </Button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
