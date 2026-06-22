@@ -54,6 +54,9 @@
   min-height: 52px;
   padding: 0 var(--space-5);
   font-size: var(--font-body);
+  // Figma button (size 52) border-radius 12 정합. 기존 .btn 의
+  // --radius-md (8) override — lg 사이즈 한정 (sm/md 는 그대로).
+  border-radius: 12px;
 }
 
 // variants
