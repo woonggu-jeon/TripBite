@@ -11,7 +11,7 @@ import {
   type ResetPasswordValues,
 } from '@/features/auth/schemas/password-reset';
 import { isAxiosError } from '@/services/interceptors/auth';
-import { Button, PasswordField, TextField } from '@/components/ui';
+import { Button, PasswordField } from '@/components/ui';
 import styles from './AuthForm.module.scss';
 
 /**
