@@ -32,11 +32,23 @@ type PersistedUser = Pick<
 type AuthState = {
   isAuthenticated: boolean;
   user?: UserDto;
+  /**
+   * 회원가입 직후 /signup/complete 의 시작하기 클릭 전까지 보존되는 user.
+   *
+   * 흐름: useSignup onSuccess → setPendingSignupUser → /signup/complete →
+   * 사용자가 "시작하기" 클릭 → setAuth(pendingSignupUser) + clearPendingSignupUser.
+   *
+   * persist 미포함 (메모리 only) — 새로고침 시 사라짐 → /signup/complete 직접
+   * 진입 가드 가능. UI 흐름상 가입 ≠ 로그인 분리 (BE 는 atomic SID 발급하지만
+   * FE store/cache 는 시작하기 클릭 시점에 hydrate).
+   */
+  pendingSignupUser?: UserDto;
 };
 
 type AuthActions = {
   setAuth: (user: UserDto) => void;
   clearAuth: () => void;
+  setPendingSignupUser: (user: UserDto | undefined) => void;
 };
 
 function toPersistedUser(user: UserDto | undefined): PersistedUser | undefined {
@@ -55,9 +67,16 @@ export const useAuthStore = create<AuthState & AuthActions>()(
     (set) => ({
       isAuthenticated: false,
       user: undefined,
+      pendingSignupUser: undefined,
 
       setAuth: (user) => set({ isAuthenticated: true, user }),
-      clearAuth: () => set({ isAuthenticated: false, user: undefined }),
+      clearAuth: () =>
+        set({
+          isAuthenticated: false,
+          user: undefined,
+          pendingSignupUser: undefined,
+        }),
+      setPendingSignupUser: (user) => set({ pendingSignupUser: user }),
     }),
     {
       name: 'tripbite.auth',

@@ -153,7 +153,7 @@ describe('useSignup', () => {
     vi.restoreAllMocks();
   });
 
-  it('atomic 응답의 user 로 setAuth + router.replace("/signup/complete")', async () => {
+  it('가입 시 pendingSignupUser 만 설정 + router.replace("/signup/complete") — setAuth 는 시작하기 클릭 시점으로 분리', async () => {
     server.use(
       http.post(`${apiUrl}/auth/signup`, () =>
         HttpResponse.json({ user: mockUser }),
@@ -169,8 +169,10 @@ describe('useSignup', () => {
     });
 
     await waitFor(() => {
-      expect(useAuthStore.getState().isAuthenticated).toBe(true);
+      // 가입 직후엔 isAuthenticated false 유지 — pendingSignupUser 만 set.
+      expect(useAuthStore.getState().pendingSignupUser?.id).toBe('u-1');
     });
+    expect(useAuthStore.getState().isAuthenticated).toBe(false);
     expect(router.replace).toHaveBeenCalledWith('/signup/complete');
   });
 });

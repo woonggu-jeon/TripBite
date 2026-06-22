@@ -95,19 +95,16 @@ export function useLogin(options?: { redirectTo?: string }) {
 
 export function useSignup() {
   const router = useRouter();
-  const queryClient = useQueryClient();
-  const setAuth = useAuthStore((s) => s.setAuth);
+  const setPendingSignupUser = useAuthStore((s) => s.setPendingSignupUser);
 
   return useMutation({
     mutationFn: (data: SignupDto) => authApi.signup(data),
     onSuccess: (response) => {
-      // BE 가 가입 + 세션 발급을 atomic 처리 — Set-Cookie: SID + { user: UserDto }.
-      // FE 는 별도 login/me 호출 불필요 — 응답의 user 그대로 store / cache hydrate.
-      setAuth(response.user);
-      queryClient.setQueryData(authKeys.me(), response.user);
-      // 가입 성공 → /signup/complete (Figma 디자인 정합, 2026-06-19).
-      // complete 페이지의 CTA 버튼이 /onboarding 진입 — middleware 의 visited
-      // cookie redirect 와 일치.
+      // BE 는 atomic 처리 (Set-Cookie: SID + { user: UserDto }) — SID 는 이미
+      // browser cookie jar 에 박힘. 그러나 FE 의 setAuth / queryClient cache
+      // hydrate 는 시작하기 클릭 시점으로 분리 (가입 ≠ 로그인 흐름 명시,
+      // 사용자 요청 2026-06-19). user 는 pendingSignupUser 에 임시 보존.
+      setPendingSignupUser(response.user);
       router.replace('/signup/complete');
       router.refresh();
     },

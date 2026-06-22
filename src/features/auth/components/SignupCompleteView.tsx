@@ -2,8 +2,12 @@
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui';
+import { useAuthStore } from '@/stores/auth-store';
+import { authKeys } from '@/features/auth/hooks/use-auth';
 import styles from './AuthForm.module.scss';
 
 /**
@@ -12,12 +16,38 @@ import styles from './AuthForm.module.scss';
  *   96px 체크 아이콘 + 제목 ExtraBold 23 + 안내 Regular 14 (1.55 line)
  *   + 큰 CTA "시작하기" (primary, full-width, 52px)
  *
- * 진입 흐름: useSignup onSuccess → /signup/complete → 본 view.
- * CTA → /onboarding 진행 (자동 로그인 완료 상태).
+ * 흐름 분리 (사용자 요청, 2026-06-19):
+ *   - useSignup onSuccess → setPendingSignupUser → /signup/complete (자동
+ *     로그인 X, FE store/cache 미 hydrate. BE SID 는 cookie 에 이미 있음).
+ *   - 본 view 의 CTA "시작하기" → setAuth + setQueryData + clear → /onboarding.
+ *
+ * 직접 진입 가드: pendingSignupUser 없으면 / 로 redirect (가입 안 했는데
+ * 이 페이지에 머무를 이유 없음).
  */
 export function SignupCompleteView() {
   const t = useTranslations('auth.signup.complete');
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const pendingSignupUser = useAuthStore((s) => s.pendingSignupUser);
+  const setAuth = useAuthStore((s) => s.setAuth);
+  const setPendingSignupUser = useAuthStore((s) => s.setPendingSignupUser);
+
+  // 가드 — 가입 직후가 아닌 직접 진입 케이스 차단. 새로고침 시에도 pending
+  // 사라져 redirect (메모리 only persist 미포함).
+  useEffect(() => {
+    if (!pendingSignupUser) {
+      router.replace('/');
+    }
+  }, [pendingSignupUser, router]);
+
+  const handleStart = () => {
+    if (!pendingSignupUser) return;
+    // 자동 로그인 프로세스 — 시작하기 클릭 시점에 hydrate.
+    setAuth(pendingSignupUser);
+    queryClient.setQueryData(authKeys.me(), pendingSignupUser);
+    setPendingSignupUser(undefined);
+    router.replace('/onboarding');
+  };
 
   return (
     <div className={`${styles.form} ${styles.center}`}>
@@ -40,7 +70,8 @@ export function SignupCompleteView() {
         variant="primary"
         size="lg"
         fullWidth
-        onClick={() => router.replace('/onboarding')}
+        onClick={handleStart}
+        disabled={!pendingSignupUser}
       >
         {t('cta')}
       </Button>
