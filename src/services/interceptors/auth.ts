@@ -2,6 +2,19 @@ import type { AxiosError, AxiosInstance } from 'axios';
 import axios from 'axios';
 
 /**
+ * 세션 만료 toast 중복 표시 방지 — module-level flag.
+ *
+ * 사용자 보고 (2026-06-19): polling (notifications/unread-count 등) 이 401
+ * 반복 시 toast 폭주. 한 세션 한 번만 표시. setAuth (재로그인) 시 reset.
+ * 보호 경로 redirect 는 hard nav (window.location.href) 라 페이지 reload →
+ * module 변수 자연 reset.
+ */
+let sessionExpiredToastShown = false;
+export function __resetSessionExpiredFlag(): void {
+  sessionExpiredToastShown = false;
+}
+
+/**
  * 401 처리 — sessionID 단일 방식
  *
  * 한국 표준 (네이버 / 카카오 / 대형 포털) 의 sessionID 쿠키 모델:
@@ -77,7 +90,17 @@ export function attachAuthInterceptor(instance: AxiosInstance) {
       if (!isMock && !onAuthPage && typeof window !== 'undefined') {
         // dynamic import 로 순환참조 회피 (interceptor → store).
         const { useAuthStore } = await import('@/stores/auth-store');
+        const wasAuthenticated = useAuthStore.getState().isAuthenticated;
         useAuthStore.getState().clearAuth();
+
+        // 세션 만료 toast — 한 세션 한 번만. 로그인 상태였던 사용자에게만
+        // (비로그인 상태에서 발생한 401 은 안내 무의미). interceptor 에서 직접
+        // useTranslations / hook 호출 불가 → window event 로 dispatch, React
+        // 단의 SessionExpiredWatcher 가 listen + toast.
+        if (wasAuthenticated && !sessionExpiredToastShown) {
+          sessionExpiredToastShown = true;
+          window.dispatchEvent(new CustomEvent('auth:session-expired'));
+        }
       }
 
       if (

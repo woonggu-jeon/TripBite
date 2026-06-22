@@ -12,6 +12,7 @@
     "close": "닫기",
     "showPassword": "비밀번호 표시",
     "hidePassword": "비밀번호 숨기기",
+    "sessionExpired": "세션이 만료되었어요. 다시 로그인해주세요.",
     "loading": "불러오는 중...",
     "submit": "제출",
     "submitting": "처리 중...",

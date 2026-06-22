@@ -20,6 +20,7 @@ import { Analytics } from '@vercel/analytics/next';
 // import { AuthBootstrap } from '@/features/auth/components/AuthBootstrap';
 import { ThemeApplier } from '@/features/theme/components/ThemeApplier';
 import { ServiceWorkerNavigateBridge } from '@/features/notification/components/ServiceWorkerNavigateBridge';
+import { SessionExpiredWatcher } from '@/features/auth/components/SessionExpiredWatcher';
 import { Toaster } from '@/components/feedback/Toaster';
 import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
 import {
@@ -191,6 +192,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <ThemeApplier />
       {/* <AuthBootstrap /> — 2026-06-12 비활성 (위 import 코멘트 참조) */}
+      <SessionExpiredWatcher />
       <ServiceWorkerNavigateBridge />
       <PageViewTracker />
       {/* dev 디버그용 콘솔 로깅만. 운영 Web Vitals 수집은 SpeedInsights 담당(중복 방지) */}

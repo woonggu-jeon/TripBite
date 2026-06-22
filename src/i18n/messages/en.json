@@ -12,6 +12,7 @@
     "close": "Close",
     "showPassword": "Show password",
     "hidePassword": "Hide password",
+    "sessionExpired": "Your session has expired. Please sign in again.",
     "loading": "Loading...",
     "submit": "Submit",
     "submitting": "Processing...",
