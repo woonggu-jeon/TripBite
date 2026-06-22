@@ -20,4 +20,7 @@
 
 .column {
   flex-direction: column;
+  // header (AuthHeader) 가 화면 상단에 닿도록 padding-top 0 override.
+  // horizontal/bottom padding 은 main 의 clamp 그대로 유지.
+  padding-top: 0;
 }

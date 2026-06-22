@@ -3,13 +3,18 @@
 
 .field {
   display: grid;
+  // Figma label-input 사이 7px sp. var(--space-2) = 8 → 근사. 유지 (1px 차이).
   gap: var(--space-2);
 }
 
 .label {
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-fg);
+  // Figma input label (2026-06-19): Pretendard Bold 12 (0.75rem) muted.
+  // 기존 medium 14 fg 에서 변경 — Figma "아이디" / "비밀번호" 정합.
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-muted);
+  letter-spacing: -0.02em;
+  line-height: 1.3em;
 }
 
 // 시각적으로 가리되 스크린리더에는 노출. placeholder/aria-label 로 의미 전달 시.

@@ -3,7 +3,9 @@
 
 .form {
   display: grid;
-  gap: var(--space-4);
+  // Figma "fields" group padding 0 0 24px — field 사이 24px. 기존 16 →
+  // 24 정합 (2026-06-19).
+  gap: var(--space-6);
   width: 100%;
   max-width: 360px;
 }
