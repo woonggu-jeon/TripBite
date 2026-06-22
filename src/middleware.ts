@@ -43,12 +43,12 @@ function isProtectedPath(pathname: string): boolean {
 // 비인증 진입용 페이지 — 인증된 사용자가 들어오면 / 또는 ?redirect= 의 안전 경로로.
 // /find-id, /forgot-password, /reset-password 는 인증 무관 (token 기반) → 제외.
 // /onboarding 은 visited cookie 기반 별도 처리 → 제외.
+// /signup/complete 는 가입 직후 SID 있는 사용자가 진입하는 정상 흐름 — exact
+// match 만 하여 sub-path 제외 (2026-06-19 사용자 보고 fix).
 const AUTH_ENTRY_PATHS = ['/login', '/signup'];
 
 function isAuthEntryPath(pathname: string): boolean {
-  return AUTH_ENTRY_PATHS.some(
-    (p) => pathname === p || pathname.startsWith(`${p}/`),
-  );
+  return AUTH_ENTRY_PATHS.includes(pathname);
 }
 
 function safeRedirectParam(raw: string | null): string {
