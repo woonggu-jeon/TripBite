@@ -71,6 +71,8 @@
     },
     "login": {
       "title": "Sign in",
+      "logoTitle": "TripBite",
+      "tagline": "A bite-sized Chungbuk journey",
       "username": "Username",
       "password": "Password",
       "submit": "Sign in",

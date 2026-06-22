@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -76,12 +77,24 @@ export function LoginForm() {
   });
 
   return (
-    <form
-      onSubmit={onSubmit}
-      className={`${styles.form} ${styles.card}`}
-      noValidate
-    >
-      <h1 className={styles.title}>{t('title')}</h1>
+    <form onSubmit={onSubmit} className={styles.form} noValidate>
+      {/* Figma LOGIN · A — 상단 logo 블록 (40x37 icon + "여행한입" + tagline).
+          page h1 은 SEO/sr 용으로 페이지 metadata 가 처리, 본 폼 안의 h1 은
+          시각 강조용 logo title. .card wrapper border 는 Figma 없음 → 제거. */}
+      <div className={styles.loginLogo}>
+        <div className={styles.loginLogoRow}>
+          <Image
+            src="/images/auth/trip-bite-logo.svg"
+            alt=""
+            width={40}
+            height={37}
+            className={styles.loginLogoIcon}
+            priority
+          />
+          <h1 className={styles.loginLogoText}>{t('logoTitle')}</h1>
+        </div>
+        <p className={styles.loginTagline}>{t('tagline')}</p>
+      </div>
 
       <TextField
         id="username"

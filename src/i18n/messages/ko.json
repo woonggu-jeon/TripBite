@@ -71,6 +71,8 @@
     },
     "login": {
       "title": "로그인",
+      "logoTitle": "여행한입",
+      "tagline": "한 입에 떠나는 충북 여행",
       "username": "아이디",
       "password": "비밀번호",
       "submit": "로그인",
