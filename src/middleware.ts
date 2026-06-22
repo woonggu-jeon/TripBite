@@ -157,6 +157,9 @@ function cspHeaderName(): string {
 export const config = {
   matcher: [
     // /api 제외: health·csp-report는 공개. Server Action(페이지 route POST)은 /api 가 아니라 유지.
-    '/((?!api|_next/static|_next/image|favicon.ico|icons|manifest.json|sw.js|workbox-.*).*)',
+    // public 정적 자산 제외 (2026-06-22 fix) — `/images/onboarding/walk-*.svg`
+    // 등이 visited cookie 없는 사용자에서 onboarding redirect 에 잡혀 307.
+    // 추가: images / splash / mockServiceWorker.js. icons 는 기존 유지.
+    '/((?!api|_next/static|_next/image|images|splash|favicon.ico|icons|manifest.json|sw.js|workbox-.*|mockServiceWorker.js).*)',
   ],
 };
