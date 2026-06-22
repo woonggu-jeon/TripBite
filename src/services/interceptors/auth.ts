@@ -15,23 +15,30 @@ export function __resetSessionExpiredFlag(): void {
 }
 
 /**
- * 401 처리 — sessionID 단일 방식
+ * 401 처리 — sessionID 단일 방식 + BE code 기반 분기 (2026-06-22 BE 응답 정합)
  *
  * 한국 표준 (네이버 / 카카오 / 대형 포털) 의 sessionID 쿠키 모델:
  *   - 단일 cookie (HttpOnly, SameSite=Lax) 가 sessionID 보관
  *   - BE 가 매 요청마다 cookie → DB/Redis 세션 조회로 검증
- *   - 만료 시 BE 가 cookie 폐기 + 401. FE 는 보호 경로에서만 /login 으로 보냄
+ *   - 만료 시 BE 가 401 + Set-Cookie 로 SID 자동 만료 (cleanup)
+ *
+ * **BE code 기반 분기 (2026-06-22)**:
+ *   401 status 만으로 일괄 처리하면 로그인 폼의 비번 틀림 (AUTH_INVALID_CREDENTIALS)
+ *   까지 자동 로그아웃 분기에 걸려 redirect 루프 발생.
+ *   → `data.code === 'AUTH_REQUIRED'` 만 자동 로그아웃 분기.
+ *   → 다른 401 (AUTH_INVALID_CREDENTIALS 등) 은 silent reject → 호출처가 처리.
+ *
+ * **auth endpoint 제외**: /v1/auth/(login|signup|check-*|find-id|
+ *   forgot-password|reset-password) 호출에서 발생한 401 은 자동 로그아웃 안 함
+ *   (호출처 폼이 인라인 에러 표시).
  *
  * 정책:
- *   - 401 받으면 그대로 reject (refresh 시도 X)
- *   - **보호 경로 (/mypage, /settings, /letter, /notifications) 에 있을 때만**
- *     hard redirect '/login' — 비로그인으로 둘러볼 수 있는 public 페이지
- *     (/, /region, /quiz, /tournament 등) 에서는 401 silent reject 만 하고
- *     페이지 그대로 유지.
- *   - auth 페이지 (/login, /signup, /find-id, /forgot-password,
- *     /reset-password, /onboarding) 에서도 hard redirect skip — 무한 루프 회피.
- *   - mock 환경 (USE_MSW=true) 도 hard redirect skip — MockAuthToggle 이 unauth
- *     UX 자체 처리.
+ *   - 401 + code=AUTH_REQUIRED + non-auth endpoint → clearAuth + (보호 경로) redirect
+ *   - **보호 경로 (/mypage, /settings, /letter, /notifications)** → hard redirect '/login'
+ *   - 그 외 페이지 → clearAuth 만 (silent, UI 자동 비로그인 전환)
+ *   - auth 페이지 / mock 환경 → redirect skip (무한 루프 / mock UX 자체 처리)
+ *
+ * BE 는 401 응답에 Set-Cookie SID=; Max-Age=0 자동 포함 — FE 가 cookie 청소 불필요.
  */
 
 /**
@@ -70,6 +77,18 @@ function isOnProtectedPath(): boolean {
   return PROTECTED_PATHS.some((pp) => p === pp || p.startsWith(`${pp}/`));
 }
 
+/**
+ * Auth endpoint 호출에서 발생한 401 인지 — 호출처 폼이 자체 처리 (BE 응답 §4).
+ * /v1/auth/(login|signup|check-username|check-email|find-id|forgot-password|
+ * reset-password) 매칭. axios baseURL 기준 path 만 검사.
+ */
+function isAuthEndpoint(requestUrl: string | undefined): boolean {
+  if (!requestUrl) return false;
+  return /\/v1\/auth\/(login|signup|check-username|check-email|find-id|forgot-password|reset-password)\b/.test(
+    requestUrl,
+  );
+}
+
 export function attachAuthInterceptor(instance: AxiosInstance) {
   instance.interceptors.response.use(
     (response) => response,
@@ -79,24 +98,31 @@ export function attachAuthInterceptor(instance: AxiosInstance) {
         return Promise.reject(error);
       }
 
+      // BE code 기반 분기 (2026-06-22) — AUTH_REQUIRED 만 자동 로그아웃 분기.
+      // AUTH_INVALID_CREDENTIALS / 기타 401 은 호출처가 처리 (인라인 에러 등).
+      const data = error.response.data as { code?: string } | undefined;
+      const code = data?.code;
+      if (code !== 'AUTH_REQUIRED') {
+        return Promise.reject(error);
+      }
+
+      // Auth endpoint (/v1/auth/login 등) 호출에서 발생한 401 은 자동 로그아웃
+      // 안 함 — 호출처 폼이 자체 처리 (BE 응답 §4 루프 방지 체크리스트).
+      if (isAuthEndpoint(error.config?.url)) {
+        return Promise.reject(error);
+      }
+
       const isMock = process.env.NEXT_PUBLIC_USE_MSW === 'true';
       const onAuthPage = isAlreadyOnAuthPage();
 
-      // **public 경로에서 401 자동 로그아웃 처리 (2026-06-19)** — 탈퇴/세션만료
-      // 사용자가 홈/시군 등 public 페이지에서 background polling 으로 401 받을
-      // 때, store 의 user 가 stale 유지되어 AppHeader 가 거짓말함. clearAuth 로
-      // UI 를 즉시 비로그인 상태로 동기화. 보호 경로는 어차피 아래 hard redirect.
-      // auth 페이지 / mock 환경은 skip (무한 루프 / mock UX 자체 처리).
+      // public 경로에서 401 자동 로그아웃 처리 — 탈퇴/세션만료 사용자의 stale
+      // store 동기화. BE 가 응답에 Set-Cookie SID 만료 헤더 자동 포함하므로
+      // FE 는 cookie 청소 불필요.
       if (!isMock && !onAuthPage && typeof window !== 'undefined') {
-        // dynamic import 로 순환참조 회피 (interceptor → store).
         const { useAuthStore } = await import('@/stores/auth-store');
         const wasAuthenticated = useAuthStore.getState().isAuthenticated;
         useAuthStore.getState().clearAuth();
 
-        // 세션 만료 toast — 한 세션 한 번만. 로그인 상태였던 사용자에게만
-        // (비로그인 상태에서 발생한 401 은 안내 무의미). interceptor 에서 직접
-        // useTranslations / hook 호출 불가 → window event 로 dispatch, React
-        // 단의 SessionExpiredWatcher 가 listen + toast.
         if (wasAuthenticated && !sessionExpiredToastShown) {
           sessionExpiredToastShown = true;
           window.dispatchEvent(new CustomEvent('auth:session-expired'));
@@ -109,8 +135,6 @@ export function attachAuthInterceptor(instance: AxiosInstance) {
         isOnProtectedPath() &&
         typeof window !== 'undefined'
       ) {
-        // 현재 path 를 redirect query 로 보존 — 로그인 후 복귀 (login/onboarding
-        // 의 safeRedirectParam 가 `/` 시작 + `//` 차단 검증 후 사용).
         const path = window.location.pathname + window.location.search;
         const safe =
           path && path.startsWith('/') && !path.startsWith('//') ? path : '/';

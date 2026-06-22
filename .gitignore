@@ -77,3 +77,8 @@ Thumbs.db
 *storybook.log
 storybook-static
 API_CONTRACT.md
+
+# BE 협의 문서 — 일회성 요청/회신 자료. git 커밋 제외 정책
+# (memory [[be-request-response-no-commit]]). archive 시 docs/ 로 이동.
+BE_REQUEST_*.md
+BE_RESPONSE_*.md
