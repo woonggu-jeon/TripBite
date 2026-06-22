@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -85,13 +84,15 @@ export function LoginForm() {
           타이틀 "로그인" 은 generateMetadata 가 처리. */}
       <div className={styles.loginLogo}>
         <div className={styles.loginLogoStack}>
-          <Image
+          {/* SVG 는 vector — next/image optimization 불필요 + hydration
+              지연 회피 (운영에서 첫 진입 시 logo 안 보이던 회귀 fix). */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src="/images/auth/trip-bite-logo.svg"
             alt=""
             width={40}
             height={37}
             className={styles.loginLogoIcon}
-            priority
           />
           <h1 className={styles.loginLogoText}>{t('logoTitle')}</h1>
         </div>
