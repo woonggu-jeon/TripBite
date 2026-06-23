@@ -50,8 +50,8 @@
   max-width: 320px;
 }
 
-// circle 84 primary-soft + Heart 38 primary filled (Figma IC-like Vector bg
-// #00B334 filled = Heart primary filled, not danger red).
+// circle 84 primary-soft + Heart 38 primary outline (Figma 빈 상태 — 저장된
+// 항목 없음 표현, outline 으로 유지).
 .emptyCircle {
   display: grid;
   place-items: center;
