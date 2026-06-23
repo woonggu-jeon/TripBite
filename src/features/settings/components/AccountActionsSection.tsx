@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { ListRow } from '@/components/ui';
+import { Button } from '@/components/ui';
 import { useDeleteAccount, useLogout } from '@/features/auth/hooks/use-auth';
 import { useConfirm } from '@/hooks/use-confirm';
 import { toast } from '@/lib/toast';
@@ -52,17 +52,31 @@ export function AccountActionsSection() {
   };
 
   return (
-    <div className={styles.list}>
-      <ListRow onClick={handleLogout} disabled={isLoggingOut}>
+    // Figma "설정" page bw frame (2026-06-23) — column 320x52 button + danger.
+    // Button.s-lg variant=secondary 가 center align + radius 12 + Body M_16
+    // 정합. border-color (--color-stroke #C6C6C6) + color override 는
+    // .actionButton / .actionButtonDanger 가 처리.
+    <div className={styles.actionStack}>
+      <Button
+        variant="secondary"
+        size="lg"
+        fullWidth
+        className={styles.actionButton}
+        onClick={handleLogout}
+        disabled={isLoggingOut}
+      >
         {isLoggingOut ? t('loggingOut') : t('logout')}
-      </ListRow>
-      <ListRow
-        variant="danger"
+      </Button>
+      <Button
+        variant="secondary"
+        size="lg"
+        fullWidth
+        className={`${styles.actionButton} ${styles.actionButtonDanger}`}
         onClick={handleWithdraw}
         disabled={isWithdrawing}
       >
         {isWithdrawing ? t('withdrawing') : t('withdraw')}
-      </ListRow>
+      </Button>
     </div>
   );
 }
