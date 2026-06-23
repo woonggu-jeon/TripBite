@@ -37,7 +37,7 @@ export function AccountSettingsSection() {
       </ListRow>
 
       <ListRow
-        hint={
+        value={
           (permission === 'granted' && t('locationGranted')) ||
           (permission === 'denied' && t('locationDenied')) ||
           (permission === 'prompt' && t('locationPrompt')) ||
