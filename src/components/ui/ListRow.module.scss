@@ -40,11 +40,11 @@
 }
 
 // row 안에 보조 텍스트 (예: "위치 권한 — 허용됨").
+// font-weight 는 parent .row 의 semibold 상속 (원본 SettingsRows .rowHint 동작
+// 유지 — margin-top 도 미지정으로 회귀 회피, 2026-06-23 자율검토).
 .hint {
-  margin-top: 2px;
   font-size: var(--font-caption);
   color: var(--color-muted);
-  font-weight: var(--font-weight-regular);
 }
 
 @media (prefers-reduced-motion: reduce) {
