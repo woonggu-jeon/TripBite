@@ -1,13 +1,14 @@
 'use client';
 
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Share2, RotateCcw, BadgeCheck, ChevronRight } from 'lucide-react';
+import { Share2, RotateCcw, BadgeCheck } from 'lucide-react';
 import { haptic } from '@/lib/haptic';
-import { CHUNGBUK_REGIONS } from '@/constants/regions';
+import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
+import { toneFor } from '@/constants/region-tone';
 import { EmptyState } from '@/components/feedback/EmptyState';
-import { Button, ButtonGrid, Card, Chip } from '@/components/ui';
+import { Button } from '@/components/ui';
+import { DestinationCard } from '@/components/ui/DestinationCard';
 import {
   useMyTravelType,
   useSetMyTravelType,
@@ -16,27 +17,25 @@ import type { TravelTypeDto } from '@/api/generated/schemas';
 import { toast } from '@/lib/toast';
 import { useShareCard } from '@/hooks/use-share-card';
 import { useRequireAuth } from '@/hooks/use-require-auth';
-import Image from 'next/image';
 import { categoryEmoji } from '@/constants/emoji-map';
-import { secureImageUrl } from '@/lib/secure-image-url';
 import styles from './TravelTypeResult.module.scss';
 
 /**
- * 여행 유형 결과 화면.
+ * 여행 유형 결과 화면 — Figma "TST · 유형테스트 결과" (2026-06-23).
  *
  * 데이터 소스: useMyTravelType (GET /travel-types/me)
  *   - Quiz 직후 진입 시 submit 의 onSuccess 가 같은 queryKey 에 결과를 setQueryData.
  *   - 새로고침/딥링크 진입 시에도 me API 가 저장된 결과 반환.
- *   - 결과 없음(처음 진입 또는 만료) → /travel-type 으로 redirect.
  *
  * 구성:
- *   1) 결과 hero — emoji + 유형 코드 + title + 키워드 chip
- *   2) description
- *   3) 추천 여행지 3 (서버 응답의 recommended 그대로)
- *   4) 액션 — 공유 카드 / 다시 테스트
+ *   1) Banner — secondary01 bg + primary 1px border, emoji + code pill + title +
+ *      keyword pills + description.
+ *   2) Recommend — DestinationCard 3 horizontal scroll (saved-grid 408w).
+ *   3) (TODO flow 3b) Match-section — compatibility.best / worst (BE 신규 필드).
+ *   4) Actions — Frame 26: [retake outline + share primary] + [apply outline gray].
  *
  * UI 가 유형 코드를 분기하지 않음 — title/description/emoji/keywords/recommended 모두
- * 서버 응답 그대로 사용. 추후 유형 추가/변경 시 코드 수정 없이 자동 반영.
+ * 서버 응답 그대로 사용.
  */
 export function TravelTypeResult() {
   const t = useTranslations('travelType.result');
@@ -58,8 +57,6 @@ export function TravelTypeResult() {
     );
   };
 
-  // file 단독 — title/text 동반 시 일부 share target (카카오톡 등) 이 텍스트만
-  // 클립보드로 분리 처리하고 file 첨부 흐름이 끊긴다.
   const handleShare = (result: TravelTypeDto) => {
     haptic.tap();
     const params = new URLSearchParams({
@@ -108,21 +105,18 @@ export function TravelTypeResult() {
 
   return (
     <div className={styles.wrap}>
-      <Card variant="highlighted" padding="lg" className={styles.hero}>
-        <div className={styles.heroEmoji} aria-hidden>
+      {/* Figma banner — 320×247 padding 28 22 24 gap 8 secondary01 + primary 1px. */}
+      <div className={styles.banner}>
+        <span className={styles.bannerEmoji} aria-hidden>
           {result.emoji}
-        </div>
-        <Chip variant="primary" size="sm" className={styles.codeBadge}>
-          {result.code}
-        </Chip>
+        </span>
+        <span className={styles.codePill}>{result.code}</span>
         <h2 className={styles.title}>{result.title}</h2>
         {keywords.length > 0 && (
           <ul className={styles.keywords} aria-label={t('keywordsAria')}>
             {keywords.map((k) => (
-              <li key={k}>
-                <Chip variant="outline" size="sm">
-                  {k}
-                </Chip>
+              <li key={k} className={styles.keywordPill}>
+                {k}
               </li>
             ))}
           </ul>
@@ -130,51 +124,25 @@ export function TravelTypeResult() {
         {result.description && (
           <p className={styles.description}>{result.description}</p>
         )}
-      </Card>
+      </div>
 
       {recommended.length > 0 && (
-        <section className={styles.recommend}>
-          <h3 className={styles.recommendTitle}>{t('recommendTitle')}</h3>
-          <ul className={styles.recommendList}>
+        <section className={styles.section}>
+          <h3 className={styles.sectionTitle}>{t('recommendTitle')}</h3>
+          <ul className={styles.recommendList} aria-label={t('recommendTitle')}>
             {recommended.map((d) => {
               const region = CHUNGBUK_REGIONS.find((r) => r.code === d.region);
               const regionLabel = region?.ko ?? d.region;
-              const safeImg = secureImageUrl(d.imageUrl);
               return (
-                <li key={d.id}>
-                  {/* 추천 카드 → 여행지 상세로 진입. DestinationCard 패턴 동일.
-                      prefetch=false — TanStack Query 가 /destination/[id] 진입
-                      후 데이터 fetch (over-prefetch 회피, [[rendering-speed-first]]). */}
-                  <Link
-                    href={`/destination/${d.id}`}
-                    prefetch={false}
-                    aria-label={`${d.name} · ${regionLabel}`}
-                    className={styles.recommendItem}
-                    onClick={() => haptic.tap()}
-                  >
-                    <span className={styles.recEmoji} aria-hidden>
-                      {safeImg ? (
-                        <Image
-                          src={safeImg}
-                          alt=""
-                          fill
-                          sizes="40px"
-                          className={styles.recPhoto}
-                        />
-                      ) : (
-                        categoryEmoji(d.category)
-                      )}
-                    </span>
-                    <div className={styles.recText}>
-                      <p className={styles.recName}>{d.name}</p>
-                      <p className={styles.recMeta}>{regionLabel}</p>
-                    </div>
-                    <ChevronRight
-                      size={20}
-                      aria-hidden
-                      className={styles.chevron}
-                    />
-                  </Link>
+                <li key={d.id} className={styles.recommendItem}>
+                  <DestinationCard
+                    href={{ pathname: `/destination/${d.id}` }}
+                    imageUrl={d.imageUrl}
+                    emoji={categoryEmoji(d.category)}
+                    tone={toneFor(d.region as RegionCode)}
+                    regionLabel={regionLabel}
+                    name={d.name}
+                  />
                 </li>
               );
             })}
@@ -183,29 +151,30 @@ export function TravelTypeResult() {
       )}
 
       <div className={styles.actions}>
-        <ButtonGrid>
+        <div className={styles.actionsRow}>
           <Button
-            variant="secondary"
-            fullWidth
-            onClick={() => handleShare(result)}
-            leadingIcon={<Share2 size={16} aria-hidden />}
-          >
-            {t('share')}
-          </Button>
-          <Button
-            variant="ghost"
+            variant="outline"
             fullWidth
             onClick={() => {
               haptic.tap();
               router.replace('/quiz');
             }}
             leadingIcon={<RotateCcw size={16} aria-hidden />}
+            className={styles.btnRetake}
           >
             {t('retake')}
           </Button>
-        </ButtonGrid>
+          <Button
+            variant="primary"
+            fullWidth
+            onClick={() => handleShare(result)}
+            leadingIcon={<Share2 size={16} aria-hidden />}
+          >
+            {t('share')}
+          </Button>
+        </div>
         <Button
-          variant="primary"
+          variant="outline"
           fullWidth
           onClick={() => handleApply(result)}
           loading={applyMutation.isPending}
