@@ -61,7 +61,17 @@ export function TravelTypeResult() {
     const params = new URLSearchParams({
       type: result.code,
       name: result.title,
+      emoji: result.emoji,
       ...(result.description ? { tagline: result.description } : {}),
+      ...(result.keywords?.length
+        ? { keywords: result.keywords.join(',') }
+        : {}),
+      ...(result.compatibility?.best
+        ? {
+            bestTitle: result.compatibility.best.title,
+            bestEmoji: result.compatibility.best.emoji,
+          }
+        : {}),
     });
     return shareCard({
       imageUrl: `/api/og/quiz?${params.toString()}`,

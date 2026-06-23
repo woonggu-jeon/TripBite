@@ -273,6 +273,20 @@ function renderTournament(
   );
 }
 
+/**
+ * Figma "TST · 공유 이미지 카드" (2026-06-23) 정합 — 360×360 spec × 3 scale
+ * (1080×1080 OG image). 모든 px Figma 360 spec × 3.
+ *
+ * 구성:
+ *   - bg peach gradient #FFF4E6 → #FFFFFF 54% → #FCEAD3
+ *   - emoji 52(×3=156) → code pill primary 73×20 → title B_24 → keyword pills
+ *     secondary01 → description R_14 muted → 💚 match-line (best.title) →
+ *     footer "여행 한입" Inter ExtraBold 13 primary (absolute bottom 20)
+ *
+ * Query:
+ *   - type (code) / name / emoji / tagline (description) / keywords (csv) /
+ *     bestTitle / bestEmoji — TravelTypeResult.handleShare 가 인코딩.
+ */
 function renderQuiz(
   q: URLSearchParams,
   fontData: ArrayBuffer | null,
@@ -280,93 +294,186 @@ function renderQuiz(
   const typeCode = q.get('type') ?? '';
   const typeName = q.get('name') ?? '여행 유형';
   const tagline = q.get('tagline') ?? '';
-  const emoji = TYPE_EMOJI[typeCode] ?? '✨';
+  const emoji = q.get('emoji') ?? TYPE_EMOJI[typeCode] ?? '✨';
+  const keywords = (q.get('keywords') ?? '')
+    .split(',')
+    .map((k) => k.trim())
+    .filter(Boolean);
+  const bestTitle = q.get('bestTitle') ?? '';
+  const bestEmoji = q.get('bestEmoji') ?? '';
   const fontFamily = fontData ? 'Pretendard' : 'sans-serif';
 
   return new ImageResponse(
     <div
       style={{
+        position: 'relative',
         width: '100%',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        background: 'linear-gradient(180deg, #eff6ff 0%, #f0f9ff 100%)',
-        paddingTop: 80,
-        paddingRight: 80,
-        paddingBottom: 80,
-        paddingLeft: 80,
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 24,
+        padding: 60,
+        background:
+          'linear-gradient(180deg, #FFF4E6 0%, #FFFFFF 54%, #FCEAD3 100%)',
         fontFamily,
       }}
     >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          fontSize: 32,
-          color: '#71717a',
-        }}
-      >
-        <span>✨ 나의 여행 유형</span>
-        <span style={{ color: '#a1a1aa' }}>TripBite</span>
+      {/* emoji 52 → 156 */}
+      <div style={{ display: 'flex', fontSize: 156, lineHeight: 1 }}>
+        {emoji}
       </div>
 
+      {/* code pill primary fill — Caption B_10 white */}
       <div
         style={{
-          flex: 1,
           display: 'flex',
-          flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
+          paddingTop: 12,
+          paddingBottom: 12,
+          paddingLeft: 36,
+          paddingRight: 36,
+          background: '#00B334',
+          borderRadius: 999,
+          fontSize: 30,
+          fontWeight: 700,
+          color: '#FFFFFF',
+          letterSpacing: '-0.02em',
+          lineHeight: 1.2,
+          textTransform: 'uppercase',
         }}
       >
+        {typeCode}
+      </div>
+
+      {/* title B_24_130% fg */}
+      <div
+        style={{
+          display: 'flex',
+          fontSize: 72,
+          fontWeight: 700,
+          color: '#151515',
+          letterSpacing: '-0.02em',
+          lineHeight: 1.3,
+          textAlign: 'center',
+        }}
+      >
+        {typeName}
+      </div>
+
+      {/* keyword pills row — secondary01 bg primary color Caption B_10 */}
+      {keywords.length > 0 && (
         <div
           style={{
             display: 'flex',
-            fontSize: 220,
-            lineHeight: 1,
-            marginBottom: 24,
+            gap: 24,
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexWrap: 'wrap',
           }}
         >
-          {emoji}
+          {keywords.slice(0, 3).map((k) => (
+            <div
+              key={k}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                paddingTop: 12,
+                paddingBottom: 12,
+                paddingLeft: 36,
+                paddingRight: 36,
+                background: '#EAF6EF',
+                borderRadius: 999,
+                fontSize: 30,
+                fontWeight: 700,
+                color: '#00B334',
+                letterSpacing: '-0.02em',
+                lineHeight: 1.2,
+              }}
+            >
+              {k}
+            </div>
+          ))}
         </div>
+      )}
+
+      {/* description R_14 muted center */}
+      {tagline && (
         <div
           style={{
             display: 'flex',
-            fontSize: 88,
-            fontWeight: 700,
-            color: '#18181b',
+            fontSize: 42,
+            color: '#393939',
             letterSpacing: '-0.02em',
-            lineHeight: 1.15,
+            lineHeight: 1.4,
             textAlign: 'center',
+            maxWidth: 960,
           }}
         >
-          {typeName}
+          {tagline}
         </div>
-        {tagline && (
+      )}
+
+      {/* match-line — white pill 💚 + best.title Caption R_12 primary */}
+      {bestTitle && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            paddingTop: 12,
+            paddingBottom: 12,
+            paddingLeft: 36,
+            paddingRight: 36,
+            background: '#FFFFFF',
+            borderRadius: 999,
+          }}
+        >
+          <div style={{ display: 'flex', fontSize: 42, lineHeight: 1 }}>
+            {bestEmoji || '💚'}
+          </div>
           <div
             style={{
               display: 'flex',
               fontSize: 36,
-              color: '#52525b',
-              marginTop: 24,
-              textAlign: 'center',
+              color: '#00B334',
+              letterSpacing: '-0.01em',
+              lineHeight: 1.4,
             }}
           >
-            {tagline}
+            {bestTitle}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
+      {/* footer — absolute bottom 60 (Figma 20×3) center, 여행 한입 Inter
+          ExtraBold 13 primary */}
       <div
         style={{
+          position: 'absolute',
+          bottom: 60,
+          left: 0,
+          right: 0,
           display: 'flex',
+          alignItems: 'center',
           justifyContent: 'center',
-          fontSize: 28,
-          color: '#a1a1aa',
+          gap: 18,
         }}
       >
-        나의 여행 유형 테스트 결과
+        <div style={{ display: 'flex', fontSize: 48, lineHeight: 1 }}>🥢</div>
+        <div
+          style={{
+            display: 'flex',
+            fontSize: 39,
+            fontWeight: 700,
+            color: '#00B334',
+            letterSpacing: '-0.02em',
+            lineHeight: 1.23,
+          }}
+        >
+          여행 한입
+        </div>
       </div>
     </div>,
     makeInit(fontData),
