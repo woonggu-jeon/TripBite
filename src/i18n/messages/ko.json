@@ -737,6 +737,8 @@
     },
     "stampBook": {
       "pageTitle": "충북 도장책",
+      "bannerTitle": "충북 11개 시군 도장책",
+      "bannerHint": "새로운 곳을 더 가보세요!",
       "remainingTitle": "충북 마스터까지 {remaining}개 남음",
       "masterAchieved": "충북 마스터 달성!",
       "progress": "{visited} / {total}",

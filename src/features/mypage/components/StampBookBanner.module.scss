@@ -1,14 +1,15 @@
-// 마이페이지 도장책 진입 배너. tap → /mypage/stamps.
+// Figma "MY_01" stamp-banner (2026-06-23) — white card 99h padding 20 gap 12
+// border 1px #E0E0E0 radius 12 + progress track 280×7 + fill primary.
 .banner {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-sage-mist);
-  border: 1.5px solid var(--color-sage);
-  border-radius: var(--radius-lg);
-  color: var(--color-sage-strong);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  padding: 20px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  color: var(--color-fg);
   text-decoration: none;
   transition:
     transform var(--motion-fast) ease,
@@ -16,62 +17,106 @@
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      box-shadow: var(--shadow-md);
+      box-shadow: var(--shadow-sm);
     }
   }
   &:active {
     transform: scale(0.99);
   }
   &:focus-visible {
-    outline: 2px solid var(--color-sage);
+    outline: var(--focus-outline);
     outline-offset: var(--focus-outline-offset);
   }
 }
 
-.master {
-  background: var(--color-sage);
-  border-color: var(--color-sage-strong);
-  color: var(--color-bg);
+// f row — label group + count value (right).
+.row {
+  display: flex;
+  align-items: center;
+  gap: 13px;
 }
 
-.iconBox {
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-full);
-  background: var(--color-bg);
-  color: var(--color-sage-strong);
-  flex-shrink: 0;
-}
-
-.master .iconBox {
-  background: var(--color-sage-strong);
-  color: var(--color-bg);
-}
-
-.body {
-  display: grid;
-  gap: 2px;
+// label column gap 3 — title B_14 + caption R_12 muted.
+.labelGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  flex-grow: 1;
   min-width: 0;
 }
 
 .title {
-  font-size: var(--font-body);
-  font-weight: var(--font-weight-extrabold);
-  letter-spacing: var(--tracking-snug);
-  color: inherit;
+  font-size: var(--text-sm); /* 14 */
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
 }
 
-.progress {
-  font-size: var(--font-body-sm);
-  color: inherit;
-  // opacity 0.85 → sage-strong(#4a6e4a) on sage-mist(#d4e2d4) 가 3.33:1 로 미달.
-  // 풀 opacity 유지 → 7.4:1 통과 (WCAG AA 4.5:1+).
-  font-variant-numeric: tabular-nums;
+.hint {
+  font-size: var(--font-caption); /* 12 */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: -0.01em;
+  color: var(--color-muted);
 }
 
-.chevron {
-  color: inherit;
-  opacity: 0.7;
+// right count value — "X" B_14 primary + "/Y" SB 14 muted, gap implicit 0.
+.value {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.valueCurrent {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-primary);
+}
+
+.valueTotal {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-muted);
+}
+
+// progress track 7h + fill primary.
+.track {
+  position: relative;
+  width: 100%;
+  height: 7px;
+  background: var(--color-disabled);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  transition: width var(--motion-base) ease;
+}
+
+// Master 상태 — border primary + title primary (Figma 도장책 prog-card master 정합).
+.master {
+  border-color: var(--color-primary);
+
+  .title {
+    color: var(--color-primary);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banner {
+    transition: none;
+  }
+  .fill {
+    transition: none;
+  }
 }
