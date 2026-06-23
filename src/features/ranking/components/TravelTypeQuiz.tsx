@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Info } from 'lucide-react';
 import { haptic } from '@/lib/haptic';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Skeleton } from '@/components/feedback/Skeleton';
@@ -170,12 +169,7 @@ export function TravelTypeQuiz() {
           })}
         </div>
         <p className={styles.progressMeta}>
-          <span className={styles.progressIndex}>
-            {t('progress', { current: stepIdx + 1, total })}
-          </span>
-          <span className={styles.progressHint}>
-            <Info size={12} aria-hidden /> {t('progressHint')}
-          </span>
+          {t('progress', { current: stepIdx + 1, total })}
         </p>
       </div>
 

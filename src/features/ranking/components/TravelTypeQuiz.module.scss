@@ -1,116 +1,100 @@
+// Figma "TST · 유형테스트 질문" (2026-06-23) — SubHeader 아래
+// progress (padding 12 20 0 height 40) + 질문 영역 (padding 32 20 0 gap 20).
 .wrap {
-  display: grid;
-  gap: 1.25rem;
-  padding-top: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 20px 0;
 }
 
-// 토너먼트 Bracket progress 와 동일한 segment 점선 패턴.
-// 각 segment 는 button — 답변한 문항(또는 현재 이전)으로 점프 가능.
+// Figma progress — height 40 (segments 8 + meta 12 + gap 8 + padding 12).
 .progressSection {
-  display: grid;
-  gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 32px;
 }
 
+// Figma segments — row gap 4 height 8 (320×8 — 5 seg × 60.8 + 4 × 4 gap).
 .progressTrack {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  align-items: stretch;
+  gap: 4px;
   height: 8px;
 }
 
+// Figma seg — flex 1 height 8 단일 radius 999 (이전 4/6/8 size 차이 단순화).
+// done = primary, current = primary, pending = #E0E0E0 (Contents/Button/disabled).
 .seg {
   flex: 1;
-  min-width: 6px;
-  height: 4px;
+  min-width: 0;
+  height: 8px;
   border: 0;
   padding: 0;
   border-radius: var(--radius-full);
-  background: color-mix(in srgb, var(--color-border) 70%, transparent);
+  background: var(--color-border);
   cursor: default;
-  transition:
-    background-color var(--motion-base) ease,
-    height var(--motion-base) ease,
-    box-shadow var(--motion-base) ease;
+  transition: background-color var(--motion-base) ease;
 }
 
-.segDone {
-  height: 6px;
-  background: var(--color-primary-muted);
-}
-
+.segDone,
 .segCurrent {
-  height: 8px;
   background: var(--color-primary);
-  box-shadow: 0 0 0 1px var(--color-primary-glow);
 }
 
 .segClickable {
   cursor: pointer;
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      background: var(--color-primary);
-    }
-  }
   &:focus-visible {
     outline: var(--focus-outline);
     outline-offset: var(--focus-outline-offset);
   }
 }
 
+// Figma Caption M_10 muted — 10 Medium 120% tracking-tight muted (#393939).
 .progressMeta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  font-size: var(--font-eyebrow);
-  color: var(--color-muted);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: var(--tracking-wide);
-}
-
-.progressIndex {
-  font-variant-numeric: tabular-nums;
-  color: var(--color-primary);
-  font-weight: var(--font-weight-extrabold);
-}
-
-.progressHint {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
+  font-size: 0.625rem; /* 10 */
   font-weight: var(--font-weight-medium);
-  letter-spacing: var(--tracking-snug);
+  line-height: var(--line-tight); /* 120% */
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-muted);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
 }
 
+// Figma Title B_20_130% — 20 Bold 130% tracking-tight fg, padding 0 (Frame 20
+// padding 32 20 0 + gap 20 으로 외곽 spacing 제공).
 .question {
-  font-size: var(--font-h2);
-  font-weight: var(--font-weight-extrabold);
+  font-size: var(--font-h2); /* 20 */
+  font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
-  line-height: var(--line-snug);
+  line-height: var(--line-tight); /* 130% */
   word-break: keep-all;
-  text-align: center;
-  padding: 0.5rem 0.5rem 0;
+  margin: 0 0 20px;
 }
 
+// Figma options — column gap 12.
 .options {
-  display: grid;
-  gap: 0.625rem;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
+// Figma opt — 320×60 padding 0 18 border 1px radius 12. Body R_16 Regular muted.
 .option {
-  display: block;
+  display: flex;
+  align-items: center;
   width: 100%;
-  padding: 1rem 1.125rem;
+  min-height: 60px;
+  padding: 0 18px;
   text-align: left;
-  font-size: var(--font-body-sm);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: var(--tracking-snug);
-  color: var(--color-fg);
+  font-size: var(--font-body); /* 16 */
+  font-weight: var(--font-weight-regular);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  color: var(--color-muted);
   background: var(--color-bg);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
   cursor: pointer;
   transition:
     border-color var(--motion-base) ease,
@@ -139,7 +123,8 @@
 
 .optionActive {
   border-color: var(--color-primary);
-  background: var(--color-primary-surface-grad-start);
+  background: var(--color-primary-soft);
+  color: var(--color-fg);
 }
 
 .submitError {

@@ -635,7 +635,6 @@
     "back": "Back",
     "progress": "{current}/{total}",
     "progressLabel": "Test progress",
-    "progressHint": "Tap the progress to revisit a previous question",
     "jumpTo": "Jump to question {n}",
     "emptyTitle": "Test is being prepared",
     "emptyHint": "Please try again shortly",
