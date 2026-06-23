@@ -79,7 +79,7 @@ export function SavedTournamentsAll() {
       <div className={styles.emptyWrap}>
         <div className={styles.emptyFrame}>
           <div className={styles.emptyCircle} aria-hidden>
-            <Heart size={38} fill="currentColor" strokeWidth={0} />
+            <Heart size={38} strokeWidth={2} />
           </div>
           <div className={styles.emptyText}>
             <h2 className={styles.emptyTitle}>{t('empty')}</h2>
