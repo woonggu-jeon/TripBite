@@ -147,9 +147,13 @@
 // Figma "다시 테스트" — Button.v-outline default 가 gray stroke + muted color
 // (apply 정합 — 별도 처리 불필요). retake 는 Figma 가 primary border + primary
 // color (white bg) 요구 — override.
-.btnRetake {
+//
+// .actions descendant selector — Button.v-outline 와 same specificity 충돌
+// (둘 다 single class) 회피. CSS module hash 가 stylesheet 순서 다를 때
+// retake override 가 v-outline 에 묻히는 회귀 차단.
+.actions .btnRetake {
   color: var(--color-primary);
-  border-color: var(--color-primary);
+  border: 1px solid var(--color-primary);
 }
 
 // Figma match-section (BE compatibility) — recent-box 320×172 padding 0 16

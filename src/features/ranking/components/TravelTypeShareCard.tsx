@@ -2,11 +2,10 @@
 
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Share2, ChevronLeft } from 'lucide-react';
 import { haptic } from '@/lib/haptic';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Skeleton } from '@/components/feedback/Skeleton';
-import { Button, IconButton } from '@/components/ui';
+import { Button } from '@/components/ui';
 import { useMyTravelType } from '@/features/ranking/hooks/use-ranking';
 import styles from './TravelTypeShareCard.module.scss';
 
@@ -97,22 +96,6 @@ export function TravelTypeShareCard() {
 
   return (
     <div className={styles.wrap}>
-      <header className={styles.head}>
-        <IconButton
-          variant="ghost"
-          size="sm"
-          aria-label={t('back')}
-          onClick={() => {
-            haptic.tap();
-            router.back();
-          }}
-        >
-          <ChevronLeft size={22} />
-        </IconButton>
-        <h2 className={styles.heading}>{t('heading')}</h2>
-        <span aria-hidden className={styles.headSpacer} />
-      </header>
-
       {/* Figma 360×360 정사각 카드 — gradient peach/cream + 1px stroke + radius 20. */}
       <article className={styles.card} aria-label={data.title}>
         <span className={styles.cardEmoji} aria-hidden>
@@ -149,12 +132,7 @@ export function TravelTypeShareCard() {
         </span>
       </article>
 
-      <Button
-        variant="primary"
-        fullWidth
-        onClick={handleShare}
-        leadingIcon={<Share2 size={18} aria-hidden />}
-      >
+      <Button variant="primary" fullWidth onClick={handleShare}>
         {t('shareCta')}
       </Button>
       <p className={styles.shareHint}>{t('shareHint')}</p>

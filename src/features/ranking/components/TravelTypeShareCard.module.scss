@@ -5,28 +5,9 @@
   padding: 16px 20px 20px;
 }
 
-.head {
-  display: grid;
-  grid-template-columns: 32px 1fr 32px;
-  align-items: center;
-  gap: 8px;
-}
-
-.headSpacer {
-  width: 32px;
-}
-
-.heading {
-  text-align: center;
-  font-size: var(--font-body);
-  font-weight: var(--font-weight-extrabold);
-  color: var(--color-fg);
-  letter-spacing: var(--tracking-snug);
-  margin: 0;
-}
-
 // Figma "TST · 공유 이미지 카드" — 360×360 정사각 padding 20 gap 8
 // gradient #FFF4E6 → #FFFFFF (54%) → #FCEAD3 + 1px #C6C6C6 + radius 20.
+// isolation: isolate — z-index stack 분리 (footer z6 stacking 안전).
 .card {
   position: relative;
   display: flex;
@@ -44,6 +25,7 @@
   border-radius: 20px;
   text-align: center;
   overflow: hidden;
+  isolation: isolate;
 }
 
 // Figma emoji 52 — Inter 52 line 100% fg.
@@ -89,11 +71,14 @@
   justify-content: center;
 }
 
+// Figma secondary01 (#EAF6EF) — primary-soft (color-mix 8%) 보다 약간 진한
+// 톤. 정확히 정합 위해 hex 직접 (gradient 색과 마찬가지로 share card 는
+// dark mode 대응 X — 항상 light gradient 카드).
 .cardKeywordPill {
   display: inline-flex;
   align-items: center;
   padding: 4px 12px;
-  background: var(--color-primary-soft);
+  background: #eaf6ef;
   border-radius: var(--radius-full);
   font-size: 0.625rem; /* 10 */
   font-weight: var(--font-weight-bold);

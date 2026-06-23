@@ -668,12 +668,11 @@
     "share": {
       "metaTitle": "공유 카드",
       "heading": "내 여행 유형 카드",
-      "back": "뒤로",
       "loading": "카드를 불러오는 중...",
       "empty": "공유할 결과가 없어요",
       "emptyHint": "테스트를 먼저 마쳐주세요",
       "startTest": "테스트 시작하기",
-      "shareCta": "공유하기",
+      "shareCta": "이미지 카드 공유",
       "shareHint": "지원되지 않는 환경에선 자동으로 클립보드에 복사돼요"
     },
     "entry": {
