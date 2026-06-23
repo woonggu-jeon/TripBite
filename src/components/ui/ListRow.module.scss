@@ -1,41 +1,38 @@
-// ListRow primitive — settings / dialog 등에서 사용하는 list-style action button.
-// 시각: full-width + 1.5px border + hover border 강조 + 내부 horizontal layout
-// (label 좌 + value 우 + hint 는 label 아래 sub-text).
-// 참조: Figma "설정" page row (Body/SB_16_140% label + Body/R_14_140% value +
-// Caption/R_12 hint), 2026-06-23.
+// ListRow primitive — Figma "설정" page row 정합 (2026-06-23 정정).
+// flat horizontal row (no border / no radius) — Figma row spec 그대로:
+// padding 16/20 + gap 12 + bg white. 행간 separator 는 section 책임
+// (PageSection / 별도 .list gap).
+// 참조: Body/SB_16_140% label + Body/R_14_140% value + Caption/R_12 hint.
 
 .row {
   display: grid;
   // value 가 있을 땐 label / value 2-col, 없을 땐 label 만 (1fr auto).
   grid-template-columns: 1fr auto;
   align-items: center;
+  gap: 12px;
   width: 100%;
-  padding: var(--space-3) var(--space-4);
+  padding: 16px 20px;
   text-align: left;
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
   background: var(--color-bg);
   color: var(--color-fg);
   // Figma Body SB_16_140% — Pretendard SemiBold 16, line 140%, ls -0.02em.
-  // 이전 font-body-sm (14) → Figma spec 16 정합 (2026-06-23).
   font-size: var(--font-body);
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-snug-relaxed);
   letter-spacing: var(--tracking-tight);
-  transition: border-color var(--motion-base) ease;
+  // border / radius 없음 (Figma flat row). hover 시 가벼운 bg 만.
+  border: 0;
+  border-radius: 0;
+  transition: background var(--motion-base) ease;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover:not(:disabled) {
-      border-color: color-mix(
-        in srgb,
-        var(--color-fg) 18%,
-        var(--color-border)
-      );
+      background: var(--color-hover);
     }
   }
   &:focus-visible {
     outline: var(--focus-outline);
-    outline-offset: var(--focus-outline-offset);
+    outline-offset: calc(-1 * var(--focus-outline-offset));
   }
   &:disabled {
     opacity: var(--opacity-disabled);
@@ -56,8 +53,7 @@
 }
 
 // hint — label 아래 sub-text. Figma Caption/R_12 (Regular 12, ls -0.01em,
-// muted color). 2026-06-23 — parent .row 의 semibold 상속 회피 위해 Regular
-// 명시. Figma spec 정합.
+// muted color).
 .hint {
   font-size: var(--font-caption);
   font-weight: var(--font-weight-regular);
