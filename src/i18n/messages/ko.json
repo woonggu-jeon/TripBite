@@ -831,6 +831,17 @@
     "errorTitle": "여행지 정보를 불러오지 못했어요",
     "errorDescription": "잠시 후 다시 시도해주세요.",
     "retry": "다시 시도",
+    "info": {
+      "address": "주소",
+      "openingHours": "시간",
+      "restDate": "휴무",
+      "parking": "주차",
+      "website": "웹사이트",
+      "phone": "전화",
+      "noData": "정보 없음",
+      "more": "더보기",
+      "less": "접기"
+    },
     "actions": {
       "groupAria": "여행지 액션",
       "directions": "길찾기",

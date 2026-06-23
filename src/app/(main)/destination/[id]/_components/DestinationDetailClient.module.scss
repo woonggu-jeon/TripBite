@@ -1,5 +1,6 @@
-// Figma "POI · 장소상세" (2026-06-23) — body padding 0 column layout.
-// (main)/layout 의 contentInner 가 좌우 padding 가지므로 - margin 으로 bleed.
+// Figma "POI · 장소상세" (2026-06-23) — body padding 0 column. (main) layout
+// 의 contentInner padding 무시 — viewport edge 까지 bleed (hero / action-bar
+// 풀폭).
 .wrap {
   display: flex;
   flex-direction: column;
@@ -16,7 +17,7 @@
   background: var(--color-bg);
 }
 
-// Figma title-area — row space-between gap 10 (Frame 28 + type-chip).
+// Figma title-area — row space-between gap 10.
 .titleArea {
   display: flex;
   flex-direction: row;
@@ -56,7 +57,8 @@
   text-transform: capitalize;
 }
 
-// Figma type-chip — pill secondary01 + compass 13 + Caption R_12 primary.
+// Figma type-chip — pill secondary01 padding 4 12 gap 4 + compass 13 +
+// Caption R_12 primary.
 .typeChip {
   display: inline-flex;
   align-items: center;
@@ -72,7 +74,132 @@
   color: var(--color-primary);
 }
 
-// Figma near-sec — padding 20 (RelatedDestinations 가 자체 carousel/grid).
+// Figma info-card — column gap 12 (5 field).
+.infoCard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+}
+
+// Figma field row — gap 10, height 18. flabel 86 (icon + label) + value Caption R_12.
+.field {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+}
+
+// Figma flabel — row gap 7 width 86. icon 18 primary + label R_12 muted.
+.flabel {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 86px;
+  margin: 0;
+}
+
+.fieldIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  color: var(--color-primary);
+}
+
+.flabelText {
+  font-size: var(--font-caption); /* 12 */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: -0.01em;
+  color: var(--color-muted);
+}
+
+// Figma value — Caption R_12 fg (또는 primary for website).
+.fvalue {
+  flex: 1;
+  font-size: var(--font-caption); /* 12 */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: -0.01em;
+  color: var(--color-fg);
+  margin: 0;
+  min-width: 0;
+  word-break: break-all;
+}
+
+.fvalueLink {
+  color: var(--color-primary);
+}
+
+.linkText {
+  color: inherit;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Figma divider 1px gray.
+.divider {
+  width: 100%;
+  height: 1px;
+  background: var(--color-border);
+}
+
+// Figma overview — column gap 8. text R_14 muted + "more" SemiBold 14 primary.
+.overview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+// Figma R_14_140% muted. 기본 4줄 clamp + expanded 시 전체.
+.overviewText {
+  font-size: var(--text-sm); /* 14 */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-muted);
+  margin: 0;
+  word-break: keep-all;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: pre-line;
+}
+
+.overviewTextExpanded {
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+
+// Figma "more" SemiBold 14 primary capitalize.
+.overviewMore {
+  align-self: flex-start;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: var(--text-sm); /* 14 */
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-primary);
+  cursor: pointer;
+  text-transform: capitalize;
+
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+  }
+}
+
+// Figma near-sec — padding 20 white bg.
 .nearSec {
   padding: 20px;
   background: var(--color-bg);

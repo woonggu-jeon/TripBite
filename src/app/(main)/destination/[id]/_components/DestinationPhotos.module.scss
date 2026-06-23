@@ -1,13 +1,12 @@
-// next/image fill 모드 — wrap 이 dimension 정의. Carousel slide 의 raw img 도
-// 동일 selector 재사용 (fill 외 케이스는 .image 가 width/aspect-ratio 처리).
+// Figma "POI · 장소상세 hero" (2026-06-23) — 360×234 fixed height. bg image +
+// #A8B29C fallback (image 없을 때). overflow hidden — overlay/dots 가 wrap
+// 영역 안에서 absolute.
 .wrap {
-  position: relative; // next/image fill 필수
+  position: relative;
   width: 100%;
-  aspect-ratio: 3 / 2;
-  border-radius: var(--radius-lg);
+  height: 234px;
+  background: #a8b29c;
   overflow: hidden;
-  background: var(--color-surface-soft);
-  margin-bottom: var(--space-3);
 }
 
 .image {
@@ -15,11 +14,22 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  background: var(--color-surface-soft);
 }
 
-@media (max-width: 380px) {
-  .wrap {
-    aspect-ratio: 4 / 3;
-  }
+// Figma hero-ov — linear-gradient 0deg rgba(0,0,0,0.2) 0.2 합성 + 180deg
+// (top 0% → 64% 0.08 → bottom 100% 0.5) 어두운 dim. pointer-events:none —
+// Image/Carousel 클릭 막지 않음.
+.overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.08) 64%,
+      rgba(0, 0, 0, 0.5) 100%
+    );
+  pointer-events: none;
+  z-index: 1;
 }

@@ -831,6 +831,17 @@
     "errorTitle": "Couldn't load destination",
     "errorDescription": "Please try again in a moment.",
     "retry": "Retry",
+    "info": {
+      "address": "Address",
+      "openingHours": "Hours",
+      "restDate": "Closed",
+      "parking": "Parking",
+      "website": "Website",
+      "phone": "Phone",
+      "noData": "—",
+      "more": "More",
+      "less": "Less"
+    },
     "actions": {
       "groupAria": "Destination actions",
       "directions": "Directions",
