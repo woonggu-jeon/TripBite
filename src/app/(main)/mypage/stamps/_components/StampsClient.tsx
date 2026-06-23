@@ -65,27 +65,62 @@ export function StampsClient() {
       filename: 'tripbite-chungbuk-master.png',
     });
 
+  const percent =
+    data.total > 0 ? Math.round((visitedCount / data.total) * 100) : 0;
+
   return (
     <div className={styles.wrap}>
+      {/* Figma prog-card — 328×120 white card padding 20 gap 12 + border radius 12.
+          마스터 상태 시 border + label color primary. */}
       <div
-        className={`${styles.banner} ${isMaster ? styles.bannerMaster : ''}`}
+        className={`${styles.progCard} ${isMaster ? styles.progCardMaster : ''}`}
       >
-        <div className={styles.bannerText}>
-          <p className={styles.bannerTitle}>
-            {isMaster
-              ? t('masterAchieved')
-              : t('remainingTitle', { remaining })}
-          </p>
-          <p className={styles.bannerProgress}>
-            {t('progress', { visited: visitedCount, total: data.total })}
-          </p>
+        <div className={styles.progTop}>
+          <div className={styles.countWrap}>
+            <span className={styles.countCurrent}>{visitedCount}</span>
+            <span className={styles.countTotal}>/{data.total}</span>
+          </div>
+          <span className={styles.progLabel}>
+            {isMaster ? t('masterAchieved') : t('bannerTitle')}
+          </span>
         </div>
+        <div
+          className={styles.track}
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={data.total}
+          aria-valuenow={visitedCount}
+        >
+          <div className={styles.fill} style={{ width: `${percent}%` }} />
+        </div>
+        <p className={styles.progCaption}>
+          {isMaster
+            ? t('progCaptionMaster')
+            : t('progCaption', { visited: visitedCount, remaining })}
+        </p>
       </div>
 
-      <ChungbukStampMap
-        visited={visited}
-        onRegionClick={(code) => router.push(`/region/${code}`)}
-      />
+      {/* Figma map-card — 328×461 white card padding 20 gap 12. */}
+      <div className={styles.mapCard}>
+        <ChungbukStampMap
+          visited={visited}
+          onRegionClick={(code) => router.push(`/region/${code}`)}
+        />
+        <div className={styles.legend} aria-hidden>
+          <div className={styles.legendItem}>
+            <span
+              className={`${styles.legendSwatch} ${styles.legendSwatchVisited}`}
+            />
+            <span className={styles.legendLabel}>{t('legendVisited')}</span>
+          </div>
+          <div className={styles.legendItem}>
+            <span
+              className={`${styles.legendSwatch} ${styles.legendSwatchUnvisited}`}
+            />
+            <span className={styles.legendLabel}>{t('legendUnvisited')}</span>
+          </div>
+        </div>
+      </div>
 
       {isMaster && (
         <Button
