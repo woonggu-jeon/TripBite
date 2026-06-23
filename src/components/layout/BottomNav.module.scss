@@ -1,3 +1,5 @@
+// Figma BottomNav (2026-06-23) — 62h, 5 tab 72w each, border-top 1px,
+// icon 24 + label 10 (Caption M_10 default / B_10 active primary).
 .nav {
   position: fixed;
   bottom: 0;
@@ -6,6 +8,7 @@
   z-index: var(--z-bottom-nav);
   display: grid;
   grid-template-columns: repeat(5, 1fr);
+  height: 62px;
   background: var(--color-bg);
   border-top: 1px solid var(--color-border);
   padding-bottom: env(safe-area-inset-bottom);
@@ -18,11 +21,14 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 3px;
   padding: var(--space-2) 0;
   color: var(--color-muted);
-  font-size: var(--font-eyebrow);
+  // Figma Caption/M_10 — Pretendard Medium 10, line 120%, ls -0.02em.
+  font-size: 0.625rem; /* 10 */
   font-weight: var(--font-weight-medium);
+  line-height: 1.2;
+  letter-spacing: var(--tracking-tight);
   transition: color var(--motion-base) ease;
 
   @media (hover: hover) and (pointer: fine) {
@@ -33,7 +39,9 @@
 }
 
 .active {
-  color: var(--color-fg);
+  // Figma active — primary color + label Bold (B_10).
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
 }
 
 .label {

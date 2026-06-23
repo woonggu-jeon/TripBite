@@ -51,7 +51,9 @@ export function BottomNav() {
             <span className={emphasized ? styles.emphasizedCircle : ''}>
               <Icon
                 name={route.icon as IconName}
-                size={emphasized ? 26 : 22}
+                // Figma BottomNav icon 24 (Caption/M_10 active 시 primary).
+                // emphasized 가운데 raised 는 우리 design (Figma 외) — 26 유지.
+                size={emphasized ? 26 : 24}
                 aria-label={t(route.labelKey)}
               />
             </span>
