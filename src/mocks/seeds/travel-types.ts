@@ -1,5 +1,5 @@
 import type {
-  TravelTypeCompatibility,
+  TravelTypeCompatibilityDto,
   TravelTypeDto,
 } from '@/api/generated/schemas';
 import type { TravelTypeQuiz } from '@/features/ranking/types';
@@ -109,10 +109,12 @@ export const travelTypeMockScoreMap: Record<string, TravelTypeMockCode> = {
   'q5-d': 'foodie',
 };
 
-/** 유형별 메타 (서버가 결과 응답에 포함시켜 던지는 내용). */
+/** 유형별 메타 (서버가 결과 응답에 포함시켜 던지는 내용).
+ *  compatibility 는 별도 seed (travelTypeCompatibilitySeed) — handler 가
+ *  ...meta + compatibility 로 합성. */
 export const travelTypeMetaSeed: Record<
   TravelTypeMockCode,
-  Omit<TravelTypeDto, 'recommended'>
+  Omit<TravelTypeDto, 'recommended' | 'compatibility'>
 > = {
   adventurer: {
     code: 'adventurer',
@@ -169,7 +171,7 @@ export const travelTypeRecommendCategoriesSeed: Record<
  */
 export const travelTypeCompatibilitySeed: Record<
   TravelTypeMockCode,
-  TravelTypeCompatibility
+  TravelTypeCompatibilityDto
 > = {
   adventurer: {
     best: {

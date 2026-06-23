@@ -6,7 +6,7 @@
  */
 import type { DestinationDto } from './destinationDto';
 import type { TravelTypeCode } from './travelTypeCode';
-import type { TravelTypeCompatibility } from './travelTypeCompatibility';
+import type { TravelTypeCompatibilityDto } from './travelTypeCompatibilityDto';
 
 export interface TravelTypeDto {
   code: TravelTypeCode;
@@ -14,6 +14,6 @@ export interface TravelTypeDto {
   description: string;
   keywords: string[];
   emoji: string;
+  compatibility: TravelTypeCompatibilityDto;
   recommended: DestinationDto[];
-  compatibility?: TravelTypeCompatibility;
 }

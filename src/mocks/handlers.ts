@@ -1069,12 +1069,9 @@ export const handlers = [
     const pool = destinationSeeds.filter((d) =>
       cats.includes(d.category as (typeof cats)[number]),
     );
-    const compatibility = (
-      travelTypeCompatibilitySeed as Record<
-        string,
-        (typeof travelTypeCompatibilitySeed)[TravelTypeMockCode]
-      >
-    )[code];
+    // meta 가 위에서 검증됐으므로 code 는 TravelTypeMockCode 4개 중 하나.
+    const compatibility =
+      travelTypeCompatibilitySeed[code as TravelTypeMockCode];
     myTravelType = {
       ...meta,
       recommended: pickRandom(pool, 3),

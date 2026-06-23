@@ -4,9 +4,10 @@
  * TripBite API
  * OpenAPI spec version: 1.0
  */
+import type { TravelTypeCode } from './travelTypeCode';
 
-export interface TravelTypeCompatibilityItem {
-  code: string;
+export interface TravelTypeMatchDto {
+  code: TravelTypeCode;
   title: string;
   emoji: string;
   reason: string;
