@@ -25,8 +25,12 @@ export function ConfirmDialog() {
     description,
     confirmLabel = '확인',
     cancelLabel = '취소',
-    destructive,
   } = current;
+
+  // Figma "MY · 우승지 삭제" modal (2026-06-23) — confirm button bg primary
+  // (#00B334) green. 이전 destructive 시 'danger' (red) 회귀 정정 — 일관 primary.
+  // destructive prop 자체는 store schema 유지 (useConfirm 호출자 호환) — 시각
+  // 분기 안 함.
 
   return (
     <Dialog
@@ -44,11 +48,7 @@ export function ConfirmDialog() {
           >
             {cancelLabel}
           </Button>
-          <Button
-            variant={destructive ? 'danger' : 'primary'}
-            fullWidth
-            onClick={() => resolve(id, true)}
-          >
+          <Button variant="primary" fullWidth onClick={() => resolve(id, true)}>
             {confirmLabel}
           </Button>
         </>
