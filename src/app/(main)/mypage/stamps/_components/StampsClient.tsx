@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
 import { useStamps } from '@/features/mypage/hooks/use-mypage';
+import { MasterCard } from '@/features/mypage/components/MasterCard';
 import { ChungbukStampMap } from '@/features/region/components/ChungbukStampMap';
 import { useShareCard } from '@/hooks/use-share-card';
 import { isRegionCode, type RegionCode } from '@/constants/regions';
@@ -123,13 +124,17 @@ export function StampsClient() {
       </div>
 
       {isMaster && (
-        <Button
-          variant="primary"
-          onClick={handleShareMaster}
-          leadingIcon={<Share2 size={16} aria-hidden />}
-        >
-          {t('shareMaster')}
-        </Button>
+        <>
+          {/* Figma "MY · 마스터 카드" — 11/11 달성 축하 카드 본문에 노출. */}
+          <MasterCard />
+          <Button
+            variant="primary"
+            onClick={handleShareMaster}
+            leadingIcon={<Share2 size={16} aria-hidden />}
+          >
+            {t('shareMaster')}
+          </Button>
+        </>
       )}
     </div>
   );
