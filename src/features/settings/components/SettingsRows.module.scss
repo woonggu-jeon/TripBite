@@ -80,11 +80,9 @@
   gap: var(--space-3);
 }
 
-// .actionButton 은 Button.v-outline variant 로 이전됨 (2026-06-23).
-// 회원 탈퇴 만 color override 유지 — outline 기본 muted 위에 danger.
-.actionButtonDanger {
-  color: var(--color-danger);
-}
+// .actionButton / .actionButtonDanger 는 모두 Button primitive 로 이전됨
+// (2026-06-23). logout = Button.v-outline, withdraw = Button.v-outline +
+// inline style color:danger (CSS module cascade 보장 회피).
 
 @media (prefers-reduced-motion: reduce) {
   .row,

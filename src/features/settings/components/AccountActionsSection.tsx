@@ -70,7 +70,11 @@ export function AccountActionsSection() {
         variant="outline"
         size="lg"
         fullWidth
-        className={styles.actionButtonDanger}
+        // color override: className 으로는 Button.v-outline 의 muted color
+        // 와 동일 specificity → CSS module inject 순서 의존 (회귀 위험).
+        // inline style 로 cascade 강제 (--color-danger 토큰은 light/dark
+        // 모두 정의 — dark mode 영향 없음). 2026-06-23 회귀 fix.
+        style={{ color: 'var(--color-danger)' }}
         onClick={handleWithdraw}
         disabled={isWithdrawing}
       >
