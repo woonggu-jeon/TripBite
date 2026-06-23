@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { ComponentProps, ReactNode } from 'react';
+import { MapPin } from 'lucide-react';
 import { MediaThumb } from './MediaThumb';
 import styles from './DestinationCard.module.scss';
 
@@ -47,15 +48,20 @@ interface DestinationCardProps {
 }
 
 /**
- * Destination 형태 카드 — 정사각 이미지(emoji) 위, 본문(region eyebrow + name + caption?) 아래.
+ * Destination 형태 카드 — Figma "DestinationCard" (RGN/POI/TravelType/Mypage
+ * 공통, 2026-06-23): 152×184, Frame 2 image 152×108 (aspect 152/108) + Frame
+ * 3 body padding 12 10 gap 4 (title B_14 + region pin+M_10 muted + description
+ * M_10 #121212).
  *
  * 사용처:
- *   - FestivalCarousel — caption 으로 축제 기간 전달
- *   - RelatedDestinations — emoji + region/name
- *   - SavedTournamentsSection 의 tile — accentDot 으로 luckyColor 표시
+ *   - RegionDetailTabs grid
+ *   - RelatedDestinations carousel
+ *   - HomeRecBlock chip filter list
+ *   - TravelTypeResult recommend list
+ *   - SavedTournamentCard mypage tile
  *
- * 톤은 시군 코드 → tone 매핑 (constants/region-tone.ts) 으로 결정. 톤별 accent 색은
- * 전역 --accent-{red|amber|green|blue|violet} 토큰. 디자이너가 한 곳에서 조정.
+ * 톤은 시군 코드 → tone 매핑 (constants/region-tone.ts). 톤별 accent 색은
+ * 전역 --accent-{tone} 토큰.
  */
 export function DestinationCard({
   href,
@@ -92,22 +98,21 @@ export function DestinationCard({
           />
         )}
       </MediaThumb>
+      {/* Figma Frame 3 — order: title (B_14) → region (pin + Caption M_10
+          muted) → 3rd line (Caption M_10 #121212). */}
       <div className={styles.body}>
-        <p className={styles.region}>{regionLabel}</p>
         <h3 className={styles.name}>{name}</h3>
-        {/*
-          description 영역은 prop 유무와 무관하게 항상 렌더 — 카드 높이를
-          그리드 안에서 일관 유지하기 위함. 값 없으면 nbsp 로 한 줄 자리만
-          차지하고 시각상 비어 보임 (color: var(--color-muted) 라 nbsp 안 보임).
-          aria-hidden 으로 스크린리더에 빈 paragraph 노출 차단.
-        */}
-        <p
-          className={styles.description}
-          aria-hidden={description ? undefined : true}
-        >
-          {description || ' '}
+        <p className={styles.region}>
+          <span className={styles.regionIcon} aria-hidden>
+            <MapPin size={12} strokeWidth={1.7} />
+          </span>
+          <span>{regionLabel}</span>
         </p>
-        {caption && <p className={styles.caption}>{caption}</p>}
+        {description ? (
+          <p className={styles.description}>{description}</p>
+        ) : caption ? (
+          <p className={styles.caption}>{caption}</p>
+        ) : null}
       </div>
       {topRightAction && (
         <div className={styles.topRight}>{topRightAction}</div>
