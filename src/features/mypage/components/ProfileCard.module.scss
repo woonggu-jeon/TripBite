@@ -1,26 +1,33 @@
-// Card primitive variant="highlighted" 가 bg/border/radius 담당.
-.card {
-  display: grid;
-  place-items: center;
-  gap: 0.625rem;
-  text-align: center;
+// Figma "MY_01 마이페이지" pf row (2026-06-23) — flat horizontal row,
+// padding 20, gap 12, bg white, border-bottom #E0E0E0.
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
 }
 
-// avatar + remove(X) 둘 다 absolute 정렬할 wrapper.
+// avatar 56x56 + cam-badge 22x22 (right -2 bottom -2). Card primitive 미사용.
 .avatarWrap {
   position: relative;
-  width: 100px;
-  height: 100px;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
 }
 
-// X 버튼 — avatar 있을 때만 우상단. avatar 클릭 (변경) 과 분리.
+// Figma cam-badge — 22x22 absolute right -2 bottom -2, primary bg + 2px white
+// border + radius 11. Camera icon 12x12 안.
 .avatarRemoveBtn {
   position: absolute;
-  top: -4px;
-  right: -4px;
+  // Figma cam-badge 위치 — right -2 bottom -2. 단 우리는 remove (X) 기능 —
+  // Figma 의 cam (변경) 과 의미 다름. visual 정합 위해 위치/크기 정합.
+  top: -2px;
+  right: -2px;
   z-index: 1;
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   display: grid;
   place-items: center;
   padding: 0;
@@ -53,12 +60,11 @@
   }
 }
 
-// avatar 영역 전체를 button 으로 — 카메라 아이콘 없이 avatar 자체가 클릭 타깃.
-// 별도 absolute 띄우는 요소가 없어 primitive 와 spec 충돌이 발생할 구조 자체 없음.
+// avatar 영역 전체 클릭 가능 — 카메라 변경 동작.
 .avatarBtn {
   position: relative;
-  width: 100px;
-  height: 100px;
+  width: 56px;
+  height: 56px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -83,17 +89,16 @@
   }
 }
 
+// Figma av — 56x56 circle bg primary-soft (#EAF6EF), user icon 27x27 primary.
 .avatar {
-  position: relative; // next/image fill 자식의 absolute 기준
-  width: 100px;
-  height: 100px;
+  position: relative;
+  width: 56px;
+  height: 56px;
   border-radius: var(--radius-full);
-  background: var(--color-bg);
-  border: 2px solid var(--color-primary-border);
+  background: var(--color-primary-soft);
   display: grid;
   place-items: center;
   overflow: hidden;
-  box-shadow: var(--shadow-md);
   transition: filter var(--motion-base) ease;
 }
 
@@ -108,8 +113,7 @@
   place-items: center;
   width: 100%;
   height: 100%;
-  color: color-mix(in srgb, var(--color-fg) 40%, var(--color-muted));
-  background: color-mix(in srgb, var(--color-fg) 4%, transparent);
+  color: var(--color-primary);
 }
 
 .fileInput {
@@ -123,12 +127,24 @@
   border: 0;
 }
 
+// pmid — column, gap 4, flex-grow 1 (남은 공간 차지).
+.pmid {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+// "여행한입러" 닉네임 — Inter ExtraBold 18 line 130% ls -0.54px.
 .nickname {
-  font-size: var(--text-lg);
+  font-size: 1.125rem; /* 18 */
   font-weight: var(--font-weight-extrabold);
+  line-height: 1.3em;
+  letter-spacing: -0.03em;
   color: var(--color-fg);
-  letter-spacing: var(--tracking-tight);
-  min-height: 1.4em;
+  margin: 0;
 }
 
 .nicknameSkeleton {
@@ -139,16 +155,28 @@
   border-radius: var(--radius-sm);
 }
 
-.travelType {
+// badge — 109x25 padding 5/11 gap 4 bg #EBF9EF radius 999 (pill).
+// "새내기 여행자" Inter Bold 12 line 15px primary.
+.badge {
   display: inline-flex;
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-primary-tint);
-  border-radius: var(--radius-md);
+  align-items: center;
+  gap: 4px;
+  padding: 5px 11px;
+  background: var(--color-primary-soft);
+  border-radius: var(--radius-full);
 }
 
-.travelTypeTitle {
-  font-size: var(--font-body);
-  font-weight: var(--font-weight-extrabold);
+.badgeIcon {
+  width: 13px;
+  height: 13px;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.badgeLabel {
+  font-size: 0.75rem; /* 12 */
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
   color: var(--color-primary);
   margin: 0;
 }

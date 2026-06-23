@@ -3,31 +3,30 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { User, X } from 'lucide-react';
+import { User, X, Compass } from 'lucide-react';
 import { useMe } from '@/features/auth/hooks/use-auth';
 import {
   useMypage,
   useRemoveAvatar,
   useUpdateAvatar,
 } from '@/features/mypage/hooks/use-mypage';
-import { Card } from '@/components/ui';
 import { secureImageUrl } from '@/lib/secure-image-url';
 import { haptic } from '@/lib/haptic';
 import { toast } from '@/lib/toast';
 import styles from './ProfileCard.module.scss';
 
-// 업로드 정책: 이미지 파일만 · ≤10MB. BE spec 도 동일 정책 (image/*, ≤10MB) 가정 — 다르면 BE 422.
-// MIME 검증은 file.type.startsWith('image/') — accept="image/*" 와 동일 의미. PWA(iOS/Android) 친화.
 const MAX_AVATAR_BYTES = 10 * 1024 * 1024;
 
 /**
- * 프로필 카드 — 원형 아바타 + 닉네임 + 카메라 floating btn (이미지 변경).
+ * 프로필 row — Figma "MY_01 마이페이지" pf frame (2026-06-23) 정합.
  *
- * 이미지 업로드:
- *   1) 파일 선택 → client object URL 즉시 preview (optimistic)
- *   2) POST /me/avatar (multipart) → BE 가 스토리지 업로드 + {avatarUrl} 응답
- *   3) onSuccess 시 /me + /mypage cache invalidate → 응답의 avatarUrl 이 정식 source
- *   업로드 실패 시 preview revoke + toast.
+ * Card primitive (highlighted wrap) → flat horizontal row.
+ * - avatar 56x56 primary-soft bg + User icon (fallback) / user image
+ * - cam-badge 22x22 right -2 bottom -2 (avatar 변경 트리거 — Figma 의 의미는
+ *   카메라이지만 우리 동작은 file picker / 제거)
+ * - 닉네임 (Inter ExtraBold 18 130% -0.03em)
+ * - badge "새내기 여행자" pill (primary-soft bg + compass icon 13 + Bold 12
+ *   primary) — 빈 상태 default. travelType.title 이 있으면 그 값 우선.
  */
 export function ProfileCard() {
   const t = useTranslations('mypage.profile');
@@ -38,7 +37,6 @@ export function ProfileCard() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [localPreview, setLocalPreview] = useState<string | null>(null);
 
-  // object URL revoke (메모리 누수 방지)
   useEffect(() => {
     return () => {
       if (localPreview) URL.revokeObjectURL(localPreview);
@@ -52,11 +50,8 @@ export function ProfileCard() {
 
   const onFile = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    // 같은 파일 재선택 가능하도록 value clear (accept 통과 후에도 다시 같은 path 가능).
     e.target.value = '';
     if (!file) return;
-    // 이미지 외 차단 — file.type 이 'image/png' / 'image/jpeg' 등 image/* 일 때만.
-    // 일부 OS 가 type 을 못 정할 때 빈 string — 보수적으로 차단.
     if (!file.type.startsWith('image/')) {
       toast.error(t('avatarInvalidType'));
       return;
@@ -70,7 +65,6 @@ export function ProfileCard() {
     setLocalPreview(url);
     updateAvatar.mutate(file, {
       onError: () => {
-        // 실패 시 preview 롤백 + toast.
         URL.revokeObjectURL(url);
         setLocalPreview(null);
         toast.error(t('avatarUploadFailed'));
@@ -93,18 +87,13 @@ export function ProfileCard() {
   };
 
   const nickname = data?.profile.nickname ?? (isLoading ? '' : t('anonymous'));
-  // 표시 우선순위: 업로드 직후 preview > /me 응답의 avatarUrl > 미설정 fallback.
-  // preview 는 mutation 완료 후 invalidate 로 /me 갱신되면 자연스럽게 사라짐.
   const avatarSrc = localPreview ?? secureImageUrl(me?.avatarUrl);
   const hasAvatar = !!avatarSrc;
+  // travelType 있으면 그 라벨, 없으면 "새내기 여행자" (Figma default badge).
+  const badgeLabel = data?.travelType?.title ?? t('badgeNewbie');
 
   return (
-    <Card
-      as="article"
-      variant="highlighted"
-      padding="md"
-      className={styles.card}
-    >
+    <section className={styles.row} aria-label={t('label')}>
       <div className={styles.avatarWrap}>
         <button
           type="button"
@@ -114,8 +103,6 @@ export function ProfileCard() {
         >
           <span className={styles.avatar}>
             {localPreview ? (
-              // 업로드 직후 client-side object URL (URL.createObjectURL) —
-              // next/image 부적합 (외부 host 가 아니라 blob:). 일반 img 정당.
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={localPreview}
@@ -123,18 +110,16 @@ export function ProfileCard() {
                 className={styles.avatarImg}
               />
             ) : avatarSrc ? (
-              // server avatar URL (R2/CDN) — next/image 로 AVIF/WebP 변환 활용.
-              // fill + sizes 로 컨테이너(80px) 정합.
               <Image
                 src={avatarSrc}
                 alt={t('avatarAlt', { nickname })}
                 fill
-                sizes="100px"
+                sizes="56px"
                 className={styles.avatarImg}
               />
             ) : (
               <span className={styles.avatarFallback} aria-hidden>
-                <User size={36} />
+                <User size={27} strokeWidth={1.9} />
               </span>
             )}
           </span>
@@ -147,15 +132,13 @@ export function ProfileCard() {
             aria-label={t('removeAvatar')}
             disabled={removeAvatar.isPending}
           >
-            <X size={14} aria-hidden />
+            <X size={12} aria-hidden />
           </button>
         )}
       </div>
       <input
         ref={fileRef}
         type="file"
-        // PWA 친화: image/* 는 iOS/Android 의 파일 선택 dialog 가 카메라/갤러리/파일 모두 노출.
-        // multiple=false (default) — 단일 파일만. capture 미지정 — 사용자가 카메라/앨범 선택권 보유.
         accept="image/*"
         className={styles.fileInput}
         onChange={onFile}
@@ -163,36 +146,19 @@ export function ProfileCard() {
         tabIndex={-1}
       />
 
-      <h2 className={styles.nickname}>
-        {nickname || <span className={styles.nicknameSkeleton} aria-hidden />}
-      </h2>
-
-      <TravelTypeField travelType={data?.travelType ?? undefined} />
-    </Card>
-  );
-}
-
-/**
- * 여행 유형 표시 영역 — 유형이 저장되어 있을 때만 렌더.
- *
- * 미설정 상태에서는 어떤 UI 도 노출하지 않는다 (CTA 도 X).
- * 유형 적용은 /quiz 결과 페이지의 "내 유형으로 적용" 버튼으로만 수행.
- */
-function TravelTypeField({
-  travelType,
-}: {
-  travelType?: {
-    code?: string;
-    title?: string;
-    description?: string;
-    emoji?: string;
-  };
-}) {
-  const t = useTranslations('mypage.profile.travelType');
-  if (!travelType?.title) return null;
-  return (
-    <div className={styles.travelType} role="group" aria-label={t('label')}>
-      <p className={styles.travelTypeTitle}>#{travelType.title}</p>
-    </div>
+      <div className={styles.pmid}>
+        <h2 className={styles.nickname}>
+          {nickname || <span className={styles.nicknameSkeleton} aria-hidden />}
+        </h2>
+        <span
+          className={styles.badge}
+          role="status"
+          aria-label={t('badgeAria')}
+        >
+          <Compass size={13} className={styles.badgeIcon} aria-hidden />
+          <span className={styles.badgeLabel}>{badgeLabel}</span>
+        </span>
+      </div>
+    </section>
   );
 }

@@ -30,10 +30,9 @@ export function MyPageClient() {
 
   return (
     <div className={styles.grid}>
-      {/* 1) 프로필 */}
-      <PageSection title={t('profile')}>
-        <ProfileCard />
-      </PageSection>
+      {/* 1) 프로필 row — Figma "MY_01" pf frame (2026-06-23) — flat row,
+          PageSection wrap 없음 (header 바로 아래 자체 row + border-bottom). */}
+      <ProfileCard />
 
       {/* 2) 닉네임 변경은 설정 페이지로 이동됨. */}
 

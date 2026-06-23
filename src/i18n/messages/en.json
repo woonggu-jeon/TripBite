@@ -688,6 +688,7 @@
       "goToSettings": "Go to settings"
     },
     "profile": {
+      "label": "Profile",
       "anonymous": "Guest",
       "avatarAlt": "Profile image of {nickname}",
       "changeAvatar": "Change profile image",
@@ -698,6 +699,8 @@
       "removeAvatar": "Remove profile image",
       "avatarRemoved": "Profile image removed.",
       "avatarRemoveFailed": "Couldn't remove image.",
+      "badgeNewbie": "Newbie traveler",
+      "badgeAria": "Traveler badge",
       "travelType": {
         "label": "Travel type"
       }
