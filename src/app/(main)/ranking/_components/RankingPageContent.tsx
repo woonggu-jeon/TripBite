@@ -11,7 +11,7 @@ import { Button } from '@/components/ui';
 import { WeekLabel } from '@/components/ui/WeekLabel';
 import { useWeeklyTopDestinations } from '@/features/ranking/hooks/use-ranking';
 import { RegionWinsChart } from '@/features/ranking/components/RegionWinsChart';
-import { CHUNGBUK_REGIONS, isRegionCode } from '@/constants/regions';
+import { isRegionCode } from '@/constants/regions';
 import { secureImageUrl } from '@/lib/secure-image-url';
 import { haptic } from '@/lib/haptic';
 import styles from './RankingPageContent.module.scss';
