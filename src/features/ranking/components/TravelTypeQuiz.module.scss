@@ -160,55 +160,59 @@
   }
 }
 
-// Submit/finishing 화면 — 토너먼트 celebration 과 같은 톤
+// Figma "TST · 유형테스트 완료" (2026-06-23) — done-center 360×664 center
+// column gap 20 (circle + Frame 1 — Frame 1 gap 12).
 .finishing {
-  position: relative;
-  display: grid;
-  gap: 0.5rem;
-  place-items: center;
-  padding: 4rem 1rem;
-  min-height: 50dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 0 20px;
+  min-height: 60dvh;
   text-align: center;
-  overflow: hidden;
   animation: finishingIn 0.45s var(--ease-out) both;
 }
 
-.finishingGlow {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    circle at center,
-    var(--color-primary-ring-soft),
-    transparent 70%
-  );
-  pointer-events: none;
-  animation: finishingGlow 1.4s var(--ease-out) both;
+// Figma circle 96 — secondary01 (#EAF6EF) bg + Check 46 primary 4.6px stroke.
+// primary-soft 토큰 활용 (dark mode 자동 정합).
+.finishingCircle {
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  background: var(--color-primary-soft);
+  border-radius: var(--radius-full);
+  color: var(--color-primary);
+  animation: finishingPop 0.5s var(--ease-spring) both;
 }
 
-.finishingEmoji {
-  font-size: var(--emoji-2xl);
-  line-height: 1;
-  filter: var(--drop-shadow-icon-strong);
-  animation: finishingPop 0.7s var(--ease-spring) both;
-  z-index: 1;
+// Figma Frame 1 — column gap 12 (title + hint).
+.finishingText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 }
 
+// Figma Title B_24_130% — 24 Bold 130% tracking-tight fg center.
 .finishingTitle {
-  font-size: var(--text-lg);
-  font-weight: var(--font-weight-extrabold);
-  color: var(--color-fg);
+  font-size: var(--font-h1); /* 24 */
+  font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-tight);
-  animation: finishingRise 0.6s var(--motion-base) var(--ease-out) both;
-  opacity: 0;
-  z-index: 1;
+  line-height: var(--line-tight); /* 130% */
+  color: var(--color-fg);
+  margin: 0;
 }
 
+// Figma R_14_140% — 14 Regular 140% tracking-tight fg center.
 .finishingHint {
-  font-size: var(--font-label);
-  color: var(--color-muted);
-  animation: finishingRise 0.6s 0.35s var(--ease-out) both;
-  opacity: 0;
-  z-index: 1;
+  font-size: var(--text-sm); /* 14 */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
+  margin: 0;
 }
 
 @keyframes finishingIn {
@@ -220,43 +224,17 @@
   }
 }
 
-@keyframes finishingGlow {
+@keyframes finishingPop {
   0% {
     opacity: 0;
     transform: scale(0.6);
   }
   60% {
-    opacity: 1;
     transform: scale(1.1);
   }
   100% {
-    opacity: var(--opacity-muted);
+    opacity: 1;
     transform: scale(1);
-  }
-}
-
-@keyframes finishingPop {
-  0% {
-    opacity: 0;
-    transform: scale(0.3) translateY(20px);
-  }
-  60% {
-    transform: scale(1.15) translateY(-4px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-@keyframes finishingRise {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -269,10 +247,7 @@
     transform: none;
   }
   .finishing,
-  .finishingGlow,
-  .finishingEmoji,
-  .finishingTitle,
-  .finishingHint {
+  .finishingCircle {
     animation: none;
     opacity: 1;
   }

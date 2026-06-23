@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { Check } from 'lucide-react';
 import { haptic } from '@/lib/haptic';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Skeleton } from '@/components/feedback/Skeleton';
@@ -81,16 +82,18 @@ export function TravelTypeQuiz() {
     );
   }
 
-  // submit 진행 중 — 결과 만드는 중 (응답 즉시 router.replace 라 단일 phase)
+  // Figma "TST · 유형테스트 완료" (2026-06-23) — done-center 96 circle
+  // secondary01 + Check 46 primary + B_24 title + R_14 hint.
   if (submit.isPending) {
     return (
       <div className={styles.finishing} role="status" aria-live="polite">
-        <div className={styles.finishingGlow} aria-hidden />
-        <div className={styles.finishingEmoji} aria-hidden>
-          ✨
+        <div className={styles.finishingCircle} aria-hidden>
+          <Check size={46} strokeWidth={4.6} />
         </div>
-        <p className={styles.finishingTitle}>{t('finishing.making')}</p>
-        <p className={styles.finishingHint}>{t('finishing.moving')}</p>
+        <div className={styles.finishingText}>
+          <p className={styles.finishingTitle}>{t('finishing.done')}</p>
+          <p className={styles.finishingHint}>{t('finishing.moving')}</p>
+        </div>
       </div>
     );
   }
