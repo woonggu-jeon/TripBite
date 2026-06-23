@@ -3,6 +3,123 @@
   gap: var(--space-6);
 }
 
+// Figma "RNK · 랭킹 (빈 상태)" body padding 18 16 22 gap 14 bg #F8F8F8 정합.
+// 빈 상태 단일 줄 라벨 — Caption R_12 muted (week + 집계 안내 합쳐).
+.weekLabelEmpty {
+  font-size: var(--font-caption); /* 12 */
+  font-weight: var(--font-weight-regular);
+  line-height: 1.25; /* 15/12 */
+  letter-spacing: -0.01em;
+  color: var(--color-muted);
+  margin: 0;
+}
+
+// Figma empty-saved card — 328×302 white + 1px gray border + radius 12
+// padding 20 column gap 16 align-center.
+.emptyCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+
+// Figma empty-recent card — 328×118 white + 1px gray border + radius 12
+// padding 20 column align-center. gap 미명시 — 자식 (head + text) 자연
+// stack (head 의 padding-bottom 16 으로 spacing).
+.emptyCardSmall {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+
+// Figma Frame 30 / 29 — title left-aligned row, padding 0 0 16 (아래 spacing).
+.emptyHead {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  padding-bottom: 16px;
+}
+
+// Figma title B_16_140% fg.
+.emptyHeadTitle {
+  font-size: var(--font-body); /* 16 */
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
+}
+
+// Figma circle 84 secondary01 + Trophy 40 primary 2.5px stroke.
+.emptyCircle {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 84px;
+  height: 84px;
+  background: var(--color-primary-soft);
+  border-radius: var(--radius-full);
+  color: var(--color-primary);
+}
+
+// Figma f column gap 3 — title B_14 center + caption R_12 center.
+.emptyText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.emptyTextTitle {
+  font-size: var(--text-sm); /* 14 */
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
+  text-align: center;
+  margin: 0;
+}
+
+.emptyTextHint {
+  font-size: var(--font-caption); /* 12 */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: -0.01em;
+  color: var(--color-muted);
+  text-align: center;
+  margin: 0;
+}
+
+// Figma empty-recent text — disabled color (#B4B4B4) 톤. CSS composes 대신
+// 별도 클래스 (CSS module composes 는 같은 file selector 만 가능).
+.emptyTextTitleDisabled {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text-disabled);
+  text-align: center;
+  margin: 0;
+}
+
+.emptyTextHintDisabled {
+  font-size: var(--font-caption);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: -0.01em;
+  color: var(--color-text-disabled);
+  text-align: center;
+  margin: 0;
+}
+
 // 상단 주차/업데이트 안내 — 좌우 양끝
 .weekRow {
   display: flex;

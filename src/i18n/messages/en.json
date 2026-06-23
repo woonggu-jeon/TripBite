@@ -345,7 +345,19 @@
     "title": "Destination ranking",
     "winsUnit": "wins",
     "weekLabel": "Week {week} of {month}",
+    "weekLabelEmpty": "Week {week} of {month} · Tally for this week just started",
     "updateNote": "Updated every Monday",
+    "emptyPopular": {
+      "title": "Most-won this week",
+      "heading": "Gathering results...",
+      "hint": "Results refresh every Monday",
+      "cta": "Start a bracket"
+    },
+    "emptyRecent": {
+      "title": "Recently viewed",
+      "heading": "Not enough data yet",
+      "hint": "Explore more to sharpen your recommendations"
+    },
     "sections": {
       "weeklyWinners": "Top {limit} most-won this week",
       "recommended": "Recommended top {limit}",

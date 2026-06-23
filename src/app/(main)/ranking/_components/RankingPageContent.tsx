@@ -1,12 +1,15 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { Trophy } from 'lucide-react';
 import { SkeletonList } from '@/components/feedback/SkeletonList';
 import { Button, PageSection } from '@/components/ui';
 import { useWeeklyTopDestinations } from '@/features/ranking/hooks/use-ranking';
 import { Top5Card } from '@/features/ranking/components/Top5Card';
 import { RegionWinsChart } from '@/features/ranking/components/RegionWinsChart';
 import { currentWeekLabel } from '@/lib/week-label';
+import { haptic } from '@/lib/haptic';
 import styles from './RankingPageContent.module.scss';
 
 /**
@@ -15,13 +18,75 @@ import styles from './RankingPageContent.module.scss';
  *   1) 이번주 우승 Top 5 — Top5Card 리스트
  *   2) 시군별 우승 횟수 — 가로 bar 차트 (클릭 시 /region/[code])
  *
- * 상단 row: "M월 N주차" + "매주 월요일 업데이트" 좌우 양끝.
+ * 빈 상태 — Figma "RNK · 랭킹 (빈 상태)" 정합:
+ *   - week label 단일줄 "{month}월 {week}주차 · 이번 주 집계가 시작됐어요"
+ *   - empty-popular card (white border + 84 circle + Trophy + heading/hint
+ *     + primary lg button)
+ *   - empty-recent card (white border + heading/hint, disabled color)
+ *   RegionWinsChart 는 빈 상태 시 미노출 — Figma spec 정합.
  */
 export function RankingPageContent() {
   const t = useTranslations('ranking');
   const tSection = useTranslations('ranking.sections');
+  const router = useRouter();
   const { data, isLoading, isError, refetch } = useWeeklyTopDestinations(5);
   const weekLabel = currentWeekLabel();
+  const isEmpty = !isLoading && !isError && data && data.length === 0;
+
+  if (isEmpty) {
+    return (
+      <div className={styles.wrap}>
+        <p className={styles.weekLabelEmpty}>
+          {t('weekLabelEmpty', {
+            month: weekLabel.month,
+            week: weekLabel.week,
+          })}
+        </p>
+
+        <div className={styles.emptyCard}>
+          <div className={styles.emptyHead}>
+            <span className={styles.emptyHeadTitle}>
+              {t('emptyPopular.title')}
+            </span>
+          </div>
+          <div className={styles.emptyCircle} aria-hidden>
+            <Trophy size={40} strokeWidth={2.5} />
+          </div>
+          <div className={styles.emptyText}>
+            <p className={styles.emptyTextTitle}>{t('emptyPopular.heading')}</p>
+            <p className={styles.emptyTextHint}>{t('emptyPopular.hint')}</p>
+          </div>
+          <Button
+            variant="primary"
+            size="lg"
+            fullWidth
+            onClick={() => {
+              haptic.tap();
+              router.push('/tournament');
+            }}
+          >
+            {t('emptyPopular.cta')}
+          </Button>
+        </div>
+
+        <div className={styles.emptyCardSmall}>
+          <div className={styles.emptyHead}>
+            <span className={styles.emptyHeadTitle}>
+              {t('emptyRecent.title')}
+            </span>
+          </div>
+          <div className={styles.emptyText}>
+            <p className={styles.emptyTextTitleDisabled}>
+              {t('emptyRecent.heading')}
+            </p>
+            <p className={styles.emptyTextHintDisabled}>
+              {t('emptyRecent.hint')}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.wrap}>
@@ -56,9 +121,6 @@ export function RankingPageContent() {
               />
             ))}
           </div>
-        )}
-        {data && data.length === 0 && (
-          <p className={styles.error}>{tSection('empty')}</p>
         )}
       </PageSection>
 

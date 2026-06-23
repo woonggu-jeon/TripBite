@@ -345,7 +345,19 @@
     "title": "여행지 랭킹",
     "winsUnit": "회",
     "weekLabel": "{month}월 {week}주차",
+    "weekLabelEmpty": "{month}월 {week}주차 · 이번 주 집계가 시작됐어요",
     "updateNote": "매주 월요일 업데이트",
+    "emptyPopular": {
+      "title": "이번 주 인기 여행지",
+      "heading": "아직 결과를 모으는 중이에요",
+      "hint": "결과는 매주 월요일 업데이트돼요",
+      "cta": "토너먼트 시작"
+    },
+    "emptyRecent": {
+      "title": "최근 본 여행지",
+      "heading": "데이터가 부족해요",
+      "hint": "더 둘러보면 추천 정확도가 올라가요"
+    },
     "sections": {
       "weeklyWinners": "이번주 가장 많이 우승한 여행지 TOP {limit}",
       "recommended": "추천 여행지 TOP {limit}",
