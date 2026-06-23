@@ -1,13 +1,19 @@
+// Figma "MY · 저장한 우승지" body (2026-06-23) — padding 20 gap 12.
 .wrap {
   display: grid;
-  gap: var(--space-3);
-  padding: var(--space-4);
+  gap: 12px;
+  padding: 20px;
 }
 
+// Figma Frame 17 (320×17) — summary 우측 정렬 Caption R_12 muted.
 .summary {
-  font-size: var(--font-body-sm);
+  font-size: var(--font-caption);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: -0.01em;
   color: var(--color-muted);
   margin: 0;
+  text-align: right;
 }
 
 // 2열 그리드 — 모바일 360px 까지 안정. 좁아지면 폭은 자동 축소.

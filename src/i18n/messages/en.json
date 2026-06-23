@@ -719,7 +719,7 @@
       "retry": "Retry",
       "viewAll": "View all ({count})",
       "allTitle": "Saved winners",
-      "totalCount": "Total {count}",
+      "totalCount": "{count} saved (newest)",
       "unsaveAria": "Unsave",
       "removeConfirmTitle": "Remove this saved winner?",
       "removeConfirmBody": "It will disappear from your saved list. Tournament history is kept.",
@@ -743,6 +743,7 @@
     },
     "stampBook": {
       "pageTitle": "Chungbuk stamp book",
+      "bannerLabel": "Chungbuk stamp book",
       "bannerHint": "Explore more places",
       "remainingTitle": "{remaining} more to Chungbuk Master",
       "progCaption": "Visited {visited}, {remaining} left",

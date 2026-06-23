@@ -1,6 +1,24 @@
-// Figma "MY · 저장한 우승지 삭제" modal (2026-06-23) — confirm modal radius
-// 18 (입력 modal 의 radius 12 와 별개 spec). Dialog primitive 의 default
-// radius 12 위에 confirm 일 때만 18 override.
+// Figma "MY · 저장한 우승지 삭제" modal (2026-06-23) — confirm modal:
+// - radius 18 (입력 modal radius 12 와 별개 spec)
+// - card padding 20 gap 20 (Frame 18 + Frame 15 사이 20px)
+// - description Caption R_12 fg center (Dialog default Body sm muted left 회귀)
+// Dialog primitive 의 default 위에 ConfirmDialog 일 때만 override.
 .confirmDialog {
   border-radius: 18px;
+  // .dialog 의 grid gap (space-3 = 12) override → 20 (Figma Frame 18 ↔
+  // Frame 15 gap 20). description 의 padding-bottom 또는 margin 으로
+  // 처리하기보다 wrapper gap 으로 일괄.
+  gap: 20px;
+}
+
+// description center + Caption R_12 fg (Figma Frame 18 의 두번째 Title
+// spec — Caption/R_12 center letter-spacing -0.01em color #151515).
+// Dialog .description 의 default (text-sm muted left) 회귀 정정.
+.confirmDescription {
+  font-size: var(--font-caption);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: -0.01em;
+  color: var(--color-fg);
+  text-align: center;
 }

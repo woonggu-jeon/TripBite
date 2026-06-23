@@ -719,7 +719,7 @@
       "retry": "다시 시도",
       "viewAll": "전체보기 ({count})",
       "allTitle": "저장한 우승 여행지",
-      "totalCount": "총 {count}개",
+      "totalCount": "최신순 {count}개 저장",
       "unsaveAria": "저장 해제",
       "removeConfirmTitle": "저장한 우승지를 삭제할까요?",
       "removeConfirmBody": "마이페이지 저장 목록에서 사라져요. 토너먼트 기록은 그대로 남아요.",
@@ -743,6 +743,7 @@
     },
     "stampBook": {
       "pageTitle": "충북 도장책",
+      "bannerLabel": "충북 도장책",
       "bannerHint": "여행지를 더 둘러보세요",
       "remainingTitle": "충북 마스터까지 {remaining}개 남음",
       "masterAchieved": "충북 마스터 달성!",

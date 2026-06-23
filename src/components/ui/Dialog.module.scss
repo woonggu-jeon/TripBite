@@ -66,9 +66,15 @@
 }
 
 .description {
-  font-size: var(--text-sm);
-  color: var(--color-muted);
-  line-height: var(--line-normal);
+  // Figma "MY · 저장 우승지 삭제" modal Frame 18 (2026-06-23) — Caption
+  // R_12 fg center letter-spacing -0.01em (이전 text-sm muted left 회귀).
+  // ConfirmDialog 만 description prop 사용 (다른 dialog 미사용).
+  font-size: var(--font-caption);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: -0.01em;
+  color: var(--color-fg);
+  text-align: center;
   margin: 0;
 }
 

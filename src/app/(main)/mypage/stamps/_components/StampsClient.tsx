@@ -82,7 +82,7 @@ export function StampsClient() {
             <span className={styles.countTotal}>/{data.total}</span>
           </div>
           <span className={styles.progLabel}>
-            {isMaster ? t('masterAchieved') : t('bannerTitle')}
+            {isMaster ? t('masterAchieved') : t('bannerLabel')}
           </span>
         </div>
         <div
