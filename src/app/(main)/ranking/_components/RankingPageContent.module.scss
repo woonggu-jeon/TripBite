@@ -3,17 +3,6 @@
   gap: var(--space-6);
 }
 
-// Figma "RNK · 랭킹 (빈 상태)" body padding 18 16 22 gap 14 bg #F8F8F8 정합.
-// 빈 상태 단일 줄 라벨 — Caption R_12 muted (week + 집계 안내 합쳐).
-.weekLabelEmpty {
-  font-size: var(--font-caption); /* 12 */
-  font-weight: var(--font-weight-regular);
-  line-height: 1.25; /* 15/12 */
-  letter-spacing: -0.01em;
-  color: var(--color-muted);
-  margin: 0;
-}
-
 // Figma empty-saved card — 328×302 white + 1px gray border + radius 12
 // padding 20 column gap 16 align-center.
 .emptyCard {
@@ -120,25 +109,8 @@
   margin: 0;
 }
 
-// 상단 주차/업데이트 안내 — 좌우 양끝
-.weekRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-  font-size: var(--font-body-sm);
-}
-
-.week {
-  color: var(--color-fg);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: var(--tracking-snug);
-}
-
-.updateNote {
-  color: var(--color-muted);
-  font-size: var(--font-caption);
-}
+// 주차 label 정합은 WeekLabel 공통 컴포넌트가 담당 (split / inline variant).
+// 이전 .weekRow / .week / .updateNote / .weekLabelEmpty 클래스 제거.
 
 .sectionTitle {
   font-size: var(--font-body);

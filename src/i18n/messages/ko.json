@@ -1,5 +1,9 @@
 {
   "common": {
+    "weekLabel": {
+      "label": "{month}월 {week}주차",
+      "updateNote": "매주 월요일 업데이트"
+    },
     "skipToContent": "본문으로 건너뛰기",
     "showMore": "더보기",
     "showLess": "접기",
@@ -345,9 +349,7 @@
   "ranking": {
     "title": "여행지 랭킹",
     "winsUnit": "회",
-    "weekLabel": "{month}월 {week}주차",
-    "weekLabelEmpty": "{month}월 {week}주차 · 이번 주 집계가 시작됐어요",
-    "updateNote": "매주 월요일 업데이트",
+    "emptyTallyHint": "이번 주 집계가 시작됐어요",
     "emptyPopular": {
       "title": "이번 주 인기 여행지",
       "heading": "아직 결과를 모으는 중이에요",

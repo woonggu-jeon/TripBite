@@ -1,5 +1,9 @@
 {
   "common": {
+    "weekLabel": {
+      "label": "Week {week} of {month}",
+      "updateNote": "Updated every Monday"
+    },
     "skipToContent": "Skip to main content",
     "showMore": "Show more",
     "showLess": "Show less",
@@ -345,9 +349,7 @@
   "ranking": {
     "title": "Destination ranking",
     "winsUnit": "wins",
-    "weekLabel": "Week {week} of {month}",
-    "weekLabelEmpty": "Week {week} of {month} · Tally for this week just started",
-    "updateNote": "Updated every Monday",
+    "emptyTallyHint": "Tally for this week just started",
     "emptyPopular": {
       "title": "Most-won this week",
       "heading": "Gathering results...",

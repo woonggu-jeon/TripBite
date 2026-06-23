@@ -5,10 +5,10 @@ import { useTranslations } from 'next-intl';
 import { Trophy } from 'lucide-react';
 import { SkeletonList } from '@/components/feedback/SkeletonList';
 import { Button, PageSection } from '@/components/ui';
+import { WeekLabel } from '@/components/ui/WeekLabel';
 import { useWeeklyTopDestinations } from '@/features/ranking/hooks/use-ranking';
 import { Top5Card } from '@/features/ranking/components/Top5Card';
 import { RegionWinsChart } from '@/features/ranking/components/RegionWinsChart';
-import { currentWeekLabel } from '@/lib/week-label';
 import { haptic } from '@/lib/haptic';
 import styles from './RankingPageContent.module.scss';
 
@@ -30,18 +30,12 @@ export function RankingPageContent() {
   const tSection = useTranslations('ranking.sections');
   const router = useRouter();
   const { data, isLoading, isError, refetch } = useWeeklyTopDestinations(5);
-  const weekLabel = currentWeekLabel();
   const isEmpty = !isLoading && !isError && data && data.length === 0;
 
   if (isEmpty) {
     return (
       <div className={styles.wrap}>
-        <p className={styles.weekLabelEmpty}>
-          {t('weekLabelEmpty', {
-            month: weekLabel.month,
-            week: weekLabel.week,
-          })}
-        </p>
+        <WeekLabel variant="inline" hint={t('emptyTallyHint')} />
 
         <div className={styles.emptyCard}>
           <div className={styles.emptyHead}>
@@ -90,12 +84,7 @@ export function RankingPageContent() {
 
   return (
     <div className={styles.wrap}>
-      <div className={styles.weekRow}>
-        <span className={styles.week}>
-          {t('weekLabel', { month: weekLabel.month, week: weekLabel.week })}
-        </span>
-        <span className={styles.updateNote}>{t('updateNote')}</span>
-      </div>
+      <WeekLabel variant="split" />
 
       {/* 1) Top 5 */}
       <PageSection title={tSection('weeklyWinners', { limit: 5 })}>
