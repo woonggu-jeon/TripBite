@@ -67,13 +67,13 @@ export function AccountActionsSection() {
         {isLoggingOut ? t('loggingOut') : t('logout')}
       </Button>
       <Button
-        variant="outline"
+        variant="ghost"
         size="lg"
         fullWidth
-        // color override: className 으로는 Button.v-outline 의 muted color
-        // 와 동일 specificity → CSS module inject 순서 의존 (회귀 위험).
-        // inline style 로 cascade 강제 (--color-danger 토큰은 light/dark
-        // 모두 정의 — dark mode 영향 없음). 2026-06-23 회귀 fix.
+        // Figma "설정" bw frame 의 두번째 button (회원탈퇴) — border 명시
+        // 없음, color #E1493C (System/error). text-only ghost variant +
+        // danger color inline override 정합. 첫번째 (로그아웃) 만 outline
+        // border 있음. 2026-06-23 정직 정정.
         style={{ color: 'var(--color-danger)' }}
         onClick={handleWithdraw}
         disabled={isWithdrawing}
