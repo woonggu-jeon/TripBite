@@ -1,40 +1,33 @@
-// 길찾기 + 공유 2버튼 동일 비율. provider 중립 톤 (브랜드 컬러 미사용).
+// Figma "POI · 장소상세 action-bar" (2026-06-23) — padding 12 20 gap 10 row,
+// Frame 25 (gap 8) 2 button 156×52.
 .row {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-2);
-  margin: var(--space-3) 0 0;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  padding: 12px 20px;
+  background: var(--color-bg);
 }
 
+// Figma button common — 16 20 padding gap 10 radius 12, M_16 center.
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-height: 44px; // WCAG 2.1 target size
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-fg);
-  font-size: var(--font-body-sm);
-  font-weight: var(--font-weight-bold);
+  flex: 1;
+  min-height: 52px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  font-size: var(--font-body); /* 16 */
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: var(--tracking-tight);
   text-align: center;
   cursor: pointer;
-  transition:
-    border-color var(--motion-base) ease,
-    background var(--motion-base) ease,
-    transform var(--motion-fast) ease;
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      border-color: var(--color-primary);
-      background: var(--color-hover);
-    }
-  }
+  transition: transform var(--motion-fast) ease;
 
   &:active {
-    transform: scale(0.97);
+    transform: scale(0.98);
   }
 
   &:focus-visible {
@@ -43,30 +36,29 @@
   }
 }
 
-// 길찾기 — primary 강조 (어떤 provider 든 동일 톤)
+// Figma 좌측 button (외향 길찾기 = visual outline primary) — white bg +
+// 1px primary border + primary color.
 .directions {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: var(--color-primary-fg);
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      opacity: var(--opacity-hover-dim);
-      background: var(--color-primary);
-      border-color: var(--color-primary);
-    }
-  }
+  background: var(--color-bg);
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
 }
 
-// 공유 — 기본 surface 톤 그대로
+// Figma 우측 button (공유 = visual fill primary) — primary bg + white text.
+.share {
+  background: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary-fg);
+}
 
 @media (max-width: 380px) {
   .row {
-    gap: var(--space-1);
+    gap: 6px;
+    padding: 12px 16px;
   }
   .btn {
-    font-size: var(--font-caption);
-    padding: var(--space-2);
+    font-size: var(--font-body-sm);
+    padding: 14px 16px;
     gap: 4px;
   }
 }

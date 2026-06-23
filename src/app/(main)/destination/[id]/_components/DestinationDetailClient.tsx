@@ -1,8 +1,7 @@
 'use client';
 
-import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Compass } from 'lucide-react';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
@@ -10,8 +9,6 @@ import { Button } from '@/components/ui';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { useDestinationDetail } from '@/features/tournament/hooks/use-tournament';
 import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetailPanel';
-import { categoryEmoji } from '@/constants/emoji-map';
-import { secureImageUrl } from '@/lib/secure-image-url';
 import { DestinationPhotos } from './DestinationPhotos';
 import { DestinationActions } from './DestinationActions';
 import { RelatedDestinations } from './RelatedDestinations';
@@ -67,12 +64,11 @@ export function DestinationDetailClient({ id }: { id: string }) {
       <>
         <SubHeader title={t('title')} />
         <div className={styles.wrap}>
-          <div className={styles.hero} aria-hidden>
-            <Skeleton width={64} height={64} radius="full" />
-            <Skeleton width="40%" height={14} radius="sm" />
+          <Skeleton width="100%" height={234} radius="sm" />
+          <div className={styles.infoSec}>
+            <Skeleton width="70%" height={28} radius="md" />
+            <Skeleton width="100%" height={180} radius="lg" />
           </div>
-          <Skeleton width="70%" height={28} radius="md" />
-          <Skeleton width="100%" height={120} radius="lg" />
         </div>
       </>
     );
@@ -80,58 +76,54 @@ export function DestinationDetailClient({ id }: { id: string }) {
 
   const regionName =
     CHUNGBUK_REGIONS.find((r) => r.code === detail.region)?.ko ?? detail.region;
-  const emoji = categoryEmoji(detail.category);
-  const safeHeroImg = secureImageUrl(detail.imageUrl);
+  const categoryLabel = tCategory(
+    detail.category as Parameters<typeof tCategory>[0],
+  );
 
   return (
     <>
       <SubHeader title={title} />
       <article className={styles.wrap} aria-labelledby="destination-name">
-        {/* 1) 사진 영역 — photos 있으면 carousel, 없으면 imageUrl 단일 hero */}
+        {/* Figma "POI · 장소상세 hero" — 360×234 carousel + dots. DestinationPhotos
+            가 photos 있을 때 carousel + dots, 없으면 imageUrl 단일. */}
         <DestinationPhotos
           photos={detail.photos}
           imageUrl={detail.imageUrl}
           alt={detail.name}
         />
 
-        {/* 2) Hero — 대표사진(imageUrl) thumbnail + 시군 · 카테고리. 사진 없으면 emoji fallback */}
-        <header className={styles.hero}>
-          <div className={styles.heroEmoji} aria-hidden>
-            {safeHeroImg ? (
-              <Image
-                src={safeHeroImg}
-                alt=""
-                fill
-                sizes="80px"
-                className={styles.heroPhoto}
-              />
-            ) : (
-              <span className={styles.heroEmojiGlyph}>{emoji}</span>
-            )}
+        {/* Figma info-sec — padding 20 20 24 gap 20 white bg. */}
+        <section className={styles.infoSec}>
+          {/* Figma title-area — row space-between: Frame 28 (name + region) +
+              type-chip pill (compass + category). */}
+          <div className={styles.titleArea}>
+            <div className={styles.titleStack}>
+              <h2 id="destination-name" className={styles.name}>
+                {detail.name}
+              </h2>
+              <p className={styles.region}>{regionName}</p>
+            </div>
+            <span className={styles.typeChip}>
+              <Compass size={13} aria-hidden />
+              <span>{categoryLabel}</span>
+            </span>
           </div>
-          <p className={styles.heroMeta}>
-            <span className={styles.heroRegion}>{regionName}</span>
-            <span aria-hidden className={styles.dot}>
-              ·
-            </span>
-            <span className={styles.heroCategory}>
-              {tCategory(detail.category as Parameters<typeof tCategory>[0])}
-            </span>
-          </p>
-        </header>
 
-        {/* 3) Name — SubHeader 가 페이지 h1 이므로 h2 로 위계 보존 */}
-        <h2 id="destination-name" className={styles.name}>
-          {detail.name}
-        </h2>
+          {/* info-card + overview — WinnerDetailPanel 위임. Figma info-card
+              (5 field row + divider + overview) layout 은 panel 의 자체
+              spec — 본 commit 에서 visual 완전 정합 보류 (panel 이 TournamentResult
+              에서도 공유 — 변경 영향 큼). */}
+          <WinnerDetailPanel detail={detail} isLoading={false} />
+        </section>
 
-        {/* 4) 장소 정보 (summary / description / 주소 / 시간 / 휴무 / 주차 / 연락처 / web) */}
-        <WinnerDetailPanel detail={detail} isLoading={false} />
+        {/* Figma near-sec — padding 20 + DestinationCard 3 horizontal scroll.
+            RelatedDestinations 가 이미 carousel. */}
+        <section className={styles.nearSec}>
+          <RelatedDestinations id={id} />
+        </section>
 
-        {/* 5) 이 시군의 다른 여행지 (Carousel) */}
-        <RelatedDestinations id={id} />
-
-        {/* 6) Actions row — 카카오 길찾기 + 공유. (네이버 분기는 코드에 주석으로 유지) */}
+        {/* Figma action-bar — padding 12 20 gap 10 row 2 button (outline +
+            fill). DestinationActions 가 visual 정합. */}
         <DestinationActions
           id={id}
           name={detail.name}
