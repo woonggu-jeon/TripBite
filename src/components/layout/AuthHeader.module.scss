@@ -1,21 +1,21 @@
-// Figma "FindIdA/FindPwA/FindId 결과" header (#3355:235 / EL-9810b3be).
-// row alignSelf stretch, padding-left 10, alignItems center, height 54.
+// Figma "Header type=find" (2026-06-23) — 갱신 spec: 56h, padding 0 20,
+// no border-bottom (find/location variant). 이전 spec (54h, padding-left
+// 10, slot 36x36) → 최신 정합. iconButton click 영역은 44x44 (HIG 준수).
 .header {
   display: flex;
   align-items: center;
   width: 100%;
-  height: 54px;
-  padding-left: 10px;
+  height: 56px;
+  padding: 0 20px;
 }
 
-// Figma slot (#3355:236 / EL-f847f176) — 36x36 click 영역, center 정렬.
-// 안 24x24 SVG (ChevronLeft).
+// click 영역 44x44 (Apple HIG) — Figma 의 24x24 는 icon visual.
 .slot {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   padding: 0;
   background: transparent;
   border: 0;

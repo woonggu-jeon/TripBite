@@ -1,7 +1,6 @@
-/* outer — 풀폭 sticky.
-   .contentInner(720px + padding) 안에서 100vw 트릭으로 viewport 전체로 확장.
-   .shell 에 overflow-x:hidden 이 있어 미세 스크롤 발생 X.
-   layout content 의 top padding 도 음수 마진으로 상쇄. */
+/* outer — 풀폭 sticky. Figma "Header type=sub/my/noti" (2026-06-23):
+   white bg + #E0E0E0 bottom border + padding 0 20. glass + backdrop-filter
+   폐기 (디자이너 spec 정합). */
 .bar {
   position: sticky;
   top: 0;
@@ -11,27 +10,27 @@
   margin-right: calc(50% - 50vw);
   margin-top: calc(-1 * var(--content-pad));
   margin-bottom: var(--space-3);
-  background: var(--color-glass);
-  backdrop-filter: var(--blur-glass);
-  -webkit-backdrop-filter: var(--blur-glass);
-  border-bottom: 1px solid var(--color-divider);
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .inner {
   display: grid;
-  grid-template-columns: 40px 1fr 40px;
+  // Figma icon 24 visual + click 영역 44 (Apple HIG) → grid track 44.
+  grid-template-columns: 44px 1fr 44px;
   align-items: center;
   gap: var(--space-2);
   max-width: var(--content-max);
   width: 100%;
   height: var(--header-h);
   margin: 0 auto;
-  padding: 0 var(--space-3);
+  padding: 0 20px;
 }
 
 .back {
-  width: 40px;
-  height: 40px;
+  // Figma icon 24x24 visual / click 영역 44x44 (HIG 준수, 회귀 회피).
+  width: 44px;
+  height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
