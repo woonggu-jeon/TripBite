@@ -40,9 +40,12 @@
   border-radius: var(--radius-input);
   background: var(--color-bg);
   color: var(--color-fg);
-  // iOS Safari auto-zoom 차단 — input focus 시 font-size 16px 미만이면 viewport
-  // zoom in. --font-body-sm (15px) 대신 1rem (16px) 명시 (2026-06-19 audit).
+  // Figma text spec: M_16_140% (Pretendard Medium 16, line 1.4em, ls -0.02em).
+  // font-size 16px = iOS Safari auto-zoom 차단 정합 (R5 audit).
   font-size: 1rem;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.4em;
+  letter-spacing: -0.02em;
   outline: none;
   transition: border-color var(--motion-base) ease;
 

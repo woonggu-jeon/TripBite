@@ -43,7 +43,9 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
             aria-pressed={visible}
             onClick={() => setVisible((v) => !v)}
           >
-            <Icon size={18} aria-hidden />
+            {/* Figma "IC-20px" (PasswordField password type 의 trailing icon)
+                — 20x20 visual 정합. button click 영역은 44 (touch target). */}
+            <Icon size={20} aria-hidden />
           </button>
         }
         {...props}
