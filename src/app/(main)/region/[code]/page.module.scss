@@ -1,0 +1,11 @@
+// Figma "RGN · 시군상세 body" (2026-06-23) — padding 20 20 0 gap 16.
+// (main)/layout 의 contentInner padding 1rem (16) 안에서 자식 spacing 정합:
+//   - banner ↔ tabs 사이 16 gap (Figma body gap 16).
+//   - top: contentInner 16 + body 4 = 20 (Figma padding-top 20).
+//   - 좌우: contentInner 16 + body 4 = 20 (Figma 좌우 20).
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 4px 4px 0;
+}

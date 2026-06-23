@@ -6,6 +6,7 @@ import { isRegionCode, type RegionCode } from '@/constants/regions';
 import { RegionHero } from '@/features/region';
 import { JsonLd, breadcrumbList } from '@/lib/json-ld';
 import { RegionDetailTabs } from './_components/RegionDetailTabs';
+import styles from './page.module.scss';
 
 // dynamic rendering — i18n cookies() 가 static generation 과 incompatible.
 // loading.tsx 가 cold start UX 보완. 11 시군은 notFound 가드로 검증.
@@ -80,9 +81,16 @@ export default async function RegionDetailPage({ params }: Props) {
           { name, url: `/region/${validCode}` },
         ])}
       />
+      {/* Figma "Header type=location" 의 rightSlot (share/북마크) 는 의도적
+          미전달 — destination/[id] 선례 동일. 공유/저장 action 은 본문
+          (RegionDetailTabs 하단 CTA 영역) 으로 이동해 헤더 단순화. */}
       <SubHeader title={name} />
-      <RegionHero code={validCode} />
-      <RegionDetailTabs code={validCode} />
+      {/* Figma body — padding 20 20 0 gap 16. contentInner padding 16 + body
+          padding 4 = 20 (Figma), gap 16 = banner ↔ tabs 사이 spacing 정합. */}
+      <div className={styles.body}>
+        <RegionHero code={validCode} />
+        <RegionDetailTabs code={validCode} />
+      </div>
     </>
   );
 }
