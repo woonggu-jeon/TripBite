@@ -5,7 +5,8 @@ import { useTranslations } from 'next-intl';
 import { Trophy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Carousel } from '@/features/carousel';
-import { AsyncSection } from '@/components/feedback/AsyncSection';
+import { SkeletonList } from '@/components/feedback/SkeletonList';
+import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
 import { useSavedTournaments } from '@/features/tournament/hooks/use-tournament';
 import { useResponsiveSlidesPerView } from '@/hooks/use-responsive-slides-per-view';
@@ -15,48 +16,67 @@ import styles from './SavedTournamentsSection.module.scss';
 /**
  * 저장된 토너먼트 우승 여행지 — 최대 20개 가로 스크롤 카드 (Carousel).
  *
- * 메인의 "지금 열리는 충북 축제" 와 동일한 패턴 — 가로 스와이퍼로 N장 모두 보임.
- * 헤더 우측에 "전체보기 (N)" Link — /mypage/saved-tournaments 상세 페이지 진입점.
+ * 빈 상태는 Figma "MY_01" empty-saved card 정합 (white card padding 20 gap 16
+ * + title B_14 center + hint R_12 center + primary button 280×52). 이전
+ * AsyncSection 의 EmptyState 56 circle 패턴은 시각 다름 → 직접 분기.
  *
- * 분기: <AsyncSection> wrapper 가 isLoading/isError/empty 표준 처리.
+ * 헤더 우측 "전체보기 (N)" Link — /mypage/saved-tournaments 상세 페이지.
  */
 export function SavedTournamentsSection() {
   const t = useTranslations('mypage.savedTournaments');
   const router = useRouter();
   const slidesPerView = useResponsiveSlidesPerView();
-  const query = useSavedTournaments();
+  const { data, isLoading, isError, refetch } = useSavedTournaments();
 
-  return (
-    <AsyncSection
-      query={query}
-      icon={<Trophy size={28} aria-hidden />}
-      errorTitle={t('error')}
-      retryLabel={t('retry')}
-      emptyTitle={t('empty')}
-      emptyDescription={t('emptyHint')}
-      emptyAction={
+  if (isLoading) {
+    return <SkeletonList count={2} height={168} radius="lg" />;
+  }
+
+  if (isError) {
+    return (
+      <EmptyState
+        icon={<Trophy size={28} aria-hidden />}
+        title={t('error')}
+        action={
+          <Button variant="secondary" size="sm" onClick={() => refetch()}>
+            {t('retry')}
+          </Button>
+        }
+      />
+    );
+  }
+
+  const items = data ?? [];
+  if (items.length === 0) {
+    // Figma empty-saved — 320×148 white card + title + hint + primary button.
+    return (
+      <div className={styles.empty}>
+        <div className={styles.emptyText}>
+          <p className={styles.emptyTitle}>{t('empty')}</p>
+          <p className={styles.emptyHint}>{t('emptyHint')}</p>
+        </div>
         <Button
           variant="primary"
-          size="sm"
+          size="lg"
+          fullWidth
           onClick={() => router.push('/tournament')}
         >
           {t('startTournament')}
         </Button>
-      }
-      isEmpty={(d) => d.length === 0}
-    >
-      {(data) => (
-        <Carousel
-          slides={data.slice(0, 10)}
-          renderSlide={(saved) => <SavedTournamentCard saved={saved} />}
-          keyExtractor={(saved) => saved.id}
-          options={{ slidesPerView, gap: 8 }}
-          showDots={false}
-          fallbackHeight={200}
-          ariaLabel={t('allTitle')}
-        />
-      )}
-    </AsyncSection>
+      </div>
+    );
+  }
+
+  return (
+    <Carousel
+      slides={items.slice(0, 10)}
+      renderSlide={(saved) => <SavedTournamentCard saved={saved} />}
+      keyExtractor={(saved) => saved.id}
+      options={{ slidesPerView, gap: 8 }}
+      showDots={false}
+      fallbackHeight={200}
+      ariaLabel={t('allTitle')}
+    />
   );
 }
 

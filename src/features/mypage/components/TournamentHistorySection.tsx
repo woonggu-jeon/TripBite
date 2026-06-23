@@ -6,7 +6,6 @@ import { SkeletonList } from '@/components/feedback/SkeletonList';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
 import { useTournamentHistory } from '@/features/tournament/hooks/use-tournament';
-import { seasonEmoji } from '@/constants/emoji-map';
 import styles from './TournamentHistorySection.module.scss';
 
 const CATEGORY_KO: Record<string, string> = {
@@ -60,23 +59,25 @@ export function TournamentHistorySection() {
 
   const items = (data?.items as HistoryItem[] | undefined) ?? [];
   if (items.length === 0) {
+    // Figma "MY_01" empty-recent — 320×60 white card border radius 12 + title B_14 center.
     return (
-      <EmptyState icon={<Trophy size={28} aria-hidden />} title={t('empty')} />
+      <div className={styles.empty}>
+        <p className={styles.emptyTitle}>{t('empty')}</p>
+      </div>
     );
   }
 
   return (
     <ul className={styles.list}>
       {items.slice(0, 10).map((it) => {
-        const themeEmoji = seasonEmoji(it.theme);
         const categoryLabel = CATEGORY_KO[it.category] ?? it.category;
         const date = new Date(it.completedAt);
         const dateLabel = `${date.getMonth() + 1}월 ${date.getDate()}일`;
         const meta = `${categoryLabel} · ${it.count}${t('countUnit')} · ${dateLabel}`;
         return (
           <li key={it.id} className={styles.row}>
-            <span className={styles.emoji} aria-hidden>
-              {themeEmoji}
+            <span className={styles.iconBox} aria-hidden>
+              <Trophy size={20} strokeWidth={1.7} />
             </span>
             <div className={styles.body}>
               <p className={styles.title}>
