@@ -1,5 +1,9 @@
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
+import Link from 'next/link';
+import { Settings } from 'lucide-react';
+import { ROUTES } from '@/constants/routes';
+import { SubHeader } from '@/components/layout/SubHeader';
 import { MyPageClient } from './_components/MyPageClient';
 
 /**
@@ -39,6 +43,35 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('title') };
 }
 
-export default function MyPage() {
-  return <MyPageClient />;
+export default async function MyPage() {
+  const t = await getTranslations('mypage');
+  const tHeader = await getTranslations('header');
+  return (
+    <>
+      {/* Figma "Header type=my" (2026-06-23) — back + title + settings.
+          다른 BottomNav 진입점 (ranking/tournament/letter) 와 동일 SubHeader
+          정합. settings 진입은 rightSlot icon link (기존 AppHeader 우상단
+          settings 대체). */}
+      <SubHeader
+        title={t('title')}
+        rightSlot={
+          <Link
+            href={ROUTES.SETTINGS}
+            aria-label={tHeader('settings')}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 44,
+              height: 44,
+              color: 'var(--color-fg)',
+            }}
+          >
+            <Settings size={24} aria-hidden />
+          </Link>
+        }
+      />
+      <MyPageClient />
+    </>
+  );
 }
