@@ -104,19 +104,28 @@ export function RegionWinsChart() {
               wins: r.wins,
             })}
           >
-            <span className={styles.rank}>{r.rank}</span>
-            <span className={styles.regionName}>{r.region}</span>
+            {/* Figma Frame 36 — rank + region 같은 row gap 8. */}
+            <span className={styles.label}>
+              <span
+                className={`${styles.rank} ${r.rank === 1 ? styles.rankFirst : ''}`}
+              >
+                {r.rank}
+              </span>
+              <span className={styles.regionName}>{r.region}</span>
+            </span>
+            {/* Figma bar — 160×8 #F1F1F1 + primary fill. */}
             <span className={styles.barTrack} aria-hidden>
               <span
                 className={styles.barFill}
                 style={{ width: `${Math.max(4, r.ratio * 100)}%` }}
               />
             </span>
+            {/* Figma Frame 35 — wins + chevron row gap 4. */}
             <span className={styles.wins}>
-              <span className={styles.winsNumber}>{r.wins}</span>
-              <span className={styles.winsUnit}>{t('winsUnit')}</span>
+              {r.wins}
+              {t('winsUnit')}
+              <ChevronRight className={styles.chevron} size={20} aria-hidden />
             </span>
-            <ChevronRight className={styles.chevron} size={16} aria-hidden />
           </button>
         </li>
       ))}

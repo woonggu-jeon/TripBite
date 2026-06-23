@@ -1,34 +1,34 @@
+// Figma "RNK · 랭킹 rv-card 2 gun-row" (2026-06-23) — padding 12 0 row
+// space-between. rv-card wrapping 안에서 사용 — 자체 border 없음.
 .list {
-  display: grid;
-  gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
   padding: 0;
   margin: 0;
   list-style: none;
 }
 
-// 1행 = rank | 시군명 | 막대 트랙 | 우승수 | chevron
-// 카드/그리드 비율은 모바일 360 ~ 720 안에서 자연스럽게 보이도록 고정 + 1fr.
+// Figma gun-row — 288×44 padding 12 0 row space-between. 3 영역:
+//   Frame 36 (rank + region) | bar 160×8 | Frame 35 (wins + chevron).
 .row {
-  display: grid;
-  grid-template-columns: 22px 44px 1fr 56px 16px;
+  display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 0.625rem;
+  justify-content: space-between;
+  gap: 8px;
   width: 100%;
-  padding: 0.625rem 0.75rem;
-  background: var(--color-bg);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
+  padding: 12px 0;
+  background: transparent;
+  border: 0;
   color: var(--color-fg);
   text-align: left;
   cursor: pointer;
   transition:
-    border-color var(--motion-base) ease,
-    transform var(--motion-fast) ease,
-    background var(--motion-base) ease;
+    background var(--motion-base) ease,
+    transform var(--motion-fast) ease;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      border-color: var(--color-primary-border);
       background: var(--color-surface-soft);
     }
   }
@@ -41,43 +41,57 @@
   }
 }
 
+// Figma Frame 36 — row gap 8 (rank + region 같은 row).
+.label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+// Figma rank — B_14_140%. 1위 primary, 2위 이하 disabled (#B4B4B4).
 .rank {
-  font-size: var(--font-caption);
-  font-weight: var(--font-weight-extrabold);
-  color: var(--color-muted);
-  text-align: center;
+  font-size: var(--text-sm); /* 14 */
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text-disabled);
   font-variant-numeric: tabular-nums;
 }
 
+// 1위 강조 — primary.
+.rankFirst {
+  color: var(--color-primary);
+}
+
+// Figma region B_14 fg.
 .regionName {
-  font-size: var(--font-body-sm);
+  font-size: var(--text-sm); /* 14 */
   font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug-relaxed); /* 140% */
   letter-spacing: var(--tracking-tight);
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: var(--color-fg);
   white-space: nowrap;
 }
 
+// Figma bar — 160×8 radius 999, bg #F1F1F1 (surface-soft), fill primary
+// (이전 gradient primary → primary-muted 정정).
 .barTrack {
   position: relative;
+  flex: 1;
   height: 8px;
-  width: 100%;
-  background: var(--color-surface-soft);
+  background: #f1f1f1;
   border-radius: var(--radius-full);
   overflow: hidden;
+  max-width: 160px;
 }
 
 .barFill {
   display: block;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    var(--color-primary),
-    var(--color-primary-muted)
-  );
+  background: var(--color-primary);
   border-radius: inherit;
-  // mount 시 width 가 inline style 로 즉시 들어가지만,
-  // 동일 width 재할당 시 안정적인 transition 을 위해 var(--ease-out).
   transition: width var(--motion-emphasis) var(--ease-out);
   animation: barIn var(--motion-emphasis) var(--ease-out) both;
   transform-origin: left center;
@@ -92,34 +106,30 @@
   }
 }
 
+// Figma Frame 35 — row gap 4 (wins + chevron).
 .wins {
   display: inline-flex;
-  align-items: baseline;
-  justify-content: flex-end;
-  gap: 2px;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  font-size: var(--text-sm); /* 14 */
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
   font-variant-numeric: tabular-nums;
 }
 
-.winsNumber {
-  font-size: var(--font-body);
-  font-weight: var(--font-weight-extrabold);
-  color: var(--color-fg);
-  letter-spacing: var(--tracking-tight);
-}
-
-.winsUnit {
-  font-size: var(--font-eyebrow);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-muted);
-}
-
 .chevron {
-  color: var(--color-muted);
-  justify-self: end;
+  color: var(--color-text-disabled);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .skeletonList {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: var(--space-2);
 }
 
@@ -131,25 +141,6 @@
   color: var(--color-muted);
   text-align: center;
   font-size: var(--text-sm);
-  background: var(--color-surface-soft);
-  border-radius: var(--radius-md);
-}
-
-.retry {
-  padding: 0.5rem 1rem;
-  background: transparent;
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-fg);
-  font-size: var(--font-label);
-  font-weight: var(--font-weight-semibold);
-  cursor: pointer;
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      border-color: var(--color-primary-border);
-    }
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
