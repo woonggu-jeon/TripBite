@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Share2, RotateCcw, BadgeCheck } from 'lucide-react';
 import { haptic } from '@/lib/haptic';
 import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import { toneFor } from '@/constants/region-tone';
@@ -211,7 +210,6 @@ export function TravelTypeResult() {
               haptic.tap();
               router.replace('/quiz');
             }}
-            leadingIcon={<RotateCcw size={16} aria-hidden />}
             className={styles.btnRetake}
           >
             {t('retake')}
@@ -220,7 +218,6 @@ export function TravelTypeResult() {
             variant="primary"
             fullWidth
             onClick={() => handleShare(result)}
-            leadingIcon={<Share2 size={16} aria-hidden />}
           >
             {t('share')}
           </Button>
@@ -230,7 +227,6 @@ export function TravelTypeResult() {
           fullWidth
           onClick={() => handleApply(result)}
           loading={applyMutation.isPending}
-          leadingIcon={<BadgeCheck size={16} aria-hidden />}
         >
           {t('apply')}
         </Button>
