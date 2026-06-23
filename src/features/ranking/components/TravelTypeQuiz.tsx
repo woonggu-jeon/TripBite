@@ -171,9 +171,7 @@ export function TravelTypeQuiz() {
             );
           })}
         </div>
-        <p className={styles.progressMeta}>
-          {t('progress', { current: stepIdx + 1, total })}
-        </p>
+        <p className={styles.progressMeta}>{t('progressHint')}</p>
       </div>
 
       <h2 className={styles.question}>{current.text}</h2>
