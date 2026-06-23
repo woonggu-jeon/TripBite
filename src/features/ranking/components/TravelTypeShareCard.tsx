@@ -26,7 +26,6 @@ import styles from './TravelTypeShareCard.module.scss';
  */
 export function TravelTypeShareCard() {
   const t = useTranslations('travelType.share');
-  const tResult = useTranslations('travelType.result');
   const router = useRouter();
   const { data, isLoading } = useMyTravelType();
 
@@ -118,10 +117,7 @@ export function TravelTypeShareCard() {
         {data.compatibility?.best && (
           <span className={styles.cardMatchLine}>
             <span aria-hidden>💚</span>
-            <span>
-              {tResult('compatibility.bestLabel')} ·{' '}
-              {data.compatibility.best.title}
-            </span>
+            <span>{data.compatibility.best.title}</span>
           </span>
         )}
         <span className={styles.cardFooter}>

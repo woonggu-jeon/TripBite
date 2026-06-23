@@ -661,8 +661,8 @@
       "retake": "Retake",
       "compatibility": {
         "title": "Travel match",
-        "bestLabel": "Great match",
-        "worstLabel": "Watch out"
+        "bestLabel": "Best match",
+        "worstLabel": "Worst match"
       }
     },
     "share": {

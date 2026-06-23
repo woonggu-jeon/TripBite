@@ -661,8 +661,8 @@
       "retake": "다시 테스트",
       "compatibility": {
         "title": "여행 궁합",
-        "bestLabel": "잘 맞아요",
-        "worstLabel": "조심해요"
+        "bestLabel": "잘 맞는 유형",
+        "worstLabel": "잘 안 맞는 유형"
       }
     },
     "share": {
