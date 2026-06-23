@@ -702,6 +702,11 @@
       "avatarRemoveFailed": "이미지 제거에 실패했어요.",
       "badgeNewbie": "새내기 여행자",
       "badgeAria": "여행자 등급",
+      "sheetTitle": "프로필 사진 변경",
+      "sheetDescription": "새로운 프로필 사진을 등록해주세요",
+      "sheetOptionCamera": "카메라로 찍기",
+      "sheetOptionGallery": "갤러리에서 선택",
+      "sheetOptionRemove": "사진 제거",
       "travelType": {
         "label": "여행 유형"
       }

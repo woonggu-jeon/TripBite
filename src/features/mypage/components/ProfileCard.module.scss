@@ -18,45 +18,38 @@
 }
 
 // Figma cam-badge — 22x22 absolute right -2 bottom -2, primary bg + 2px white
-// border + radius 11. Camera icon 12x12 안.
-.avatarRemoveBtn {
+// border + radius 11 + Camera icon 12 white. 사용자 발견: X (제거) icon 회귀
+// → Camera icon 정합 (2026-06-23). 클릭 시 BottomSheet 트리거.
+.cameraBtn {
   position: absolute;
-  // Figma cam-badge 위치 — right -2 bottom -2. 단 우리는 remove (X) 기능 —
-  // Figma 의 cam (변경) 과 의미 다름. visual 정합 위해 위치/크기 정합.
-  top: -2px;
   right: -2px;
+  bottom: -2px;
   z-index: 1;
   width: 22px;
   height: 22px;
   display: grid;
   place-items: center;
   padding: 0;
-  background: var(--color-bg);
-  border: 1.5px solid var(--color-border);
+  background: var(--color-primary);
+  border: 2px solid var(--color-bg);
   border-radius: var(--radius-full);
-  color: var(--color-fg);
+  color: var(--color-bg);
   cursor: pointer;
-  box-shadow: var(--shadow-sm);
   transition:
     transform var(--motion-fast) ease,
-    border-color var(--motion-base) ease;
+    opacity var(--motion-base) ease;
 
   @media (hover: hover) and (pointer: fine) {
-    &:hover:not(:disabled) {
-      border-color: var(--color-danger, var(--color-primary));
-      color: var(--color-danger, var(--color-primary));
+    &:hover {
+      opacity: var(--opacity-hover-dim);
     }
   }
-  &:active:not(:disabled) {
+  &:active {
     transform: scale(0.92);
   }
   &:focus-visible {
     outline: var(--focus-outline);
     outline-offset: var(--focus-outline-offset);
-  }
-  &:disabled {
-    opacity: var(--opacity-disabled);
-    cursor: not-allowed;
   }
 }
 
@@ -179,4 +172,52 @@
   line-height: 1;
   color: var(--color-primary);
   margin: 0;
+}
+
+// Figma "MY · 프로필 사진 변경" opt row (2026-06-23) — 64h padding 12/20
+// gap 12, opt-ic 40 circle primary-soft + label SB_14 fg.
+.sheetOption {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: background var(--motion-base) ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      background: var(--color-hover);
+    }
+  }
+  &:disabled {
+    opacity: var(--opacity-disabled);
+    cursor: not-allowed;
+  }
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: calc(-1 * var(--focus-outline-offset));
+  }
+}
+
+.sheetOptionIcon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.sheetOptionLabel {
+  // Figma label — SemiBold 14 line 140% -0.02em fg.
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
 }

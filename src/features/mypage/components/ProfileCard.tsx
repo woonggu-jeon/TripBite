@@ -3,13 +3,14 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { User, X, Compass } from 'lucide-react';
+import { Camera, Compass, ImagePlus, Trash2, User } from 'lucide-react';
 import { useMe } from '@/features/auth/hooks/use-auth';
 import {
   useMypage,
   useRemoveAvatar,
   useUpdateAvatar,
 } from '@/features/mypage/hooks/use-mypage';
+import { BottomSheet } from '@/components/feedback/BottomSheet';
 import { secureImageUrl } from '@/lib/secure-image-url';
 import { haptic } from '@/lib/haptic';
 import { toast } from '@/lib/toast';
@@ -22,8 +23,8 @@ const MAX_AVATAR_BYTES = 10 * 1024 * 1024;
  *
  * Card primitive (highlighted wrap) → flat horizontal row.
  * - avatar 56x56 primary-soft bg + User icon (fallback) / user image
- * - cam-badge 22x22 right -2 bottom -2 (avatar 변경 트리거 — Figma 의 의미는
- *   카메라이지만 우리 동작은 file picker / 제거)
+ * - **cam-badge 22x22 right -2 bottom -2** — Camera icon 12 (Figma 정합).
+ *   클릭 시 BottomSheet 열림 → 카메라 / 갤러리 / 제거 옵션.
  * - 닉네임 (Inter ExtraBold 18 130% -0.03em)
  * - badge "새내기 여행자" pill (primary-soft bg + compass icon 13 + Bold 12
  *   primary) — 빈 상태 default. travelType.title 이 있으면 그 값 우선.
@@ -34,8 +35,10 @@ export function ProfileCard() {
   const { data: me } = useMe();
   const updateAvatar = useUpdateAvatar();
   const removeAvatar = useRemoveAvatar();
-  const fileRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
   const [localPreview, setLocalPreview] = useState<string | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -45,7 +48,7 @@ export function ProfileCard() {
 
   const onPick = () => {
     haptic.tap();
-    fileRef.current?.click();
+    setSheetOpen(true);
   };
 
   const onFile = (e: ChangeEvent<HTMLInputElement>) => {
@@ -75,8 +78,7 @@ export function ProfileCard() {
     });
   };
 
-  const onRemove = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const onRemove = () => {
     haptic.tap();
     if (localPreview) URL.revokeObjectURL(localPreview);
     setLocalPreview(null);
@@ -86,79 +88,153 @@ export function ProfileCard() {
     });
   };
 
+  const triggerCamera = () => {
+    setSheetOpen(false);
+    cameraInputRef.current?.click();
+  };
+  const triggerGallery = () => {
+    setSheetOpen(false);
+    galleryInputRef.current?.click();
+  };
+  const triggerRemove = () => {
+    setSheetOpen(false);
+    onRemove();
+  };
+
   const nickname = data?.profile.nickname ?? (isLoading ? '' : t('anonymous'));
   const avatarSrc = localPreview ?? secureImageUrl(me?.avatarUrl);
   const hasAvatar = !!avatarSrc;
-  // travelType 있으면 그 라벨, 없으면 "새내기 여행자" (Figma default badge).
   const badgeLabel = data?.travelType?.title ?? t('badgeNewbie');
 
   return (
-    <section className={styles.row} aria-label={t('label')}>
-      <div className={styles.avatarWrap}>
+    <>
+      <section className={styles.row} aria-label={t('label')}>
+        <div className={styles.avatarWrap}>
+          <button
+            type="button"
+            className={styles.avatarBtn}
+            onClick={onPick}
+            aria-label={t('changeAvatar')}
+          >
+            <span className={styles.avatar}>
+              {localPreview ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={localPreview}
+                  alt={t('avatarAlt', { nickname })}
+                  className={styles.avatarImg}
+                />
+              ) : avatarSrc ? (
+                <Image
+                  src={avatarSrc}
+                  alt={t('avatarAlt', { nickname })}
+                  fill
+                  sizes="56px"
+                  className={styles.avatarImg}
+                />
+              ) : (
+                <span className={styles.avatarFallback} aria-hidden>
+                  <User size={27} strokeWidth={1.9} />
+                </span>
+              )}
+            </span>
+          </button>
+          {/* Figma cam-badge — 22x22 absolute right -2 bottom -2, primary bg
+              + 2px white border + Camera icon 12 white. 항상 노출. 클릭 시
+              avatar 변경 sheet 열기. */}
+          <button
+            type="button"
+            className={styles.cameraBtn}
+            onClick={onPick}
+            aria-label={t('changeAvatar')}
+          >
+            <Camera size={12} aria-hidden />
+          </button>
+        </div>
+        <input
+          ref={cameraInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className={styles.fileInput}
+          onChange={onFile}
+          aria-hidden
+          tabIndex={-1}
+        />
+        <input
+          ref={galleryInputRef}
+          type="file"
+          accept="image/*"
+          className={styles.fileInput}
+          onChange={onFile}
+          aria-hidden
+          tabIndex={-1}
+        />
+
+        <div className={styles.pmid}>
+          <h2 className={styles.nickname}>
+            {nickname || (
+              <span className={styles.nicknameSkeleton} aria-hidden />
+            )}
+          </h2>
+          <span
+            className={styles.badge}
+            role="status"
+            aria-label={t('badgeAria')}
+          >
+            <Compass size={13} className={styles.badgeIcon} aria-hidden />
+            <span className={styles.badgeLabel}>{badgeLabel}</span>
+          </span>
+        </div>
+      </section>
+
+      {/* Figma "MY_01 · 프로필 사진 변경" bottom sheet (2026-06-23). */}
+      <BottomSheet
+        open={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        title={t('sheetTitle')}
+        description={t('sheetDescription')}
+      >
         <button
           type="button"
-          className={styles.avatarBtn}
-          onClick={onPick}
-          aria-label={t('changeAvatar')}
+          className={styles.sheetOption}
+          onClick={triggerCamera}
         >
-          <span className={styles.avatar}>
-            {localPreview ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={localPreview}
-                alt={t('avatarAlt', { nickname })}
-                className={styles.avatarImg}
-              />
-            ) : avatarSrc ? (
-              <Image
-                src={avatarSrc}
-                alt={t('avatarAlt', { nickname })}
-                fill
-                sizes="56px"
-                className={styles.avatarImg}
-              />
-            ) : (
-              <span className={styles.avatarFallback} aria-hidden>
-                <User size={27} strokeWidth={1.9} />
-              </span>
-            )}
+          <span className={styles.sheetOptionIcon} aria-hidden>
+            <Camera size={22} strokeWidth={1.65} />
+          </span>
+          <span className={styles.sheetOptionLabel}>
+            {t('sheetOptionCamera')}
+          </span>
+        </button>
+        <button
+          type="button"
+          className={styles.sheetOption}
+          onClick={triggerGallery}
+        >
+          <span className={styles.sheetOptionIcon} aria-hidden>
+            <ImagePlus size={22} strokeWidth={1.65} />
+          </span>
+          <span className={styles.sheetOptionLabel}>
+            {t('sheetOptionGallery')}
           </span>
         </button>
         {hasAvatar && (
           <button
             type="button"
-            className={styles.avatarRemoveBtn}
-            onClick={onRemove}
-            aria-label={t('removeAvatar')}
+            className={styles.sheetOption}
+            onClick={triggerRemove}
             disabled={removeAvatar.isPending}
           >
-            <X size={12} aria-hidden />
+            <span className={styles.sheetOptionIcon} aria-hidden>
+              <Trash2 size={22} strokeWidth={1.65} />
+            </span>
+            <span className={styles.sheetOptionLabel}>
+              {t('sheetOptionRemove')}
+            </span>
           </button>
         )}
-      </div>
-      <input
-        ref={fileRef}
-        type="file"
-        accept="image/*"
-        className={styles.fileInput}
-        onChange={onFile}
-        aria-hidden
-        tabIndex={-1}
-      />
-
-      <div className={styles.pmid}>
-        <h2 className={styles.nickname}>
-          {nickname || <span className={styles.nicknameSkeleton} aria-hidden />}
-        </h2>
-        <span
-          className={styles.badge}
-          role="status"
-          aria-label={t('badgeAria')}
-        >
-          <Compass size={13} className={styles.badgeIcon} aria-hidden />
-          <span className={styles.badgeLabel}>{badgeLabel}</span>
-        </span>
-      </div>
-    </section>
+      </BottomSheet>
+    </>
   );
 }

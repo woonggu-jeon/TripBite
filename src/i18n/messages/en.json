@@ -702,6 +702,11 @@
       "avatarRemoveFailed": "Couldn't remove image.",
       "badgeNewbie": "Newbie traveler",
       "badgeAria": "Traveler badge",
+      "sheetTitle": "Change profile photo",
+      "sheetDescription": "Pick a new profile picture",
+      "sheetOptionCamera": "Take photo",
+      "sheetOptionGallery": "Choose from gallery",
+      "sheetOptionRemove": "Remove photo",
       "travelType": {
         "label": "Travel type"
       }
