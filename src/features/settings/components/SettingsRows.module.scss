@@ -71,12 +71,12 @@
 // button-row 패턴 유지. clickable button element 는 ListRow primitive 사용.
 
 // AccountActionsSection 의 logout / withdraw — Figma "설정" page bw frame.
-// padding 20 wrapper + 320x52 column button (gap 12). Button.s-lg variant=
-// secondary 위에 border-color #C6C6C6 (--color-stroke) + color override.
+// padding 20 all + 320x52 column button (gap 12). 이전 padding-bottom 0
+// 회귀 정정 (2026-06-23).
 .actionStack {
   display: flex;
   flex-direction: column;
-  padding: var(--space-5) var(--space-5) 0;
+  padding: var(--space-5);
   gap: var(--space-3);
 }
 
