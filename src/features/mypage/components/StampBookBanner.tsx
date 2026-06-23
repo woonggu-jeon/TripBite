@@ -56,7 +56,11 @@ export function StampBookBanner() {
       <div className={styles.row}>
         <div className={styles.labelGroup}>
           <span className={styles.title}>
-            {isMaster ? t('masterAchieved') : t('bannerTitle')}
+            {isMaster
+              ? t('masterAchieved')
+              : t('remainingTitle', {
+                  remaining: Math.max(0, total - visited),
+                })}
           </span>
           <span className={styles.hint}>{t('bannerHint')}</span>
         </div>

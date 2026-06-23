@@ -42,15 +42,28 @@
   text-align: center;
 }
 
-// PageSection action 슬롯 — 타이틀 우측 inline 링크 "전체보기 (N)"
+// Figma "MY_01" sec-title 우측 muted text + chev (2026-06-23) — Caption R_12
+// muted + ChevronRight 14. stampMapViewAll 과 동일 시각 (sec-title 우측 통일).
 .viewAll {
-  font-size: var(--font-body-sm);
-  color: var(--color-primary);
-  font-weight: var(--font-weight-bold);
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: var(--font-caption);
+  font-weight: var(--font-weight-regular);
+  letter-spacing: -0.01em;
+  color: var(--color-muted);
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      text-decoration: underline;
+      color: var(--color-fg);
     }
   }
+}
+
+// Figma DestinationCard 152×168 carousel skeleton — gap 8 horizontal flex.
+// SkeletonList Fragment 가 column stack 회귀 → 자체 flex container.
+.skeletonRow {
+  display: flex;
+  gap: 8px;
+  overflow: hidden;
 }

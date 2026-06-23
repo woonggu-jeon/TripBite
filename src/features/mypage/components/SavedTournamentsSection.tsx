@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Trophy } from 'lucide-react';
+import { ChevronRight, Trophy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Carousel } from '@/features/carousel';
-import { SkeletonList } from '@/components/feedback/SkeletonList';
+import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
 import { useSavedTournaments } from '@/features/tournament/hooks/use-tournament';
@@ -29,7 +29,15 @@ export function SavedTournamentsSection() {
   const { data, isLoading, isError, refetch } = useSavedTournaments();
 
   if (isLoading) {
-    return <SkeletonList count={2} height={168} radius="lg" />;
+    // Figma DestinationCard 152×168 — carousel 가로 스크롤 skeleton.
+    // SkeletonList Fragment 는 column stack 회귀 → 자체 horizontal flex.
+    return (
+      <div className={styles.skeletonRow} aria-busy>
+        <Skeleton width={152} height={168} radius="lg" />
+        <Skeleton width={152} height={168} radius="lg" />
+        <Skeleton width={152} height={168} radius="lg" />
+      </div>
+    );
   }
 
   if (isError) {
@@ -81,11 +89,16 @@ export function SavedTournamentsSection() {
 }
 
 /**
- * PageSection action 슬롯용 — 헤더 우측 "전체보기 (N)" Link.
- * /mypage/saved-tournaments 상세 페이지 진입점. data 없을 때는 미노출.
+ * PageSection action 슬롯용 — 헤더 우측 "전체보기" Link + chev.
+ * /mypage/saved-tournaments 상세 페이지 진입점.
+ *
+ * Figma "MY_01" sec-title 우측 muted text 패턴 정합 (stampMapViewAll 과
+ * 동일 시각 — Caption R_12 muted + ChevronRight 14). 이전 "(N)" count
+ * + primary bold 회귀 정정 (2026-06-23).
+ * data 없을 때는 미노출.
  */
 export function SavedTournamentsViewAll() {
-  const t = useTranslations('mypage.savedTournaments');
+  const tSections = useTranslations('mypage.sections');
   const { data } = useSavedTournaments();
   const count = data?.length ?? 0;
   if (count === 0) return null;
@@ -95,7 +108,8 @@ export function SavedTournamentsViewAll() {
       prefetch={false}
       className={styles.viewAll}
     >
-      {t('viewAll', { count })}
+      <span>{tSections('savedTournamentsViewAll')}</span>
+      <ChevronRight size={14} aria-hidden />
     </Link>
   );
 }

@@ -685,8 +685,8 @@
       "stampMap": "Chungbuk stamp book",
       "stampMapViewAll": "View all",
       "savedTournaments": "Saved winners",
-      "tournamentHistory": "Recent tournaments",
-      "goToSettings": "Go to settings"
+      "savedTournamentsViewAll": "View all",
+      "tournamentHistory": "Recent tournaments"
     },
     "profile": {
       "label": "Profile",
@@ -743,8 +743,7 @@
     },
     "stampBook": {
       "pageTitle": "Chungbuk stamp book",
-      "bannerTitle": "Chungbuk 11 cities stamp book",
-      "bannerHint": "Visit more new places!",
+      "bannerHint": "Explore more places",
       "remainingTitle": "{remaining} more to Chungbuk Master",
       "progCaption": "Visited {visited}, {remaining} left",
       "progCaptionMaster": "You've visited every city in Chungbuk!",

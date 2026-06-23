@@ -684,9 +684,9 @@
       "profile": "프로필",
       "stampMap": "충북 도장책",
       "stampMapViewAll": "전체보기",
-      "savedTournaments": "저장한 우승 여행지",
-      "tournamentHistory": "최근 토너먼트",
-      "goToSettings": "설정으로 이동"
+      "savedTournaments": "저장한 우승지",
+      "savedTournamentsViewAll": "전체보기",
+      "tournamentHistory": "최근 토너먼트"
     },
     "profile": {
       "label": "프로필",
@@ -743,8 +743,7 @@
     },
     "stampBook": {
       "pageTitle": "충북 도장책",
-      "bannerTitle": "충북 11개 시군 도장책",
-      "bannerHint": "새로운 곳을 더 가보세요!",
+      "bannerHint": "여행지를 더 둘러보세요",
       "remainingTitle": "충북 마스터까지 {remaining}개 남음",
       "masterAchieved": "충북 마스터 달성!",
       "progress": "{visited} / {total}",
