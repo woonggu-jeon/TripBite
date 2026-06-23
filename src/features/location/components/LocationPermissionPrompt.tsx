@@ -40,14 +40,13 @@ export function LocationPermissionPrompt({
       role="dialog"
       aria-labelledby="loc-perm-title"
     >
-      {/* Figma 위치 권한 동의 hero — 116px SVG icon. lucide MapPin 대체.
-          SVG 는 native <img> — next/image 의 hydration 지연 회피. */}
+      {/* Figma "circle/location" (3378:266) — 96x96. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/images/auth/location-hero.svg"
         alt=""
-        width={116}
-        height={116}
+        width={96}
+        height={96}
         className={styles.icon}
       />
       <h3 id="loc-perm-title" className={styles.title}>

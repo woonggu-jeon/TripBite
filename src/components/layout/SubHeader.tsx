@@ -58,7 +58,7 @@ export function SubHeader({
           className={styles.back}
           onClick={handleBack}
         >
-          <ChevronLeft size={22} />
+          <ChevronLeft size={24} />
         </button>
         <h1 className={styles.title}>{title}</h1>
         <div className={styles.rightSlot}>{rightSlot}</div>
