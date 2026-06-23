@@ -19,9 +19,8 @@ interface BrandLogoProps {
  *   - amber #F79D26 ×2 — 작은 액센트 2개
  *
  * 사용처:
- *   - MasterCard footer brand row
  *   - /api/og/quiz Satori PNG footer (inline SVG)
- *   - /api/og/master Satori PNG footer (inline SVG)
+ *   - /api/og/master Satori PNG brand row (inline SVG)
  *
  * 출처: public/images/auth/trip-bite-logo.svg (92×85 viewBox) — 같은 path
  * 데이터를 inline JSX 로 옮겨 Satori 호환 (next/image 는 ImageResponse 에서

@@ -7,7 +7,6 @@ import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
 import { useStamps } from '@/features/mypage/hooks/use-mypage';
-import { MasterCard } from '@/features/mypage/components/MasterCard';
 import { ChungbukStampMap } from '@/features/region/components/ChungbukStampMap';
 import { useShareCard } from '@/hooks/use-share-card';
 import { haptic } from '@/lib/haptic';
@@ -18,9 +17,11 @@ import styles from './StampsClient.module.scss';
  * 도장책 전체 페이지 client.
  *
  * 구성:
- *   1) 진행 배너 — "충북 마스터까지 N개 남음" 또는 "충북 마스터 달성!"
- *   2) 정밀 지도 — ChungbukStampMap (Sage Mist 색 / dashed 미획득)
- *   3) (11/11 도달 시) 마스터 OG 카드 공유 버튼
+ *   1) prog-card — 진행도 + 라벨. 11/11 달성 시 자체 button (click = share OG
+ *      master PNG). 사용자 명시 (2026-06-23): 별도 축하 카드 본문 노출 X,
+ *      "11개 시군 모두 모으면 충북 마스터 카드를 받아요" 영역 (= prog-card)
+ *      만 share trigger.
+ *   2) 정밀 지도 — ChungbukStampMap (Sage Mist 색 / dashed 미획득).
  */
 export function StampsClient() {
   const t = useTranslations('mypage.stampBook');
@@ -149,10 +150,6 @@ export function StampsClient() {
           </div>
         </div>
       </div>
-
-      {/* Figma "MY · 마스터 카드" — 11/11 달성 축하 카드 본문에 노출. share 는
-          prog-card 자체 click 으로 통합 (별도 share button 제거). */}
-      {isMaster && <MasterCard />}
     </div>
   );
 }
