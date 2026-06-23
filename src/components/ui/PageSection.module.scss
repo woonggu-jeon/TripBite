@@ -17,11 +17,15 @@
 }
 
 .title {
-  font-size: var(--font-h3);
-  font-weight: var(--font-weight-extrabold);
-  letter-spacing: var(--tracking-tight);
+  // Figma "bl" sec-title (2026-06-23) — Btn/SB_14 (Pretendard SemiBold 14,
+  // line 100%, ls -0.01em). 이전 font-h3 (17) ExtraBold tracking-tight 회귀
+  // 정정. 모든 PageSection 사용처 (settings/mypage/ranking/letter/region
+  // 등) 일괄 정합.
+  font-size: var(--text-sm); /* 14 */
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-snug); /* -0.01em */
+  line-height: var(--line-1); /* 100% */
   color: var(--color-fg);
-  line-height: var(--line-snug);
 }
 
 .hint {
