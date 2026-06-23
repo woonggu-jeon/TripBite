@@ -9,16 +9,14 @@ import { haptic } from '@/lib/haptic';
 import styles from './BottomNav.module.scss';
 
 /**
- * 하단 네비게이션 (5 탭)
+ * 하단 네비게이션 — Figma "nav" 정합 (2026-06-23).
  *
- * 변경 사항:
- *   - 아이콘을 lucide-react 에서 SVG sprite (<Icon />) 로 교체
- *     · 다른 페이지에 lucide 아이콘 import 가 없는 페이지는 lucide 전체를 다운로드 안 함
- *     · 첫 진입 시 /icons.svg 한 번 다운로드 (SW 캐시 후 영구)
- *   - 탭 클릭 시 미세 햅틱 (모바일)
+ * 5 평등 탭 (72×62 each). icon 24 + Caption M_10 label.
+ *   - 비활성: text-disabled (#B4B4B4)
+ *   - 활성: primary + Bold (B_10)
  *
- * 활성 기준:
- *   - 홈("/")은 정확히 일치
+ * 아이콘은 SVG sprite (<Icon />). 활성 기준:
+ *   - 홈("/") 정확히 일치
  *   - 나머지는 prefix 매칭 (예: /tournament/play 도 토너먼트 탭 활성)
  */
 export function BottomNav() {
@@ -32,31 +30,21 @@ export function BottomNav() {
     <nav className={styles.nav} aria-label={t('home')}>
       {BOTTOM_NAV_ROUTES.map((route) => {
         const active = isActive(route.path);
-        const emphasized = 'emphasized' in route && route.emphasized;
-
         return (
           <Link
             key={route.path}
             href={route.path}
             onClick={() => haptic.tap()}
-            className={[
-              styles.item,
-              active ? styles.active : '',
-              emphasized ? styles.emphasized : '',
-            ]
+            className={[styles.item, active ? styles.active : '']
               .filter(Boolean)
               .join(' ')}
             aria-current={active ? 'page' : undefined}
           >
-            <span className={emphasized ? styles.emphasizedCircle : ''}>
-              <Icon
-                name={route.icon as IconName}
-                // Figma BottomNav icon 24 (Caption/M_10 active 시 primary).
-                // emphasized 가운데 raised 는 우리 design (Figma 외) — 26 유지.
-                size={emphasized ? 26 : 24}
-                aria-label={t(route.labelKey)}
-              />
-            </span>
+            <Icon
+              name={route.icon as IconName}
+              size={24}
+              aria-label={t(route.labelKey)}
+            />
             <span className={styles.label}>{t(route.labelKey)}</span>
           </Link>
         );

@@ -33,20 +33,14 @@ export const ROUTES = {
 } as const;
 
 /**
- * 하단 네비게이션 5탭
- *
- * emphasized: true → 가운데 강조 버튼 (BottomNav에서 raised로 렌더)
- * 사이트맵 기준: 토너먼트가 중앙 강조 위치
+ * 하단 네비게이션 5탭 — Figma "nav" 정합 (2026-06-23). 5탭 평등 (72×62
+ * stroke + Caption M_10/B_10). 이전 emphasized (raised circle) — 자체
+ * 디자인이었으나 Figma 정합 결정으로 제거.
  */
 export const BOTTOM_NAV_ROUTES = [
   { path: ROUTES.HOME, labelKey: 'home', icon: 'home' },
   { path: ROUTES.RANKING, labelKey: 'ranking', icon: 'trending-up' },
-  {
-    path: ROUTES.TOURNAMENT,
-    labelKey: 'tournament',
-    icon: 'trophy',
-    emphasized: true,
-  },
+  { path: ROUTES.TOURNAMENT, labelKey: 'tournament', icon: 'trophy' },
   { path: ROUTES.LETTER, labelKey: 'letter', icon: 'mail' },
   { path: ROUTES.MYPAGE, labelKey: 'mypage', icon: 'user' },
 ] as const;
