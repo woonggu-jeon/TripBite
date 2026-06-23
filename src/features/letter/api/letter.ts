@@ -1,5 +1,4 @@
 import {
-  letterControllerComposeV1,
   letterControllerGetV1,
   letterControllerLikeV1,
   letterControllerLikedV1,
@@ -9,6 +8,8 @@ import {
   letterControllerSavedV1,
   letterControllerSentV1,
 } from '@/api/generated/letters/letters';
+import { api } from '@/services/api/client';
+import type { ComposeLetterDto, LetterDto } from '@/api/generated/schemas';
 
 const PAGE_LIMIT = '10';
 
@@ -33,7 +34,29 @@ function pageParams(cursor: number) {
  *   DELETE /letters/:id              → 204
  */
 export const letterApi = {
-  send: letterControllerComposeV1,
+  /**
+   * 편지 작성 (POST /v1/letters).
+   *
+   * Idempotency-Key (BE 합의 2026-06-23): 호출 1회 = UUID 1개 → 같은 키
+   * 24h 내 동일 결과 반환 → 네트워크 재시도 / 더블 submit 시 letter 중복
+   * 생성 방지. 토너먼트 `recordResult` 와 동일 규약.
+   * generated `letterControllerComposeV1` 는 axios config override 불가
+   * (signal 만 받음) — generated 우회 후 axios 직접 호출. 다른 endpoint 는
+   * generated 그대로.
+   */
+  send: async (
+    data: ComposeLetterDto,
+    idempotencyKey?: string,
+    signal?: AbortSignal,
+  ): Promise<LetterDto> => {
+    const headers: Record<string, string> = {};
+    if (idempotencyKey) headers['Idempotency-Key'] = idempotencyKey;
+    const res = await api.post<LetterDto>('/v1/letters', data, {
+      headers: Object.keys(headers).length > 0 ? headers : undefined,
+      signal,
+    });
+    return res.data;
+  },
   listReceived: (cursor = 0) => letterControllerReceivedV1(pageParams(cursor)),
   listSent: (cursor = 0) => letterControllerSentV1(pageParams(cursor)),
   listLiked: (cursor = 0) => letterControllerLikedV1(pageParams(cursor)),

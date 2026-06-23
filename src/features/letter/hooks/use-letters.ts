@@ -58,10 +58,26 @@ export function useLetter(id: string) {
   });
 }
 
+/**
+ * 편지 작성 mutation.
+ *
+ * Idempotency-Key (BE 합의 2026-06-23): mutate 호출 1회 = UUID 1개. 24h
+ * 내 같은 키 = BE 가 동일 결과 반환 → 네트워크 재시도 / 더블 submit 시
+ * letter 중복 생성 방지. 토너먼트 `useRecordTournament` 와 동일 규약.
+ * 더블 submit 자체는 호출처 (LetterComposeForm) 의 isPending 가드로 1차
+ * 차단. mutation retry 는 기본 0 — 같은 키 재사용 시나리오는 사용자 의도
+ * 재시도 (mutate 재호출 = 새 UUID, 다른 트랜잭션) 외엔 없음.
+ */
 export function useSendLetter() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: ComposeLetterDto) => letterApi.send(data),
+    mutationFn: (data: ComposeLetterDto) => {
+      const idempotencyKey =
+        typeof crypto !== 'undefined' && 'randomUUID' in crypto
+          ? crypto.randomUUID()
+          : undefined;
+      return letterApi.send(data, idempotencyKey);
+    },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: letterKeys.list('sent') });
     },

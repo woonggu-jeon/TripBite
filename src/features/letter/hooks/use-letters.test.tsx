@@ -197,6 +197,27 @@ describe('useSendLetter', () => {
       queryKey: letterKeys.list('sent'),
     });
   });
+
+  it('Idempotency-Key 헤더 전송 (BE dedup — letter 중복 생성 방지)', async () => {
+    let capturedKey: string | null = null;
+    server.use(
+      http.post(`${apiUrl}/letters`, ({ request }) => {
+        capturedKey = request.headers.get('Idempotency-Key');
+        return HttpResponse.json(makeLetter({ id: 'l-idem' }));
+      }),
+    );
+    const { result } = renderHookWithProviders(() => useSendLetter());
+    await act(async () => {
+      await result.current.mutateAsync({
+        body: '잘있어',
+        location: { label: '청주시 어딘가', regionCode: 'cheongju' },
+      });
+    });
+    expect(capturedKey).toBeTruthy();
+    expect(capturedKey).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    );
+  });
 });
 
 describe('useDeleteLetter', () => {
