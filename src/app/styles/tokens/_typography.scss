@@ -1,5 +1,25 @@
 /* Typography tokens — font size scale + 시멘틱 + 도메인 + line/tracking/weight + emoji.
-   디자이너가 typography hierarchy 조정 시 한 파일만 수정. */
+   디자이너가 typography hierarchy 조정 시 한 파일만 수정.
+
+   **Figma 토큰 페이지 mapping (2026-06-23)** — 디자이너 token 명 → 우리 토큰:
+
+   | Figma 토큰         | size            | weight | line   | ls       | 우리 사용                                         |
+   | ------------------ | --------------- | ------ | ------ | -------- | ------------------------------------------------- |
+   | Title/B_24_130%    | --text-2xl (24) | 700    | 1.3em  | -0.02em  | --font-h1 (1.5rem) + bold + line-tight            |
+   | Title/B_20_130%    | --text-xl (20)  | 700    | 1.3em  | -0.02em  | --font-h2 (1.25rem) + bold + line-tight           |
+   | Title/B_18_140%    | --text-lg (18)  | 700    | 1.4em  | -0.02em  | --text-lg + bold + line-snug-relaxed              |
+   | Title/B_18_120%    | --text-lg (18)  | 700    | 1.2em  | -0.02em  | --text-lg + bold + line-tight                     |
+   | Basic Body/B_16_140% | --text-base   | 700    | 1.4em  | -0.02em  | --font-body (1rem) + bold                         |
+   | Basic Body/B_14_140% | --text-sm     | 700    | 1.4em  | -0.02em  | --text-sm + bold                                  |
+   | Basic Body/SB_16_140%| --text-base   | 600    | 1.4em  | -0.02em  | --font-body + semibold                            |
+   | Basic Body/M_16_140% | --text-base   | 500    | 1.4em  | -0.02em  | --font-body + medium (Button/Input value)         |
+   | Basic Body/R_16_140% | --text-base   | 400    | 1.4em  | -0.02em  | --font-body + regular                             |
+   | Basic Body/R_14_140% | --text-sm     | 400    | 1.4em  | -0.02em  | --text-sm + regular (Walk tagline)                |
+   | Caption/R_12       | --text-xs (12)  | 400    | 1.4em  | -0.01em  | --font-caption + regular + ls-snug (InputField label) |
+   | Btn/SB_14          | --text-sm       | 600    | 1em    | -0.01em  | --text-sm + semibold + line-1 (작은 button label) |
+
+   raw px 직접 작성 금지 — `var(--text-*)` + `var(--font-weight-*)` + `var(--line-*)` + `var(--tracking-*)` 조합 사용.
+*/
 :root {
   /* primitive scale (크기만) */
   --text-xs: 0.75rem; /* 12px */
@@ -37,16 +57,21 @@
   --emoji-3xl: 5rem; /* celebration emoji (80px) */
   --emoji-4xl: 6rem; /* hero illustration glyph (96px) */
 
-  /* line-height */
+  /* line-height — Figma 토큰 페이지 (em 단위) + 도메인 */
   --line-display: 1.1; /* 큰 글씨 (CountSelector) */
-  --line-tight: 1.2;
+  --line-tight: 1.2; /* Figma "120%" — Title B_18_120% 등 */
   --line-snug: 1.35;
+  --line-snug-relaxed: 1.4; /* Figma "140%" — Body/Caption 대부분 */
   --line-normal: 1.5;
-  --line-relaxed: 1.65;
+  --line-relaxed: 1.55; /* Figma description (Walk hero) */
+  --line-1: 1; /* Figma Btn/SB_14 (line 100%) */
+  --line-65: 1.65; /* LocationPermission desc */
+  /* 기존 --line-relaxed (1.65) → --line-65 으로 rename. alias 유지: */
+  /* (--line-relaxed 사용처가 1.65 가정이면 → --line-65 으로 점진 마이그) */
 
-  /* letter-spacing */
-  --tracking-tight: -0.02em;
-  --tracking-snug: -0.01em;
+  /* letter-spacing — Figma 토큰 페이지 */
+  --tracking-tight: -0.02em; /* Figma Title/Body 대부분 */
+  --tracking-snug: -0.01em; /* Figma Caption/Btn */
   --tracking-normal: 0;
   --tracking-wide: 0.02em;
   --tracking-uppercase: 0.06em;
@@ -54,11 +79,12 @@
   --tracking-pin: 0.25em; /* LetterDetail body PIN style */
   --tracking-pin-fill: 1em; /* PinLikeInput 5칸 강제 */
 
-  /* font-weight */
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
+  /* font-weight — Figma 토큰 명 매칭 */
+  --font-weight-regular: 400; /* R (Regular) */
+  --font-weight-normal: 400; /* alias — 기존 사용처 호환 */
+  --font-weight-medium: 500; /* M (Medium) */
+  --font-weight-semibold: 600; /* SB (SemiBold) */
+  --font-weight-bold: 700; /* B (Bold) */
   --font-weight-extrabold: 800;
 
   /* Font stack — next/font/local 의 var(--font-sans-loaded) 우선 + 메트릭 fallback + 시스템.
