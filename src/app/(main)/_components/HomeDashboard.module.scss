@@ -14,14 +14,15 @@
   gap: 9px;
 }
 
-// Figma qa-banner — 320×74/79 padding 15 16 gap 13 radius 12. primary 은
-// primary-soft bg, amber 는 #FCEFD9.
+// Figma qa-banner (2026-06-23 정정) — 320×82/85 padding 12 20 gap 12 radius 12.
+// primary 은 secondary01 (#EBF9EF) bg, amber 는 #FCEFD9.
+// 이전 padding 15 16 gap 13 → 12 20 12 정정.
 .qaBanner {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 13px;
-  padding: 15px 16px;
+  gap: 12px;
+  padding: 12px 20px;
   border-radius: 12px;
   text-decoration: none;
   color: inherit;
@@ -44,13 +45,13 @@
   background: #fcefd9;
 }
 
-// Figma circle 44 — flex shrink 0, icon white 22 안.
+// Figma circle 40 (이전 44 → 40 정정) — flex shrink 0, icon white 22 안.
 .qaCircle {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: var(--radius-full);
   color: #ffffff;
 }
@@ -63,11 +64,12 @@
   background: #f79d26;
 }
 
-// Figma qa-text column gap 2 — title B_14 #333 + subtitle R_12 #626262.
+// Figma qa-text Frame 38 — column gap 4 (이전 2 정정). title B_14 fg +
+// subtitle R_12 muted.
 .qaText {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
   flex: 1;
   min-width: 0;
 }
@@ -75,7 +77,7 @@
 .qaTitle {
   font-size: var(--text-sm); /* 14 */
   font-weight: var(--font-weight-bold);
-  line-height: 1.21; /* 17/14 */
+  line-height: var(--line-snug-relaxed); /* 140% */
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
   word-break: keep-all;
@@ -84,23 +86,26 @@
 .qaSubtitle {
   font-size: var(--font-caption); /* 12 */
   font-weight: var(--font-weight-regular);
-  line-height: 1.25; /* 15/12 */
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: -0.01em;
   color: var(--color-muted);
   word-break: keep-all;
 }
 
-// Figma qa-btn — 58/71 × 44 pill (radius 999) Inter SemiBold 14 white.
+// Figma qa-btn (정정) — 80×36 padding 16 20 radius 12 + Body M_16 white.
+// 이전 pill (radius 999) 44h SemiBold 14 → square radius 12 36h M_16 정정.
 .qaBtn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  padding: 0 16px;
-  height: 44px;
-  border-radius: var(--radius-full);
-  font-size: var(--text-sm); /* 14 */
-  font-weight: var(--font-weight-semibold);
-  line-height: 1.21;
+  padding: 0 20px;
+  min-height: 36px;
+  border-radius: 12px;
+  font-size: var(--font-body); /* 16 */
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: var(--tracking-tight);
   color: #ffffff;
 }
 
