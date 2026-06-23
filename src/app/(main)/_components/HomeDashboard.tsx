@@ -1,50 +1,32 @@
 import { getTranslations } from 'next-intl/server';
-import { RecommendationBanner } from '@/features/home/components/RecommendationBanner';
-import { FestivalCarousel } from '@/features/home/components/FestivalCarousel';
+import { HomeHero } from '@/features/home/components/HomeHero';
+import { HomeRecBlock } from '@/features/home/components/HomeRecBlock';
 import { HomeQuickActions } from './HomeQuickActions';
 import styles from './HomeDashboard.module.scss';
 
 /**
- * 홈 대시보드 (사이트맵 v2) — Server Component.
+ * 홈 대시보드 — Figma "HOME · 홈" (2026-06-23) 정합.
  *
  * 위젯 (위 → 아래):
- *   1) 오늘의 추천 (RecommendationBanner — `/v1/rankings?type=recommended&limit=5`)
- *   2) 진행 중인 충북 축제 슬라이드 (Carousel + useOngoingFestivals)
- *   3) 빠른 시작 2버튼 (계절 토너먼트 / 유형 테스트) — HomeQuickActions client island
+ *   1) HomeHero — 단일 큰 카드 (image + 90deg dark overlay + 텍스트).
+ *      useRecommendedDestinations(5) → [0] 만 사용.
+ *   2) HomeRecBlock — chip filter (전체/축제/관광지/체험) + DestinationCard 3
+ *      horizontal scroll. 같은 hook 의 [1..] 노출 (TanStack Query cache 공유).
+ *   3) HomeQuickActions — 2 banner (primary-soft + amber-soft). season-aware.
  *
- * 성능 원칙:
- *   - Dashboard shell 은 RSC — 첫 HTML 에 섹션 타이틀 / 정적 layout 즉시 paint
- *   - 데이터 위젯 (RecommendationBanner / FestivalCarousel) 은 자체 'use client'
- *     + useQuery → streaming 으로 채워짐
- *   - QuickActions 만 season-aware client island — getCurrentSeason 의 시간대 의존성
- *     격리. shell 의 server render 와 mismatch 없도록 useEffect 안에서 결정.
- *
- * 4) 새로 도착한 편지 미리보기 / 5) 내 우승지 가로 슬라이드 — 사용자 요청으로 미노출.
- * 추후 재오픈 시 LatestReceivedLetter / SavedTournaments carousel 복원.
+ * 이전 RecommendationBanner / FestivalCarousel 폐기 — Figma spec 의 hero +
+ * rec-block 구조로 통합 (rec-block 의 카테고리 chip 으로 축제/관광지/체험
+ * 모두 한 영역).
  */
 export async function HomeDashboard() {
-  const t = await getTranslations('home.widgets');
-
+  const t = await getTranslations('home');
   return (
     <div className={styles.grid}>
-      {/* a11y heading 위계 — 홈 페이지 h1. SubHeader 미사용 페이지 (main layout 의
-          AppHeader 만 사용) 이므로 sr-only h1 으로 페이지 제목 제공. screen reader
-          가 페이지 구조 인식, 시각적 영향 0. 2026-06-19 audit Round 25. */}
-      <h1 className={styles.srOnly}>{t('weatherRecommendation')}</h1>
-
-      {/* 1) 오늘의 추천 — RecommendationBanner 만 노출 (날씨 위젯 미노출). */}
-      <section
-        data-widget="weather-recommendation"
-        aria-label={t('weatherRecommendation')}
-      >
-        <h2 className={styles.sectionTitle}>{t('weatherRecommendation')}</h2>
-        <RecommendationBanner />
-      </section>
-
-      {/* 2) 지금 열리는 충북 축제 — 빈 응답 시 자체 미노출 */}
-      <FestivalCarousel />
-
-      {/* 3) 빠른 시작 — season 결정은 client (hydration mismatch 회피) */}
+      {/* a11y h1 — SubHeader 미사용 페이지 (AppHeader 만) sr-only h1 으로 페이지
+          제목. 시각 영향 0, screen reader 가 페이지 구조 인식. */}
+      <h1 className={styles.srOnly}>{t('title')}</h1>
+      <HomeHero />
+      <HomeRecBlock />
       <HomeQuickActions />
     </div>
   );

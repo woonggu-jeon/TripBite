@@ -278,28 +278,21 @@
         "quizCta": "테스트"
       }
     },
-    "recommendation": {
-      "label": "오늘의 추천",
-      "cta": "자세히 보기"
+    "hero": {
+      "eyebrow": "오늘의 여행",
+      "title": "한 입씩 떠나는\n충북 11개 시군"
     },
-    "festivals": {
-      "label": "지금 열리는 축제"
-    },
-    "festival": {
-      "ongoing": "지금 열리는 축제",
-      "upcoming": "곧 충북에서 열리는 축제",
-      "popular": "이번 주 인기 여행지",
-      "dday": {
-        "label": "D-{n}",
-        "aria": "{n}일 후 시작"
-      }
-    },
-    "latestLetterWidget": {
-      "badge": "새 편지 도착",
-      "justNow": "방금 전",
-      "minutesAgo": "{n}분 전",
-      "hoursAgo": "{n}시간 전",
-      "daysAgo": "{n}일 전"
+    "recBlock": {
+      "title": "추천 여행지",
+      "subtitle": "취향에 맞는 곳을 골라봤어요",
+      "filterLabel": "카테고리 필터",
+      "chip": {
+        "all": "전체",
+        "festival": "축제",
+        "attraction": "관광지",
+        "experience": "체험"
+      },
+      "emptyForChip": "해당 카테고리의 추천이 없어요"
     }
   },
   "weather": {

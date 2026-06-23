@@ -1,0 +1,111 @@
+// Figma hero-block "HOME · 홈" (2026-06-23) — 320×176 radius 12 padding 0 0 0
+// 18 column justify-center align-flex-start. overflow hidden + isolation
+// (z-index stack 안전).
+.hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  height: 176px;
+  padding: 0 0 0 18px;
+  border-radius: 12px;
+  overflow: hidden;
+  isolation: isolate;
+  text-decoration: none;
+  color: #ffffff;
+  transition: transform var(--motion-fast) ease;
+
+  &:active {
+    transform: scale(0.99);
+  }
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+  }
+}
+
+// Figma hero-img absolute fill — bg image + #A8B29C fallback (image 없을 때).
+.heroImg {
+  position: absolute;
+  inset: 0;
+  background: #a8b29c;
+  z-index: 0;
+}
+
+.heroImage {
+  object-fit: cover;
+}
+
+// Figma hero-overlay — linear-gradient 90deg dark fade (left strong → right
+// transparent). 텍스트 가독성 확보.
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.72) 0%,
+    rgba(0, 0, 0, 0.4) 40%,
+    rgba(0, 0, 0, 0) 72%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+
+// Figma hero-text 250×97 z-index 2.
+.heroText {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  max-width: 250px;
+}
+
+// Figma eyebrow Inter ExtraBold 11.5 line 14 ls 0.04em opacity 0.95.
+// Figma sp 7px gap 후 title.
+.heroEyebrow {
+  font-size: 0.71875rem; /* 11.5 */
+  font-weight: var(--font-weight-extrabold);
+  line-height: 1.21; /* 14/11.5 */
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  opacity: 0.95;
+  margin-bottom: 7px;
+}
+
+// Figma title Inter ExtraBold 21 line 126% ls -0.035em.
+// Figma sp 9px gap 후 footer.
+.heroTitle {
+  font-size: 1.3125rem; /* 21 */
+  font-weight: var(--font-weight-extrabold);
+  line-height: 1.26;
+  letter-spacing: -0.035em;
+  color: #ffffff;
+  margin: 0 0 9px;
+  word-break: keep-all;
+  // i18n hero.title 의 \n 줄바꿈 인식 — Figma 250×52 (2 줄) 정합.
+  white-space: pre-line;
+}
+
+// Figma footer row gap 4 — pin 12 + Inter Medium 12 line 15 opacity 0.9.
+.heroFooter {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem; /* 12 */
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25; /* 15/12 */
+  color: #ffffff;
+  opacity: 0.9;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero {
+    transition: none;
+    &:active {
+      transform: none;
+    }
+  }
+}

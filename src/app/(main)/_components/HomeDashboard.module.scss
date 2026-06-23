@@ -1,50 +1,10 @@
-// Fluid 반응형 — gap / 위젯 min-height 부드럽게 (320~desktop).
+// Figma "HOME · 홈 · body" (2026-06-23) — padding 16 20 20 gap 22.
+// (main)/layout 의 contentInner 가 좌우 padding 담당 — 여기는 top 4 + gap 만.
 .grid {
-  display: grid;
-  gap: clamp(1.25rem, 4vw, 1.5rem);
-}
-
-.placeholder {
-  border: 1px dashed var(--color-border);
-  border-radius: var(--radius-lg);
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  color: var(--color-muted);
-  font-size: var(--font-body-sm);
-}
-
-.placeholderNote {
-  padding: 2px var(--space-2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-eyebrow);
-}
-
-// 위젯 min-height — fluid clamp() 로 RecommendationBanner fluid height 와 매칭.
-// fetch 가 늦어도 layout shift 안 일어나도록. 카카오/Naver 인앱 webview 떨림 방지.
-.grid [data-widget='weather-recommendation'] {
-  // banner clamp(140, 28vw, 172) + dots + title margin ≈ clamp(196, ?, 232)
-  min-height: clamp(196px, 32vw, 232px);
-}
-.grid [data-widget='ongoing-festivals'] {
-  min-height: clamp(180px, 30vw, 220px);
-}
-.grid [data-widget='latest-letter'] {
-  min-height: clamp(128px, 20vw, 140px);
-}
-.grid [data-widget='my-winners'] {
-  min-height: clamp(140px, 22vw, 156px);
-}
-
-.sectionTitle {
-  font-size: var(--font-body);
-  font-weight: var(--font-weight-extrabold);
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-fg);
-  margin-bottom: clamp(0.5rem, 2vw, 0.75rem);
-  padding-left: var(--space-1);
+  flex-direction: column;
+  gap: 22px;
+  padding-top: 4px; // body padding-top 16 - contentInner 기본 padding 12 보정.
 }
 
 // Figma HOME quick-actions (2026-06-23) — column gap 9. 2 banner soft bg.

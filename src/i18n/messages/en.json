@@ -278,28 +278,21 @@
         "quizCta": "Test"
       }
     },
-    "recommendation": {
-      "label": "Today's pick",
-      "cta": "See more"
+    "hero": {
+      "eyebrow": "Today's trip",
+      "title": "Bite-sized trips across\nChungbuk's 11 cities"
     },
-    "festivals": {
-      "label": "Festivals happening now"
-    },
-    "festival": {
-      "ongoing": "Festivals happening now",
-      "upcoming": "Upcoming festivals in Chungbuk",
-      "popular": "Popular destinations this week",
-      "dday": {
-        "label": "D-{n}",
-        "aria": "Starts in {n} days"
-      }
-    },
-    "latestLetterWidget": {
-      "badge": "New letter",
-      "justNow": "Just now",
-      "minutesAgo": "{n}m ago",
-      "hoursAgo": "{n}h ago",
-      "daysAgo": "{n}d ago"
+    "recBlock": {
+      "title": "Recommended for you",
+      "subtitle": "Picked for your taste",
+      "filterLabel": "Category filter",
+      "chip": {
+        "all": "All",
+        "festival": "Festival",
+        "attraction": "Attraction",
+        "experience": "Experience"
+      },
+      "emptyForChip": "No recommendations for this category"
     }
   },
   "weather": {
