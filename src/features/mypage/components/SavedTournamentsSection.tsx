@@ -95,13 +95,13 @@ export function SavedTournamentsSection() {
  * Figma "MY_01" sec-title 우측 muted text 패턴 정합 (stampMapViewAll 과
  * 동일 시각 — Caption R_12 muted + ChevronRight 14). 이전 "(N)" count
  * + primary bold 회귀 정정 (2026-06-23).
- * data 없을 때는 미노출.
+ *
+ * 빈 상태에서도 노출 (2026-06-23 사용자 요청) — 상세 페이지 빈 상태에서
+ * "토너먼트 시작하기" 진입 가능. SavedTournaments 자체가 사용자별 한 번
+ * fetch (zustand cache) 이므로 추가 비용 없음.
  */
 export function SavedTournamentsViewAll() {
   const tSections = useTranslations('mypage.sections');
-  const { data } = useSavedTournaments();
-  const count = data?.length ?? 0;
-  if (count === 0) return null;
   return (
     <Link
       href="/mypage/saved-tournaments"
