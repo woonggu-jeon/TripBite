@@ -71,16 +71,6 @@
   font-size: var(--text-sm);
 }
 
-.retry {
-  padding: 0.5rem 1rem;
-  background: transparent;
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-fg);
-  font-size: var(--font-label);
-  font-weight: var(--font-weight-semibold);
-}
-
 .empty {
   padding: 2.5rem 1rem;
   color: var(--color-muted);

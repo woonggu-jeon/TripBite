@@ -19,6 +19,7 @@ import {
 } from '@/features/region/api/region';
 import { InfiniteList } from '@/features/list/components/InfiniteList';
 import {
+  Button,
   DestinationCard,
   DestinationCardSkeleton,
   TabList,
@@ -178,13 +179,9 @@ function RegionContentPanel({
     return (
       <div className={styles.fallback}>
         <p>{t('listError')}</p>
-        <button
-          type="button"
-          className={styles.retry}
-          onClick={() => refetch()}
-        >
+        <Button variant="secondary" size="sm" onClick={() => refetch()}>
           {t('listRetry')}
-        </button>
+        </Button>
       </div>
     );
   }

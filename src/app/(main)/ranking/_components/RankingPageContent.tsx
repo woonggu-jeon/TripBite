@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { SkeletonList } from '@/components/feedback/SkeletonList';
-import { PageSection } from '@/components/ui';
+import { Button, PageSection } from '@/components/ui';
 import { useWeeklyTopDestinations } from '@/features/ranking/hooks/use-ranking';
 import { Top5Card } from '@/features/ranking/components/Top5Card';
 import { RegionWinsChart } from '@/features/ranking/components/RegionWinsChart';
@@ -42,13 +42,9 @@ export function RankingPageContent() {
         {isError && (
           <div className={styles.error}>
             <p>{tSection('error')}</p>
-            <button
-              type="button"
-              className={styles.retry}
-              onClick={() => refetch()}
-            >
+            <Button variant="secondary" size="sm" onClick={() => refetch()}>
               {tSection('retry')}
-            </button>
+            </Button>
           </div>
         )}
         {data && data.length > 0 && (

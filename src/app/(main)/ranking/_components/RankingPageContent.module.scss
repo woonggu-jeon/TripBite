@@ -47,16 +47,6 @@
   border-radius: var(--radius-md);
 }
 
-.retry {
-  padding: 0.5rem 1rem;
-  background: transparent;
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-fg);
-  font-size: var(--font-label);
-  font-weight: var(--font-weight-semibold);
-}
-
 .chartHint {
   font-size: var(--font-caption);
   color: var(--color-muted);
