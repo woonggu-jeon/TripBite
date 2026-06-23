@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Trophy } from 'lucide-react';
+import { Heart, Trophy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { SkeletonList } from '@/components/feedback/SkeletonList';
 import { EmptyState } from '@/components/feedback/EmptyState';
@@ -73,22 +73,27 @@ export function SavedTournamentsAll() {
   }
 
   if (!data || data.length === 0) {
+    // Figma "MY · 저장한 우승지 (빈 상태)" ec frame (2026-06-23) — 600h
+    // center, Frame 7 column gap 20 (circle + Frame 1 + button).
     return (
-      <div className={styles.wrap}>
-        <EmptyState
-          icon={<Trophy size={28} aria-hidden />}
-          title={t('empty')}
-          description={t('emptyHint')}
-          action={
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => router.push('/tournament')}
-            >
-              {t('startTournament')}
-            </Button>
-          }
-        />
+      <div className={styles.emptyWrap}>
+        <div className={styles.emptyFrame}>
+          <div className={styles.emptyCircle} aria-hidden>
+            <Heart size={38} fill="currentColor" strokeWidth={0} />
+          </div>
+          <div className={styles.emptyText}>
+            <h2 className={styles.emptyTitle}>{t('empty')}</h2>
+            <p className={styles.emptyDesc}>{t('emptyHint')}</p>
+          </div>
+          <Button
+            variant="primary"
+            size="lg"
+            fullWidth
+            onClick={() => router.push('/tournament')}
+          >
+            {t('startTournament')}
+          </Button>
+        </div>
       </div>
     );
   }

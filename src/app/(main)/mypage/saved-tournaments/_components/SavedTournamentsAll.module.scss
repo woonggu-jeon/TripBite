@@ -30,3 +30,65 @@
   display: grid;
   min-width: 0;
 }
+
+// Figma "MY · 저장한 우승지 (빈 상태)" ec frame (2026-06-23) — 360×600
+// padding 0 20 center column. Frame 7 320×259 column gap 20.
+.emptyWrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
+  min-height: 600px;
+}
+
+.emptyFrame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 320px;
+}
+
+// circle 84 primary-soft + Heart 38 primary filled (Figma IC-like Vector bg
+// #00B334 filled = Heart primary filled, not danger red).
+.emptyCircle {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  background: var(--color-primary-soft);
+  border-radius: var(--radius-full);
+  color: var(--color-primary);
+}
+
+// Frame 1 column gap 12 (title + description).
+.emptyText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+// Figma title B_24_130% — 24 Bold line 130% -0.02em fg center.
+.emptyTitle {
+  font-size: var(--font-h1); /* 24 */
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-tight); /* 130% */
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
+  margin: 0;
+  text-align: center;
+}
+
+// Figma description R_14_140% center muted (125w × 40h — 2 줄).
+.emptyDesc {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-muted);
+  margin: 0;
+  text-align: center;
+  white-space: pre-line;
+}
