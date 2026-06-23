@@ -46,17 +46,17 @@
 
 ## 마이페이지 (MyPage)
 
-| 항목                                                                              | 상태                                                             | 비고                                                                                     |
-| --------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| Header (title B_18 + settings rightSlot 24)                                       | ✅ `8af1538` + `5080bb8`                                         | SubHeader 정합                                                                           |
-| pf (profile row) — avatar 56 + cam-badge + 닉 + badge "새내기 여행자"             | ✅ `93fa442`                                                     | ProfileCard 재설계 — 100→56, Card→row, TravelTypeField→badge                             |
-| sec-title (SB_16 + right Caption R_12 muted "X/Y")                                | ⏸ PageSection 광범위 영향 보류                                   | mypage 만 변경하려면 별도 컴포넌트 필요                                                  |
-| stamp-banner (도장책 진입 — 99h white card border radius 12)                      | ✅ `0bc9651`                                                     | sage → flat white card + progress track 정합                                             |
-| saved-grid (DestinationCard 152×168 + heart-btn 28×28 right top)                  | ❌ Figma 의 DestinationCard 가 우리 DestinationCard 와 시각 다름 | 우리는 region-tone 색상 카드, Figma 는 image + name + region + heart overlay — 별도 turn |
-| empty-saved (320×148 white card + Title B_14 + Caption + primary button 280×52)   | ✅ `e10cc85`                                                     | 직접 분기 + 자체 markup                                                                  |
-| empty-recent (320×60 white card + Title B_14 center only)                         | ✅ `e10cc85`                                                     |                                                                                          |
-| 최근 토너먼트 row (320×68 + circle 40 trophy 20 + title B_14 + meta Caption M_10) | ✅ `e10cc85`                                                     | seasonEmoji → Trophy primary-soft circle. meta Caption M_10.                             |
-| BottomNav (62/64h, 5 tab, MY active primary)                                      | ✅ `2fa24f3`                                                     | icon 24, label 10, active primary + bold                                                 |
+| 항목                                                                              | 상태                           | 비고                                                                                             |
+| --------------------------------------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------ |
+| Header (title B_18 + settings rightSlot 24)                                       | ✅ `8af1538` + `5080bb8`       | SubHeader 정합                                                                                   |
+| pf (profile row) — avatar 56 + cam-badge + 닉 + badge "새내기 여행자"             | ✅ `93fa442`                   | ProfileCard 재설계 — 100→56, Card→row, TravelTypeField→badge                                     |
+| sec-title (SB_16 + right Caption R_12 muted "X/Y")                                | ⏸ PageSection 광범위 영향 보류 | mypage 만 변경하려면 별도 컴포넌트 필요                                                          |
+| stamp-banner (도장책 진입 — 99h white card border radius 12)                      | ✅ `0bc9651`                   | sage → flat white card + progress track 정합                                                     |
+| saved-grid (DestinationCard 152×168 + heart-btn 28×28 right top)                  | ✅ `74cd549`                   | SavedTournamentCard 자체 markup (DestinationCard primitive 미사용) — image-first + heart overlay |
+| empty-saved (320×148 white card + Title B_14 + Caption + primary button 280×52)   | ✅ `e10cc85`                   | 직접 분기 + 자체 markup                                                                          |
+| empty-recent (320×60 white card + Title B_14 center only)                         | ✅ `e10cc85`                   |                                                                                                  |
+| 최근 토너먼트 row (320×68 + circle 40 trophy 20 + title B_14 + meta Caption M_10) | ✅ `e10cc85`                   | seasonEmoji → Trophy primary-soft circle. meta Caption M_10.                                     |
+| BottomNav (62/64h, 5 tab, MY active primary)                                      | ✅ `2fa24f3`                   | icon 24, label 10, active primary + bold                                                         |
 
 ## 마이페이지 — 프로필 사진 변경 (bottom sheet)
 
