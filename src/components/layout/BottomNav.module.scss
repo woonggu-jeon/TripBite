@@ -22,8 +22,10 @@
   align-items: center;
   justify-content: center;
   gap: 3px;
-  padding: var(--space-2) 0;
-  color: var(--color-muted);
+  padding: 0;
+  // Figma 비활성 — Basic/TextColor/disabled (#B4B4B4) — muted(#393939) 보다
+  // 옅음. text-disabled 토큰 활용 (정의처 _color.scss line 16).
+  color: var(--color-text-disabled);
   // Figma Caption/M_10 — Pretendard Medium 10, line 120%, ls -0.02em.
   font-size: 0.625rem; /* 10 */
   font-weight: var(--font-weight-medium);

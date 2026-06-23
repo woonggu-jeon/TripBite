@@ -11,6 +11,9 @@
   --color-bg: #0a0a0a;
   --color-fg: #fafafa;
   --color-muted: #9ca3af;
+  /* Figma TextColor/disabled (#B4B4B4) — dark 에선 muted 보다 한 단계 옅게
+     (비활성이 활성보다 덜 두드러지도록). */
+  --color-text-disabled: #6b7280;
   --color-border: #1f2937;
   --color-primary: #fafafa;
   --color-primary-fg: #0a0a0a;
