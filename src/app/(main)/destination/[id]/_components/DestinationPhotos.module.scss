@@ -16,20 +16,19 @@
   display: block;
 }
 
-// Figma hero-ov — linear-gradient 0deg rgba(0,0,0,0.2) 0.2 합성 + 180deg
-// (top 0% → 64% 0.08 → bottom 100% 0.5) 어두운 dim. pointer-events:none —
-// Image/Carousel 클릭 막지 않음.
+// Figma hero-ov — 180deg only (top 0% → 64% 0.08 → bottom 100% 0.5) 하단
+// dim — dots/카드 가독성. 0deg dim 0.2 합성 제거 (이미지 너무 어두워지는
+// 문제 — 2026-06-23 사용자 "이미지 사이즈 잘 조절" 정합).
+// pointer-events:none — Image/Carousel 클릭 막지 않음.
 .overlay {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
-    linear-gradient(
-      180deg,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.08) 64%,
-      rgba(0, 0, 0, 0.5) 100%
-    );
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.08) 64%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
   pointer-events: none;
   z-index: 1;
 }

@@ -10,6 +10,13 @@ export type CarouselProps<T> = {
   keyExtractor?: (item: T, index: number) => string | number;
   options?: CarouselOptions;
   showDots?: boolean;
+  /**
+   * dots 위치/시각 variant.
+   * - 'below' (default): carousel 아래 gray dots (현재 default).
+   * - 'overlay': carousel 안 absolute bottom center + white dots (hero
+   *   이미지 위 overlay). POI 장소상세 등 image hero 에 사용.
+   */
+  dotsVariant?: 'below' | 'overlay';
   showArrows?: boolean;
   ariaLabel?: string;
   /**

@@ -845,10 +845,10 @@
     "actions": {
       "groupAria": "여행지 액션",
       "directions": "길찾기",
-      "share": "링크 공유"
+      "share": "공유하기"
     },
     "related": {
-      "label": "이 시군의 다른 여행지"
+      "label": "이런 여행지가 어울려요"
     }
   },
   "notification": {

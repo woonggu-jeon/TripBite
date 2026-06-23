@@ -1,7 +1,6 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { MapPin, Share2 } from 'lucide-react';
 import { shareUrl } from '@/lib/share';
 import { toast } from '@/lib/toast';
 import styles from './DestinationActions.module.scss';
@@ -60,8 +59,7 @@ export function DestinationActions({
           rel="noopener noreferrer"
           className={`${styles.btn} ${styles.directions}`}
         >
-          <MapPin size={16} aria-hidden />
-          <span>{t('directions')}</span>
+          {t('directions')}
         </a>
       )}
       <button
@@ -69,8 +67,7 @@ export function DestinationActions({
         onClick={handleShare}
         className={`${styles.btn} ${styles.share}`}
       >
-        <Share2 size={16} aria-hidden />
-        <span>{t('share')}</span>
+        {t('share')}
       </button>
     </nav>
   );

@@ -845,10 +845,10 @@
     "actions": {
       "groupAria": "Destination actions",
       "directions": "Directions",
-      "share": "Share link"
+      "share": "Share"
     },
     "related": {
-      "label": "More in this district"
+      "label": "Destinations that match"
     }
   },
   "notification": {

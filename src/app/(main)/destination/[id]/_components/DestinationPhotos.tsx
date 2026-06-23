@@ -71,6 +71,7 @@ export function DestinationPhotos({
         )}
         options={{ slidesPerView: 1, gap: 0 }}
         showDots={slides.length > 1}
+        dotsVariant="overlay"
         fallbackHeight={234}
         ariaLabel={alt}
       />

@@ -14,6 +14,7 @@ export type CarouselImplProps<T> = {
   keyExtractor?: (item: T, index: number) => string | number;
   options?: CarouselOptions;
   showDots?: boolean;
+  dotsVariant?: 'below' | 'overlay';
   showArrows?: boolean;
   ariaLabel?: string;
 };
@@ -37,6 +38,7 @@ export default function CarouselImpl<T>({
   keyExtractor,
   options,
   showDots = true,
+  dotsVariant = 'below',
   showArrows = false,
   ariaLabel,
 }: CarouselImplProps<T>) {
@@ -153,7 +155,12 @@ export default function CarouselImpl<T>({
       )}
 
       {showDots && slides.length > 1 && (
-        <div className={styles.dots} role="tablist">
+        <div
+          className={`${styles.dots} ${
+            dotsVariant === 'overlay' ? styles.dotsOverlay : ''
+          }`}
+          role="tablist"
+        >
           {slides.map((_, i) => (
             <button
               key={i}

@@ -100,6 +100,26 @@
   margin-top: var(--space-3);
 }
 
+// Figma "POI · 장소상세 hero-dots" — absolute bottom 14 center (overlay).
+// .dotsOverlay 가 .dots 와 함께 적용되어 position 만 override + 자식 dot
+// 색은 .dotsOverlay .dot 의 cascade 로 white.
+.dotsOverlay {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 0;
+  z-index: 2;
+  pointer-events: auto;
+
+  .dot {
+    background: rgba(255, 255, 255, 0.55);
+  }
+  .dotActive {
+    background: #ffffff;
+  }
+}
+
 .dot {
   width: 6px;
   height: 6px;
