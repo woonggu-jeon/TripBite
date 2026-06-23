@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { useStamps } from '@/features/mypage/hooks/use-mypage';
@@ -10,11 +9,14 @@ import styles from './StampBookBanner.module.scss';
  * 마이페이지의 도장책 진입 배너 — Figma "MY_01" stamp-banner (2026-06-23).
  *
  * 시각: white card border 1px #E0E0E0 radius 12 padding 20 gap 12.
- * - row: label group (title B_14 + caption R_12 muted) + right count
- *   value ("X" B_14 primary + "/Y" SB 14 muted)
- * - progress track 7h bg disabled + fill primary
+ *   - row: label group (title B_14 + caption R_12 muted) + right count
+ *     value ("X" B_14 primary + "/Y" SB 14 muted)
+ *   - progress track 7h bg disabled + fill primary
  *
- * 누르면 /mypage/stamps 의 전체 지도 페이지로 진입.
+ * 동작: **배너 자체는 클릭 비활성** (2026-06-23 사용자 요청 — 이전 Link 으로
+ * /mypage/stamps 이동 회귀 정정). 도장책 진입은 sec-title 우측 "전체보기"
+ * link 만 사용 (MyPageClient.tsx 의 PageSection action). 정보 표시 전용.
+ *
  * 마스터 (visited === total) 시 border + title 색상 primary 강조.
  */
 export function StampBookBanner() {
@@ -27,14 +29,14 @@ export function StampBookBanner() {
 
   if (isError || !data) {
     return (
-      <Link href="/mypage/stamps" className={styles.banner}>
+      <div className={styles.banner}>
         <div className={styles.row}>
           <div className={styles.labelGroup}>
             <span className={styles.title}>{t('bannerErrorTitle')}</span>
             <span className={styles.hint}>{t('bannerErrorHint')}</span>
           </div>
         </div>
-      </Link>
+      </div>
     );
   }
 
@@ -44,9 +46,9 @@ export function StampBookBanner() {
   const percent = total > 0 ? Math.round((visited / total) * 100) : 0;
 
   return (
-    <Link
-      href="/mypage/stamps"
+    <div
       className={`${styles.banner} ${isMaster ? styles.master : ''}`}
+      role="group"
       aria-label={t('remainingTitle', {
         remaining: Math.max(0, total - visited),
       })}
@@ -72,6 +74,6 @@ export function StampBookBanner() {
       >
         <div className={styles.fill} style={{ width: `${percent}%` }} />
       </div>
-    </Link>
+    </div>
   );
 }

@@ -1,5 +1,7 @@
 // Figma "MY_01" stamp-banner (2026-06-23) — white card 99h padding 20 gap 12
 // border 1px #E0E0E0 radius 12 + progress track 280×7 + fill primary.
+// 2026-06-23 정정: Link → div (정보 표시 전용). hover/active/focus 인터랙션
+// 제거 — sec-title 우측 "전체보기" link 만 stamps 페이지 진입.
 .banner {
   display: flex;
   flex-direction: column;
@@ -10,23 +12,6 @@
   border: 1px solid var(--color-border);
   border-radius: 12px;
   color: var(--color-fg);
-  text-decoration: none;
-  transition:
-    transform var(--motion-fast) ease,
-    box-shadow var(--motion-base) ease;
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      box-shadow: var(--shadow-sm);
-    }
-  }
-  &:active {
-    transform: scale(0.99);
-  }
-  &:focus-visible {
-    outline: var(--focus-outline);
-    outline-offset: var(--focus-outline-offset);
-  }
 }
 
 // f row — label group + count value (right).
@@ -117,9 +102,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .banner {
-    transition: none;
-  }
   .fill {
     transition: none;
   }
