@@ -1,14 +1,15 @@
 .wrap {
-  display: grid;
-  gap: 1rem;
-  padding-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 20px 20px;
 }
 
 .head {
   display: grid;
   grid-template-columns: 32px 1fr 32px;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .headSpacer {
@@ -21,94 +22,144 @@
   font-weight: var(--font-weight-extrabold);
   color: var(--color-fg);
   letter-spacing: var(--tracking-snug);
+  margin: 0;
 }
 
-// Card primitive variant="highlighted" 위에 정사각 + emphasis shadow 만 추가
+// Figma "TST · 공유 이미지 카드" — 360×360 정사각 padding 20 gap 8
+// gradient #FFF4E6 → #FFFFFF (54%) → #FCEAD3 + 1px #C6C6C6 + radius 20.
 .card {
-  display: grid;
-  place-items: center;
-  gap: 0.75rem;
-  aspect-ratio: var(--aspect-square);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   width: 100%;
   max-width: 360px;
+  aspect-ratio: 1 / 1;
   margin: 0 auto;
-  box-shadow: var(--shadow-emphasis);
-  position: relative;
-  overflow: hidden;
+  padding: 20px;
+  background: linear-gradient(180deg, #fff4e6 0%, #ffffff 54%, #fcead3 100%);
+  border: 1px solid var(--color-stroke);
+  border-radius: 20px;
   text-align: center;
+  overflow: hidden;
 }
 
+// Figma emoji 52 — Inter 52 line 100% fg.
 .cardEmoji {
-  font-size: var(--emoji-2xl);
+  font-size: 52px;
   line-height: 1;
-  filter: var(--drop-shadow-icon-strong);
 }
 
+// Figma code pill primary fill — 73×20 padding 4 12 radius 999 white text B_10.
 .cardCode {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  font-size: 0.625rem; /* 10 */
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-tight); /* 120% */
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-primary-fg);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-uppercase);
 }
 
+// Figma title B_24_130% — 24 Bold 130% tracking-tight fg.
 .cardTitle {
-  font-size: var(--font-h1);
-  font-weight: var(--font-weight-extrabold);
+  font-size: var(--font-h1); /* 24 */
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-tight); /* 130% */
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
+  margin: 0;
   word-break: keep-all;
 }
 
+// Figma tags row gap 8 — 3 pill secondary01 bg primary color B_10.
 .cardKeywords {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem;
-  justify-content: center;
+  gap: 8px;
   padding: 0;
   margin: 0;
   list-style: none;
+  justify-content: center;
 }
 
-.cardBrand {
-  margin-top: auto;
-  font-size: var(--font-eyebrow);
-  color: var(--color-muted);
-  letter-spacing: var(--tracking-uppercase);
-}
-
-.shareBtn {
+.cardKeywordPill {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.875rem 1rem;
-  background: var(--color-primary);
-  color: var(--color-primary-fg);
-  border: 0;
-  border-radius: var(--radius-md);
+  padding: 4px 12px;
+  background: var(--color-primary-soft);
+  border-radius: var(--radius-full);
+  font-size: 0.625rem; /* 10 */
   font-weight: var(--font-weight-bold);
-  font-size: var(--font-body-sm);
-  cursor: pointer;
-  transition:
-    opacity var(--motion-base) ease,
-    transform var(--motion-fast) ease;
+  line-height: var(--line-tight); /* 120% */
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-primary);
+}
 
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      opacity: var(--opacity-hover-dim);
-    }
-  }
-  &:active {
-    transform: scale(0.98);
-  }
-  &:focus-visible {
-    outline: var(--focus-outline);
-    outline-offset: var(--focus-outline-offset);
-  }
+// Figma description R_14_140% muted center (320×40 — 2 줄).
+.cardDescription {
+  margin: 0;
+  font-size: var(--text-sm); /* 14 */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-muted);
+  text-align: center;
+  word-break: keep-all;
+}
+
+// Figma match-line — white pill 136×25 padding 4 12 radius 999. 💚 + Caption R_12 primary.
+.cardMatchLine {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  background: var(--color-bg);
+  border-radius: var(--radius-full);
+  font-size: var(--font-caption); /* 12 */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: -0.01em;
+  color: var(--color-primary);
+}
+
+// Figma footer — absolute 74.1×16 bottom 20 center, brand icon + "여행 한입".
+// 임시 emoji 🥢 (trip-bite-logo SVG 추후 — rate limit 대기).
+.cardFooter {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cardFooterIcon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+// Figma "여행 한입" — Inter ExtraBold 13 line 16 tracking-tight primary.
+.cardFooterText {
+  font-size: 0.8125rem; /* 13 */
+  font-weight: var(--font-weight-extrabold);
+  line-height: 1.23; /* 16/13 */
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-primary);
 }
 
 .shareHint {
   text-align: center;
   font-size: var(--font-caption);
   color: var(--color-muted);
+  margin: 0;
 }
 
 .fallback {
@@ -118,24 +169,4 @@
   padding: 3rem 1rem;
   color: var(--color-muted);
   text-align: center;
-}
-
-.retry {
-  padding: 0.625rem 1rem;
-  background: var(--color-primary);
-  color: var(--color-primary-fg);
-  border-radius: var(--radius-md);
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-bold);
-  border: 0;
-  cursor: pointer;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .shareBtn {
-    transition: none;
-    &:active {
-      transform: none;
-    }
-  }
 }

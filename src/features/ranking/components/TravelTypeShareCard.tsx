@@ -6,22 +6,28 @@ import { Share2, ChevronLeft } from 'lucide-react';
 import { haptic } from '@/lib/haptic';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Skeleton } from '@/components/feedback/Skeleton';
-import { Button, Card, Chip, IconButton } from '@/components/ui';
+import { Button, IconButton } from '@/components/ui';
 import { useMyTravelType } from '@/features/ranking/hooks/use-ranking';
 import styles from './TravelTypeShareCard.module.scss';
 
 /**
- * 여행 유형 공유 카드.
+ * 여행 유형 공유 카드 — Figma "TST · 공유 이미지 카드" (2026-06-23).
  *
- * 데이터: useMyTravelType (서버 응답 그대로). 결과 없음 시 /travel-type 으로 redirect.
+ * 데이터: useMyTravelType (서버 응답 그대로). 결과 없음 시 /quiz 로 redirect.
  *
  * 공유:
  *   - Web Share API (navigator.share) 우선 사용
  *   - 미지원/실패 시 클립보드 복사 fallback
  *   - 이미지 추출(html2canvas 등)은 추후 — 현재는 텍스트 + URL share
+ *
+ * 시각:
+ *   360×360 정사각 카드 — gradient peach/cream + #C6C6C6 1px border + radius 20.
+ *   내부: emoji 52 → code pill primary → B_24 title → keyword pills secondary01 →
+ *   R_14 description → 💚 match-line (compatibility.best 있을 때) → brand footer.
  */
 export function TravelTypeShareCard() {
   const t = useTranslations('travelType.share');
+  const tResult = useTranslations('travelType.result');
   const router = useRouter();
   const { data, isLoading } = useMyTravelType();
 
@@ -78,14 +84,13 @@ export function TravelTypeShareCard() {
         // 사용자 취소 / 권한 거부 — fallback 으로
       }
     }
-    // clipboard fallback
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
       try {
         await navigator.clipboard.writeText(
           `${shareText}\n${shareData.url ?? ''}`,
         );
       } catch {
-        // 무시 — 마지막 사용자 알림은 toast 인프라가 있으면 연결
+        // 무시
       }
     }
   };
@@ -108,34 +113,41 @@ export function TravelTypeShareCard() {
         <span aria-hidden className={styles.headSpacer} />
       </header>
 
-      {/* 정사각 공유 카드 — 추후 html2canvas/dom-to-image 로 PNG 추출 */}
-      <Card
-        as="article"
-        variant="highlighted"
-        padding="lg"
-        className={styles.card}
-        aria-label={data.title}
-      >
+      {/* Figma 360×360 정사각 카드 — gradient peach/cream + 1px stroke + radius 20. */}
+      <article className={styles.card} aria-label={data.title}>
         <span className={styles.cardEmoji} aria-hidden>
           {data.emoji}
         </span>
-        <Chip variant="outline" size="sm" className={styles.cardCode}>
-          {data.code}
-        </Chip>
+        <span className={styles.cardCode}>{data.code}</span>
         <h3 className={styles.cardTitle}>{data.title}</h3>
         {keywords.length > 0 && (
           <ul className={styles.cardKeywords}>
             {keywords.map((k) => (
-              <li key={k}>
-                <Chip variant="default" size="sm">
-                  {k}
-                </Chip>
+              <li key={k} className={styles.cardKeywordPill}>
+                {k}
               </li>
             ))}
           </ul>
         )}
-        <p className={styles.cardBrand}>TripBite · 여행 유형 테스트</p>
-      </Card>
+        {data.description && (
+          <p className={styles.cardDescription}>{data.description}</p>
+        )}
+        {data.compatibility?.best && (
+          <span className={styles.cardMatchLine}>
+            <span aria-hidden>💚</span>
+            <span>
+              {tResult('compatibility.bestLabel')} ·{' '}
+              {data.compatibility.best.title}
+            </span>
+          </span>
+        )}
+        <span className={styles.cardFooter}>
+          <span aria-hidden className={styles.cardFooterIcon}>
+            🥢
+          </span>
+          <span className={styles.cardFooterText}>여행 한입</span>
+        </span>
+      </article>
 
       <Button
         variant="primary"
