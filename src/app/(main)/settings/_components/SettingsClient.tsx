@@ -56,9 +56,10 @@ export function SettingsClient() {
       </PageSection>
       */}
 
-      <PageSection title={t('account.section')}>
-        <AccountActionsSection />
-      </PageSection>
+      {/* Figma "설정" page bw frame (2026-06-23) — 섹션 외 별도 영역.
+          PageSection wrap 없이 직접 render (이전 회귀: PageSection title
+          "계정" 2번 등장으로 사용자 발견). */}
+      <AccountActionsSection />
     </div>
   );
 }

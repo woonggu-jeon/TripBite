@@ -81,10 +81,12 @@
 }
 
 .actionButton {
-  // Figma button: border 1px #C6C6C6 (stroke) + color #393939 (muted).
-  // Button.v-secondary default border 가 --color-border (#E0E0E0) 인데
-  // settings 의 logout/withdraw 만 --color-stroke (#C6C6C6) 의도.
+  // Figma button: border **1px** (not 1.5) #C6C6C6 (stroke) + bg white +
+  // color #393939 (muted). Button.btn 의 1.5px border + transparent bg
+  // override.
+  border-width: 1px;
   border-color: var(--color-stroke);
+  background: var(--color-bg);
   color: var(--color-muted);
 }
 
