@@ -744,7 +744,7 @@
     "stampBook": {
       "pageTitle": "Chungbuk stamp book",
       "bannerLabel": "Chungbuk stamp book",
-      "bannerHint": "Explore more places",
+      "bannerHint": "Share master card when all 11 collected",
       "remainingTitle": "{remaining} more to Chungbuk Master",
       "progCaption": "Visited {visited}, {remaining} left",
       "progCaptionMaster": "You've visited every city in Chungbuk!",
