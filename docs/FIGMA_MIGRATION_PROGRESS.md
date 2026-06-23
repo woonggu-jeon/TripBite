@@ -15,7 +15,7 @@
 
 | 항목                                                | 상태                                      | 비고                                                                                |
 | --------------------------------------------------- | ----------------------------------------- | ----------------------------------------------------------------------------------- |
-| 헤더 (title 18 / settings rightSlot none)           | ⏸ title 16 → 18 보류                      | SubHeader 광범위 사용, 일괄 변경 시 다른 페이지 회귀 우려                           |
+| 헤더 (title 18 / settings rightSlot none)           | ✅ `e399a73`                              | SubHeader title B_18_140% 일괄 정합 (모든 SubHeader 페이지 영향)                    |
 | 프로필 row (avatar 56 + badge)                      | ❌ Figma 외 (설정 spec에 프로필 row 없음) | settings 자체에는 프로필 row 없음 — mypage 패턴과 혼동 가능                         |
 | 알림 3 row (push/inApp/letterReceived)              | ✅ `59adcd0`                              | letterLiked 제거 + push/inApp 노출                                                  |
 | 계정 3 row (닉/비번/위치)                           | ✅ `59adcd0`                              | 차단 row 제거                                                                       |
@@ -38,25 +38,25 @@
 
 ## 알림 (Notifications)
 
-| 항목                                                    | 상태                                                  | 비고                                      |
-| ------------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------- |
-| Header (title B_18 + 전체읽음 right)                    | 🟡 title 16 (헤더 통일) / "모두 읽음" muted text 적용 | title font 보류 동일                      |
-| 빈 상태 (84 circle + Bell 38 primary + Body B_16 title) | ✅ `1ea94f6`                                          | EmptyState variant=hero 추가              |
-| 알림 목록 Item (notiCircle 44 + 3-line layout)          | ⏸ 보류                                                | SVG path 필요 + 3-line layout 명확화 필요 |
+| 항목                                                    | 상태         | 비고                                        |
+| ------------------------------------------------------- | ------------ | ------------------------------------------- |
+| Header (title B_18 + 전체읽음 right)                    | ✅ `e399a73` | SubHeader title B_18 일괄 정합 시 같이 적용 |
+| 빈 상태 (84 circle + Bell 38 primary + Body B_16 title) | ✅ `1ea94f6` | EmptyState variant=hero 추가                |
+| 알림 목록 Item (notiCircle 44 + 3-line layout)          | ⏸ 보류       | SVG path 필요 + 3-line layout 명확화 필요   |
 
 ## 마이페이지 (MyPage)
 
-| 항목                                                                              | 상태                           | 비고                                                                                             |
-| --------------------------------------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------ |
-| Header (title B_18 + settings rightSlot 24)                                       | ✅ `8af1538` + `5080bb8`       | SubHeader 정합                                                                                   |
-| pf (profile row) — avatar 56 + cam-badge + 닉 + badge "새내기 여행자"             | ✅ `93fa442`                   | ProfileCard 재설계 — 100→56, Card→row, TravelTypeField→badge                                     |
-| sec-title (SB_16 + right Caption R_12 muted "X/Y")                                | ⏸ PageSection 광범위 영향 보류 | mypage 만 변경하려면 별도 컴포넌트 필요                                                          |
-| stamp-banner (도장책 진입 — 99h white card border radius 12)                      | ✅ `0bc9651`                   | sage → flat white card + progress track 정합                                                     |
-| saved-grid (DestinationCard 152×168 + heart-btn 28×28 right top)                  | ✅ `74cd549`                   | SavedTournamentCard 자체 markup (DestinationCard primitive 미사용) — image-first + heart overlay |
-| empty-saved (320×148 white card + Title B_14 + Caption + primary button 280×52)   | ✅ `e10cc85`                   | 직접 분기 + 자체 markup                                                                          |
-| empty-recent (320×60 white card + Title B_14 center only)                         | ✅ `e10cc85`                   |                                                                                                  |
-| 최근 토너먼트 row (320×68 + circle 40 trophy 20 + title B_14 + meta Caption M_10) | ✅ `e10cc85`                   | seasonEmoji → Trophy primary-soft circle. meta Caption M_10.                                     |
-| BottomNav (62/64h, 5 tab, MY active primary)                                      | ✅ `2fa24f3`                   | icon 24, label 10, active primary + bold                                                         |
+| 항목                                                                              | 상태                     | 비고                                                                                                                                         |
+| --------------------------------------------------------------------------------- | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Header (title B_18 + settings rightSlot 24)                                       | ✅ `8af1538` + `5080bb8` | SubHeader 정합                                                                                                                               |
+| pf (profile row) — avatar 56 + cam-badge + 닉 + badge "새내기 여행자"             | ✅ `93fa442`             | ProfileCard 재설계 — 100→56, Card→row, TravelTypeField→badge                                                                                 |
+| sec-title (SB_16 + right Caption R_12 muted "X/Y")                                | ✅ `3821ca0`             | PageSection title Btn/SB_14 일괄 정합. Figma "bl" spec 14 SemiBold line 100% -0.01em — sec-title 16 (SB_16) 이 아니라 14 (Btn/SB_14) 가 정합 |
+| stamp-banner (도장책 진입 — 99h white card border radius 12)                      | ✅ `0bc9651`             | sage → flat white card + progress track 정합                                                                                                 |
+| saved-grid (DestinationCard 152×168 + heart-btn 28×28 right top)                  | ✅ `74cd549`             | SavedTournamentCard 자체 markup (DestinationCard primitive 미사용) — image-first + heart overlay                                             |
+| empty-saved (320×148 white card + Title B_14 + Caption + primary button 280×52)   | ✅ `e10cc85`             | 직접 분기 + 자체 markup                                                                                                                      |
+| empty-recent (320×60 white card + Title B_14 center only)                         | ✅ `e10cc85`             |                                                                                                                                              |
+| 최근 토너먼트 row (320×68 + circle 40 trophy 20 + title B_14 + meta Caption M_10) | ✅ `e10cc85`             | seasonEmoji → Trophy primary-soft circle. meta Caption M_10.                                                                                 |
+| BottomNav (62/64h, 5 tab, MY active primary)                                      | ✅ `2fa24f3`             | icon 24, label 10, active primary + bold                                                                                                     |
 
 ## 마이페이지 — 프로필 사진 변경 (bottom sheet)
 
