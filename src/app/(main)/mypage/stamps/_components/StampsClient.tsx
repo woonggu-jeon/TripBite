@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { MapPin, Share2 } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
@@ -10,6 +10,7 @@ import { useStamps } from '@/features/mypage/hooks/use-mypage';
 import { MasterCard } from '@/features/mypage/components/MasterCard';
 import { ChungbukStampMap } from '@/features/region/components/ChungbukStampMap';
 import { useShareCard } from '@/hooks/use-share-card';
+import { haptic } from '@/lib/haptic';
 import { isRegionCode, type RegionCode } from '@/constants/regions';
 import styles from './StampsClient.module.scss';
 
@@ -69,43 +70,63 @@ export function StampsClient() {
   const percent =
     data.total > 0 ? Math.round((visitedCount / data.total) * 100) : 0;
 
+  const progCardLabel = isMaster
+    ? t('masterAchieved')
+    : t('bannerLabel', { remaining });
+  const progCardCaption = isMaster
+    ? t('progCaptionMaster')
+    : t('progCaption', {
+        total: data.total,
+        visited: visitedCount,
+        remaining,
+      });
+
+  // master 시 prog-card 자체가 share trigger (Figma "탭하여 마스터 카드
+  // 공유하기" — caption click → useShareCard. 토너먼트 결과 공유 동일 패턴).
+  const handleProgCardClick = () => {
+    if (!isMaster) return;
+    haptic.tap();
+    void handleShareMaster();
+  };
+
+  const progCardContent = (
+    <>
+      <div className={styles.progTop}>
+        <div className={styles.countWrap}>
+          <span className={styles.countCurrent}>{visitedCount}</span>
+          <span className={styles.countTotal}>/{data.total}</span>
+        </div>
+        <span className={styles.progLabel}>{progCardLabel}</span>
+      </div>
+      <div
+        className={styles.track}
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={data.total}
+        aria-valuenow={visitedCount}
+      >
+        <div className={styles.fill} style={{ width: `${percent}%` }} />
+      </div>
+      <p className={styles.progCaption}>{progCardCaption}</p>
+    </>
+  );
+
   return (
     <div className={styles.wrap}>
       {/* Figma prog-card — 328×120 white card padding 20 gap 12 + border radius 12.
-          마스터 상태 시 border + label color primary. */}
-      <div
-        className={`${styles.progCard} ${isMaster ? styles.progCardMaster : ''}`}
-      >
-        <div className={styles.progTop}>
-          <div className={styles.countWrap}>
-            <span className={styles.countCurrent}>{visitedCount}</span>
-            <span className={styles.countTotal}>/{data.total}</span>
-          </div>
-          <span className={styles.progLabel}>
-            {isMaster
-              ? t('masterAchieved')
-              : t('bannerLabel', { total: data.total })}
-          </span>
-        </div>
-        <div
-          className={styles.track}
-          role="progressbar"
-          aria-valuemin={0}
-          aria-valuemax={data.total}
-          aria-valuenow={visitedCount}
+          마스터 상태 시 border + label color primary + 카드 자체 button (share). */}
+      {isMaster ? (
+        <button
+          type="button"
+          className={`${styles.progCard} ${styles.progCardMaster} ${styles.progCardButton}`}
+          onClick={handleProgCardClick}
+          aria-label={t('shareMasterAria')}
         >
-          <div className={styles.fill} style={{ width: `${percent}%` }} />
-        </div>
-        <p className={styles.progCaption}>
-          {isMaster
-            ? t('progCaptionMaster')
-            : t('progCaption', {
-                total: data.total,
-                visited: visitedCount,
-                remaining,
-              })}
-        </p>
-      </div>
+          {progCardContent}
+        </button>
+      ) : (
+        <div className={styles.progCard}>{progCardContent}</div>
+      )}
 
       {/* Figma map-card — 328×461 white card padding 20 gap 12. */}
       <div className={styles.mapCard}>
@@ -129,19 +150,9 @@ export function StampsClient() {
         </div>
       </div>
 
-      {isMaster && (
-        <>
-          {/* Figma "MY · 마스터 카드" — 11/11 달성 축하 카드 본문에 노출. */}
-          <MasterCard />
-          <Button
-            variant="primary"
-            onClick={handleShareMaster}
-            leadingIcon={<Share2 size={16} aria-hidden />}
-          >
-            {t('shareMaster')}
-          </Button>
-        </>
-      )}
+      {/* Figma "MY · 마스터 카드" — 11/11 달성 축하 카드 본문에 노출. share 는
+          prog-card 자체 click 으로 통합 (별도 share button 제거). */}
+      {isMaster && <MasterCard />}
     </div>
   );
 }

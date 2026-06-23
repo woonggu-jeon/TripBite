@@ -21,6 +21,30 @@
   border-color: var(--color-primary);
 }
 
+// master 시 prog-card 자체가 button — share trigger (Figma "탭하여 마스터
+// 카드 공유하기" 정합).
+.progCardButton {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform var(--motion-fast) ease,
+    box-shadow var(--motion-base) ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      box-shadow: var(--shadow-sm);
+    }
+  }
+  &:active {
+    transform: scale(0.99);
+  }
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+  }
+}
+
 // Figma prog-top — row space-between gap 8.
 .progTop {
   display: flex;
