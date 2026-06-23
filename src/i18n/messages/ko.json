@@ -682,9 +682,10 @@
     "title": "마이페이지",
     "sections": {
       "profile": "프로필",
-      "stampMap": "충북 도장깨기",
+      "stampMap": "충북 도장책",
+      "stampMapViewAll": "전체보기",
       "savedTournaments": "저장한 우승 여행지",
-      "tournamentHistory": "토너먼트 기록",
+      "tournamentHistory": "최근 토너먼트",
       "goToSettings": "설정으로 이동"
     },
     "profile": {

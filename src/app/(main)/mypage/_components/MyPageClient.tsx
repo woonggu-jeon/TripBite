@@ -36,8 +36,21 @@ export function MyPageClient() {
 
       {/* 2) 닉네임 변경은 설정 페이지로 이동됨. */}
 
-      {/* 3) 도장책 — 배너 진입점. 전체 지도는 /mypage/stamps */}
-      <PageSection title={t('stampMap')}>
+      {/* 3) 도장책 — 배너 진입점. 전체 지도는 /mypage/stamps.
+          sec-title 우측 "전체보기" Link 도 stamps 페이지로 (banner 자체 click 과
+          동일 동작 — Figma "MY_01" sec-title 우측 Caption R_12 muted slot). */}
+      <PageSection
+        title={t('stampMap')}
+        action={
+          <Link
+            href="/mypage/stamps"
+            prefetch={false}
+            className={styles.sectionViewAll}
+          >
+            {t('stampMapViewAll')}
+          </Link>
+        }
+      >
         <StampBookBanner />
       </PageSection>
 

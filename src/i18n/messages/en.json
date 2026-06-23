@@ -682,9 +682,10 @@
     "title": "My Page",
     "sections": {
       "profile": "Profile",
-      "stampMap": "Chungbuk stamps",
+      "stampMap": "Chungbuk stamp book",
+      "stampMapViewAll": "View all",
       "savedTournaments": "Saved winners",
-      "tournamentHistory": "Bracket history",
+      "tournamentHistory": "Recent tournaments",
       "goToSettings": "Go to settings"
     },
     "profile": {
