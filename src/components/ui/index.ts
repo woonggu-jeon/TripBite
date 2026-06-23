@@ -34,3 +34,4 @@ export {
   type TabProps,
   type TabPanelProps,
 } from './Tabs';
+export { ListRow, type ListRowVariant } from './ListRow';

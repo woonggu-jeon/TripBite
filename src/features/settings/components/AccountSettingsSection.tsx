@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { ListRow } from '@/components/ui';
 import { usePermissionState } from '@/features/location';
 import { NicknameEditDialog } from './NicknameEditDialog';
 import { ChangePasswordDialog } from './ChangePasswordDialog';
@@ -27,34 +28,26 @@ export function AccountSettingsSection() {
 
   return (
     <div className={styles.list}>
-      <button
-        type="button"
-        className={styles.button}
-        onClick={() => setOpenDialog('nickname')}
-      >
+      <ListRow onClick={() => setOpenDialog('nickname')}>
         {t('changeNickname')}
-      </button>
+      </ListRow>
 
-      <button
-        type="button"
-        className={styles.button}
-        onClick={() => setOpenDialog('password')}
-      >
+      <ListRow onClick={() => setOpenDialog('password')}>
         {t('changePassword')}
-      </button>
+      </ListRow>
 
-      <button type="button" className={styles.button}>
-        <div>{t('locationPermission')}</div>
-        <div className={styles.rowHint}>
-          {permission === 'granted' && t('locationGranted')}
-          {permission === 'denied' && t('locationDenied')}
-          {permission === 'prompt' && t('locationPrompt')}
-          {permission === 'unsupported' && t('locationUnsupported')}
-        </div>
-      </button>
-      <button type="button" className={styles.button}>
-        {t('blockedUsers')}
-      </button>
+      <ListRow
+        hint={
+          (permission === 'granted' && t('locationGranted')) ||
+          (permission === 'denied' && t('locationDenied')) ||
+          (permission === 'prompt' && t('locationPrompt')) ||
+          (permission === 'unsupported' && t('locationUnsupported')) ||
+          null
+        }
+      >
+        {t('locationPermission')}
+      </ListRow>
+      <ListRow>{t('blockedUsers')}</ListRow>
 
       {openDialog === 'nickname' && (
         <NicknameEditDialog onClose={() => setOpenDialog(null)} />

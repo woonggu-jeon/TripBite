@@ -1,0 +1,54 @@
+// ListRow primitive — settings / dialog 등에서 사용하는 list-style action button.
+// 시각: full-width + text-align left + 1.5px border + hover border 강조.
+// SettingsRows.module.scss 의 .button + .danger + button 내부 .rowHint 를 이전
+// (2026-06-23). [[ui-rendering-speed-first]] focus-visible / reduced-motion 정합.
+
+.row {
+  display: block;
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-semibold);
+  transition: border-color var(--motion-base) ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      border-color: color-mix(
+        in srgb,
+        var(--color-fg) 18%,
+        var(--color-border)
+      );
+    }
+  }
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+  }
+  &:disabled {
+    opacity: var(--opacity-disabled);
+    cursor: not-allowed;
+  }
+}
+
+.danger {
+  color: var(--color-danger);
+}
+
+// row 안에 보조 텍스트 (예: "위치 권한 — 허용됨").
+.hint {
+  margin-top: 2px;
+  font-size: var(--font-caption);
+  color: var(--color-muted);
+  font-weight: var(--font-weight-regular);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row {
+    transition: none;
+  }
+}

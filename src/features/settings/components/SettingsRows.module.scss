@@ -71,9 +71,9 @@
   }
 }
 
-.danger {
-  color: var(--color-danger);
-}
+// .danger 는 ListRow primitive (ui/ListRow.module.scss) 로 이전됨 (2026-06-23).
+// 본 module 의 .button 은 PolicySection 의 <Link> 에서 여전히 사용 — link as
+// button-row 패턴 유지. clickable button element 는 ListRow primitive 사용.
 
 @media (prefers-reduced-motion: reduce) {
   .row,

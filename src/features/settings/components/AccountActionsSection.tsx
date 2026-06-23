@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { ListRow } from '@/components/ui';
 import { useDeleteAccount, useLogout } from '@/features/auth/hooks/use-auth';
 import { useConfirm } from '@/hooks/use-confirm';
 import { toast } from '@/lib/toast';
@@ -52,22 +53,16 @@ export function AccountActionsSection() {
 
   return (
     <div className={styles.list}>
-      <button
-        type="button"
-        className={styles.button}
-        onClick={handleLogout}
-        disabled={isLoggingOut}
-      >
+      <ListRow onClick={handleLogout} disabled={isLoggingOut}>
         {isLoggingOut ? t('loggingOut') : t('logout')}
-      </button>
-      <button
-        type="button"
-        className={`${styles.button} ${styles.danger}`}
+      </ListRow>
+      <ListRow
+        variant="danger"
         onClick={handleWithdraw}
         disabled={isWithdrawing}
       >
         {isWithdrawing ? t('withdrawing') : t('withdraw')}
-      </button>
+      </ListRow>
     </div>
   );
 }
