@@ -3,6 +3,9 @@
   gap: var(--space-3);
 }
 
+// Figma "Header type=noti" rightSlot — muted text-link (iOS toolbar action
+// convention). action button 형태 아님. caption 12 + muted color +
+// transparent bg.
 .allRead {
   font-size: var(--font-caption);
   color: var(--color-muted);
@@ -79,6 +82,37 @@
 .icon {
   margin-top: 2px;
   color: var(--color-muted);
+}
+
+// Figma "알림 빈 상태" ec frame (2026-06-23) — center column, padding 0 40 60.
+// circle 84x84 (primary-soft bg) + Bell icon 38 (primary) + title Body B_16.
+.empty {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 40px 60px;
+  gap: 20px;
+  min-height: 480px;
+}
+
+.emptyCircle {
+  width: 84px;
+  height: 84px;
+  display: grid;
+  place-items: center;
+  background: var(--color-primary-soft);
+  border-radius: var(--radius-full);
+  color: var(--color-primary);
+}
+
+.emptyTitle {
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
+  margin: 0;
 }
 
 .itemMessage {
