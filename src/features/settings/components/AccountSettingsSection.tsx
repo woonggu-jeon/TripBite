@@ -9,13 +9,14 @@ import { ChangePasswordDialog } from './ChangePasswordDialog';
 import styles from './SettingsRows.module.scss';
 
 /**
- * 계정/권한 섹션
+ * 계정/권한 섹션 — Figma "설정" page (2026-06-23) 정합.
  *
- * 항목:
+ * 노출 3 row (사용자 명시):
  *   - 닉네임 변경 → NicknameEditDialog 모달
  *   - 비밀번호 변경 → ChangePasswordDialog 모달
- *   - 위치 권한 상태 표시 (브라우저에서만 변경 가능)
- *   - 차단한 사용자 관리 → 별도 경로
+ *   - 위치 권한 상태 표시 (브라우저에서만 변경 가능, value 패턴)
+ *
+ * 차단한 사용자 관리 — Figma 외 + 사용자 미사용 명시. UI 제거.
  *
  * 두 dialog 는 동시에 열리지 않음 — `openDialog` 단일 state 로 union 관리.
  */
@@ -47,7 +48,6 @@ export function AccountSettingsSection() {
       >
         {t('locationPermission')}
       </ListRow>
-      <ListRow>{t('blockedUsers')}</ListRow>
 
       {openDialog === 'nickname' && (
         <NicknameEditDialog onClose={() => setOpenDialog(null)} />
