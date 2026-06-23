@@ -1,10 +1,11 @@
-// Figma "MY_01" body (2026-06-23) — bg #FAFBFA (off-white) + gap 24 + padding
-// 20 0 24. layout content-pad (모든 (main) 페이지 공통) 무시하고 viewport
-// 가장자리까지 bleed — pf row (white + border-bottom) 가 360 풀너비 정합.
+// Figma "MY_01" body (2026-06-23 색 정정) — bg #F8F8F8 (이전 #FAFBFA 회귀) +
+// gap 24 + padding 20 0 24. layout content-pad (모든 (main) 페이지 공통)
+// 무시하고 viewport 가장자리까지 bleed — pf row (white + border-bottom) 가
+// 360 풀너비 정합.
 .grid {
   display: grid;
   gap: var(--space-6);
-  background: #fafbfa;
+  background: #f8f8f8;
   // contentInner padding 무시 (음의 margin) — viewport edge 까지 bg 채움.
   margin: calc(-1 * var(--content-pad));
   // ProfileCard row 가 자체 padding 으로 처리 (Figma pf 20 padding). 그 외

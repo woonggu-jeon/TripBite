@@ -2,6 +2,7 @@ import { ImageResponse } from 'next/og';
 import { destinationSeeds } from '@/mocks/seeds/destinations';
 import { regionContentSeeds } from '@/mocks/seeds/regions';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
+import { BrandLogo } from '@/components/ui/BrandLogo';
 
 /**
  * 결과 이미지 카드 — Next.js ImageResponse(Satori) 기반.
@@ -452,8 +453,8 @@ function renderQuiz(
         </div>
       )}
 
-      {/* footer — absolute bottom 60 (Figma 20×3) center, 여행 한입 Inter
-          ExtraBold 13 primary */}
+      {/* footer — absolute bottom 60 (Figma 20×3) center, brand logo (3 path
+          vector) + "여행 한입" Inter ExtraBold 13 primary (×3 = 39). */}
       <div
         style={{
           position: 'absolute',
@@ -466,7 +467,7 @@ function renderQuiz(
           gap: 18,
         }}
       >
-        <div style={{ display: 'flex', fontSize: 48, lineHeight: 1 }}>🥢</div>
+        <BrandLogo width={54} ariaHidden style={{ display: 'block' }} />
         <div
           style={{
             display: 'flex',
@@ -701,13 +702,21 @@ function renderRegion(
 }
 
 /**
- * 충북 마스터 달성 카드 — 11/11 도장 완료 시 공유 카드.
+ * 충북 마스터 달성 카드 — Figma "MY · 마스터 카드" (2026-06-23) 정합.
  *
- * 디자인: Sage 톤 그라데이션 배경 + 큰 트로피/체크 emoji + "충북 마스터" 큰 텍스트 +
- *         "충북 11개 시군 모두 정복" 부제 + TripBite 푸터.
+ * 모든 px = Figma 360 spec × 3 (1080×1080 OG image).
+ *
+ * 구성:
+ *   - bg gradient #8DEF80 → #C5F5D9 (Figma 정확 정합).
+ *   - 88 white circle + Trophy 44 primary (×3 = 264 circle + 132 trophy).
+ *   - "CHUNGBUK MASTER" Bold 13 ls 0.16em opacity 0.9 (×3 = 39).
+ *   - "충북 마스터" ExtraBold 30 ls -0.03em (×3 = 90).
+ *   - msg-box white radius 12 padding 20 18 + Medium 14 line 170% muted center
+ *     (×3 = radius 36, padding 60 54, font 42).
+ *   - footer brand row — BrandLogo + "여행한입" Bold 18 primary (×3 = 54).
  *
  * Query:
- *   - count (optional) — 보통 11. 다른 값 (예: 향후 확장) 대비.
+ *   - count (optional) — 보통 11.
  */
 function renderMaster(
   q: URLSearchParams,
@@ -722,80 +731,125 @@ function renderMaster(
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        background: 'linear-gradient(180deg, #d4e2d4 0%, #6b8e6b 100%)',
-        paddingTop: 80,
-        paddingRight: 80,
-        paddingBottom: 80,
-        paddingLeft: 80,
+        alignItems: 'center',
+        justifyContent: 'center',
+        // Figma padding 40 20 20 (×3) — top 120 / 좌우 60 / bottom 60.
+        paddingTop: 120,
+        paddingLeft: 60,
+        paddingRight: 60,
+        paddingBottom: 60,
+        background: 'linear-gradient(180deg, #8DEF80 0%, #C5F5D9 100%)',
+        border: '3px solid #C6C6C6',
+        borderRadius: 60,
         fontFamily,
       }}
     >
+      {/* iconCircle 88 (×3=264) white + Trophy 44 (×3=132) primary. Frame 22
+          gap 16 (×3=48) — icon ↔ subtitle. */}
       <div
         style={{
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          fontSize: 32,
-          color: '#ffffff',
-        }}
-      >
-        <span>🏞️ 충북 도장책</span>
-        <span style={{ opacity: 0.85 }}>TripBite</span>
-      </div>
-
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
+          width: 264,
+          height: 264,
+          background: '#FFFFFF',
+          borderRadius: 999,
+          marginBottom: 48,
+        }}
+      >
+        <div style={{ display: 'flex', fontSize: 132, lineHeight: 1 }}>🏆</div>
+      </div>
+
+      {/* subtitle "CHUNGBUK MASTER" Bold 13 ls 0.16em opacity 0.9.
+          Frame 21 gap 4 (×3=12). */}
+      <div
+        style={{
+          display: 'flex',
+          fontSize: 39,
+          fontWeight: 700,
+          color: '#151515',
+          opacity: 0.9,
+          letterSpacing: '0.16em',
+          lineHeight: 1.23,
+          marginBottom: 12,
+          textAlign: 'center',
+        }}
+      >
+        CHUNGBUK MASTER
+      </div>
+
+      {/* title "충북 마스터" ExtraBold 30 ls -0.03em. Frame 23 gap 24
+          (×3=72) — title ↔ msg-box. */}
+      <div
+        style={{
+          display: 'flex',
+          fontSize: 90,
+          fontWeight: 800,
+          color: '#151515',
+          letterSpacing: '-0.03em',
+          lineHeight: 1.2,
+          marginBottom: 72,
+          textAlign: 'center',
+        }}
+      >
+        충북 마스터
+      </div>
+
+      {/* msg-box white radius 12 padding 20 18 + Medium 14 170% muted center.
+          Frame 24 gap 20 (×3=60) — msg-box ↔ brand. */}
+      <div
+        style={{
+          display: 'flex',
+          width: '100%',
+          paddingTop: 60,
+          paddingBottom: 60,
+          paddingLeft: 54,
+          paddingRight: 54,
+          background: '#FFFFFF',
+          borderRadius: 36,
+          marginBottom: 60,
         }}
       >
         <div
           style={{
             display: 'flex',
-            fontSize: 220,
-            lineHeight: 1,
-            marginBottom: 16,
+            width: '100%',
+            fontSize: 42,
+            fontWeight: 500,
+            color: '#393939',
+            lineHeight: 1.7,
+            textAlign: 'center',
+            justifyContent: 'center',
           }}
         >
-          🏆
+          충북 {count}개 시군 도장 모두 완료
         </div>
+      </div>
+
+      {/* brand row — BrandLogo + "여행 한입" Title B_18 (×3 = 54) primary.
+          Figma Frame 6 row gap 4 (×3=12) center. */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 12,
+        }}
+      >
+        <BrandLogo width={66} ariaHidden style={{ display: 'block' }} />
         <div
           style={{
             display: 'flex',
-            fontSize: 96,
+            fontSize: 54,
             fontWeight: 700,
-            color: '#ffffff',
+            color: '#151515',
             letterSpacing: '-0.02em',
+            lineHeight: 1.4,
           }}
         >
-          충북 마스터
+          여행 한입
         </div>
-        <div
-          style={{
-            display: 'flex',
-            fontSize: 40,
-            color: '#ffffff',
-            marginTop: 24,
-            opacity: 0.92,
-          }}
-        >
-          {count}개 시군 모두 정복
-        </div>
-      </div>
-
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          fontSize: 28,
-          color: '#ffffff',
-          opacity: 0.85,
-        }}
-      >
-        충북 11개 시군 도장 완료
       </div>
     </div>,
     makeInit(fontData),

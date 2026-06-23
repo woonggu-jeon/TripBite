@@ -1,5 +1,6 @@
 import { Trophy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { BrandLogo } from '@/components/ui/BrandLogo';
 import styles from './MasterCard.module.scss';
 
 /**
@@ -34,9 +35,9 @@ export function MasterCard() {
       </div>
 
       <div className={styles.brand} aria-hidden>
-        {/* trip-bite-logo placeholder — Figma vector 좌표만 있어 정확 path 미정.
-            rate limit 풀린 후 SVG export 받으면 정합. 현재는 emoji + text. */}
-        <span className={styles.brandIcon}>🥢</span>
+        {/* trip-bite-logo — Figma vector 정합 (BrandLogo 컴포넌트, 92×85
+            viewBox 의 3 path: primary green + amber ×2). */}
+        <BrandLogo width={20} className={styles.brandIcon} />
         <span className={styles.brandText}>{t('brandName')}</span>
       </div>
     </article>
