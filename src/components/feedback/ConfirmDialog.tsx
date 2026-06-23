@@ -2,6 +2,7 @@
 
 import { useUIStore } from '@/stores/ui-store';
 import { Button, Dialog } from '@/components/ui';
+import styles from './ConfirmDialog.module.scss';
 
 /**
  * <ConfirmDialog />
@@ -33,6 +34,7 @@ export function ConfirmDialog() {
       onClose={() => resolve(id, false)}
       title={title}
       description={description}
+      className={styles.confirmDialog}
       actions={
         <>
           <Button
