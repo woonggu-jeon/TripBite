@@ -72,6 +72,8 @@
 .valueCurrent {
   font-size: var(--text-sm);
   font-weight: var(--font-weight-bold);
+  // Figma B_14_140% — line 140% 명시 (2026-06-23).
+  line-height: var(--line-snug-relaxed);
   letter-spacing: var(--tracking-tight);
   color: var(--color-primary);
 }
@@ -79,6 +81,8 @@
 .valueTotal {
   font-size: var(--text-sm);
   font-weight: var(--font-weight-semibold);
+  // Figma SB_14_140% — line 140% 명시.
+  line-height: var(--line-snug-relaxed);
   letter-spacing: var(--tracking-tight);
   color: var(--color-muted);
 }

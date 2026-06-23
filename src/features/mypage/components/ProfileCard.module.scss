@@ -169,7 +169,9 @@
 .badgeLabel {
   font-size: 0.75rem; /* 12 */
   font-weight: var(--font-weight-bold);
-  line-height: 1;
+  // Figma "MY · pf" badge label — Inter Bold 12 line 15px (= 1.25 at 12px).
+  // 이전 line 1 (= 12px) 회귀 정정 (2026-06-23).
+  line-height: 1.25;
   color: var(--color-primary);
   margin: 0;
 }
