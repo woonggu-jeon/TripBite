@@ -1,17 +1,117 @@
-// SavedTournamentCard — 우상단 하트 (unsave) 스타일.
-// row layout 은 폐기 — DestinationCard primitive 만 사용.
+// Figma "MY · 저장한 우승지" DestinationCard (2026-06-23) — 152×168 white
+// card border 1px #E0E0E0 radius 12, column flex (image + body), heart
+// overlay absolute right:10 top:10.
 
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+  text-decoration: none;
+  transition:
+    transform var(--motion-fast) ease,
+    box-shadow var(--motion-base) ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      box-shadow: var(--shadow-sm);
+    }
+  }
+  &:active {
+    transform: scale(0.99);
+  }
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+  }
+}
+
+// Frame 2 — 152×108 image (Figma 152/108 ≈ 1.41:1).
+.image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 152 / 108;
+  background: var(--color-surface-soft);
+  overflow: hidden;
+}
+
+.imageMedia {
+  object-fit: cover;
+}
+
+.imageFallback {
+  width: 100%;
+  height: 100%;
+  background: var(--color-surface-soft);
+}
+
+// Frame 4 — 152×60 padding 12/10 gap 4, column.
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 10px;
+  background: var(--color-bg);
+}
+
+// title B_14 (Pretendard Bold 14 line 140% -0.02em fg).
+.title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// meta row — gap 4, icon 12 + label 10.
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.metaIcon {
+  color: var(--color-muted);
+  flex-shrink: 0;
+}
+
+// meta label — Caption M_10 (Pretendard Medium 10 line 120% -0.02em muted).
+.metaLabel {
+  font-size: 0.625rem; /* 10 */
+  font-weight: var(--font-weight-medium);
+  line-height: 1.2;
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// heart-btn 28×28 absolute right:10 top:10 white bg radius 14 + Heart 16 danger.
 .heart {
+  position: absolute;
+  top: 10px;
+  right: 10px;
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   padding: 0;
-  background: color-mix(in srgb, var(--color-bg) 86%, transparent);
-  color: var(--accent-red);
-  border: 1px solid color-mix(in srgb, var(--accent-red) 18%, transparent);
+  background: var(--color-bg);
+  border: 0;
   border-radius: var(--radius-full);
+  color: var(--color-danger);
   cursor: pointer;
+  box-shadow: var(--shadow-sm);
   transition:
     transform var(--motion-fast) ease,
     background var(--motion-base) ease;
@@ -27,17 +127,17 @@
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      background: var(--color-bg);
+      background: color-mix(in srgb, var(--color-bg) 90%, var(--color-fg));
     }
   }
 }
 
 .heartIcon {
-  // lucide stroke color 상속 — accent-red.
-  color: var(--accent-red);
+  color: var(--color-danger);
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .card,
   .heart {
     transition: none;
     &:active {
