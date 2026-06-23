@@ -11,7 +11,7 @@
   --color-bg: #ffffff;
   --color-fg: #151515; /* 디자이너 spec — 기존 #0a0a0a 보다 미세 부드러움 */
   --color-muted: #393939; /* 디자이너 spec — 기존 #5b6470 보다 더 진함 (가독성 ↑) */
-  --color-border: #d8d8d8; /* 디자이너 spec (2026-06-19 Figma) — 기존 #c6c6c6 보다 부드러운 톤 */
+  --color-border: #e0e0e0; /* Figma 토큰 페이지 Basic/BorderColor/gray (2026-06-23). 페이지 간 시안 차이 해소 — 토큰 페이지가 SoT. */
   --color-disabled: #e0e0e0; /* Figma 토큰 Contents/Button/disabled. 기존 #dddddd → #E0E0E0 (2026-06-19) */
   --color-text-disabled: #b4b4b4; /* Figma 토큰 Basic/TextColor/disabled — disabled bg 위 텍스트 */
   --color-stroke: #c6c6c6; /* Figma 토큰 Stroke/01 — border 와 별개 stroke 색 (선 그래픽 등) */

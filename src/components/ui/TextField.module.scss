@@ -3,18 +3,18 @@
 
 .field {
   display: grid;
-  // Figma label-input 사이 7px sp. var(--space-2) = 8 → 근사. 유지 (1px 차이).
-  gap: var(--space-2);
+  // Figma "InputField" component (3365:1347, 2026-06-23) — column gap 4.
+  gap: 4px;
 }
 
 .label {
-  // Figma input label (2026-06-19): Pretendard Bold 12 (0.75rem) muted.
-  // 기존 medium 14 fg 에서 변경 — Figma "아이디" / "비밀번호" 정합.
+  // Figma input label "Caption/R_12" (2026-06-23) — Pretendard Regular 12 muted.
+  // 이전 Bold 12 → Regular 12 (토큰 페이지 spec 정합).
   font-size: 0.75rem;
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-regular);
   color: var(--color-muted);
-  letter-spacing: -0.02em;
-  line-height: 1.3em;
+  letter-spacing: -0.01em;
+  line-height: 1.4em;
 }
 
 // 시각적으로 가리되 스크린리더에는 노출. placeholder/aria-label 로 의미 전달 시.
@@ -32,10 +32,10 @@
 
 .input {
   width: 100%;
-  // Figma input box 정합 (FindId/FindPw 기준 — LOGIN 50/13px 은 미완) —
-  // height 46 fixed + padding 0 14. radius 는 --radius-input 10px.
-  height: 46px;
-  padding: 0 14px;
+  // Figma "Input" component (3365:1284, 2026-06-23) — height 52 + padding
+  // 12 16, radius 10. 이전 height 46 / padding 0 14 → 토큰 페이지 spec.
+  height: 52px;
+  padding: 12px 16px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-input);
   background: var(--color-bg);

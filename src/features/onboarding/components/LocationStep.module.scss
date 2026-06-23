@@ -59,8 +59,9 @@
 }
 
 .icon {
-  width: 116px;
-  height: 116px;
+  // Figma "circle/location" (3378:266) — 96x96.
+  width: 96px;
+  height: 96px;
 }
 
 // body — Walk 1/2/3 와 동일. padding 40 20 28 + column space-between.

@@ -138,12 +138,13 @@ export function LocationStep({
 
       {/* 360h illustArea — 116x116 location-hero SVG (다른 Walk 와 동일 비율). */}
       <div className={styles.illustArea}>
+        {/* Figma "circle/location" (3378:266) — 96x96. 이전 116 → 96 토큰 정합. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/images/auth/location-hero.svg"
           alt=""
-          width={116}
-          height={116}
+          width={96}
+          height={96}
           className={styles.icon}
         />
       </div>
