@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui';
 import styles from './SegmentError.module.scss';
 
 /**
@@ -40,9 +41,9 @@ export function SegmentError({
       <AlertCircle size={32} className={styles.icon} />
       <h2 className={styles.title}>{t('errors.generic')}</h2>
       <p className={styles.description}>{t('errors.tryAgainLater')}</p>
-      <button type="button" onClick={reset} className={styles.retry}>
+      <Button variant="primary" size="md" onClick={reset}>
         {t('common.tryAgain')}
-      </button>
+      </Button>
       {error.digest && (
         <code className={styles.digest}>ref: {error.digest}</code>
       )}

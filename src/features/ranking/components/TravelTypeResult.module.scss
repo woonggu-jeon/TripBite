@@ -213,17 +213,6 @@
   text-align: center;
 }
 
-.retry {
-  padding: 0.625rem 1rem;
-  background: var(--color-primary);
-  color: var(--color-primary-fg);
-  border-radius: var(--radius-md);
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-bold);
-  border: 0;
-  cursor: pointer;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .primary,
   .secondary {

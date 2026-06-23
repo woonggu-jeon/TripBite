@@ -87,16 +87,16 @@ export function TravelTypeResult() {
         title={t('empty')}
         description={t('emptyHint')}
         action={
-          <button
-            type="button"
-            className={styles.retry}
+          <Button
+            variant="primary"
+            size="md"
             onClick={() => {
               haptic.tap();
               router.replace('/quiz');
             }}
           >
             {t('startTest')}
-          </button>
+          </Button>
         }
       />
     );

@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { useQueryClient } from '@tanstack/react-query';
+import { Button } from '@/components/ui';
 
 /**
  * App Router Error Boundary
@@ -51,18 +52,9 @@ export default function GlobalError({
         잠시 후 다시 시도해주세요. 문제가 계속되면 관리자에게 문의해주세요.
       </p>
       <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-        <button
-          onClick={handleReset}
-          style={{
-            padding: '0.75rem 1.5rem',
-            background: 'var(--color-primary)',
-            color: 'var(--color-primary-fg)',
-            borderRadius: 'var(--radius-md)',
-            fontWeight: 500,
-          }}
-        >
+        <Button variant="primary" size="md" onClick={handleReset}>
           다시 시도
-        </button>
+        </Button>
         <Link
           href="/"
           style={{
