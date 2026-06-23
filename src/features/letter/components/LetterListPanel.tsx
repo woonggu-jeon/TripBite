@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui';
 import { InfiniteList } from '@/features/list/components/InfiniteList';
 import { useLettersInfinite } from '@/features/letter/hooks/use-letters';
 import type { LetterDto } from '@/api/generated/schemas';
@@ -30,13 +31,9 @@ export function LetterListPanel({ kind }: { kind: LetterListKind }) {
     return (
       <div className={styles.error}>
         <p>{t('listError')}</p>
-        <button
-          type="button"
-          className={styles.retry}
-          onClick={() => refetch()}
-        >
+        <Button variant="secondary" size="sm" onClick={() => refetch()}>
           {t('listRetry')}
-        </button>
+        </Button>
       </div>
     );
   }
