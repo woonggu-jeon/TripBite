@@ -52,7 +52,15 @@
   &::placeholder {
     color: var(--color-muted);
   }
-  &:focus {
+  // 키보드 focus (tab) 시 outline ring + border-color. Button / PasswordField
+  // 와 동일 --focus-outline 토큰 사용 (R3 audit, 2026-06-23). 마우스 click
+  // focus 는 border-color 만 변경해 ring 깜빡임 회피.
+  &:focus-visible {
+    border-color: var(--color-primary);
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+  }
+  &:focus:not(:focus-visible) {
     border-color: var(--color-primary);
   }
   &[aria-invalid='true'] {
