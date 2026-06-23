@@ -7,6 +7,9 @@ import styles from './Button.module.scss';
  * variant:
  *   - primary   : 채움 (가장 강한 강조 — submit/CTA)
  *   - secondary : border + 투명 배경
+ *   - outline   : Figma "설정" cancel/logout 패턴 — bg white + 1px stroke
+ *                 border (#C6C6C6) + muted color (#393939). dialog cancel /
+ *                 settings logout / withdraw 시각 통일.
  *   - ghost     : 배경/border 없음 — text-like
  *   - danger    : 위험 액션 (삭제 confirm 등)
  *
@@ -24,7 +27,12 @@ import styles from './Button.module.scss';
  * 기존 컴포넌트의 .primary/.secondary 클래스 대체용. 자체 SCSS 의 padding/radius/
  * transition 반복 제거.
  */
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+export type ButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'outline'
+  | 'ghost'
+  | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

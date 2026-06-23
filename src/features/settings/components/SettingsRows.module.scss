@@ -80,18 +80,9 @@
   gap: var(--space-3);
 }
 
-.actionButton {
-  // Figma button: border **1px** (not 1.5) #C6C6C6 (stroke) + bg white +
-  // color #393939 (muted). Button.btn 의 1.5px border + transparent bg
-  // override.
-  border-width: 1px;
-  border-color: var(--color-stroke);
-  background: var(--color-bg);
-  color: var(--color-muted);
-}
-
+// .actionButton 은 Button.v-outline variant 로 이전됨 (2026-06-23).
+// 회원 탈퇴 만 color override 유지 — outline 기본 muted 위에 danger.
 .actionButtonDanger {
-  // 회원 탈퇴 — Figma color #E1493C (System/error = --color-danger).
   color: var(--color-danger);
 }
 

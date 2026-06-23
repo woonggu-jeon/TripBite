@@ -58,20 +58,19 @@ export function AccountActionsSection() {
     // .actionButton / .actionButtonDanger 가 처리.
     <div className={styles.actionStack}>
       <Button
-        variant="secondary"
+        variant="outline"
         size="lg"
         fullWidth
-        className={styles.actionButton}
         onClick={handleLogout}
         disabled={isLoggingOut}
       >
         {isLoggingOut ? t('loggingOut') : t('logout')}
       </Button>
       <Button
-        variant="secondary"
+        variant="outline"
         size="lg"
         fullWidth
-        className={`${styles.actionButton} ${styles.actionButtonDanger}`}
+        className={styles.actionButtonDanger}
         onClick={handleWithdraw}
         disabled={isWithdrawing}
       >

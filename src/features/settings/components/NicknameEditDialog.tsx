@@ -68,7 +68,11 @@ export function NicknameEditDialog({ onClose }: { onClose: () => void }) {
       showCloseButton
       actions={
         <>
-          <Button variant="ghost" onClick={onClose} disabled={update.isPending}>
+          <Button
+            variant="outline"
+            onClick={onClose}
+            disabled={update.isPending}
+          >
             {tCommon('cancel')}
           </Button>
           <Button
