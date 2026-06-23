@@ -1,33 +1,42 @@
 'use client';
 
+import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Trophy } from 'lucide-react';
 import { SkeletonList } from '@/components/feedback/SkeletonList';
-import { Button, PageSection } from '@/components/ui';
+import { Skeleton } from '@/components/feedback/Skeleton';
+import { Button } from '@/components/ui';
 import { WeekLabel } from '@/components/ui/WeekLabel';
 import { useWeeklyTopDestinations } from '@/features/ranking/hooks/use-ranking';
-import { Top5Card } from '@/features/ranking/components/Top5Card';
 import { RegionWinsChart } from '@/features/ranking/components/RegionWinsChart';
+import { CHUNGBUK_REGIONS, isRegionCode } from '@/constants/regions';
+import { secureImageUrl } from '@/lib/secure-image-url';
 import { haptic } from '@/lib/haptic';
 import styles from './RankingPageContent.module.scss';
 
 /**
- * 랭킹 페이지
+ * 랭킹 페이지 — Figma "RNK · 랭킹" (2026-06-23) 정합.
  *
- *   1) 이번주 우승 Top 5 — Top5Card 리스트
- *   2) 시군별 우승 횟수 — 가로 bar 차트 (클릭 시 /region/[code])
+ * Layout:
+ *   - WeekLabel inline ("M월 N주차 · ...")
+ *   - rv-card 1 "이번 주 인기 여행지":
+ *     · title B_16 fg + padding-bottom 16
+ *     · hero (rank 1): 288×152 image + dark overlay + B_20 title 좌하단 +
+ *       row (시군 + 우승 횟수) white.
+ *     · top5-row × 4 (rank 2-5): num 16 SB_16 disabled + circle 48
+ *       thumbnail + name B_14 + region Caption R_12 muted.
+ *   - rv-card 2 "시군별 우승 횟수":
+ *     · title B_16 fg + padding-bottom 16
+ *     · RegionWinsChart (11 gun-row).
  *
- * 빈 상태 — Figma "RNK · 랭킹 (빈 상태)" 정합:
- *   - week label 단일줄 "{month}월 {week}주차 · 이번 주 집계가 시작됐어요"
- *   - empty-popular card (white border + 84 circle + Trophy + heading/hint
- *     + primary lg button)
- *   - empty-recent card (white border + heading/hint, disabled color)
- *   RegionWinsChart 는 빈 상태 시 미노출 — Figma spec 정합.
+ * 빈 상태 — Figma "RNK · 랭킹 (빈 상태)" 정합 (이전 commit 유지).
  */
 export function RankingPageContent() {
   const t = useTranslations('ranking');
   const tSection = useTranslations('ranking.sections');
+  const tRegion = useTranslations('region.names');
   const router = useRouter();
   const { data, isLoading, isError, refetch } = useWeeklyTopDestinations(5);
   const isEmpty = !isLoading && !isError && data && data.length === 0;
@@ -82,17 +91,29 @@ export function RankingPageContent() {
     );
   }
 
+  const top1 = data?.[0];
+  const top2to5 = data?.slice(1, 5) ?? [];
+
   return (
     <div className={styles.wrap}>
-      <WeekLabel variant="split" />
+      <WeekLabel variant="inline" hint={t('updateNoteShort')} />
 
-      {/* 1) Top 5 */}
-      <PageSection title={tSection('weeklyWinners', { limit: 5 })}>
+      {/* rv-card 1 — 이번 주 인기 여행지 */}
+      <section
+        className={styles.rvCard}
+        aria-label={tSection('weeklyWinners', { limit: 5 })}
+      >
+        <h2 className={styles.rvTitle}>
+          {tSection('weeklyWinners', { limit: 5 })}
+        </h2>
+
         {isLoading && (
-          <div className={styles.list}>
-            <SkeletonList count={5} height={72} radius="lg" />
+          <div className={styles.rvLoading}>
+            <Skeleton width="100%" height={152} radius="md" />
+            <SkeletonList count={4} height={64} radius="md" />
           </div>
         )}
+
         {isError && (
           <div className={styles.error}>
             <p>{tSection('error')}</p>
@@ -101,25 +122,118 @@ export function RankingPageContent() {
             </Button>
           </div>
         )}
-        {data && data.length > 0 && (
-          <div className={styles.list}>
-            {data.map((item) => (
-              <Top5Card
-                key={item.destination.id ?? `rank-${item.rank}`}
-                item={item}
-              />
-            ))}
-          </div>
-        )}
-      </PageSection>
 
-      {/* 2) 시군별 우승 횟수 차트 */}
-      <PageSection
-        title={tSection('byRegionChart')}
-        hint={tSection('byRegionChartHint')}
-      >
+        {top1 && (
+          <>
+            <Top1Hero item={top1} tRegion={tRegion} winsUnit={t('winsUnit')} />
+            <ul className={styles.top5List}>
+              {top2to5.map((item) => (
+                <li key={item.destination.id ?? `rank-${item.rank}`}>
+                  <Top5Row item={item} tRegion={tRegion} />
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </section>
+
+      {/* rv-card 2 — 시군별 우승 횟수 */}
+      <section className={styles.rvCard} aria-label={tSection('byRegionChart')}>
+        <h2 className={styles.rvTitle}>{tSection('byRegionChart')}</h2>
         <RegionWinsChart />
-      </PageSection>
+      </section>
     </div>
+  );
+}
+
+function Top1Hero({
+  item,
+  tRegion,
+  winsUnit,
+}: {
+  item: import('@/features/ranking/types').RankedDestination;
+  tRegion: ReturnType<typeof useTranslations<'region.names'>>;
+  winsUnit: string;
+}) {
+  const safeImg = secureImageUrl(item.destination.imageUrl);
+  const code = item.destination.region;
+  const regionName = isRegionCode(code)
+    ? tRegion(code as Parameters<typeof tRegion>[0])
+    : code;
+  const shortRegion = regionName.replace(/(시|군)$/u, '');
+
+  return (
+    <Link
+      href={{ pathname: `/destination/${item.destination.id}` }}
+      prefetch={false}
+      className={styles.hero}
+      aria-label={`1위 ${item.destination.name}`}
+      onClick={() => haptic.tap()}
+    >
+      <div className={styles.heroImg} aria-hidden>
+        {safeImg && (
+          <Image
+            src={safeImg}
+            alt=""
+            fill
+            sizes="(max-width: 480px) 100vw, 360px"
+            className={styles.heroImage}
+          />
+        )}
+      </div>
+      <div className={styles.heroOverlay} aria-hidden />
+      <div className={styles.heroText}>
+        <h3 className={styles.heroTitle}>{item.destination.name}</h3>
+        <div className={styles.heroMeta}>
+          <span className={styles.heroRegion}>{shortRegion}</span>
+          <span className={styles.heroWins}>
+            {item.score}
+            {winsUnit}
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function Top5Row({
+  item,
+  tRegion,
+}: {
+  item: import('@/features/ranking/types').RankedDestination;
+  tRegion: ReturnType<typeof useTranslations<'region.names'>>;
+}) {
+  const safeImg = secureImageUrl(item.destination.imageUrl);
+  const code = item.destination.region;
+  const regionName = isRegionCode(code)
+    ? tRegion(code as Parameters<typeof tRegion>[0])
+    : code;
+  const shortRegion = regionName.replace(/(시|군)$/u, '');
+
+  return (
+    <Link
+      href={{ pathname: `/destination/${item.destination.id}` }}
+      prefetch={false}
+      className={styles.top5Row}
+      aria-label={`${item.rank}위 ${item.destination.name}`}
+      onClick={() => haptic.tap()}
+    >
+      <span className={styles.top5Num}>{item.rank}</span>
+      <span className={styles.top5Thumb} aria-hidden>
+        {safeImg && (
+          <Image
+            src={safeImg}
+            alt=""
+            fill
+            sizes="48px"
+            className={styles.top5ThumbImage}
+          />
+        )}
+      </span>
+      <div className={styles.top5Text}>
+        <p className={styles.top5Name}>{item.destination.name}</p>
+        <p className={styles.top5Region}>{shortRegion}</p>
+      </div>
+    </Link>
   );
 }

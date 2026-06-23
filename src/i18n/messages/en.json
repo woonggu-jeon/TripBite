@@ -350,6 +350,7 @@
     "title": "Destination ranking",
     "winsUnit": "wins",
     "emptyTallyHint": "Tally for this week just started",
+    "updateNoteShort": "Updated every Monday",
     "emptyPopular": {
       "title": "Most-won this week",
       "heading": "Gathering results...",
