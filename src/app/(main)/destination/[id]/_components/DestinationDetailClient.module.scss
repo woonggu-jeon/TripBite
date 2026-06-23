@@ -204,3 +204,12 @@
   padding: 20px;
   background: var(--color-bg);
 }
+
+// Loading skeleton — near-sec 안의 3 카드 placeholder row (Figma saved-grid
+// 408w x-scroll 정합).
+.skeletonRelatedRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  overflow: hidden;
+}

@@ -7,6 +7,17 @@
   height: 234px;
   background: #a8b29c;
   overflow: hidden;
+
+  // Carousel 의 outer wrap (style minHeight) / .root / .viewport 가 자체
+  // height 명시 없음 — image 의 intrinsic height 의존. wrap 의 234px 를
+  // 모든 후손 div 가 채우도록 강제 (dots absolute bottom 기준 .root 가
+  // 234 차지). slide 의 flex column 으로 image 도 height 100%.
+  & > div {
+    height: 100%;
+  }
+  & > div > div {
+    height: 100%;
+  }
 }
 
 .image {

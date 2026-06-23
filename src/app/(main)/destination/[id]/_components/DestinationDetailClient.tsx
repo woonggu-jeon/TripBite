@@ -79,14 +79,36 @@ export function DestinationDetailClient({ id }: { id: string }) {
   }
 
   if (isLoading || !detail) {
+    // Figma layout 대응 skeleton — hero 234 + info-sec (title-area + info-card
+    // 5 field + divider + overview) + near-sec 3 card. CLS 0.
     return (
       <>
         <SubHeader title={t('title')} />
         <div className={styles.wrap}>
           <Skeleton width="100%" height={234} radius="sm" />
           <div className={styles.infoSec}>
-            <Skeleton width="70%" height={28} radius="md" />
-            <Skeleton width="100%" height={180} radius="lg" />
+            <div className={styles.titleArea}>
+              <div className={styles.titleStack}>
+                <Skeleton width="60%" height={26} radius="sm" />
+                <Skeleton width="40%" height={20} radius="sm" />
+              </div>
+              <Skeleton width={72} height={25} radius="full" />
+            </div>
+            <div className={styles.infoCard}>
+              {[0, 1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} width="100%" height={18} radius="sm" />
+              ))}
+            </div>
+            <div className={styles.divider} aria-hidden />
+            <Skeleton width="100%" height={80} radius="sm" />
+          </div>
+          <div className={styles.nearSec}>
+            <Skeleton width="40%" height={22} radius="sm" />
+            <div className={styles.skeletonRelatedRow} aria-hidden>
+              <Skeleton width={152} height={168} radius="md" />
+              <Skeleton width={152} height={168} radius="md" />
+              <Skeleton width={152} height={168} radius="md" />
+            </div>
           </div>
         </div>
       </>
