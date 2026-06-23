@@ -1,20 +1,22 @@
-// Figma "MY · 마스터 카드" (2026-06-23).
-// 360×~448 linear-gradient + radius 20 + center column.
+// Figma "MY · 마스터 카드" (2026-06-23 정정 spec) — 360×425.9 linear-gradient
+// + radius 20 + center column. nested Frame 구조 정합 (Frame 24/23/22/21 gap).
 
 .card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40px 28px 34px;
+  // Figma padding 40 20 20 (좌우 28→20, bottom 34→20 정정).
+  padding: 40px 20px 20px;
   width: 100%;
   max-width: 360px;
   margin: 0 auto;
-  background: linear-gradient(180deg, #1ce055 0%, #edfef4 100%);
+  // Figma gradient #8DEF80 → #C5F5D9 (이전 #1CE055 → #EDFEF4 정정).
+  background: linear-gradient(180deg, #8def80 0%, #c5f5d9 100%);
   border-radius: 20px;
   color: var(--color-fg);
 }
 
-// 88 white circle + Trophy 44 primary.
+// Figma Frame 22 — 88 circle + Frame 21 (subtitle + title) 묶음 gap 16.
 .iconCircle {
   display: grid;
   place-items: center;
@@ -23,7 +25,8 @@
   background: var(--color-bg);
   border-radius: var(--radius-full);
   color: var(--color-primary);
-  margin-bottom: 20px;
+  // Figma Frame 22 gap 16 (icon ↔ subtitle).
+  margin-bottom: 16px;
 }
 
 // "CHUNGBUK MASTER" — Inter Bold 13 line 16 ls 0.16em opacity 0.9.
@@ -34,7 +37,8 @@
   letter-spacing: 0.16em;
   color: var(--color-fg);
   opacity: 0.9;
-  margin: 0 0 8px;
+  // Figma Frame 21 gap 4 (subtitle ↔ title).
+  margin: 0 0 4px;
   text-align: center;
 }
 
@@ -45,17 +49,20 @@
   line-height: 1.2; /* 36/30 */
   letter-spacing: -0.03em;
   color: var(--color-fg);
-  margin: 0 0 22px;
+  // Figma Frame 23 gap 24 (title ↔ msg-box).
+  margin: 0 0 24px;
   text-align: center;
 }
 
-// msg-box — white card radius 14 padding 20/18.
+// Figma msg-box — 320×136 padding 20 18 radius 12 (이전 14 정정).
 .msgBox {
   width: 100%;
   padding: 20px 18px;
   background: var(--color-bg);
-  border-radius: 14px;
-  margin-bottom: 22px;
+  // Figma radius 12 (이전 14 회귀 정정).
+  border-radius: 12px;
+  // Figma Frame 24 gap 20 (msg-box ↔ brand).
+  margin-bottom: 20px;
 }
 
 // msg text — Inter Medium 14 line 170% center muted.
@@ -68,7 +75,7 @@
   text-align: center;
 }
 
-// trip-bite-logo — row gap 4 center (Figma Frame 6 inner).
+// trip-bite-logo Frame 6 — row gap 4 center (94×25.9).
 .brand {
   display: flex;
   align-items: center;
