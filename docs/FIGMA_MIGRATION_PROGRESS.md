@@ -22,7 +22,7 @@
 | Toggle row (label SB_16 + caption R_12 muted)       | ✅ `8a1b068`                              | font-body + tracking-tight + line-snug-relaxed                                      |
 | link row (flat horizontal, label + value + chevron) | ✅ `535f478`                              | boxed → flat 정합                                                                   |
 | 로그아웃 button (outline)                           | ✅ `48c001d` + `92be751`                  | Button.v-outline border 1px stroke + color muted                                    |
-| 회원탈퇴 button (border 없음 + danger color)        | 🟡 진행 중 (border 제거 fix)              | Figma spec 의 두번째 button 은 border 명시 없음 — ghost variant + danger color 적용 |
+| 회원탈퇴 button (border 없음 + danger color)        | ✅ `fa4a966`                              | Figma spec 의 두번째 button 은 border 명시 없음 — ghost variant + danger color 적용 |
 | actionStack padding 20 all                          | ✅ `769c8b6`                              | bottom 0 회귀 정정                                                                  |
 
 ## 모달 (Dialog)
@@ -46,17 +46,17 @@
 
 ## 마이페이지 (MyPage)
 
-| 항목                                                                              | 상태                                                             | 비고                                                                                             |
-| --------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Header (title B_18 + settings rightSlot 24)                                       | ✅ `8af1538` + `5080bb8`                                         | SubHeader 정합                                                                                   |
-| pf (profile row) — avatar 56 + cam-badge + 닉 + badge "새내기 여행자"             | 🟡 진행 중 (이번 turn)                                           | ProfileCard 재설계 — 100→56, Card→row, TravelTypeField→badge                                     |
-| sec-title (SB_16 + right Caption R_12 muted "X/Y")                                | ⏸ PageSection 광범위 영향 보류                                   | mypage 만 변경하려면 별도 컴포넌트 필요                                                          |
-| stamp-banner (도장책 진입 — 99h white card border radius 12)                      | ❌ 이상 — 현재 StampBookBanner 가 다른 시각                      | Figma 의 row 패턴 (label + caption + value B_14 primary "X/Y" + progress 280×7 + fill) 적용 필요 |
-| saved-grid (DestinationCard 152×168 + heart-btn 28×28 right top)                  | ❌ Figma 의 DestinationCard 가 우리 DestinationCard 와 시각 다름 | 우리는 region-tone 색상 카드, Figma 는 image + name + region + heart overlay                     |
-| empty-saved (320×148 white card + Title B_14 + Caption + primary button 280×52)   | 🟡 SavedTournamentsSection 빈 상태 정합 필요                     |                                                                                                  |
-| empty-recent (320×60 white card + Title B_14 center only)                         | 🟡 TournamentHistorySection 빈 상태 정합 필요                    |                                                                                                  |
-| 최근 토너먼트 row (320×68 + circle 40 trophy 20 + title B_14 + meta Caption M_10) | ⏸ Figma 외                                                       | 우리 코드 구조와 큰 차이 — 별도 작업                                                             |
-| BottomNav (62/64h, 5 tab, MY active primary)                                      | 🟡 정합 확인 필요                                                | 현재 BottomNav 시각 비교 필요                                                                    |
+| 항목                                                                              | 상태                                                             | 비고                                                                                     |
+| --------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Header (title B_18 + settings rightSlot 24)                                       | ✅ `8af1538` + `5080bb8`                                         | SubHeader 정합                                                                           |
+| pf (profile row) — avatar 56 + cam-badge + 닉 + badge "새내기 여행자"             | ✅ `93fa442`                                                     | ProfileCard 재설계 — 100→56, Card→row, TravelTypeField→badge                             |
+| sec-title (SB_16 + right Caption R_12 muted "X/Y")                                | ⏸ PageSection 광범위 영향 보류                                   | mypage 만 변경하려면 별도 컴포넌트 필요                                                  |
+| stamp-banner (도장책 진입 — 99h white card border radius 12)                      | ✅ `0bc9651`                                                     | sage → flat white card + progress track 정합                                             |
+| saved-grid (DestinationCard 152×168 + heart-btn 28×28 right top)                  | ❌ Figma 의 DestinationCard 가 우리 DestinationCard 와 시각 다름 | 우리는 region-tone 색상 카드, Figma 는 image + name + region + heart overlay — 별도 turn |
+| empty-saved (320×148 white card + Title B_14 + Caption + primary button 280×52)   | ✅ `e10cc85`                                                     | 직접 분기 + 자체 markup                                                                  |
+| empty-recent (320×60 white card + Title B_14 center only)                         | ✅ `e10cc85`                                                     |                                                                                          |
+| 최근 토너먼트 row (320×68 + circle 40 trophy 20 + title B_14 + meta Caption M_10) | ✅ `e10cc85`                                                     | seasonEmoji → Trophy primary-soft circle. meta Caption M_10.                             |
+| BottomNav (62/64h, 5 tab, MY active primary)                                      | ✅ `2fa24f3`                                                     | icon 24, label 10, active primary + bold                                                 |
 
 ## 마이페이지 — 프로필 사진 변경 (bottom sheet)
 
