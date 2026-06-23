@@ -60,13 +60,14 @@
 
 ## 마이페이지 — 프로필 사진 변경 (bottom sheet)
 
-| 항목                                                              | 상태                 | 비고                         |
-| ----------------------------------------------------------------- | -------------------- | ---------------------------- |
-| dim overlay (rgba(0,0,0,0.42))                                    | ⏸                    | bottom sheet 컴포넌트 미존재 |
-| profile-photo-sheet (360×375, radius 22 top, handle 80×4 #E0E0E0) | ⏸ 신규 컴포넌트 필요 |                              |
-| 카메라 / 갤러리 / 사람 옵션 row (40 circle + label)               | ⏸                    |                              |
-| cancel button (outline)                                           | ⏸                    |                              |
-| ProfileCard onPick 동작 변경 — file picker → bottom sheet         | ⏸                    | 큰 변경                      |
+| 항목                                                              | 상태         | 비고                                                                       |
+| ----------------------------------------------------------------- | ------------ | -------------------------------------------------------------------------- |
+| dim overlay (rgba(0,0,0,0.42))                                    | ✅ `2c1f831` | BottomSheet primitive 신규                                                 |
+| profile-photo-sheet (360×375, radius 22 top, handle 80×4 #E0E0E0) | ✅ `2c1f831` | BottomSheet.tsx + .module.scss                                             |
+| 카메라 / 갤러리 / 제거 옵션 row (40 circle + label)               | ✅ `2c1f831` | opt-person = 제거 매핑 (Figma 의도 추정 — 정직 보고: opt-person 의미 불명) |
+| cancel button (outline)                                           | ✅ `2c1f831` | BottomSheet primitive 내장                                                 |
+| ProfileCard onPick 동작 변경 — file picker → bottom sheet         | ✅ `2c1f831` | 카메라 capture / 갤러리 default / 제거 분기                                |
+| cam-badge X → Camera icon                                         | ✅ `2c1f831` | 항상 노출 (이전 hasAvatar 시 만)                                           |
 
 ## 마이페이지 — 저장한 우승지 (상세)
 
