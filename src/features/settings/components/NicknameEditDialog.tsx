@@ -65,7 +65,6 @@ export function NicknameEditDialog({ onClose }: { onClose: () => void }) {
       open
       onClose={onClose}
       title={t('title')}
-      showCloseButton
       actions={
         <>
           <Button

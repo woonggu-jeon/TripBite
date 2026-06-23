@@ -91,13 +91,13 @@
 }
 
 // Figma "설정" cancel/logout 패턴 (2026-06-23) — bg white + 1px stroke border
-// + muted color. Button.btn 의 1.5px border override (1px) + bg transparent
-// → white 명시.
+// + muted color. .btn base 의 `border: 1.5px solid transparent` 를 완전
+// override 위해 shorthand 사용 (이전 border-width / border-color 분리 시
+// border-style 상속 의존 — 명확화).
 .v-outline {
   background: var(--color-bg);
   color: var(--color-muted);
-  border-width: 1px;
-  border-color: var(--color-stroke);
+  border: 1px solid var(--color-stroke);
 
   @media (hover: hover) and (pointer: fine) {
     &:hover:not(:disabled) {
