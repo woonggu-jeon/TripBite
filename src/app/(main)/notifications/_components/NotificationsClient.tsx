@@ -125,15 +125,13 @@ export function NotificationsClient() {
               />
             )}
             emptyState={
-              // Figma "알림 빈 상태" (2026-06-23) — 84x84 primary-soft circle
-              // + Bell 38 primary + Body B_16 title. EmptyState primitive 의
-              // .icon 56x56 default 와 시각 다름 → 자체 markup 사용.
-              <div className={styles.empty}>
-                <div className={styles.emptyCircle}>
-                  <Bell size={38} aria-hidden />
-                </div>
-                <p className={styles.emptyTitle}>{t('empty')}</p>
-              </div>
+              // Figma "알림 빈 상태" (2026-06-23) — EmptyState variant=hero
+              // (84 circle + primary-soft bg + primary 38 Bell + Body B_16).
+              <EmptyState
+                variant="hero"
+                icon={<Bell size={38} aria-hidden />}
+                title={t('empty')}
+              />
             }
           />
         )}

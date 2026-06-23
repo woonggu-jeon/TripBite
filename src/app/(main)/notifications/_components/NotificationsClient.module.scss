@@ -84,36 +84,8 @@
   color: var(--color-muted);
 }
 
-// Figma "알림 빈 상태" ec frame (2026-06-23) — center column, padding 0 40 60.
-// circle 84x84 (primary-soft bg) + Bell icon 38 (primary) + title Body B_16.
-.empty {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 0 40px 60px;
-  gap: 20px;
-  min-height: 480px;
-}
-
-.emptyCircle {
-  width: 84px;
-  height: 84px;
-  display: grid;
-  place-items: center;
-  background: var(--color-primary-soft);
-  border-radius: var(--radius-full);
-  color: var(--color-primary);
-}
-
-.emptyTitle {
-  font-size: var(--font-body);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-fg);
-  margin: 0;
-}
+// 알림 빈 상태는 EmptyState primitive 의 variant=hero 로 위임 (2026-06-23
+// 정정 — 이전 inline markup 회귀를 EmptyState 컴포넌트 재사용으로 정합).
 
 .itemMessage {
   font-size: var(--text-sm);
