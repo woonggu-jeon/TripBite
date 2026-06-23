@@ -334,6 +334,7 @@
       "startTournamentHere": "이 시군으로 토너먼트 시작"
     },
     "empty": {
+      "title": "아직 결과가 없어요",
       "attraction": "관광지 정보가 없어요",
       "festival": "진행 중인 축제가 없어요",
       "experience": "체험 콘텐츠가 없어요"

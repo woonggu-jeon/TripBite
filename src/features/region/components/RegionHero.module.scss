@@ -1,108 +1,48 @@
-// Fluid 반응형 — 320~desktop viewport 따라 부드럽게.
-.wrap {
-  position: relative;
-  width: 100%;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  background: var(--color-surface-soft);
+// Figma "RGN · 시군상세 banner" (2026-06-23) — 320×103 padding 16 20 gap 12
+// secondary01 bg + 1px gray border + radius 12.
+.banner {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 20px;
+  background: var(--color-primary-soft);
   border: 1px solid var(--color-border);
-  padding: clamp(0.75rem, 3vw, 1rem) clamp(1rem, 4vw, 1.25rem);
-  isolation: isolate;
+  border-radius: 12px;
 }
 
-.bg {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(
-      circle at 100% 0%,
-      var(--color-primary-tint),
-      transparent 60%
-    ),
-    linear-gradient(
-      180deg,
-      var(--color-primary-surface-grad-start),
-      var(--color-bg)
-    );
-  z-index: -1;
+// Figma Frame 30 — column gap 4 (title + eyebrow).
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.content {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--space-4);
-  align-items: center;
-}
-
-// heroImage 있으면 image, 없으면 emoji — MediaThumb 가 분기.
-.thumbWrap {
-  position: relative;
-  width: clamp(48px, 14vw, 64px);
-  height: clamp(48px, 14vw, 64px);
-  border-radius: var(--radius-full);
-  overflow: hidden;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-sm);
-  flex-shrink: 0;
-}
-
-.thumb {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-}
-
-.emoji {
-  font-size: clamp(var(--emoji-md), 8vw, var(--emoji-lg));
-  line-height: 1;
-}
-
-.body {
-  display: grid;
-  gap: 2px;
-  min-width: 0;
-}
-
+// Figma title B_20_130% fg.
 .title {
-  font-size: clamp(var(--font-h2), 5.5vw, var(--font-h1));
-  font-weight: var(--font-weight-extrabold);
-  color: var(--color-fg);
+  font-size: var(--font-h2); /* 20 */
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-tight); /* 130% */
   letter-spacing: var(--tracking-tight);
-  margin: 0;
-}
-
-.subtitle {
-  font-size: var(--font-caption);
-  color: var(--color-muted);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-  margin: 0;
-}
-
-.description {
-  font-size: var(--font-body-sm);
   color: var(--color-fg);
-  margin: var(--space-2) 0 0;
-  line-height: var(--line-relaxed);
+  margin: 0;
+}
+
+// Figma eyebrow Caption B_10 primary (영문 시군명).
+.eyebrow {
+  font-size: 0.625rem; /* 10 */
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-tight); /* 120% */
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-primary);
+}
+
+// Figma subtitle Caption R_12 muted.
+.description {
+  font-size: var(--font-caption); /* 12 */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: -0.01em;
+  color: var(--color-muted);
+  margin: 0;
   word-break: keep-all;
 }
-
-.popularity {
-  position: absolute;
-  top: var(--space-3);
-  right: var(--space-3);
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px var(--space-2);
-  background: var(--color-primary-tint);
-  color: var(--color-primary);
-  border-radius: var(--radius-full);
-  font-size: var(--font-caption);
-  font-weight: var(--font-weight-bold);
-}
-
-// fluid clamp() 가 단계별 media query 대체.

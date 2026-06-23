@@ -1,31 +1,39 @@
 .wrap {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: var(--space-4);
 }
 
-// 탭 수가 3 (관광지/축제/체험) ~ 4 (전체 추가 시) 로 변동 — auto-fit 으로 동적.
-// minmax(0, 1fr) 의 0 은 grid track 안 ellipsis 동작 보장.
+// Figma "RGN · 시군상세 chips" (2026-06-23) — row gap 4 height 28.
+// chip-on primary fill (Body B_14 white) / chip-off white + 1px gray border
+// (Body R_14 muted). 모두 padding 4 16 radius 999.
 .tabs {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(0, 1fr);
-  gap: 0.5rem;
-  padding: 0.375rem;
-  background: color-mix(in srgb, var(--color-fg) 4%, transparent);
-  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  flex-wrap: wrap;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
 }
 
 .tab {
-  padding: 0.5rem 0.75rem;
-  border-radius: calc(var(--radius-md) - 2px);
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-bold);
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 16px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm); /* 14 */
+  font-weight: var(--font-weight-regular);
+  line-height: 1.43; /* 20/14 */
+  letter-spacing: var(--tracking-tight);
   color: var(--color-muted);
-  background: transparent;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
   transition:
     background var(--motion-base) ease,
-    color var(--motion-base) ease;
-  letter-spacing: var(--tracking-snug);
+    color var(--motion-base) ease,
+    border-color var(--motion-base) ease;
 
   &:focus-visible {
     outline: var(--focus-outline);
@@ -33,9 +41,10 @@
   }
 
   &.active {
-    background: var(--color-bg);
-    color: var(--color-fg);
-    box-shadow: var(--shadow-sm);
+    background: var(--color-primary);
+    color: var(--color-primary-fg);
+    border-color: var(--color-primary);
+    font-weight: var(--font-weight-bold);
   }
 }
 
@@ -71,11 +80,64 @@
   font-size: var(--text-sm);
 }
 
+// Figma "RGN · 시군상세 (빈 상태)" empty (2026-06-23) — 320×400 padding 40 0
+// 32 column center.
 .empty {
-  padding: 2.5rem 1rem;
-  color: var(--color-muted);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0 32px;
+  min-height: 400px;
+}
+
+// Figma Frame 6 — column gap 20 (circle + Frame 31).
+.emptyInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+// Figma circle 88 secondary01 + compass 40 primary 2.5 stroke.
+.emptyCircle {
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  background: var(--color-primary-soft);
+  border-radius: var(--radius-full);
+  color: var(--color-primary);
+}
+
+// Figma Frame 31 — column gap 4 (title + caption).
+.emptyText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+// Figma title B_16_140% fg.
+.emptyTitle {
+  font-size: var(--font-body); /* 16 */
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
   text-align: center;
-  font-size: var(--text-sm);
+  margin: 0;
+}
+
+// Figma caption R_12 fg (#151515) — disabled 아님.
+.emptyHint {
+  font-size: var(--font-caption); /* 12 */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: -0.01em;
+  color: var(--color-fg);
+  text-align: center;
+  margin: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {

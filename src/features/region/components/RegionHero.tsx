@@ -1,92 +1,39 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { TrendingUp } from 'lucide-react';
-import { Skeleton } from '@/components/feedback/Skeleton';
-import { MediaThumb } from '@/components/ui';
 import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import { useRegionSummary } from '@/features/region/hooks/use-region';
 import styles from './RegionHero.module.scss';
 
-const REGION_EMOJI: Record<RegionCode, string> = {
-  cheongju: '🏛️',
-  chungju: '🍎',
-  jecheon: '🏞️',
-  boeun: '🌰',
-  okcheon: '🌿',
-  yeongdong: '🍇',
-  jincheon: '🌾',
-  goesan: '🌶️',
-  eumseong: '🎭',
-  danyang: '⛰️',
-  jeungpyeong: '🌱',
-};
-
 /**
- * <RegionHero />
+ * <RegionHero /> — Figma "RGN · 시군상세 banner" (2026-06-23) 정합.
  *
- * 시군 상세 페이지 (/region/[code]) 의 상단 hero.
- *
- * 표시:
- *   - heroImage (TourAPI) 있으면 노출, 없으면 emoji fallback
- *   - 시군명 (ko)
- *   - 설명 (서버 응답 or fallback)
- *   - 인기도 chip (popularity 값 0-100)
+ * 시군 상세 페이지 (/region/[code]) 의 상단 banner.
+ *   - secondary01 bg + 1px gray border + radius 12, padding 16 20 column gap 12.
+ *   - Frame 30 (column gap 4): title B_20_130% fg "단양" + eyebrow Caption
+ *     B_10 primary "DANYANG".
+ *   - subtitle Caption R_12 muted (서버 description 또는 fallback).
  *
  * 데이터: `useRegionSummary(code)` → GET /regions/:code/summary.
- * 로딩 시 Skeleton, 실패 시 emoji + 시군명만 (graceful degradation).
- *
- * heroImage 의 http→https 정규화는 regionApi.getSummary 가 처리.
+ * popularity 는 Figma 미명시 — 제거 (현재 banner 시각 단순).
  */
 export function RegionHero({ code }: { code: RegionCode }) {
   const t = useTranslations('region.hero');
   const tNames = useTranslations('region.names');
-  const { data, isLoading } = useRegionSummary(code);
+  const { data } = useRegionSummary(code);
 
   const meta = CHUNGBUK_REGIONS.find((r) => r.code === code);
   const name = tNames(code as Parameters<typeof tNames>[0]);
-  const emoji = REGION_EMOJI[code];
-
-  if (isLoading) {
-    return (
-      <div className={styles.wrap}>
-        <Skeleton width="100%" height={140} radius="lg" />
-      </div>
-    );
-  }
-
   const description = data?.description ?? t('fallbackDescription', { name });
-  const popularity = data?.popularity;
-  const heroImage = data?.heroImage;
+  const eyebrow = (meta?.en ?? code).toUpperCase();
 
   return (
-    <section className={styles.wrap} aria-label={name}>
-      <div className={styles.bg} aria-hidden />
-      <div className={styles.content}>
-        <div className={styles.thumbWrap} aria-hidden>
-          <MediaThumb
-            src={heroImage}
-            emoji={emoji}
-            sizes="64px"
-            className={styles.thumb}
-            emojiClassName={styles.emoji}
-          />
-        </div>
-        <div className={styles.body}>
-          {/* SubHeader 가 페이지 h1 — Hero 는 h2 로 위계 보존 */}
-          <h2 className={styles.title}>{name}</h2>
-          <p className={styles.subtitle}>{meta?.en ?? code}</p>
-          <p className={styles.description}>{description}</p>
-        </div>
+    <section className={styles.banner} aria-label={name}>
+      <div className={styles.head}>
+        <h2 className={styles.title}>{name}</h2>
+        <span className={styles.eyebrow}>{eyebrow}</span>
       </div>
-      {typeof popularity === 'number' && (
-        <div className={styles.popularity}>
-          <TrendingUp size={14} aria-hidden />
-          <span>
-            {t('popularity')} {popularity}
-          </span>
-        </div>
-      )}
+      <p className={styles.description}>{description}</p>
     </section>
   );
 }

@@ -3,6 +3,7 @@
 import { useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
+import { Compass } from 'lucide-react';
 import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import { toneFor } from '@/constants/region-tone';
 import type {
@@ -215,7 +216,19 @@ function RegionContentPanel({
       )}
       renderSkeleton={() => <DestinationCardSkeleton />}
       skeletonCount={4}
-      emptyState={<p className={styles.empty}>{t(emptyKey)}</p>}
+      emptyState={
+        <div className={styles.empty}>
+          <div className={styles.emptyInner}>
+            <div className={styles.emptyCircle} aria-hidden>
+              <Compass size={40} strokeWidth={2.5} />
+            </div>
+            <div className={styles.emptyText}>
+              <p className={styles.emptyTitle}>{t('empty.title')}</p>
+              <p className={styles.emptyHint}>{t(emptyKey)}</p>
+            </div>
+          </div>
+        </div>
+      }
       columns={2}
     />
   );

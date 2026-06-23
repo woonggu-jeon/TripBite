@@ -334,6 +334,7 @@
       "startTournamentHere": "Start a bracket here"
     },
     "empty": {
+      "title": "No results yet",
       "attraction": "No attractions yet",
       "festival": "No festivals on now",
       "experience": "No experiences yet"
