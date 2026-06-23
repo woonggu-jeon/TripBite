@@ -10,14 +10,19 @@ import type { Season } from '@/api/generated/schemas';
 import styles from './HomeDashboard.module.scss';
 
 /**
- * 홈 빠른시작 2 버튼 — 현재 계절 결정 + 동적 라벨 / 토너먼트 query.
+ * 홈 빠른시작 — Figma "HOME · 홈 · quick-actions" (2026-06-23) 정합.
+ *
+ * 2 banner row (320×74 / 320×79 column gap 9):
+ *   - banner 1: bg primary-soft + circle 44 primary + Trophy 22 white + title
+ *     B_14 fg + subtitle R_12 muted + pill 58×44 primary "시작" SemiBold 14 white.
+ *   - banner 2: bg amber-soft (#FCEFD9) + circle 44 amber (#F79D26) +
+ *     Sparkles 22 white + 유사 layout + pill amber "테스트".
  *
  * Client island 로 분리한 이유: getCurrentSeason() 의 시간대 의존성 격리.
- * SSR 의 server time 과 client time 이 다르면 hydration mismatch. mount 후
- * useEffect 안에서 결정 — 잠깐 fallback 'spring' 노출은 시각상 거의 인지 불가.
+ * SSR/CSR mismatch 회피.
  */
 export function HomeQuickActions() {
-  const t = useTranslations('home.widgets');
+  const t = useTranslations('home.widgets.quick');
   const [season, setSeason] = useState<Season>('spring');
 
   useEffect(() => {
@@ -25,37 +30,45 @@ export function HomeQuickActions() {
   }, []);
 
   return (
-    <section data-widget="quick-actions" className={styles.quickActions}>
-      <QuickActionLink
+    <section className={styles.quickActions}>
+      <Link
         href={{
           pathname: ROUTES.TOURNAMENT,
           query: { theme: 'season', season },
         }}
-        icon={<Trophy size={20} />}
-        label={t(`quick.tournamentBySeason.${season}`)}
-      />
-      <QuickActionLink
-        href={ROUTES.QUIZ}
-        icon={<Sparkles size={20} />}
-        label={t('quick.quiz')}
-      />
-    </section>
-  );
-}
+        className={`${styles.qaBanner} ${styles.qaBannerPrimary}`}
+        aria-label={t(`tournamentBySeason.${season}`)}
+      >
+        <span className={`${styles.qaCircle} ${styles.qaCirclePrimary}`}>
+          <Trophy size={22} aria-hidden />
+        </span>
+        <span className={styles.qaText}>
+          <span className={styles.qaTitle}>
+            {t(`tournamentBySeason.${season}`)}
+          </span>
+          <span className={styles.qaSubtitle}>{t('tournamentSubtitle')}</span>
+        </span>
+        <span className={`${styles.qaBtn} ${styles.qaBtnPrimary}`}>
+          {t('tournamentCta')}
+        </span>
+      </Link>
 
-function QuickActionLink({
-  href,
-  icon,
-  label,
-}: {
-  href: React.ComponentProps<typeof Link>['href'];
-  icon: React.ReactNode;
-  label: string;
-}) {
-  return (
-    <Link href={href} className={styles.quickAction}>
-      <span className={styles.quickActionIcon}>{icon}</span>
-      <span className={styles.quickActionLabel}>{label}</span>
-    </Link>
+      <Link
+        href={ROUTES.QUIZ}
+        className={`${styles.qaBanner} ${styles.qaBannerAmber}`}
+        aria-label={t('quizTitle')}
+      >
+        <span className={`${styles.qaCircle} ${styles.qaCircleAmber}`}>
+          <Sparkles size={22} aria-hidden />
+        </span>
+        <span className={styles.qaText}>
+          <span className={styles.qaTitle}>{t('quizTitle')}</span>
+          <span className={styles.qaSubtitle}>{t('quizSubtitle')}</span>
+        </span>
+        <span className={`${styles.qaBtn} ${styles.qaBtnAmber}`}>
+          {t('quizCta')}
+        </span>
+      </Link>
+    </section>
   );
 }

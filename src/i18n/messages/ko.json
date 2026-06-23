@@ -55,7 +55,8 @@
     "mypage": "마이"
   },
   "header": {
-    "logo": "Travel",
+    "logo": "여행 한입",
+    "home": "홈",
     "notification": "알림",
     "settings": "설정"
   },
@@ -269,7 +270,12 @@
           "summer": "이번 여름 토너먼트 시작하기 ☀",
           "autumn": "이번 가을 토너먼트 시작하기 🍂",
           "winter": "이번 겨울 토너먼트 시작하기 ❄"
-        }
+        },
+        "tournamentSubtitle": "16강부터 시작 · 약 2분 소요",
+        "tournamentCta": "시작",
+        "quizTitle": "나는 어떤 여행자일까?",
+        "quizSubtitle": "5가지 질문으로 내 여행 유형 찾기",
+        "quizCta": "테스트"
       }
     },
     "recommendation": {

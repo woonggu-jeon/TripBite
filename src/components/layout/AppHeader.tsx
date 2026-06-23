@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Icon } from '@/components/icon';
+import { BrandLogo } from '@/components/ui/BrandLogo';
 import { ROUTES } from '@/constants/routes';
 import { useNotificationBadge } from '@/features/notification/hooks/use-notification-inbox';
 import { MockModeBanner } from '@/features/pwa/components/MockModeBanner';
@@ -50,12 +51,15 @@ export function AppHeader() {
           )}
         </div>
 
-        {/* 2) 로고 */}
-        <Link href={ROUTES.HOME} className={styles.logo} aria-label="Home">
-          {t('logo')}
+        {/* 2) 로고 — Figma "trip-bite-logo" (Frame 6 row gap 4) — Group 1 SVG
+            + Title B_18 "여행 한입" fg. */}
+        <Link href={ROUTES.HOME} className={styles.logo} aria-label={t('home')}>
+          <BrandLogo width={28} />
+          <span className={styles.logoText}>{t('logo')}</span>
         </Link>
 
-        {/* 3) 설정 */}
+        {/* 3) 설정 — Figma 우측은 IC-Header (search icon 표현) 이지만 사이트에
+            검색 페이지 없음 — settings link 유지 (실 기능 정합 우선). */}
         <div className={`${styles.slot} ${styles.slotEnd}`}>
           <Link
             href={ROUTES.SETTINGS}

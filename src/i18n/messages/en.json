@@ -55,7 +55,8 @@
     "mypage": "Me"
   },
   "header": {
-    "logo": "Travel",
+    "logo": "TripBite",
+    "home": "Home",
     "notification": "Notifications",
     "settings": "Settings"
   },
@@ -269,7 +270,12 @@
           "summer": "Start summer bracket ☀",
           "autumn": "Start autumn bracket 🍂",
           "winter": "Start winter bracket ❄"
-        }
+        },
+        "tournamentSubtitle": "Round of 16 · ~2 min",
+        "tournamentCta": "Start",
+        "quizTitle": "What kind of traveler are you?",
+        "quizSubtitle": "Find your travel style in 5 questions",
+        "quizCta": "Test"
       }
     },
     "recommendation": {
