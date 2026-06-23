@@ -123,7 +123,7 @@ const nextConfig = {
     //   /region, /region/[code], /destination/[id], /quiz, /ranking
     // 미적용 대상 — user-specific (cookie 기반 응답 다름):
     //   /mypage/*, /settings/*, /letter/*, /notifications, /tournament/*
-    //   /quiz/result, /quiz/share — 사용자별 결과 (user-specific)
+    //   /quiz/result — 사용자별 결과 (user-specific)
     const CDN_CACHE = {
       key: 'Cache-Control',
       value: 'public, s-maxage=3600, stale-while-revalidate=86400',

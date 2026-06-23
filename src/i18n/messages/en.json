@@ -665,16 +665,6 @@
         "worstLabel": "Worst match"
       }
     },
-    "share": {
-      "metaTitle": "Share card",
-      "heading": "My travel type card",
-      "loading": "Loading card…",
-      "empty": "No result to share yet",
-      "emptyHint": "Take the test first",
-      "startTest": "Start the test",
-      "shareCta": "Share image card",
-      "shareHint": "If sharing isn't supported, the text is copied to your clipboard"
-    },
     "entry": {
       "ctaEyebrow": "Travel type test",
       "ctaTitle": "Find your travel style in 5 questions",

@@ -317,6 +317,11 @@ function renderQuiz(
         padding: 60,
         background:
           'linear-gradient(180deg, #FFF4E6 0%, #FFFFFF 54%, #FCEAD3 100%)',
+        // Figma border 1px #C6C6C6 + radius 20 — OG image 는 1080×1080 PNG
+        // 사각형 자체. radius/border 가 시각적으로 보이게 안쪽 inset (사각형
+        // 모서리 둥글게는 PNG 출력 불가능하지만 카드 외곽선 표현은 가능).
+        border: '3px solid #C6C6C6',
+        borderRadius: 60,
         fontFamily,
       }}
     >
