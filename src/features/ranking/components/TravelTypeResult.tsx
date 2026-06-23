@@ -150,6 +150,58 @@ export function TravelTypeResult() {
         </section>
       )}
 
+      {/* Figma "match-section" — BE compatibility.best/worst (2026-06-23 신규
+          필드). 비로그인 submit 결과에도 포함 — 항상 노출 가능. */}
+      {result.compatibility && (
+        <section className={styles.section}>
+          <h3 className={styles.sectionTitle}>{t('compatibility.title')}</h3>
+          <div className={styles.matchBox}>
+            <div className={`${styles.matchRow} ${styles.matchRowBordered}`}>
+              <span
+                className={`${styles.matchEmoji} ${styles.matchEmojiBest}`}
+                aria-hidden
+              >
+                {result.compatibility.best.emoji}
+              </span>
+              <div className={styles.matchText}>
+                <span
+                  className={`${styles.matchEyebrow} ${styles.matchEyebrowBest}`}
+                >
+                  {t('compatibility.bestLabel')}
+                </span>
+                <p className={styles.matchTitle}>
+                  {result.compatibility.best.title}
+                </p>
+                <p className={styles.matchReason}>
+                  {result.compatibility.best.reason}
+                </p>
+              </div>
+            </div>
+            <div className={styles.matchRow}>
+              <span
+                className={`${styles.matchEmoji} ${styles.matchEmojiWorst}`}
+                aria-hidden
+              >
+                {result.compatibility.worst.emoji}
+              </span>
+              <div className={styles.matchText}>
+                <span
+                  className={`${styles.matchEyebrow} ${styles.matchEyebrowWorst}`}
+                >
+                  {t('compatibility.worstLabel')}
+                </span>
+                <p className={styles.matchTitle}>
+                  {result.compatibility.worst.title}
+                </p>
+                <p className={styles.matchReason}>
+                  {result.compatibility.worst.reason}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
       <div className={styles.actions}>
         <div className={styles.actionsRow}>
           <Button

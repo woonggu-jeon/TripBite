@@ -150,6 +150,96 @@
   border-color: var(--color-primary);
 }
 
+// Figma match-section (BE compatibility) — recent-box 320×172 padding 0 16
+// white border 1px radius 12.
+.matchBox {
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+
+// Figma row — 288×86 padding 12 0 gap 12. border-bottom — last row 미적용.
+.matchRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.matchRowBordered {
+  border-bottom: 1px solid var(--color-border);
+}
+
+// Figma emoji-c 40 circle — best #EBF9EF (primary-soft) / worst #F1F1F1 (surface-soft).
+.matchEmoji {
+  display: grid;
+  place-items: center;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  font-size: 24px;
+  line-height: 1;
+}
+
+.matchEmojiBest {
+  background: var(--color-primary-soft);
+}
+
+.matchEmojiWorst {
+  background: var(--color-surface-soft);
+}
+
+// Figma f column — gap 3 (eyebrow + title + description).
+.matchText {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+
+// Figma eyebrow — best Caption B_10 primary / worst Caption M_10 muted.
+.matchEyebrow {
+  font-size: 0.625rem; /* 10 */
+  line-height: var(--line-tight); /* 120% */
+  letter-spacing: var(--tracking-tight);
+}
+
+.matchEyebrowBest {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+
+.matchEyebrowWorst {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-muted);
+}
+
+// Figma title B_14_140% — 14 Bold 140% tracking-tight fg.
+.matchTitle {
+  font-size: var(--text-sm); /* 14 */
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
+  margin: 0;
+}
+
+// Figma description Caption M_10 muted (2 줄 표시 가능).
+.matchReason {
+  font-size: 0.625rem; /* 10 */
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-tight); /* 120% */
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-muted);
+  margin: 0;
+  word-break: keep-all;
+}
+
 .fallback {
   display: grid;
   gap: 0.75rem;

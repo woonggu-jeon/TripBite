@@ -193,6 +193,30 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Destination'
+        compatibility:
+          $ref: '#/components/schemas/TravelTypeCompatibility'
+
+    TravelTypeCompatibility:
+      type: object
+      required: [best, worst]
+      properties:
+        best:
+          $ref: '#/components/schemas/TravelTypeCompatibilityItem'
+        worst:
+          $ref: '#/components/schemas/TravelTypeCompatibilityItem'
+
+    TravelTypeCompatibilityItem:
+      type: object
+      required: [code, title, emoji, reason]
+      properties:
+        code:
+          type: string
+        title:
+          type: string
+        emoji:
+          type: string
+        reason:
+          type: string
 
     MyPageSummary:
       type: object

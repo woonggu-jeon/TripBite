@@ -96,6 +96,8 @@ export * from './tournamentSize';
 export * from './tournamentThemeDto';
 export * from './travelTypeBriefDto';
 export * from './travelTypeCode';
+export * from './travelTypeCompatibility';
+export * from './travelTypeCompatibilityItem';
 export * from './travelTypeDto';
 export * from './unreadCountDto';
 export * from './unsubscribeDto';

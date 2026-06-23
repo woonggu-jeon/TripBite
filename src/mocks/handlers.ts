@@ -27,6 +27,7 @@ import {
 import { destinationSeeds } from './seeds/destinations';
 import { notificationSeeds } from './seeds/notifications';
 import {
+  travelTypeCompatibilitySeed,
   travelTypeMetaSeed,
   travelTypeMockScoreMap,
   travelTypeQuizSeed,
@@ -210,7 +211,11 @@ function resolveTravelType(answers: TravelTypeAnswer[]): TravelTypeDto {
   const pool = destinationSeeds.filter((d) =>
     cats.includes(d.category as (typeof cats)[number]),
   );
-  return { ...meta, recommended: pickRandom(pool, 3) };
+  return {
+    ...meta,
+    recommended: pickRandom(pool, 3),
+    compatibility: travelTypeCompatibilitySeed[best],
+  };
 }
 
 // 11 시군 라벨 — rankings/by-region 응답에서 사용.
@@ -1064,8 +1069,18 @@ export const handlers = [
     const pool = destinationSeeds.filter((d) =>
       cats.includes(d.category as (typeof cats)[number]),
     );
-    myTravelType = { ...meta, recommended: pickRandom(pool, 3) };
+    const compatibility = (
+      travelTypeCompatibilitySeed as Record<
+        string,
+        (typeof travelTypeCompatibilitySeed)[TravelTypeMockCode]
+      >
+    )[code];
+    myTravelType = {
+      ...meta,
+      recommended: pickRandom(pool, 3),
+      compatibility,
+    };
     // 다만 PATCH 응답 자체는 BE spec 대로 recommended:[] (저장 ack).
-    return HttpResponse.json({ ...meta, recommended: [] });
+    return HttpResponse.json({ ...meta, recommended: [], compatibility });
   }),
 ];

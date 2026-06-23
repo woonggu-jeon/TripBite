@@ -658,7 +658,12 @@
       "appliedSuccess": "Saved to your profile",
       "appliedFailed": "Could not save",
       "share": "Share result",
-      "retake": "Retake"
+      "retake": "Retake",
+      "compatibility": {
+        "title": "Travel match",
+        "bestLabel": "Great match",
+        "worstLabel": "Watch out"
+      }
     },
     "share": {
       "metaTitle": "Share card",

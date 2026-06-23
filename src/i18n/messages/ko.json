@@ -658,7 +658,12 @@
       "appliedSuccess": "프로필에 저장됐어요",
       "appliedFailed": "저장에 실패했어요",
       "share": "결과 공유하기",
-      "retake": "다시 테스트"
+      "retake": "다시 테스트",
+      "compatibility": {
+        "title": "여행 궁합",
+        "bestLabel": "잘 맞아요",
+        "worstLabel": "조심해요"
+      }
     },
     "share": {
       "metaTitle": "공유 카드",
