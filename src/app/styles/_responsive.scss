@@ -67,7 +67,9 @@
     --space-5: 1rem; /* 20 → 16 */
     --space-6: 1.125rem; /* 20 → 18 */
     --space-8: 1.5rem; /* 28 → 24 */
-    /* header-h 축소 — 작은 화면에서 컨텐츠 공간 확보 */
-    --header-h: 48px; /* 56 → 48 */
+    /* header-h 는 56 유지 — Figma "Header" 6 variant 통일 spec (R2 audit
+       2026-06-23). 이전 ≤320px 에서 48 축소 → Figma 통일 위반 + iOS
+       safe-area / sticky scroll-padding 정합 회귀 우려로 56 복귀. 컨텐츠
+       공간은 본문 spacing (space-5/6/8) 축소로 흡수. */
   }
 }
