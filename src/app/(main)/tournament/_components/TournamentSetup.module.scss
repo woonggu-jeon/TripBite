@@ -105,6 +105,250 @@
   }
 }
 
+/* ─────────────────────────────────────────────────────────────
+ * intro phase (step 5) — Figma "TRN · 로딩 지도 펼침"
+ *   - column center, FallingPetals 위에 흩어진 leaf emoji 6 + circle-stack
+ *   - title "잠시 후 충북 지도가 펼쳐져요" + 3 dots primary
+ * ─────────────────────────────────────────────────────────────
+ */
+.intro {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  min-height: calc(100dvh - 280px);
+  padding: 0 30px;
+  overflow: hidden;
+}
+
+.bgLeaf1,
+.bgLeaf2,
+.bgLeaf3,
+.bgLeaf4,
+.bgLeaf5,
+.bgLeaf6 {
+  position: absolute;
+  font-size: 28px;
+  opacity: 0.5;
+  pointer-events: none;
+  user-select: none;
+  line-height: 1;
+}
+.bgLeaf1 {
+  top: 11.5%;
+  left: 11.1%;
+}
+.bgLeaf2 {
+  top: 17.8%;
+  left: 91.7%;
+}
+.bgLeaf3 {
+  top: 81.4%;
+  left: 16.7%;
+}
+.bgLeaf4 {
+  top: 71.3%;
+  left: 94.4%;
+}
+.bgLeaf5 {
+  top: 31.8%;
+  left: 83.3%;
+}
+.bgLeaf6 {
+  top: 45.8%;
+  left: 15.3%;
+}
+
+.circleStack {
+  position: relative;
+  width: 134px;
+  height: 134px;
+}
+.circleAmber {
+  position: absolute;
+  inset: 0;
+  width: 134px;
+  height: 134px;
+  border-radius: var(--radius-full);
+  background: #ffcd99;
+}
+.circleWhite {
+  position: absolute;
+  top: 17px;
+  left: 17px;
+  width: 100px;
+  height: 100px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg, #ffffff);
+}
+.circleLeaf {
+  position: absolute;
+  top: 37px;
+  left: 37px;
+  width: 60px;
+  height: 60px;
+  font-size: 60px;
+  line-height: 60px;
+  text-align: center;
+  user-select: none;
+}
+
+.introTitle {
+  font-family: 'Inter', 'Pretendard', ui-sans-serif, system-ui, sans-serif;
+  font-size: 19px;
+  font-weight: 800;
+  line-height: 140%;
+  letter-spacing: -0.03em;
+  color: var(--color-fg);
+  text-align: center;
+  margin: 0;
+}
+
+.dots {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  animation: introDot 1.2s ease-in-out infinite;
+}
+.dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes introDot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.85);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dot {
+    animation: none;
+    opacity: 0.8;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * map phase (step 6) — Figma "TRN · 여행지 준비완료"
+ * ─────────────────────────────────────────────────────────────
+ */
+.map {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.mapCard {
+  // FallingPetals 가 카드 안에서도 비치도록 50% 반투명 + 살짝 blur.
+  width: 100%;
+  aspect-ratio: 320 / 348;
+  padding: 12px;
+  background: color-mix(
+    in srgb,
+    var(--color-surface, #ffffff) 50%,
+    transparent
+  );
+  border: 1px solid #c6c6c6;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  backdrop-filter: blur(2px);
+
+  @media (prefers-color-scheme: dark) {
+    border-color: var(--color-border);
+  }
+}
+
+.mapFooter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  width: 100%;
+}
+
+.mapTitle {
+  font-size: 24px;
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug);
+  color: var(--color-fg);
+  margin: 0;
+}
+
+.mapDesc {
+  font-size: 14px;
+  font-weight: var(--font-weight-regular);
+  line-height: 1.5;
+  color: var(--color-muted);
+  margin: 0;
+  white-space: pre-line;
+}
+
+.mapBtns {
+  width: 100%;
+  gap: 11px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * tournamentSize phase (step 7) — Figma "TRN · 토너먼트 규모"
+ * ─────────────────────────────────────────────────────────────
+ */
+.sizePhase {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.sizeHeading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.sizeTitle {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
+  margin: 0;
+}
+
+.sizeHint {
+  font-size: var(--font-caption);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: var(--tracking-snug);
+  color: var(--color-muted);
+  margin: 0;
+}
+
 // 계절 적용 범위 hint — step 3 에서 비-festival 카테고리 선택 시.
 // info chip 톤 (강한 경고 X). 사용자 학습용.
 .scopeHint {

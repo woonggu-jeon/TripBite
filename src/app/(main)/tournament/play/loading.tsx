@@ -1,43 +1,56 @@
 import { Skeleton } from '@/components/feedback/Skeleton';
 
 /**
- * /tournament/play cold start fallback — intro phase 첫 화면 정합.
- *   - column center gap 30 padding 0 30 (TournamentPlayClient.intro)
- *   - circle-stack 134 + title 19h + 3 dots
- *   - 실 mount 후 첫 화면이 intro 라 그대로 placeholder.
+ * /tournament/play cold start fallback — bracket phase 첫 화면 정합 (2026-06-24).
+ *   - Frame 43 (progress label + segments) + B_20 round title + match-area
+ *   - intro/map/tournamentSize phase 는 /tournament (setup) 으로 이동 후
+ *     이 fallback 은 bracket layout placeholder 만 표시.
  */
 export default function TournamentPlayLoading() {
   return (
     <div
       style={{
-        position: 'relative',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 30,
-        minHeight: 'calc(100dvh - 200px)',
-        padding: '0 30px',
-        overflow: 'hidden',
+        gap: 20,
+        padding: 20,
       }}
     >
-      {/* circle-stack 134 */}
-      <Skeleton width={134} height={134} radius="full" />
-      {/* introTitle — 19px 1줄 */}
-      <Skeleton width="80%" height={19} radius="sm" />
-      {/* 3 dots — 9×9 gap 8 */}
+      {/* Frame 43 — progress top row + segments */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Skeleton width={120} height={20} radius="sm" />
+          <Skeleton width={80} height={20} radius="sm" />
+        </div>
+        <div style={{ display: 'flex', gap: 4 }}>
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} style={{ flex: 1 }}>
+              <Skeleton width="100%" height={8} radius="full" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* round title B_20 */}
+      <Skeleton width="60%" height={26} radius="sm" />
+
+      {/* match-area — hero 2 stacked + VS center */}
       <div
         style={{
           display: 'flex',
-          flexDirection: 'row',
-          gap: 8,
-          alignItems: 'center',
-          justifyContent: 'center',
+          flexDirection: 'column',
+          gap: 12,
+          position: 'relative',
         }}
       >
-        <Skeleton width={9} height={9} radius="full" />
-        <Skeleton width={9} height={9} radius="full" />
-        <Skeleton width={9} height={9} radius="full" />
+        <Skeleton width="100%" height={176} radius="lg" />
+        <Skeleton width="100%" height={176} radius="lg" />
       </div>
     </div>
   );
