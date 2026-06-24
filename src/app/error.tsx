@@ -2,13 +2,18 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
+import { AlertCircle } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui';
+import { EmptyState } from '@/components/feedback/EmptyState';
+import styles from './error.module.scss';
 
 /**
- * App Router Error Boundary
- * 라우트 세그먼트에서 발생한 예외를 캐치.
- * 'use client' 필수 (Next.js 규약)
+ * App Router root Error Boundary. EmptyState hero 패턴으로 디자인 통일
+ * (2026-06-24 사용자 명시) — segment error / not-found 와 일관된 시각.
+ *
+ * reset() 만 호출 시 같은 query cache 가 fail 상태로 남아 재시도 시 동일
+ * 에러 재발 가능. resetQueries 로 cache 초기화 + reset 으로 segment remount.
  */
 export default function GlobalError({
   error,
@@ -20,57 +25,37 @@ export default function GlobalError({
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    // 운영 — Vercel Analytics 가 vitals/페이지뷰만 수집. error tracking 미도입.
     console.error('[App Error]', error);
   }, [error]);
 
-  // reset() 만 호출 시 같은 query cache 가 fail 상태로 남아 재시도 시 동일
-  // 에러 재발 가능. resetQueries 로 cache 초기화 + reset 으로 segment remount.
-  // 2026-06-19 audit.
   const handleReset = () => {
     queryClient.resetQueries();
     reset();
   };
 
   return (
-    <main
-      style={{
-        minHeight: '100dvh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '1rem',
-        padding: '2rem',
-        textAlign: 'center',
-      }}
-    >
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 700 }}>
-        문제가 발생했습니다
-      </h1>
-      <p style={{ color: 'var(--color-muted)', maxWidth: 480 }}>
-        잠시 후 다시 시도해주세요. 문제가 계속되면 관리자에게 문의해주세요.
-      </p>
-      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-        <Button variant="primary" size="md" onClick={handleReset}>
-          다시 시도
-        </Button>
-        <Link
-          href="/"
-          style={{
-            padding: '0.75rem 1.5rem',
-            background: 'transparent',
-            color: 'var(--color-fg)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius-md)',
-            fontWeight: 500,
-            textDecoration: 'none',
-            display: 'inline-block',
-          }}
-        >
-          홈으로
-        </Link>
-      </div>
+    <main className={styles.main}>
+      <EmptyState
+        variant="hero"
+        icon={<AlertCircle size={40} strokeWidth={1.6} aria-hidden />}
+        title="문제가 발생했어요"
+        description={
+          '잠시 후 다시 시도해주세요.\n문제가 계속되면 도움이 필요해요.'
+        }
+        action={
+          <div className={styles.actions}>
+            <Button variant="primary" size="md" onClick={handleReset}>
+              다시 시도
+            </Button>
+            <Link href="/" className={styles.homeLink}>
+              홈으로
+            </Link>
+          </div>
+        }
+      />
+      {error.digest && (
+        <code className={styles.digest}>ref: {error.digest}</code>
+      )}
     </main>
   );
 }

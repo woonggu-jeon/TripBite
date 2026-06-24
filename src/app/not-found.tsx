@@ -1,33 +1,25 @@
 import Link from 'next/link';
+import { Compass } from 'lucide-react';
+import { EmptyState } from '@/components/feedback/EmptyState';
+import styles from './error.module.scss';
 
+/**
+ * 404 — EmptyState hero 패턴으로 디자인 통일 (2026-06-24).
+ */
 export default function NotFound() {
   return (
-    <main
-      style={{
-        minHeight: '100dvh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '1rem',
-        padding: '2rem',
-        textAlign: 'center',
-      }}
-    >
-      <h1 style={{ fontSize: '2rem', fontWeight: 700 }}>404</h1>
-      <p style={{ color: 'var(--color-muted)' }}>
-        요청하신 페이지를 찾을 수 없습니다.
-      </p>
-      <Link
-        href="/"
-        style={{
-          padding: '0.75rem 1.5rem',
-          border: '1px solid var(--color-border)',
-          borderRadius: 'var(--radius-md)',
-        }}
-      >
-        홈으로
-      </Link>
+    <main className={styles.main}>
+      <EmptyState
+        variant="hero"
+        icon={<Compass size={40} strokeWidth={1.6} aria-hidden />}
+        title="페이지를 찾을 수 없어요"
+        description={'요청하신 페이지가 사라졌거나\n잘못된 주소예요.'}
+        action={
+          <Link href="/" className={styles.homeLink}>
+            홈으로
+          </Link>
+        }
+      />
     </main>
   );
 }
