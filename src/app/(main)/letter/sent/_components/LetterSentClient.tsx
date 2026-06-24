@@ -41,6 +41,7 @@ export function LetterSentClient() {
   const searchParams = useSearchParams();
   const letterId = searchParams.get('id');
   const t = useTranslations('letter.sent');
+  const tAuthor = useTranslations('letter.author');
   const lastSent = useLetterStore((s) => s.lastSent);
   const { data: me } = useMe();
 
