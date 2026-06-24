@@ -2,14 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import {
-  MapPin,
-  Phone,
-  Globe,
-  Clock,
-  CalendarX,
-  CircleParking,
-} from 'lucide-react';
+import { MapPin, Clock, CalendarX } from 'lucide-react';
 import type { DestinationDetailDto } from '@/api/generated/schemas';
 import styles from './WinnerDetailPanel.module.scss';
 
@@ -26,7 +19,6 @@ function ExpandableSummary({ text }: { text: string }) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    // 화면 paint 후 scrollHeight 가 정확. expanded 토글 시 측정 안 함 (오버플로우 판정은 clamp 상태 기준).
     if (!expanded) setOverflowing(el.scrollHeight > el.clientHeight + 1);
   }, [text, expanded]);
 
@@ -58,15 +50,18 @@ interface Props {
 }
 
 /**
- * 우승 여행지 상세 패널 — API 응답의 optional 필드를 있는 것만 렌더.
+ * 토너먼트 우승 info-card — Figma "TRN · 토너먼트 결과" info-card (320×285) 정합.
  *
- * 설계 원칙:
- *   - 모든 필드 optional → 백엔드가 점진적으로 채우거나, 특정 destination 에 정보가
- *     없어도 패널 자체는 깨지지 않음
- *   - 데이터 없으면 해당 row 자체 미노출 (빈 공간/대시 X)
- *   - 표시할 정보가 아무것도 없으면 패널 전체 미노출
- *   - 로딩 중엔 skeleton — 우승 카드만 먼저 보이고 상세는 비동기로 채워짐
- *     ("렌더 속도 최우선" 정책: 상세 fetch 가 늦어도 winner/stats 는 즉시 표시)
+ * 구성 (위→아래):
+ *   - title B_16 "장소 정보"
+ *   - 3 field row (gap 12): pin/calendar/clock 추첨 후보 = 주소/휴무일/운영시간
+ *     · 각 row: flabel 86 (icon 18 primary + label Caption R_12 muted) + value R_12 fg
+ *   - divider 1px gray
+ *   - overview column gap 8: text Body R_14 muted line 80h + "더보기" SemiBold 14 primary
+ *
+ * 데이터 정책:
+ *   - 모든 필드 optional. 표시할 정보가 아무것도 없으면 패널 미노출.
+ *   - 로딩 중엔 skeleton.
  */
 export function WinnerDetailPanel({ detail, isLoading }: Props) {
   const t = useTranslations('tournament.result.detail');
@@ -83,6 +78,7 @@ export function WinnerDetailPanel({ detail, isLoading }: Props) {
 
   if (!detail) return null;
 
+  // Figma 정합: pin / calendar / clock 3 row 만. (phone/website/parking 등은 미노출)
   const rows: Array<{
     key: string;
     icon: React.ReactNode;
@@ -92,47 +88,25 @@ export function WinnerDetailPanel({ detail, isLoading }: Props) {
   if (detail.address)
     rows.push({
       key: 'address',
-      icon: <MapPin size={16} aria-hidden />,
+      icon: <MapPin size={18} aria-hidden />,
       label: t('address'),
       value: detail.address,
-    });
-  if (detail.openingHours)
-    rows.push({
-      key: 'hours',
-      icon: <Clock size={16} aria-hidden />,
-      label: t('openingHours'),
-      value: detail.openingHours,
     });
   if (detail.restDate)
     rows.push({
       key: 'restDate',
-      icon: <CalendarX size={16} aria-hidden />,
+      icon: <CalendarX size={18} aria-hidden />,
       label: t('restDate'),
       value: detail.restDate,
     });
-  if (detail.parking)
+  if (detail.openingHours)
     rows.push({
-      key: 'parking',
-      icon: <CircleParking size={16} aria-hidden />,
-      label: t('parking'),
-      value: detail.parking,
-    });
-  if (detail.phone)
-    rows.push({
-      key: 'phone',
-      icon: <Phone size={16} aria-hidden />,
-      label: t('phone'),
-      value: detail.phone,
-    });
-  if (detail.website)
-    rows.push({
-      key: 'website',
-      icon: <Globe size={16} aria-hidden />,
-      label: t('website'),
-      value: detail.website,
+      key: 'hours',
+      icon: <Clock size={18} aria-hidden />,
+      label: t('openingHours'),
+      value: detail.openingHours,
     });
 
-  // BE 가 summary 폐기 + description 통합 (API_CONTRACT 2026-06-11) — overview 전체 또는 한글 폴백.
   const lead = detail.description;
   const hasLead = !!lead;
   const hasRows = rows.length > 0;
@@ -141,39 +115,25 @@ export function WinnerDetailPanel({ detail, isLoading }: Props) {
 
   return (
     <section className={styles.panel} aria-label={t('panelLabel')}>
-      {hasLead && <ExpandableSummary text={lead} />}
+      <h3 className={styles.title}>{t('panelLabel')}</h3>
 
       {hasRows && (
         <dl className={styles.rows}>
-          {rows.map((r) => {
-            // website 인 경우 BE 응답이 http(s) prefix 인지 강제 검증 (javascript:
-            // 같은 URL scheme XSS 차단). BE 가 신뢰 source 라도 다층 방어.
-            const isLink = r.key === 'website' && /^https?:\/\//i.test(r.value);
-            return (
-              <div key={r.key} className={styles.row}>
-                <dt className={styles.rowLabel}>
-                  <span className={styles.rowIcon}>{r.icon}</span>
-                  <span className={styles.rowLabelText}>{r.label}</span>
-                </dt>
-                <dd className={styles.rowValue}>
-                  {isLink ? (
-                    <a
-                      href={r.value}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.rowLink}
-                    >
-                      {r.value}
-                    </a>
-                  ) : (
-                    r.value
-                  )}
-                </dd>
-              </div>
-            );
-          })}
+          {rows.map((r) => (
+            <div key={r.key} className={styles.row}>
+              <dt className={styles.rowLabel}>
+                <span className={styles.rowIcon}>{r.icon}</span>
+                <span className={styles.rowLabelText}>{r.label}</span>
+              </dt>
+              <dd className={styles.rowValue}>{r.value}</dd>
+            </div>
+          ))}
         </dl>
       )}
+
+      {hasRows && hasLead && <div className={styles.divider} aria-hidden />}
+
+      {hasLead && <ExpandableSummary text={lead} />}
     </section>
   );
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import type { DestinationDto } from '@/api/generated/schemas';
@@ -8,103 +9,165 @@ import styles from './TournamentStats.module.scss';
 
 interface Props {
   winner: DestinationDto;
+  /** Figma 정합 spec 에서 chip 4 슬롯만 노출 — runnerUp UI 제외. prop 만 유지(호출부 호환). */
   runnerUp: DestinationDto | null;
   matchesPlayed: number;
   tournamentSize: TournamentCount | undefined;
 }
 
 // i18n strict typing (T7053) 회피용 switch — count 키 literal narrowing
-function bracketSizeLabelKey(
-  size: TournamentCount,
-): '4' | '8' | '16' | '32' | null {
+function bracketSizeShortLabel(size: TournamentCount): string {
   switch (size) {
     case 4:
-      return '4';
+      return '4강';
     case 8:
-      return '8';
+      return '8강';
     case 16:
-      return '16';
+      return '16강';
     case 32:
-      return '32';
+      return '32강';
     default:
-      return null;
+      return '';
   }
 }
 
+/** LuckyColor 와 동일 hash — 같은 destination 우승 시 동일 색. */
+function hashSeed(seed: string): number {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash << 5) - hash + seed.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
+
+function hslToHex(h: number, s: number, l: number): string {
+  const ll = l / 100;
+  const a = (s * Math.min(ll, 1 - ll)) / 100;
+  const f = (n: number) => {
+    const k = (n + h / 30) % 12;
+    const c = ll - a * Math.max(-1, Math.min(k - 3, 9 - k, 1));
+    return Math.round(255 * c)
+      .toString(16)
+      .padStart(2, '0');
+  };
+  return `#${f(0)}${f(8)}${f(4)}`.toUpperCase();
+}
+
+type ColorKey =
+  | 'red'
+  | 'orange'
+  | 'yellow'
+  | 'green'
+  | 'teal'
+  | 'blue'
+  | 'purple'
+  | 'pink';
+
+const HUE_BANDS: { max: number; key: ColorKey }[] = [
+  { max: 30, key: 'red' },
+  { max: 60, key: 'orange' },
+  { max: 90, key: 'yellow' },
+  { max: 150, key: 'green' },
+  { max: 210, key: 'teal' },
+  { max: 270, key: 'blue' },
+  { max: 330, key: 'purple' },
+  { max: 360, key: 'pink' },
+];
+
+function colorKeyFromHue(h: number): ColorKey {
+  return HUE_BANDS.find((b) => h < b.max)?.key ?? 'pink';
+}
+
 /**
- * 우승 결과 부가 정보 — 매치업 사이즈 / 총 매치 수 / 결승 상대 / 시군·카테고리.
+ * Frame 47 — Figma "TRN · 토너먼트 결과" 토너먼트 기록 정합.
  *
- * Bracket 결과로 받은 runnerUp/matchesPlayed + store config 의 tournamentSize 결합.
- * 결승전이 실제로 있었던 경우(runnerUp != null)에만 결승 상대 표기.
+ * 구성 (column gap 12):
+ *   - title B_16 fg "토너먼트 기록"
+ *   - Frame 46 column gap 12:
+ *     · chips row gap 8 — 4 rchip 74×59 (column align center padding 12 4) +
+ *       secondary01 bg + primary border + radius 12:
+ *         · B_14 primary 숫자 (matchesPlayed / bracketSize / region(생략) / category)
+ *         · sp 3
+ *         · Caption M_10 muted 라벨
+ *     · lucky row padding 14 16 + secondary01 + primary border + radius 12:
+ *         · B_14 fg "이번 행운의 색" (왼쪽)
+ *         · lucky-r row gap 8 — B_14 fg 색이름 + circle 20 색 bg (오른쪽)
+ *
+ * runnerUp 정보는 Figma 정합 spec 에서 제외 — chip 4 슬롯이 더 우선.
+ * 보유 데이터: bracketSize / matchesPlayed / region / category 4 슬롯.
  */
 export function TournamentStats({
   winner,
-  runnerUp,
+  runnerUp: _runnerUp,
   matchesPlayed,
   tournamentSize,
 }: Props) {
   const t = useTranslations('tournament');
+  const tColor = useTranslations('tournament.result.color');
   const region = CHUNGBUK_REGIONS.find((r) => r.code === winner.region);
   const regionLabel = region?.ko ?? winner.region;
   const categoryLabel = t(`category.${winner.category}`);
-  const runnerUpRegion = runnerUp
-    ? (CHUNGBUK_REGIONS.find((r) => r.code === runnerUp.region)?.ko ??
-      runnerUp.region)
-    : null;
-  const bracketKey =
-    tournamentSize !== undefined ? bracketSizeLabelKey(tournamentSize) : null;
   const bracketLabel =
-    bracketKey === '4'
-      ? t('play.tournamentSize.count.4')
-      : bracketKey === '8'
-        ? t('play.tournamentSize.count.8')
-        : bracketKey === '16'
-          ? t('play.tournamentSize.count.16')
-          : bracketKey === '32'
-            ? t('play.tournamentSize.count.32')
-            : null;
+    tournamentSize !== undefined ? bracketSizeShortLabel(tournamentSize) : '';
+
+  const { hex, colorName } = useMemo(() => {
+    const h = hashSeed(winner.id) % 360;
+    const key = colorKeyFromHue(h);
+    return { hex: hslToHex(h, 70, 55), colorName: tColor(key) };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [winner.id]);
+
+  const chips: { key: string; value: string; label: string }[] = [];
+  if (bracketLabel)
+    chips.push({
+      key: 'bracket',
+      value: bracketLabel,
+      label: t('result.stats.bracketSize'),
+    });
+  chips.push({
+    key: 'matches',
+    value: `${matchesPlayed}`,
+    label: t('result.stats.matches'),
+  });
+  chips.push({
+    key: 'region',
+    value: regionLabel,
+    label: t('result.stats.region'),
+  });
+  chips.push({
+    key: 'category',
+    value: categoryLabel,
+    label: t('result.stats.category'),
+  });
 
   return (
     <section className={styles.wrap} aria-label={t('result.stats.label')}>
-      <ul className={styles.grid}>
-        {bracketLabel && (
-          <li className={styles.cell}>
-            <span className={styles.cellLabel}>
-              {t('result.stats.bracketSize')}
-            </span>
-            <span className={styles.cellValue}>{bracketLabel}</span>
-          </li>
-        )}
-        <li className={styles.cell}>
-          <span className={styles.cellLabel}>{t('result.stats.matches')}</span>
-          <span className={styles.cellValue}>
-            {t('result.stats.matchesValue', { n: matchesPlayed })}
-          </span>
-        </li>
-        <li className={styles.cell}>
-          <span className={styles.cellLabel}>{t('result.stats.region')}</span>
-          <span className={styles.cellValue}>{regionLabel}</span>
-        </li>
-        <li className={styles.cell}>
-          <span className={styles.cellLabel}>{t('result.stats.category')}</span>
-          <span className={styles.cellValue}>{categoryLabel}</span>
-        </li>
-      </ul>
+      <h3 className={styles.title}>{t('result.stats.title')}</h3>
 
-      {runnerUp && (
-        <div className={styles.runnerUp}>
-          <span className={styles.runnerUpBadge} aria-hidden>
-            🥈
-          </span>
-          <div className={styles.runnerUpText}>
-            <span className={styles.runnerUpLabel}>
-              {t('result.stats.runnerUp')}
-            </span>
-            <span className={styles.runnerUpName}>{runnerUp.name}</span>
-            <span className={styles.runnerUpRegion}>{runnerUpRegion}</span>
+      <div className={styles.chips}>
+        {chips.slice(0, 4).map((c) => (
+          <div key={c.key} className={styles.chip}>
+            <span className={styles.chipValue}>{c.value}</span>
+            <span className={styles.chipLabel}>{c.label}</span>
           </div>
-        </div>
-      )}
+        ))}
+      </div>
+
+      <div
+        className={styles.luckyRow}
+        aria-label={`${tColor('label')}: ${colorName}`}
+      >
+        <span className={styles.luckyLabel}>{tColor('label')}</span>
+        <span className={styles.luckyValue}>
+          <span className={styles.luckyName}>{colorName}</span>
+          <span
+            className={styles.luckySwatch}
+            style={{ background: hex }}
+            aria-hidden
+          />
+        </span>
+      </div>
     </section>
   );
 }

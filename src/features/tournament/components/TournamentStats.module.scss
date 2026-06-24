@@ -1,77 +1,104 @@
+// Frame 47 — column gap 12.
 .wrap {
   display: grid;
-  gap: 0.75rem;
+  gap: 12px;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
-  padding: 0;
+// title B_16 fg
+.title {
   margin: 0;
-  list-style: none;
-}
-
-.cell {
-  display: grid;
-  gap: 0.25rem;
-  padding: 0.875rem 1rem;
-  background: var(--color-bg);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
-}
-
-.cellLabel {
-  font-size: var(--font-caption);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-muted);
-  letter-spacing: var(--tracking-wide);
-}
-
-.cellValue {
   font-size: var(--font-body);
   font-weight: var(--font-weight-bold);
   color: var(--color-fg);
+  line-height: 22px;
+  letter-spacing: var(--tracking-snug);
+}
+
+// chips row gap 8 — 4 rchip 74×59 (column align center padding 12 4) +
+// secondary01 bg + primary border + radius 12.
+.chips {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.chip {
+  display: grid;
+  gap: 3px;
+  place-items: center;
+  min-height: 59px;
+  padding: 12px 4px;
+  background: var(--color-primary-tint);
+  border: 1px solid var(--color-primary-border);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+// 숫자/주요 값 B_14 primary
+.chipValue {
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  line-height: 1.1;
   letter-spacing: var(--tracking-snug);
   word-break: keep-all;
 }
 
-.runnerUp {
+// 라벨 Caption M_10 muted
+.chipLabel {
+  font-size: 10px;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-muted);
+  letter-spacing: var(--tracking-snug);
+  line-height: 1.2;
+}
+
+// lucky row — padding 14 16 + secondary01 + primary border + radius 12.
+// 왼쪽 라벨 B_14 fg + 오른쪽 색이름 + circle 20.
+.luckyRow {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.875rem 1rem;
-  background: var(--color-surface-soft);
-  border: 1.5px dashed
-    color-mix(in srgb, var(--color-fg) 22%, var(--color-border));
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--color-primary-tint);
+  border: 1px solid var(--color-primary-border);
   border-radius: var(--radius-md);
 }
 
-.runnerUpBadge {
-  font-size: var(--font-h1);
-  line-height: 1;
-}
-
-.runnerUpText {
-  display: grid;
-  gap: 2px;
-  min-width: 0;
-}
-
-.runnerUpLabel {
-  font-size: var(--font-caption);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-muted);
-}
-
-.runnerUpName {
+.luckyLabel {
   font-size: var(--font-body-sm);
   font-weight: var(--font-weight-bold);
   color: var(--color-fg);
-  word-break: keep-all;
+  letter-spacing: var(--tracking-snug);
 }
 
-.runnerUpRegion {
-  font-size: var(--font-label);
-  color: var(--color-muted);
+.luckyValue {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.luckyName {
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-fg);
+  letter-spacing: var(--tracking-snug);
+}
+
+.luckySwatch {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+// 모바일 360 이하 — chip 폰트/라벨 한 단계 축소.
+@media (max-width: 380px) {
+  .chip {
+    padding: 10px 2px;
+  }
+  .chipValue {
+    font-size: 13px;
+  }
 }

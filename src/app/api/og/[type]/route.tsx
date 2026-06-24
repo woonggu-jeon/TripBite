@@ -146,10 +146,13 @@ export async function GET(
 
 type ImageInit = ConstructorParameters<typeof ImageResponse>[1];
 
-function makeInit(fontData: ArrayBuffer | null): ImageInit {
+function makeInit(
+  fontData: ArrayBuffer | null,
+  size: { width: number; height: number } = { width: SIZE, height: SIZE },
+): ImageInit {
   const init: ImageInit = {
-    width: SIZE,
-    height: SIZE,
+    width: size.width,
+    height: size.height,
     headers: CACHE_HEADERS,
   };
   if (fontData) {
@@ -165,6 +168,30 @@ function makeInit(fontData: ArrayBuffer | null): ImageInit {
   return init;
 }
 
+/**
+ * Figma "TRN · 결과 공유 카드" 정합 (2026-06-24) — 360×500 spec × 3 scale →
+ * 1080×1500 PNG. 모든 px = Figma 360 spec × 3.
+ *
+ * 구성:
+ *   - box 1080×1500 primary bg radius 72 padding 132/96/84 (44/32/28 ×3) column center.
+ *   - trophy circle 252 (84×3) white opacity 0.18 + Trophy 120 (~42×3) white.
+ *   - sp 66 (22×3).
+ *   - eyebrow Inter ExtraBold 37.5 (12.5×3) ls 0.14em white opacity 0.9 "나의 우승 여행지".
+ *   - sp 30 (10×3).
+ *   - title Inter ExtraBold 90 (30×3) line 108 ls -0.04em white "{winner}".
+ *   - sp 24 (8×3).
+ *   - meta Inter Medium 40.5 (13.5×3) white opacity 0.92 "{region} · {category}".
+ *   - sp 54 (18×3).
+ *   - description Inter Regular 40.5 line 160% white opacity 0.9 max-width 888 (296×3).
+ *   - grow space.
+ *   - match-badge 471×96 (157×32 ×3) padding 24 54 (8/18 ×3) white opacity 0.16
+ *     + Inter Bold 40.5 white "총 N매치 끝의 우승 🏆".
+ *   - sp 60 (20×3).
+ *   - footer row gap 18 (6×3): BrandLogo 54 (18×3) + Inter ExtraBold 39 (13×3)
+ *     ls -0.02em white "여행 한입".
+ *
+ * Query: winner / region / category / matches / desc.
+ */
 function renderTournament(
   q: URLSearchParams,
   fontData: ArrayBuffer | null,
@@ -174,11 +201,8 @@ function renderTournament(
   const region = REGION_KO[regionCode] ?? regionCode;
   const category = q.get('category') ?? '';
   const categoryLabel = CATEGORY_KO[category] ?? '';
-  const emoji = CATEGORY_EMOJI[category] ?? '🏆';
   const matches = q.get('matches');
-  const footerText = matches
-    ? `총 ${matches}매치 끝의 우승`
-    : '나의 여행지 우승';
+  const desc = q.get('desc') ?? '';
   const metaText =
     region && categoryLabel
       ? `${region} · ${categoryLabel}`
@@ -192,85 +216,160 @@ function renderTournament(
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        background: 'linear-gradient(180deg, #fff7ed 0%, #fdf2f8 100%)',
-        paddingTop: 80,
-        paddingRight: 80,
-        paddingBottom: 80,
-        paddingLeft: 80,
+        alignItems: 'center',
+        // padding 44 32 28 (Figma 360 spec) → ×3 = 132 / 96 / 84.
+        paddingTop: 132,
+        paddingLeft: 96,
+        paddingRight: 96,
+        paddingBottom: 84,
+        // primary bg + radius 72 (24×3). 1080×1500 PNG 사각형이므로 radius 는
+        // 시각적으로 안 보이지만 spec 일관성 위해 명시.
+        background: '#00B334',
+        borderRadius: 72,
         fontFamily,
       }}
     >
+      {/* trophy circle 252 (84×3) white opacity 0.18 + emoji 120 (~42×3) white. */}
       <div
         style={{
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          fontSize: 32,
-          color: '#71717a',
-        }}
-      >
-        <span>🏆 토너먼트 우승</span>
-        <span style={{ color: '#a1a1aa' }}>TripBite</span>
-      </div>
-
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
+          width: 252,
+          height: 252,
+          background: 'rgba(255, 255, 255, 0.18)',
+          borderRadius: 999,
         }}
       >
+        <div style={{ display: 'flex', fontSize: 132, lineHeight: 1 }}>🏆</div>
+      </div>
+
+      {/* eyebrow — sp 66 (22×3) 위. Inter ExtraBold 37.5 ls 0.14em white 0.9. */}
+      <div
+        style={{
+          display: 'flex',
+          fontSize: 37.5,
+          fontWeight: 800,
+          color: 'rgba(255, 255, 255, 0.9)',
+          letterSpacing: '0.14em',
+          lineHeight: 1.2,
+          marginTop: 66,
+          textAlign: 'center',
+        }}
+      >
+        나의 우승 여행지
+      </div>
+
+      {/* title — sp 30 위. Inter ExtraBold 90 line 108 ls -0.04em white. */}
+      <div
+        style={{
+          display: 'flex',
+          fontSize: 90,
+          fontWeight: 800,
+          color: '#FFFFFF',
+          letterSpacing: '-0.04em',
+          lineHeight: 1.2,
+          marginTop: 30,
+          textAlign: 'center',
+        }}
+      >
+        {winner}
+      </div>
+
+      {/* meta — sp 24 위. Inter Medium 40.5 white opacity 0.92. */}
+      {metaText && (
         <div
           style={{
             display: 'flex',
-            fontSize: 220,
-            lineHeight: 1,
-            marginBottom: 24,
-          }}
-        >
-          {emoji}
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            fontSize: 80,
-            fontWeight: 700,
-            color: '#18181b',
+            fontSize: 40.5,
+            fontWeight: 500,
+            color: 'rgba(255, 255, 255, 0.92)',
             letterSpacing: '-0.02em',
-            lineHeight: 1.15,
+            lineHeight: 1.3,
+            marginTop: 24,
             textAlign: 'center',
           }}
         >
-          {winner}
+          {metaText}
         </div>
-        {metaText && (
-          <div
-            style={{
-              display: 'flex',
-              fontSize: 36,
-              color: '#52525b',
-              marginTop: 24,
-            }}
-          >
-            {metaText}
-          </div>
-        )}
-      </div>
+      )}
 
+      {/* description — sp 54 위. Inter Regular 40.5 line 160% white 0.9 max-width 888.
+          desc 가 비면 row 자체 미노출. */}
+      {desc && (
+        <div
+          style={{
+            display: 'flex',
+            fontSize: 40.5,
+            fontWeight: 400,
+            color: 'rgba(255, 255, 255, 0.9)',
+            letterSpacing: '-0.02em',
+            lineHeight: 1.6,
+            marginTop: 54,
+            maxWidth: 888,
+            textAlign: 'center',
+            // line clamp — Satori 가 -webkit 미지원이지만 description 은 너무
+            // 길면 자체 wrap 됨. 명시 길이 강제 자르기 위해 substring.
+          }}
+        >
+          {desc.length > 80 ? `${desc.slice(0, 80)}…` : desc}
+        </div>
+      )}
+
+      {/* grow space — match-badge 를 아래쪽으로 밀어내기 */}
+      <div style={{ display: 'flex', flex: 1 }} />
+
+      {/* match-badge — 471×96 white opacity 0.16 padding 24 54 + Inter Bold 40.5 white. */}
+      {matches && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingTop: 24,
+            paddingBottom: 24,
+            paddingLeft: 54,
+            paddingRight: 54,
+            background: 'rgba(255, 255, 255, 0.16)',
+            borderRadius: 999,
+            fontSize: 40.5,
+            fontWeight: 700,
+            color: '#FFFFFF',
+            letterSpacing: '-0.02em',
+            lineHeight: 1.2,
+          }}
+        >
+          총 {matches}매치 끝의 우승 🏆
+        </div>
+      )}
+
+      {/* footer — sp 60 (20×3) 위. row gap 18 (6×3) center. BrandLogo 54 +
+          "여행 한입" Inter ExtraBold 39 ls -0.02em white. */}
       <div
         style={{
           display: 'flex',
+          alignItems: 'center',
           justifyContent: 'center',
-          fontSize: 28,
-          color: '#a1a1aa',
+          gap: 18,
+          marginTop: 60,
         }}
       >
-        {footerText}
+        <BrandLogo width={54} ariaHidden style={{ display: 'block' }} />
+        <div
+          style={{
+            display: 'flex',
+            fontSize: 39,
+            fontWeight: 800,
+            color: '#FFFFFF',
+            letterSpacing: '-0.02em',
+            lineHeight: 1.2,
+          }}
+        >
+          여행 한입
+        </div>
       </div>
     </div>,
-    makeInit(fontData),
+    makeInit(fontData, { width: 1080, height: 1500 }),
   );
 }
 

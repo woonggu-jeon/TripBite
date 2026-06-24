@@ -1,8 +1,50 @@
-.wrap {
+// Figma ladder card — 320×432 padding 20 gap 12 white border 1px gray radius 16.
+.card {
   display: grid;
-  gap: 0.875rem;
+  gap: 12px;
+  padding: 20px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+// Frame 49 — column gap 4: title B_16 + caption R_12.
+.head {
+  display: grid;
+  gap: 4px;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-fg);
+  line-height: 22px;
+  letter-spacing: var(--tracking-snug);
+}
+
+.caption {
+  margin: 0;
+  font-size: var(--font-caption);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-muted);
+  line-height: 1.4;
+}
+
+// Frame 50 — column align center: eyebrow + svg.
+.viewer {
+  display: grid;
+  gap: 8px;
   justify-items: center;
   width: 100%;
+}
+
+// eyebrow B_14 primary "결과 보기"
+.eyebrow {
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  letter-spacing: var(--tracking-snug);
 }
 
 .hint {
@@ -49,7 +91,7 @@
 
 .svg {
   width: 100%;
-  max-width: 360px;
+  max-width: 280px; // Figma ladder svg spec
   height: auto;
 }
 

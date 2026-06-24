@@ -1,27 +1,93 @@
+// Figma info-card — 320×285 padding 20 gap 12 white border 1px gray radius 16.
 .panel {
   display: grid;
-  gap: 0.75rem;
-  padding: 1rem 1.125rem;
-  background: var(--color-surface-soft);
+  gap: 12px;
+  padding: 20px;
+  background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
 }
 
+// title B_16 fg 22h
+.title {
+  margin: 0;
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-bold);
+  line-height: 22px;
+  color: var(--color-fg);
+  letter-spacing: var(--tracking-snug);
+}
+
+// Frame 44 column gap 12 — 3 field row 만 (Figma 정합)
+.rows {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+}
+
+// row: flabel 86 (icon 18 + label) + value
+.row {
+  display: grid;
+  grid-template-columns: 86px 1fr;
+  gap: 10px;
+  align-items: start;
+}
+
+.rowLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-caption);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.rowIcon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.rowLabelText {
+  letter-spacing: var(--tracking-snug);
+}
+
+.rowValue {
+  font-size: var(--font-caption);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-fg);
+  margin: 0;
+  word-break: break-word;
+  letter-spacing: var(--tracking-snug);
+  line-height: 1.45;
+}
+
+// divider 1px gray
+.divider {
+  height: 1px;
+  background: var(--color-border);
+}
+
+// overview column gap 8 — Body R_14 muted line 80% (high readability) + more SemiBold 14 primary
 .summaryWrap {
   display: grid;
-  gap: 0.25rem;
+  gap: 8px;
 }
 
 .summary {
   font-size: var(--font-body-sm);
-  line-height: var(--line-normal);
-  color: var(--color-fg);
+  font-weight: var(--font-weight-regular);
+  line-height: 1.5;
+  color: var(--color-muted);
   letter-spacing: var(--tracking-snug);
   word-break: keep-all;
   margin: 0;
 }
 
-// expanded 상태는 .clamped 미적용으로 표현 — 빈 .expanded class 제거.
 .clamped {
   display: -webkit-box;
   -webkit-line-clamp: 4;
@@ -32,13 +98,14 @@
 .expandToggle {
   background: none;
   border: none;
-  color: var(--color-primary);
   padding: 0;
   font-size: var(--font-body-sm);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
   cursor: pointer;
   text-align: left;
   align-self: start;
+  letter-spacing: var(--tracking-snug);
 
   &:hover {
     text-decoration: underline;
@@ -51,127 +118,12 @@
   }
 }
 
-.metaRow {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.rating {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-full);
-  font-size: var(--font-label);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-fg);
-  font-variant-numeric: tabular-nums;
-}
-
-.starIcon {
-  color: var(--color-warning);
-  align-self: center;
-}
-
-.ratingValue {
-  letter-spacing: var(--tracking-snug);
-}
-
-.ratingCount {
-  font-size: var(--font-eyebrow);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-muted);
-}
-
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-.tag {
-  font-size: var(--font-eyebrow);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary-muted);
-  padding: 0.125rem 0.5rem;
-  background: var(--color-primary-tint);
-  border-radius: var(--radius-full);
-}
-
-.rows {
-  display: grid;
-  gap: 0.5rem;
-  padding: 0;
-  margin: 0;
-}
-
-.row {
-  display: grid;
-  grid-template-columns: 92px 1fr;
-  gap: 0.5rem;
-  align-items: start;
-  padding: 0.375rem 0;
-  border-top: 1px dashed var(--color-divider);
-
-  &:first-child {
-    border-top: 0;
-    padding-top: 0;
-  }
-}
-
-.rowLabel {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: var(--font-caption);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-muted);
-  margin: 0;
-}
-
-.rowIcon {
-  display: inline-flex;
-  align-items: center;
-  color: var(--color-primary-muted);
-}
-
-.rowLabelText {
-  letter-spacing: var(--tracking-snug);
-}
-
-.rowValue {
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-fg);
-  margin: 0;
-  word-break: break-word;
-  letter-spacing: var(--tracking-snug);
-}
-
-.rowLink {
-  color: var(--color-primary-muted);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      color: var(--color-primary);
-    }
-  }
-}
-
+// skeleton — panel 와 같은 box shape
 .skeleton {
   display: grid;
-  gap: 0.5rem;
-  padding: 1rem 1.125rem;
-  background: var(--color-surface-soft);
+  gap: 8px;
+  padding: 20px;
+  background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
 }

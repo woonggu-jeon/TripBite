@@ -167,11 +167,12 @@ export function LuckyLadder({
     return () => window.clearTimeout(id);
   }, [selected, mode]);
 
-  const W = 320;
-  const H = 380;
-  const topPad = 36;
-  const bottomPad = 44;
-  const sidePad = 30;
+  // Figma ladder svg 280×337 정합.
+  const W = 280;
+  const H = 337;
+  const topPad = 32;
+  const bottomPad = 40;
+  const sidePad = 24;
   const colX = (i: number) => sidePad + (i * (W - sidePad * 2)) / (count - 1);
   const rowY = (r: number) => topPad + (r * (H - topPad - bottomPad)) / rows;
 
@@ -211,175 +212,194 @@ export function LuckyLadder({
   }, [revealed, resultPercent]);
 
   return (
-    <div className={styles.wrap}>
-      <p
-        className={styles.hint}
-        aria-live="polite"
-        data-state={
-          selected === null ? 'idle' : revealed ? 'revealed' : 'rolling'
-        }
-      >
-        {selected === null && (
-          <>
-            <span aria-hidden className={styles.hintArrow}>
-              ↓
+    <section className={styles.card} aria-label={t('svgLabel')}>
+      {/* Frame 49 column gap 4 — title B_16 fg + caption R_12 muted */}
+      <header className={styles.head}>
+        <h3 className={styles.cardTitle}>{t('title')}</h3>
+        <p className={styles.caption}>{t('subtitle')}</p>
+      </header>
+
+      {/* Frame 50 column — eyebrow B_14 primary "결과 보기" + ladder svg 280×337 */}
+      <div className={styles.viewer}>
+        <span className={styles.eyebrow}>{t('viewResult')}</span>
+
+        <p
+          className={styles.hint}
+          aria-live="polite"
+          data-state={
+            selected === null ? 'idle' : revealed ? 'revealed' : 'rolling'
+          }
+        >
+          {selected === null && (
+            <>
+              <span aria-hidden className={styles.hintArrow}>
+                ↓
+              </span>
+              {t('hintIdle')}
+            </>
+          )}
+          {selected !== null && !revealed && t('hintRolling')}
+          {revealed && t('hintRevealed')}
+        </p>
+
+        <svg
+          viewBox={`0 0 ${W} ${H}`}
+          className={styles.svg}
+          role="img"
+          aria-label={t('svgLabel')}
+        >
+          {/* 세로선 */}
+          {Array.from({ length: count }).map((_, i) => (
+            <line
+              key={`v${i}`}
+              x1={colX(i)}
+              y1={rowY(0)}
+              x2={colX(i)}
+              y2={rowY(rows)}
+              stroke="var(--color-border)"
+              strokeWidth={2}
+              strokeLinecap="round"
+            />
+          ))}
+
+          {/* 가로선 */}
+          {rungs.map((g, i) => (
+            <line
+              key={`r${i}`}
+              x1={colX(g.col)}
+              y1={rowY(g.row + 0.5)}
+              x2={colX(g.col + 1)}
+              y2={rowY(g.row + 0.5)}
+              stroke="var(--color-border)"
+              strokeWidth={2}
+              strokeLinecap="round"
+            />
+          ))}
+
+          {/* 시작점 — 클릭 가능 (선택 전에만) */}
+          {Array.from({ length: count }).map((_, i) => {
+            const isPicked = selected === i;
+            const isLocked = selected !== null && !isPicked;
+            return (
+              <g
+                key={`s${i}`}
+                onClick={() => handlePick(i)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handlePick(i);
+                  }
+                }}
+                role="button"
+                tabIndex={selected === null ? 0 : -1}
+                aria-label={t('lineLabel', { n: i + 1 })}
+                aria-pressed={isPicked}
+                className={
+                  isPicked
+                    ? `${styles.startPoint} ${styles.startPointPicked}`
+                    : isLocked
+                      ? `${styles.startPoint} ${styles.startPointLocked}`
+                      : styles.startPoint
+                }
+              >
+                <circle
+                  cx={colX(i)}
+                  cy={rowY(0) - 18}
+                  r={14}
+                  fill={isPicked ? 'var(--color-primary)' : 'var(--color-bg)'}
+                  stroke="var(--color-primary)"
+                  strokeWidth={2}
+                />
+                <text
+                  x={colX(i)}
+                  y={rowY(0) - 14}
+                  textAnchor="middle"
+                  fontSize={12}
+                  fontWeight={600}
+                  fill={
+                    isPicked
+                      ? 'var(--color-primary-fg)'
+                      : 'var(--color-primary)'
+                  }
+                >
+                  {i + 1}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* 끝점 — 도착 라인의 % 만 revealed 시 공개. 나머지는 항상 '?'. */}
+          {percents.map((p, i) => {
+            const isEnd = endCol === i;
+            const showPercent = revealed && isEnd;
+            const dimmed = selected !== null && !isEnd;
+            return (
+              <g
+                key={`e${i}`}
+                className={showPercent ? styles.endRevealed : undefined}
+              >
+                <rect
+                  x={colX(i) - 22}
+                  y={rowY(rows) + 8}
+                  width={44}
+                  height={26}
+                  rx={13}
+                  fill={
+                    showPercent ? 'var(--color-primary)' : 'var(--color-muted)'
+                  }
+                  opacity={dimmed ? 0.4 : 1}
+                />
+                <text
+                  x={colX(i)}
+                  y={rowY(rows) + 25}
+                  textAnchor="middle"
+                  fontSize={12}
+                  fontWeight={700}
+                  fill="var(--color-primary-fg)"
+                  opacity={dimmed ? 0.6 : 1}
+                >
+                  {showPercent ? `${p}%` : '?'}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* 선택 경로 — stroke-dashoffset 애니메이션 */}
+          {selected !== null && (
+            <polyline
+              key={`path-${selected}-${mode}-${resetKey}`}
+              points={path
+                .map((p) => `${colX(p.col)},${rowY(p.row)}`)
+                .join(' ')}
+              fill="none"
+              stroke="var(--color-primary)"
+              strokeWidth={3.5}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className={styles.path}
+            />
+          )}
+        </svg>
+
+        {/* 결과 강조 패널 — revealed 시 등장 */}
+        {revealed && resultPercent !== null && (
+          <div className={styles.result} role="status" aria-live="polite">
+            <span className={styles.resultLabel}>{t('resultLabel')}</span>
+            <span className={styles.resultValue}>
+              <span className={styles.resultNumber}>{displayPercent}</span>
+              <span className={styles.resultUnit}>%</span>
             </span>
-            {t('hintIdle')}
-          </>
-        )}
-        {selected !== null && !revealed && t('hintRolling')}
-        {revealed && t('hintRevealed')}
-      </p>
-
-      <svg
-        viewBox={`0 0 ${W} ${H}`}
-        className={styles.svg}
-        role="img"
-        aria-label={t('svgLabel')}
-      >
-        {/* 세로선 */}
-        {Array.from({ length: count }).map((_, i) => (
-          <line
-            key={`v${i}`}
-            x1={colX(i)}
-            y1={rowY(0)}
-            x2={colX(i)}
-            y2={rowY(rows)}
-            stroke="var(--color-border)"
-            strokeWidth={2}
-            strokeLinecap="round"
-          />
-        ))}
-
-        {/* 가로선 */}
-        {rungs.map((g, i) => (
-          <line
-            key={`r${i}`}
-            x1={colX(g.col)}
-            y1={rowY(g.row + 0.5)}
-            x2={colX(g.col + 1)}
-            y2={rowY(g.row + 0.5)}
-            stroke="var(--color-border)"
-            strokeWidth={2}
-            strokeLinecap="round"
-          />
-        ))}
-
-        {/* 시작점 — 클릭 가능 (선택 전에만) */}
-        {Array.from({ length: count }).map((_, i) => {
-          const isPicked = selected === i;
-          const isLocked = selected !== null && !isPicked;
-          return (
-            <g
-              key={`s${i}`}
-              onClick={() => handlePick(i)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  handlePick(i);
-                }
-              }}
-              role="button"
-              tabIndex={selected === null ? 0 : -1}
-              aria-label={t('lineLabel', { n: i + 1 })}
-              aria-pressed={isPicked}
-              className={
-                isPicked
-                  ? `${styles.startPoint} ${styles.startPointPicked}`
-                  : isLocked
-                    ? `${styles.startPoint} ${styles.startPointLocked}`
-                    : styles.startPoint
-              }
+            <button
+              type="button"
+              className={styles.retry}
+              onClick={handleRetry}
             >
-              <circle
-                cx={colX(i)}
-                cy={rowY(0) - 18}
-                r={14}
-                fill={isPicked ? 'var(--color-primary)' : 'var(--color-bg)'}
-                stroke="var(--color-primary)"
-                strokeWidth={2}
-              />
-              <text
-                x={colX(i)}
-                y={rowY(0) - 14}
-                textAnchor="middle"
-                fontSize={12}
-                fontWeight={600}
-                fill={
-                  isPicked ? 'var(--color-primary-fg)' : 'var(--color-primary)'
-                }
-              >
-                {i + 1}
-              </text>
-            </g>
-          );
-        })}
-
-        {/* 끝점 — 도착 라인의 % 만 revealed 시 공개. 나머지는 항상 '?'. */}
-        {percents.map((p, i) => {
-          const isEnd = endCol === i;
-          const showPercent = revealed && isEnd;
-          const dimmed = selected !== null && !isEnd;
-          return (
-            <g
-              key={`e${i}`}
-              className={showPercent ? styles.endRevealed : undefined}
-            >
-              <rect
-                x={colX(i) - 22}
-                y={rowY(rows) + 8}
-                width={44}
-                height={26}
-                rx={13}
-                fill={
-                  showPercent ? 'var(--color-primary)' : 'var(--color-muted)'
-                }
-                opacity={dimmed ? 0.4 : 1}
-              />
-              <text
-                x={colX(i)}
-                y={rowY(rows) + 25}
-                textAnchor="middle"
-                fontSize={12}
-                fontWeight={700}
-                fill="var(--color-primary-fg)"
-                opacity={dimmed ? 0.6 : 1}
-              >
-                {showPercent ? `${p}%` : '?'}
-              </text>
-            </g>
-          );
-        })}
-
-        {/* 선택 경로 — stroke-dashoffset 애니메이션 */}
-        {selected !== null && (
-          <polyline
-            key={`path-${selected}-${mode}-${resetKey}`}
-            points={path.map((p) => `${colX(p.col)},${rowY(p.row)}`).join(' ')}
-            fill="none"
-            stroke="var(--color-primary)"
-            strokeWidth={3.5}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={styles.path}
-          />
+              <span aria-hidden>🎲</span>
+              {t('retry')}
+            </button>
+          </div>
         )}
-      </svg>
-
-      {/* 결과 강조 패널 — revealed 시 등장 */}
-      {revealed && resultPercent !== null && (
-        <div className={styles.result} role="status" aria-live="polite">
-          <span className={styles.resultLabel}>{t('resultLabel')}</span>
-          <span className={styles.resultValue}>
-            <span className={styles.resultNumber}>{displayPercent}</span>
-            <span className={styles.resultUnit}>%</span>
-          </span>
-          <button type="button" className={styles.retry} onClick={handleRetry}>
-            <span aria-hidden>🎲</span>
-            {t('retry')}
-          </button>
-        </div>
-      )}
-    </div>
+      </div>
+    </section>
   );
 }
