@@ -1,36 +1,23 @@
 import { Skeleton } from '@/components/feedback/Skeleton';
 
 /**
- * /quiz cold start fallback — progress bar + question card + 4 옵션.
+ * /quiz cold start fallback — TravelTypeQuiz isLoading 분기 정합.
+ *   - fallback class: gap 0.5rem padding 3rem 1rem center
+ *   - 180 lg + 56 md + 56 md (TravelTypeQuiz 의 isLoading 첫 화면)
  */
 export default function QuizLoading() {
   return (
     <div
       style={{
-        padding: 'var(--space-4)',
         display: 'grid',
-        gap: 'var(--space-3)',
+        gap: '0.5rem',
+        placeItems: 'center',
+        padding: '3rem 1rem',
       }}
     >
-      {/* progress segments (5문항 기준) */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(5, 1fr)',
-          gap: 6,
-        }}
-      >
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} width="100%" height={6} radius="sm" />
-        ))}
-      </div>
-      {/* question text */}
-      <Skeleton width="90%" height={28} radius="md" />
-      <Skeleton width="60%" height={20} radius="sm" />
-      {/* 4 옵션 카드 */}
-      {Array.from({ length: 4 }).map((_, i) => (
-        <Skeleton key={i} width="100%" height={56} radius="md" />
-      ))}
+      <Skeleton width="100%" height={180} radius="lg" />
+      <Skeleton width="100%" height={56} radius="md" />
+      <Skeleton width="100%" height={56} radius="md" />
     </div>
   );
 }

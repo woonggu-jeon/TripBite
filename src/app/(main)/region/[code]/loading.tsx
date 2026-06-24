@@ -1,26 +1,50 @@
 import { Skeleton } from '@/components/feedback/Skeleton';
 
 /**
- * /region/[code] streaming fallback — ISR generate / cache miss 시 paint.
+ * /region/[code] cold start fallback — Figma "RGN · 시군상세" layout 정합.
  *
- * SubHeader 자리 + RegionHero (140px) + 탭 라인 + content row 3개 placeholder.
- * 클라이언트 진입 시 즉시 보이므로 cold start 시간 동안 사용자 체감 ↓.
+ * page.module.scss `.body` (padding 4 4 0 gap 16) 안에서:
+ *   1) RegionHero banner — 320×103 padding 16 20 gap 12 radius 12 (primary-soft
+ *      bg + 1px border). title B_20 + eyebrow + description 2줄.
+ *   2) RegionDetailTabs — 4 chip tabs (28h pill, gap 4) + panelArea min-height
+ *      460 (DestinationCard 2-col grid ≈ 220h ×2 row).
  */
 export default function RegionDetailLoading() {
   return (
     <div
       style={{
-        padding: 'var(--space-4)',
-        display: 'grid',
-        gap: 'var(--space-3)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 16,
+        padding: '4px 4px 0',
       }}
     >
-      <Skeleton width="50%" height={28} radius="md" />
-      <Skeleton width="100%" height={140} radius="lg" />
-      <Skeleton width="60%" height={32} radius="md" />
-      <Skeleton width="100%" height={96} radius="lg" />
-      <Skeleton width="100%" height={96} radius="lg" />
-      <Skeleton width="100%" height={96} radius="lg" />
+      {/* RegionHero banner placeholder — 103h radius 12. */}
+      <Skeleton width="100%" height={103} radius="md" />
+
+      {/* RegionDetailTabs wrap — gap var(--space-4) = 16. */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {/* 4 chip tabs — 28h pill, gap 4. 첫 칩은 active 라 width 가 약간 큼. */}
+        <div style={{ display: 'flex', gap: 4 }}>
+          <Skeleton width={64} height={28} radius="full" />
+          <Skeleton width={72} height={28} radius="full" />
+          <Skeleton width={56} height={28} radius="full" />
+          <Skeleton width={88} height={28} radius="full" />
+        </div>
+
+        {/* panelArea — DestinationCard 2 columns × 2 rows ≈ 460h. */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: 12,
+          }}
+        >
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} width="100%" height={220} radius="md" />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

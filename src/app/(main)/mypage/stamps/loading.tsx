@@ -1,31 +1,21 @@
 import { Skeleton } from '@/components/feedback/Skeleton';
 
-/** /mypage/stamps — 11 시군 도장책 (지도 + 시군 chip grid). */
+/**
+ * /mypage/stamps cold start fallback — StampsClient isLoading 분기 정합.
+ *   - wrap: padding 18 16 24 gap 18
+ *   - progCard 68 + mapCard 360
+ */
 export default function StampsLoading() {
   return (
     <div
       style={{
-        padding: 'var(--space-4)',
         display: 'grid',
-        gap: 'var(--space-3)',
+        gap: 18,
+        padding: '18px 16px 24px',
       }}
     >
-      {/* progress (방문 카운트) */}
-      <Skeleton width="60%" height={24} radius="md" />
-      {/* 충북 지도 영역 */}
-      <Skeleton width="100%" height={280} radius="lg" />
-      {/* 11 시군 chip grid */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: 8,
-        }}
-      >
-        {Array.from({ length: 11 }).map((_, i) => (
-          <Skeleton key={i} width="100%" height={48} radius="md" />
-        ))}
-      </div>
+      <Skeleton width="100%" height={68} radius="md" />
+      <Skeleton width="100%" height={360} radius="lg" />
     </div>
   );
 }

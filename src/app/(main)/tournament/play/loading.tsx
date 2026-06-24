@@ -1,31 +1,43 @@
 import { Skeleton } from '@/components/feedback/Skeleton';
 
 /**
- * /tournament/play cold start fallback — 매치업 2 카드 (좌/우) + VS center.
+ * /tournament/play cold start fallback — intro phase 첫 화면 정합.
+ *   - column center gap 30 padding 0 30 (TournamentPlayClient.intro)
+ *   - circle-stack 134 + title 19h + 3 dots
+ *   - 실 mount 후 첫 화면이 intro 라 그대로 placeholder.
  */
 export default function TournamentPlayLoading() {
   return (
     <div
       style={{
-        padding: 'var(--space-4)',
-        display: 'grid',
-        gap: 'var(--space-3)',
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 30,
+        minHeight: 'calc(100dvh - 200px)',
+        padding: '0 30px',
+        overflow: 'hidden',
       }}
     >
-      {/* round 표시 */}
-      <Skeleton width="30%" height={20} radius="sm" />
-      {/* 매치업 — 두 큰 카드 + 중앙 VS */}
+      {/* circle-stack 134 */}
+      <Skeleton width={134} height={134} radius="full" />
+      {/* introTitle — 19px 1줄 */}
+      <Skeleton width="80%" height={19} radius="sm" />
+      {/* 3 dots — 9×9 gap 8 */}
       <div
         style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr auto 1fr',
+          display: 'flex',
+          flexDirection: 'row',
           gap: 8,
           alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
-        <Skeleton width="100%" height={280} radius="lg" />
-        <Skeleton width={36} height={36} radius="full" />
-        <Skeleton width="100%" height={280} radius="lg" />
+        <Skeleton width={9} height={9} radius="full" />
+        <Skeleton width={9} height={9} radius="full" />
+        <Skeleton width={9} height={9} radius="full" />
       </div>
     </div>
   );
