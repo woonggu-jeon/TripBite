@@ -1,11 +1,10 @@
-// Figma "POI · 장소상세 action-bar" (2026-06-23) — padding 12 20 gap 10 row,
-// Frame 25 (gap 8) 2 button 156×52.
+// Figma "POI · 장소상세 action-bar" — padding 0 20 20 gap 8 row, 2 button
+// 156×52. bg 없음 (page bg #F8F8F8 비침 — Figma 정합).
 .row {
   display: flex;
   flex-direction: row;
   gap: 8px;
-  padding: 12px 20px;
-  background: var(--color-bg);
+  padding: 0 20px 20px;
 }
 
 // Figma button common — 16 20 padding gap 10 radius 12, M_16 center.

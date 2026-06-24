@@ -47,6 +47,7 @@ export function NotificationSettingsSection() {
       />
       <Row
         label={t('letterReceived')}
+        hint={t('letterReceivedHint')}
         checked={!!n?.letterReceived}
         onChange={(next) => update({ letterReceived: next })}
       />

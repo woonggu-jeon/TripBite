@@ -1,11 +1,16 @@
-// Figma "POI · 장소상세" (2026-06-23) — body padding 0 column. (main) layout
-// 의 contentInner padding 무시 — viewport edge 까지 bleed (hero / action-bar
-// 풀폭).
+// Figma "POI · 장소상세" — body padding 0 column bg #F8F8F8. (main) layout 의
+// contentInner padding-left/right 무시 — viewport edge 까지 bleed (hero /
+// action-bar 풀폭). padding-top 은 SubHeader 자체가 -content-pad 로 탈출 →
+// 여기서 또 음수 margin 주면 SubHeader 와 overlap (사용자 명시 2026-06-24).
 .wrap {
   display: flex;
   flex-direction: column;
-  margin: 0 calc(-1 * var(--content-pad));
-  background: var(--color-surface-soft);
+  margin-left: calc(-1 * var(--content-pad));
+  margin-right: calc(-1 * var(--content-pad));
+  background: var(--color-gray-10); /* #F8F8F8 */
+  :global(:root[data-theme='dark']) & {
+    background: var(--color-bg);
+  }
 }
 
 // Figma info-sec — padding 20 20 24 gap 20 white bg.
@@ -199,10 +204,10 @@
   }
 }
 
-// Figma near-sec — padding 20 white bg.
+// Figma near-sec — padding 20, bg 없음 (page bg #F8F8F8 비침 — info-sec 와
+// 분리된 island 시각).
 .nearSec {
   padding: 20px;
-  background: var(--color-bg);
 }
 
 // Loading skeleton — near-sec 안의 3 카드 placeholder row (Figma saved-grid

@@ -10,7 +10,6 @@ import { AccountSettingsSection } from '@/features/settings/components/AccountSe
 import { AccountActionsSection } from '@/features/settings/components/AccountActionsSection';
 // 테마 섹션 미노출 (사용자 요청, 재노출 대비 import 유지)
 // import { ThemeSection } from '@/features/theme/components/ThemeSection';
-import { PageSection } from '@/components/ui';
 import styles from './SettingsClient.module.scss';
 
 /**
@@ -29,36 +28,19 @@ export function SettingsClient() {
 
   return (
     <div className={styles.wrap}>
-      <PageSection title={t('notifications.section')}>
-        <NotificationSettingsSection />
-      </PageSection>
+      {/* Figma "설정 bl" heading — padding 26 0 8 20 + SB_14 fg. PageSection
+          wrap 제거 (header padding 26 정합이 PageSection 공통 spec 과 충돌 →
+          settings 만 자체 bl heading 사용, 사용자 명시 2026-06-24). */}
+      <div className={styles.bl}>{t('notifications.section')}</div>
+      <NotificationSettingsSection />
 
-      {/* 테마 섹션 — 미노출 (사용자 요청). 추후 복원 시 주석 해제.
-      <PageSection title={t('theme.section')}>
-        <ThemeSection />
-      </PageSection>
-      */}
+      <div className={styles.bl}>{t('account.section')}</div>
+      <AccountSettingsSection />
 
-      <PageSection title={t('account.section')}>
-        <AccountSettingsSection />
-      </PageSection>
+      {/* 테마 / 언어 / 약관 섹션 — 미노출 (사용자 요청). 추후 복원 시
+          <div className={styles.bl}>{t('theme.section')}</div> 등으로 추가. */}
 
-      {/* 언어 섹션 — 미노출 (사용자 요청). 추후 복원 시 주석 해제.
-      <PageSection title={t('language')}>
-        <LanguageSwitcher />
-      </PageSection>
-      */}
-
-      {/* 약관 섹션 — 미노출 (사용자 요청, 2026-06-18). 정책 본문 (docs/BE_REQUEST
-          또는 법무 검토) 확정 후 주석 해제.
-      <PageSection title={t('policy.section')}>
-        <PolicySection />
-      </PageSection>
-      */}
-
-      {/* Figma "설정" page bw frame (2026-06-23) — 섹션 외 별도 영역.
-          PageSection wrap 없이 직접 render (이전 회귀: PageSection title
-          "계정" 2번 등장으로 사용자 발견). */}
+      {/* Figma "설정" page bw frame — 섹션 외 별도 영역. */}
       <AccountActionsSection />
     </div>
   );

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ListRow } from '@/components/ui';
 import { usePermissionState } from '@/features/location';
+import { useMypage } from '@/features/mypage/hooks/use-mypage';
 import { NicknameEditDialog } from './NicknameEditDialog';
 import { ChangePasswordDialog } from './ChangePasswordDialog';
 import styles from './SettingsRows.module.scss';
@@ -23,13 +24,19 @@ import styles from './SettingsRows.module.scss';
 export function AccountSettingsSection() {
   const t = useTranslations('settings.account');
   const permission = usePermissionState();
+  const { data: mypage } = useMypage();
   const [openDialog, setOpenDialog] = useState<'nickname' | 'password' | null>(
     null,
   );
+  // Figma "설정 row" 우측 value 슬롯 — 현재 닉네임 표시 (사용자 명시 2026-06-24).
+  const currentNickname = mypage?.profile.nickname ?? null;
 
   return (
     <div className={styles.list}>
-      <ListRow onClick={() => setOpenDialog('nickname')}>
+      <ListRow
+        onClick={() => setOpenDialog('nickname')}
+        value={currentNickname}
+      >
         {t('changeNickname')}
       </ListRow>
 

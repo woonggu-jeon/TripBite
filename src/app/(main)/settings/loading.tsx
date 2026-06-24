@@ -2,49 +2,44 @@ import { Skeleton } from '@/components/feedback/Skeleton';
 import { SubHeaderSkeleton } from '@/components/feedback/SubHeaderSkeleton';
 
 /**
- * /settings cold start fallback — SettingsClient layout 정합.
+ * /settings cold start fallback — Figma "설정" page 정합.
  *
- * 구조 (SettingsClient.module.scss `.wrap` gap var(--space-6)):
- *   1) PageSection "알림" — title (14 SemiBold) + 3 row flat (각 ~56h padding
- *      16 20, no border).
- *   2) PageSection "계정/권한" — title + 3 row flat.
- *   3) AccountActionsSection — actionStack padding 20 gap 12, 2 button 52h
- *      (logout outline + withdraw ghost danger).
- *
- * ※ 이전 회귀: PageSection rows 56h border-radius md → flat row (no border)
- *   정정. 2026-06-23 Figma 정합 이후 SettingsRows.scss row 가 padding 16 20
- *   bg 만, divider 없음.
+ * 구조:
+ *   - SubHeader 56h (skeleton)
+ *   - bl heading × 2 — padding 26 0 8 20, SB_14 fg "알림" / "계정"
+ *   - row × 3 (each) — 360 풀너비 padding 16 20
+ *   - bw bottom — padding 20 gap 12, logout button + withdraw text
  */
 export default function SettingsLoading() {
   return (
     <div
       style={{
-        display: 'grid',
-        gap: 'var(--space-6)',
+        marginLeft: 'calc(-1 * var(--content-pad))',
+        marginRight: 'calc(-1 * var(--content-pad))',
       }}
     >
       <SubHeaderSkeleton />
-      {/* PageSection "알림" — title 14h + 3 row 56h. */}
-      <section style={{ display: 'grid', gap: 'var(--space-3)' }}>
+      {/* bl "알림" */}
+      <div style={{ padding: '26px 0 8px 20px' }}>
         <Skeleton width={48} height={14} radius="sm" />
-        <div style={{ display: 'grid', gap: 0 }}>
-          {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={`n-${i}`} width="100%" height={56} radius="sm" />
-          ))}
+      </div>
+      {Array.from({ length: 3 }).map((_, i) => (
+        <div key={`n-${i}`} style={{ padding: '16px 20px' }}>
+          <Skeleton width="100%" height={40} radius="sm" />
         </div>
-      </section>
+      ))}
 
-      {/* PageSection "계정/권한" — title 14h + 3 row 56h. */}
-      <section style={{ display: 'grid', gap: 'var(--space-3)' }}>
+      {/* bl "계정" */}
+      <div style={{ padding: '26px 0 8px 20px' }}>
         <Skeleton width={64} height={14} radius="sm" />
-        <div style={{ display: 'grid', gap: 0 }}>
-          {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={`a-${i}`} width="100%" height={56} radius="sm" />
-          ))}
+      </div>
+      {Array.from({ length: 3 }).map((_, i) => (
+        <div key={`a-${i}`} style={{ padding: '16px 20px' }}>
+          <Skeleton width="100%" height={22} radius="sm" />
         </div>
-      </section>
+      ))}
 
-      {/* AccountActionsSection — padding 20 gap 12, 2 button 52h. */}
+      {/* bw — padding 20 gap 12, logout button + withdraw text */}
       <div
         style={{
           display: 'flex',
@@ -54,7 +49,7 @@ export default function SettingsLoading() {
         }}
       >
         <Skeleton width="100%" height={52} radius="md" />
-        <Skeleton width="100%" height={52} radius="md" />
+        <Skeleton width="100%" height={22} radius="sm" />
       </div>
     </div>
   );

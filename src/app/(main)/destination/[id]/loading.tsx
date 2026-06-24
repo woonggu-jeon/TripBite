@@ -25,8 +25,9 @@ export default function DestinationDetailLoading() {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        background: 'var(--color-surface-soft)',
-        margin: '0 calc(-1 * var(--content-pad))',
+        background: 'var(--color-gray-10)',
+        marginLeft: 'calc(-1 * var(--content-pad))',
+        marginRight: 'calc(-1 * var(--content-pad))',
       }}
     >
       <SubHeaderSkeleton />
@@ -88,8 +89,8 @@ export default function DestinationDetailLoading() {
         <Skeleton width="100%" height={80} radius="sm" />
       </div>
 
-      {/* near-sec — padding 20 white */}
-      <div style={{ padding: 20, background: 'var(--color-bg)' }}>
+      {/* near-sec — padding 20 (bg 없음, page bg 비침) */}
+      <div style={{ padding: 20 }}>
         <Skeleton width="40%" height={22} radius="sm" />
         <div
           style={{ display: 'flex', gap: 8, marginTop: 12, overflow: 'hidden' }}

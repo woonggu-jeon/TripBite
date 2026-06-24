@@ -3,9 +3,10 @@
 
 .form {
   display: grid;
-  // Figma "fields" group padding 0 0 24px — field 사이 24px. 기존 16 →
-  // 24 정합 (2026-06-19).
-  gap: var(--space-6);
+  // Figma "AUTH · 회원가입" Frame 67 fields gap 16. 외곽 Frame 68 (fields +
+  // submit + footRow) 의 gap 24 는 .submit / .toLoginRow 의 margin-top 8 추가로
+  // 16 + 8 = 24 (2026-06-24 사용자 명시 정합). 직전 uniform 24 회귀.
+  gap: var(--space-4); /* 16 */
   width: 100%;
   max-width: 360px;
   // AuthLayout column variant (flex column, align-items stretch default) 에서
@@ -84,6 +85,39 @@
   font-size: var(--text-sm);
   color: var(--color-muted);
   margin-top: var(--space-2);
+}
+
+// Figma "AUTH · 회원가입" submit button — fields (16 gap) 와 분리, 외곽 Frame 68
+// gap 24 정합. form gap 16 + .submit margin-top 8 = 24.
+.submit {
+  margin-top: var(--space-2); /* 8 */
+}
+
+// Figma "AUTH · 회원가입 Frame 69" — row gap 4 center align. "이미 계정이 있나요?"
+// R_14 fg + dot 2×2 #C2C2C2 + "로그인" B_14 primary (link).
+// .submit 과 form 사이 자연 16 + 추가 8 = Frame 68 외곽 gap 24 정합.
+.toLoginRow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  margin-top: var(--space-2); /* 8 → 16 + 8 = 24 (Figma Frame 68 외곽 gap) */
+}
+
+.toLoginPrompt {
+  font-size: var(--text-sm); /* 14 */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
+}
+
+.toLoginAction {
+  font-size: var(--text-sm); /* 14 */
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-primary);
 }
 
 // Figma LOGIN · A 의 links — "회원가입 · 아이디 찾기 · 비밀번호 찾기" 가운데 정렬.

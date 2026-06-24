@@ -1,4 +1,5 @@
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
+import { ChevronRight } from 'lucide-react';
 import styles from './ListRow.module.scss';
 
 /**
@@ -57,6 +58,10 @@ export const ListRow = forwardRef<HTMLButtonElement, ListRowProps>(
     ]
       .filter(Boolean)
       .join(' ');
+    // Figma "설정" row link spec — IC-right chevron 20 모든 default row 에 노출
+    // (사용자 명시 2026-06-24 — 위치 권한처럼 onClick 없는 정보 row 도 chevron
+    // 노출). variant=danger / disabled 만 chevron 미노출.
+    const showChevron = !rest.disabled && variant !== 'danger';
     return (
       <button ref={ref} type={type ?? 'button'} className={cls} {...rest}>
         <div className={styles.labelGroup}>
@@ -64,6 +69,14 @@ export const ListRow = forwardRef<HTMLButtonElement, ListRowProps>(
           {hint != null && <div className={styles.hint}>{hint}</div>}
         </div>
         {value != null && <div className={styles.value}>{value}</div>}
+        {showChevron && (
+          <ChevronRight
+            size={20}
+            className={styles.chevron}
+            aria-hidden
+            strokeWidth={1.5}
+          />
+        )}
       </button>
     );
   },

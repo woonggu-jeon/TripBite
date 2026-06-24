@@ -5,9 +5,10 @@
 // 참조: Body/SB_16_140% label + Body/R_14_140% value + Caption/R_12 hint.
 
 .row {
-  display: grid;
-  // value 가 있을 땐 label / value 2-col, 없을 땐 label 만 (1fr auto).
-  grid-template-columns: 1fr auto;
+  // flex 로 통일 — value 유무에 따라 chevron 위치가 12px 어긋나는 grid track
+  // gap 회귀 회피 (사용자 명시 2026-06-24). flex gap 은 item 사이에만 적용 →
+  // value 없을 때 labelGroup ↔ chevron 직접 인접 (gap 12 한 번).
+  display: flex;
   align-items: center;
   gap: 12px;
   width: 100%;
@@ -44,11 +45,13 @@
   color: var(--color-danger);
 }
 
-// label + hint 묶음 (왼쪽 column). hint 가 있으면 column stack (label / hint).
+// label + hint 묶음 (왼쪽 column). flex item 으로 남은 공간 차지 → value/
+// chevron 자연 우측 정렬.
 .labelGroup {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  flex: 1;
   min-width: 0;
 }
 
@@ -62,7 +65,7 @@
 }
 
 // value — 오른쪽 정렬 텍스트. Figma Body/R_14_140% (Regular 14, ls -0.02em,
-// fg color). 예: 언어 "한국어", 버전 "1.0.0", 위치 권한 "허용됨".
+// fg color). 예: 언어 "한국어", 버전 "1.0.0", 위치 권한 "허용됨", 닉네임.
 .value {
   font-size: var(--text-sm);
   font-weight: var(--font-weight-regular);
@@ -70,6 +73,14 @@
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
   text-align: right;
+}
+
+// Figma "설정" row link spec — IC-right chevron 20 disabled tone. row 의
+// onClick (interactive) 시 노출. value 와 함께 사용 가능 (닉네임/언어 등 +
+// chevron).
+.chevron {
+  color: var(--color-text-disabled);
+  flex-shrink: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {

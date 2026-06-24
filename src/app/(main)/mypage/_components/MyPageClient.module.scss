@@ -1,25 +1,26 @@
-// Figma "MY_01" body (2026-06-23 색 정정) — bg #F8F8F8 (이전 #FAFBFA 회귀) +
-// gap 24 + padding 20 0 24. layout content-pad (모든 (main) 페이지 공통)
-// 무시하고 viewport 가장자리까지 bleed — pf row (white + border-bottom) 가
-// 360 풀너비 정합.
+// Figma "MY_01" body — bg #F8F8F8. layout content-pad 무시하고 viewport
+// 가장자리까지 bleed — Figma pf row width 360 풀너비 정합. .grid 의 좌우
+// padding 없음 (직전 padding-left/right content-pad 가 ProfileCard 까지
+// 영향 → row 폭 줄어드는 회귀, 사용자 명시 2026-06-24 fix).
 .grid {
   display: grid;
-  gap: var(--space-6);
-  background: #f8f8f8;
-  // contentInner padding 무시 (음의 margin) — viewport edge 까지 bg 채움.
-  margin: calc(-1 * var(--content-pad));
-  // ProfileCard row 가 자체 padding 으로 처리 (Figma pf 20 padding). 그 외
-  // 섹션 (PageSection / banner / 카드) 은 다시 안쪽 padding 으로 viewport
-  // 가장자리 여백 확보.
-  padding: 0 var(--content-pad) var(--content-pad);
+  background: var(--color-gray-10); /* #F8F8F8 */
+  margin-left: calc(-1 * var(--content-pad));
+  margin-right: calc(-1 * var(--content-pad));
+  margin-bottom: calc(-1 * var(--content-pad));
+  :global(:root[data-theme='dark']) & {
+    background: var(--color-bg);
+  }
 }
 
-// 본문 padding 안쪽 sections 묶음 — sec-title + content 가 viewport 가장자리
-// 까지 닿지 않도록 wrap.
+// Figma "MY_01" body — column padding 20 0 24 gap 24. 좌우 20 의 sections
+// 은 .body padding 으로 처리 (Figma section padding 0 20). 가로 스크롤
+// saved-grid 만 SavedTournamentsSection 자체에서 음수 margin 으로 viewport
+// edge bleed.
 .body {
   display: grid;
-  gap: var(--space-6);
-  padding: var(--space-5) var(--content-pad) 0;
+  gap: var(--space-6); /* 24 */
+  padding: var(--space-5) var(--space-5) var(--space-6); /* 20 20 24 */
 }
 
 // Figma "MY_01" sec-title 우측 muted text slot (Caption R_12 #393939) —

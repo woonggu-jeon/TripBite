@@ -1,14 +1,16 @@
-// section wrap + title 만. 카드 자체는 ui/DestinationCard 가 담당.
+// Figma "POI · 장소상세 near-sec section" — column gap 12.
 .wrap {
   display: grid;
-  gap: var(--space-3);
-  margin-top: var(--space-5);
+  gap: 12px;
+  margin: 0;
 }
 
+// Figma sec-title B_16_140% fg.
 .title {
-  font-size: var(--font-h3);
-  font-weight: var(--font-weight-extrabold);
+  font-size: var(--font-body); /* 16 */
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
-  letter-spacing: var(--tracking-snug);
   margin: 0;
 }

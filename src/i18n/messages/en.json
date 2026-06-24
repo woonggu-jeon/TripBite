@@ -158,6 +158,8 @@
       "submitting": "Creating...",
       "failed": "Sign-up failed.",
       "toLogin": "Already have an account? Sign in",
+      "toLoginPrompt": "Already have an account?",
+      "toLoginAction": "Sign in",
       "errors": {
         "usernameInvalid": "Username must be 4-20 letters/digits.",
         "usernameTaken": "This username is already taken.",
@@ -796,6 +798,7 @@
       "inApp": "In-app notifications",
       "inAppHint": "Use the in-app inbox",
       "letterReceived": "Letter arrived",
+      "letterReceivedHint": "We'll notify you when a new letter arrives",
       "letterLiked": "Like on my letter"
     },
     "theme": {

@@ -1,18 +1,26 @@
-// Figma "RNK · 랭킹" body (2026-06-23) — padding 18 16 22 gap 14, bg #F8F8F8.
-// (main)/layout 의 contentInner padding 16 안에서 자체 padding 0 + gap 14
-// (16 좌우 padding 와 합쳐 32 — 좁아지므로 margin 으로 약간 보정).
+// Figma "RNK · 랭킹" body — padding 20 (4변) gap 14 bg #F8F8F8 (사용자 명시
+// 2026-06-24 정합). contentInner padding-left/right 만 음의 margin 으로 탈출
+// (padding-top 은 SubHeader 자체가 -content-pad 로 탈출 — 여기서 또 탈출하면
+// SubHeader 와 overlap). 자체 padding 20 으로 Figma body padding 정합.
 .wrap {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding-top: 2px; // contentInner 16 + 2 = 18 (Figma top 18).
+  background: var(--color-gray-10); /* #F8F8F8 */
+  margin-left: calc(-1 * var(--content-pad));
+  margin-right: calc(-1 * var(--content-pad));
+  padding: 20px;
+  :global(:root[data-theme='dark']) & {
+    background: var(--color-bg);
+  }
 }
 
-// Figma rv-card — 328×N padding 20 white border 1px gray radius 12.
+// Figma rv-card — 320×N padding 20 16 (상하 20, 좌우 16) white border 1px
+// gray radius 12.
 .rvCard {
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: 20px 16px;
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: 12px;
@@ -214,27 +222,26 @@
   gap: 8px;
 }
 
-// Figma empty-saved card — 328×302 white + 1px gray border + radius 12
-// padding 20 column gap 16 align-center.
+// Figma empty-saved card — 320×302 white + 1px gray border + radius 12
+// padding 20 16 column gap 16 align-center (rv-card 와 동일).
 .emptyCard {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  padding: 20px;
+  padding: 20px 16px;
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: 12px;
 }
 
-// Figma empty-recent card — 328×118 white + 1px gray border + radius 12
-// padding 20 column align-center. gap 미명시 — 자식 (head + text) 자연
-// stack (head 의 padding-bottom 16 으로 spacing).
+// Figma empty-recent card — 320×118 white + 1px gray border + radius 12
+// padding 20 16 column align-center.
 .emptyCardSmall {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 20px 16px;
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: 12px;

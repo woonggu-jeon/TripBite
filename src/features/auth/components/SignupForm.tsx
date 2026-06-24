@@ -258,20 +258,8 @@ export function SignupForm() {
         {...register('username', { onChange: onUsernameInputChange })}
       />
 
-      <TextField
-        id="nickname"
-        type="text"
-        autoComplete="nickname"
-        label={t('nickname')}
-        placeholder={t('nicknamePlaceholder')}
-        errorMessage={
-          errors.nickname
-            ? tErr(errors.nickname.message as Parameters<typeof tErr>[0])
-            : undefined
-        }
-        {...register('nickname')}
-      />
-
+      {/* Figma "AUTH · 회원가입" input 순서 정합 (2026-06-24 사용자 명시):
+          username → password → passwordConfirm → nickname → email. */}
       <PasswordField
         id="password"
         autoComplete="new-password"
@@ -296,6 +284,20 @@ export function SignupForm() {
             : undefined
         }
         {...register('passwordConfirm')}
+      />
+
+      <TextField
+        id="nickname"
+        type="text"
+        autoComplete="nickname"
+        label={t('nickname')}
+        placeholder={t('nicknamePlaceholder')}
+        errorMessage={
+          errors.nickname
+            ? tErr(errors.nickname.message as Parameters<typeof tErr>[0])
+            : undefined
+        }
+        {...register('nickname')}
       />
 
       <TextField
@@ -355,13 +357,20 @@ export function SignupForm() {
         fullWidth
         loading={isSubmitting}
         disabled={submitDisabled}
+        className={styles.submit}
       >
         {isSubmitting ? t('submitting') : t('submit')}
       </Button>
 
-      <Link href="/login" className={styles.footCenter}>
-        {t('toLogin')}
-      </Link>
+      {/* Figma "AUTH · 회원가입 Frame 69" — "이미 계정이 있나요?" R_14 fg + dot 2×2 +
+          "로그인" B_14 primary (사용자 명시 2026-06-24). 단일 link 텍스트 → row + 강조. */}
+      <div className={styles.toLoginRow}>
+        <span className={styles.toLoginPrompt}>{t('toLoginPrompt')}</span>
+        <span className={styles.footDot} aria-hidden />
+        <Link href="/login" className={styles.toLoginAction}>
+          {t('toLoginAction')}
+        </Link>
+      </div>
     </form>
   );
 }
