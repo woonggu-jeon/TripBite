@@ -1,7 +1,7 @@
 # TripBite 후속 작업 백로그
 
 > 코드베이스 전수조사 후 정리한 잔존 / 개선 항목. 분기점마다 갱신.
-> 마지막 갱신: 2026-06-22 (Figma 후속 + 자동 로그인 분리 + BE 응답 정합 + favicon 갱신)
+> 마지막 갱신: 2026-06-24 (TRN 9 화면 Figma 정합 + skeleton 19 sweep + dead cleanup)
 >
 > 작업량 표기: **S** (≤30분) · **M** (1-3시간) · **L** (반나절+)
 
@@ -77,6 +77,15 @@
 - **2026-06-18**: BE 보안 audit 회신 정합 — `BE_RESPONSE_security_audit_followup.md` 수신. 회신 6항목 (SID cookie 속성 fail-fast / X-Requested-With 항상 요구 / CSRF token 미도입 / login dummy-hash 타이밍 균등화 / rate-limit 표 명문화 / `AUTH_ACCOUNT_LOCKED` 옵션 A 유지). FE 실 동작 영향 0건 (axios 가 X-Requested-With 전역 전송 중 / generated check-username/email 이미 GET / LoginForm 분기 정상 동작). 정합 작업 — (1) `error-normalize.ts` 주석 단수→복수 (`AUTH_INVALID_CREDENTIALS`) + `GENERIC_MESSAGE` 에 `CSRF` 키 추가 (BE 의 403 CSRF 대응 사용자 친화 메시지). (2) `api/openapi.yaml` 에러 코드 예시 갱신 (복수형 + 운영 코드 6종 명시). (3) `error-normalize.test.ts` +2 cases (CSRF + AUTH_ACCOUNT_LOCKED, vitest 248 → 250). 운영 env 확인 완료 — Vercel `COOKIE_DOMAIN` 빈 값 (host-only, same-origin proxy 정합 ✓).
 - **2026-06-10**: Event JSON-LD — `DestinationDetailDto.eventStart/eventEnd` BE 반영 (`docs/BE_REQUEST_FESTIVAL_DATES.md` 전달). `touristAttraction()` 이 Festival + startDate 시 schema.org Event 분기 (startDate/endDate/location.Place). `/destination/[id]` SSR 에서 `tournamentApi.getDestinationDetail(id)` fetch 로 schema 보강 (실패 시 graceful fallback). mock handler 가 category=festival 일 때 deterministic date 응답 (dev 검증).
 - **2026-06-10**: dead infra 청소 — `src/lib/blur.ts` (`getBlurDataURL`) + `plaiceholder` devDep 삭제. 호출 0건 + LCP 후보 `DestinationPhotos` 가 raw `<img>` 라 적용 비용 > 효과. 필요 시 38줄 재작성. §3 인프라 항목 폐기.
+- **2026-06-24**: TRN 9 화면 Figma 정합 + skeleton 19 sweep + dead cleanup.
+  - **Phase 1 — skeleton sweep top 5** (commit `ecef28f`): 21 routes 전수조사 → 17/21 불일치 (page-level `loading.tsx` ↔ component `isLoading` layout). top 5 정합 (`/mypage` / `/letter/[id]` / `/letter/sent` / `/notifications` / `/tournament/result`).
+  - **Phase 2 — TRN 9 화면 Figma 정합** (3 Agent 병렬, commit `ca62912` / `feeab08` / `0d5aac7`): setup (theme/season/category/count) + play (loading/mapReady/match) + result + share card. WinnerCard hero 320×176 image + 90deg dark gradient, info-card 285h 3-field + divider + overview, Frame 47 4 rchip + lucky row 흡수, ladder card 320×432. OG `renderTournament` 전면 재작성 (360×500 spec × 3 → 1080×1500, primary bg + trophy 252 + eyebrow + title 90 + meta + desc + match-badge + footer).
+  - **Phase 3 — dead component cleanup** (commit `1972513`): `LuckyColor` (TournamentStats 안 흡수) / `CenterIllustration` (직접 markup 전환) / `SeasonalCenterIllustration` (자기 자신 외 ref 0) 6 file 제거. docs 정합 (BACKLOG / STYLES / result/page.tsx outdated docstring).
+  - **Phase 4 — skeleton sweep 나머지 12 routes** (2 Agent 병렬, commit `178f9fd`): `/`, `/region`, `/region/[code]`, `/letter`, `/letter/compose`, `/settings`, `/tournament`, `/tournament/play`, `/quiz`, `/quiz/result`, `/mypage/stamps`, `/mypage/saved-tournaments`. 모든 page `loading.tsx` 가 client 의 isLoading 또는 mount 후 첫 layout markup 과 일치 → cold start 시 2단계 시각 jump 회피.
+  - **layout 안정 fix** (commit `cf69943`): `DestinationCard` flex item `min-width: 0` + `max-width: 100%` (ellipsis 안정), `HomeRecBlock .cell` height 168 fixed + 자식 100% 강제 (카드 크기 일관), `RegionWinsChart .barTrack` width fixed → `flex: 1 1 auto + min-width 80` (desktop wider viewport 자연 grow).
+  - **msw catch-up** (commit `fbeece2`): `TravelType.compatibility` (commit `8bb6f86` schema regen) 의 msw mock 생성기 후속 — `mypage.msw.ts` / `travel-types.msw.ts` compatibility 필드 추가.
+  - 검증: tsc 0 / next build exit 0 / Bracket test 5/5. 신규 file 0 (정합만, 모두 기존 파일 modify/delete).
+  - 미해결: `DestinationDto.shortDescription` BE 협의 대기 (Figma TRN 매치 hero subtitle 유일 사용처 — fallback 으로 카테고리 label 표시 중) → `BE_REQUEST_destination_short_description.md` 작성.
 - **2026-06-11**: orval generated commit — `src/api/generated/` 의 `.gitignore` 해제 + 121 파일 commit. 운영 BE 의 `/v1/docs-json` 비노출 (Swagger 보안) 으로 Vercel build prebuild 가 실패하던 회귀 대응. `predev`/`prebuild` 가 `generate:api || echo skip` fail-soft 로 — fetch 실패 시 cached generated 사용. BE swagger 변경 시 FE 가 `npm run generate:api && git commit src/api/generated/` 흐름.
 - **2026-06-10**: login returnUrl 회귀 fix — 2-단계 fix.
   - (1) `AuthBootstrap` / `useRequireAuth` 가 `encodeURIComponent` 후 query 작성 → double-encode → LoginForm 가드 실패 → fallback `/`. middleware 와 동일하게 `URLSearchParams.set('redirect', pathname)` 통일.
