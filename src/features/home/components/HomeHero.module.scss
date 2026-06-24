@@ -2,13 +2,15 @@
 // 18 column justify-center align-flex-start. overflow hidden + isolation
 // (z-index stack 안전).
 .hero {
+  // aspect-ratio 320/176 (사용자 명시 2026-06-24) — desktop 에서 contentInner
+  // 폭까지 grow 시 비율 유지.
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
   width: 100%;
-  height: 176px;
+  aspect-ratio: 320 / 176;
   padding: 0 0 0 18px;
   border-radius: 12px;
   overflow: hidden;

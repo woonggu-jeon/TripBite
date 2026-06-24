@@ -30,11 +30,13 @@
 }
 
 // Figma hero — 288×152 radius 12 overflow hidden. text absolute bottom.
+// aspect-ratio 288/152 = 36/19 — desktop 에서 contentInner 폭까지 grow 시
+// 비율 유지 (사용자 명시 2026-06-24).
 .hero {
   position: relative;
   display: block;
   width: 100%;
-  height: 152px;
+  aspect-ratio: 288 / 152;
   border-radius: 12px;
   overflow: hidden;
   text-decoration: none;

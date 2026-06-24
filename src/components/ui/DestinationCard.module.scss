@@ -2,6 +2,9 @@
 // 152×184: Frame 2 image 152×108 (aspect 152/108) + Frame 3 body 152×76
 // padding 12 10 gap 4. card padding 0, 1px gray border, radius 12.
 .card {
+  // 비율 152/168 (사용자 명시 2026-06-24) — width fixed (152) 환경에선 height
+  // 168, desktop/grid 다른 폭에서도 비율 유지. body content 가 길면 overflow
+  // hidden 으로 시각 안정 (text-overflow ellipsis 가 안 내부에서 처리).
   position: relative;
   display: flex;
   flex-direction: column;
@@ -12,6 +15,7 @@
   color: var(--color-fg);
   overflow: hidden;
   width: 100%;
+  aspect-ratio: 152 / 168;
   // flex item default min-width:auto 회피 — 부모 flex container (.grid / carousel
   // slide) 에서 nowrap name/region/description 콘텐츠 길이만큼 카드 폭 커지는
   // 회귀 차단. cell flex: 0 0 152 의 152 폭 안에서만 ellipsis 작동.
