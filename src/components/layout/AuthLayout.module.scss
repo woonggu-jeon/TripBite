@@ -4,13 +4,21 @@
 
    variant:
      - center : form 류 (5개) — 화면 중앙 정렬
-     - column : 멀티 step 류 (onboarding) — 상단부터 세로 배치 */
+     - column : 멀티 step 류 (onboarding) — 상단부터 세로 배치
+
+   layout: (main) layout 의 contentInner 와 같은 폭 정합 — max-width
+   var(--content-max) 720 + white bg + margin auto. desktop 720+ 에서 양 옆
+   body bg (#EAF6EF) 노출, 가운데 720 폭만 white. 모바일 360 은 풀폭 white
+   (사용자 명시 2026-06-24 — 배경색 적용 후 auth white 회귀 fix). */
 // Fluid 반응형 — 320~desktop viewport 따라 padding 부드럽게.
 .main {
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
   padding: clamp(1rem, 4vw, 1.5rem) clamp(0.75rem, 3vw, 1rem);
+  max-width: var(--content-max); /* 720 */
+  margin: 0 auto;
+  background: var(--color-bg);
 }
 
 .center {
