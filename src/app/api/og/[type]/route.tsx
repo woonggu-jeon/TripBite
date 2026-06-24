@@ -364,7 +364,7 @@ function renderTournament(
             fontWeight: 800,
             color: '#FFFFFF',
             letterSpacing: '-0.02em',
-            lineHeight: 1.2,
+            lineHeight: 1.23, // Figma 16/13 정합 (2026-06-24)
           }}
         >
           여행 한입

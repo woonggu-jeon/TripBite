@@ -37,7 +37,7 @@
 .rowLabel {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px; // Figma flabel row gap 7 (icon ↔ label) — 2026-06-24 정합
   font-size: var(--font-caption);
   font-weight: var(--font-weight-regular);
   color: var(--color-muted);
