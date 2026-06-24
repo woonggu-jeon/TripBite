@@ -182,11 +182,8 @@ export function TournamentSetup() {
         hint: t('steps.category.hint'),
       };
     return {
-      // phase 3 와 같은 패턴 — season 변수. random/season 흐름 둘 다 step 4
-      // 진입 시 season set 보장.
-      title: t('steps.count.title', {
-        season: season ? tSeason(season) : '',
-      }),
+      // count step 은 카피 자체에 season 변수 사용 안 함 — 단순 안내.
+      title: t('steps.count.title'),
       hint: t('steps.count.hint'),
     };
   })();

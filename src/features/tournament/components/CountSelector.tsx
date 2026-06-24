@@ -107,11 +107,13 @@ export function CountSelector({
             aria-label={ariaOf(c)}
             className={`${styles.card} ${active ? styles.active : ''}`}
           >
-            <span className={styles.titleRow}>
-              <span className={styles.number}>{c}</span>
-              <span className={styles.unit}>{unit}</span>
+            <span className={styles.t5Text}>
+              <span className={styles.titleRow}>
+                <span className={styles.number}>{c}</span>
+                <span className={styles.unit}>{unit}</span>
+              </span>
+              {showLabel && <span className={styles.sub}>{subOf(c)}</span>}
             </span>
-            {showLabel && <span className={styles.sub}>{subOf(c)}</span>}
           </RadioOption>
         );
       })}

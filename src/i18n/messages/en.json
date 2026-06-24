@@ -412,8 +412,8 @@
           "seasonScopeNonFestival": "Season ({season}) applies to Festival only. Other categories are recommended regardless of season."
         },
         "count": {
-          "title": "How many {season} destinations?",
-          "hint": "Pick how many destinations to drop on the map.",
+          "title": "Pick a destination count",
+          "hint": "More destinations means a longer tournament.",
           "ariaLabel": "Destination count"
         }
       },

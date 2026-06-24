@@ -14,9 +14,9 @@
 .card {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start; /* Figma — t5-text 가 stretch 로 가로 채움 */
   justify-content: center;
-  gap: var(--space-1); /* 4 */
+  gap: var(--space-3); /* 12 — Figma card gap */
   min-height: 92px;
   padding: var(--space-5); /* 20 */
   background: var(--color-bg);
@@ -53,11 +53,21 @@
   }
 }
 
-// number + unit 한 행 (Figma Frame 42 row gap 0).
+// Figma t5-text wrapper — 카드 안에서 align-self stretch (가로 114 = card
+// 154 - padding 40), column center align, gap 4 (titleRow ↔ sub).
+.t5Text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1); /* 4 */
+  align-self: stretch;
+}
+
+// Figma Frame 42 — number + unit row, gap 0, align center.
 .titleRow {
   display: flex;
   align-items: baseline;
-  gap: var(--space-1); /* 4 — 시각상 0 에 가깝지만 baseline 정렬 보존 */
+  gap: 0;
 }
 
 .number {
@@ -88,11 +98,11 @@
   color: var(--color-muted);
 }
 
-// active 시 숫자/단위 primary, sub 는 Figma spec 상 active 카드 안에서도
-// muted #393939 유지 (`--color-muted` 기본값 — primary tint 안 줌).
+// active 시 숫자/단위 primary (#00B334), sub 는 Figma spec 상 active 카드
+// 안에서도 muted #393939 유지 (primary tint 안 줌).
 .card.active .number,
 .card.active .unit {
-  color: var(--color-primary-text-bold);
+  color: var(--color-primary);
 }
 
 @media (prefers-reduced-motion: reduce) {
