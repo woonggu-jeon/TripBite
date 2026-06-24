@@ -28,7 +28,9 @@
 
 .column {
   flex-direction: column;
-  // header (AuthHeader) 가 화면 상단에 닿도록 padding-top 0 override.
-  // horizontal/bottom padding 은 main 의 clamp 그대로 유지.
-  padding-top: 0;
+  // onboarding 의 illustArea (Walk1/2/3 파스텔 bg 360h) 가 viewport edge 까지
+  // 풀폭 bleed 정합 — center variant 의 좌우 clamp padding 제거 (2026-06-24
+  // 사용자 명시). find-id/forgot-password 의 form 은 자체 max-width 360 +
+  // center 라 좌우 padding 영향 없음 (form 가운데 정렬 유지).
+  padding: 0;
 }

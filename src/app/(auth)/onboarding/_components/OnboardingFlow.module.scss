@@ -1,10 +1,11 @@
+// AuthLayout main 이 max-width 720 + center 로 desktop 폭 제한 — .wrap 의
+// max-width 420 회귀 정정 (illustArea 가 .wrap 안에서 420 폭으로 좁아지는 회귀
+// 2026-06-24 fix). main 폭 풀로 사용 → illustArea Walk bg 가 viewport edge 까지.
 .wrap {
   flex: 1;
   display: flex;
   flex-direction: column;
-  max-width: 420px;
   width: 100%;
-  margin: 0 auto;
 }
 
 // Figma "위치 권한 동의" dots 정합 (2026-06-19) — 8x8 round 일반 + 22x8 pill
