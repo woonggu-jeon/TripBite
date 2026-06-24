@@ -67,6 +67,7 @@ export function TournamentSetup() {
   const searchParams = useSearchParams();
   const t = useTranslations('tournament.setup');
   const tSeason = useTranslations('tournament.season');
+  const tNav = useTranslations('tournament');
   const setConfig = useTournamentStore((s) => s.setConfig);
 
   // 홈 "이번 {계절} 토너먼트 시작하기" 진입 시 query 로 theme + season 사전 선택.
@@ -172,11 +173,15 @@ export function TournamentSetup() {
 
   return (
     <>
-      <SubHeader title={heading.title} onBack={goBack} />
+      <SubHeader title={tNav('title')} onBack={goBack} />
       <div className={styles.wrap}>
-        <div className={styles.section}>
+        {/* Figma "Frame 41" — page heading + caption gap 8. */}
+        <header className={styles.heading}>
+          <h2 className={styles.headingTitle}>{heading.title}</h2>
           <p className={styles.hint}>{heading.hint}</p>
+        </header>
 
+        <div className={styles.section}>
           {step === 1 && (
             <ThemeKindSelector value={themeKind} onChange={handleKind} />
           )}
@@ -224,15 +229,17 @@ export function TournamentSetup() {
         </div>
 
         {step === 4 && (
-          <Button
-            variant="primary"
-            size="lg"
-            fullWidth
-            onClick={handleStart}
-            disabled={!canStart}
-          >
-            {t('start')}
-          </Button>
+          <div className={styles.cta}>
+            <Button
+              variant="primary"
+              size="lg"
+              fullWidth
+              onClick={handleStart}
+              disabled={!canStart}
+            >
+              {t('start')}
+            </Button>
+          </div>
         )}
 
         {(step === 1 || step === 2 || step === 3) && (

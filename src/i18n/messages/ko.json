@@ -385,6 +385,10 @@
     "title": "토너먼트",
     "resultTitle": "토너먼트 결과",
     "inProgressTitle": "토너먼트 진행 중",
+    "countUnit": {
+      "destination": "개",
+      "tournament": "강"
+    },
     "setup": {
       "next": "다음",
       "start": "시작하기",
@@ -431,10 +435,21 @@
       "autumn": "가을",
       "winter": "겨울"
     },
+    "seasonMonths": {
+      "spring": "3·4·5월",
+      "summer": "6·7·8월",
+      "autumn": "9·10·11월",
+      "winter": "12·1·2월"
+    },
     "category": {
       "festival": "축제",
       "attraction": "관광지",
       "experience": "체험관광"
+    },
+    "categoryDesc": {
+      "festival": "지역 축제·이벤트",
+      "attraction": "유명 관광 명소",
+      "experience": "체험·액티비티"
     },
     "play": {
       "loading": "여행지를 불러오는 중이에요",
@@ -443,7 +458,12 @@
       "retry": "다시 시도",
       "introHint": "잠시 후 충북 지도가 펼쳐져요",
       "next": "다음",
-      "reshuffle": "다시하기",
+      "start": "시작",
+      "reshuffle": "다시",
+      "mapReady": {
+        "title": "여행지 준비완료",
+        "desc": "선정된 여행지로 1:1 토너먼트를 시작할게요"
+      },
       "mapSummary": "여행지 {destinations}곳이 선정됐어요",
       "emptyPool": {
         "title": "조건에 맞는 여행지가 없어요",
@@ -476,6 +496,7 @@
         "roundOfN": "{n}강",
         "matchCount": "매치 {current} / {total}",
         "progressLabel": "토너먼트 진행도",
+        "pickPrompt": "어디로 떠나볼까요?",
         "autoWin": "선택한 한 곳이 바로 우승이에요"
       },
       "celebration": {
@@ -491,7 +512,10 @@
       "saveFailed": "저장에 실패했어요",
       "saveRequireAuth": "마이페이지 저장은 로그인 후 사용할 수 있어요. 지금 로그인할까요?",
       "retry": "다시 하기",
+      "retryTournament": "다시 토너먼트",
       "share": "결과 공유하기",
+      "shareShort": "공유",
+      "saveShort": "저장",
       "savedToast": "저장되었어요",
       "noWinner": "토너먼트 결과가 없어요",
       "goSetup": "토너먼트 시작하기",
@@ -508,6 +532,7 @@
         "pink": "분홍"
       },
       "stats": {
+        "title": "토너먼트 기록",
         "label": "우승 정보",
         "bracketSize": "토너먼트",
         "matches": "총 매치",
@@ -517,7 +542,7 @@
         "runnerUp": "결승 상대"
       },
       "detail": {
-        "panelLabel": "여행지 상세",
+        "panelLabel": "장소 정보",
         "address": "주소",
         "openingHours": "운영시간",
         "restDate": "휴무일",
@@ -526,6 +551,8 @@
         "website": "웹사이트"
       },
       "ladder": {
+        "title": "행운의 사다리",
+        "viewResult": "결과 보기",
         "subtitle": "라인을 선택하면 도착점의 확률이 공개돼요",
         "hintIdle": "원하는 라인을 선택해주세요",
         "hintRolling": "사다리를 내려가는 중...",

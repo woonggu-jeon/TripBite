@@ -1,21 +1,26 @@
+// Figma "TRN · 여행지 수" (2026-06-22) — 2×2 grid count card.
+// 각 카드 154×92, padding 20, column center justify.
+//   ┌──────────────┐
+//   │  24 개 (B_24 + B_14, 같은 row)             │
+//   │  Caption R_12 muted                        │
+//   └──────────────┘
+// active: 숫자/단위 primary color + bg secondary01 + 1px primary border.
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.625rem;
+  gap: var(--space-3); /* 12 */
 }
 
-// aspect-ratio 1.6/1 + padding 1.25rem 이 좁은 모바일에서 카드 내부 콘텐츠가
-// 빡빡해 글자 겹침 발생. min-height 로 자리잡되 자체 padding 만으로 높이 조절.
 .card {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-1);
-  padding: var(--space-3) var(--space-2);
-  min-height: 96px;
+  gap: var(--space-1); /* 4 */
+  min-height: 92px;
+  padding: var(--space-5); /* 20 */
   background: var(--color-bg);
-  border: 1.5px solid var(--color-border);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   color: var(--color-fg);
   cursor: pointer;
@@ -30,7 +35,7 @@
     }
   }
   &:active:not(:disabled) {
-    transform: scale(0.96);
+    transform: scale(0.97);
   }
   &:focus-visible {
     outline: var(--focus-outline);
@@ -38,39 +43,58 @@
   }
   &:disabled,
   &[aria-disabled='true'] {
-    opacity: 0.4;
+    opacity: var(--opacity-disabled);
     cursor: not-allowed;
   }
 
   &.active {
     border-color: var(--color-primary);
-    background: var(--color-primary);
-    color: var(--color-primary-fg);
+    background: var(--color-primary-soft);
   }
 }
 
-.title {
-  font-size: var(--text-xl);
-  font-weight: var(--font-weight-extrabold);
+// number + unit 한 행 (Figma Frame 42 row gap 0).
+.titleRow {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1); /* 4 — 시각상 0 에 가깝지만 baseline 정렬 보존 */
+}
+
+.number {
+  /* Figma B_24_130% */
+  font-size: var(--text-2xl); /* 24 */
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-tight);
   letter-spacing: var(--tracking-tight);
-  line-height: var(--line-display);
+  color: var(--color-fg);
+  font-variant-numeric: tabular-nums;
 }
 
-@media (min-width: 480px) {
-  .title {
-    font-size: var(--font-h1);
-  }
+.unit {
+  /* Figma B_14_140% */
+  font-size: var(--text-sm); /* 14 */
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
 }
 
 .sub {
-  font-size: var(--font-caption);
-  font-weight: var(--font-weight-semibold);
+  /* Figma Caption R_12 */
+  font-size: var(--font-caption); /* 12 */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed);
   letter-spacing: var(--tracking-snug);
-  opacity: var(--opacity-muted);
+  color: var(--color-muted);
+}
 
-  .active & {
-    opacity: 0.9;
-  }
+// active 시 숫자/단위 primary tint, caption 도 약간 primary 톤.
+.card.active .number,
+.card.active .unit {
+  color: var(--color-primary-text-bold);
+}
+.card.active .sub {
+  color: var(--color-primary-muted);
 }
 
 @media (prefers-reduced-motion: reduce) {

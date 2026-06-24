@@ -19,7 +19,13 @@ export interface SeasonSelectorProps {
 
 /**
  * 토너먼트 2단계(계절 분기) — 봄/여름/가을/겨울 4지선택.
- * 2×2 그리드, 계절별 컬러 그라데이션.
+ *
+ * Figma "TRN · 계절 선택" (2026-06-22):
+ *   2×2 grid, season-card 154×145 padding 20 10 gap 12.
+ *   circle 56 + season color bg (봄 #FBE4E4 / 여름 #E0FF89 /
+ *   가을 #FFCD99 / 겨울 #E9F0F9) + emoji 28.
+ *   title B_14 + caption R_12 muted (월 범위).
+ *   active: bg secondary01 + 1px primary border.
  */
 export function SeasonSelector({ value, onChange }: SeasonSelectorProps) {
   const t = useTranslations('tournament');
@@ -38,10 +44,13 @@ export function SeasonSelector({ value, onChange }: SeasonSelectorProps) {
               className: `${styles.card} ${active ? styles.active : ''} ${styles[s.value] ?? ''}`,
             })}
           >
-            <span className={styles.emoji} aria-hidden>
-              {s.emoji}
+            <span className={styles.emojiCircle} aria-hidden>
+              <span className={styles.emoji}>{s.emoji}</span>
             </span>
-            <span className={styles.label}>{t(`season.${s.value}`)}</span>
+            <span className={styles.t5Text}>
+              <span className={styles.label}>{t(`season.${s.value}`)}</span>
+              <span className={styles.sub}>{t(`seasonMonths.${s.value}`)}</span>
+            </span>
           </RadioOption>
         );
       })}

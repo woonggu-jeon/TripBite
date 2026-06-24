@@ -1,18 +1,26 @@
+// Figma "TRN · 카테고리 선택" (2026-06-22) — big-card 3 행 세로 list.
+// 각 카드 320×81, padding 20, gap 12 row.
+//   ┌──────────────────────────────────────────────┐
+//   │ 관광지 B_14 fg                                │
+//   │ 유명 관광 명소 R_12 muted                       │
+//   └──────────────────────────────────────────────┘
+// active: bg secondary01 + 1px primary border, inactive: white + gray.
 .list {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0.625rem;
+  /* Figma row gap 11 → 0.6875rem ≒ 11px */
+  gap: 0.6875rem;
 }
 
 .row {
-  display: grid;
-  grid-template-columns: 2.5rem 1fr 1.25rem;
-  align-items: center;
-  gap: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1); /* 4 */
   width: 100%;
-  padding: 0.875rem 1rem;
+  min-height: 81px;
+  padding: var(--space-5); /* 20 */
   background: var(--color-bg);
-  border: 1.5px solid var(--color-border);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   color: var(--color-fg);
   text-align: left;
@@ -38,25 +46,25 @@
   &.active {
     border-color: var(--color-primary);
     background: var(--color-primary-soft);
-    color: var(--color-primary);
   }
 }
 
-.emoji {
-  font-size: var(--font-h1);
-  line-height: 1;
-}
-
 .label {
-  font-size: var(--font-body);
+  /* Figma B_14_140% */
+  font-size: var(--text-sm); /* 14 */
   font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
 }
 
-.check {
-  font-size: var(--font-body);
-  font-weight: var(--font-weight-extrabold);
-  color: var(--color-primary);
-  text-align: right;
+.desc {
+  /* Figma Caption R_12 */
+  font-size: var(--font-caption); /* 12 */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: var(--tracking-snug);
+  color: var(--color-muted);
 }
 
 @media (prefers-reduced-motion: reduce) {

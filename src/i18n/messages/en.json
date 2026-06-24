@@ -385,6 +385,10 @@
     "title": "Bracket",
     "resultTitle": "Bracket result",
     "inProgressTitle": "Bracket in progress",
+    "countUnit": {
+      "destination": "spots",
+      "tournament": "rd"
+    },
     "setup": {
       "next": "Next",
       "start": "Start",
@@ -431,10 +435,21 @@
       "autumn": "Autumn",
       "winter": "Winter"
     },
+    "seasonMonths": {
+      "spring": "Mar·Apr·May",
+      "summer": "Jun·Jul·Aug",
+      "autumn": "Sep·Oct·Nov",
+      "winter": "Dec·Jan·Feb"
+    },
     "category": {
       "festival": "Festival",
       "attraction": "Attraction",
       "experience": "Experience"
+    },
+    "categoryDesc": {
+      "festival": "Local festivals & events",
+      "attraction": "Famous tourist spots",
+      "experience": "Hands-on activities"
     },
     "play": {
       "loading": "Loading destinations…",
@@ -443,7 +458,12 @@
       "retry": "Try again",
       "introHint": "The Chungbuk map will appear shortly",
       "next": "Next",
-      "reshuffle": "Reshuffle",
+      "start": "Start",
+      "reshuffle": "Retry",
+      "mapReady": {
+        "title": "Destinations ready",
+        "desc": "Start the 1:1 tournament with the selected destinations"
+      },
       "mapSummary": "{destinations} destinations selected",
       "emptyPool": {
         "title": "No destinations match your filters",
@@ -476,6 +496,7 @@
         "roundOfN": "Round of {n}",
         "matchCount": "Match {current} / {total}",
         "progressLabel": "Bracket progress",
+        "pickPrompt": "Where to next?",
         "autoWin": "Your single pick wins automatically"
       },
       "celebration": {
@@ -491,7 +512,10 @@
       "saveFailed": "Save failed",
       "saveRequireAuth": "Sign in to save to My Page. Go to login now?",
       "retry": "Try again",
+      "retryTournament": "New bracket",
       "share": "Share result",
+      "shareShort": "Share",
+      "saveShort": "Save",
       "savedToast": "Saved",
       "noWinner": "No tournament result yet",
       "goSetup": "Start a bracket",
@@ -508,6 +532,7 @@
         "pink": "Pink"
       },
       "stats": {
+        "title": "Bracket recap",
         "label": "Winner stats",
         "bracketSize": "Bracket",
         "matches": "Matches",
@@ -517,7 +542,7 @@
         "runnerUp": "Runner-up"
       },
       "detail": {
-        "panelLabel": "Destination detail",
+        "panelLabel": "Place info",
         "address": "Address",
         "openingHours": "Hours",
         "restDate": "Closed",
@@ -526,6 +551,8 @@
         "website": "Website"
       },
       "ladder": {
+        "title": "Lucky ladder",
+        "viewResult": "View result",
         "subtitle": "Pick a line and see the chance at its endpoint",
         "hintIdle": "Pick a line to start",
         "hintRolling": "Tracing the ladder…",

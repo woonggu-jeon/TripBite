@@ -1,18 +1,27 @@
+// Figma "TRN · 계절 선택" (2026-06-22) — 2×2 grid season card.
+// 각 카드 154×145, padding 20 10, gap 12 column center.
+//   ┌──────────────┐
+//   │      ⃝ 56     │  ← season color bg + emoji 28
+//   │  봄 B_14      │
+//   │  3·4·5월 R_12 │
+//   └──────────────┘
+// active (봄): bg secondary01 #EBF9EF + 1px primary
+// inactive: bg #FFFFFF + 1px gray
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
+  gap: var(--space-3); /* 12 */
 }
 
-// cardClasses 가 bg/border/radius 담당. layout + interactive 만.
+// cardClasses 의 v-surface 가 bg/border/radius 담당. layout 만.
 .card {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  aspect-ratio: var(--aspect-card-narrow);
-  padding: 1rem 0.5rem;
+  gap: var(--space-3); /* 12 */
+  min-height: 145px;
+  padding: var(--space-5) var(--space-2); /* 20 10 */
   color: var(--color-fg);
   cursor: pointer;
   transition:
@@ -35,47 +44,80 @@
 
   &.active {
     border-color: var(--color-primary);
-    color: var(--color-primary);
+    background: var(--color-primary-soft);
   }
 }
 
+// circle 56 — season color bg, 항상 동일 색상 (active/inactive 무관).
+// 봄 #FBE4E4 / 여름 #E0FF89 / 가을 #FFCD99 / 겨울 #E9F0F9.
+.emojiCircle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  /* fallback bg — season modifier 가 override */
+  background: var(--color-surface-soft);
+}
+
 .emoji {
-  font-size: var(--emoji-lg);
+  font-size: 1.75rem; /* 28 */
   line-height: 1;
 }
 
-.label {
-  font-size: var(--font-body);
-  font-weight: var(--font-weight-bold);
+.t5Text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1); /* 4 */
 }
 
-.spring.active {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--accent-spring-grad-start) 18%, var(--color-bg)),
-    var(--color-bg)
-  );
+.label {
+  /* Figma B_14_140% */
+  font-size: var(--text-sm); /* 14 */
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
 }
-.summer.active {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--accent-summer-grad-start) 18%, var(--color-bg)),
-    var(--color-bg)
-  );
+
+.sub {
+  /* Figma Caption R_12 */
+  font-size: var(--font-caption); /* 12 */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: var(--tracking-snug);
+  color: var(--color-muted);
 }
-.autumn.active {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--accent-autumn-grad-start) 18%, var(--color-bg)),
-    var(--color-bg)
-  );
+
+// season color circle bg — Figma spec.
+.spring .emojiCircle {
+  background: #fbe4e4;
 }
-.winter.active {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--accent-winter-grad-start) 20%, var(--color-bg)),
-    var(--color-bg)
-  );
+.summer .emojiCircle {
+  background: #e0ff89;
+}
+.autumn .emojiCircle {
+  background: #ffcd99;
+}
+.winter .emojiCircle {
+  background: #e9f0f9;
+}
+
+// ≤ 380 — min-height 축소.
+@media (max-width: 380px) {
+  .card {
+    min-height: 130px;
+    padding: var(--space-4) var(--space-2); /* 16 10 */
+  }
+  .emojiCircle {
+    width: 48px;
+    height: 48px;
+  }
+  .emoji {
+    font-size: 1.5rem; /* 24 */
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,62 +1,101 @@
+// Figma "TRN · 토너먼트 setup phase 4" (2026-06-22).
+// page: bg #F8F8F8, padding 20, gap 20 (Frame 41 header + section).
+// header: B_20_130% title + R_12 muted hint, gap 8 (Frame 41).
+// section: selector + auxiliary hint.
+// 하단 absolute button — 320×52, padding 16 20, radius 12, primary M_16 white.
 .wrap {
   display: grid;
-  gap: 1rem;
+  gap: var(--space-5); /* 20 — Frame 41 + section + ... */
+  // Figma page bg #F8F8F8 — (main) layout 의 content-pad 좌우/하단 무시 (음의
+  // margin) → viewport 가장자리까지 bg bleed, padding 으로 내부 20 여백 확보.
+  // top 은 그대로 (SubHeader 가 이미 -margin-top 으로 contentInner 상단까지
+  // 끌어올려진 상태). 카드 320×52 + 20 좌우 padding = 360 viewport 정확 정합.
+  background: #f8f8f8;
+  margin-left: calc(-1 * var(--content-pad));
+  margin-right: calc(-1 * var(--content-pad));
+  margin-bottom: calc(-1 * var(--content-pad));
+  padding-top: var(--space-5);
+  padding-left: var(--space-5);
+  padding-right: var(--space-5);
+  padding-bottom: calc(
+    52px + var(--space-4) + var(--space-5) + env(safe-area-inset-bottom, 0px)
+  );
+  min-height: calc(100vh - var(--header-h));
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2); /* 8 — Figma Frame 41 */
+}
+
+.headingTitle {
+  // Figma "Title/B_20_130%" — Pretendard Bold 20, line 130%, ls -0.02em.
+  font-size: var(--text-xl); /* 20 */
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
+  margin: 0;
+}
+
+.hint {
+  // Figma Caption R_12 muted
+  font-size: var(--font-caption); /* 12 */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: var(--tracking-snug);
+  color: var(--color-muted);
+  margin: 0;
 }
 
 .section {
   display: grid;
-  gap: 1rem;
-  margin-top: 0.5rem;
+  gap: var(--space-5); /* 20 */
 }
 
-.hint {
-  font-size: var(--text-sm);
-  color: var(--color-muted);
-}
+// 하단 absolute button container — viewport 하단 고정.
+.cta {
+  position: fixed;
+  bottom: env(safe-area-inset-bottom, 0px);
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  padding: var(--space-4) var(--space-5); /* 16 20 */
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    var(--color-bg) 30%,
+    var(--color-bg) 100%
+  );
+  z-index: var(--z-sticky, 5);
+  pointer-events: none;
 
-.next,
-.start {
-  padding: 1rem;
-  background: var(--color-primary);
-  color: var(--color-primary-fg);
-  border-radius: var(--radius-md);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--font-body);
-  cursor: pointer;
-  margin-top: 0.5rem;
-  transition:
-    opacity var(--motion-base) ease,
-    transform var(--motion-fast) ease;
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover:not(:disabled) {
-      opacity: var(--opacity-hover-dim);
-    }
-  }
-  &:active:not(:disabled) {
-    transform: scale(0.98);
-  }
-  &:focus-visible {
-    outline: var(--focus-outline);
-    outline-offset: var(--focus-outline-offset);
-  }
-  &:disabled {
-    opacity: var(--opacity-disabled);
-    cursor: not-allowed;
+  > * {
+    pointer-events: auto;
+    max-width: 320px;
+    width: 100%;
+    height: 52px;
+    border-radius: var(--radius-md); /* 12 */
   }
 }
 
 .autoHint {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
   text-align: center;
   font-size: var(--font-caption);
   color: var(--color-muted);
-  margin-top: 0.25rem;
+  margin: 0;
+  pointer-events: none;
 }
 
 // 계절 적용 범위 hint — step 3 에서 비-festival 카테고리 선택 시.
 // info chip 톤 (강한 경고 X). 사용자 학습용.
 .scopeHint {
-  margin-top: 0.25rem;
   padding: 0.625rem 0.75rem;
   font-size: var(--font-caption);
   line-height: var(--line-snug);
@@ -75,16 +114,5 @@
     content: 'ⓘ ';
     color: var(--color-primary);
     font-weight: var(--font-weight-bold);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .next,
-  .start {
-    transition: none;
-  }
-  .next:active:not(:disabled),
-  .start:active:not(:disabled) {
-    transform: none;
   }
 }
