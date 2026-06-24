@@ -188,17 +188,22 @@ export function LetterSentClient() {
             </div>
           </div>
 
-          {/* Figma ms — 5 stamp cells. */}
+          {/* Figma ms (padding 20) > Frame 71 (padding 12 0 + border-y error)
+              > Frame 70 (border-y error + 5 cells) — 이중 border + 12 gap.
+              직전 단일 border 만 → Figma 우표 천공 효과 정합 (사용자 명시
+              2026-06-24). */}
           <div className={styles.ms}>
-            <div className={styles.cells}>
-              {Array.from({ length: 5 }).map((_, i) => {
-                const ch = Array.from(view.body)[i] ?? '';
-                return (
-                  <div key={i} className={styles.cell}>
-                    {ch && <span className={styles.cellChar}>{ch}</span>}
-                  </div>
-                );
-              })}
+            <div className={styles.cellsOuter}>
+              <div className={styles.cells}>
+                {Array.from({ length: 5 }).map((_, i) => {
+                  const ch = Array.from(view.body)[i] ?? '';
+                  return (
+                    <div key={i} className={styles.cell}>
+                      {ch && <span className={styles.cellChar}>{ch}</span>}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
 

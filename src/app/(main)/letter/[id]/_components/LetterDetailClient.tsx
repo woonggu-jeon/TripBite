@@ -128,16 +128,20 @@ export function LetterDetailClient({ letterId }: { letterId: string }) {
               </div>
             </div>
 
+            {/* Figma ms > Frame 71 > Frame 70 — 이중 border + 12 gap 우표 천공
+                효과 (사용자 명시 2026-06-24). */}
             <div className={styles.ms}>
-              <div className={styles.cells}>
-                {Array.from({ length: 5 }).map((_, i) => {
-                  const ch = Array.from(letter.body)[i] ?? '';
-                  return (
-                    <div key={i} className={styles.cell}>
-                      {ch && <span className={styles.cellChar}>{ch}</span>}
-                    </div>
-                  );
-                })}
+              <div className={styles.cellsOuter}>
+                <div className={styles.cells}>
+                  {Array.from({ length: 5 }).map((_, i) => {
+                    const ch = Array.from(letter.body)[i] ?? '';
+                    return (
+                      <div key={i} className={styles.cell}>
+                        {ch && <span className={styles.cellChar}>{ch}</span>}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
