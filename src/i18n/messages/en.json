@@ -408,11 +408,13 @@
         "category": {
           "title": "Looking for {season} destinations?",
           "hint": "Pick a destination type.",
+          "ariaLabel": "Destination type",
           "seasonScopeNonFestival": "Season ({season}) applies to Festival only. Other categories are recommended regardless of season."
         },
         "count": {
           "title": "How many {season} destinations?",
-          "hint": "Pick how many destinations to drop on the map."
+          "hint": "Pick how many destinations to drop on the map.",
+          "ariaLabel": "Destination count"
         }
       },
       "count": {
@@ -447,7 +449,7 @@
     },
     "categoryDesc": {
       "festival": "Local festivals and seasonal events",
-      "attraction": "Famous landmarks and natural scenery",
+      "attraction": "Hands-on experience programs",
       "experience": "Hands-on experience programs"
     },
     "play": {

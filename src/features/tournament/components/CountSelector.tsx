@@ -47,9 +47,12 @@ export function CountSelector({
       ? DESTINATION_COUNT_OPTIONS
       : TOURNAMENT_SIZE_OPTIONS;
 
+  // RadioGroup aria-label — page heading 과 별도 (sr-only). page heading 이
+  // season 변수 카피이므로 aria 는 단순 그룹 명 사용 (변수 X) — formatting
+  // error 회피.
   const ariaLabel =
     mode === 'destination'
-      ? tAria('setup.steps.count.title')
+      ? tAria('setup.steps.count.ariaLabel')
       : tAria('play.tournamentSize.title');
 
   // mode 별 단위 — destination 은 "개", tournament 은 "강".

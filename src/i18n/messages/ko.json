@@ -408,11 +408,13 @@
         "category": {
           "title": "{season} 여행지를 찾아볼까요?",
           "hint": "여행 유형을 선택해주세요.",
+          "ariaLabel": "여행 유형 선택",
           "seasonScopeNonFestival": "선택한 계절({season})은 축제 카테고리에만 적용돼요. 다른 카테고리는 계절과 무관하게 추천됩니다."
         },
         "count": {
           "title": "{season} 여행지 몇 곳을 골라볼까요?",
-          "hint": "지도에 펼쳐질 여행지 개수를 정해주세요."
+          "hint": "지도에 펼쳐질 여행지 개수를 정해주세요.",
+          "ariaLabel": "여행지 개수 선택"
         }
       },
       "count": {
@@ -447,7 +449,7 @@
     },
     "categoryDesc": {
       "festival": "지역 축제와 행사 위주",
-      "attraction": "유명 명소와 자연 풍경 위주",
+      "attraction": "직접 즐기는 체험 프로그램",
       "experience": "직접 즐기는 체험 프로그램"
     },
     "play": {

@@ -30,7 +30,10 @@ export function CategoryFilter({ value, onChange }: CategoryFilterProps) {
   const t = useTranslations('tournament');
 
   return (
-    <RadioGroup label={t('setup.steps.category.title')} className={styles.list}>
+    <RadioGroup
+      label={t('setup.steps.category.ariaLabel')}
+      className={styles.list}
+    >
       {CATEGORIES.map((c) => {
         const active = value === c.value;
         return (
