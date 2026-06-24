@@ -23,14 +23,17 @@
 }
 
 .chip {
+  // Figma rchip 74×59 padding 12 4 secondary01 + 1px primary border radius 12.
+  // 직전엔 --color-primary-border (옅은 톤) + radius-md (8) 사용 → primary 직접
+  // + radius-lg (12) 으로 정합 (사용자 피드백 2026-06-24).
   display: grid;
   gap: 3px;
   place-items: center;
   min-height: 59px;
   padding: 12px 4px;
-  background: var(--color-primary-tint);
-  border: 1px solid var(--color-primary-border);
-  border-radius: var(--radius-md);
+  background: var(--color-primary-soft);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-lg);
   text-align: center;
 }
 
@@ -56,13 +59,15 @@
 // lucky row — padding 14 16 + secondary01 + primary border + radius 12.
 // 왼쪽 라벨 B_14 fg + 오른쪽 색이름 + circle 20.
 .luckyRow {
+  // Figma lucky 320×48 padding 14 16 secondary01 + 1px primary border radius
+  // 12. chip 과 동일 톤 정합.
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 14px 16px;
-  background: var(--color-primary-tint);
-  border: 1px solid var(--color-primary-border);
-  border-radius: var(--radius-md);
+  background: var(--color-primary-soft);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-lg);
 }
 
 .luckyLabel {

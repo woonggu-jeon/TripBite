@@ -379,15 +379,15 @@ export function LuckyLadder({
       </div>
 
       {/* 결과 강조 패널 — revealed 시 ladder card 하단에 명확히 배치. retry
-          button 제거 (사용자 명시 2026-06-24) — 결과 한 번만 표시, 다시 시도는
-          페이지 하단 "다시하기" 가 담당. */}
+          button 제거 (사용자 명시 2026-06-24). value 가 먼저 (큰 숫자), 그
+          아래에 라벨 — 결과 % 가 강조되도록 시각 위계. */}
       {revealed && resultPercent !== null && (
         <div className={styles.result} role="status" aria-live="polite">
-          <span className={styles.resultLabel}>{t('resultLabel')}</span>
           <span className={styles.resultValue}>
             <span className={styles.resultNumber}>{displayPercent}</span>
             <span className={styles.resultUnit}>%</span>
           </span>
+          <span className={styles.resultLabel}>{t('resultLabel')}</span>
         </div>
       )}
     </section>

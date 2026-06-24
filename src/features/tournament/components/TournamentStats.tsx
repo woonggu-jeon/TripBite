@@ -127,7 +127,9 @@ export function TournamentStats({
     });
   chips.push({
     key: 'matches',
-    value: `${matchesPlayed}`,
+    // 사용자 명시 (2026-06-24): 값을 "3" → "3매치" 형식으로 표시. 라벨 "매치"
+    // 와 같이 보이지만 값 자체가 단위 포함 — i18n `matchesValue` 활용.
+    value: t('result.stats.matchesValue', { n: matchesPlayed }),
     label: t('result.stats.matches'),
   });
   chips.push({
