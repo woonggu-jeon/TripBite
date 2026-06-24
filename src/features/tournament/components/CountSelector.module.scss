@@ -88,13 +88,11 @@
   color: var(--color-muted);
 }
 
-// active 시 숫자/단위 primary tint, caption 도 약간 primary 톤.
+// active 시 숫자/단위 primary, sub 는 Figma spec 상 active 카드 안에서도
+// muted #393939 유지 (`--color-muted` 기본값 — primary tint 안 줌).
 .card.active .number,
 .card.active .unit {
   color: var(--color-primary-text-bold);
-}
-.card.active .sub {
-  color: var(--color-primary-muted);
 }
 
 @media (prefers-reduced-motion: reduce) {
