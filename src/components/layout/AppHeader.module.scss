@@ -1,9 +1,13 @@
-/* outer — 풀폭 sticky. Figma "Header" (2026-06-23) — white bg + #E0E0E0 border.
-   기존 glass + backdrop-filter 폐기 (디자이너 spec 정합). */
+/* outer — sticky, contentInner 폭 (사용자 명시 2026-06-24) — BottomNav 와 정합.
+   desktop 720+ 에서 양 옆 body bg (#EAF6EF) 노출, 헤더/본문/nav 모두 동일 폭.
+   Figma "Header" (2026-06-23) white bg + #E0E0E0 border. */
 .header {
   position: sticky;
   top: 0;
   z-index: var(--z-header);
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
   background: var(--color-bg);
   border-bottom: 1px solid var(--color-border);
 }

@@ -1,13 +1,16 @@
-/* outer — 풀폭 sticky. Figma "Header type=sub/my/noti" (2026-06-23):
-   white bg + #E0E0E0 bottom border + padding 0 20. glass + backdrop-filter
-   폐기 (디자이너 spec 정합). */
+/* outer — sticky, contentInner 폭 (사용자 명시 2026-06-24) — AppHeader/
+   BottomNav 와 정합. 직전엔 100vw 풀폭 + 음의 margin 으로 contentInner padding
+   탈출했으나, 이제 contentInner 안에서 자연 폭 정합. desktop 720+ 에서 양 옆
+   body bg (#EAF6EF) 노출. Figma "Header type=sub/my/noti" white bg + border. */
 .bar {
   position: sticky;
   top: 0;
   z-index: var(--z-header);
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
+  // contentInner padding 으로 줄어든 폭 회피 — 음의 margin 으로 contentInner
+  // 좌우 padding 영역까지 헤더 bg 가 차지 (모바일 360 에서 풀폭, desktop 에서
+  // contentInner 720 폭).
+  margin-left: calc(-1 * var(--content-pad));
+  margin-right: calc(-1 * var(--content-pad));
   margin-top: calc(-1 * var(--content-pad));
   margin-bottom: var(--space-3);
   background: var(--color-bg);
