@@ -196,10 +196,12 @@
   border-bottom: 1px solid var(--color-danger);
 }
 
-// Figma Frame 70 — 내부 가로 line + 5 cells row.
+// Figma Frame 70 — 내부 가로 line + 5 cells row. cells 의 자식 cell 이 width
+// 49.6 명시 → children 합 < parent width 시 왼쪽 정렬 회귀. center 로 정정.
 .cells {
   display: flex;
   flex-direction: row;
+  justify-content: center;
   align-items: center;
   width: 100%;
   border-top: 1px solid var(--color-danger);
