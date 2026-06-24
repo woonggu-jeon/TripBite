@@ -44,7 +44,7 @@ export function DestinationPhotos({
           alt={alt}
           fill
           priority
-          sizes="(max-width: 720px) 100vw, 720px"
+          sizes="(max-width: 600px) 100vw, 600px"
           className={styles.image}
           draggable={false}
         />

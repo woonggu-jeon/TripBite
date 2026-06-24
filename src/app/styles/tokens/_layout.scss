@@ -11,8 +11,10 @@
   --space-10: 2.5rem; /* 40 */
   --space-12: 3rem; /* 48 */
 
-  /* Container / layout dimensions */
-  --content-max: 720px;
+  /* Container / layout dimensions — content 폭 600 (사용자 명시 2026-06-24).
+     desktop 600+ viewport 에서 양 옆 body bg (#EAF6EF) 노출, 가운데 600 폭만
+     contentInner (white). 모바일 360 viewport 는 풀폭 (max-width 영향 없음). */
+  --content-max: 600px;
   --content-pad: 1rem;
   --header-h: 56px;
   --bottom-nav-h: 64px;
