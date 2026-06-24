@@ -127,9 +127,15 @@
 }
 
 .empty {
+  // chip 필터 결과 0 일 때 표시. .grid (cell 168h) 와 같은 min-height 로 페이지
+  // height 변동 회피 (사용자 피드백 2026-06-24 — chip 변경 시 카드 0 ↔ N 전환
+  // 시 scrollbar 등장/사라짐 회피).
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 168px;
   font-size: var(--font-caption);
   color: var(--color-muted);
   text-align: center;
-  padding: 40px 0;
   margin: 0;
 }

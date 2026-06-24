@@ -57,13 +57,10 @@
   background: var(--color-bg);
   // 짧은 page (quiz 등) 가 viewport 채우지 못해 하단에 body bg (#EAF6EF) 가
   // 노출되는 문제 해결 (사용자 피드백 2026-06-24) — contentInner 가 viewport
-  // 풀 height 까지 차지 → 안에서 white 보장.
-  min-height: calc(
-    100vh - var(--header-h) - var(--bottom-nav-h) - env(
-        safe-area-inset-bottom,
-        0px
-      )
-  );
+  // bottom 까지 차지 (nav 는 fixed overlay 라 nav 만큼 빼면 그 아래 빈 영역에
+  // 다시 #EAF6EF 노출). nav 가 contentInner 위에 fixed overlay 되도록 100vh -
+  // header 만 빼서 nav 영역까지 contentInner bg 가 채움.
+  min-height: calc(100vh - var(--header-h));
   // padding-bottom = 여유(space-8) + nav 자체(--bottom-nav-h)
   //   + safe-area-inset-bottom (iPhone home indicator)
   //
