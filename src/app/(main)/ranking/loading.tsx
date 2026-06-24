@@ -23,6 +23,21 @@ export default function RankingLoading() {
         paddingTop: 2,
       }}
     >
+      {/* SubHeader placeholder — page.tsx 의 SubHeader 가 server 라 cold start
+          fallback 시 미렌더. 56h white bar + border + 음의 margin 으로 wrap
+          padding-top(2) + contentInner padding(16) 양쪽 탈출. */}
+      <div
+        style={{
+          height: 56,
+          background: 'var(--color-bg)',
+          borderBottom: '1px solid var(--color-border)',
+          marginLeft: 'calc(-1 * var(--content-pad))',
+          marginRight: 'calc(-1 * var(--content-pad))',
+          marginTop: 'calc(-1 * var(--content-pad) - 2px)',
+        }}
+        aria-hidden
+      />
+
       {/* WeekLabel inline */}
       <Skeleton width="60%" height={17} radius="sm" />
 

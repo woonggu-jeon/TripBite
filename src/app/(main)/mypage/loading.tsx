@@ -19,6 +19,22 @@ export default function MyPageLoading() {
         gap: 'var(--space-4)',
       }}
     >
+      {/* SubHeader placeholder — page.tsx 의 SubHeader 가 server 라 cold start
+          fallback 시 미렌더. 56h white bar + border + 음의 margin 으로 wrap
+          padding(--space-4) + contentInner padding(--content-pad) 양쪽 탈출. */}
+      <div
+        style={{
+          height: 56,
+          background: 'var(--color-bg)',
+          borderBottom: '1px solid var(--color-border)',
+          marginLeft: 'calc(-1 * var(--content-pad))',
+          marginRight: 'calc(-1 * var(--content-pad))',
+          marginTop: 'calc(-1 * (var(--space-4) + var(--content-pad)))',
+          marginBottom: 'calc(-1 * var(--space-4))',
+        }}
+        aria-hidden
+      />
+
       {/* ProfileCard avatar + nickname */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <Skeleton width={64} height={64} radius="full" />
