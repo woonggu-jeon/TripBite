@@ -199,7 +199,7 @@ export function LetterSentClient() {
                   const ch = Array.from(view.body)[i] ?? '';
                   return (
                     <div key={i} className={styles.cell}>
-                      {ch && <span className={styles.cellChar}>{ch}</span>}
+                      {ch}
                     </div>
                   );
                 })}

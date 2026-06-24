@@ -213,40 +213,37 @@
   border-bottom: 1px solid var(--color-danger);
 }
 
-// Figma Frame 70 — 내부 가로 line + 5 cells row. cells 의 자식 cell 이 width
-// 49.6 명시 (5 × 49.6 = 248) — 부모 width 100% 가 248 보다 클 경우 children
-// 합이 더 작아 왼쪽 정렬 회귀. justify-content: center 로 가운데 정렬 (사용자
-// 명시 2026-06-24).
+// Figma Frame 70 — 5 cells row + border-y 1 error. PinLikeInput 동일 패턴 —
+// cell flex 1 균등 분포 (직전 width 49.6 명시 → 왼쪽 정렬 회귀, 사용자 명시
+// 2026-06-24 통일).
 .cells {
   display: flex;
   flex-direction: row;
-  justify-content: center;
   align-items: center;
   width: 100%;
   border-top: 1px solid var(--color-danger);
   border-bottom: 1px solid var(--color-danger);
 }
 
-// Figma cell — 49.6×56 white border-right 1px error, 첫 cell border-left 도.
+// Figma cell — 56h white border-right 1 error + 첫 cell border-left. flex 1
+// 균등 분포 + font 직접 적용 (cellChar wrapper 제거).
 .cell {
-  display: grid;
-  place-items: center;
-  width: 49.6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
   height: 56px;
   background: var(--color-bg);
   border-right: 1px solid var(--color-danger);
-
-  &:first-child {
-    border-left: 1px solid var(--color-danger);
-  }
-}
-
-.cellChar {
-  font-size: 1.5rem; /* 24 */
+  font-size: 1.5rem; /* Title/B_24_130% — 24 */
   font-weight: var(--font-weight-bold);
   line-height: 1.3;
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
+
+  &:first-child {
+    border-left: 1px solid var(--color-danger);
+  }
 }
 
 // Figma div — 288 1px gray (separator).

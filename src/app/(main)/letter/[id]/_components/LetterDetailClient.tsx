@@ -137,7 +137,7 @@ export function LetterDetailClient({ letterId }: { letterId: string }) {
                     const ch = Array.from(letter.body)[i] ?? '';
                     return (
                       <div key={i} className={styles.cell}>
-                        {ch && <span className={styles.cellChar}>{ch}</span>}
+                        {ch}
                       </div>
                     );
                   })}
