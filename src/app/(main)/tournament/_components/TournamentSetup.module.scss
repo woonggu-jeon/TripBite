@@ -18,7 +18,11 @@
   // margin) → viewport 가장자리까지 bg bleed, padding 으로 내부 20 여백 확보.
   // top 은 그대로 (SubHeader 가 이미 -margin-top 으로 contentInner 상단까지
   // 끌어올려진 상태). 카드 320×52 + 20 좌우 padding = 360 viewport 정확 정합.
-  background: #f8f8f8;
+  // light = Figma #F8F8F8 정합 (--color-gray-10), dark = surface bg.
+  background: var(--color-gray-10);
+  :global(:root[data-theme='dark']) & {
+    background: var(--color-bg);
+  }
   margin-left: calc(-1 * var(--content-pad));
   margin-right: calc(-1 * var(--content-pad));
   // contentInner padding-bottom = space-8 + bottom-nav-h + safe-area. BottomNav
@@ -278,6 +282,9 @@
   backdrop-filter: blur(2px);
 
   @media (prefers-color-scheme: dark) {
+    border-color: var(--color-border);
+  }
+  :global(:root[data-theme='dark']) & {
     border-color: var(--color-border);
   }
 }

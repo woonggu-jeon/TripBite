@@ -59,14 +59,11 @@
   flex: 1;
   height: 8px;
   border-radius: 999px;
-  background: #e0e0e0;
+  // Figma #E0E0E0 disabled = `--color-border` 정합. dark 분기 자동 (토큰).
+  background: var(--color-border);
   transition:
     background-color 0.3s ease,
     box-shadow 0.3s ease;
-
-  @media (prefers-color-scheme: dark) {
-    background: color-mix(in srgb, var(--color-border) 70%, transparent);
-  }
 }
 
 .segDone {
@@ -101,8 +98,9 @@
   width: 36px;
   height: 36px;
   border-radius: 999px;
-  background: #ffffff;
-  border: 1.5px solid #c6c6c6;
+  // Figma white circle on dark — light/dark 토큰 직접 사용.
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-stroke);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -113,11 +111,6 @@
   pointer-events: none;
   z-index: 3;
   box-shadow: var(--shadow-sm);
-
-  @media (prefers-color-scheme: dark) {
-    background: var(--color-surface);
-    border-color: var(--color-border);
-  }
 }
 
 /* autoWin 메시지 (단일 매치 종료 시) */
