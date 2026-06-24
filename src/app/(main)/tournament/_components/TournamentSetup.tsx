@@ -80,6 +80,11 @@ const SEASON_EMOJI: Record<Season, string> = {
 
 const INTRO_MS = 2500;
 
+// zustand selector 의 fallback array — module-level stable reference 로 두지
+// 않으면 `?? []` 가 매 render 마다 새 배열 → selector 가 변경 감지 → 무한
+// re-render (React DevTools "Maximum update depth" warning).
+const EMPTY_REGIONS: readonly string[] = Object.freeze([]);
+
 function pickRandom<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)] as T;
 }
@@ -110,7 +115,7 @@ export function TournamentSetup() {
   const setTournamentSize = useTournamentStore((s) => s.setTournamentSize);
   const reset = useTournamentStore((s) => s.reset);
   const selectedRegions = useTournamentStore(
-    (s) => s.config?.selectedRegions ?? [],
+    (s) => s.config?.selectedRegions ?? EMPTY_REGIONS,
   );
 
   // mount 1회 — 직전 토너먼트 store 잔재 (config/selectedRegions/tournamentSize/
