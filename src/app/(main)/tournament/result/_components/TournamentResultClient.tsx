@@ -9,6 +9,7 @@ import {
   useSaveTournament,
   useTournamentRecord,
 } from '@/features/tournament/hooks/use-tournament';
+import { Skeleton } from '@/components/feedback/Skeleton';
 import { Button, ButtonGrid } from '@/components/ui';
 import { WinnerCard } from '@/features/tournament/components/WinnerCard';
 import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetailPanel';
@@ -91,10 +92,19 @@ export function TournamentResultClient() {
   // 우승자 풍부 정보 — winner.id 기준 별도 fetch.
   const detailQuery = useDestinationDetail(winner?.id);
 
-  // record 로딩 중 + store 도 비어있음 → 빈 placeholder (?id= deep-link 새로고침 케이스).
-  // 별도 loading i18n 키 없음 — 짧은 시간이라 노이즈 회피.
+  // record 로딩 중 + store 도 비어있음 → deep-link 새로고침 케이스.
+  // loading.tsx (cold start fallback) 와 동일 layout 의 skeleton — Suspense
+  // → mount 전환 시 깜빡임 없음 (CLS 0).
   if (recordId && recordQuery.isLoading && !storeWinner) {
-    return <div className={styles.empty} aria-busy="true" />;
+    return (
+      <div className={styles.wrap} aria-busy="true">
+        <Skeleton width="100%" height={260} radius="lg" />
+        <Skeleton width="60%" height={24} radius="md" />
+        <Skeleton width="100%" height={80} radius="md" />
+        <Skeleton width="100%" height={48} radius="md" />
+        <Skeleton width="100%" height={48} radius="md" />
+      </div>
+    );
   }
 
   if (!winner) {
