@@ -75,16 +75,31 @@
   white-space: nowrap;
 }
 
-// Figma bar — 160×8 radius 999, bg #F1F1F1 (surface-soft), fill primary
-// (이전 gradient primary → primary-muted 정정).
+// Figma bar — 160×8 fixed radius 999, bg #F1F1F1, fill primary.
+// Frame 36 (rank+region) ↔ bar ↔ Frame 35 (wins+chev) space-between layout
+// 에서 bar 만 width 고정 — 좌우 frame 은 flex-shrink 0 자동.
 .barTrack {
   position: relative;
-  flex: 1;
+  flex-shrink: 0;
+  width: 160px;
   height: 8px;
   background: #f1f1f1;
   border-radius: var(--radius-full);
   overflow: hidden;
-  max-width: 160px;
+}
+
+// 모바일 360 viewport 좁아 시군명 길이로 bar 가 잘릴 우려 — 320 미만에서
+// 약간 줄여 안전 (Figma 360 기준 160, 320 viewport 에선 140 정도).
+@media (max-width: 360px) {
+  .barTrack {
+    width: 140px;
+  }
+}
+
+@media (max-width: 320px) {
+  .barTrack {
+    width: 120px;
+  }
 }
 
 .barFill {
