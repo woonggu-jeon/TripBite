@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { ChevronRight } from 'lucide-react';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { DestinationCard } from '@/components/ui/DestinationCard';
 import { useRecommendedDestinations } from '@/features/ranking/hooks/use-ranking';
@@ -57,6 +59,14 @@ export function HomeRecBlock() {
           <h2 className={styles.midTitle}>{t('title')}</h2>
           <p className={styles.midSubtitle}>{t('subtitle')}</p>
         </div>
+        {/* 더보기 chevron — /ranking 으로 이동 (사용자 명시 2026-06-24). */}
+        <Link
+          href="/ranking"
+          className={styles.moreLink}
+          aria-label={t('moreLabel')}
+        >
+          <ChevronRight size={20} aria-hidden />
+        </Link>
       </div>
 
       <ul className={styles.chips} role="tablist" aria-label={t('filterLabel')}>

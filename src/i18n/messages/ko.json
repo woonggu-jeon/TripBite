@@ -287,8 +287,9 @@
       "title": "한 입씩 떠나는\n충북 11개 시군"
     },
     "recBlock": {
-      "title": "추천 여행지",
-      "subtitle": "취향에 맞는 곳을 골라봤어요",
+      "title": "이런 여행 어때요?",
+      "subtitle": "카테고리별 추천 여행지",
+      "moreLabel": "랭킹 페이지로 이동",
       "filterLabel": "카테고리 필터",
       "chip": {
         "all": "전체",

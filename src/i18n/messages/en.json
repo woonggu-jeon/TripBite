@@ -287,8 +287,9 @@
       "title": "Bite-sized trips across\nChungbuk's 11 cities"
     },
     "recBlock": {
-      "title": "Recommended for you",
-      "subtitle": "Picked for your taste",
+      "title": "How about this trip?",
+      "subtitle": "Recommendations by category",
+      "moreLabel": "Go to ranking",
       "filterLabel": "Category filter",
       "chip": {
         "all": "All",
