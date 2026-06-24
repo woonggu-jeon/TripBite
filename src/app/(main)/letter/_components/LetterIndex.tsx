@@ -26,11 +26,14 @@ import styles from './LetterIndex.module.scss';
  *   2) pointerdown / focus prefetch — 터치 다운 latency 흡수.
  *   3) ml min-height — CLS 0.
  */
-const TABS: { key: LetterListKind; labelKey: 'received' | 'liked' | 'sent' }[] =
+// Figma "편지 메인 · seg" — 3 탭 순서: 받은 → 보낸 → 저장 (사용자 명시
+// 2026-06-24). liked 탭은 letter detail 의 좋아요 토글로 별도 처리, 메인
+// 탭에서는 폐기.
+const TABS: { key: LetterListKind; labelKey: 'received' | 'sent' | 'saved' }[] =
   [
     { key: 'received', labelKey: 'received' },
-    { key: 'liked', labelKey: 'liked' },
     { key: 'sent', labelKey: 'sent' },
+    { key: 'saved', labelKey: 'saved' },
   ];
 
 const FETCHERS = {
@@ -40,7 +43,7 @@ const FETCHERS = {
   saved: letterApi.listSaved,
 } as const;
 
-const VALID_TABS = new Set<LetterListKind>(['received', 'sent', 'liked']);
+const VALID_TABS = new Set<LetterListKind>(['received', 'sent', 'saved']);
 
 function readInitialTab(value: string | null): LetterListKind {
   return value && VALID_TABS.has(value as LetterListKind)

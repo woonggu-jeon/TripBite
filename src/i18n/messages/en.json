@@ -563,7 +563,7 @@
     "title": "Five-letter letter",
     "new": "New letter",
     "banner": {
-      "lead": "Share your heart in five letters",
+      "lead": "Just five letters, reaching someone",
       "cta": "Write a letter"
     },
     "row": {
@@ -583,7 +583,7 @@
       "received": "Received",
       "sent": "Sent",
       "liked": "Hearts",
-      "saved": "Saved"
+      "saved": "Saved letters"
     },
     "empty": {
       "received": "No letters yet",
