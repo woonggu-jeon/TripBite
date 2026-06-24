@@ -276,7 +276,8 @@ function renderTournament(
         {winner}
       </div>
 
-      {/* meta — sp 24 위. Inter Medium 40.5 white opacity 0.92. */}
+      {/* meta — sp 24 위. Inter Medium 40.5 line 48 white opacity 0.92.
+          Figma 명시 letterSpacing X — 제거 (2026-06-24 정합). */}
       {metaText && (
         <div
           style={{
@@ -284,8 +285,7 @@ function renderTournament(
             fontSize: 40.5,
             fontWeight: 500,
             color: 'rgba(255, 255, 255, 0.92)',
-            letterSpacing: '-0.02em',
-            lineHeight: 1.3,
+            lineHeight: 1.185,
             marginTop: 24,
             textAlign: 'center',
           }}
@@ -295,6 +295,7 @@ function renderTournament(
       )}
 
       {/* description — sp 54 위. Inter Regular 40.5 line 160% white 0.9 max-width 888.
+          Figma 명시 letterSpacing X — 제거 (2026-06-24 정합).
           desc 가 비면 row 자체 미노출. */}
       {desc && (
         <div
@@ -303,7 +304,6 @@ function renderTournament(
             fontSize: 40.5,
             fontWeight: 400,
             color: 'rgba(255, 255, 255, 0.9)',
-            letterSpacing: '-0.02em',
             lineHeight: 1.6,
             marginTop: 54,
             maxWidth: 888,
@@ -319,7 +319,8 @@ function renderTournament(
       {/* grow space — match-badge 를 아래쪽으로 밀어내기 */}
       <div style={{ display: 'flex', flex: 1 }} />
 
-      {/* match-badge — 471×96 white opacity 0.16 padding 24 54 + Inter Bold 40.5 white. */}
+      {/* match-badge — 471×96 white opacity 0.16 padding 24 54 + Inter Bold 40.5 white.
+          Figma 명시 letterSpacing X — 제거 (2026-06-24 정합). */}
       {matches && (
         <div
           style={{
@@ -335,16 +336,16 @@ function renderTournament(
             fontSize: 40.5,
             fontWeight: 700,
             color: '#FFFFFF',
-            letterSpacing: '-0.02em',
-            lineHeight: 1.2,
+            lineHeight: 1.185,
           }}
         >
           총 {matches}매치 끝의 우승 🏆
         </div>
       )}
 
-      {/* footer — sp 60 (20×3) 위. row gap 18 (6×3) center. BrandLogo 54 +
-          "여행 한입" Inter ExtraBold 39 ls -0.02em white. */}
+      {/* footer — sp 60 (20×3) 위. row gap 18 (6×3) center, opacity 0.95
+          (Figma 명시 — 2026-06-24 정합). BrandLogo 54 + "여행 한입" Inter
+          ExtraBold 39 ls -0.02em white. */}
       <div
         style={{
           display: 'flex',
@@ -352,6 +353,7 @@ function renderTournament(
           justifyContent: 'center',
           gap: 18,
           marginTop: 60,
+          opacity: 0.95,
         }}
       >
         <BrandLogo width={54} ariaHidden style={{ display: 'block' }} />
