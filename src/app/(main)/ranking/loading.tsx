@@ -66,9 +66,9 @@ export default function RankingLoading() {
       >
         <Skeleton width="40%" height={22} radius="sm" />
         <div style={{ height: 8 }} />
-        {/* 11 gun-row × 44 (RegionWinsChart fallback 정합 — 단 5 row 만 표시
-            cold fallback 짧게). */}
-        <SkeletonList count={5} height={32} radius="sm" />
+        {/* RegionWinsChart fallback — 11 시군 row × 44h (component isLoading
+            과 동일). 직전 5×32 placeholder 는 mount 후 jump 큼 — 2026-06-24. */}
+        <SkeletonList count={11} height={44} radius="md" />
       </div>
     </div>
   );

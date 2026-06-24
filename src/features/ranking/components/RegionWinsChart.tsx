@@ -57,15 +57,16 @@ export function RegionWinsChart() {
   }, [data, tRegion]);
 
   if (isLoading) {
-    // 5 row skeleton — 시각적 자리잡이 (CLS 0). role=status — axe-core prohibited
-    // attr 회피 + 스크린리더에 로딩 상태 announce.
+    // 11 row skeleton (충북 시군 11개) × 44 height (실 row .row padding 12 0 +
+    // content 20 ≈ 44h). 직전 5×32 placeholder 는 실 mount 후 11×44 와 큰 jump
+    // 발생 — 사용자 피드백 2026-06-24 정합.
     return (
       <div
         className={styles.skeletonList}
         role="status"
         aria-label={t('chart.loading')}
       >
-        <SkeletonList count={5} height={32} radius="md" />
+        <SkeletonList count={11} height={44} radius="md" />
       </div>
     );
   }

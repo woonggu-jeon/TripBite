@@ -109,7 +109,11 @@ export function RankingPageContent() {
 
         {isLoading && (
           <div className={styles.rvLoading}>
-            <Skeleton width="100%" height={152} radius="md" />
+            <Skeleton
+              width="100%"
+              radius="md"
+              style={{ aspectRatio: '288 / 152' }}
+            />
             <SkeletonList count={4} height={64} radius="md" />
           </div>
         )}
