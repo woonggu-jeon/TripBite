@@ -53,13 +53,19 @@
 }
 
 // Figma rank — B_14_140%. 1위 primary, 2위 이하 disabled (#B4B4B4).
+// 1-9 (1자리) vs 10-11 (2자리) 텍스트 폭 차이로 row 간 progress bar 시작
+// 위치가 달라지는 문제 — min-width 1.5em + text-align center 로 동일 폭 고정
+// (사용자 피드백 2026-06-24).
 .rank {
+  display: inline-block;
+  min-width: 1.5em;
   font-size: var(--text-sm); /* 14 */
   font-weight: var(--font-weight-bold);
   line-height: var(--line-snug-relaxed); /* 140% */
   letter-spacing: var(--tracking-tight);
   color: var(--color-text-disabled);
   font-variant-numeric: tabular-nums;
+  text-align: center;
 }
 
 // 1위 강조 — primary.
