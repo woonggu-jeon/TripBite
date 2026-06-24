@@ -232,9 +232,10 @@ function Top5Row({
       </span>
       <div className={styles.top5Text}>
         <p className={styles.top5Name}>{item.destination.name}</p>
-        {/* "단양군 · 32회 우승" 형식 (사용자 명시 2026-06-24) — full region 이름 + wins. */}
+        {/* "단양군 · 32회 우승" 형식 (사용자 명시 2026-06-24) — full region + score.
+            RankedDestination.score 는 weekly-winners 의 우승 횟수. */}
         <p className={styles.top5Region}>
-          {t('top5RegionWins', { region: regionName, wins: item.wins })}
+          {t('top5RegionWins', { region: regionName, wins: item.score })}
         </p>
       </div>
     </Link>
