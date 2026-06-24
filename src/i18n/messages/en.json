@@ -586,9 +586,9 @@
       "saved": "Saved letters"
     },
     "empty": {
-      "received": "No letters yet",
-      "sent": "No letters sent yet",
-      "liked": "No hearts yet",
+      "received": "No received letters yet",
+      "sent": "No sent letters yet",
+      "liked": "No liked letters yet",
       "saved": "No saved letters yet"
     },
     "listError": "Couldn't load letters",
