@@ -125,18 +125,16 @@ export function TournamentResultClient() {
       />
       <LuckyLadder />
 
-      {/* Figma Frame 48 — column gap 8: primary 320×52 + outline pair */}
+      {/* Figma Frame 48 — column gap 8: primary 320×52 (공유) + outline pair
+          (다시하기, 마이페이지에 저장). 사용자 명시 순서 (2026-06-24). */}
       <div className={styles.actions}>
-        <Button
-          variant="primary"
-          size="lg"
-          fullWidth
-          onClick={handleRetry}
-          loading={save.isPending}
-        >
-          {t('retryTournament')}
+        <Button variant="primary" size="lg" fullWidth onClick={handleShare}>
+          {t('shareShort')}
         </Button>
         <div className={styles.actionPair}>
+          <Button variant="outline" fullWidth onClick={handleRetry}>
+            {t('retryTournament')}
+          </Button>
           <Button
             variant="outline"
             fullWidth
@@ -145,9 +143,6 @@ export function TournamentResultClient() {
             loading={save.isPending}
           >
             {save.isSuccess ? t('saved') : t('saveShort')}
-          </Button>
-          <Button variant="outline" fullWidth onClick={handleShare}>
-            {t('shareShort')}
           </Button>
         </div>
       </div>

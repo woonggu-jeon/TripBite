@@ -23,12 +23,17 @@ import styles from './WinnerCard.module.scss';
  */
 export function WinnerCard({ destination }: { destination: DestinationDto }) {
   const t = useTranslations('tournament');
+  const tResult = useTranslations('tournament.result');
   const region = CHUNGBUK_REGIONS.find((r) => r.code === destination.region);
   const regionLabel = region?.ko ?? destination.region;
   const categoryLabel = t(`category.${destination.category}`);
+  const eyebrow = tResult('winnerEyebrow');
 
   return (
-    <section className={styles.hero} aria-label={`우승 ${destination.name}`}>
+    <section
+      className={styles.hero}
+      aria-label={`${eyebrow} ${destination.name}`}
+    >
       <MediaThumb
         src={destination.imageUrl}
         emoji={categoryEmoji(destination.category)}
@@ -38,9 +43,7 @@ export function WinnerCard({ destination }: { destination: DestinationDto }) {
       />
       <div className={styles.gradient} aria-hidden />
       <div className={styles.text}>
-        <span className={styles.eyebrow} aria-hidden>
-          🏆 우승
-        </span>
+        <span className={styles.eyebrow}>{eyebrow}</span>
         <h2 className={styles.title}>{destination.name}</h2>
         <p className={styles.location}>
           {regionLabel} · {categoryLabel}

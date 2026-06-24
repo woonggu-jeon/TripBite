@@ -219,10 +219,10 @@ export function LuckyLadder({
         <p className={styles.caption}>{t('subtitle')}</p>
       </header>
 
-      {/* Frame 50 column — eyebrow B_14 primary "결과 보기" + ladder svg 280×337 */}
+      {/* Frame 50 column — ladder svg 280×337 (사용자 명시 2026-06-24:
+          "결과 보기" eyebrow 제거 — title 자체가 "여행에서 인연을 만날 확률"
+          로 명시적). */}
       <div className={styles.viewer}>
-        <span className={styles.eyebrow}>{t('viewResult')}</span>
-
         <p
           className={styles.hint}
           aria-live="polite"
