@@ -353,8 +353,10 @@ export function TournamentPlayClient() {
 
       {phase === 'tournamentSize' && (
         <div className={styles.sizePhase}>
-          <h2 className={styles.sizeTitle}>{t('tournamentSize.title')}</h2>
-          <p className={styles.sizeHint}>{t('tournamentSize.hint')}</p>
+          <header className={styles.sizeHeading}>
+            <h2 className={styles.sizeTitle}>{t('tournamentSize.title')}</h2>
+            <p className={styles.sizeHint}>{t('tournamentSize.hint')}</p>
+          </header>
           <CountSelector
             value={pendingSize}
             onChange={setPendingSize}
@@ -367,7 +369,7 @@ export function TournamentPlayClient() {
             disabled={!canStartBracket}
             onClick={handleConfirmSize}
           >
-            {t('next')}
+            {t('startBracket')}
           </Button>
         </div>
       )}

@@ -322,27 +322,41 @@
   }
 }
 
-// contentInner 가 이미 좌우 padding 을 담당하므로 sizePhase 는 좌우 padding 0.
-// 이중 padding 으로 카드 영역이 좁아져 깨지던 문제 해결.
+// Figma "TRN · 토너먼트 규모" (T-6) — Frame 41 (title B_20 + caption R_12,
+// gap 8) + 2×2 grid gap 12. sizePhase 는 column stack, Frame 41 다음 selector.
 .sizePhase {
   position: relative;
   z-index: 2;
-  display: grid;
-  gap: var(--space-4);
-  padding: var(--space-2) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3); /* 12 — heading↔selector 간격 (다른 phase 와 동일 톤) */
+  padding: var(--space-5) 0; /* top/bottom 20 */
+}
+
+.sizeHeading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2); /* 8 — Figma Frame 41 gap */
 }
 
 .sizeTitle {
-  font-size: var(--font-h2);
+  /* Figma B_20_130% */
+  font-size: var(--text-xl); /* 20 */
   font-weight: var(--font-weight-bold);
+  line-height: var(--line-tight);
+  letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
-  line-height: var(--line-snug);
+  margin: 0;
 }
 
 .sizeHint {
-  font-size: var(--text-sm);
+  /* Figma Caption R_12 muted */
+  font-size: var(--font-caption); /* 12 */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: var(--tracking-snug);
   color: var(--color-muted);
-  margin-top: -0.5rem;
+  margin: 0;
 }
 
 .bracket {

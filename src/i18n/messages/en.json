@@ -472,18 +472,18 @@
         "back": "Adjust setup"
       },
       "tournamentSize": {
-        "title": "Bracket size",
-        "hint": "A bracket of this size will be generated",
+        "title": "How many rounds?",
+        "hint": "More rounds means more comparisons and a more thoughtful pick.",
         "count": {
           "4": "Round of 4",
           "8": "Round of 8",
           "16": "Round of 16",
           "32": "Round of 32",
           "sub": {
-            "4": "Quick",
-            "8": "Recommended",
-            "16": "Deep",
-            "32": "All in"
+            "4": "Quick pick!",
+            "8": "Fun balance",
+            "16": "Thoughtful",
+            "32": "Deep dive"
           }
         }
       },
