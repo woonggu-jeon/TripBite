@@ -6,11 +6,16 @@ import { useTranslations } from 'next-intl';
 import { ChevronRight } from 'lucide-react';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { DestinationCard } from '@/components/ui/DestinationCard';
+import { Carousel } from '@/features/carousel';
+import { useResponsiveSlidesPerView } from '@/hooks/use-responsive-slides-per-view';
 import { useRecommendedDestinations } from '@/features/ranking/hooks/use-ranking';
 import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import { toneFor } from '@/constants/region-tone';
 import { categoryEmoji } from '@/constants/emoji-map';
-import type { DestinationCategory } from '@/api/generated/schemas';
+import type {
+  DestinationCategory,
+  DestinationDto,
+} from '@/api/generated/schemas';
 import styles from './HomeRecBlock.module.scss';
 
 /**
@@ -35,6 +40,7 @@ export function HomeRecBlock() {
   const t = useTranslations('home.recBlock');
   const [activeChip, setActiveChip] = useState<ChipKey>('all');
   const { data, isLoading } = useRecommendedDestinations(8);
+  const slidesPerView = useResponsiveSlidesPerView();
 
   if (isLoading) {
     return (
@@ -48,9 +54,8 @@ export function HomeRecBlock() {
   const rest = (data ?? []).slice(1).map((r) => r.destination);
   if (rest.length === 0) return null;
 
-  const filtered =
+  const filtered: DestinationDto[] =
     activeChip === 'all' ? rest : rest.filter((d) => d.category === activeChip);
-  const visible = filtered.slice(0, 3);
 
   return (
     <section className={styles.wrap} aria-label={t('title')}>
@@ -90,25 +95,29 @@ export function HomeRecBlock() {
         })}
       </ul>
 
-      {visible.length > 0 ? (
-        <ul className={styles.grid} aria-label={t('title')}>
-          {visible.map((d) => {
+      {filtered.length > 0 ? (
+        <Carousel
+          slides={filtered}
+          renderSlide={(d) => {
             const region = CHUNGBUK_REGIONS.find((r) => r.code === d.region);
             const regionLabel = region?.ko ?? d.region;
             return (
-              <li key={d.id} className={styles.cell}>
-                <DestinationCard
-                  href={{ pathname: `/destination/${d.id}` }}
-                  imageUrl={d.imageUrl}
-                  emoji={categoryEmoji(d.category)}
-                  tone={toneFor(d.region as RegionCode)}
-                  regionLabel={regionLabel}
-                  name={d.name}
-                />
-              </li>
+              <DestinationCard
+                href={{ pathname: `/destination/${d.id}` }}
+                imageUrl={d.imageUrl}
+                emoji={categoryEmoji(d.category)}
+                tone={toneFor(d.region as RegionCode)}
+                regionLabel={regionLabel}
+                name={d.name}
+              />
             );
-          })}
-        </ul>
+          }}
+          keyExtractor={(d) => d.id}
+          options={{ slidesPerView, gap: 8 }}
+          showDots={false}
+          ariaLabel={t('title')}
+          fallbackHeight={168}
+        />
       ) : (
         <p className={styles.empty}>{t('emptyForChip')}</p>
       )}

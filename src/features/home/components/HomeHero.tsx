@@ -5,29 +5,19 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { MapPin } from 'lucide-react';
 import { Skeleton } from '@/components/feedback/Skeleton';
+import { Carousel } from '@/features/carousel';
 import { useRecommendedDestinations } from '@/features/ranking/hooks/use-ranking';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { secureImageUrl } from '@/lib/secure-image-url';
+import type { DestinationDto } from '@/api/generated/schemas';
 import styles from './HomeHero.module.scss';
 
 /**
- * 홈 hero — Figma "HOME · 홈 · hero-block" (2026-06-23).
+ * 홈 hero — Figma "HOME · 홈 · hero-block" 스타일을 carousel 로 노출
+ * (사용자 명시 2026-06-24 — 단일 카드 → 5-slide swipe carousel 복원).
  *
- * 단일 큰 카드 (이전 RecommendationBanner 의 5-slide carousel 폐기). 추천
- * top 1 destination 의 image + 90deg dark overlay + eyebrow / title / 📍
- * footer.
- *
- * spec:
- *   - 320×176 radius 12 overflow hidden, padding 0 0 0 18.
- *   - hero-img: absolute fill, bg image + #A8B29C fallback.
- *   - hero-overlay: linear-gradient 90deg rgba(0,0,0,0.72→0.4→0).
- *   - hero-text z2:
- *     · eyebrow Inter ExtraBold 11.5 ls 0.04em opacity 0.95.
- *     · title Inter ExtraBold 21 line 126% ls -0.035em.
- *     · 📍 footer Medium 12 opacity 0.9.
- *
- * 데이터: useRecommendedDestinations(5) → [0] 만 사용. TanStack Query cache
- * 공유 — HomeRecBlock 가 같은 hook 호출 시 한 번 fetch.
+ * 데이터: useRecommendedDestinations(5) → 5 slides. dot overlay (white).
+ * embla 기반 Carousel primitive 사용 (transform 60fps + lazy load + autoplay).
  */
 export function HomeHero() {
   const t = useTranslations('home.hero');
@@ -36,13 +26,37 @@ export function HomeHero() {
   if (isLoading) {
     return <Skeleton width="100%" height={176} radius="md" />;
   }
-  const item = data?.[0]?.destination;
-  if (!item) return null;
+  const items = (data ?? []).map((r) => r.destination).slice(0, 5);
+  if (items.length === 0) return null;
 
+  return (
+    <Carousel
+      slides={items}
+      renderSlide={(item) => (
+        <HeroSlide item={item} eyebrow={t('eyebrow')} title={t('title')} />
+      )}
+      keyExtractor={(item) => item.id}
+      options={{ loop: true, autoplayMs: 5000, slidesPerView: 1, gap: 0 }}
+      showDots
+      dotsVariant="overlay"
+      ariaLabel={t('title')}
+      fallbackHeight={176}
+    />
+  );
+}
+
+function HeroSlide({
+  item,
+  eyebrow,
+  title,
+}: {
+  item: DestinationDto;
+  eyebrow: string;
+  title: string;
+}) {
   const region = CHUNGBUK_REGIONS.find((r) => r.code === item.region);
   const regionKo = region?.ko ?? item.region;
   const safeImg = secureImageUrl(item.imageUrl);
-
   return (
     <Link
       href={{ pathname: `/destination/${item.id}` }}
@@ -55,7 +69,7 @@ export function HomeHero() {
             src={safeImg}
             alt=""
             fill
-            sizes="(max-width: 480px) 100vw, 360px"
+            sizes="(max-width: 600px) 100vw, 600px"
             className={styles.heroImage}
             priority
           />
@@ -63,8 +77,8 @@ export function HomeHero() {
       </div>
       <div className={styles.heroOverlay} aria-hidden />
       <div className={styles.heroText}>
-        <span className={styles.heroEyebrow}>{t('eyebrow')}</span>
-        <h2 className={styles.heroTitle}>{t('title')}</h2>
+        <span className={styles.heroEyebrow}>{eyebrow}</span>
+        <h2 className={styles.heroTitle}>{title}</h2>
         <span className={styles.heroFooter}>
           <MapPin size={12} aria-hidden />
           <span>

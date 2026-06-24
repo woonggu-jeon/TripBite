@@ -21,15 +21,9 @@
   // 회귀 차단. cell flex: 0 0 152 의 152 폭 안에서만 ellipsis 작동.
   min-width: 0;
   max-width: 100%;
-  transition:
-    border-color var(--motion-base) ease,
-    transform var(--motion-fast) ease;
+  // hover 시 border 색 변경 제거 (사용자 명시 2026-06-24) — active scale 만 유지.
+  transition: transform var(--motion-fast) ease;
 
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      border-color: var(--accent, var(--color-primary));
-    }
-  }
   &:active {
     transform: scale(0.99);
   }
