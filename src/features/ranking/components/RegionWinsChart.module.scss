@@ -8,14 +8,16 @@
   list-style: none;
 }
 
-// Figma gun-row — 288×44 padding 12 0 row space-between. 3 영역:
-//   Frame 36 (rank + region) | bar 160×8 | Frame 35 (wins + chevron).
+// Figma gun-row — 288×44 padding 12 0 row. 3 영역:
+//   Frame 36 (rank + region, flex-shrink 0) | bar (flex 1) | Frame 35
+//   (wins + chevron, flex-shrink 0).
+// space-between 대신 bar flex 1 — desktop wider viewport 에서 bar 가 남은
+// 폭 채움 (모바일 360 기준 160 ≈ Figma 명시, 720 desktop 에선 자연 grow).
 .row {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 12px;
   width: 100%;
   padding: 12px 0;
   background: transparent;
@@ -75,31 +77,17 @@
   white-space: nowrap;
 }
 
-// Figma bar — 160×8 fixed radius 999, bg #F1F1F1, fill primary.
-// Frame 36 (rank+region) ↔ bar ↔ Frame 35 (wins+chev) space-between layout
-// 에서 bar 만 width 고정 — 좌우 frame 은 flex-shrink 0 자동.
+// Figma bar — 8h radius 999, bg #F1F1F1, fill primary. row 안에서 bar 만
+// flex 1 (좌우 label/wins flex-shrink 0) — 남은 폭 차지.
+// 모바일 360: 약 160 (Figma 명시), desktop 720: 약 500+.
 .barTrack {
   position: relative;
-  flex-shrink: 0;
-  width: 160px;
+  flex: 1 1 auto;
+  min-width: 80px;
   height: 8px;
   background: #f1f1f1;
   border-radius: var(--radius-full);
   overflow: hidden;
-}
-
-// 모바일 360 viewport 좁아 시군명 길이로 bar 가 잘릴 우려 — 320 미만에서
-// 약간 줄여 안전 (Figma 360 기준 160, 320 viewport 에선 140 정도).
-@media (max-width: 360px) {
-  .barTrack {
-    width: 140px;
-  }
-}
-
-@media (max-width: 320px) {
-  .barTrack {
-    width: 120px;
-  }
 }
 
 .barFill {
