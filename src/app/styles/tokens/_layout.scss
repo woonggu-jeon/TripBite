@@ -1,6 +1,6 @@
 /* Layout tokens — spacing (4px grid) + content/header/nav 치수 + aspect-ratio + z-index + icon size */
 :root {
-  /* Spacing scale (4px grid) */
+  /* Spacing scale (4px grid). --space-12 폐기 (2026-06-24 dead). */
   --space-1: 0.25rem; /* 4px */
   --space-2: 0.5rem; /* 8 */
   --space-3: 0.75rem; /* 12 */
@@ -9,7 +9,6 @@
   --space-6: 1.5rem; /* 24 */
   --space-8: 2rem; /* 32 */
   --space-10: 2.5rem; /* 40 */
-  --space-12: 3rem; /* 48 */
 
   /* Container / layout dimensions — content 폭 600 (사용자 명시 2026-06-24).
      desktop 600+ viewport 에서 양 옆 body bg (#EAF6EF) 노출, 가운데 600 폭만
@@ -19,26 +18,18 @@
   --header-h: 56px;
   --bottom-nav-h: 64px;
 
-  /* Aspect ratio */
-  --aspect-square: 1 / 1;
+  /* Aspect ratio — 사용 중인 토큰만 보존 (2026-06-24 — square/card-narrow/
+     card-wide/map dead, Figma 정합 컴포넌트들이 자체 ratio 152/168 등 직접 명시). */
   --aspect-pin-cell: 1 / 1.1;
-  --aspect-card-narrow: 1.4 / 1; /* festival ≤380 / season selector */
-  --aspect-card-wide: 1.5 / 1; /* festival ≤480 */
-  --aspect-map: 4 / 3;
 
-  /* Z-index 레이어 — 충돌 방지 명시 */
-  --z-base: 0;
-  --z-elevated: 10;
+  /* Z-index 레이어 — 충돌 방지 명시. --z-base / -elevated / -dropdown 폐기
+     (2026-06-24 dead). */
   --z-header: 50; /* AppHeader sticky */
   --z-bottom-nav: 50;
-  --z-dropdown: 60;
   --z-banner: 70;
   --z-modal: 80;
   --z-toast: 90; /* 모달 위에 떠야 함 */
 
-  /* Icon size — 의미별 */
-  --icon-sm: 16px; /* 인라인 텍스트 옆 */
-  --icon-md: 20px; /* 버튼 */
-  --icon-lg: 24px; /* 헤더 / 네비 */
-  --icon-xl: 32px; /* 일러스트성 */
+  /* Icon size — 컴포넌트들이 lucide-react size prop 으로 직접 명시
+     (--icon-sm/md/lg/xl 폐기 2026-06-24). */
 }

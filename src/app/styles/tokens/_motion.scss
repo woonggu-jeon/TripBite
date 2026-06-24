@@ -1,8 +1,7 @@
-/* Motion tokens — duration + easing */
+/* Motion tokens — duration + easing. --motion-slow 폐기 (2026-06-24 dead). */
 :root {
   --motion-fast: 100ms; /* 미세한 active scale */
   --motion-base: 150ms; /* 일반 hover/border 전환 */
-  --motion-slow: 300ms; /* 슬라이드/페이드 */
   --motion-emphasis: 550ms; /* 등장 강조 (celebration 등) */
 
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);

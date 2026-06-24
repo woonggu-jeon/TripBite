@@ -1,26 +1,22 @@
 /* Misc tokens — radius + opacity + border-width.
    분리할 만큼 크지 않은 토큰 그룹. */
 :root {
-  /* Radius */
+  /* Radius. --radius-card / -pill 폐기 (2026-06-24 dead — Figma 정합 컴포넌트가
+     직접 radius 12 등 명시 사용 중). --radius-input 은 1 곳 사용 — 보존. */
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
   --radius-full: 9999px;
-  /* 디자이너 spec (2026-06-19) — Figma button 정합용 + pill button. */
-  --radius-card: 14px; /* 카드 12~16 사이 권장값 */
-  --radius-pill: 26px; /* 버튼 pill 24~28 */
-  --radius-input: 10px; /* 입력 폼 box — 디자이너 spec (LOGIN 13px 은 미완 → 10px 통일) */
+  --radius-input: 10px; /* 입력 폼 box — 디자이너 spec */
 
   /* Opacity scale — 명확한 의미만. 컴포넌트 unique 미세 조정은 raw 유지. */
   --opacity-disabled: 0.45;
   --opacity-muted: 0.7;
   --opacity-hover-dim: 0.92;
 
-  /* Border width scale — 신규 코드 권장 */
-  --border-thin: 1px;
+  /* Border width — --border-base 만 사용 중 (--border-thin / -thick dead). */
   --border-base: 1.5px;
-  --border-thick: 2px;
 
   /* Focus ring — 키보드 포커스 시각 표시. shorthand 로 일관 적용 (a11y 핵심).
      사용: `outline: var(--focus-outline); outline-offset: var(--focus-outline-offset);` */

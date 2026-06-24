@@ -21,14 +21,13 @@
    raw px 직접 작성 금지 — `var(--text-*)` + `var(--font-weight-*)` + `var(--line-*)` + `var(--tracking-*)` 조합 사용.
 */
 :root {
-  /* primitive scale (크기만) */
+  /* primitive scale (크기만). --text-3xl 폐기 (2026-06-24 — 사용처 0). */
   --text-xs: 0.75rem; /* 12px */
   --text-sm: 0.875rem; /* 14 */
   --text-base: 1rem; /* 16 */
   --text-lg: 1.125rem; /* 18 */
   --text-xl: 1.25rem; /* 20 */
   --text-2xl: 1.5rem; /* 24 */
-  --text-3xl: 1.875rem; /* 30 */
 
   /* 의미별 시멘틱 — 컴포넌트는 가급적 이쪽 사용 */
   --font-display: 2.5rem; /* 결과 숫자 등 큰 임팩트 */
@@ -41,47 +40,38 @@
   --font-caption: 0.75rem;
   --font-eyebrow: 0.6875rem;
 
-  /* 도메인 font — letter / tournament */
+  /* 도메인 font — letter. --font-tournament-trophy / -winner 폐기 (2026-06-24
+     — 사용처 0, WinnerCard 가 별도 inline px 사용 중. 토큰 필요 시 재도입). */
   --font-letter-body: 1.625rem; /* 26px — 편지 본문 5글자 큰 글씨 */
   --font-letter-stamp-tag: 0.5rem; /* 8px — 우표 라벨 */
   --font-letter-envelope: 3.5rem; /* 56px — ComposeEntryCard 봉투 emoji */
-  --font-tournament-trophy: 2rem; /* 32px — WinnerCard trophy */
-  --font-tournament-winner: 2.75rem; /* 44px — WinnerCard winner emoji */
 
-  /* Emoji 스케일 — 디자인 교체 시 emoji 전반 비율 한 곳에서 조정 */
-  --emoji-sm: 1.375rem; /* 추천 카드 내 emoji (22px) */
+  /* Emoji 스케일 — 사용 중 토큰만. -sm/-lg/-3xl/-4xl 폐기 (2026-06-24 dead). */
   --emoji-md: 1.75rem; /* 일반 emoji 아이콘 (28px) */
-  --emoji-lg: 2.25rem; /* 선택 카드 emoji (36px) */
   --emoji-xl: 4rem; /* hero 카드 emoji (64px) */
   --emoji-2xl: 4.5rem; /* finishing/공유 카드 (72px) */
-  --emoji-3xl: 5rem; /* celebration emoji (80px) */
-  --emoji-4xl: 6rem; /* hero illustration glyph (96px) */
 
-  /* line-height — Figma 토큰 페이지 (em 단위) + 도메인 */
-  --line-display: 1.1; /* 큰 글씨 (CountSelector) */
+  /* line-height — Figma 토큰 페이지 (em 단위) + 도메인. --line-display /
+     --line-65 폐기 (2026-06-24 — 사용처 0). */
   --line-tight: 1.2; /* Figma "120%" — Title B_18_120% 등 */
   --line-snug: 1.35;
   --line-snug-relaxed: 1.4; /* Figma "140%" — Body/Caption 대부분 */
   --line-normal: 1.5;
   --line-relaxed: 1.55; /* Figma description (Walk hero) */
   --line-1: 1; /* Figma Btn/SB_14 (line 100%) */
-  --line-65: 1.65; /* LocationPermission desc */
-  /* 기존 --line-relaxed (1.65) → --line-65 으로 rename. alias 유지: */
-  /* (--line-relaxed 사용처가 1.65 가정이면 → --line-65 으로 점진 마이그) */
 
-  /* letter-spacing — Figma 토큰 페이지 */
+  /* letter-spacing — Figma 토큰 페이지. --tracking-normal 폐기 (사용처 0). */
   --tracking-tight: -0.02em; /* Figma Title/Body 대부분 */
   --tracking-snug: -0.01em; /* Figma Caption/Btn */
-  --tracking-normal: 0;
   --tracking-wide: 0.02em;
   --tracking-uppercase: 0.06em;
   --tracking-emphasis: 0.12em; /* letter / banner label 강조 */
   --tracking-pin: 0.25em; /* LetterDetail body PIN style */
   --tracking-pin-fill: 1em; /* PinLikeInput 5칸 강제 */
 
-  /* font-weight — Figma 토큰 명 매칭 */
+  /* font-weight — Figma 토큰 명 매칭. --font-weight-normal (regular alias)
+     중복 폐기 (2026-06-24 — 사용처 0, --font-weight-regular 로 통일). */
   --font-weight-regular: 400; /* R (Regular) */
-  --font-weight-normal: 400; /* alias — 기존 사용처 호환 */
   --font-weight-medium: 500; /* M (Medium) */
   --font-weight-semibold: 600; /* SB (SemiBold) */
   --font-weight-bold: 700; /* B (Bold) */
