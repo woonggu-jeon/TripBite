@@ -42,8 +42,12 @@ export default function RankingLoading() {
         <Skeleton width="40%" height={22} radius="sm" />
         {/* spacer 8px = title margin-bottom 16 (component 정합) */}
         <div style={{ height: 8 }} />
-        {/* hero 288×152 */}
-        <Skeleton width="100%" height={152} radius="md" />
+        {/* Top1Hero — aspect-ratio 288/152 (component 와 동일 grow). */}
+        <Skeleton
+          width="100%"
+          radius="md"
+          style={{ aspectRatio: '288 / 152' }}
+        />
         {/* 4 top5-row × 64 */}
         <SkeletonList count={4} height={64} radius="md" />
       </div>

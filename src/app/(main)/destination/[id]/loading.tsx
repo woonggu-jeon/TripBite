@@ -28,8 +28,8 @@ export default function DestinationDetailLoading() {
         margin: '0 calc(-1 * var(--content-pad))',
       }}
     >
-      {/* hero 234 */}
-      <Skeleton width="100%" height={234} radius="sm" />
+      {/* DestinationPhotos hero — aspect-ratio 360/234 (component 와 동일 grow). */}
+      <Skeleton width="100%" radius="sm" style={{ aspectRatio: '360 / 234' }} />
 
       {/* info-sec — padding 20 20 24 gap 20 white */}
       <div
