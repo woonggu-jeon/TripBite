@@ -125,7 +125,7 @@ export function RankingPageContent() {
 
         {top1 && (
           <>
-            <Top1Hero item={top1} tRegion={tRegion} winsUnit={t('winsUnit')} />
+            <Top1Hero item={top1} tRegion={tRegion} />
             <ul className={styles.top5List}>
               {top2to5.map((item) => (
                 <li key={item.destination.id ?? `rank-${item.rank}`}>
@@ -149,18 +149,16 @@ export function RankingPageContent() {
 function Top1Hero({
   item,
   tRegion,
-  winsUnit,
 }: {
   item: import('@/features/ranking/types').RankedDestination;
   tRegion: ReturnType<typeof useTranslations<'region.names'>>;
-  winsUnit: string;
 }) {
+  const t = useTranslations('ranking');
   const safeImg = secureImageUrl(item.destination.imageUrl);
   const code = item.destination.region;
   const regionName = isRegionCode(code)
     ? tRegion(code as Parameters<typeof tRegion>[0])
     : code;
-  const shortRegion = regionName.replace(/(시|군)$/u, '');
 
   return (
     <Link
@@ -184,13 +182,10 @@ function Top1Hero({
       <div className={styles.heroOverlay} aria-hidden />
       <div className={styles.heroText}>
         <h3 className={styles.heroTitle}>{item.destination.name}</h3>
-        <div className={styles.heroMeta}>
-          <span className={styles.heroRegion}>{shortRegion}</span>
-          <span className={styles.heroWins}>
-            {item.score}
-            {winsUnit}
-          </span>
-        </div>
+        {/* "단양군 · 32회 우승" 단일 라인 (사용자 명시 2026-06-24, Top5Row 와 정합). */}
+        <p className={styles.heroMeta}>
+          {t('top5RegionWins', { region: regionName, wins: item.score })}
+        </p>
       </div>
     </Link>
   );
