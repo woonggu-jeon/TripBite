@@ -26,8 +26,9 @@ export default function MainLoading() {
         paddingTop: 4,
       }}
     >
-      {/* HomeHero — Figma 320×176 radius-md. */}
-      <Skeleton width="100%" height={176} radius="md" />
+      {/* HomeHero — width 100% + aspect-ratio 320/176. desktop 폭 grow 시 비율
+          유지 (HomeHero.module.scss aspect-ratio 와 동일, 2026-06-24). */}
+      <Skeleton width="100%" radius="md" style={{ aspectRatio: '320 / 176' }} />
 
       {/* HomeRecBlock — sec-title (28) + horizontal 152×168 ×3 carousel. */}
       <section style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
