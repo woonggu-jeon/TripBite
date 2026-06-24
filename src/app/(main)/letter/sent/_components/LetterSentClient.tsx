@@ -48,26 +48,30 @@ export function LetterSentClient() {
   const enabled = !!letterId;
   const serverLetter = enabled ? letterQuery.data : undefined;
 
+  // lastSent (compose 직후 저장) 우선 — BE LetterDto 에 isAnonymous 필드 없어
+  // server letter 만으로 익명 판정 불가능. ?id= deep-link 새로고침 시 lastSent
+  // 가 살아있으면 그대로 사용, 없으면 server letter fallback (익명 판정 X,
+  // nickname 그대로 노출 — BE spec 확정 후 정합 보강).
   const view: {
     body: string;
     sentAt: string;
     location: string;
     isAnonymous: boolean;
-  } | null = serverLetter
+  } | null = lastSent
     ? {
-        body: serverLetter.body,
-        sentAt: serverLetter.createdAt,
-        location: serverLetter.author.location ?? '',
-        // server letter author.nickname 이 빈 문자열 또는 "익명" 마커일 때
-        // 익명으로 간주 — BE spec 확정 시 정합.
-        isAnonymous: !serverLetter.author.nickname,
+        body: lastSent.body,
+        sentAt: lastSent.sentAt,
+        location: lastSent.location?.label ?? '',
+        isAnonymous: !!lastSent.isAnonymous,
       }
-    : lastSent
+    : serverLetter
       ? {
-          body: lastSent.body,
-          sentAt: lastSent.sentAt,
-          location: lastSent.location?.label ?? '',
-          isAnonymous: !!lastSent.isAnonymous,
+          body: serverLetter.body,
+          sentAt: serverLetter.createdAt,
+          location: serverLetter.author.location ?? '',
+          // BE 가 익명 편지의 author.nickname 을 빈 문자열로 반환한다고 가정.
+          // 실제 BE spec 확정 시 (isAnonymous 필드 추가 요청) 갱신.
+          isAnonymous: !serverLetter.author.nickname,
         }
       : null;
 
