@@ -426,7 +426,6 @@ orval 단일화 완료 (2026-06-06). 운영 워크플로:
 | -------------------------- | ------------------------------------------------------------ |
 | `SettingsClient.tsx`       | 언어 섹션 미노출 (사용자 요청). LanguageSwitcher 보존        |
 | `ConceptStep.tsx`          | 일러스트 디자인 확정 후 교체                                 |
-| `CenterIllustration.tsx`   | emoji → SVG 일러스트 교체 가능                               |
 | `RecommendationBanner.tsx` | mock → `useRecommendations()` 교체 (추천 알고리즘 결정 필요) |
 
 ---

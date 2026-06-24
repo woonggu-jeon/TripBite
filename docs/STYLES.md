@@ -158,7 +158,7 @@ src/app/
 적용 컴포넌트 (9종, 2026-06-08):
 
 - RecommendationBanner / LatestReceivedLetter / RegionHero / ConceptIllustration
-- AuthLayout / DestinationCard / SeasonalCenterIllustration / ThemeKindSelector
+- AuthLayout / DestinationCard / ThemeKindSelector
 - DestinationDetailClient / HomeDashboard
 
 ### Typography
