@@ -349,6 +349,7 @@
   "ranking": {
     "title": "여행지 랭킹",
     "winsUnit": "회",
+    "top5RegionWins": "{region} · {wins}회 우승",
     "emptyTallyHint": "이번 주 집계가 시작됐어요",
     "updateNoteShort": "매주 월요일 업데이트",
     "emptyPopular": {

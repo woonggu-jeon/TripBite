@@ -349,6 +349,7 @@
   "ranking": {
     "title": "Destination ranking",
     "winsUnit": "wins",
+    "top5RegionWins": "{region} · {wins} wins",
     "emptyTallyHint": "Tally for this week just started",
     "updateNoteShort": "Updated every Monday",
     "emptyPopular": {

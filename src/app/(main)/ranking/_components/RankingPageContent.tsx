@@ -203,12 +203,12 @@ function Top5Row({
   item: import('@/features/ranking/types').RankedDestination;
   tRegion: ReturnType<typeof useTranslations<'region.names'>>;
 }) {
+  const t = useTranslations('ranking');
   const safeImg = secureImageUrl(item.destination.imageUrl);
   const code = item.destination.region;
   const regionName = isRegionCode(code)
     ? tRegion(code as Parameters<typeof tRegion>[0])
     : code;
-  const shortRegion = regionName.replace(/(시|군)$/u, '');
 
   return (
     <Link
@@ -232,7 +232,10 @@ function Top5Row({
       </span>
       <div className={styles.top5Text}>
         <p className={styles.top5Name}>{item.destination.name}</p>
-        <p className={styles.top5Region}>{shortRegion}</p>
+        {/* "단양군 · 32회 우승" 형식 (사용자 명시 2026-06-24) — full region 이름 + wins. */}
+        <p className={styles.top5Region}>
+          {t('top5RegionWins', { region: regionName, wins: item.wins })}
+        </p>
       </div>
     </Link>
   );
