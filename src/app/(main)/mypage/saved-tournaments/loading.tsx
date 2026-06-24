@@ -1,4 +1,5 @@
 import { Skeleton } from '@/components/feedback/Skeleton';
+import { SubHeaderSkeleton } from '@/components/feedback/SubHeaderSkeleton';
 
 /**
  * /mypage/saved-tournaments cold start fallback — SavedTournamentsAll
@@ -15,6 +16,7 @@ export default function SavedTournamentsLoading() {
         padding: 20,
       }}
     >
+      <SubHeaderSkeleton wrapPadding={20} />
       <div
         style={{
           display: 'grid',

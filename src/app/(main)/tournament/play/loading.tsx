@@ -1,4 +1,5 @@
 import { Skeleton } from '@/components/feedback/Skeleton';
+import { SubHeaderSkeleton } from '@/components/feedback/SubHeaderSkeleton';
 
 /**
  * /tournament/play cold start fallback — bracket phase 첫 화면 정합 (2026-06-24).
@@ -16,6 +17,7 @@ export default function TournamentPlayLoading() {
         padding: 20,
       }}
     >
+      <SubHeaderSkeleton wrapPadding={20} />
       {/* Frame 43 — progress top row + segments */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         <div

@@ -1,4 +1,5 @@
 import { Skeleton } from '@/components/feedback/Skeleton';
+import { SubHeaderSkeleton } from '@/components/feedback/SubHeaderSkeleton';
 
 /**
  * /region/[code] cold start fallback — Figma "RGN · 시군상세" layout 정합.
@@ -19,6 +20,7 @@ export default function RegionDetailLoading() {
         padding: '4px 4px 0',
       }}
     >
+      <SubHeaderSkeleton wrapPadding={4} />
       {/* RegionHero banner placeholder — 103h radius 12. */}
       <Skeleton width="100%" height={103} radius="md" />
 

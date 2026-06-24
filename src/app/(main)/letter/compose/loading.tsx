@@ -1,4 +1,5 @@
 import { Skeleton } from '@/components/feedback/Skeleton';
+import { SubHeaderSkeleton } from '@/components/feedback/SubHeaderSkeleton';
 
 /**
  * /letter/compose cold start fallback — LetterComposeForm layout 정합.
@@ -19,6 +20,7 @@ export default function LetterComposeLoading() {
         gap: 'var(--space-5)',
       }}
     >
+      <SubHeaderSkeleton />
       {/* intro — 2줄 center. */}
       <div
         style={{

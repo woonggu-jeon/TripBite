@@ -1,4 +1,5 @@
 import { Skeleton } from '@/components/feedback/Skeleton';
+import { SubHeaderSkeleton } from '@/components/feedback/SubHeaderSkeleton';
 
 /**
  * /settings cold start fallback — SettingsClient layout 정합.
@@ -22,6 +23,7 @@ export default function SettingsLoading() {
         gap: 'var(--space-6)',
       }}
     >
+      <SubHeaderSkeleton />
       {/* PageSection "알림" — title 14h + 3 row 56h. */}
       <section style={{ display: 'grid', gap: 'var(--space-3)' }}>
         <Skeleton width={48} height={14} radius="sm" />

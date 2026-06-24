@@ -1,4 +1,5 @@
 import { Skeleton } from '@/components/feedback/Skeleton';
+import { SubHeaderSkeleton } from '@/components/feedback/SubHeaderSkeleton';
 
 /**
  * /region cold start fallback — RegionMapClient layout 정합.
@@ -18,6 +19,7 @@ export default function RegionLoading() {
         gap: 'var(--space-6)',
       }}
     >
+      <SubHeaderSkeleton />
       {/* ChungbukStampMap placeholder — 480 max-height 정합. */}
       <Skeleton width="100%" height={480} radius="md" />
 

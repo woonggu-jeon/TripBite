@@ -1,4 +1,5 @@
 import { Skeleton } from '@/components/feedback/Skeleton';
+import { SubHeaderSkeleton } from '@/components/feedback/SubHeaderSkeleton';
 
 /** /tournament/result — 우승지 hero + 통계 + actions. */
 export default function TournamentResultLoading() {
@@ -10,6 +11,7 @@ export default function TournamentResultLoading() {
         gap: 'var(--space-4)',
       }}
     >
+      <SubHeaderSkeleton wrapPadding={16} />
       {/* 우승지 hero (이미지 + 이름) */}
       <Skeleton width="100%" height={260} radius="lg" />
       <Skeleton width="60%" height={24} radius="md" />

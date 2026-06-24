@@ -1,4 +1,5 @@
 import { Skeleton } from '@/components/feedback/Skeleton';
+import { SubHeaderSkeleton } from '@/components/feedback/SubHeaderSkeleton';
 
 /**
  * /quiz cold start fallback — TravelTypeQuiz isLoading 분기 정합.
@@ -15,6 +16,7 @@ export default function QuizLoading() {
         padding: '3rem 1rem',
       }}
     >
+      <SubHeaderSkeleton wrapPadding={48} />
       <Skeleton width="100%" height={180} radius="lg" />
       <Skeleton width="100%" height={56} radius="md" />
       <Skeleton width="100%" height={56} radius="md" />

@@ -1,4 +1,5 @@
 import { Skeleton } from '@/components/feedback/Skeleton';
+import { SubHeaderSkeleton } from '@/components/feedback/SubHeaderSkeleton';
 
 /**
  * /notifications cold start fallback — NotificationsClient skeletonItem 정합.
@@ -13,6 +14,7 @@ export default function NotificationsLoading() {
         gap: 'var(--space-3)',
       }}
     >
+      <SubHeaderSkeleton wrapPadding={16} />
       {Array.from({ length: 4 }).map((_, i) => (
         <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <Skeleton width={32} height={32} radius="full" />

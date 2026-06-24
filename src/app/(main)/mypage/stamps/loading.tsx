@@ -1,4 +1,5 @@
 import { Skeleton } from '@/components/feedback/Skeleton';
+import { SubHeaderSkeleton } from '@/components/feedback/SubHeaderSkeleton';
 
 /**
  * /mypage/stamps cold start fallback — StampsClient isLoading 분기 정합.
@@ -14,6 +15,7 @@ export default function StampsLoading() {
         padding: '18px 16px 24px',
       }}
     >
+      <SubHeaderSkeleton wrapPadding={18} />
       <Skeleton width="100%" height={68} radius="md" />
       <Skeleton width="100%" height={360} radius="lg" />
     </div>

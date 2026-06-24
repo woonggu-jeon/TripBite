@@ -1,4 +1,5 @@
 import { Skeleton } from '@/components/feedback/Skeleton';
+import { SubHeaderSkeleton } from '@/components/feedback/SubHeaderSkeleton';
 
 /**
  * /destination/[id] cold start fallback — Figma "POI · 장소상세" layout 과
@@ -28,6 +29,7 @@ export default function DestinationDetailLoading() {
         margin: '0 calc(-1 * var(--content-pad))',
       }}
     >
+      <SubHeaderSkeleton />
       {/* DestinationPhotos hero — aspect-ratio 360/234 (component 와 동일 grow). */}
       <Skeleton width="100%" radius="sm" style={{ aspectRatio: '360 / 234' }} />
 

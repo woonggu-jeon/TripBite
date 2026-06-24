@@ -1,4 +1,5 @@
 import { Skeleton } from '@/components/feedback/Skeleton';
+import { SubHeaderSkeleton } from '@/components/feedback/SubHeaderSkeleton';
 
 /**
  * /quiz/result cold start fallback — TravelTypeResult mount 후 첫 화면 정합.
@@ -20,6 +21,7 @@ export default function QuizResultLoading() {
         padding: '0 20px 20px',
       }}
     >
+      <SubHeaderSkeleton />
       {/* banner 320×247 — emoji 52 + codePill 73×20 + title + keywords + desc */}
       <div
         style={{

@@ -1,4 +1,5 @@
 import { Skeleton } from '@/components/feedback/Skeleton';
+import { SubHeaderSkeleton } from '@/components/feedback/SubHeaderSkeleton';
 
 /**
  * /letter/sent cold start fallback — LetterSentClient isLoading 분기 정합.
@@ -14,6 +15,7 @@ export default function LetterSentLoading() {
         gap: 'var(--space-3)',
       }}
     >
+      <SubHeaderSkeleton wrapPadding={16} />
       <Skeleton width="100%" height={64} radius="lg" />
       <Skeleton width="100%" height={320} radius="lg" />
       <Skeleton width="100%" height={56} radius="md" />

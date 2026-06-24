@@ -1,4 +1,5 @@
 import { Skeleton } from '@/components/feedback/Skeleton';
+import { SubHeaderSkeleton } from '@/components/feedback/SubHeaderSkeleton';
 
 /**
  * /letter cold start fallback — LetterIndex layout 정합.
@@ -19,6 +20,7 @@ export default function LetterLoading() {
         gap: 'var(--space-6)',
       }}
     >
+      <SubHeaderSkeleton />
       {/* ComposeEntryCard — hero 140 + body (16px padding row + arrow). */}
       <Skeleton width="100%" height={196} radius="lg" />
 

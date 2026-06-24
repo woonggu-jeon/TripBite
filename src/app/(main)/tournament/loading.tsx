@@ -1,4 +1,5 @@
 import { Skeleton } from '@/components/feedback/Skeleton';
+import { SubHeaderSkeleton } from '@/components/feedback/SubHeaderSkeleton';
 
 /**
  * /tournament cold start fallback — TournamentSetup 첫 화면 (step 1) 정합.
@@ -24,6 +25,7 @@ export default function TournamentSetupLoading() {
         minHeight: 'calc(100vh - var(--header-h))',
       }}
     >
+      <SubHeaderSkeleton wrapPadding={20} />
       {/* heading — gap 8 */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         <Skeleton width="60%" height={20} radius="sm" />

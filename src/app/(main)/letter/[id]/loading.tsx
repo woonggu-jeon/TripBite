@@ -1,4 +1,5 @@
 import { Skeleton } from '@/components/feedback/Skeleton';
+import { SubHeaderSkeleton } from '@/components/feedback/SubHeaderSkeleton';
 
 /**
  * /letter/[id] cold start fallback — LetterDetailClient isLoading 분기 정합.
@@ -13,6 +14,7 @@ export default function LetterDetailLoading() {
         gap: 'var(--space-3)',
       }}
     >
+      <SubHeaderSkeleton wrapPadding={16} />
       <Skeleton width="100%" height={64} radius="lg" />
       <Skeleton width="100%" height={320} radius="lg" />
       <Skeleton width="100%" height={68} radius="md" />
