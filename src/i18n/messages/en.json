@@ -582,13 +582,11 @@
       "section": "Letters",
       "received": "Received",
       "sent": "Sent",
-      "liked": "Hearts",
       "saved": "Saved letters"
     },
     "empty": {
       "received": "No received letters",
       "sent": "No sent letters",
-      "liked": "No liked letters",
       "saved": "No saved letters"
     },
     "listError": "Couldn't load letters",
