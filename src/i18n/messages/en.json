@@ -598,13 +598,14 @@
       "daysAgo": "{n}d ago"
     },
     "compose": {
-      "title": "Leave five letters",
-      "intro": "It will arrive at a random time",
+      "title": "Write a letter",
+      "heroTitle": "Share your heart in 5 letters",
+      "intro": "Letters arrive at a random time to someone",
       "introMain": "Send your feelings in 5 characters or less",
       "introSub": "Letters arrive at a random time to someone",
       "label": "Letter body",
       "placeholder": "Up to 5 characters",
-      "anonymous": "Attach my location",
+      "anonymous": "Send anonymously",
       "anonymousHint": "Recipient won't see your nickname",
       "reset": "Rewrite",
       "submit": "Send letter",

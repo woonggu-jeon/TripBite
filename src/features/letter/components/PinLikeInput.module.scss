@@ -3,8 +3,12 @@
 //   - cell 56×56 white — border-right 1px #E1493C (각 cell 우측 vertical
 //     divider). 첫 cell 좌측에도 border-left 1px error → 외곽 좌우도 닫힘.
 // 결과: 우표(stamp) 같은 외곽 사각 + 4 verical divider.
+// PinLikeInput .wrap — width 100% 명시 (2026-06-24 fix). 부모 .inputWrap 이
+// flex container 일 때 .wrap 의 자연 width 가 cells flex 1 children 합 0 으로
+// 압축되는 회귀 정정.
 .wrap {
   position: relative;
+  width: 100%;
   cursor: text;
   user-select: none;
 }

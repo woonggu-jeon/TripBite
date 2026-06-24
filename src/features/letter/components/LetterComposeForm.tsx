@@ -141,9 +141,11 @@ export function LetterComposeForm() {
   return (
     <form onSubmit={onSubmit} className={styles.form}>
       <div className={styles.wb}>
-        {/* Figma Frame 1 — intro (title B_24 + sub R_14 muted center). */}
+        {/* Figma Frame 1 — intro (title B_24 + sub R_14 muted center). SubHeader
+            title 은 "편지 쓰기" (page.tsx 의 letter.compose.title), body hero
+            는 별도 heroTitle 키 — 둘이 분리 (사용자 명시 2026-06-24). */}
         <div className={styles.intro}>
-          <h1 className={styles.title}>{t('title')}</h1>
+          <h1 className={styles.title}>{t('heroTitle')}</h1>
           <p className={styles.sub}>{t('intro')}</p>
         </div>
 
@@ -212,10 +214,11 @@ export function LetterComposeForm() {
             <div className={styles.locMid}>
               {resolved ? (
                 <>
-                  <span className={styles.locSub}>{resolved.label}</span>
-                  <span className={styles.locLabel}>
-                    {tLoc('autoAttached')}
-                  </span>
+                  {/* Figma loc: caption (위) "현재 위치가 자동으로 첨부돼요" +
+                      label (아래, 강조) "{지역명}" — 위치 변경 (사용자 명시
+                      2026-06-24). 직전엔 지역명 → 안내 순서 였음. */}
+                  <span className={styles.locSub}>{tLoc('autoAttached')}</span>
+                  <span className={styles.locLabel}>{resolved.label}</span>
                 </>
               ) : isResolving ? (
                 <span className={styles.locSub}>{tLoc('resolving')}</span>

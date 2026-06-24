@@ -598,13 +598,14 @@
       "daysAgo": "{n}일 전"
     },
     "compose": {
-      "title": "다섯 글자를 남겨주세요",
-      "intro": "랜덤한 시간에 누군가에게 도착해요",
+      "title": "편지 쓰기",
+      "heroTitle": "5글자로 마음을 전해보세요",
+      "intro": "편지는 랜덤한 시간에 누군가에게 도착해요",
       "introMain": "5글자 이하로 마음을 전해보세요",
       "introSub": "편지는 랜덤 시간에 누군가에게 도착해요",
       "label": "편지 내용",
       "placeholder": "다섯 글자 이내",
-      "anonymous": "위치 첨부 동의",
+      "anonymous": "익명으로 편지 보내기",
       "anonymousHint": "받는 사람에게 닉네임이 보이지 않아요",
       "reset": "또 쓰기",
       "submit": "편지 보내기",
