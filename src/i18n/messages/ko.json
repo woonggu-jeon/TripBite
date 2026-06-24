@@ -406,8 +406,8 @@
           "hint": "선택한 계절의 분위기로 여행지를 골라요."
         },
         "category": {
-          "title": "어떤 유형이 끌리세요?",
-          "hint": "테마에 맞는 여행지 유형을 골라주세요.",
+          "title": "{season} 여행지를 찾아볼까요?",
+          "hint": "여행 유형을 선택해주세요.",
           "seasonScopeNonFestival": "선택한 계절({season})은 축제 카테고리에만 적용돼요. 다른 카테고리는 계절과 무관하게 추천됩니다."
         },
         "count": {
@@ -446,9 +446,9 @@
       "experience": "체험관광"
     },
     "categoryDesc": {
-      "festival": "지역 축제·이벤트",
-      "attraction": "유명 관광 명소",
-      "experience": "체험·액티비티"
+      "festival": "지역 축제와 행사 위주",
+      "attraction": "유명 명소와 자연 풍경 위주",
+      "experience": "직접 즐기는 체험 프로그램"
     },
     "play": {
       "loading": "여행지를 불러오는 중이에요",

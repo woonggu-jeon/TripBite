@@ -6,8 +6,8 @@ import type { DestinationCategory } from '@/api/generated/schemas';
 import styles from './CategoryFilter.module.scss';
 
 const CATEGORIES: { value: DestinationCategory }[] = [
-  { value: 'attraction' },
   { value: 'festival' },
+  { value: 'attraction' },
   { value: 'experience' },
 ];
 

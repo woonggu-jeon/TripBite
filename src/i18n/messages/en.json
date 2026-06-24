@@ -406,8 +406,8 @@
           "hint": "Pick a destination by the season's mood."
         },
         "category": {
-          "title": "What type interests you?",
-          "hint": "Pick a destination type that fits the theme.",
+          "title": "Looking for {season} destinations?",
+          "hint": "Pick a destination type.",
           "seasonScopeNonFestival": "Season ({season}) applies to Festival only. Other categories are recommended regardless of season."
         },
         "count": {
@@ -446,9 +446,9 @@
       "experience": "Experience"
     },
     "categoryDesc": {
-      "festival": "Local festivals & events",
-      "attraction": "Famous tourist spots",
-      "experience": "Hands-on activities"
+      "festival": "Local festivals and seasonal events",
+      "attraction": "Famous landmarks and natural scenery",
+      "experience": "Hands-on experience programs"
     },
     "play": {
       "loading": "Loading destinations…",

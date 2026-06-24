@@ -174,7 +174,11 @@ export function TournamentSetup() {
       return { title: t('steps.season.title'), hint: t('steps.season.hint') };
     if (step === 3)
       return {
-        title: t('steps.category.title'),
+        // season 변수 — phase 2 (또는 random 흐름의 즉시 prefill) 후 not-null
+        // 보장. 안전 fallback 으로 empty string (이론적 race 대비).
+        title: t('steps.category.title', {
+          season: season ? tSeason(season) : '',
+        }),
         hint: t('steps.category.hint'),
       };
     return { title: t('steps.count.title'), hint: t('steps.count.hint') };
