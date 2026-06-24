@@ -44,3 +44,25 @@ export const BOTTOM_NAV_ROUTES = [
   { path: ROUTES.LETTER, labelKey: 'letter', icon: 'mail' },
   { path: ROUTES.MYPAGE, labelKey: 'mypage', icon: 'user' },
 ] as const;
+
+/**
+ * BottomNav 미노출 라우트 — 하단 fixed button (CTA) 가 있는 페이지나 흐름
+ * 집중도가 필요한 페이지에서 nav 와 button 겹침 회피.
+ *
+ * 매칭 규칙:
+ *   - `prefix` true: pathname.startsWith(path) — 하위 모두 적용 (예: tournament/*).
+ *   - `prefix` false: pathname === path — 정확히 그 path 만 (예: /letter/compose).
+ *
+ * 새 hide 페이지 추가 시 이 array 만 수정.
+ */
+export const NAV_HIDE_ROUTES: ReadonlyArray<{
+  path: string;
+  prefix: boolean;
+}> = [
+  // 토너먼트 흐름 전체 (setup/play/result) — 하단 "다음/시작/공유" CTA.
+  { path: '/tournament', prefix: true },
+  // 편지 sub 페이지 전체 — `/letter/` (trailing slash) prefix 매칭으로
+  // /letter/compose, /letter/sent, /letter/[id] 모두 hide. /letter 메인은
+  // trailing slash 가 없어 자연 노출 (BottomNav 활성 탭).
+  { path: '/letter/', prefix: true },
+] as const;

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Icon, type IconName } from '@/components/icon';
-import { BOTTOM_NAV_ROUTES } from '@/constants/routes';
+import { BOTTOM_NAV_ROUTES, NAV_HIDE_ROUTES } from '@/constants/routes';
 import { haptic } from '@/lib/haptic';
 import styles from './BottomNav.module.scss';
 
@@ -19,15 +19,19 @@ import styles from './BottomNav.module.scss';
  *   - 홈("/") 정확히 일치
  *   - 나머지는 prefix 매칭 (예: /tournament/play 도 토너먼트 탭 활성)
  *
- * 숨김 분기 (사용자 피드백 2026-06-24): 토너먼트 흐름 (`/tournament*`) 은
- * 하단 fixed "다음/시작" button 과 nav 가 겹쳐 가려지는 문제 + 흐름 집중도
- * (테스트 진행 중 다른 경로 이탈 차단) 위해 미렌더.
+ * 숨김 분기: `NAV_HIDE_ROUTES` (constants/routes.ts) 매칭 시 미렌더.
+ *   - 토너먼트 흐름 (`/tournament*`): 하단 fixed CTA + 흐름 집중도.
+ *   - 편지 sub (`/letter/*`): compose/sent/[id] 모두 하단 fixed CTA.
+ * 새 hide 페이지는 constants 의 NAV_HIDE_ROUTES 만 갱신 (2026-06-24 정합).
  */
 export function BottomNav() {
   const pathname = usePathname();
   const t = useTranslations('nav');
 
-  if (pathname.startsWith('/tournament')) {
+  const shouldHide = NAV_HIDE_ROUTES.some((route) =>
+    route.prefix ? pathname.startsWith(route.path) : pathname === route.path,
+  );
+  if (shouldHide) {
     return null;
   }
 
