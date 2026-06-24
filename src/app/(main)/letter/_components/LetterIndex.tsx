@@ -9,30 +9,28 @@ import { LetterListPanel } from '@/features/letter/components/LetterListPanel';
 import { letterKeys } from '@/features/letter/hooks/use-letters';
 import { letterApi } from '@/features/letter/api/letter';
 import type { LetterListKind } from '@/features/letter/types';
-import { TabList, Tab, TabPanel } from '@/components/ui';
 import styles from './LetterIndex.module.scss';
 
 /**
- * /letter 메인
+ * /letter 메인 — Figma "편지 메인" (2026-06-24).
  *
- *   ┌────────────────────────────┐
- *   │ ComposeEntryCard (hero)    │ ← 편지 보내러 가기
- *   ├────────────────────────────┤
- *   │ 받은 · 보낸 · 하트 (탭)     │
- *   ├────────────────────────────┤
- *   │ LetterRowCard × N          │ ← InfiniteList (useLettersInfinite)
- *   └────────────────────────────┘
+ * 구조:
+ *   - mb (banner wrap padding 20) — ComposeEntryCard 320×147.
+ *   - seg (3 탭 360×44) — 받은 / 좋아요 / 보낸 (Figma 순서).
+ *     · 활성: border-bottom primary + B_14 fg.
+ *     · 비활성: border-bottom gray + R_14 muted.
+ *   - ml (mail list padding 20 gap 12) 또는 ec (empty state).
  *
- * 깜빡임 방지 (RegionDetailTabs 와 동일 전략 — [[rendering-speed-first]]):
- *   1) mount 유지 + lazy fetch — 한번 클릭된 탭만 panel mount, hidden 토글
- *   2) pointerdown / focus prefetch — 터치 다운 ~ 클릭 사이 latency 흡수
- *   3) min-height — list 영역 고정 → CLS 0
+ * 깜빡임 방지 — RegionDetailTabs 와 동일 전략:
+ *   1) 한번 클릭된 탭만 panel mount + hidden 토글.
+ *   2) pointerdown / focus prefetch — 터치 다운 latency 흡수.
+ *   3) ml min-height — CLS 0.
  */
-const TABS: { key: LetterListKind; labelKey: 'received' | 'sent' | 'liked' }[] =
+const TABS: { key: LetterListKind; labelKey: 'received' | 'liked' | 'sent' }[] =
   [
     { key: 'received', labelKey: 'received' },
-    { key: 'sent', labelKey: 'sent' },
     { key: 'liked', labelKey: 'liked' },
+    { key: 'sent', labelKey: 'sent' },
   ];
 
 const FETCHERS = {
@@ -53,18 +51,16 @@ function readInitialTab(value: string | null): LetterListKind {
 export function LetterIndex() {
   const t = useTranslations('letter.tabs');
   const queryClient = useQueryClient();
-  // 알림 / deep-link 에서 `?tab=sent|liked` 으로 직접 진입 가능 — 초기 active 분기.
   const searchParams = useSearchParams();
   const initial = readInitialTab(searchParams.get('tab'));
   const [active, setActive] = useState<LetterListKind>(initial);
-  // 한번이라도 활성화된 탭만 panel mount. 초기엔 initial 탭만.
   const [activated, setActivated] = useState<Set<LetterListKind>>(
     () => new Set([initial]),
   );
 
   const prefetchTab = useCallback(
     (kind: LetterListKind) => {
-      if (activated.has(kind)) return; // 이미 mount 중이면 중복 호출 X
+      if (activated.has(kind)) return;
       queryClient.prefetchInfiniteQuery({
         queryKey: letterKeys.list(kind),
         queryFn: ({ pageParam = 0 }) => FETCHERS[kind](pageParam as number),
@@ -84,41 +80,47 @@ export function LetterIndex() {
 
   return (
     <div className={styles.wrap}>
-      <ComposeEntryCard />
+      <div className={styles.mb}>
+        <ComposeEntryCard />
+      </div>
 
-      <section aria-label={t('section')}>
-        <TabList ariaLabel={t('section')} className={styles.tabs}>
-          {TABS.map((tab) => {
-            const isActive = active === tab.key;
-            return (
-              <Tab
-                key={tab.key}
-                id={`letter-${tab.key}`}
-                selected={isActive}
-                onSelect={() => selectTab(tab.key)}
-                onPrefetch={() => prefetchTab(tab.key)}
-                className={`${styles.tab} ${isActive ? styles.active : ''}`}
-              >
-                {t(tab.labelKey)}
-              </Tab>
-            );
-          })}
-        </TabList>
-
-        <div className={styles.list}>
-          {TABS.map((tab) => (
-            <TabPanel
+      <div className={styles.seg} role="tablist" aria-label={t('section')}>
+        {TABS.map((tab) => {
+          const isActive = active === tab.key;
+          return (
+            <button
               key={tab.key}
-              id={`letter-${tab.key}`}
-              selected={active === tab.key}
-              mounted={activated.has(tab.key)}
-              className={styles.panel}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              aria-controls={`letter-panel-${tab.key}`}
+              id={`letter-tab-${tab.key}`}
+              tabIndex={isActive ? 0 : -1}
+              className={`${styles.tab} ${isActive ? styles.tabActive : ''}`}
+              onClick={() => selectTab(tab.key)}
+              onPointerDown={() => prefetchTab(tab.key)}
+              onFocus={() => prefetchTab(tab.key)}
             >
-              <LetterListPanel kind={tab.key} />
-            </TabPanel>
-          ))}
-        </div>
-      </section>
+              {t(tab.labelKey)}
+            </button>
+          );
+        })}
+      </div>
+
+      <div>
+        {TABS.map((tab) => (
+          <div
+            key={tab.key}
+            id={`letter-panel-${tab.key}`}
+            role="tabpanel"
+            aria-labelledby={`letter-tab-${tab.key}`}
+            hidden={active !== tab.key}
+            className={styles.panel}
+          >
+            {activated.has(tab.key) && <LetterListPanel kind={tab.key} />}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -1,65 +1,88 @@
+// Figma "편지 메인" body — bg #F8F8F8 + mb (banner) padding 20 + seg + ml.
+// contentInner padding 좌우 무시 — viewport edge 까지 bleed (banner padding 20
+// 자체 처리).
 .wrap {
-  display: grid;
-  gap: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  background: var(--color-gray-10); /* #F8F8F8 */
+  margin-left: calc(-1 * var(--content-pad));
+  margin-right: calc(-1 * var(--content-pad));
+  margin-bottom: calc(-1 * var(--content-pad));
+  :global(:root[data-theme='dark']) & {
+    background: var(--color-bg);
+  }
 }
 
-.tabs {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
-  padding: 0.375rem;
-  background: color-mix(in srgb, var(--color-fg) 4%, transparent);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--space-3);
+// Figma mb — padding 20 (banner wrap).
+.mb {
+  padding: 20px;
+}
+
+// Figma seg — 360×44 white bg row, 3 탭 균등 분할. tab 별 border-bottom 1px
+// (활성: primary / 비활성: gray).
+.seg {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  background: var(--color-bg);
 }
 
 .tab {
-  padding: 0.5rem 0.75rem;
-  border-radius: calc(var(--radius-md) - 2px);
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-muted);
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  height: 44px;
+  padding: 12px 0;
   background: transparent;
-  transition:
-    background var(--motion-base) ease,
-    color var(--motion-base) ease;
-  letter-spacing: var(--tracking-snug);
+  border: 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--text-sm); /* 14 */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: color var(--motion-base) ease;
 
   &:focus-visible {
     outline: var(--focus-outline);
-    outline-offset: var(--focus-outline-offset);
-  }
-
-  &.active {
-    background: var(--color-bg);
-    color: var(--color-fg);
-    box-shadow: var(--shadow-sm);
+    outline-offset: calc(-1 * var(--focus-outline-offset));
   }
 }
 
-// 탭 panel 영역 — skeleton ↔ data 전환 시 CLS 0.
-// LetterRowCard ≈ 107px (padding 24 + image 80 + border 3) + gap 12.
-// 3 row + sentinel 가 안정적으로 들어갈 높이.
-//
-// display: block — 자식 InfiniteList 가 자체 grid 를 가지므로 wrapper 는 block.
-.list {
-  position: relative;
-  min-height: 360px;
+.tabActive {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-fg);
+  border-bottom: 1px solid var(--color-primary);
 }
 
-// 비활성 panel 만 숨김. [hidden] specificity 가 .panel 보다 높아 안전.
+// Figma ml — padding 20 gap 12 column (mail list).
+.ml {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+}
+
+// 비활성 panel 만 숨김.
 .panel[hidden] {
   display: none;
 }
 
-@media (max-width: 380px) {
-  .list {
-    min-height: 320px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tab {
-    transition: none;
+// Figma ec — empty state 영역 (받은/보낸/좋아요 0 건). bg #FAFBFA, column
+// center padding 0 0 60. EmptyState hero variant 가 시각 처리 (circle 84
+// primary-soft + send icon 38 primary stroke + title B_16 fg).
+.ec {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 0 60px;
+  background: #fafbfa;
+  min-height: 360px;
+  :global(:root[data-theme='dark']) & {
+    background: var(--color-surface-soft);
   }
 }

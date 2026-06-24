@@ -562,6 +562,14 @@
   "letter": {
     "title": "다섯글자 편지",
     "new": "새 편지",
+    "banner": {
+      "lead": "마음을 다섯 글자로 담아보세요",
+      "cta": "편지 쓰러 가기"
+    },
+    "row": {
+      "pillLocation": "위치",
+      "pillAnonymous": "익명"
+    },
     "indexCta": {
       "title": "편지 보내러 가기",
       "subtitle": "단 다섯 글자, 누군가에게 닿습니다"
@@ -571,10 +579,10 @@
     "liked": "좋아요한 편지",
     "saved": "저장한 편지",
     "tabs": {
-      "section": "도착한 편지",
+      "section": "편지함",
       "received": "받은 편지",
       "sent": "보낸 편지",
-      "liked": "하트",
+      "liked": "좋아요",
       "saved": "저장됨"
     },
     "empty": {

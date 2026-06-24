@@ -1,23 +1,19 @@
-// cardClasses 가 bg/border/radius 담당. 본 SCSS 는 layout + interactive 만.
-// radius-xl 이 필요한 경우 override 가능 (Card primitive 는 radius-lg).
-.card {
-  display: grid;
-  grid-template-rows: 140px auto;
-  border-radius: var(--radius-xl);
+// Figma "편지 메인 · mb · banner" (2026-06-24) — 320×147 padding 20 16 gap 12
+// bg #EAF6EF (primary-soft) + 1px primary border + radius 12 column center.
+.banner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 16px;
+  background: var(--color-primary-soft); /* #EAF6EF */
+  border: 1px solid var(--color-primary);
+  border-radius: 12px;
   text-decoration: none;
-  color: var(--color-fg);
-  overflow: hidden;
-  transition:
-    border-color var(--motion-base) ease,
-    transform var(--motion-fast) ease,
-    box-shadow var(--motion-base) ease;
+  color: inherit;
+  transition: transform var(--motion-fast) ease;
 
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      border-color: var(--color-primary);
-      box-shadow: var(--shadow-card-strong);
-    }
-  }
   &:active {
     transform: scale(0.99);
   }
@@ -27,81 +23,48 @@
   }
 }
 
-.hero {
-  position: relative;
+// Figma bic — 50×50 white radius 14 center, Send icon 24 primary stroke 1.7.
+.bic {
   display: grid;
   place-items: center;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--accent-spring-grad-start) 22%, var(--color-bg)),
-    color-mix(in srgb, var(--accent-festival-grad-start) 18%, var(--color-bg))
-      50%,
-    color-mix(in srgb, var(--accent-winter-grad-start) 22%, var(--color-bg))
-  );
-  overflow: hidden;
+  width: 50px;
+  height: 50px;
+  background: var(--color-bg);
+  border-radius: 14px;
+  color: var(--color-primary);
+  flex-shrink: 0;
 }
 
-.envelope {
-  font-size: var(--font-letter-envelope);
-  line-height: 1;
-  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.15));
-  z-index: 1;
-}
-
-.sparkle1,
-.sparkle2 {
-  position: absolute;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: var(--font-body);
-  filter: var(--drop-shadow-sm);
-}
-
-.sparkle1 {
-  top: 20%;
-  left: 22%;
-  font-size: var(--text-sm);
-}
-
-.sparkle2 {
-  bottom: 22%;
-  right: 24%;
-  font-size: var(--font-h2);
-}
-
-.body {
-  display: grid;
-  grid-template-columns: 1fr auto;
+// Figma f — column gap 3 center align (lead + cta).
+.f {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-4);
+  gap: 3px;
 }
 
-.title {
-  font-size: var(--font-h3);
-  font-weight: var(--font-weight-extrabold);
-  color: var(--color-fg);
+// Figma title B_14_140% fg.
+.lead {
+  font-size: var(--text-sm); /* 14 */
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug-relaxed); /* 140% */
   letter-spacing: var(--tracking-tight);
-  line-height: var(--line-snug);
+  color: var(--color-fg);
+  text-align: center;
 }
 
-.subtitle {
-  font-size: var(--font-label);
-  color: var(--color-muted);
-  margin-top: 0.25rem;
-}
-
-.arrow {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-full);
-  background: var(--color-primary);
-  color: var(--color-primary-fg);
+// Figma title B_16_140% primary.
+.cta {
+  font-size: var(--font-body); /* 16 */
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-primary);
+  text-align: center;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card {
+  .banner {
     transition: none;
     &:active {
       transform: none;

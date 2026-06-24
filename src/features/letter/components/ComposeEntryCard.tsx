@@ -1,40 +1,37 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { Send } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { ROUTES } from '@/constants/routes';
-import { cardClasses } from '@/components/ui';
 import styles from './ComposeEntryCard.module.scss';
 
 /**
- * /letter 메인 상단 hero — 편지 보내러 가기 CTA.
- * 큰 그라데이션 hero + 본문 + 화살표 → /letter/compose
+ * /letter 메인 mb banner — Figma "편지 메인 · mb · banner" 정합 (2026-06-24).
+ *
+ * spec:
+ *   - banner 320×147 padding 20 16 gap 12 bg #EAF6EF (secondary01) + 1px primary
+ *     border + radius 12 column center.
+ *   - bic 50×50 white radius 14 center — Send icon 24 primary 1.7 stroke.
+ *   - f (column gap 3 center):
+ *     · title B_14 fg "마음을 다섯 글자로 담아보세요"
+ *     · title B_16 primary "편지 쓰러 가기"
  */
 export function ComposeEntryCard() {
-  const t = useTranslations('letter.indexCta');
+  const t = useTranslations('letter.banner');
 
   return (
     <Link
       href={ROUTES.LETTER_COMPOSE}
-      className={cardClasses({
-        variant: 'surface',
-        className: styles.card,
-      })}
+      className={styles.banner}
+      aria-label={t('cta')}
     >
-      <div className={styles.hero} aria-hidden>
-        <span className={styles.envelope}>✉️</span>
-        <span className={styles.sparkle1}>✦</span>
-        <span className={styles.sparkle2}>✦</span>
-      </div>
-      <div className={styles.body}>
-        <div>
-          <h2 className={styles.title}>{t('title')}</h2>
-          <p className={styles.subtitle}>{t('subtitle')}</p>
-        </div>
-        <span className={styles.arrow} aria-hidden>
-          <ArrowRight size={20} />
-        </span>
+      <span className={styles.bic} aria-hidden>
+        <Send size={24} strokeWidth={1.7} />
+      </span>
+      <div className={styles.f}>
+        <span className={styles.lead}>{t('lead')}</span>
+        <span className={styles.cta}>{t('cta')}</span>
       </div>
     </Link>
   );

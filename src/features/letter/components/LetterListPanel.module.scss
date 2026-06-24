@@ -1,15 +1,9 @@
-.error {
-  display: grid;
-  gap: 0.5rem;
-  place-items: center;
-  padding: 2rem 1rem;
-  color: var(--color-muted);
-  text-align: center;
+// Figma "편지 메인 · ml" — padding 20 gap 12 (LetterIndex .ml 에서 적용).
+// LetterListPanel 은 list wrap 만 — InfiniteList grid gap 12 자체 처리.
+.listWrap {
+  padding: 20px;
 }
 
-.empty {
-  padding: 2.5rem 1rem;
-  color: var(--color-muted);
-  text-align: center;
-  font-size: var(--text-sm);
+.error {
+  padding: 20px;
 }

@@ -562,6 +562,14 @@
   "letter": {
     "title": "Five-letter letter",
     "new": "New letter",
+    "banner": {
+      "lead": "Share your heart in five letters",
+      "cta": "Write a letter"
+    },
+    "row": {
+      "pillLocation": "Place",
+      "pillAnonymous": "Anon"
+    },
     "indexCta": {
       "title": "Send a letter",
       "subtitle": "Just five letters, reaching someone"
