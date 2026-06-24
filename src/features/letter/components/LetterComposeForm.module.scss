@@ -1,155 +1,224 @@
+// Figma "편지 쓰기" (2026-06-24) — wb (form wrap) padding 20 + bottom button
+// absolute 20.
 .form {
-  display: grid;
-  gap: var(--space-5);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  // 하단 button 영역 reserve — bottom 20 + button 52 + gap 20 = 92.
+  min-height: calc(100dvh - var(--header-h));
 }
 
+// Figma wb — padding 20 column. Frame 76 안 column gap 32 (intro + input +
+// bottom block).
+.wb {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 20px;
+  // 하단 button 위치 공간 확보 (absolute button 80 reserve).
+  padding-bottom: calc(20px + 52px + 20px);
+}
+
+// Figma Frame 1 — intro column align center gap 12.
 .intro {
-  display: grid;
-  gap: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+// Figma Title/B_24_130% fg.
+.title {
+  font-size: 1.5rem; /* 24 */
+  font-weight: var(--font-weight-bold);
+  line-height: 1.3;
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
+  margin: 0;
   text-align: center;
 }
 
-.introMain {
-  font-size: var(--font-body);
-  font-weight: var(--font-weight-extrabold);
-  color: var(--color-fg);
+// Figma Body/R_14_140% muted center.
+.sub {
+  font-size: var(--text-sm); /* 14 */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed); /* 140% */
   letter-spacing: var(--tracking-tight);
-  word-break: keep-all;
-}
-
-.introSub {
-  font-size: var(--font-body-sm);
   color: var(--color-muted);
-  letter-spacing: var(--tracking-snug);
-  word-break: keep-all;
+  margin: 0;
+  text-align: center;
+  white-space: pre-line;
 }
 
-.inputSection {
-  display: grid;
-  gap: 0.5rem;
+// Figma Frame 73 — input wrap + count column gap 8.
+.inputBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.label {
-  font-size: var(--font-body-sm);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-fg);
-  letter-spacing: var(--tracking-snug);
+// Figma Frame 79 — 320×120 bg #F8F8F8 border 1px gray radius 12 padding 20.
+// Frame 70 (PinLikeInput cells) 가 width 280 (340 - 40) 으로 안에 들어감.
+.inputWrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: var(--color-gray-10); /* #F8F8F8 */
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
 }
 
+// Figma Frame 72 — row justify-end gap 10 width 320 height 12.
 .countRow {
   display: flex;
   justify-content: flex-end;
 }
 
-.anonymous {
-  display: grid;
-  grid-template-columns: 20px 1fr;
-  gap: 0.625rem;
-  align-items: start;
-  padding: 0.75rem 0.875rem;
-  background: var(--color-surface-soft);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+// Figma Title/B_10 primary right.
+.count {
+  font-size: 0.625rem; /* 10 */
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+// Figma Frame 75 — column gap 20 (anonymous + location).
+.bottomBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+// Figma an — row gap 9 align center. checkbox 20×20 + label B_14 fg.
+.anon {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
   cursor: pointer;
+  user-select: none;
 
   &:focus-within {
-    border-color: var(--color-primary);
     outline: var(--focus-outline);
-    outline-offset: 1px;
+    outline-offset: var(--focus-outline-offset);
+    border-radius: var(--radius-sm);
   }
 }
 
-.anonymousCheckbox {
+.anonNative {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+// Figma Rectangle 30 — 20×20 primary fill radius 4 + Check 14 white (체크 시).
+.anonBox {
+  display: grid;
+  place-items: center;
   width: 20px;
   height: 20px;
-  margin: 0;
-  accent-color: var(--color-primary);
-  cursor: pointer;
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-border);
+  border-radius: 4px;
+  color: transparent;
+  transition:
+    background var(--motion-base) ease,
+    border-color var(--motion-base) ease;
 }
 
-.anonymousText {
-  display: grid;
-  gap: 2px;
+.anonChecked {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-bg);
 }
 
-.anonymousLabel {
-  font-size: var(--font-body-sm);
+// Figma title Body/B_14_140% fg.
+.anonLabel {
+  font-size: var(--text-sm);
   font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
-  letter-spacing: var(--tracking-snug);
 }
 
-.anonymousHint {
-  font-size: var(--font-caption);
-  color: var(--color-muted);
+// Figma loc — row gap 12 padding 20 16 white + 1px gray border + radius 12.
+// MapPin 20 primary + lm (column gap 3) + lbg pill primary-soft right.
+.locCard {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 16px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
 }
 
-.count {
-  font-size: var(--font-caption);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-muted);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: var(--tracking-wide);
+.locIcon {
+  color: var(--color-primary);
+  flex-shrink: 0;
 }
 
-.locationSection {
-  display: grid;
-  grid-template-columns: 24px 1fr;
-  gap: 0.625rem;
-  align-items: start;
-  padding: 0.875rem 1rem;
-  background: var(--color-primary-fade);
-  border: 1px solid
-    color-mix(in srgb, var(--color-primary) 20%, var(--color-border));
-  border-radius: var(--radius-md);
-}
-
-.locationIcon {
-  color: var(--color-primary-text-bold);
-  margin-top: 1px;
-}
-
-.locationBody {
-  display: grid;
-  gap: 0.125rem;
+.locMid {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
   min-width: 0;
 }
 
-.locationLine1 {
-  font-size: var(--font-label);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-fg);
-  letter-spacing: var(--tracking-snug);
-}
-
-.locationLine2 {
-  font-size: var(--font-label);
+// Figma Caption/R_12 muted (위치명).
+.locSub {
+  font-size: var(--font-caption); /* 12 */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: -0.01em;
   color: var(--color-muted);
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.375rem;
-  flex-wrap: wrap;
 }
 
-.locationTag {
-  font-size: var(--font-eyebrow);
-  font-weight: var(--font-weight-semibold);
-  padding: 1px 6px;
-  background: var(--color-primary-tint);
-  color: var(--color-primary-text-bold);
-  border-radius: var(--radius-sm);
-  letter-spacing: var(--tracking-snug);
-}
-
-.allowBtn {
-  margin-top: 0.25rem;
-  padding: 4px 10px;
-  background: var(--color-primary);
-  color: var(--color-primary-fg);
-  font-size: var(--font-caption);
+// Figma Body/B_14_140% fg (label).
+.locLabel {
+  font-size: var(--text-sm);
   font-weight: var(--font-weight-bold);
-  border-radius: var(--radius-sm);
-  justify-self: start;
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
+}
+
+// Figma lbg — pill 69×20 padding 4 12 #EAF6EF radius 999. Caption B_10 primary.
+.locPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  background: var(--color-primary-soft);
+  border-radius: var(--radius-full);
+  font-size: 0.625rem; /* 10 */
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+// "위치 허용" 버튼 — primary text link 시각.
+.locAllow {
+  align-self: flex-start;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+  cursor: pointer;
+  text-decoration: underline;
 
   &:focus-visible {
     outline: var(--focus-outline);
@@ -157,11 +226,10 @@
   }
 }
 
+// Figma button — absolute bottom 20, 320×52 padding 16 20 radius 12 primary.
 .actions {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 0.625rem;
-  margin-top: 0.25rem;
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
 }
-
-/* .primary / .secondary 클래스는 Button primitive 마이그레이션 후 미사용 — 제거 */

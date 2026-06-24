@@ -5,7 +5,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { MapPin } from 'lucide-react';
+import { MapPin, Check } from 'lucide-react';
 import {
   letterSchema,
   type LetterFormValues,
@@ -23,18 +23,17 @@ import { PinLikeInput } from './PinLikeInput';
 import styles from './LetterComposeForm.module.scss';
 
 /**
- * 편지 작성 폼
+ * 편지 작성 폼 — Figma "편지 쓰기" (2026-06-24) 정합.
  *
- * 구성:
- *   1) 상단 알림 문구 (info)
- *   2) PIN 코드 형식 5칸 시각 + 단일 input
- *      · 1~5자 (zod schema), 띄어쓰기/특수문자/이모지 허용
- *      · 한국어 IME 안전 (5칸 분리 input 대신 1개 input + 시각)
- *      · inputMode="text" — 모바일 일반 키패드
- *   3) 하단 현재 위치 노출 (location store + 권한 prompt)
- *   4) 또 쓰기 / 편지 보내기 두 버튼
- *      · 또 쓰기 = 입력 초기화 (form.reset)
- *      · 편지 보내기 → store.setLastSent + /letter/sent 이동
+ * 구조 (Frame 76 column gap 32):
+ *   - Frame 1 (intro center): title B_24 fg + sub R_14 muted.
+ *   - Frame 73 (gap 8): Frame 79 (input wrap bg #F8F8F8 border 1px gray radius
+ *     12 padding 20) + Frame 72 (count "X/5" right B_10 primary).
+ *   - Frame 75 (column gap 20): an (체크박스 + label) + loc (위치 카드 row).
+ *   - button absolute bottom 20 — 단일 "편지 보내기" 320×52 primary.
+ *
+ * "또 쓰기" 버튼 폐기 (Figma 정합 — 단일 submit). 입력 reset 은 사용자 명시 시
+ * 추가 가능.
  */
 export function LetterComposeForm() {
   const t = useTranslations('letter.compose');
@@ -51,17 +50,14 @@ export function LetterComposeForm() {
   const pushToast = useUIStore((s) => s.pushToast);
   const autoTriggered = useRef(false);
 
-  // 1차 자동 resolve — granted 일 때 즉시, prompt/unsupported 도 시도(브라우저 native prompt 띄움)
-  // store 에 이미 있으면 skip. 컴포넌트 mount 당 1회만.
   useEffect(() => {
     if (resolved || autoTriggered.current) return;
-    if (permission === 'denied') return; // denied 는 사용자 명시 클릭 필요
+    if (permission === 'denied') return;
     autoTriggered.current = true;
     void resolve()
       .then((r) => {
         if (r) setResolved(r);
       })
-      // unhandled rejection 회피 — resolve 가 내부 try-catch 처리하지만 안전망.
       .catch(() => {});
   }, [permission, resolved, resolve, setResolved]);
 
@@ -75,12 +71,10 @@ export function LetterComposeForm() {
     control,
     handleSubmit,
     watch,
-    reset,
     formState: { isSubmitting },
   } = useForm<LetterFormValues>({
     resolver: zodResolver(letterSchema),
     defaultValues: { body: '', isAnonymous: false },
-    // 'onSubmit' — 입력 중 인라인 에러 미표시. submit 시점에 검증 + toast 안내.
     mode: 'onSubmit',
   });
 
@@ -89,12 +83,8 @@ export function LetterComposeForm() {
 
   const onSubmit = handleSubmit(
     async (values) => {
-      // 위치 권한 필수 — onboarding 에선 skip 가능하지만 편지 보낼 땐 필수.
-      // disabled 가 막지만 DevTools 우회 안전망으로 한 번 더 검증.
       if (!resolved) {
         haptic.tap();
-        // duration 명시 생략 — toast.ts 의 type 별 default (warning=3000ms)
-        // 사용. 2500ms 단축 시 위치 권한 안내를 못 보고 지나칠 가능성.
         pushToast({
           type: 'warning',
           message: tErr('locationRequired'),
@@ -102,8 +92,6 @@ export function LetterComposeForm() {
         return;
       }
       haptic.success();
-      // BE reverse 응답의 label 그대로 사용 (예: "서울시 용산구"). reverse 실패 fallback 은
-      // useResolveLocation 가 좌표 표시 label 로 채움.
       let created;
       try {
         created = await send({
@@ -116,7 +104,6 @@ export function LetterComposeForm() {
           },
         });
       } catch {
-        // 네트워크 / 401 / 5xx — silent fail 회피, 사용자에게 명시. retry 결정 위임.
         haptic.tap();
         pushToast({
           type: 'error',
@@ -130,18 +117,14 @@ export function LetterComposeForm() {
         location: { label: resolved.label },
         sentAt: created?.createdAt ?? new Date().toISOString(),
       });
-      // analytics — PII 제외 (length 만). TrackEventMap 정의 정합.
       track('letter.sent', { length: graphemeLength(values.body) });
-      // 서버가 letter id 반환 시 deep-link 로 push — 새로고침/공유 가능.
       router.push(
         created?.id
           ? `/letter/sent?id=${encodeURIComponent(created.id)}`
           : '/letter/sent',
       );
     },
-    // invalid submit — 인라인 에러 대신 toast 로 안내. 첫 에러 메시지만 표시.
     (formErrors) => {
-      // 폼 검증 실패 — tap → warning 으로 사용자 피드백 신호 강화 (Round 6 audit).
       haptic.warning();
       const first = formErrors.body?.message;
       if (first) {
@@ -153,128 +136,117 @@ export function LetterComposeForm() {
     },
   );
 
-  const handleReset = () => {
-    haptic.tap();
-    reset({ body: '', isAnonymous: false });
-  };
-
-  // 정상 UX: 빈 입력 또는 위치 미허용 시 보내기 버튼 disabled.
-  //   - graphemeLength 로 1~5자 검증
-  //   - resolved !== null (위치 허용 또는 IP fallback)
-  // onSubmit 의 invalid 콜백 / 위치 가드는 DevTools 우회 안전망.
   const canSubmit = count > 0 && count <= 5 && resolved !== null;
 
   return (
     <form onSubmit={onSubmit} className={styles.form}>
-      {/* 0) 상단 안내 — 메인 한 줄 + 서브 한 줄 */}
-      <div className={styles.intro}>
-        <p className={styles.introMain}>{t('introMain')}</p>
-        <p className={styles.introSub}>{t('introSub')}</p>
-      </div>
+      <div className={styles.wb}>
+        {/* Figma Frame 1 — intro (title B_24 + sub R_14 muted center). */}
+        <div className={styles.intro}>
+          <h1 className={styles.title}>{t('title')}</h1>
+          <p className={styles.sub}>{t('intro')}</p>
+        </div>
 
-      {/* 1) 편지 내용 라벨 + PIN 5칸 입력 + 우측 하단 카운터 */}
-      <div className={styles.inputSection}>
-        <label htmlFor="body" className={styles.label}>
-          {t('label')}
-        </label>
-        <Controller
-          name="body"
-          control={control}
-          render={({ field }) => (
-            <PinLikeInput
-              id="body"
-              value={field.value}
-              onChange={field.onChange}
-              onBlur={field.onBlur}
-              name={field.name}
-              placeholder={t('placeholder')}
-              aria-label={t('placeholder')}
+        {/* Figma Frame 73 — input wrap + count. */}
+        <div className={styles.inputBlock}>
+          <div className={styles.inputWrap}>
+            <Controller
+              name="body"
+              control={control}
+              render={({ field }) => (
+                <PinLikeInput
+                  id="body"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  name={field.name}
+                  aria-label={t('placeholder')}
+                />
+              )}
             />
-          )}
-        />
-        <div className={styles.countRow}>
-          <span className={styles.count} aria-live="polite">
-            {count} / 5
-          </span>
+          </div>
+          <div className={styles.countRow}>
+            <span className={styles.count} aria-live="polite">
+              {count}/5
+            </span>
+          </div>
         </div>
 
-        {/* 익명 발송 체크박스 — 받는 사람에게 닉네임 미노출.
-            서버는 위치는 그대로 받되 author.nickname 만 가림 ("익명의 여행자"). */}
-        <Controller
-          name="isAnonymous"
-          control={control}
-          render={({ field }) => (
-            // input id + htmlFor 로 연결되어 있고 label 자식 span 이 accessible text 를
-            // 제공. rule 이 nested span 안 텍스트를 detect 못 해 disable.
-            // eslint-disable-next-line jsx-a11y/label-has-associated-control
-            <label htmlFor="isAnonymous" className={styles.anonymous}>
-              <input
-                id="isAnonymous"
-                type="checkbox"
-                checked={field.value}
-                onChange={(e) => field.onChange(e.target.checked)}
-                onBlur={field.onBlur}
-                name={field.name}
-                className={styles.anonymousCheckbox}
-              />
-              <span className={styles.anonymousText}>
-                <span className={styles.anonymousLabel}>{t('anonymous')}</span>
-                <span className={styles.anonymousHint}>
-                  {t('anonymousHint')}
+        {/* Figma Frame 75 — anonymous checkbox + location card. */}
+        <div className={styles.bottomBlock}>
+          <Controller
+            name="isAnonymous"
+            control={control}
+            render={({ field }) => (
+              <label htmlFor="isAnonymous" className={styles.anon}>
+                <input
+                  id="isAnonymous"
+                  type="checkbox"
+                  checked={field.value}
+                  onChange={(e) => field.onChange(e.target.checked)}
+                  onBlur={field.onBlur}
+                  name={field.name}
+                  className={styles.anonNative}
+                />
+                <span
+                  className={`${styles.anonBox} ${field.value ? styles.anonChecked : ''}`}
+                  aria-hidden
+                >
+                  {field.value && <Check size={14} strokeWidth={3} />}
                 </span>
-              </span>
-            </label>
-          )}
-        />
-        {/* 인라인 에러 메시지 제거 — 보내기 버튼 클릭 시 toast 로 안내.
-            disabled 자체는 시각적으로 dim 처리해 빈 상태를 명확히 표시. */}
-      </div>
+                <span className={styles.anonLabel}>{t('anonymous')}</span>
+              </label>
+            )}
+          />
 
-      {/* 3) 하단 위치 — 2줄 안내 (자동 첨부 + 지역) */}
-      <div className={styles.locationSection}>
-        <MapPin size={16} aria-hidden className={styles.locationIcon} />
-        <div className={styles.locationBody}>
-          {resolved ? (
-            <>
-              <p className={styles.locationLine1}>{tLoc('autoAttached')}</p>
-              <p className={styles.locationLine2}>
-                {resolved.label}{' '}
-                <span className={styles.locationTag}>{tLoc('autoSet')}</span>
-              </p>
-            </>
-          ) : isResolving ? (
-            <p className={styles.locationLine1}>{tLoc('resolving')}</p>
-          ) : permission === 'denied' ? (
-            <p className={styles.locationLine1}>{tLoc('permission.denied')}</p>
-          ) : (
-            <>
-              <p className={styles.locationLine1}>
-                {tLoc('permission.needed')}
-              </p>
-              <button
-                type="button"
-                className={styles.allowBtn}
-                onClick={handleRequestLocation}
-              >
-                {tLoc('permission.request')}
-              </button>
-            </>
-          )}
+          {/* Figma loc — 320×81 padding 20 16 white + 1px gray border + radius
+              12 row. MapPin 20 primary + lm (column gap 3 — caption 위치명 +
+              B_14 fg 라벨) + lbg pill primary-soft "위치 첨부". */}
+          <div className={styles.locCard}>
+            <MapPin
+              size={20}
+              strokeWidth={1.4}
+              className={styles.locIcon}
+              aria-hidden
+            />
+            <div className={styles.locMid}>
+              {resolved ? (
+                <>
+                  <span className={styles.locSub}>{resolved.label}</span>
+                  <span className={styles.locLabel}>
+                    {tLoc('autoAttached')}
+                  </span>
+                </>
+              ) : isResolving ? (
+                <span className={styles.locSub}>{tLoc('resolving')}</span>
+              ) : permission === 'denied' ? (
+                <span className={styles.locSub}>
+                  {tLoc('permission.denied')}
+                </span>
+              ) : (
+                <>
+                  <span className={styles.locSub}>
+                    {tLoc('permission.needed')}
+                  </span>
+                  <button
+                    type="button"
+                    className={styles.locAllow}
+                    onClick={handleRequestLocation}
+                  >
+                    {tLoc('permission.request')}
+                  </button>
+                </>
+              )}
+            </div>
+            {resolved && (
+              <span className={styles.locPill}>{tLoc('autoSet')}</span>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* 4) 액션 — 보내기 버튼은 빈 입력 시 disabled.
-              인라인 에러는 표시 안 함 (시각적 중복). DevTools 등으로 disabled
-              를 우회해 클릭한 경우는 onSubmit 의 invalid 콜백이 toast 로 안내. */}
+      {/* Figma button — absolute bottom 20, 320×52 primary radius 12 M_16 white. */}
       <div className={styles.actions}>
-        <Button
-          variant="secondary"
-          fullWidth
-          onClick={handleReset}
-          disabled={isSubmitting || body.length === 0}
-        >
-          {t('reset')}
-        </Button>
         <Button
           type="submit"
           variant="primary"
