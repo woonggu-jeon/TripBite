@@ -4,7 +4,12 @@
 // section: selector + auxiliary hint.
 // 하단 absolute button — 320×52, padding 16 20, radius 12, primary M_16 white.
 .wrap {
-  display: grid;
+  // 단순 column stack — heading + section (+ scopeHint) 순. grid 는 implicit
+  // align-items: stretch + justify-items: stretch 가 자식 sizing 에 영향
+  // 미쳐 cards 가 의도와 다른 폭/높이로 잡힘 (사용자 피드백 2026-06-24).
+  // flex column 으로 자식 본연 크기 + 명시 gap 만 사용.
+  display: flex;
+  flex-direction: column;
   // Figma 모바일 spec 은 gap 20 — 360 viewport 정합. webview/desktop 에서
   // heading ↔ cards 사이가 시각적으로 너무 넓어 보여 사용자 피드백 (2026-06-24)
   // 으로 12 로 축소. heading 내부 gap 8 (Frame 41) 은 spec 유지.
@@ -58,8 +63,13 @@
 }
 
 .section {
-  display: grid;
-  gap: var(--space-5); /* 20 */
+  // selector + scopeHint 같이 들어오는 경우 column stack. grid 사용 이유
+  // 없었음 (1 column only) — flex column 으로 단순화.
+  display: flex;
+  flex-direction: column;
+  gap: var(
+    --space-3
+  ); /* 12 — Figma 모바일 spec 20 이나 사용자 피드백으로 축소 */
 }
 
 // 하단 fixed button container — viewport 하단 고정 + contentInner 와 같은
