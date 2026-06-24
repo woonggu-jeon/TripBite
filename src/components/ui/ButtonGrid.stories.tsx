@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { ButtonGrid } from './ButtonGrid';
-import { Button } from './button';
+import { Button } from './Button';
 
 const meta: Meta<typeof ButtonGrid> = {
   title: 'UI/ButtonGrid',

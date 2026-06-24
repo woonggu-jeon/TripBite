@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { MapPin } from 'lucide-react';
 import { Dialog } from './Dialog';
-import { Button } from './button';
+import { Button } from './Button';
 
 const meta: Meta<typeof Dialog> = {
   title: 'UI/Dialog',

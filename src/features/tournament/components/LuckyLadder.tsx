@@ -140,13 +140,9 @@ export function LuckyLadder({
     [selected],
   );
 
-  const handleRetry = useCallback(() => {
-    haptic.tap();
-    setSelected(null);
-    setRevealed(false);
-    setDisplayPercent(0);
-    setResetKey((k) => k + 1);
-  }, []);
+  // handleRetry 제거 (사용자 명시 2026-06-24) — ladder card 안 "다시 시도"
+  // button 폐기. resetKey 는 path 의 React key 변경에만 의존하므로 setResetKey
+  // 호출이 없어도 초기값 0 으로 고정 OK.
 
   // 선택 후 경로 애니메이션이 끝나면 % 공개
   useEffect(() => {
@@ -380,26 +376,20 @@ export function LuckyLadder({
             />
           )}
         </svg>
-
-        {/* 결과 강조 패널 — revealed 시 등장 */}
-        {revealed && resultPercent !== null && (
-          <div className={styles.result} role="status" aria-live="polite">
-            <span className={styles.resultLabel}>{t('resultLabel')}</span>
-            <span className={styles.resultValue}>
-              <span className={styles.resultNumber}>{displayPercent}</span>
-              <span className={styles.resultUnit}>%</span>
-            </span>
-            <button
-              type="button"
-              className={styles.retry}
-              onClick={handleRetry}
-            >
-              <span aria-hidden>🎲</span>
-              {t('retry')}
-            </button>
-          </div>
-        )}
       </div>
+
+      {/* 결과 강조 패널 — revealed 시 ladder card 하단에 명확히 배치. retry
+          button 제거 (사용자 명시 2026-06-24) — 결과 한 번만 표시, 다시 시도는
+          페이지 하단 "다시하기" 가 담당. */}
+      {revealed && resultPercent !== null && (
+        <div className={styles.result} role="status" aria-live="polite">
+          <span className={styles.resultLabel}>{t('resultLabel')}</span>
+          <span className={styles.resultValue}>
+            <span className={styles.resultNumber}>{displayPercent}</span>
+            <span className={styles.resultUnit}>%</span>
+          </span>
+        </div>
+      )}
     </section>
   );
 }

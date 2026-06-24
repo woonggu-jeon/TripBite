@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { Heart, ArrowRight } from 'lucide-react';
-import { Button } from './button';
+import { Button } from './Button';
 
 const meta = {
   title: 'UI/Button',

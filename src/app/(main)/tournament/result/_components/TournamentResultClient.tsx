@@ -136,7 +136,7 @@ export function TournamentResultClient() {
             {t('retryTournament')}
           </Button>
           <Button
-            variant="outline"
+            variant="outlinePrimary"
             fullWidth
             onClick={handleSave}
             disabled={save.isSuccess}

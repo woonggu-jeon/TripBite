@@ -12,7 +12,7 @@ export {
   type IconButtonSize,
 } from './IconButton';
 export { PageSection } from './PageSection';
-export { Button, type ButtonVariant, type ButtonSize } from './button';
+export { Button, type ButtonVariant, type ButtonSize } from './Button';
 export { DestinationCard, type DestinationCardTone } from './DestinationCard';
 export { DestinationCardSkeleton } from './DestinationCardSkeleton';
 export { ButtonGrid } from './ButtonGrid';
