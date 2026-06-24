@@ -2,7 +2,8 @@
   position: relative;
   width: 100%;
   aspect-ratio: 800 / 903;
-  max-width: 420px;
+  // max-width 제거 (2026-06-24) — 부모 (TournamentPlayClient .mapCard) 가
+  // 폭 결정. desktop 에서 contentInner 폭까지 SVG 자연 확대.
   margin: 0 auto;
 
   // light 톤 기본값
@@ -36,9 +37,9 @@
     fill: var(--map-region-fill);
     stroke: var(--map-region-stroke);
     stroke-width: 2;
-    transition:
-      fill var(--motion-base) ease,
-      stroke var(--motion-base) ease;
+    // transition 제거 (2026-06-24) — mount 시 fill/stroke 색이 transition 으로
+    // 깜빡이며 mapCard border 등장과 겹쳐 UX 어색. hover 인터랙션도 즉시
+    // 변경이 깔끔. drop pin keyframes 와 FallingPetals 만으로 충분한 motion.
   }
 
   // 시군 그룹 hover — 같은 시군의 모든 path 에 클래스 부여 (JS 에서 토글).
@@ -139,9 +140,6 @@
     opacity: 1;
   }
   .button {
-    transition: none;
-  }
-  .svgWrap :global(svg path.region) {
     transition: none;
   }
 }
