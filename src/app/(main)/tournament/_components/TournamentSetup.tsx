@@ -108,9 +108,18 @@ export function TournamentSetup() {
   const setConfig = useTournamentStore((s) => s.setConfig);
   const setSelectedRegions = useTournamentStore((s) => s.setSelectedRegions);
   const setTournamentSize = useTournamentStore((s) => s.setTournamentSize);
+  const reset = useTournamentStore((s) => s.reset);
   const selectedRegions = useTournamentStore(
     (s) => s.config?.selectedRegions ?? [],
   );
+
+  // mount 1회 — 직전 토너먼트 store 잔재 (config/selectedRegions/tournamentSize/
+  // winner 등) 정리. 사용자가 result → "다시하기" → /tournament 재진입 시 잔재
+  // 가 false-positive 진입 가드로 /play 직진 가능 — 명시 reset 으로 차단.
+  useEffect(() => {
+    reset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const initialTheme = searchParams.get('theme');
   const initialSeasonParam = searchParams.get('season');
