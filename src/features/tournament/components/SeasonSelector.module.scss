@@ -21,7 +21,7 @@
   justify-content: center;
   gap: var(--space-3); /* 12 */
   min-height: 145px;
-  padding: var(--space-5) var(--space-2); /* 20 10 */
+  padding: var(--space-5) 0.625rem; /* 20 10 — Figma spec t5-text width 134 정합 */
   color: var(--color-fg);
   cursor: pointer;
   transition:
@@ -70,7 +70,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-1); /* 4 */
+  // Figma t5-text height 37 = title 20 + sub 17 → gap 0 (자식 line-height
+  // 만으로 stack). 4 였던 직전 gap 은 spec 의 inner height 와 불일치.
+  gap: 0;
 }
 
 .label {
