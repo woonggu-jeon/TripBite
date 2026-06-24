@@ -403,7 +403,7 @@
         },
         "season": {
           "title": "Which season would you like?",
-          "hint": "We'll suggest Chungbuk destinations matching the season."
+          "hint": "Pick a destination by the season's mood."
         },
         "category": {
           "title": "What type interests you?",
@@ -435,10 +435,10 @@
       "winter": "Winter"
     },
     "seasonMonths": {
-      "spring": "Mar·Apr·May",
-      "summer": "Jun·Jul·Aug",
-      "autumn": "Sep·Oct·Nov",
-      "winter": "Dec·Jan·Feb"
+      "spring": "Cherry blossoms in the breeze",
+      "summer": "Blue sea and bright sun",
+      "autumn": "Leaves turning red and gold",
+      "winter": "Snowflakes in the air"
     },
     "category": {
       "festival": "Festival",
