@@ -402,8 +402,8 @@
           "randomDesc": "We'll pick the season and type for you"
         },
         "season": {
-          "title": "Which season?",
-          "hint": "Choose the season that fits the mood"
+          "title": "Which season would you like?",
+          "hint": "We'll suggest Chungbuk destinations matching the season."
         },
         "category": {
           "title": "What type interests you?",

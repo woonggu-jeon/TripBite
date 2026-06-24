@@ -7,7 +7,7 @@ import styles from './SeasonSelector.module.scss';
 
 const SEASONS: { value: Season; emoji: string }[] = [
   { value: 'spring', emoji: '🌸' },
-  { value: 'summer', emoji: '🌊' },
+  { value: 'summer', emoji: '☀️' },
   { value: 'autumn', emoji: '🍂' },
   { value: 'winter', emoji: '❄️' },
 ];
