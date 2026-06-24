@@ -22,7 +22,7 @@ import { Button } from '@/components/ui';
 import styles from './TournamentSetup.module.scss';
 
 /**
- * 토너먼트 설정 — 스텝별 진행 (4 steps)
+ * 토너먼트 설정 — 스텝별 진행 (4 steps), Figma "TRN · 토너먼트 메인" 정합.
  *
  *   1) 테마 종류    : 계절 직접선택 / 랜덤테마
  *   2) 계절         : 봄·여름·가을·겨울 (1 step 에서 'season' 선택 시만)
@@ -31,10 +31,10 @@ import styles from './TournamentSetup.module.scss';
  *
  * 흐름:
  *   - season  : step 1 → 2 (계절) → 3 (유형) → 4 (갯수)
- *   - random  : step 1 → (계절/유형 즉시 랜덤 선택) → 4 (갯수) 로 점프
+ *   - random  : step 1 → ("다음" click 시 계절/유형 즉시 랜덤) → 4 (갯수)
  *
- * 모든 step (1/2/3)은 선택 즉시 next. step 4 만 "시작하기" 버튼.
- * 토너먼트 매치업 사이즈(M ≤ N)는 Play 페이지의 별도 phase 에서 결정.
+ * 모든 step 은 카드 선택 후 하단 "다음" button click 으로 advance (step 4 만
+ * "시작하기"). Figma spec 의 fixed bottom button 320×52 패턴.
  *
  * 홈 → /tournament?theme=season&season=spring 으로 진입 시 1·2 단계 자동
  * prefill, step 3 (유형) 부터 시작.
@@ -101,32 +101,33 @@ export function TournamentSetup() {
     setStep(next);
   };
 
-  const handleKind = (k: ThemeKind) => {
-    setThemeKind(k);
-    if (k === 'season') {
-      advanceTo(2);
+  // step 별 select handler — 카드 선택 시 state 만 set. advance 는 "다음" button.
+  const handleKind = (k: ThemeKind) => setThemeKind(k);
+  const handleSeason = (s: Season) => setSeason(s);
+  const handleCategory = (c: DestinationCategory) => setCategory(c);
+  const handleCount = (c: TournamentCount) => setCount(c);
+
+  const handleNext = () => {
+    if (step === 1) {
+      if (themeKind === 'season') {
+        advanceTo(2);
+        return;
+      }
+      // random — 계절 + 카테고리 즉시 랜덤 채우고 갯수 step 으로 점프.
+      setSeason(pickRandom(VALID_SEASONS));
+      setCategory(pickRandom(CATEGORIES));
+      advanceTo(4);
       return;
     }
-    // random 테마 — 계절 + 카테고리 즉시 랜덤 채우고 바로 갯수 step 으로.
-    const randomSeason = pickRandom(VALID_SEASONS);
-    const randomCategory = pickRandom(CATEGORIES);
-    setSeason(randomSeason);
-    setCategory(randomCategory);
-    advanceTo(4);
-  };
-
-  const handleSeason = (s: Season) => {
-    setSeason(s);
-    advanceTo(3);
-  };
-
-  const handleCategory = (c: DestinationCategory) => {
-    setCategory(c);
-    advanceTo(4);
-  };
-
-  const handleCount = (c: TournamentCount) => {
-    setCount(c);
+    if (step === 2) {
+      advanceTo(3);
+      return;
+    }
+    if (step === 3) {
+      advanceTo(4);
+      return;
+    }
+    handleStart();
   };
 
   const goBack = () => {
@@ -145,6 +146,14 @@ export function TournamentSetup() {
 
   const canStart =
     step === 4 && count !== null && season !== null && category !== null;
+
+  // step 별 button 활성 조건 — 해당 step 의 선택이 끝났는지.
+  const canAdvance = (() => {
+    if (step === 1) return themeKind !== null;
+    if (step === 2) return season !== null;
+    if (step === 3) return category !== null;
+    return canStart;
+  })();
 
   const handleStart = () => {
     if (count === null || season === null || category === null) return;
@@ -228,23 +237,17 @@ export function TournamentSetup() {
           )}
         </div>
 
-        {step === 4 && (
-          <div className={styles.cta}>
-            <Button
-              variant="primary"
-              size="lg"
-              fullWidth
-              onClick={handleStart}
-              disabled={!canStart}
-            >
-              {t('start')}
-            </Button>
-          </div>
-        )}
-
-        {(step === 1 || step === 2 || step === 3) && (
-          <p className={styles.autoHint}>{t('selectToContinue')}</p>
-        )}
+        <div className={styles.cta}>
+          <Button
+            variant="primary"
+            size="lg"
+            fullWidth
+            onClick={handleNext}
+            disabled={!canAdvance}
+          >
+            {step === 4 ? t('start') : t('next')}
+          </Button>
+        </div>
       </div>
     </>
   );

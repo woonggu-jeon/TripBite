@@ -392,11 +392,10 @@
     "setup": {
       "next": "Next",
       "start": "Start",
-      "selectToContinue": "Pick one to continue",
       "steps": {
         "themeKind": {
-          "title": "What's the theme?",
-          "hint": "Pick a season yourself or roll the dice",
+          "title": "Pick a theme to choose a destination",
+          "hint": "We'll suggest Chungbuk destinations matching the theme.",
           "season": "Pick a season",
           "seasonDesc": "Choose Spring · Summer · Autumn · Winter",
           "random": "Random theme",
@@ -408,7 +407,7 @@
         },
         "category": {
           "title": "What type interests you?",
-          "hint": "You can pick more than one",
+          "hint": "Pick a destination type that fits the theme.",
           "seasonScopeNonFestival": "Season ({season}) applies to Festival only. Other categories are recommended regardless of season."
         },
         "count": {

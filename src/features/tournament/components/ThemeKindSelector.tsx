@@ -27,7 +27,7 @@ export function ThemeKindSelector({ value, onChange }: ThemeKindSelectorProps) {
     labelKey: 'season' | 'random';
     descKey: 'seasonDesc' | 'randomDesc';
   }[] = [
-    { value: 'season', emoji: '🌿', labelKey: 'season', descKey: 'seasonDesc' },
+    { value: 'season', emoji: '🗓️', labelKey: 'season', descKey: 'seasonDesc' },
     {
       value: 'random',
       emoji: '🎲',

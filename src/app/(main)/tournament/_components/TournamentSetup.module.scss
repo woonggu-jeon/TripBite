@@ -81,18 +81,6 @@
   }
 }
 
-.autoHint {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
-  text-align: center;
-  font-size: var(--font-caption);
-  color: var(--color-muted);
-  margin: 0;
-  pointer-events: none;
-}
-
 // 계절 적용 범위 hint — step 3 에서 비-festival 카테고리 선택 시.
 // info chip 톤 (강한 경고 X). 사용자 학습용.
 .scopeHint {
