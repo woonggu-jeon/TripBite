@@ -368,7 +368,8 @@ export function TournamentSetup() {
             </div>
           )}
 
-          {/* step 6 — map: ChungbukMap + "여행지 N곳 선정" + 다시하기/다음으로 */}
+          {/* step 6 — map: ChungbukMap + "여행지 N곳 선정". 버튼은 .cta 안에서
+              2 button (다시하기/다음으로) 분기 — 다른 phase 들과 위치 정합. */}
           {step === 6 && mapPlaceholders.length > 0 && (
             <div className={styles.map}>
               <div className={styles.mapCard}>
@@ -387,24 +388,6 @@ export function TournamentSetup() {
                   })}
                 </p>
               </div>
-              <ButtonGrid className={styles.mapBtns}>
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  fullWidth
-                  onClick={handleReshuffle}
-                >
-                  {tPlay('reshuffle')}
-                </Button>
-                <Button
-                  variant="primary"
-                  size="lg"
-                  fullWidth
-                  onClick={handleNext}
-                >
-                  {tPlay('start')}
-                </Button>
-              </ButtonGrid>
             </div>
           )}
 
@@ -428,18 +411,40 @@ export function TournamentSetup() {
           )}
         </div>
 
-        {/* fixed bottom CTA — step 5 (intro auto) + step 6 (ButtonGrid 자체) 제외 */}
-        {step !== 5 && step !== 6 && (
+        {/* fixed bottom CTA — step 5 (intro auto) 만 제외.
+            step 6 (map) 은 다시하기 + 다음으로 2 button row, 그 외는 1 button. */}
+        {step !== 5 && (
           <div className={styles.cta}>
-            <Button
-              variant="primary"
-              size="lg"
-              fullWidth
-              onClick={handleNext}
-              disabled={!canAdvance}
-            >
-              {step === 7 ? tPlay('startBracket') : t('next')}
-            </Button>
+            {step === 6 ? (
+              <ButtonGrid className={styles.ctaPair}>
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  fullWidth
+                  onClick={handleReshuffle}
+                >
+                  {tPlay('reshuffle')}
+                </Button>
+                <Button
+                  variant="primary"
+                  size="lg"
+                  fullWidth
+                  onClick={handleNext}
+                >
+                  {tPlay('start')}
+                </Button>
+              </ButtonGrid>
+            ) : (
+              <Button
+                variant="primary"
+                size="lg"
+                fullWidth
+                onClick={handleNext}
+                disabled={!canAdvance}
+              >
+                {step === 7 ? tPlay('startBracket') : t('next')}
+              </Button>
+            )}
           </div>
         )}
       </div>

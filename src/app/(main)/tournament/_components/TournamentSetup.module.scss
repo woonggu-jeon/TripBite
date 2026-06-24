@@ -308,9 +308,12 @@
   white-space: pre-line;
 }
 
-.mapBtns {
+// step 6 의 .cta 안 2 button row (다시하기 + 다음으로). cta 자체가 fixed
+// bottom + max-width content-max + padding-x 20 이라 .ctaPair 는 width 100%
+// 만 명시 + button 간 gap 8 (Figma "Frame 25" gap 8 정합).
+.ctaPair {
   width: 100%;
-  gap: 11px;
+  gap: 8px;
 }
 
 /* ─────────────────────────────────────────────────────────────
