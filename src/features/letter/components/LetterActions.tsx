@@ -3,13 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Heart, Bookmark, Trash2 } from 'lucide-react';
-import { useConfirm } from '@/hooks/use-confirm';
 import { useDebouncedCallback } from '@/hooks/use-debounced-callback';
 import { haptic } from '@/lib/haptic';
-import { toast } from '@/lib/toast';
+import { Button } from '@/components/ui';
 import {
-  useDeleteLetter,
   useToggleLikeLetter,
   useToggleSaveLetter,
 } from '@/features/letter/hooks/use-letters';
@@ -17,36 +14,33 @@ import type { LetterDto } from '@/api/generated/schemas';
 import styles from './LetterActions.module.scss';
 
 /**
- * 편지 상세 액션 — 좋아요 / 저장 / 삭제.
+ * 편지 상세 액션 — Figma "받은 편지 상세 · buttons" (2026-06-24) 정합.
  *
- * 좋아요·저장: 빠른 연속 클릭을 흡수하기 위해 컴포넌트 로컬 상태 + 디바운스(400ms).
- *   - 클릭 즉시 로컬 state 토글(즉각 UI 피드백, haptic.tap)
- *   - 디바운스 만료 시 서버 진실(letter.liked/saved)과 비교 → net change 시에만 mutate
- *   - 짝수 번 클릭으로 원위치 시 API 호출 자체 skip → 서버 부담 / race ↓
- *   - mutate 의 onMutate optimistic update 가 다른 화면(LetterRow 등) 까지 즉시 동기화
+ * 구조 (Frame 26 column gap 10):
+ *   - Frame 25 (row gap 8): 저장 (outline gray 156×52 M_16 muted) + 좋아요
+ *     (primary fill 156×52 M_16 white).
+ *   - button 320×52 outline primary M_16 — "답장 쓰기" (Figma 명시).
  *
- * 삭제: useConfirm() Promise 확인 → DELETE → router.back().
- *   디바운스 불필요 — 명시적 확인 단계가 이미 게이트 역할.
+ * 좋아요·저장 디바운스(400ms) — 빠른 연속 클릭 흡수, net change 시에만 mutate.
+ * 삭제 액션은 Figma spec 외 — 추후 SubHeader rightSlot 또는 kebab 메뉴 도입 시
+ * 재추가 (현재 미노출).
  */
 const TOGGLE_DEBOUNCE_MS = 400;
 
 export function LetterActions({ letter }: { letter: LetterDto }) {
   const t = useTranslations('letter.detail');
   const router = useRouter();
-  const confirm = useConfirm();
   const toggleLike = useToggleLikeLetter();
   const toggleSave = useToggleSaveLetter();
-  const del = useDeleteLetter();
 
   const [likedLocal, setLikedLocal] = useState(letter.liked);
   const [savedLocal, setSavedLocal] = useState(letter.saved);
 
-  // 외부에서 letter 가 갱신되면 (예: cache invalidate 후 refetch) 로컬도 동기.
   useEffect(() => setLikedLocal(letter.liked), [letter.liked]);
   useEffect(() => setSavedLocal(letter.saved), [letter.saved]);
 
   const commitLike = useDebouncedCallback((targetLiked: boolean) => {
-    if (targetLiked === letter.liked) return; // net change 없음 — skip
+    if (targetLiked === letter.liked) return;
     toggleLike.mutate(letter.id);
   }, TOGGLE_DEBOUNCE_MS);
 
@@ -73,69 +67,37 @@ export function LetterActions({ letter }: { letter: LetterDto }) {
     });
   };
 
-  const onDelete = async () => {
-    if (del.isPending) return;
+  const onReply = () => {
     haptic.tap();
-    const ok = await confirm({
-      title: t('deleteConfirmTitle'),
-      description: t('deleteConfirmBody'),
-      confirmLabel: t('deleteConfirmYes'),
-      cancelLabel: t('deleteConfirmNo'),
-      destructive: true,
-    });
-    if (!ok) return;
-    haptic.warning();
-    // 삭제 직전 대기 중인 토글이 있으면 즉시 flush — 서버 상태 일관성 보장
-    commitLike.flush();
-    commitSave.flush();
-    del.mutate(letter.id, {
-      onSuccess: () => {
-        toast.success(t('deletedToast'));
-        router.back();
-      },
-      onError: () => toast.error(t('deleteFailedToast')),
-    });
+    router.push('/letter/compose');
   };
 
   return (
-    <div className={styles.actions} role="group" aria-label={t('actionsAria')}>
-      <button
-        type="button"
-        className={`${styles.action} ${likedLocal ? styles.liked : ''}`}
-        onClick={onLike}
-        aria-pressed={likedLocal}
-      >
-        <Heart
-          size={20}
-          fill={likedLocal ? 'currentColor' : 'none'}
-          aria-hidden
-        />
-        <span>{t('like')}</span>
-      </button>
+    <div className={styles.buttons} role="group" aria-label={t('actionsAria')}>
+      {/* Figma Frame 25 — 저장 (outline gray) + 좋아요 (primary fill). */}
+      <div className={styles.row}>
+        <button
+          type="button"
+          className={`${styles.btnGray} ${savedLocal ? styles.btnSavedActive : ''}`}
+          onClick={onSave}
+          aria-pressed={savedLocal}
+        >
+          {savedLocal ? t('saved') : t('save')}
+        </button>
+        <button
+          type="button"
+          className={`${styles.btnPrimary} ${likedLocal ? styles.btnLikedActive : ''}`}
+          onClick={onLike}
+          aria-pressed={likedLocal}
+        >
+          {likedLocal ? t('liked') : t('like')}
+        </button>
+      </div>
 
-      <button
-        type="button"
-        className={`${styles.action} ${savedLocal ? styles.saved : ''}`}
-        onClick={onSave}
-        aria-pressed={savedLocal}
-      >
-        <Bookmark
-          size={20}
-          fill={savedLocal ? 'currentColor' : 'none'}
-          aria-hidden
-        />
-        <span>{t('save')}</span>
-      </button>
-
-      <button
-        type="button"
-        className={`${styles.action} ${styles.danger}`}
-        onClick={onDelete}
-        disabled={del.isPending}
-      >
-        <Trash2 size={20} aria-hidden />
-        <span>{t('delete')}</span>
-      </button>
+      {/* Figma button 320×52 outline primary — "답장 쓰기". */}
+      <Button variant="outline" fullWidth onClick={onReply}>
+        {t('reply')}
+      </Button>
     </div>
   );
 }

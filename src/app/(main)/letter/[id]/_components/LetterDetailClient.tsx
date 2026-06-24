@@ -2,33 +2,33 @@
 
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Mail, Inbox } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { Button } from '@/components/ui';
+import { EmptyState } from '@/components/feedback/EmptyState';
 import { useLetter } from '@/features/letter/hooks/use-letters';
 import { LetterActions } from '@/features/letter/components/LetterActions';
 import styles from './LetterDetailClient.module.scss';
 
 /**
- * 받은 편지 상세 (/letter/[id])
+ * 받은 편지 상세 (/letter/[id]) — Figma "받은 편지 상세" (2026-06-24) 정합.
  *
- *   ┌──────────────────────────────────────┐
- *   │ 📬  편지가 도착했어요                 │  상단 알림
- *   ├──────────────────────────────────────┤
- *   │ 편지지 (베이지 톤)                    │
- *   │  ─ FROM   닉네임 / 위치 / STAMP       │
- *   │  ─ Message  본문 / 도착 시각          │
- *   │  ─ TO   당신에게 도착했어요           │
- *   ├──────────────────────────────────────┤
- *   │ [♡ 좋아요] [🔖 저장] [🗑 삭제]         │
- *   ├──────────────────────────────────────┤
- *   │ ⓘ 저장하지 않으면 3일 후 자동 삭제     │  saved 면 숨김
- *   └──────────────────────────────────────┘
+ * 구조 (Frame 77 column align center gap 40):
+ *   - Frame 7 hero: circle 72 EAF6EF + Mail 36 primary stroke 2.69 + title
+ *     B_24 fg "편지가 도착했어요" + sub R_14 muted "어디에서 왔을까요?…"
+ *   - Frame 81 (gap 8 column align center):
+ *     · Frame 79 stamp card (편지 발송완료 와 동일 spec — bg #F8F8F8 + border
+ *       12 + padding 20 16):
+ *       - top: pw (sq 60 우표 + 도착 도장 pm) + meta (from/닉네임/위치 right)
+ *       - ms: 5 stamp cells (border-y error / cell border-right error) B_24 fg
+ *       - div 1px gray
+ *       - footer: B_10 disabled star + B_14 fg row + R_12 disabled note
+ *     · sub R_12 fg center (자동 삭제 안내 등).
+ *   - LetterActions absolute bottom 20.
  */
 
 function formatKoreanDate(iso: string): string {
   const d = new Date(iso);
-  // invalid date 가드 — 사용자에게 "NaN.NaN.NaN" 노출 회피, 원본 iso 그대로.
   if (Number.isNaN(d.getTime())) return iso;
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -47,85 +47,124 @@ export function LetterDetailClient({ letterId }: { letterId: string }) {
   if (isLoading) {
     return (
       <div className={styles.wrap}>
-        <Skeleton width="100%" height={64} radius="lg" />
-        <Skeleton width="100%" height={320} radius="lg" />
-        <Skeleton width="100%" height={68} radius="md" />
+        <div className={styles.wb}>
+          <div className={styles.skeletonHero}>
+            <Skeleton width={72} height={72} radius="full" />
+            <Skeleton width="60%" height={31} radius="sm" />
+            <Skeleton width="80%" height={20} radius="sm" />
+          </div>
+          <Skeleton width="100%" height={292} radius="lg" />
+        </div>
       </div>
     );
   }
 
   if (isError || !letter) {
     return (
-      <div className={styles.empty}>
-        <p>{t('loadError')}</p>
-        <div className={styles.emptyActions}>
-          <Button variant="secondary" onClick={() => refetch()}>
-            {t('retry')}
-          </Button>
-          <Button variant="primary" onClick={() => router.replace('/letter')}>
-            {t('backToList')}
-          </Button>
-        </div>
+      <div className={styles.wrap}>
+        <EmptyState
+          variant="hero"
+          icon={<Mail size={36} strokeWidth={2.7} aria-hidden />}
+          title={t('loadError')}
+          action={
+            <div className={styles.errorActions}>
+              <Button variant="secondary" size="md" onClick={() => refetch()}>
+                {t('retry')}
+              </Button>
+              <Button
+                variant="primary"
+                size="md"
+                onClick={() => router.replace('/letter')}
+              >
+                {t('backToList')}
+              </Button>
+            </div>
+          }
+        />
       </div>
     );
   }
 
   const senderName = letter.author.nickname || tAuthor('anonymous');
   const senderLocation = letter.author.location;
+  const arrivedAt = formatKoreanDate(letter.arrivedAt ?? letter.createdAt);
 
   return (
     <div className={styles.wrap}>
-      {/* 1) 도착 알림 */}
-      <header className={styles.notice} role="status">
-        <span className={styles.noticeIcon} aria-hidden>
-          <Inbox size={20} />
-        </span>
-        <div>
-          <p className={styles.noticeTitle}>{t('arrivedTitle')}</p>
-          <p className={styles.noticeBody}>{t('arrivedBody')}</p>
-        </div>
-      </header>
-
-      {/* 2) 편지지 */}
-      <article className={styles.letter} aria-label={t('letterAria')}>
-        <section className={styles.from}>
-          <p className={styles.label}>{t('from')}</p>
-          <div className={styles.fromRow}>
-            <div>
-              <p className={styles.author}>{senderName}</p>
-              {senderLocation && (
-                <p className={styles.fromLocation}>{senderLocation}</p>
-              )}
-            </div>
-            <div className={styles.stamp} aria-hidden>
-              <Mail size={18} />
-              <span className={styles.stampTag}>STAMP</span>
-            </div>
+      <div className={styles.wb}>
+        {/* Figma Frame 7 hero — circle 72 EAF6EF + Mail 36 primary + title +
+            sub. */}
+        <div className={styles.hero}>
+          <span className={styles.circle} aria-hidden>
+            <Mail size={36} strokeWidth={2.7} />
+          </span>
+          <div className={styles.headings}>
+            <h1 className={styles.title}>{t('arrivedTitle')}</h1>
+            <p className={styles.sub}>{t('arrivedBody')}</p>
           </div>
-        </section>
+        </div>
 
-        <section className={styles.message}>
-          <p className={styles.body}>{letter.body}</p>
-          <p className={styles.date}>
-            {formatKoreanDate(letter.arrivedAt ?? letter.createdAt)}
-          </p>
-        </section>
+        {/* Figma Frame 81 — card + sub note column gap 8. */}
+        <div className={styles.cardBlock}>
+          <article className={styles.card} aria-label={t('letterAria')}>
+            <div className={styles.top}>
+              <div className={styles.pw} aria-hidden>
+                <span className={styles.sq}>
+                  <span className={styles.sqChar}>
+                    {Array.from(letter.body)[0] ?? ''}
+                  </span>
+                </span>
+                <span className={styles.pm}>
+                  <span className={styles.pmTitle}>{t('stampTitle')}</span>
+                  <span className={styles.pmSub}>{t('stampSub')}</span>
+                </span>
+              </div>
+              <div className={styles.meta}>
+                <span className={styles.metaLabel}>{t('from')}</span>
+                <span className={styles.metaName}>{senderName}</span>
+                {senderLocation && (
+                  <span className={styles.metaLoc}>{senderLocation}</span>
+                )}
+              </div>
+            </div>
 
-        <section className={styles.to}>
-          <p className={styles.label}>{t('to')}</p>
-          <p className={styles.toLine}>{t('toYou')}</p>
-        </section>
-      </article>
+            <div className={styles.ms}>
+              <div className={styles.cells}>
+                {Array.from({ length: 5 }).map((_, i) => {
+                  const ch = Array.from(letter.body)[i] ?? '';
+                  return (
+                    <div key={i} className={styles.cell}>
+                      {ch && <span className={styles.cellChar}>{ch}</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
 
-      {/* 3) 액션 */}
-      <LetterActions letter={letter} />
+            <div className={styles.div} aria-hidden />
 
-      {/* 4) 자동 삭제 안내 — saved 시 숨김 */}
-      {!letter.saved && (
-        <p className={styles.autoDelete} role="note">
-          {t('autoDeleteNotice')}
-        </p>
-      )}
+            <div className={styles.footer}>
+              <div className={styles.footerRow}>
+                <span className={styles.footerStar} aria-hidden>
+                  ✦
+                </span>
+                <span className={styles.footerLabel}>{t('toYou')}</span>
+              </div>
+              <span className={styles.footerNote}>{arrivedAt}</span>
+            </div>
+          </article>
+
+          {/* Figma sub R_12 fg center — 자동 삭제 안내 (saved 시 미노출). */}
+          {!letter.saved && (
+            <p className={styles.note}>{t('autoDeleteNotice')}</p>
+          )}
+        </div>
+      </div>
+
+      {/* Figma buttons absolute bottom 20 — 저장/좋아요 + 답장 쓰기. */}
+      <div className={styles.actions}>
+        <LetterActions letter={letter} />
+      </div>
     </div>
   );
 }
