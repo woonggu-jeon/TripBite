@@ -212,18 +212,26 @@
 
 .mapCard {
   // Figma 모바일 320 spec — desktop 에서는 contentInner 폭까지 grow (사용자
-  // 피드백 2026-06-24: "웹에서 지도 영역이 너무 작아"). max-width 제거 후
-  // 자식 ChungbukMap SVG 가 비율 (287/324) 유지하며 자연 확대.
+  // 피드백 2026-06-24). max-width 제거 후 자식 ChungbukMap SVG 가 비율 유지.
+  //
+  // bg 50% 반투명 (2026-06-24) — mapCard 가 FallingPetals (뒤 z-index 1) 의
+  // 흩날림 (꽃잎/비/단풍/눈) 을 흰 카드 bg 로 가리는 문제 해결. 카드 형태는
+  // border + 살짝 있는 bg 로 유지하되, 뒤 motion 이 비쳐 보이도록 투과.
   width: 100%;
-  aspect-ratio: 320 / 348; /* Figma map-card 비율 유지 */
+  aspect-ratio: 320 / 348;
   padding: 12px;
-  background: var(--color-surface, #ffffff);
+  background: color-mix(
+    in srgb,
+    var(--color-surface, #ffffff) 50%,
+    transparent
+  );
   border: 1px solid #c6c6c6;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  backdrop-filter: blur(2px);
 
   /* dark mode 시 border 톤 down */
   @media (prefers-color-scheme: dark) {
