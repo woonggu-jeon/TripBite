@@ -211,9 +211,11 @@
 }
 
 .mapCard {
+  // Figma 모바일 320 spec — desktop 에서는 contentInner 폭까지 grow (사용자
+  // 피드백 2026-06-24: "웹에서 지도 영역이 너무 작아"). max-width 제거 후
+  // 자식 ChungbukMap SVG 가 비율 (287/324) 유지하며 자연 확대.
   width: 100%;
-  max-width: 320px;
-  min-height: 348px;
+  aspect-ratio: 320 / 348; /* Figma map-card 비율 유지 */
   padding: 12px;
   background: var(--color-surface, #ffffff);
   border: 1px solid #c6c6c6;
@@ -264,8 +266,8 @@
 }
 
 .mapBtns {
+  // map-card 와 같은 폭 정합 — desktop 에서도 같은 width grow.
   width: 100%;
-  max-width: 320px;
   gap: 11px;
 }
 

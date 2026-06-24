@@ -7,7 +7,7 @@ import { FallingPetals } from '@/features/tournament/components/FallingPetals';
 import { ChungbukMap } from '@/features/tournament/components/ChungbukMap';
 import { CountSelector } from '@/features/tournament/components/CountSelector';
 import { Bracket } from '@/features/tournament/components/Bracket';
-import type { DestinationDto } from '@/api/generated/schemas';
+import type { DestinationDto, Season } from '@/api/generated/schemas';
 import type {
   BracketResult,
   TournamentCount,
@@ -27,6 +27,15 @@ type Phase = 'intro' | 'map' | 'tournamentSize' | 'bracket' | 'celebration';
 
 const INTRO_MS = 2500;
 const CELEBRATION_MS = 1800;
+
+// intro phase 의 circle-stack + 배경 leaf emoji 를 계절에 맞춰 교체.
+// FallingPetals (별도 흩날림) 와 같은 시즌 ↔ emoji 매핑을 유지.
+const SEASON_EMOJI: Record<Season, string> = {
+  spring: '🌸',
+  summer: '☀️',
+  autumn: '🍁',
+  winter: '❄️',
+};
 
 /**
  * 충북 11 시군에서 N 개 random pick. Fisher–Yates.
@@ -96,6 +105,7 @@ function pickRandomRegions(config: {
 export function TournamentPlayClient() {
   const router = useRouter();
   const t = useTranslations('tournament.play');
+  const tSeason = useTranslations('tournament.season');
   const config = useTournamentStore((s) => s.config);
   const setSelectedRegions = useTournamentStore((s) => s.setSelectedRegions);
   const setTournamentSize = useTournamentStore((s) => s.setTournamentSize);
@@ -226,6 +236,11 @@ export function TournamentPlayClient() {
   }
 
   const theme = config.theme;
+  // intro / map 의 계절 이미지 — theme.kind 가 항상 'season' (setup 에서 random
+  // 도 season value 로 정규화). fallback 으로 autumn emoji.
+  const seasonEmoji =
+    theme.kind === 'season' ? SEASON_EMOJI[theme.value] : '🍁';
+  const seasonLabel = theme.kind === 'season' ? tSeason(theme.value) : '';
 
   // map "다음" — N 시군 확정 후 tournamentSize phase 로.
   const handleMapNext = () => {
@@ -263,30 +278,30 @@ export function TournamentPlayClient() {
 
       {phase === 'intro' && (
         <div className={styles.intro}>
-          {/* 배경 흩어진 단풍 emoji 6개 — absolute, opacity 0.5 (FallingPetals 와 별개) */}
+          {/* 배경 흩어진 계절 emoji 6개 — absolute, opacity 0.5 (FallingPetals 와 별개) */}
           <span className={styles.bgLeaf1} aria-hidden>
-            🍁
+            {seasonEmoji}
           </span>
           <span className={styles.bgLeaf2} aria-hidden>
-            🍁
+            {seasonEmoji}
           </span>
           <span className={styles.bgLeaf3} aria-hidden>
-            🍁
+            {seasonEmoji}
           </span>
           <span className={styles.bgLeaf4} aria-hidden>
-            🍁
+            {seasonEmoji}
           </span>
           <span className={styles.bgLeaf5} aria-hidden>
-            🍁
+            {seasonEmoji}
           </span>
           <span className={styles.bgLeaf6} aria-hidden>
-            🍁
+            {seasonEmoji}
           </span>
-          {/* circle-stack 134: amber → white → 60 leaf */}
+          {/* circle-stack 134: amber → white → 60 season emoji */}
           <div className={styles.circleStack} aria-hidden>
             <span className={styles.circleAmber} />
             <span className={styles.circleWhite} />
-            <span className={styles.circleLeaf}>🍁</span>
+            <span className={styles.circleLeaf}>{seasonEmoji}</span>
           </div>
           <h2 className={styles.introTitle}>{t('introHint')}</h2>
           <div className={styles.dots} aria-hidden>
@@ -306,10 +321,11 @@ export function TournamentPlayClient() {
                 <ChungbukMap destinations={mapPlaceholders} theme={theme} />
               </div>
               <div className={styles.mapFooter}>
-                <h2 className={styles.mapTitle}>{t('mapReady.title')}</h2>
-                <p className={styles.mapDesc}>{t('mapReady.desc')}</p>
-                <p className={styles.counter}>
-                  {t('mapSummary', { destinations: N })}
+                <h2 className={styles.mapTitle}>
+                  {t('mapReady.title', { count: N })}
+                </h2>
+                <p className={styles.mapDesc}>
+                  {t('mapReady.desc', { season: seasonLabel })}
                 </p>
               </div>
               <ButtonGrid className={styles.mapBtns}>

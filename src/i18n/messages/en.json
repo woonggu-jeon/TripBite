@@ -459,11 +459,11 @@
       "retry": "Try again",
       "introHint": "The Chungbuk map will appear shortly",
       "next": "Next",
-      "start": "Start",
+      "start": "Next",
       "reshuffle": "Retry",
       "mapReady": {
-        "title": "Destinations ready",
-        "desc": "Start the 1:1 tournament with the selected destinations"
+        "title": "{count} destinations selected",
+        "desc": "Picked across Chungbuk for the {season} theme.\nReady to start the match?"
       },
       "mapSummary": "{destinations} destinations selected",
       "emptyPool": {

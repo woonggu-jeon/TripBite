@@ -458,12 +458,12 @@
       "recordFailedToast": "토너먼트 기록을 저장하지 못했어요",
       "retry": "다시 시도",
       "introHint": "잠시 후 충북 지도가 펼쳐져요",
-      "next": "다음",
-      "start": "시작",
-      "reshuffle": "다시",
+      "next": "다음으로",
+      "start": "다음으로",
+      "reshuffle": "다시하기",
       "mapReady": {
-        "title": "여행지 준비완료",
-        "desc": "선정된 여행지로 1:1 토너먼트를 시작할게요"
+        "title": "여행지 {count}곳이 선정됐어요",
+        "desc": "{season} 테마로 충북 곳곳에서 고른 여행지예요.\n이제 대결을 시작할까요?"
       },
       "mapSummary": "여행지 {destinations}곳이 선정됐어요",
       "emptyPool": {
