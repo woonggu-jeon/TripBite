@@ -496,8 +496,10 @@
         "quarterfinal": "Quarterfinal",
         "roundOfN": "Round of {n}",
         "matchCount": "Match {current} / {total}",
+        "roundMatchProgress": "{label} · Match {current}/{total}",
+        "remainMatches": "{remain} matches left",
         "progressLabel": "Bracket progress",
-        "pickPrompt": "Where to next?",
+        "pickPrompt": "Pick the one you want more",
         "autoWin": "Your single pick wins automatically"
       },
       "celebration": {

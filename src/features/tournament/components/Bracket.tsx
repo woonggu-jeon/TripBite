@@ -189,12 +189,23 @@ export function Bracket({ destinations, onComplete }: BracketProps) {
 
   return (
     <div className={styles.wrap}>
-      {/* Frame 43: top row + segments — 결승은 progress 의미 X (segment 미렌더). */}
+      {/* Frame 43: top row + segments — 결승은 progress 의미 X (segment 미렌더).
+          좌측 = "{label} · 매치 {current}/{total}", 우측 = "남은 매치 N".
+          remain = 라운드 안 아직 결정 안 된 매치 수 (현재 매치 포함 X = 진행
+          중인 매치 끝나면 -1). 사용자 명시 (2026-06-24) 카피 정합. */}
       <div className={styles.progressFrame}>
         <div className={styles.progressTop}>
-          <span className={styles.progressLabel}>{label}</span>
+          <span className={styles.progressLabel}>
+            {t('roundMatchProgress', {
+              label,
+              current: state.currentMatchIndex + 1,
+              total: round.matches.length,
+            })}
+          </span>
           <span className={styles.matchCount}>
-            {state.currentMatchIndex + 1}/{round.matches.length}
+            {t('remainMatches', {
+              remain: round.matches.length - state.currentMatchIndex - 1,
+            })}
           </span>
         </div>
         {showProgress ? (

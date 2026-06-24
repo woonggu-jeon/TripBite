@@ -11,8 +11,11 @@
 .hero {
   position: relative;
   display: block;
+  // max-width 제거 (2026-06-24) — 사용자 피드백 "웹에서 카드 이미지가 너무
+  // 작아". Figma 모바일 320 spec 은 aspect-ratio 로 비율만 유지하고,
+  // desktop 에서는 contentInner 폭까지 grow. mobile 360 = 320 (padding 20*2),
+  // desktop 720 = 680.
   width: 100%;
-  max-width: 320px;
   aspect-ratio: 320 / 176;
   border-radius: 12px;
   border: none;
@@ -142,9 +145,5 @@
   }
 }
 
-/* 360 미만 narrow viewport — 카드 max-width 100% 로 채워 layout 깨짐 방지. */
-@media (max-width: 380px) {
-  .hero {
-    max-width: 100%;
-  }
-}
+/* hero 가 이제 width 100% 기본이므로 360 미만 분기 불필요 (사용자 피드백
+   2026-06-24 후속) — aspect-ratio 만으로 모든 viewport 대응. */

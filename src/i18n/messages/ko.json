@@ -496,8 +496,10 @@
         "quarterfinal": "8강",
         "roundOfN": "{n}강",
         "matchCount": "매치 {current} / {total}",
+        "roundMatchProgress": "{label} · 매치 {current}/{total}",
+        "remainMatches": "남은 매치 {remain}",
         "progressLabel": "토너먼트 진행도",
-        "pickPrompt": "어디로 떠나볼까요?",
+        "pickPrompt": "더 가고 싶은 곳을 골라주세요",
         "autoWin": "선택한 한 곳이 바로 우승이에요"
       },
       "celebration": {
