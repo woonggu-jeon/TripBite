@@ -22,9 +22,10 @@
   }
 }
 
-// Figma stamp — 48×48 #EAF6EF (primary-soft) radius 8 center, 본문 첫 글자
-// Inter ExtraBold 19 primary line 130%.
-.stamp {
+// Figma row 좌측 — sender 프로필 avatar 48×48 #EAF6EF (primary-soft) radius 8.
+// BE author.avatarUrl 미제공 → User icon 24 primary fallback (사용자 명시
+// 2026-06-24). 추후 BE avatar 추가 시 <Image src={author.avatarUrl} /> 으로 교체.
+.avatar {
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -32,10 +33,8 @@
   height: 48px;
   background: var(--color-primary-soft);
   border-radius: 8px;
-  font-size: 1.1875rem; /* 19 */
-  font-weight: var(--font-weight-extrabold);
-  line-height: 1.3;
   color: var(--color-primary);
+  overflow: hidden;
 }
 
 // Figma m — column gap 7 width 194. flex item 으로 남은 공간 차지.
@@ -62,12 +61,12 @@
 
 // Figma r2 — row gap 8 align center.
 .r2 {
-  position: relative;
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 8px;
   min-width: 0;
+  flex-wrap: wrap;
 }
 
 // Figma rp — pill 36×18 padding 3 9 #EAF6EF radius 999, Caption B_10 primary.
@@ -110,25 +109,55 @@
   font-variant-numeric: tabular-nums;
 }
 
-// Figma red notification dot — 4×4 #E1493C absolute (relative parent: .r2).
-.unread {
-  position: absolute;
-  width: 4px;
-  height: 4px;
+// Figma "NEW" badge — 받은 편지 unread 상태 시각 마커. 사용자 명시 spec X →
+// 작은 pill (10px Bold + primary bg + white text + padding 1 6) 으로 시각
+// 강조 (2026-06-24 정합).
+.newBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 6px;
   background: var(--color-danger);
   border-radius: var(--radius-full);
-  top: 0;
-  left: 78px;
+  font-size: 0.5625rem; /* 9 — pill 안 작은 라벨 */
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  color: var(--color-bg);
+  flex-shrink: 0;
 }
 
-// Figma chev — 22 disabled (read) / primary (unread). flex-shrink: 0.
-.chev {
+// Figma 우측 — bookmark toggle button (Bookmark icon 22). saved=true 시 primary
+// fill. 사용자 명시 2026-06-24 — chevron → bookmark 변경.
+.bookmark {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-full);
   color: var(--color-text-disabled);
-  flex-shrink: 0;
+  cursor: pointer;
+  transition:
+    background var(--motion-base) ease,
+    color var(--motion-base) ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: var(--color-hover);
+    }
+  }
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+  }
 }
-.chevUnread {
+
+.bookmarkActive {
   color: var(--color-primary);
-  flex-shrink: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
