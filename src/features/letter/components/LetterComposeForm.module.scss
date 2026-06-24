@@ -75,14 +75,23 @@
   justify-content: flex-end;
 }
 
-// Figma Title/B_10 primary right.
+// Figma Title/B_10 primary right — current "{count}" 강조 (primary) + max
+// "/5" 약화 (text-disabled). 단일 .count 의 font/size/weight 는 Figma 기본 +
+// children 색만 분리 (사용자 명시 2026-06-24).
 .count {
   font-size: 0.625rem; /* 10 */
   font-weight: var(--font-weight-bold);
   line-height: 1.2;
   letter-spacing: var(--tracking-tight);
-  color: var(--color-primary);
   font-variant-numeric: tabular-nums;
+}
+
+.countCurrent {
+  color: var(--color-primary);
+}
+
+.countMax {
+  color: var(--color-text-disabled);
 }
 
 // Figma Frame 75 — column gap 20 (anonymous + location).

@@ -168,8 +168,11 @@ export function LetterComposeForm() {
             />
           </div>
           <div className={styles.countRow}>
+            {/* "X/5" — current 강조 (primary), max 약화 (disabled). Figma single
+                spec 의 정확한 정합 + UX 표준 split (사용자 명시 2026-06-24). */}
             <span className={styles.count} aria-live="polite">
-              {count}/5
+              <span className={styles.countCurrent}>{count}</span>
+              <span className={styles.countMax}>/5</span>
             </span>
           </div>
         </div>
