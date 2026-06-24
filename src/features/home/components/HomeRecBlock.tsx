@@ -59,13 +59,15 @@ export function HomeRecBlock() {
           <h2 className={styles.midTitle}>{t('title')}</h2>
           <p className={styles.midSubtitle}>{t('subtitle')}</p>
         </div>
-        {/* 더보기 chevron — /ranking 으로 이동 (사용자 명시 2026-06-24). */}
+        {/* 더보기 + chevron — /ranking 으로 이동 (사용자 명시 2026-06-24).
+            Figma "rec-block mid" 우측: Caption R_12 muted "더보기" + chevron 12. */}
         <Link
           href="/ranking"
           className={styles.moreLink}
           aria-label={t('moreLabel')}
         >
-          <ChevronRight size={20} aria-hidden />
+          <span className={styles.moreText}>{t('moreText')}</span>
+          <ChevronRight size={12} aria-hidden />
         </Link>
       </div>
 

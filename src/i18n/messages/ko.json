@@ -289,6 +289,7 @@
     "recBlock": {
       "title": "이런 여행 어때요?",
       "subtitle": "카테고리별 추천 여행지",
+      "moreText": "더보기",
       "moreLabel": "랭킹 페이지로 이동",
       "filterLabel": "카테고리 필터",
       "chip": {

@@ -289,6 +289,7 @@
     "recBlock": {
       "title": "How about this trip?",
       "subtitle": "Recommendations by category",
+      "moreText": "More",
       "moreLabel": "Go to ranking",
       "filterLabel": "Category filter",
       "chip": {

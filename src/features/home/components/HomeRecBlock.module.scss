@@ -22,16 +22,20 @@
   min-width: 0;
 }
 
+// Figma "rec-block mid" 우측 — Caption R_12 muted "더보기" + chevron 12,
+// row gap 4 align center. /ranking link.
 .moreLink {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
+  gap: 4px;
+  padding: 4px 6px;
   color: var(--color-muted);
   text-decoration: none;
-  border-radius: var(--radius-full);
-  transition: background var(--motion-base) ease;
+  border-radius: var(--radius-md);
+  transition:
+    background var(--motion-base) ease,
+    color var(--motion-base) ease;
+  flex-shrink: 0;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
@@ -43,6 +47,15 @@
     outline: var(--focus-outline);
     outline-offset: var(--focus-outline-offset);
   }
+}
+
+.moreText {
+  // Figma Caption R_12 muted.
+  font-size: var(--font-caption); /* 12 */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed); /* 140% */
+  letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
 // Figma title B_16_140% fg.
