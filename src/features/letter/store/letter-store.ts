@@ -14,6 +14,7 @@ export type LastSentLetter = {
     regionCode?: string;
   };
   sentAt: string; // ISO
+  isAnonymous?: boolean;
 };
 
 interface LetterStoreState {

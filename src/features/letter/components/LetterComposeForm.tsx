@@ -116,6 +116,7 @@ export function LetterComposeForm() {
         body: values.body,
         location: { label: resolved.label },
         sentAt: created?.createdAt ?? new Date().toISOString(),
+        isAnonymous: values.isAnonymous,
       });
       track('letter.sent', { length: graphemeLength(values.body) });
       router.push(
