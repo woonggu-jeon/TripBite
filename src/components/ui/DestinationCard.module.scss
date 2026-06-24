@@ -12,6 +12,11 @@
   color: var(--color-fg);
   overflow: hidden;
   width: 100%;
+  // flex item default min-width:auto 회피 — 부모 flex container (.grid / carousel
+  // slide) 에서 nowrap name/region/description 콘텐츠 길이만큼 카드 폭 커지는
+  // 회귀 차단. cell flex: 0 0 152 의 152 폭 안에서만 ellipsis 작동.
+  min-width: 0;
+  max-width: 100%;
   transition:
     border-color var(--motion-base) ease,
     transform var(--motion-fast) ease;
@@ -93,7 +98,8 @@
   min-width: 0;
 }
 
-// Figma title B_14_140% fg — 1 line ellipsis.
+// Figma title B_14_140% fg — 1 line ellipsis. flex item min-width 0 명시 —
+// 긴 이름이 카드 폭 늘리는 회귀 차단.
 .name {
   font-size: var(--text-sm); /* 14 */
   font-weight: var(--font-weight-bold);
@@ -101,6 +107,8 @@
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
   margin: 0;
+  min-width: 0;
+  max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -138,6 +146,8 @@
   letter-spacing: var(--tracking-tight);
   color: #121212;
   margin: 0;
+  min-width: 0;
+  max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
