@@ -1,14 +1,19 @@
-// Figma "편지 쓰기 · Frame 70" (2026-06-24) — stamp 천공 효과:
-//   - Frame 70 (5 cells row align center) — border-y 1px #E1493C (위/아래).
-//   - cell 56×56 white — border-right 1px #E1493C (각 cell 우측 vertical
-//     divider). 첫 cell 좌측에도 border-left 1px error → 외곽 좌우도 닫힘.
-// 결과: 우표(stamp) 같은 외곽 사각 + 4 verical divider.
-// PinLikeInput .wrap — width 100% 명시 (2026-06-24 fix). 부모 .inputWrap 이
-// flex container 일 때 .wrap 의 자연 width 가 cells flex 1 children 합 0 으로
-// 압축되는 회귀 정정.
+// Figma "편지 쓰기 · Frame 79 > ms > Frame 71 > Frame 70" (2026-06-24 정합 v2) —
+// stamp 천공 효과는 **이중 border + 12px gap** 으로 표현:
+//
+//   .wrap (Frame 71): padding 12 0 + border-y 1 error  ← 외곽 가로 line
+//     └ 12px (padding)
+//     └ .cells (Frame 70): border-y 1 error             ← 내부 가로 line
+//        └ cell × 5 (border-right 1 error, 첫 cell border-left)
+//     └ 12px (padding)
+//
+// 결과 시각: 위 1px line — 12 gap — 1px line — 56 cells — 1px line — 12 gap — 1px line.
 .wrap {
   position: relative;
   width: 100%;
+  padding: 12px 0;
+  border-top: 1px solid var(--color-danger);
+  border-bottom: 1px solid var(--color-danger);
   cursor: text;
   user-select: none;
 }
