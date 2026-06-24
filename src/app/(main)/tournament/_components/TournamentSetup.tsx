@@ -78,7 +78,10 @@ const SEASON_EMOJI: Record<Season, string> = {
   winter: '❄️',
 };
 
-const INTRO_MS = 2500;
+// intro phase 자동 advance 시간 — 사용자 피드백 (2026-06-24) "굳이 시간이
+// 오래 걸릴 이유가 있나" → 2.5s → 1.0s. fetch 시점이 아닌 단순 시각 transition
+// 이므로 안내 카피 한 번 읽을 시간만 두고 빠르게 map 으로.
+const INTRO_MS = 1000;
 
 // zustand selector 의 fallback array — module-level stable reference 로 두지
 // 않으면 `?? []` 가 매 render 마다 새 배열 → selector 가 변경 감지 → 무한
@@ -121,8 +124,13 @@ export function TournamentSetup() {
   // mount 1회 — 직전 토너먼트 store 잔재 (config/selectedRegions/tournamentSize/
   // winner 등) 정리. 사용자가 result → "다시하기" → /tournament 재진입 시 잔재
   // 가 false-positive 진입 가드로 /play 직진 가능 — 명시 reset 으로 차단.
+  //
+  // 동시에 /tournament/play chunk prefetch — 사용자가 step 7 "토너먼트 시작"
+  // click 시점에 이미 background download 완료 → push 즉시 mount, 페이지 점프
+  // 시각적 어색함 회피 (사용자 피드백 2026-06-24).
   useEffect(() => {
     reset();
+    router.prefetch('/tournament/play');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
