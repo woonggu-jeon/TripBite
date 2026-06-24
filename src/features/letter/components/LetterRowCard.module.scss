@@ -22,13 +22,19 @@
   }
 }
 
+// .avatarWrap — relative positioning 부모 (unread red dot 의 absolute 기준).
+.avatarWrap {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
 // Figma row 좌측 — sender 프로필 avatar 48×48 #EAF6EF (primary-soft) radius 8.
-// BE author.avatarUrl 미제공 → User icon 24 primary fallback (사용자 명시
-// 2026-06-24). 추후 BE avatar 추가 시 <Image src={author.avatarUrl} /> 으로 교체.
+// BE author.avatarUrl 미제공 → User icon 24 primary fallback. 추후 BE avatar
+// 추가 시 <Image src={author.avatarUrl} /> 으로 교체.
 .avatar {
   display: grid;
   place-items: center;
-  flex-shrink: 0;
   width: 48px;
   height: 48px;
   background: var(--color-primary-soft);
@@ -109,22 +115,16 @@
   font-variant-numeric: tabular-nums;
 }
 
-// Figma "NEW" badge — 받은 편지 unread 상태 시각 마커. 사용자 명시 spec X →
-// 작은 pill (10px Bold + primary bg + white text + padding 1 6) 으로 시각
-// 강조 (2026-06-24 정합).
-.newBadge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1px 6px;
+// Figma unread red dot — 4×4 #E1493C. avatar 우상단 notification badge
+// (사용자 명시 2026-06-24 — pill NEW 회귀 → dot 으로 복원).
+.unread {
+  position: absolute;
+  width: 4px;
+  height: 4px;
   background: var(--color-danger);
   border-radius: var(--radius-full);
-  font-size: 0.5625rem; /* 9 — pill 안 작은 라벨 */
-  font-weight: var(--font-weight-bold);
-  line-height: 1.2;
-  letter-spacing: 0.04em;
-  color: var(--color-bg);
-  flex-shrink: 0;
+  top: 2px;
+  right: 2px;
 }
 
 // Figma 우측 — bookmark toggle button (Bookmark icon 22). saved=true 시 primary

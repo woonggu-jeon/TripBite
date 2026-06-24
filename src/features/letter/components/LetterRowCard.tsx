@@ -78,9 +78,14 @@ export function LetterRowCard({ letter }: { letter: LetterDto }) {
       className={styles.card}
       aria-label={`${letter.body} · ${letter.author.nickname}`}
     >
-      {/* 좌측 avatar — BE author.avatarUrl 미제공 → User icon fallback. */}
-      <span className={styles.avatar} aria-hidden>
-        <User size={24} strokeWidth={1.6} />
+      {/* 좌측 avatar — BE author.avatarUrl 미제공 → User icon fallback.
+          unread (받은 편지 + 미열람) 시 우상단 4×4 red dot notification badge
+          (사용자 명시 2026-06-24 — pill 형태 NEW 아니라 dot). */}
+      <span className={styles.avatarWrap} aria-hidden>
+        <span className={styles.avatar}>
+          <User size={24} strokeWidth={1.6} />
+        </span>
+        {isUnread && <span className={styles.unread} />}
       </span>
       <div className={styles.m}>
         <h3 className={styles.title}>{letter.body}</h3>
@@ -94,7 +99,6 @@ export function LetterRowCard({ letter }: { letter: LetterDto }) {
           <span className={styles.time}>
             <time dateTime={letter.arrivedAt ?? letter.createdAt}>{time}</time>
           </span>
-          {isUnread && <span className={styles.newBadge}>NEW</span>}
         </div>
       </div>
       {/* 우측 bookmark toggle — saved 시 fill. row click 충돌 회피. */}
