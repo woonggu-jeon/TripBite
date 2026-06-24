@@ -102,10 +102,14 @@
     transform var(--motion-fast) ease;
   word-break: keep-all;
 
+  // hover 색 = active 와 동일 (사용자 명시 2026-06-24) — primary border +
+  // primary-soft bg + primary text. hover preview = "선택하면 이 모양"
+  // 시각적 단서.
   @media (hover: hover) and (pointer: fine) {
     &:hover:not(:disabled) {
-      border-color: var(--color-primary-border);
-      background: var(--color-surface-soft);
+      border-color: var(--color-primary);
+      background: var(--color-primary-soft);
+      color: var(--color-primary);
     }
   }
   &:active:not(:disabled) {
@@ -124,8 +128,6 @@
 .optionActive {
   border-color: var(--color-primary);
   background: var(--color-primary-soft);
-  // 선택 시 text 도 primary 강조 (Figma active opt 명시 없으나 border/bg
-  // primary 와 통일 — 사용자 정합 결정 2026-06-23).
   color: var(--color-primary);
   font-weight: var(--font-weight-medium);
 }

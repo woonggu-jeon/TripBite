@@ -1,10 +1,15 @@
 // Figma BottomNav (2026-06-23) — 62h, 5 tab 72w each, border-top 1px,
 // icon 24 + label 10 (Caption M_10 default / B_10 active primary).
 .nav {
+  // contentInner 와 같은 max-width + center (사용자 명시 2026-06-24) —
+  // viewport 풀폭 left/right 0 → desktop 에서 콘텐츠 영역과 정렬 어색 →
+  // max-width content-max + transform translateX(-50%) 패턴.
   position: fixed;
   bottom: 0;
-  left: 0;
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--content-max);
   z-index: var(--z-bottom-nav);
   display: grid;
   grid-template-columns: repeat(5, 1fr);

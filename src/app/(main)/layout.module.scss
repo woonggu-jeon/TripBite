@@ -51,6 +51,10 @@
   width: 100%;
   margin: 0 auto;
   padding: var(--content-pad);
+  // body bg = #EAF6EF (viewport 바깥) 위에 본문 영역만 white 카드. desktop
+  // 720+ 에서 contentInner 양 옆은 primary-soft tint, contentInner 안은
+  // white (light) / surface (dark).
+  background: var(--color-bg);
   // padding-bottom = 여유(space-8) + nav 자체(--bottom-nav-h)
   //   + safe-area-inset-bottom (iPhone home indicator)
   //

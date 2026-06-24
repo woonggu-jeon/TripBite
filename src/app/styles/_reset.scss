@@ -35,7 +35,13 @@ body {
   font-size: var(--text-base);
   line-height: var(--line-normal);
   color: var(--color-fg);
-  background: var(--color-bg);
+  // viewport 바깥 (contentInner max 720 이상 desktop 영역) bg = primary-soft
+  // (#EAF6EF, 사용자 명시 2026-06-24). contentInner 자체는 .contentInner 에서
+  // var(--color-bg) override → 본문 영역은 white 유지.
+  background: #eaf6ef;
+  :root[data-theme='dark'] & {
+    background: var(--color-bg);
+  }
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* overflow-x: hidden 는 html 에 적용됨 (위 html,body 블록). */
