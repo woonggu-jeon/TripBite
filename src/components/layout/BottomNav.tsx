@@ -18,10 +18,18 @@ import styles from './BottomNav.module.scss';
  * 아이콘은 SVG sprite (<Icon />). 활성 기준:
  *   - 홈("/") 정확히 일치
  *   - 나머지는 prefix 매칭 (예: /tournament/play 도 토너먼트 탭 활성)
+ *
+ * 숨김 분기 (사용자 피드백 2026-06-24): 토너먼트 흐름 (`/tournament*`) 은
+ * 하단 fixed "다음/시작" button 과 nav 가 겹쳐 가려지는 문제 + 흐름 집중도
+ * (테스트 진행 중 다른 경로 이탈 차단) 위해 미렌더.
  */
 export function BottomNav() {
   const pathname = usePathname();
   const t = useTranslations('nav');
+
+  if (pathname.startsWith('/tournament')) {
+    return null;
+  }
 
   const isActive = (path: string) =>
     path === '/' ? pathname === '/' : pathname.startsWith(path);

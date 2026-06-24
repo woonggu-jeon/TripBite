@@ -5,7 +5,10 @@
 // 하단 absolute button — 320×52, padding 16 20, radius 12, primary M_16 white.
 .wrap {
   display: grid;
-  gap: var(--space-5); /* 20 — Frame 41 + section + ... */
+  // Figma 모바일 spec 은 gap 20 — 360 viewport 정합. 다만 webview/desktop 에서
+  // heading ↔ cards 사이가 시각적으로 너무 넓어 보여 사용자 피드백 (2026-06-24)
+  // 으로 16 으로 축소. heading 내부 gap 8 (Frame 41) 은 spec 유지.
+  gap: var(--space-4); /* 16 */
   // Figma page bg #F8F8F8 — (main) layout 의 content-pad 좌우/하단 무시 (음의
   // margin) → viewport 가장자리까지 bg bleed, padding 으로 내부 20 여백 확보.
   // top 은 그대로 (SubHeader 가 이미 -margin-top 으로 contentInner 상단까지
@@ -13,7 +16,12 @@
   background: #f8f8f8;
   margin-left: calc(-1 * var(--content-pad));
   margin-right: calc(-1 * var(--content-pad));
-  margin-bottom: calc(-1 * var(--content-pad));
+  // contentInner padding-bottom = space-8 + bottom-nav-h + safe-area. BottomNav
+  // 가 /tournament* 경로에서 미렌더 (BottomNav.tsx 분기) 이므로 그 padding
+  // 영역까지 #f8f8f8 bg bleed + cta fixed 가 viewport bottom 에 부착.
+  margin-bottom: calc(
+    -1 * var(--content-pad) - var(--bottom-nav-h) - var(--space-8)
+  );
   padding-top: var(--space-5);
   padding-left: var(--space-5);
   padding-right: var(--space-5);

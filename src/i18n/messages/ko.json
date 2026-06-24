@@ -396,10 +396,10 @@
         "themeKind": {
           "title": "어떤 테마로 여행지를 골라볼까요?",
           "hint": "테마에 맞춰 충북 여행지를 추천해 드려요.",
-          "season": "계절 선택",
+          "season": "계절 테마",
           "seasonDesc": "봄·여름·가을·겨울 중 직접",
           "random": "랜덤 테마",
-          "randomDesc": "계절과 유형을 랜덤으로"
+          "randomDesc": "계절과 유형을 랜덤으로 골라드려요"
         },
         "season": {
           "title": "어느 계절이 좋을까요?",

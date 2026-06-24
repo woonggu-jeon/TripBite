@@ -396,10 +396,10 @@
         "themeKind": {
           "title": "Pick a theme to choose a destination",
           "hint": "We'll suggest Chungbuk destinations matching the theme.",
-          "season": "Pick a season",
+          "season": "Seasonal theme",
           "seasonDesc": "Choose Spring · Summer · Autumn · Winter",
           "random": "Random theme",
-          "randomDesc": "Season and type chosen for you"
+          "randomDesc": "We'll pick the season and type for you"
         },
         "season": {
           "title": "Which season?",
