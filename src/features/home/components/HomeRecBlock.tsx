@@ -8,7 +8,7 @@ import { Skeleton } from '@/components/feedback/Skeleton';
 import { DestinationCard } from '@/components/ui/DestinationCard';
 import { Carousel } from '@/features/carousel';
 import { useResponsiveSlidesPerView } from '@/hooks/use-responsive-slides-per-view';
-import { useRecommendedDestinations } from '@/features/ranking/hooks/use-ranking';
+import { useRecommendationGroups } from '@/features/home/hooks/use-recommendations';
 import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import { toneFor } from '@/constants/region-tone';
 import { categoryEmoji } from '@/constants/emoji-map';
@@ -19,18 +19,16 @@ import type {
 import styles from './HomeRecBlock.module.scss';
 
 /**
- * 홈 추천 블록 — Figma "HOME · 홈 · rec-block" (2026-06-23).
+ * 홈 추천 블록 — Figma "HOME · 홈 · rec-block".
  *
- * 구성:
- *   - mid (sec-title + subtitle): title B_16 fg "추천 여행지" + Caption R_12
- *     muted "취향에 맞는 곳을 골라봤어요" (또는 "더 보기" 우측 link 미사용).
- *   - chips: 전체 (primary fill, Bold) + 3 카테고리 (outline gray, R_14 muted)
- *     — festival / attraction / experience.
- *   - section: DestinationCard 3 horizontal scroll (saved-grid 408w x-scroll).
+ * 데이터 (2026-06-24 BE 전환):
+ *   - `GET /v1/destinations/recommendations` (신설) — festival/attraction/
+ *     experience 3 그룹 응답.
+ *   - chip 'all' → 3 그룹 합침, 'festival'/'attraction'/'experience' → 그룹
+ *     그대로 노출. client filter (refetch X).
  *
- * 데이터: useRecommendedDestinations(8) — TanStack Query cache 공유. HomeHero
- * 가 [0] 사용 — RecBlock 은 [1..] 만 노출하여 hero 와 중복 회피.
- * chip 변경 시 client filter (refetch X).
+ * 기존 `GET /rankings?type=recommended` (인기순, 관광지 only) 는 HomeHero
+ * 가 그대로 사용 — BE retire 시점에 통합.
  */
 type ChipKey = 'all' | DestinationCategory;
 
@@ -39,7 +37,7 @@ const CHIPS: ChipKey[] = ['all', 'festival', 'attraction', 'experience'];
 export function HomeRecBlock() {
   const t = useTranslations('home.recBlock');
   const [activeChip, setActiveChip] = useState<ChipKey>('all');
-  const { data, isLoading } = useRecommendedDestinations(8);
+  const { data, isLoading } = useRecommendationGroups();
   const slidesPerView = useResponsiveSlidesPerView();
 
   if (isLoading) {
@@ -50,12 +48,17 @@ export function HomeRecBlock() {
       </section>
     );
   }
-
-  const rest = (data ?? []).slice(1).map((r) => r.destination);
-  if (rest.length === 0) return null;
+  if (!data) return null;
 
   const filtered: DestinationDto[] =
-    activeChip === 'all' ? rest : rest.filter((d) => d.category === activeChip);
+    activeChip === 'all'
+      ? [...data.festival, ...data.attraction, ...data.experience]
+      : data[activeChip];
+
+  // 3 그룹 모두 비면 섹션 자체 미노출 (이전 동작 유지).
+  const totalCount =
+    data.festival.length + data.attraction.length + data.experience.length;
+  if (totalCount === 0) return null;
 
   return (
     <section className={styles.wrap} aria-label={t('title')}>
@@ -64,7 +67,7 @@ export function HomeRecBlock() {
           <h2 className={styles.midTitle}>{t('title')}</h2>
           <p className={styles.midSubtitle}>{t('subtitle')}</p>
         </div>
-        {/* 더보기 + chevron — /ranking 으로 이동 (사용자 명시 2026-06-24).
+        {/* 더보기 + chevron — /ranking 으로 이동.
             Figma "rec-block mid" 우측: Caption R_12 muted "더보기" + chevron 12. */}
         <Link
           href="/ranking"

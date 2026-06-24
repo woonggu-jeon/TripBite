@@ -766,6 +766,22 @@ export const handlers = [
   //   - tournamentSize: 매치업 사이즈 (M ≤ N) — 현재 mock 은 무시, 백엔드 연동 후 활용
   //   - pool : 클라이언트에 노출할 풀 사이즈 (없으면 count와 같음)
   //
+  // 메인 "이런 여행 어때요" 추천 그룹 — Figma rec-block 전용.
+  // BE: GET /destinations/recommendations (2026-06-24 신설).
+  // 응답: { festival: [], attraction: [], experience: [] } 3 그룹.
+  // 각 그룹당 최대 8개 (mock 운영 — destinationSeeds 카테고리별 deterministic
+  // slice).
+  // ⚠ /destinations/:id 보다 먼저 등록 (segment 매칭 회피).
+  http.get(`${apiUrl}/destinations/recommendations`, () => {
+    const byCategory = (cat: 'festival' | 'attraction' | 'experience') =>
+      destinationSeeds.filter((d) => d.category === cat).slice(0, 8);
+    return HttpResponse.json({
+      festival: byCategory('festival'),
+      attraction: byCategory('attraction'),
+      experience: byCategory('experience'),
+    });
+  }),
+
   // 관련 여행지 — 같은 region 의 다른 destination 6개. seed 기반 deterministic.
   // ⚠ /destinations/:id 보다 먼저 등록 — :id 가 'related' segment 도 매칭하므로
   //   path 명시 (`/destinations/:id/related`) 가 더 길어 우선되지만 안전을 위해 앞에.

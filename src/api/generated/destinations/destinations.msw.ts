@@ -22,11 +22,14 @@ import {
 } from '../schemas';
 import type {
   DestinationDetailDto,
-  DestinationDto
+  DestinationDto,
+  RecommendationsDto
 } from '../schemas';
 
 
 export const getDestinationControllerRandomV1ResponseMock = (): DestinationDto[] => (Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => ({category: faker.helpers.arrayElement(Object.values(DestinationCategory)), region: faker.helpers.arrayElement(Object.values(RegionCode)), id: faker.string.alpha({length: {min: 10, max: 20}}), name: faker.string.alpha({length: {min: 10, max: 20}}), imageUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])})))
+
+export const getDestinationControllerRecommendationsV1ResponseMock = (overrideResponse: Partial<Extract<RecommendationsDto, object>> = {}): RecommendationsDto => ({festival: Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => ({category: faker.helpers.arrayElement(Object.values(DestinationCategory)), region: faker.helpers.arrayElement(Object.values(RegionCode)), id: faker.string.alpha({length: {min: 10, max: 20}}), name: faker.string.alpha({length: {min: 10, max: 20}}), imageUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])})), attraction: Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => ({category: faker.helpers.arrayElement(Object.values(DestinationCategory)), region: faker.helpers.arrayElement(Object.values(RegionCode)), id: faker.string.alpha({length: {min: 10, max: 20}}), name: faker.string.alpha({length: {min: 10, max: 20}}), imageUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])})), experience: Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => ({category: faker.helpers.arrayElement(Object.values(DestinationCategory)), region: faker.helpers.arrayElement(Object.values(RegionCode)), id: faker.string.alpha({length: {min: 10, max: 20}}), name: faker.string.alpha({length: {min: 10, max: 20}}), imageUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])})), ...overrideResponse})
 
 export const getDestinationControllerRelatedV1ResponseMock = (): DestinationDto[] => (Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => ({category: faker.helpers.arrayElement(Object.values(DestinationCategory)), region: faker.helpers.arrayElement(Object.values(RegionCode)), id: faker.string.alpha({length: {min: 10, max: 20}}), name: faker.string.alpha({length: {min: 10, max: 20}}), imageUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])})))
 
@@ -40,6 +43,18 @@ export const getDestinationControllerRandomV1MockHandler = (overrideResponse?: D
     return HttpResponse.json(overrideResponse !== undefined
     ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
     : getDestinationControllerRandomV1ResponseMock(),
+      { status: 200
+      })
+  }, options)
+}
+
+export const getDestinationControllerRecommendationsV1MockHandler = (overrideResponse?: RecommendationsDto | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<RecommendationsDto> | RecommendationsDto), options?: RequestHandlerOptions) => {
+  return http.get('*/v1/destinations/recommendations', async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+
+
+    return HttpResponse.json(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getDestinationControllerRecommendationsV1ResponseMock(),
       { status: 200
       })
   }, options)
@@ -70,6 +85,7 @@ export const getDestinationControllerDetailV1MockHandler = (overrideResponse?: D
 }
 export const getDestinationsMock = () => [
   getDestinationControllerRandomV1MockHandler(),
+  getDestinationControllerRecommendationsV1MockHandler(),
   getDestinationControllerRelatedV1MockHandler(),
   getDestinationControllerDetailV1MockHandler()
 ]

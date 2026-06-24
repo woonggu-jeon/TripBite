@@ -66,6 +66,7 @@ export * from './quizQuestionDto';
 export * from './rankDestinationDto';
 export * from './rankingControllerListV1Params';
 export * from './rankItemDto';
+export * from './recommendationsDto';
 export * from './recordConsentDto';
 export * from './recordTournamentDto';
 export * from './regionCode';

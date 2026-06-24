@@ -28,7 +28,8 @@ import type {
   DestinationControllerRandomV1Params,
   DestinationDetailDto,
   DestinationDto,
-  ErrorDto
+  ErrorDto,
+  RecommendationsDto
 } from '../schemas';
 
 import { orvalMutator } from '../../../services/api/orval-mutator';
@@ -182,6 +183,162 @@ export function useDestinationControllerRandomV1<TData = Awaited<ReturnType<type
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getDestinationControllerRandomV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+export const destinationControllerRecommendationsV1 = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalMutator<RecommendationsDto>(
+      {url: `/v1/destinations/recommendations`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getDestinationControllerRecommendationsV1InfiniteQueryKey = () => {
+    return [
+    'infinite', `/v1/destinations/recommendations`
+    ] as const;
+    }
+
+export const getDestinationControllerRecommendationsV1QueryKey = () => {
+    return [
+    `/v1/destinations/recommendations`
+    ] as const;
+    }
+
+
+export const getDestinationControllerRecommendationsV1InfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>>, TError = ErrorDto>( options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDestinationControllerRecommendationsV1InfiniteQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>> = ({ signal }) => destinationControllerRecommendationsV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DestinationControllerRecommendationsV1InfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>>
+export type DestinationControllerRecommendationsV1InfiniteQueryError = ErrorDto
+
+
+export function useDestinationControllerRecommendationsV1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>>, TError = ErrorDto>(
+  options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>,
+          TError,
+          Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDestinationControllerRecommendationsV1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>>, TError = ErrorDto>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>,
+          TError,
+          Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDestinationControllerRecommendationsV1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>>, TError = ErrorDto>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useDestinationControllerRecommendationsV1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>>, TError = ErrorDto>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDestinationControllerRecommendationsV1InfiniteQueryOptions(options)
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+export const getDestinationControllerRecommendationsV1QueryOptions = <TData = Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>, TError = ErrorDto>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDestinationControllerRecommendationsV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>> = ({ signal }) => destinationControllerRecommendationsV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DestinationControllerRecommendationsV1QueryResult = NonNullable<Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>>
+export type DestinationControllerRecommendationsV1QueryError = ErrorDto
+
+
+export function useDestinationControllerRecommendationsV1<TData = Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>, TError = ErrorDto>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>,
+          TError,
+          Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDestinationControllerRecommendationsV1<TData = Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>, TError = ErrorDto>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>,
+          TError,
+          Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDestinationControllerRecommendationsV1<TData = Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>, TError = ErrorDto>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useDestinationControllerRecommendationsV1<TData = Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>, TError = ErrorDto>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof destinationControllerRecommendationsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDestinationControllerRecommendationsV1QueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
