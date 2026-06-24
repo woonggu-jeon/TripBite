@@ -65,10 +65,11 @@
 }
 
 // Figma Frame 79 — sent card 320×292 bg #F8F8F8 + 1px gray border + radius
-// 12 + padding 20 16.
+// 12 + padding 20 16 + column gap 10 (Figma 정합 2026-06-24).
 .card {
   display: flex;
   flex-direction: column;
+  gap: 10px;
   padding: 20px 16px;
   background: var(--color-gray-10); /* #F8F8F8 */
   border: 1px solid var(--color-border);
@@ -133,7 +134,7 @@
   height: 58px;
   border: 2px solid var(--color-danger);
   border-radius: var(--radius-full);
-  opacity: 0.85;
+  opacity: 0.7; /* Figma 명시 정합 (사용자 명시 2026-06-24) */
   transform: rotate(-14deg);
   text-align: center;
 }
@@ -193,12 +194,13 @@
   color: var(--color-muted);
 }
 
-// Figma ms — row padding 20 288×120. Frame 71 = 248 width (288 - 40).
+// Figma ms — row padding 20 (4변) 288×120. Frame 71 cells 248 width = 288 -
+// 40 (좌우 padding 20+20). 직전 padding-y 20 만 → 좌우 padding 누락 정정.
 .ms {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px 0;
+  padding: 20px;
 }
 
 // Figma Frame 70 — 5 cells row border-y 1px error #E1493C.
@@ -239,12 +241,12 @@
   background: var(--color-border);
 }
 
-// Figma Frame 80 — column gap 4.
+// Figma Frame 80 — column gap 4 (.card gap 10 으로 자연 spacing — padding-top
+// 12 직전 제거).
 .footer {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding-top: 12px;
 }
 
 // Figma fr — row space-between width 288 height 20.

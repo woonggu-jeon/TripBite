@@ -217,9 +217,16 @@ export function LetterSentClient() {
         </article>
       </div>
 
-      {/* Figma button absolute bottom 20 — "홈으로 가기" outline primary. */}
+      {/* Figma button absolute bottom 20 — 320×52 outline primary M_16:
+          white bg + 1px primary border + primary color + radius 12.
+          variant=outlinePrimary (primary border) + size=lg (52h, radius 12). */}
       <div className={styles.actions}>
-        <Button variant="outline" fullWidth onClick={handleHome}>
+        <Button
+          variant="outlinePrimary"
+          size="lg"
+          fullWidth
+          onClick={handleHome}
+        >
           {t('goHome')}
         </Button>
       </div>
