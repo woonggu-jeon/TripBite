@@ -459,14 +459,12 @@
       "recordFailedToast": "Couldn't save the tournament",
       "retry": "Try again",
       "introHint": "The Chungbuk map will appear shortly",
-      "next": "Next",
       "start": "Next",
       "reshuffle": "Retry",
       "mapReady": {
         "title": "{count} destinations selected",
         "desc": "Picked across Chungbuk for the {season} theme.\nReady to start the match?"
       },
-      "mapSummary": "{destinations} destinations selected",
       "emptyPool": {
         "title": "No destinations match your filters",
         "hint": "Try a different region or category combination",
@@ -489,7 +487,6 @@
         }
       },
       "startBracket": "Start bracket",
-      "noConfig": "No tournament settings yet",
       "goSetup": "Go to setup",
       "matchup": {
         "final": "Final",
@@ -509,22 +506,13 @@
     },
     "result": {
       "winnerEyebrow": "Winning destination",
-      "luckyColor": "Lucky color",
-      "meetChance": "Chance of a fated encounter",
-      "saveToMypage": "Save to My Page",
-      "saving": "Saving…",
       "saved": "Saved",
-      "saveFailed": "Save failed",
       "saveRequireAuth": "Sign in to save to My Page. Go to login now?",
-      "retry": "Try again",
       "retryTournament": "Retry",
-      "share": "Share result",
       "shareShort": "Share result",
       "saveShort": "Save to My Page",
-      "savedToast": "Saved",
       "noWinner": "No tournament result yet",
       "goSetup": "Start a bracket",
-      "shareText": "{name} won my TripBite bracket!",
       "color": {
         "label": "Lucky color of this place",
         "red": "Red",
@@ -557,13 +545,11 @@
       },
       "ladder": {
         "title": "Chance of a fated encounter on this trip",
-        "viewResult": "View result",
         "subtitle": "Pick a line and see the chance at its endpoint",
         "hintIdle": "Pick a line to start",
         "hintRolling": "Tracing the ladder…",
         "hintRevealed": "Arrived!",
         "resultLabel": "Chance of a fated encounter on this trip",
-        "retry": "Roll again",
         "svgLabel": "Ladder game",
         "lineLabel": "Line {n}"
       }

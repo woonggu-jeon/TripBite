@@ -1,3 +1,5 @@
+// /tournament/play — bracket + celebration phase 만 (2026-06-24 refactor 후
+// setup 으로 intro/map/size 이동). dead class 일괄 정리.
 .wrap {
   position: relative;
   display: grid;
@@ -7,281 +9,10 @@
   overflow: hidden;
 }
 
-.empty {
-  display: grid;
-  gap: 0.75rem;
-  place-items: center;
-  padding: 3rem 1rem;
-  color: var(--color-muted);
-  text-align: center;
-}
-
-.center {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  gap: 1rem;
-  place-items: center;
-  padding: 2.5rem 1rem;
-}
-
 .hint {
   font-size: var(--font-body-sm);
   color: var(--color-muted);
   text-align: center;
-}
-
-/* ─────────────────────────────────────────────────────────────
- * intro phase — TRN 로딩 (Figma)
- *   - 360×786 padding 0 30, column center
- *   - 배경 leaf 6개 (40,90 / 330,140 / 60,640 / 340,560 / 300,250 / 55,360)
- *   - circle-stack: 134 amber + 100 white + 60 leaf
- *   - title 19/140%/-0.03em ExtraBold
- *   - 3 dots 9px primary radius full
- * ─────────────────────────────────────────────────────────────
- */
-.intro {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 30px;
-  min-height: calc(100dvh - 200px);
-  padding: 0 30px;
-  overflow: hidden;
-}
-
-.bgLeaf1,
-.bgLeaf2,
-.bgLeaf3,
-.bgLeaf4,
-.bgLeaf5,
-.bgLeaf6 {
-  position: absolute;
-  font-size: 28px;
-  opacity: 0.5;
-  pointer-events: none;
-  user-select: none;
-  line-height: 1;
-}
-/* Figma 360 viewport 좌표 → % 환산 (360×786). */
-.bgLeaf1 {
-  top: 11.5%;
-  left: 11.1%;
-}
-.bgLeaf2 {
-  top: 17.8%;
-  left: 91.7%;
-}
-.bgLeaf3 {
-  top: 81.4%;
-  left: 16.7%;
-}
-.bgLeaf4 {
-  top: 71.3%;
-  left: 94.4%;
-}
-.bgLeaf5 {
-  top: 31.8%;
-  left: 83.3%;
-}
-.bgLeaf6 {
-  top: 45.8%;
-  left: 15.3%;
-}
-
-.circleStack {
-  position: relative;
-  width: 134px;
-  height: 134px;
-}
-
-.circleAmber {
-  position: absolute;
-  inset: 0;
-  width: 134px;
-  height: 134px;
-  border-radius: var(--radius-full);
-  background: #ffcd99;
-}
-
-.circleWhite {
-  position: absolute;
-  top: 17px;
-  left: 17px;
-  width: 100px;
-  height: 100px;
-  border-radius: var(--radius-full);
-  background: var(--color-bg, #ffffff);
-}
-
-.circleLeaf {
-  position: absolute;
-  top: 37px;
-  left: 37px;
-  width: 60px;
-  height: 60px;
-  font-size: 60px;
-  line-height: 60px;
-  text-align: center;
-  user-select: none;
-}
-
-.introTitle {
-  font-family: 'Inter', 'Pretendard', ui-sans-serif, system-ui, sans-serif;
-  font-size: 19px;
-  font-weight: 800; /* ExtraBold */
-  line-height: 140%;
-  letter-spacing: -0.03em;
-  color: var(--color-fg);
-  text-align: center;
-  margin: 0;
-}
-
-.dots {
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-  align-items: center;
-  justify-content: center;
-}
-
-.dot {
-  width: 9px;
-  height: 9px;
-  border-radius: var(--radius-full);
-  background: var(--color-primary);
-  animation: introDot 1.2s ease-in-out infinite;
-}
-.dot:nth-child(2) {
-  animation-delay: 0.15s;
-}
-.dot:nth-child(3) {
-  animation-delay: 0.3s;
-}
-
-@keyframes introDot {
-  0%,
-  60%,
-  100% {
-    opacity: 0.35;
-    transform: scale(0.85);
-  }
-  30% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dot {
-    animation: none;
-    opacity: 0.8;
-  }
-}
-
-.retry {
-  padding: 0.625rem 1rem;
-  background: transparent;
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-fg);
-  font-weight: var(--font-weight-semibold);
-  cursor: pointer;
-}
-
-/* ─────────────────────────────────────────────────────────────
- * map phase — TRN 여행지 준비완료 (Figma)
- *   - content padding 20 gap 20
- *   - map-card 320×348 padding 12 white border #C6C6C6 radius 12
- *   - title B_24 + R_14 muted 2-line desc
- *   - rbtns row gap 11: outline 154.5×52 (다시) + primary 154.5×52 (시작)
- * ─────────────────────────────────────────────────────────────
- */
-.map {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  padding: 20px;
-}
-
-.mapCard {
-  // Figma 모바일 320 spec — desktop 에서는 contentInner 폭까지 grow (사용자
-  // 피드백 2026-06-24). max-width 제거 후 자식 ChungbukMap SVG 가 비율 유지.
-  //
-  // bg 50% 반투명 (2026-06-24) — mapCard 가 FallingPetals (뒤 z-index 1) 의
-  // 흩날림 (꽃잎/비/단풍/눈) 을 흰 카드 bg 로 가리는 문제 해결. 카드 형태는
-  // border + 살짝 있는 bg 로 유지하되, 뒤 motion 이 비쳐 보이도록 투과.
-  width: 100%;
-  aspect-ratio: 320 / 348;
-  padding: 12px;
-  background: color-mix(
-    in srgb,
-    var(--color-surface, #ffffff) 50%,
-    transparent
-  );
-  border: 1px solid #c6c6c6;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  backdrop-filter: blur(2px);
-
-  /* dark mode 시 border 톤 down */
-  @media (prefers-color-scheme: dark) {
-    border-color: var(--color-border);
-  }
-}
-
-.mapFooter {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  text-align: center;
-  width: 100%;
-}
-
-.mapTitle {
-  font-size: 24px;
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-snug);
-  color: var(--color-fg);
-  margin: 0;
-}
-
-.mapDesc {
-  font-size: 14px;
-  font-weight: var(--font-weight-regular);
-  line-height: 1.5;
-  color: var(--color-muted);
-  margin: 0;
-  white-space: pre-line;
-}
-
-.counter {
-  font-size: var(--font-body-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-muted);
-  letter-spacing: var(--tracking-wide);
-  margin: 0;
-}
-
-.mapBtns {
-  // map-card 와 같은 폭 정합 — desktop 에서도 같은 width grow.
-  width: 100%;
-  gap: 11px;
-}
-
-.mapHint {
-  font-size: var(--text-sm);
-  color: var(--color-muted);
 }
 
 .errorBox {
@@ -290,73 +21,6 @@
   place-items: center;
   padding: 2rem 1rem;
   color: var(--color-muted);
-}
-
-.cta {
-  padding: 1rem;
-  background: var(--color-primary);
-  color: var(--color-primary-fg);
-  border-radius: var(--radius-md);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--font-body);
-  cursor: pointer;
-  transition:
-    opacity var(--motion-base) ease,
-    transform var(--motion-fast) ease;
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover:not(:disabled) {
-      opacity: var(--opacity-hover-dim);
-    }
-  }
-  &:active:not(:disabled) {
-    transform: scale(0.98);
-  }
-  &:focus-visible {
-    outline: var(--focus-outline);
-    outline-offset: var(--focus-outline-offset);
-  }
-  &:disabled {
-    opacity: var(--opacity-disabled);
-    cursor: not-allowed;
-  }
-}
-
-// Figma "TRN · 토너먼트 규모" (T-6) — Frame 41 (title B_20 + caption R_12,
-// gap 8) + 2×2 grid gap 12. sizePhase 는 column stack, Frame 41 다음 selector.
-.sizePhase {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3); /* 12 — heading↔selector 간격 (다른 phase 와 동일 톤) */
-  padding: var(--space-5) 0; /* top/bottom 20 */
-}
-
-.sizeHeading {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2); /* 8 — Figma Frame 41 gap */
-}
-
-.sizeTitle {
-  /* Figma B_20_130% */
-  font-size: var(--text-xl); /* 20 */
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-tight);
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-fg);
-  margin: 0;
-}
-
-.sizeHint {
-  /* Figma Caption R_12 muted */
-  font-size: var(--font-caption); /* 12 */
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: var(--tracking-snug);
-  color: var(--color-muted);
-  margin: 0;
 }
 
 .bracket {
@@ -368,71 +32,72 @@
   padding: 20px;
 }
 
-// 우승자 celebration — bracket 마지막 매치 → 1.8s 강조 → result 자동 이동
+/* ─────────────────────────────────────────────────────────────
+ * celebration phase — bracket 마지막 매치 → 1.8s 강조 → result 자동 이동
+ * ─────────────────────────────────────────────────────────────
+ */
 .celebration {
   position: relative;
-  z-index: 2;
-  display: grid;
-  place-items: center;
-  gap: 0.5rem;
-  padding: 4rem 1rem;
-  min-height: 60dvh;
-  text-align: center;
-  overflow: hidden;
-  animation: celebFadeIn 0.45s var(--ease-out) both;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: calc(100dvh - 200px);
+  padding: 40px 20px;
+  animation: celebFadeIn 0.3s var(--ease-out);
 }
 
 .celebGlow {
   position: absolute;
-  inset: 0;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 320px;
+  height: 320px;
   background: radial-gradient(
-    circle at center,
-    var(--color-primary-glow),
+    circle,
+    color-mix(in srgb, var(--color-primary) 30%, transparent),
     transparent 70%
   );
+  border-radius: 50%;
   pointer-events: none;
-  animation: celebGlow 1.8s var(--ease-out) both;
+  animation: celebGlow 1.4s var(--ease-out) forwards;
 }
 
 .celebTrophy {
-  font-size: var(--emoji-3xl);
+  font-size: 96px;
   line-height: 1;
-  filter: var(--drop-shadow-icon-strong);
-  animation: celebTrophyPop 0.7s var(--ease-spring) both;
-  z-index: 1;
+  animation: celebTrophyPop 0.9s var(--ease-spring) forwards;
 }
 
 .celebTitle {
   font-size: var(--font-body);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary-text-bold);
-  letter-spacing: var(--tracking-uppercase);
-  animation: celebRise 0.6s 0.25s var(--ease-out) both;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-muted);
+  margin: 0;
   opacity: 0;
-  z-index: 1;
+  animation: celebRise 0.5s var(--ease-out) 0.4s forwards;
 }
 
 .celebName {
-  font-size: var(--emoji-md);
-  font-weight: var(--font-weight-extrabold);
+  font-size: var(--font-h1);
+  font-weight: var(--font-weight-bold);
   color: var(--color-fg);
-  letter-spacing: var(--tracking-tight);
-  line-height: var(--line-tight);
-  word-break: keep-all;
-  animation: celebRise 0.6s 0.4s var(--ease-out) both;
+  margin: 0;
+  text-align: center;
   opacity: 0;
-  z-index: 1;
+  animation: celebRise 0.5s var(--ease-out) 0.55s forwards;
 }
 
 .celebRegion {
   font-size: var(--font-body-sm);
   color: var(--color-muted);
-  animation: celebRise 0.6s 0.55s var(--ease-out) both;
+  margin: 0;
   opacity: 0;
-  z-index: 1;
+  animation: celebRise 0.5s var(--ease-out) 0.7s forwards;
 }
 
-// sparkle 부스러기 (3개) — 절대 위치 + scale 펄스
 .celebSparkle1,
 .celebSparkle2,
 .celebSparkle3 {
@@ -479,15 +144,15 @@
 @keyframes celebGlow {
   0% {
     opacity: 0;
-    transform: scale(0.6);
+    transform: translate(-50%, -50%) scale(0.6);
   }
   60% {
     opacity: 1;
-    transform: scale(1.1);
+    transform: translate(-50%, -50%) scale(1.1);
   }
   100% {
     opacity: var(--opacity-muted);
-    transform: scale(1);
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 
@@ -542,14 +207,5 @@
   .celebSparkle3 {
     animation: none;
     opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cta {
-    transition: none;
-    &:active:not(:disabled) {
-      transform: none;
-    }
   }
 }

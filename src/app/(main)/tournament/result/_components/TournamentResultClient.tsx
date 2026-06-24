@@ -22,14 +22,11 @@ import styles from './TournamentResultClient.module.scss';
  * 토너먼트 결과 — Figma "TRN · 토너먼트 결과" 정합 (2026-06-24).
  *
  * 구성 (column gap 20):
- *   1) WinnerCard      — hero 320×176 (image + 90deg dark gradient + bottom-left text)
- *   2) WinnerDetailPanel — info-card 320×285 (3 field row + divider + overview)
- *   3) TournamentStats — Frame 47 (title + 4 rchip + lucky color row)
- *   4) LuckyLadder     — ladder card 320×432 (title + caption + ladder svg 280×337)
- *   5) actions         — primary 320×52 "다시 토너먼트" + outline pair "저장"/"공유"
- *
- * LuckyColor 의 행운의 색 row 는 TournamentStats 안으로 흡수됨 (Frame 47 정합).
- * separate `<LuckyColor>` 컴포넌트는 다른 사용처가 없으므로 dead — 추후 삭제 후보.
+ *   1) WinnerCard         — hero 320×176 (image + 90deg dark gradient + bottom-left text)
+ *   2) WinnerDetailPanel  — info-card 320×285 (3 field row + divider + overview)
+ *   3) TournamentStats    — Frame 47 (title + 4 rchip + lucky color row 흡수)
+ *   4) LuckyLadder        — ladder card 320×432 (title + caption + ladder svg 280×337)
+ *   5) actions            — primary 320×52 "결과 공유하기" + outline pair (다시하기 / 마이페이지에 저장)
  */
 export function TournamentResultClient() {
   const router = useRouter();

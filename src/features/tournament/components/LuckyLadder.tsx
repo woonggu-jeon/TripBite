@@ -117,8 +117,9 @@ export function LuckyLadder({
   const [revealed, setRevealed] = useState(false);
   // 결과 % count-up 표시값 (0 → 최종)
   const [displayPercent, setDisplayPercent] = useState(0);
-  // 다시 시도 시 사다리·% 재생성 트리거
-  const [resetKey, setResetKey] = useState(0);
+  // path 의 React key 변수로만 사용 — 재생성 트리거 (handleRetry) 제거됨
+  // (2026-06-24 사용자 명시). 초기값 0 고정 — setter 불필요.
+  const [resetKey] = useState(0);
 
   const { rungs, percents } = useMemo(
     () => ({

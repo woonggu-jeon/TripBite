@@ -100,16 +100,10 @@
   word-break: keep-all;
 }
 
-// Figma f — row space-between, 시군 B_14 white + 우승 B_14 white.
+// Figma f — 단일 라인 "{region} · {wins}회 우승" (2026-06-24 정합).
+// 직전 .heroRegion + .heroWins split 은 dead — 제거됨.
 .heroMeta {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.heroRegion,
-.heroWins {
+  margin: 0;
   font-size: var(--text-sm); /* 14 */
   font-weight: var(--font-weight-bold);
   line-height: var(--line-snug-relaxed); /* 140% */

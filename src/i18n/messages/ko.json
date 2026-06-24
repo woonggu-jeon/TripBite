@@ -459,14 +459,12 @@
       "recordFailedToast": "토너먼트 기록을 저장하지 못했어요",
       "retry": "다시 시도",
       "introHint": "잠시 후 충북 지도가 펼쳐져요",
-      "next": "다음으로",
       "start": "다음으로",
       "reshuffle": "다시하기",
       "mapReady": {
         "title": "여행지 {count}곳이 선정됐어요",
         "desc": "{season} 테마로 충북 곳곳에서 고른 여행지예요.\n이제 대결을 시작할까요?"
       },
-      "mapSummary": "여행지 {destinations}곳이 선정됐어요",
       "emptyPool": {
         "title": "조건에 맞는 여행지가 없어요",
         "hint": "다른 시군 / 카테고리 조합으로 다시 시도해 보세요",
@@ -489,7 +487,6 @@
         }
       },
       "startBracket": "토너먼트 시작",
-      "noConfig": "토너먼트 설정이 없어요",
       "goSetup": "설정 화면으로",
       "matchup": {
         "final": "결승",
@@ -509,22 +506,13 @@
     },
     "result": {
       "winnerEyebrow": "우승 여행지",
-      "luckyColor": "행운의 색",
-      "meetChance": "여행에서 인연을 만날 확률",
-      "saveToMypage": "마이페이지에 저장",
-      "saving": "저장 중...",
       "saved": "저장됐어요",
-      "saveFailed": "저장에 실패했어요",
       "saveRequireAuth": "마이페이지 저장은 로그인 후 사용할 수 있어요. 지금 로그인할까요?",
-      "retry": "다시 하기",
       "retryTournament": "다시하기",
-      "share": "결과 공유하기",
       "shareShort": "결과 공유하기",
       "saveShort": "마이페이지에 저장",
-      "savedToast": "저장되었어요",
       "noWinner": "토너먼트 결과가 없어요",
       "goSetup": "토너먼트 시작하기",
-      "shareText": "TripBite 에서 {name} 가(이) 우승했어요!",
       "color": {
         "label": "이 곳의 행운의 색",
         "red": "빨강",
@@ -557,13 +545,11 @@
       },
       "ladder": {
         "title": "여행에서 인연을 만날 확률",
-        "viewResult": "결과 보기",
         "subtitle": "라인을 선택하면 도착점의 확률이 공개돼요",
         "hintIdle": "원하는 라인을 선택해주세요",
         "hintRolling": "사다리를 내려가는 중...",
         "hintRevealed": "도착했어요!",
         "resultLabel": "이번 여행에서 인연을 만날 확률",
-        "retry": "다시 시도",
         "svgLabel": "사다리타기",
         "lineLabel": "{n}번 라인"
       }
