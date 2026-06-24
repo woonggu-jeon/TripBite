@@ -586,10 +586,10 @@
       "saved": "Saved letters"
     },
     "empty": {
-      "received": "No received letters yet",
-      "sent": "No sent letters yet",
-      "liked": "No liked letters yet",
-      "saved": "No saved letters yet"
+      "received": "No received letters",
+      "sent": "No sent letters",
+      "liked": "No liked letters",
+      "saved": "No saved letters"
     },
     "listError": "Couldn't load letters",
     "listRetry": "Try again",

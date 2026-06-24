@@ -52,9 +52,12 @@
   }
 }
 
+// Figma "편지 빈 상태 · seg · t (활성)" — 텍스트 primary + border-bottom
+// primary. 메인 spec 은 fg 였으나 빈 상태 spec 의 primary 가 시각 강조 자연
+// (사용자 명시 2026-06-24).
 .tabActive {
   font-weight: var(--font-weight-bold);
-  color: var(--color-fg);
+  color: var(--color-primary);
   border-bottom: 1px solid var(--color-primary);
 }
 
