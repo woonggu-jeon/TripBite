@@ -356,7 +356,15 @@ function renderTournament(
           opacity: 0.95,
         }}
       >
-        <BrandLogo width={54} ariaHidden style={{ display: 'block' }} />
+        {/* OG 카드 bg = primary #00B334. BrandLogo 큰 path 기본 #00B334 라
+            동색 → 안 보임. mainFill="#FFFFFF" 로 override (Figma spec — 큰
+            leaf white + amber accent 2). */}
+        <BrandLogo
+          width={54}
+          ariaHidden
+          mainFill="#FFFFFF"
+          style={{ display: 'block' }}
+        />
         <div
           style={{
             display: 'flex',
