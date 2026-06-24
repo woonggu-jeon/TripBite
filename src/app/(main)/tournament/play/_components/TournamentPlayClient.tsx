@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { CenterIllustration } from '@/features/tournament/components/CenterIllustration';
 import { FallingPetals } from '@/features/tournament/components/FallingPetals';
 import { ChungbukMap } from '@/features/tournament/components/ChungbukMap';
 import { CountSelector } from '@/features/tournament/components/CountSelector';
@@ -263,9 +262,38 @@ export function TournamentPlayClient() {
       )}
 
       {phase === 'intro' && (
-        <div className={styles.center}>
-          <CenterIllustration theme={theme} onTap={() => {}} disabled />
-          <p className={styles.hint}>{t('introHint')}</p>
+        <div className={styles.intro}>
+          {/* 배경 흩어진 단풍 emoji 6개 — absolute, opacity 0.5 (FallingPetals 와 별개) */}
+          <span className={styles.bgLeaf1} aria-hidden>
+            🍁
+          </span>
+          <span className={styles.bgLeaf2} aria-hidden>
+            🍁
+          </span>
+          <span className={styles.bgLeaf3} aria-hidden>
+            🍁
+          </span>
+          <span className={styles.bgLeaf4} aria-hidden>
+            🍁
+          </span>
+          <span className={styles.bgLeaf5} aria-hidden>
+            🍁
+          </span>
+          <span className={styles.bgLeaf6} aria-hidden>
+            🍁
+          </span>
+          {/* circle-stack 134: amber → white → 60 leaf */}
+          <div className={styles.circleStack} aria-hidden>
+            <span className={styles.circleAmber} />
+            <span className={styles.circleWhite} />
+            <span className={styles.circleLeaf}>🍁</span>
+          </div>
+          <h2 className={styles.introTitle}>{t('introHint')}</h2>
+          <div className={styles.dots} aria-hidden>
+            <span className={styles.dot} />
+            <span className={styles.dot} />
+            <span className={styles.dot} />
+          </div>
         </div>
       )}
 
@@ -273,31 +301,35 @@ export function TournamentPlayClient() {
         <div className={styles.map}>
           {mapPlaceholders.length > 0 && (
             <>
-              {/* 자동 표시 — 사용자 선택 X. fetch 전 placeholder 로 시군 위치만 시각화 */}
-              <ChungbukMap destinations={mapPlaceholders} theme={theme} />
+              {/* map-card 320×348 padding 12 white border #C6C6C6 radius 12 */}
+              <div className={styles.mapCard}>
+                <ChungbukMap destinations={mapPlaceholders} theme={theme} />
+              </div>
               <div className={styles.mapFooter}>
+                <h2 className={styles.mapTitle}>{t('mapReady.title')}</h2>
+                <p className={styles.mapDesc}>{t('mapReady.desc')}</p>
                 <p className={styles.counter}>
                   {t('mapSummary', { destinations: N })}
                 </p>
-                <ButtonGrid>
-                  <Button
-                    variant="secondary"
-                    size="lg"
-                    fullWidth
-                    onClick={handleReshuffle}
-                  >
-                    {t('reshuffle')}
-                  </Button>
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    fullWidth
-                    onClick={handleMapNext}
-                  >
-                    {t('next')}
-                  </Button>
-                </ButtonGrid>
               </div>
+              <ButtonGrid className={styles.mapBtns}>
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  fullWidth
+                  onClick={handleReshuffle}
+                >
+                  {t('reshuffle')}
+                </Button>
+                <Button
+                  variant="primary"
+                  size="lg"
+                  fullWidth
+                  onClick={handleMapNext}
+                >
+                  {t('start')}
+                </Button>
+              </ButtonGrid>
             </>
           )}
         </div>

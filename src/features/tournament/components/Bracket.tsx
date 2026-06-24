@@ -189,25 +189,17 @@ export function Bracket({ destinations, onComplete }: BracketProps) {
 
   return (
     <div className={styles.wrap}>
-      <header className={styles.head}>
-        <p className={styles.roundLabel}>
-          <span className={styles.round}>{label}</span>
-          <span aria-hidden className={styles.dot}>
-            ·
-          </span>
+      {/* Frame 43: top row + segments — 결승은 progress 의미 X (segment 미렌더). */}
+      <div className={styles.progressFrame}>
+        <div className={styles.progressTop}>
+          <span className={styles.progressLabel}>{label}</span>
           <span className={styles.matchCount}>
-            {t('matchCount', {
-              current: state.currentMatchIndex + 1,
-              total: round.matches.length,
-            })}
+            {state.currentMatchIndex + 1}/{round.matches.length}
           </span>
-        </p>
-        {/* 결승(1 매치) 은 progress 의미 없어 segment 미렌더 — 다만 .progressBar
-            의 height:6px + .head 의 gap 0.5rem 은 유지 (빈 placeholder) 해서
-            라운드 전환 시 카드 위치가 위로 올라오는 layout shift 회피. */}
+        </div>
         {showProgress ? (
           <div
-            className={styles.progressBar}
+            className={styles.segments}
             role="progressbar"
             aria-valuemin={0}
             aria-valuemax={100}
@@ -220,18 +212,22 @@ export function Bracket({ destinations, onComplete }: BracketProps) {
                 aria-hidden
                 className={
                   i < decidedInRound
-                    ? `${styles.progressSeg} ${styles.progressSegDone}`
-                    : styles.progressSeg
+                    ? `${styles.seg} ${styles.segDone}`
+                    : styles.seg
                 }
               />
             ))}
           </div>
         ) : (
-          <div className={styles.progressBar} aria-hidden />
+          <div className={styles.segments} aria-hidden />
         )}
-      </header>
+      </div>
 
-      <div className={styles.matchup}>
+      {/* 라운드 안내 문구 — B_20 fg. 사용자 요청 (2026-06-19) 단순화 */}
+      <h2 className={styles.roundTitle}>{t('pickPrompt')}</h2>
+
+      {/* match-area: hero stacked × 2 + VS absolute center 36 circle */}
+      <div className={styles.matchArea}>
         {/* key 에 match.a.id / match.b.id — 매치 변경 시 button DOM 자체가
             unmount/remount 되어 focus + (touch 환경의) sticky 상태가 강제
             리셋. 같은 DOM 재사용 시 ios safari 에서 이전 선택지가 다음 매치에
@@ -241,14 +237,14 @@ export function Bracket({ destinations, onComplete }: BracketProps) {
           destination={match.a}
           onPick={() => dispatch({ type: 'pick', winner: match.a })}
         />
-        <div className={styles.vs} aria-hidden>
-          VS
-        </div>
         <MatchupCard
           key={match.b.id}
           destination={match.b}
           onPick={() => dispatch({ type: 'pick', winner: match.b })}
         />
+        <div className={styles.vs} aria-hidden>
+          VS
+        </div>
       </div>
     </div>
   );

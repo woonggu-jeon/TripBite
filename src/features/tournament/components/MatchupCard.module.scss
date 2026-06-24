@@ -1,32 +1,39 @@
-// cardClasses 가 bg/border/radius 담당. layout + interactive 만.
-.card {
-  display: grid;
-  grid-template-rows: auto auto;
-  gap: 0.5rem;
+/* ─────────────────────────────────────────────────────────────
+ * Matchup hero card (Figma TRN 매치 8강)
+ *   - 320×176 radius 12, position relative, overflow hidden
+ *   - image fill + 90deg gradient (rgba 0.72 → 0.4 → 0 → 0)
+ *   - hero-text 250×63 absolute bottom-left padding 20 column gap 4
+ *     - title B_20 white (destination name)
+ *     - region row gap 4: pin 12 white + R_12 white (region)
+ *     - subtitle Caption B_10 white (description / category)
+ * ─────────────────────────────────────────────────────────────
+ */
+.hero {
+  position: relative;
+  display: block;
   width: 100%;
-  padding: 0.75rem;
-  text-align: center;
+  max-width: 320px;
+  aspect-ratio: 320 / 176;
+  border-radius: 12px;
+  border: none;
+  padding: 0;
+  margin: 0 auto;
+  background: var(--color-primary-fade);
+  overflow: hidden;
   cursor: pointer;
+  isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
   transition:
-    border-color var(--motion-base) ease,
-    background var(--motion-base) ease,
     transform var(--motion-fast) ease,
     box-shadow var(--motion-base) ease;
-  // iOS Safari 의 tap 후 회색 highlight 제거 — 우리는 :active 로 직접 처리.
-  -webkit-tap-highlight-color: transparent;
 
-  // :hover 는 마우스/펜 환경에서만. touch (iOS Safari, Android Chrome) 는
-  // tap 후 :hover 가 sticky 가 되어 다음 매치까지 이전 카드가 강조된 채로
-  // 남는 회귀의 원인 → @media (hover: hover) and (pointer: fine) 로 격리.
   @media (hover: hover) and (pointer: fine) {
     &:hover:not(:disabled) {
-      border-color: var(--color-primary);
-      background: var(--color-primary-fade);
       box-shadow: var(--shadow-md);
     }
   }
   &:active:not(:disabled) {
-    transform: scale(0.97);
+    transform: scale(0.98);
   }
   &:focus-visible {
     outline: var(--focus-outline);
@@ -39,10 +46,9 @@
 }
 
 .image {
-  position: relative;
-  width: 100%;
-  aspect-ratio: var(--aspect-square);
-  border-radius: var(--radius-md);
+  position: absolute;
+  inset: 0;
+  z-index: 0;
   background: linear-gradient(
     135deg,
     var(--color-primary-tint-strong),
@@ -50,50 +56,95 @@
   );
   display: grid;
   place-items: center;
-  overflow: hidden;
 }
 
 .emoji {
-  font-size: var(--emoji-lg);
+  font-size: var(--emoji-xl);
   line-height: 1;
+  filter: var(--drop-shadow-md);
 }
 
-.body {
-  display: grid;
-  gap: 0.1875rem;
-  min-width: 0;
+.gradient {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.72) 0%,
+    rgba(0, 0, 0, 0.4) 40%,
+    rgba(0, 0, 0, 0) 70%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  pointer-events: none;
+}
+
+.heroText {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  z-index: 2;
+  max-width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+  text-align: left;
 }
 
 .name {
-  font-size: var(--font-body-sm);
+  font-size: 20px;
   font-weight: var(--font-weight-bold);
-  color: var(--color-fg);
   line-height: var(--line-tight);
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  color: #ffffff;
+  margin: 0;
   word-break: keep-all;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
-.meta {
-  font-size: var(--font-caption);
-  color: var(--color-muted);
+.regionRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+}
+
+.pin {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
+  color: #ffffff;
 }
 
 .region {
-  font-weight: var(--font-weight-semibold);
+  font-size: 12px;
+  font-weight: var(--font-weight-regular);
+  line-height: 1;
+  color: #ffffff;
 }
 
-.category {
-  font-weight: var(--font-weight-medium);
+.subtitle {
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.4;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card {
+  .hero {
     transition: none;
     &:active:not(:disabled) {
       transform: none;
     }
+  }
+}
+
+/* 360 미만 narrow viewport — 카드 max-width 100% 로 채워 layout 깨짐 방지. */
+@media (max-width: 380px) {
+  .hero {
+    max-width: 100%;
   }
 }
