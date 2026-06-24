@@ -211,7 +211,11 @@ export function SignupForm() {
     emailStatus !== 'available';
 
   return (
-    <form onSubmit={onSubmit} noValidate className={styles.form}>
+    <form
+      onSubmit={onSubmit}
+      noValidate
+      className={`${styles.form} ${styles.formSignup}`}
+    >
       <h1 className={styles.title}>{t('title')}</h1>
 
       <TextField
