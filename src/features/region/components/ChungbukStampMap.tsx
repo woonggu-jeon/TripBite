@@ -51,42 +51,109 @@ export function ChungbukStampMap({
     };
   }, []);
 
-  // 2) path.region 에 data-visited / data-region attr + click handler
-  //    도장 표현은 별도 마커 없이 fill 음영(primary tinted) 만으로 처리.
+  // 2) path.region 에 data-visited / data-region attr + click handler.
+  //    SVG path 에 id 없음 (`class="region" d="..."` 만). text.label 도
+  //    textContent 만. mount 후 path bbox center 와 가장 가까운 label (시군명)
+  //    매칭 → 모든 path/label 에 `data-region` 한글명 attr 부여. 청주시 4 path
+  //    (상당/서원/청원/흥덕) 모두 청주 label 인접성으로 청주시 매핑됨 (사용자
+  //    명시 2026-06-25 — 도장책 색칠 fix, ChungbukMap 과 동일 패턴).
   useEffect(() => {
     if (!wrapRef.current || !svg) return;
     const root = wrapRef.current;
     const paths = Array.from(
       root.querySelectorAll<SVGPathElement>('path.region'),
     );
-    if (paths.length === 0) return;
+    const labels = Array.from(
+      root.querySelectorAll<SVGTextElement>('text.label'),
+    );
+    const labelInfo = labels
+      .map((el) => ({
+        x: parseFloat(el.getAttribute('x') ?? '0'),
+        y: parseFloat(el.getAttribute('y') ?? '0'),
+        text: (el.textContent ?? '').trim(),
+        el,
+      }))
+      .filter((l) => l.text);
+    if (labelInfo.length === 0 || paths.length === 0) return;
 
-    // 한글 id 첫 토큰 → 시군 ko. 청주시는 4 path (상당/서원/청원/흥덕) 같은 그룹.
-    const groupKey = (p: SVGPathElement) => p.id.split(/\s+/)[0] ?? p.id;
+    // label 에 data-region (RegionCode) — visited cascade 용. text 자체에는
+    // 한글 이름 textContent. label 자체는 1:1 매핑이라 직접 ko.
+    labelInfo.forEach((l) => {
+      const code = KO_TO_CODE[l.text];
+      if (code) l.el.setAttribute('data-region', code);
+    });
+
+    // 각 path 의 bbox center 와 가장 가까운 label 의 시군명 → RegionCode.
+    paths.forEach((p) => {
+      const bbox = p.getBBox();
+      const cx = bbox.x + bbox.width / 2;
+      const cy = bbox.y + bbox.height / 2;
+      let nearestText = '';
+      let minDist = Infinity;
+      labelInfo.forEach((l) => {
+        const d = Math.hypot(cx - l.x, cy - l.y);
+        if (d < minDist) {
+          minDist = d;
+          nearestText = l.text;
+        }
+      });
+      const code = nearestText ? KO_TO_CODE[nearestText] : undefined;
+      if (code) p.setAttribute('data-region', code);
+    });
+
+    // 청주시는 4 path (상당/서원/청원/흥덕). 일부 path 가 진천/보은 label 에
+    // 더 가까워 잘못 매핑될 수 있음 (사용자 명시 2026-06-25 — 청주 부자연 fix).
+    // 청주 label center 와 가장 가까운 4 path 를 강제로 cheongju 매핑.
+    const cheongjuLabel = labelInfo.find(
+      (l) => KO_TO_CODE[l.text] === 'cheongju',
+    );
+    if (cheongjuLabel) {
+      const cl = cheongjuLabel;
+      const ranked = paths
+        .map((p) => {
+          const bbox = p.getBBox();
+          return {
+            path: p,
+            dist: Math.hypot(
+              bbox.x + bbox.width / 2 - cl.x,
+              bbox.y + bbox.height / 2 - cl.y,
+            ),
+          };
+        })
+        .sort((a, b) => a.dist - b.dist);
+      ranked
+        .slice(0, 4)
+        .forEach((r) => r.path.setAttribute('data-region', 'cheongju'));
+    }
+  }, [svg]);
+
+  // 3) visited + click handler — data-region attr 기준 (mount 후 1회 부여됨).
+  useEffect(() => {
+    if (!wrapRef.current || !svg) return;
+    const root = wrapRef.current;
+    const paths = Array.from(
+      root.querySelectorAll<SVGPathElement>('path.region'),
+    );
+    const labels = Array.from(
+      root.querySelectorAll<SVGTextElement>('text.label'),
+    );
     const cleanups: Array<() => void> = [];
 
     paths.forEach((p) => {
-      const ko = groupKey(p);
-      const code = KO_TO_CODE[ko];
+      const code = p.getAttribute('data-region') as RegionCode | null;
       if (!code) return;
-      p.setAttribute('data-region', code);
       if (visited.has(code)) p.setAttribute('data-visited', 'true');
       else p.removeAttribute('data-visited');
       p.style.cursor = onRegionClick ? 'pointer' : 'default';
-
       if (onRegionClick) {
         const onClick = () => onRegionClick(code);
         p.addEventListener('click', onClick);
         cleanups.push(() => p.removeEventListener('click', onClick));
       }
     });
-
-    // 라벨 text 에도 visited attr — visited 시 라벨도 강조
-    root.querySelectorAll<SVGTextElement>('text.label').forEach((t) => {
-      const ko = (t.textContent ?? '').trim().split(/\s+/)[0] ?? '';
-      const code = KO_TO_CODE[ko];
+    labels.forEach((t) => {
+      const code = t.getAttribute('data-region') as RegionCode | null;
       if (!code) return;
-      t.setAttribute('data-region', code);
       if (visited.has(code)) t.setAttribute('data-visited', 'true');
       else t.removeAttribute('data-visited');
     });

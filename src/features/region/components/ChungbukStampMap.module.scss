@@ -13,50 +13,41 @@
     display: block;
   }
 
-  /* 시군 path 기본 — 미획득 dashed 회색 외곽선. dark 자동 분기. */
+  /* Figma "MY · 충북 도장책" 정합 (사용자 명시 2026-06-25). 시군 path 기본
+     — 미방문: white fill + 1.05 disabled border (solid, dashed X). dark 자동
+     분기. transition 으로 visited 전환 부드럽게. */
   :global(path.region) {
     fill: var(--color-bg);
-    stroke: var(--color-muted);
-    stroke-width: 1.25;
-    stroke-dasharray: 4 3;
+    stroke: #b4b4b4;
+    stroke-width: 1.05;
     transition:
       fill var(--motion-base) ease,
-      stroke var(--motion-base) ease,
-      stroke-dasharray var(--motion-base) ease;
+      stroke var(--motion-base) ease;
   }
 
   @media (hover: hover) and (pointer: fine) {
     :global(path.region:hover) {
-      fill: var(--color-hover);
-      stroke: var(--color-sage);
+      fill: var(--color-primary-soft);
+      stroke: var(--color-primary);
     }
   }
 
-  /* visited 시군 — Sage Mist fill + Sage 외곽선 (solid). 도장 획득 표현. */
+  /* 방문 시군 — Figma: #EAF6EF (primary-tint) fill + #00B334 primary 1.05
+     border. 도장 획득 표현. 청주시 4 path (상당/서원/청원/흥덕) 도 동일 stroke
+     — 외곽선 일관성 (사용자 명시 2026-06-25, 왼쪽 테두리 불일치 fix). 내부
+     행정구 경계가 보이지만 같은 primary 색이라 시군 한 덩어리 인지 + 외곽선이
+     다른 visited 시군과 동일. */
   :global(path.region[data-visited='true']) {
-    fill: var(--color-sage-mist);
-    stroke: var(--color-sage);
-    stroke-width: 2;
-    stroke-dasharray: none;
+    fill: var(--color-primary-soft);
+    stroke: var(--color-primary);
+    stroke-width: 1.05;
   }
 
-  /* 청주시 (4 path: 상당/서원/청원/흥덕) — visited 일 때만 내부 구 경계선 제거.
-     stroke 를 없애면 4 path 가 한 덩어리로 sage fill 만 보임.
-     미획득 (visited X) 상태에선 다른 시군과 동일 dashed 외곽선 유지 — 0개 도장책에서
-     청주시 영역이 안 보이던 회귀 fix. */
-  :global(path.region[data-region='cheongju'][data-visited='true']) {
-    stroke-width: 0;
-    stroke: transparent;
-  }
-  @media (hover: hover) and (pointer: fine) {
-    :global(path.region[data-region='cheongju'][data-visited='true']:hover) {
-      stroke-width: 0;
-    }
-  }
-
-  /* 라벨 텍스트 (SVG 내장) — 원본 SVG 의 text-anchor:middle / 24px / 외곽선 복원.
-     내장 <style> 을 제거했기 때문에 명시적으로 다시 선언하지 않으면 좌측 정렬되어
-     `x="675"` 좌표가 텍스트 중앙이 아닌 좌상 기준이 됨. */
+  /* 라벨 텍스트 (SVG 내장) — 원본 SVG 의 text-anchor:middle / 외곽선 복원.
+     내장 <style> 을 제거했기 때문에 명시적으로 다시 선언하지 않으면 좌측 정렬
+     되어 `x="675"` 좌표가 텍스트 중앙이 아닌 좌상 기준이 됨. Figma label
+     B_10 (font-size 10 bold) — viewBox 800×903 안에서는 시각 적정 크기로 24
+     유지 (모바일 viewport scale 시 약 8~10 픽셀). */
   :global(text.label) {
     font-family: Pretendard, Arial, sans-serif;
     font-size: 24px;
@@ -70,7 +61,8 @@
     pointer-events: none;
   }
 
+  /* Figma 방문 시 label — primary 색 (#00B334). */
   :global(text.label[data-visited='true']) {
-    fill: var(--color-sage-strong);
+    fill: var(--color-primary);
   }
 }
