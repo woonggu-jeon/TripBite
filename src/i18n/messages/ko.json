@@ -509,6 +509,7 @@
       }
     },
     "result": {
+      "loading": "결과를 불러오는 중이에요",
       "winnerEyebrow": "우승 여행지",
       "saved": "저장됐어요",
       "saveRequireAuth": "마이페이지 저장은 로그인 후 사용할 수 있어요. 지금 로그인할까요?",

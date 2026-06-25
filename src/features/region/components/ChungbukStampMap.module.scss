@@ -18,7 +18,7 @@
      분기. transition 으로 visited 전환 부드럽게. */
   :global(path.region) {
     fill: var(--color-bg);
-    stroke: #b4b4b4;
+    stroke: var(--color-disabled);
     stroke-width: 1.05;
     transition:
       fill var(--motion-base) ease,

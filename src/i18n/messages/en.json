@@ -509,6 +509,7 @@
       }
     },
     "result": {
+      "loading": "Loading your result…",
       "winnerEyebrow": "Winning destination",
       "saved": "Saved",
       "saveRequireAuth": "Sign in to save to My Page. Go to login now?",
