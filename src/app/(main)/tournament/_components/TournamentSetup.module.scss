@@ -220,16 +220,18 @@
   animation: circlePulse 2s ease-in-out infinite;
 }
 
-[data-season='spring'] .circleAmber {
+// .intro scope 명시 — attribute selector 전역 cascade 회피 (자율 검토
+// 2026-06-25). 다른 컴포넌트의 data-season attribute 가 hijack 안 함.
+.intro[data-season='spring'] .circleAmber {
   background: #ffebeb;
 }
-[data-season='summer'] .circleAmber {
+.intro[data-season='summer'] .circleAmber {
   background: #e0ff89;
 }
-[data-season='autumn'] .circleAmber {
+.intro[data-season='autumn'] .circleAmber {
   background: #ffcd99;
 }
-[data-season='winter'] .circleAmber {
+.intro[data-season='winter'] .circleAmber {
   background: #e8f1fd;
 }
 

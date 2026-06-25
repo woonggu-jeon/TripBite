@@ -21,6 +21,12 @@
       color: var(--color-fg);
     }
   }
+  // keyboard 사용자 시각 피드백 (자율 검토 2026-06-25 — 누락 fix).
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+    border-radius: var(--radius-sm);
+  }
 }
 
 /* loading skeleton — 알림 item 의 dimension 유지 */
@@ -58,6 +64,11 @@
     &:hover .alrow {
       background: var(--color-hover);
     }
+  }
+  // keyboard 사용자 시각 피드백 (자율 검토 2026-06-25 — 누락 fix).
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
   }
 }
 
