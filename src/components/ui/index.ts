@@ -35,3 +35,4 @@ export {
   type TabPanelProps,
 } from './Tabs';
 export { ListRow, type ListRowVariant } from './ListRow';
+export { SeasonIcon, type SeasonIconSize } from './SeasonIcon';

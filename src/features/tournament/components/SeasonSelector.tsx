@@ -1,15 +1,20 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { cardClasses, RadioGroup, RadioOption } from '@/components/ui';
+import {
+  cardClasses,
+  RadioGroup,
+  RadioOption,
+  SeasonIcon,
+} from '@/components/ui';
 import type { Season } from '@/api/generated/schemas';
 import styles from './SeasonSelector.module.scss';
 
-const SEASONS: { value: Season; emoji: string }[] = [
-  { value: 'spring', emoji: '🌸' },
-  { value: 'summer', emoji: '☀️' },
-  { value: 'autumn', emoji: '🍂' },
-  { value: 'winter', emoji: '❄️' },
+const SEASONS: { value: Season }[] = [
+  { value: 'spring' },
+  { value: 'summer' },
+  { value: 'autumn' },
+  { value: 'winter' },
 ];
 
 export interface SeasonSelectorProps {
@@ -45,7 +50,7 @@ export function SeasonSelector({ value, onChange }: SeasonSelectorProps) {
             })}
           >
             <span className={styles.emojiCircle} aria-hidden>
-              <span className={styles.emoji}>{s.emoji}</span>
+              <SeasonIcon season={s.value} size={36} />
             </span>
             <span className={styles.t5Text}>
               <span className={styles.label}>{t(`season.${s.value}`)}</span>
