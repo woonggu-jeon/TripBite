@@ -180,6 +180,7 @@ function Top1Hero({
             fill
             sizes="(max-width: 480px) 100vw, 360px"
             className={styles.heroImage}
+            priority
           />
         )}
       </div>
