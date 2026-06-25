@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Icon } from '@/components/icon/Icon';
@@ -29,6 +30,17 @@ export function StampsClient() {
   const shareCard = useShareCard();
   const { data, isLoading, isError, refetch } = useStamps();
 
+  // useMemo 는 early return 전에 — React hooks 규칙. data 없으면 빈 Set.
+  // ChungbukStampMap visited dep useEffect 매번 재실행 회피 (자율 검토
+  // 2026-06-25 — re-render 최적화).
+  const visited = useMemo(
+    () =>
+      new Set(
+        (data?.visited ?? []).filter((v): v is RegionCode => isRegionCode(v)),
+      ),
+    [data?.visited],
+  );
+
   if (isLoading) {
     return (
       <div className={styles.wrap}>
@@ -54,10 +66,6 @@ export function StampsClient() {
     );
   }
 
-  // BE 응답의 visited 는 string[] (generated StampsDto). RegionCode 가드 후 Set.
-  const visited = new Set(
-    data.visited.filter((v): v is RegionCode => isRegionCode(v)),
-  );
   const visitedCount = visited.size;
   const remaining = Math.max(0, data.total - visitedCount);
   const isMaster = remaining === 0 && data.total > 0;
