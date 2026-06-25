@@ -217,76 +217,78 @@ function renderTournament(
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        // padding 44 32 28 (Figma 360 spec) → ×3 = 132 / 96 / 84.
-        paddingTop: 132,
-        paddingLeft: 96,
-        paddingRight: 96,
-        paddingBottom: 84,
-        // primary bg + radius 72 (24×3). 1080×1500 PNG 사각형이므로 radius 는
-        // 시각적으로 안 보이지만 spec 일관성 위해 명시.
-        background: '#00B334',
+        // Figma "TRN · 결과 공유 카드" (2026-06-25 재정합) — padding 40 20 20.
+        paddingTop: 120,
+        paddingLeft: 60,
+        paddingRight: 60,
+        paddingBottom: 60,
+        // bg #EAF6EF (primary-soft) + radius 72 (24×3). 직전 primary fill
+        // 회귀 정정.
+        background: '#EAF6EF',
         borderRadius: 72,
         fontFamily,
       }}
     >
-      {/* trophy circle 252 (84×3) white opacity 0.18 + emoji 120 (~42×3) white. */}
+      {/* circle 88 (×3=264) white + Trophy 40 (×3=120) primary stroke 2.7 — 우승 trophy.
+          Satori 가 svg path 지원 → Lucide Trophy outline. */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          width: 252,
-          height: 252,
-          background: 'rgba(255, 255, 255, 0.18)',
+          width: 264,
+          height: 264,
+          background: '#FFFFFF',
           borderRadius: 999,
+          marginBottom: 48,
         }}
       >
-        <div style={{ display: 'flex', fontSize: 132, lineHeight: 1 }}>🏆</div>
+        <div style={{ display: 'flex', fontSize: 120, lineHeight: 1 }}>🏆</div>
       </div>
 
-      {/* eyebrow — sp 66 (22×3) 위. Inter ExtraBold 37.5 ls 0.14em white 0.9. */}
+      {/* eyebrow — Body B_14_140% muted (Figma 명시 색 fg/muted 정합). */}
       <div
         style={{
           display: 'flex',
-          fontSize: 37.5,
-          fontWeight: 800,
-          color: 'rgba(255, 255, 255, 0.9)',
-          letterSpacing: '0.14em',
-          lineHeight: 1.2,
-          marginTop: 66,
+          fontSize: 42,
+          fontWeight: 700,
+          color: '#393939',
+          letterSpacing: '-0.02em',
+          lineHeight: 1.4,
+          marginBottom: 24,
           textAlign: 'center',
         }}
       >
         나의 우승 여행지
       </div>
 
-      {/* title — sp 30 위. Inter ExtraBold 90 line 108 ls -0.04em white. */}
+      {/* title — B_24_130% fg (#151515) — winner. */}
       <div
         style={{
           display: 'flex',
-          fontSize: 90,
-          fontWeight: 800,
-          color: '#FFFFFF',
-          letterSpacing: '-0.04em',
-          lineHeight: 1.2,
-          marginTop: 30,
+          fontSize: 72,
+          fontWeight: 700,
+          color: '#151515',
+          letterSpacing: '-0.02em',
+          lineHeight: 1.3,
+          marginBottom: 12,
           textAlign: 'center',
         }}
       >
         {winner}
       </div>
 
-      {/* meta — sp 24 위. Inter Medium 40.5 line 48 white opacity 0.92.
-          Figma 명시 letterSpacing X — 제거 (2026-06-24 정합). */}
+      {/* meta — Caption R_12 fg (#151515) — region 단독. */}
       {metaText && (
         <div
           style={{
             display: 'flex',
-            fontSize: 40.5,
-            fontWeight: 500,
-            color: 'rgba(255, 255, 255, 0.92)',
-            lineHeight: 1.185,
-            marginTop: 24,
+            fontSize: 36,
+            fontWeight: 400,
+            color: '#151515',
+            letterSpacing: '-0.01em',
+            lineHeight: 1.4,
+            marginBottom: 60,
             textAlign: 'center',
           }}
         >
@@ -294,85 +296,66 @@ function renderTournament(
         </div>
       )}
 
-      {/* description — sp 54 위. Inter Regular 40.5 line 160% white 0.9 max-width 888.
-          Figma 명시 letterSpacing X — 제거 (2026-06-24 정합).
-          desc 가 비면 row 자체 미노출. */}
+      {/* description — Caption R_12 fg (#151515) center 2 lines max. */}
       {desc && (
         <div
           style={{
             display: 'flex',
-            fontSize: 40.5,
+            fontSize: 36,
             fontWeight: 400,
-            color: 'rgba(255, 255, 255, 0.9)',
-            lineHeight: 1.6,
-            marginTop: 54,
+            color: '#151515',
+            letterSpacing: '-0.01em',
+            lineHeight: 1.4,
+            marginBottom: 60,
             maxWidth: 888,
             textAlign: 'center',
-            // line clamp — Satori 가 -webkit 미지원이지만 description 은 너무
-            // 길면 자체 wrap 됨. 명시 길이 강제 자르기 위해 substring.
           }}
         >
           {desc.length > 80 ? `${desc.slice(0, 80)}…` : desc}
         </div>
       )}
 
-      {/* grow space — match-badge 를 아래쪽으로 밀어내기 */}
+      {/* grow space — match line 을 아래쪽으로. */}
       <div style={{ display: 'flex', flex: 1 }} />
 
-      {/* match-badge — 471×96 white opacity 0.16 padding 24 54 + Inter Bold 40.5 white.
-          Figma 명시 letterSpacing X — 제거 (2026-06-24 정합). */}
+      {/* match line — Body B_14 fg plain text (직전 pill 회귀 → Figma 정합 plain). */}
       {matches && (
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            paddingTop: 24,
-            paddingBottom: 24,
-            paddingLeft: 54,
-            paddingRight: 54,
-            background: 'rgba(255, 255, 255, 0.16)',
-            borderRadius: 999,
-            fontSize: 40.5,
+            fontSize: 42,
             fontWeight: 700,
-            color: '#FFFFFF',
-            lineHeight: 1.185,
+            color: '#151515',
+            letterSpacing: '-0.02em',
+            lineHeight: 1.4,
           }}
         >
-          총 {matches}매치 끝의 우승 🏆
+          총 {matches}매치 끝의 우승
         </div>
       )}
 
-      {/* footer — sp 60 (20×3) 위. row gap 18 (6×3) center, opacity 0.95
-          (Figma 명시 — 2026-06-24 정합). BrandLogo 54 + "여행 한입" Inter
-          ExtraBold 39 ls -0.02em white. */}
+      {/* footer — BrandLogo + Title B_18 fg "여행 한입" (×3=54). bg #EAF6EF
+          이므로 BrandLogo 기본색 (primary leaf + amber accent) 자연 노출. */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: 18,
+          gap: 12,
           marginTop: 60,
-          opacity: 0.95,
         }}
       >
-        {/* OG 카드 bg = primary #00B334. BrandLogo 큰 path 기본 #00B334 라
-            동색 → 안 보임. mainFill="#FFFFFF" 로 override (Figma spec — 큰
-            leaf white + amber accent 2). */}
-        <BrandLogo
-          width={54}
-          ariaHidden
-          mainFill="#FFFFFF"
-          style={{ display: 'block' }}
-        />
+        <BrandLogo width={66} ariaHidden style={{ display: 'block' }} />
         <div
           style={{
             display: 'flex',
-            fontSize: 39,
-            fontWeight: 800,
-            color: '#FFFFFF',
+            fontSize: 54,
+            fontWeight: 700,
+            color: '#151515',
             letterSpacing: '-0.02em',
-            lineHeight: 1.23, // Figma 16/13 정합 (2026-06-24)
+            lineHeight: 1.4,
           }}
         >
           여행 한입
@@ -425,13 +408,12 @@ function renderQuiz(
         justifyContent: 'center',
         gap: 24,
         padding: 60,
-        background:
-          'linear-gradient(180deg, #FFF4E6 0%, #FFFFFF 54%, #FCEAD3 100%)',
-        // Figma border 1px #C6C6C6 + radius 20 — OG image 는 1080×1080 PNG
-        // 사각형 자체. radius/border 가 시각적으로 보이게 안쪽 inset (사각형
-        // 모서리 둥글게는 PNG 출력 불가능하지만 카드 외곽선 표현은 가능).
-        border: '3px solid #C6C6C6',
-        borderRadius: 60,
+        // Figma "TST · 공유 이미지 카드" — bg #EAF6EF (secondary01) + 1px #C6C6C6
+        // + radius 36 (12×3). 직전 peach gradient + 3px (검정 두꺼움) 정정
+        // (사용자 명시 2026-06-25). 1px 도 ×3 = 3 가능하나 사용자가 검정처럼
+        // 보인다고 명시 → border 자체 제거.
+        background: '#EAF6EF',
+        borderRadius: 36,
         fontFamily,
       }}
     >
@@ -847,8 +829,10 @@ function renderMaster(
         paddingLeft: 60,
         paddingRight: 60,
         paddingBottom: 60,
-        background: 'linear-gradient(180deg, #8DEF80 0%, #C5F5D9 100%)',
-        border: '3px solid #C6C6C6',
+        // Figma "MY · 마스터 카드" — bg #EAF6EF (secondary01) + radius 60 (20×3).
+        // 직전 gradient + 3px C6C6C6 border (검정처럼 보임) → 명시 정합 (사용자
+        // 명시 2026-06-25).
+        background: '#EAF6EF',
         borderRadius: 60,
         fontFamily,
       }}
