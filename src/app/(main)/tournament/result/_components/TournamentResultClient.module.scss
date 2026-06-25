@@ -1,8 +1,10 @@
-// Figma "TRN · 토너먼트 결과" content — bg #F8F8F8 padding 20 gap 20.
+// Figma "TRN · 토너먼트 결과 (T-8)" content padding 20 gap 20. SubHeader 가
+// contentInner padding-top 을 음수 margin 으로 탈출하므로 .wrap 에 padding-top
+// 20 명시 — header 와 content 사이 간격 회귀 fix (사용자 명시 2026-06-25).
 .wrap {
   display: grid;
   gap: 20px;
-  padding: 0; // 부모 layout 이 page padding 책임
+  padding-top: 20px;
 }
 
 .empty {

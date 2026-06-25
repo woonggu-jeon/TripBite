@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Bracket } from '@/features/tournament/components/Bracket';
+import { SeasonLoadingPanel } from '@/features/tournament/components/SeasonLoadingPanel';
 import type { DestinationDto } from '@/api/generated/schemas';
 import type { BracketResult } from '@/features/tournament/types';
 import { useTournamentStore } from '@/features/tournament/store/tournament-store';
@@ -150,7 +151,12 @@ export function TournamentPlayClient() {
     <div className={styles.wrap}>
       {phase === 'bracket' && (
         <div className={styles.bracket}>
-          {isLoading && <p className={styles.hint}>{t('loading')}</p>}
+          {isLoading && (
+            <SeasonLoadingPanel
+              season={config.theme.value}
+              title={t('loading')}
+            />
+          )}
           {isError && (
             <div className={styles.errorBox}>
               <p>{t('error')}</p>

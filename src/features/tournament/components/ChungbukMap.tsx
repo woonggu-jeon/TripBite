@@ -161,9 +161,51 @@ export function ChungbukMap({
     };
   }, []);
 
-  // path.region 에 click 만 (hover 제거 — 사용자 명시 2026-06-25, 사용 안 함).
-  // click 은 시군 단위 통합 — onRegionClick 에는 그룹 키 (예: '청주시') 전달.
-  // 청주시는 4 path (상당/서원/청원/흥덕) 라 group key 매핑 유지.
+  // SVG path.region 에는 id 가 없음 (`class="region" d="..."` 만). text.label
+  // 도 textContent 만. mount 후 path 의 bbox center 와 가장 가까운 label
+  // (시군명) 을 매칭 → 모든 path/label 에 `data-region` 한글명 attribute 부여.
+  // 청주시 4 path (상당/서원/청원/흥덕) 도 청주 label 이 가장 가깝다는
+  // 지리적 인접성으로 모두 청주시 매핑됨 (사용자 명시 2026-06-25 — 색칠 회귀
+  // fix). 이후 click / region-active 모두 data-region 기반.
+  useEffect(() => {
+    if (!svgWrapRef.current || !svg) return;
+    const root = svgWrapRef.current;
+    const paths = Array.from(
+      root.querySelectorAll<SVGPathElement>('path.region'),
+    );
+    const labels = Array.from(
+      root.querySelectorAll<SVGTextElement>('text.label'),
+    );
+    const labelInfo = labels
+      .map((el) => ({
+        x: parseFloat(el.getAttribute('x') ?? '0'),
+        y: parseFloat(el.getAttribute('y') ?? '0'),
+        text: (el.textContent ?? '').trim(),
+        el,
+      }))
+      .filter((l) => l.text);
+    if (labelInfo.length === 0 || paths.length === 0) return;
+
+    labelInfo.forEach((l) => l.el.setAttribute('data-region', l.text));
+    paths.forEach((p) => {
+      const bbox = p.getBBox();
+      const cx = bbox.x + bbox.width / 2;
+      const cy = bbox.y + bbox.height / 2;
+      let nearestText = '';
+      let minDist = Infinity;
+      labelInfo.forEach((l) => {
+        const d = Math.hypot(cx - l.x, cy - l.y);
+        if (d < minDist) {
+          minDist = d;
+          nearestText = l.text;
+        }
+      });
+      if (nearestText) p.setAttribute('data-region', nearestText);
+    });
+  }, [svg]);
+
+  // path.region 에 click 만 (hover 제거 — 사용자 명시 2026-06-25). data-region
+  // 시군명 (예: "청주시") 을 onRegionClick 에 전달.
   useEffect(() => {
     if (!svgWrapRef.current || !svg) return;
     const root = svgWrapRef.current;
@@ -172,15 +214,14 @@ export function ChungbukMap({
     );
     if (paths.length === 0) return;
 
-    const groupKey = (p: SVGPathElement) => p.id.split(/\s+/)[0] ?? p.id;
-
     const cleanups: Array<() => void> = [];
     paths.forEach((p) => {
-      const key = groupKey(p);
       const click = () => {
         if (!onRegionClick) return;
+        const region = p.getAttribute('data-region');
+        if (!region) return;
         haptic.tap();
-        onRegionClick(key);
+        onRegionClick(region);
       };
       p.addEventListener('click', click);
       p.style.cursor = onRegionClick ? 'pointer' : 'default';
@@ -194,20 +235,19 @@ export function ChungbukMap({
   }, [svg, onRegionClick]);
 
   // Figma 정합 — destinations 가 위치한 시군 path / text 에 `region-active`
-  // 클래스 부여. 청주시는 4 path (상당/서원/청원/흥덕) 라 group key 매칭 필수.
+  // 클래스 부여 (data-region 기준). 청주 4 path 모두 청주시 매핑이라 함께 색칠.
   useEffect(() => {
     if (!svgWrapRef.current || !svg) return;
     const root = svgWrapRef.current;
-    const groupKey = (id: string) => id.split(/\s+/)[0] ?? id;
     const paths = root.querySelectorAll<SVGPathElement>('path.region');
     const labels = root.querySelectorAll<SVGTextElement>('text.label');
     paths.forEach((p) => {
-      const key = groupKey(p.id);
-      p.classList.toggle('region-active', activeKoSet.has(key));
+      const region = p.getAttribute('data-region') ?? '';
+      p.classList.toggle('region-active', activeKoSet.has(region));
     });
     labels.forEach((tEl) => {
-      const key = groupKey(tEl.id || tEl.textContent || '');
-      tEl.classList.toggle('region-active', activeKoSet.has(key));
+      const region = tEl.getAttribute('data-region') ?? '';
+      tEl.classList.toggle('region-active', activeKoSet.has(region));
     });
     return () => {
       paths.forEach((p) => p.classList.remove('region-active'));

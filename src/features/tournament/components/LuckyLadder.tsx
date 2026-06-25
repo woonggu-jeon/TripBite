@@ -164,11 +164,12 @@ export function LuckyLadder({
     return () => window.clearTimeout(id);
   }, [selected, mode]);
 
-  // Figma ladder svg 280×337 정합. bottomPad 40 → 56 — endpoint rect (height
-  // 26, y rowY+8 ~ rowY+34) 가 svg bottom edge (H=337) 와 너무 가까워 시각
-  // crop 발생 (사용자 명시 2026-06-25). 추가 16px 여유.
+  // Figma ladder svg 280×337 정합. H 337 → 380, bottomPad 56 — endpoint rect
+  // 위 endPop scale 1.15 animation 시 transform-box fill-box 가 일부 브라우저
+  // 에서 view-box fallback → endpoint 위쪽이 svg viewport 밖으로 잘림 (사용자
+  // 명시 2026-06-25 반복 보고). H 증가 + 추가 padding 으로 안전 여유 확보.
   const W = 280;
-  const H = 337;
+  const H = 380;
   const topPad = 32;
   const bottomPad = 56;
   const sidePad = 24;
@@ -327,11 +328,16 @@ export function LuckyLadder({
             );
           })}
 
-          {/* 끝점 — 도착 라인의 % 만 revealed 시 공개. 나머지는 항상 '?'. */}
+          {/* 끝점 — 도착 라인의 % 만 revealed 시 공개. 나머지는 항상 '?'.
+              rect height 26 → 36 + text alphabetic baseline 명시 계산 (cross-
+              browser 호환 — dominantBaseline 미사용). rect 안 위아래 여유 확보로
+              사용자 보고 "위쪽 잘림" 회귀 해결 (2026-06-25). */}
           {percents.map((p, i) => {
             const isEnd = endCol === i;
             const showPercent = revealed && isEnd;
             const dimmed = selected !== null && !isEnd;
+            const rectY = rowY(rows) + 8;
+            const rectH = 36;
             return (
               <g
                 key={`e${i}`}
@@ -339,20 +345,22 @@ export function LuckyLadder({
               >
                 <rect
                   x={colX(i) - 22}
-                  y={rowY(rows) + 8}
+                  y={rectY}
                   width={44}
-                  height={26}
-                  rx={13}
+                  height={rectH}
+                  rx={18}
                   fill={
                     showPercent ? 'var(--color-primary)' : 'var(--color-muted)'
                   }
                   opacity={dimmed ? 0.4 : 1}
                 />
+                {/* alphabetic baseline = rect center + fontSize * 0.36
+                    (descent 보정). dominantBaseline 의 브라우저별 fontmetric
+                    fallback 회피. */}
                 <text
                   x={colX(i)}
-                  y={rowY(rows) + 8 + 13}
+                  y={rectY + rectH / 2 + 12 * 0.36}
                   textAnchor="middle"
-                  dominantBaseline="central"
                   fontSize={12}
                   fontWeight={700}
                   fill="var(--color-primary-fg)"

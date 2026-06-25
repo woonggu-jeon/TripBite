@@ -1,0 +1,137 @@
+// Figma "TRN · 로딩 (지도 펼침)" 정합 (사용자 명시 2026-06-25) —
+// TournamentSetup step 5 intro + TournamentPlayClient bracket fetching 공통.
+//
+// 134 circle-stack: outer 134 (계절 색) + 100 white inner + 64 SeasonIcon
+// PNG center. B_20 title. 3-dot indicator.
+.panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  padding: 60px 30px;
+  min-height: 480px;
+}
+
+.circleStack {
+  position: relative;
+  width: 134px;
+  height: 134px;
+}
+
+.circleAmber {
+  position: absolute;
+  inset: 0;
+  width: 134px;
+  height: 134px;
+  border-radius: var(--radius-full);
+  background: #ffcd99;
+  animation: circlePulse 2s ease-in-out infinite;
+}
+
+[data-season='spring'] .circleAmber {
+  background: #ffebeb;
+}
+[data-season='summer'] .circleAmber {
+  background: #e0ff89;
+}
+[data-season='autumn'] .circleAmber {
+  background: #ffcd99;
+}
+[data-season='winter'] .circleAmber {
+  background: #e8f1fd;
+}
+
+.circleWhite {
+  position: absolute;
+  top: 17px;
+  left: 17px;
+  width: 100px;
+  height: 100px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg, #ffffff);
+}
+
+// SeasonIcon size=64 wrapper (64×64) 안 image 52×52. circleStack 134 의 정
+// 중앙: (134-64)/2 = 35. inline-flex default + absolute override.
+.circleLeaf {
+  position: absolute;
+  top: 35px;
+  left: 35px;
+  animation: leafBob 2.4s ease-in-out infinite;
+}
+
+@keyframes circlePulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}
+
+@keyframes leafBob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+// Figma title B_20_130% fg, text-align center.
+.title {
+  font-size: var(--font-h2); /* 20 */
+  font-weight: var(--font-weight-extrabold);
+  line-height: var(--line-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
+  text-align: center;
+  margin: 0;
+}
+
+// 3-dot indicator — row gap 8, 각 dot 9×9 primary radius full.
+// dotBounce stagger animation — 0.16s 간격.
+.dots {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  animation: dotBounce 1.2s ease-in-out infinite;
+
+  &:nth-child(2) {
+    animation-delay: 0.16s;
+  }
+  &:nth-child(3) {
+    animation-delay: 0.32s;
+  }
+}
+
+@keyframes dotBounce {
+  0%,
+  80%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  40% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .circleAmber,
+  .circleLeaf,
+  .dot {
+    animation: none;
+  }
+}

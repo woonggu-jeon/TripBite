@@ -8,12 +8,12 @@ import {
   useSaveTournament,
   useTournamentRecord,
 } from '@/features/tournament/hooks/use-tournament';
-import { Skeleton } from '@/components/feedback/Skeleton';
 import { Button } from '@/components/ui';
 import { WinnerCard } from '@/features/tournament/components/WinnerCard';
 import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetailPanel';
 import { TournamentStats } from '@/features/tournament/components/TournamentStats';
 import { LuckyLadder } from '@/features/tournament/components/LuckyLadder';
+import { SeasonLoadingPanel } from '@/features/tournament/components/SeasonLoadingPanel';
 import { useShareCard } from '@/hooks/use-share-card';
 import { useRequireAuth } from '@/hooks/use-require-auth';
 import styles from './TournamentResultClient.module.scss';
@@ -42,6 +42,7 @@ export function TournamentResultClient() {
   const storeTournamentSize = useTournamentStore(
     (s) => s.config?.tournamentSize,
   );
+  const storeSeason = useTournamentStore((s) => s.config?.theme.value);
   const reset = useTournamentStore((s) => s.reset);
 
   const record = recordQuery.data;
@@ -56,15 +57,16 @@ export function TournamentResultClient() {
   const shareCard = useShareCard();
   const detailQuery = useDestinationDetail(winner?.id);
 
+  // deep-link 진입 (?id=) + record fetch 중 + store winner 없을 때 fallback.
+  // 큰 5-stack skeleton (hero/info/stats/ladder/actions) → SeasonLoadingPanel
+  // 로 통일 (사용자 명시 2026-06-25 — 깜빡임 회귀). store season 없으면
+  // autumn fallback (deep-link 만 진입 시 config 정보 없음).
   if (recordId && recordQuery.isLoading && !storeWinner) {
     return (
-      <div className={styles.wrap} aria-busy="true">
-        <Skeleton width="100%" height={176} radius="lg" />
-        <Skeleton width="100%" height={285} radius="lg" />
-        <Skeleton width="100%" height={140} radius="lg" />
-        <Skeleton width="100%" height={432} radius="lg" />
-        <Skeleton width="100%" height={52} radius="md" />
-      </div>
+      <SeasonLoadingPanel
+        season={storeSeason ?? 'autumn'}
+        title={t('loading')}
+      />
     );
   }
 
