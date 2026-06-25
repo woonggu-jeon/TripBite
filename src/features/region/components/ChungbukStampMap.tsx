@@ -32,19 +32,24 @@ export function ChungbukStampMap({
   onRegionClick?: (code: RegionCode) => void;
 }) {
   const [svg, setSvg] = useState<string | null>(null);
+  const [fetchError, setFetchError] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
 
-  // 1) SVG fetch + 내장 <style> 제거
+  // 1) SVG fetch + 내장 <style> 제거 + 실패 시 사용자 안내 (silent fail 회피).
   useEffect(() => {
     let cancelled = false;
+    setFetchError(false);
     fetch(SVG_URL)
-      .then((r) => r.text())
+      .then((r) => {
+        if (!r.ok) throw new Error(`status ${r.status}`);
+        return r.text();
+      })
       .then((text) => {
         if (cancelled) return;
         setSvg(text.replace(/<style[\s\S]*?<\/style>/g, ''));
       })
       .catch(() => {
-        /* graceful fallback — null 유지 (지도 미표시) */
+        if (!cancelled) setFetchError(true);
       });
     return () => {
       cancelled = true;
@@ -165,6 +170,22 @@ export function ChungbukStampMap({
     };
   }, [svg, visited, onRegionClick]);
 
+  if (fetchError) {
+    return (
+      <div className={styles.wrap} role="alert" aria-live="polite">
+        <p
+          style={{
+            padding: 24,
+            textAlign: 'center',
+            color: 'var(--color-muted)',
+            margin: 'auto',
+          }}
+        >
+          지도를 불러오지 못했어요.
+        </p>
+      </div>
+    );
+  }
   return (
     <div
       ref={wrapRef}

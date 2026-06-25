@@ -5,6 +5,9 @@
   display: grid;
   gap: 20px;
   padding-top: 20px;
+  /* SeasonLoadingPanel (480h) → 실제 content 전환 시 CLS 회피 — viewport
+     높이 기준 최소 보장 (자율 검토 2026-06-25). */
+  min-height: 480px;
 }
 
 .empty {

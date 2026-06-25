@@ -151,7 +151,9 @@
   color: var(--color-disabled);
 }
 
-/* Figma time R_12 disabled, right top (mid 와 baseline 정합). */
+/* Figma time R_12 disabled, right top (mid 와 baseline 정합). relativeTime
+   text width 변동 (방금 전 / N분 전 / N시간 전 / N일 전 / 7월 25일) 시 mid
+   flex 영향 회피 — min-width 고정 (CLS 회피, 자율 검토 2026-06-25). */
 .time {
   font-size: var(--font-caption); /* 12 */
   font-weight: var(--font-weight-regular);
@@ -161,6 +163,7 @@
   text-align: right;
   flex-shrink: 0;
   white-space: nowrap;
+  min-width: 56px;
 }
 
 // 알림 빈 상태는 EmptyState primitive 의 variant=hero 로 위임 (2026-06-23

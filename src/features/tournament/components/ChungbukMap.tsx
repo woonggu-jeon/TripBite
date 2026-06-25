@@ -144,17 +144,23 @@ export function ChungbukMap({
   );
 
   // SVG fetch + 내장 <style> 제거 (외부 CSS variable 로 컨트롤)
+  const [fetchError, setFetchError] = useState(false);
+
   useEffect(() => {
     let cancelled = false;
+    setFetchError(false);
     fetch(SVG_URL)
-      .then((r) => r.text())
+      .then((r) => {
+        if (!r.ok) throw new Error(`status ${r.status}`);
+        return r.text();
+      })
       .then((text) => {
         if (cancelled) return;
         const stripped = text.replace(/<style[\s\S]*?<\/style>/g, '');
         setSvg(stripped);
       })
       .catch(() => {
-        // network 오류 — fallback 없음 (지도 없이 drop 만 표시되도록)
+        if (!cancelled) setFetchError(true);
       });
     return () => {
       cancelled = true;
@@ -293,14 +299,29 @@ export function ChungbukMap({
 
   return (
     <div className={styles.wrap}>
-      <div
-        ref={svgWrapRef}
-        className={styles.svgWrap}
-        // SVG 는 우리 정적 파일(public/images/chungbuk-final-map.svg) 이라 신뢰 가능.
-        // 내장 <style> 만 제거하고 path/text 가 외부 CSS 로 cascade 되도록.
-        dangerouslySetInnerHTML={{ __html: svg ?? '' }}
-        aria-label="충청북도 지도"
-      />
+      {fetchError ? (
+        // SVG fetch 실패 fallback — 빈 화면 silent fail 대신 사용자 안내.
+        <div className={styles.svgWrap} role="alert" aria-live="polite">
+          <p
+            style={{
+              padding: 24,
+              textAlign: 'center',
+              color: 'var(--color-muted)',
+            }}
+          >
+            지도를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
+          </p>
+        </div>
+      ) : (
+        <div
+          ref={svgWrapRef}
+          className={styles.svgWrap}
+          // SVG 는 우리 정적 파일(public/images/chungbuk-final-map.svg) 이라 신뢰 가능.
+          // 내장 <style> 만 제거하고 path/text 가 외부 CSS 로 cascade 되도록.
+          dangerouslySetInnerHTML={{ __html: svg ?? '' }}
+          aria-label="충청북도 지도"
+        />
+      )}
 
       <div key={placedNonce} className={styles.overlay}>
         {placed.map((p) => {
