@@ -362,7 +362,7 @@ function renderTournament(
         </div>
       </div>
     </div>,
-    makeInit(fontData, { width: 1080, height: 1500 }),
+    makeInit(fontData, { width: 1080, height: 1260 }),
   );
 }
 
@@ -854,17 +854,16 @@ function renderMaster(
         <div style={{ display: 'flex', fontSize: 132, lineHeight: 1 }}>🏆</div>
       </div>
 
-      {/* subtitle "CHUNGBUK MASTER" Bold 13 ls 0.16em opacity 0.9.
-          Frame 21 gap 4 (×3=12). */}
+      {/* subtitle "CHUNGBUK MASTER" — Figma Body B_14_140% fg (Bold 14
+          ×3=42, ls -0.02em). 직전 39 + 0.16em 회귀 정정 (2026-06-25). */}
       <div
         style={{
           display: 'flex',
-          fontSize: 39,
+          fontSize: 42,
           fontWeight: 700,
           color: '#151515',
-          opacity: 0.9,
-          letterSpacing: '0.16em',
-          lineHeight: 1.23,
+          letterSpacing: '-0.02em',
+          lineHeight: 1.4,
           marginBottom: 12,
           textAlign: 'center',
         }}
@@ -872,16 +871,16 @@ function renderMaster(
         CHUNGBUK MASTER
       </div>
 
-      {/* title "충북 마스터" ExtraBold 30 ls -0.03em. Frame 23 gap 24
-          (×3=72) — title ↔ msg-box. */}
+      {/* title "충북 마스터" — Figma Title B_24_130% fg (Bold 24 ×3=72).
+          직전 ExtraBold 30 (×3=90) 회귀 정정 (2026-06-25 — Bold 700, 72px). */}
       <div
         style={{
           display: 'flex',
-          fontSize: 90,
-          fontWeight: 800,
+          fontSize: 72,
+          fontWeight: 700,
           color: '#151515',
-          letterSpacing: '-0.03em',
-          lineHeight: 1.2,
+          letterSpacing: '-0.02em',
+          lineHeight: 1.3,
           marginBottom: 72,
           textAlign: 'center',
         }}
@@ -889,17 +888,19 @@ function renderMaster(
         충북 마스터
       </div>
 
-      {/* msg-box white radius 12 padding 20 18 + Medium 14 170% muted center.
-          Frame 24 gap 20 (×3=60) — msg-box ↔ brand. */}
+      {/* msg-box white radius 12 padding 20 16 + 1px #E0E0E0 border + Medium
+          14 170% muted center. Frame 24 gap 20 (×3=60). Figma border 누락
+          정정 (2026-06-25). */}
       <div
         style={{
           display: 'flex',
           width: '100%',
           paddingTop: 60,
           paddingBottom: 60,
-          paddingLeft: 54,
-          paddingRight: 54,
+          paddingLeft: 48,
+          paddingRight: 48,
           background: '#FFFFFF',
+          border: '3px solid #E0E0E0',
           borderRadius: 36,
           marginBottom: 60,
         }}
