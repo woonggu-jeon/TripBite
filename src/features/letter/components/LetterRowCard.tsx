@@ -71,9 +71,17 @@ export function LetterRowCard({ letter }: { letter: LetterDto }) {
     });
   };
 
+  // 본인이 보낸 편지 (보낸 편지 탭) → /letter/sent?id 로 라우팅 (LetterSentClient
+  // 재사용 — 보낸 편지 상세 view). 다른 사람이 보낸 편지 (받은/저장 탭) →
+  // /letter/[id] (LetterDetailClient — 받은 편지 상세 view). 라우팅으로 view
+  // 자연 분리 (사용자 명시 2026-06-25).
+  const href = letter.isMine
+    ? { pathname: '/letter/sent', query: { id: letter.id } }
+    : { pathname: `/letter/${letter.id}` };
+
   return (
     <Link
-      href={{ pathname: `/letter/${letter.id}` }}
+      href={href}
       prefetch={false}
       className={styles.card}
       aria-label={`${letter.body} · ${letter.author.nickname}`}

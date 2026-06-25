@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -46,6 +47,15 @@ export function LetterDetailClient({ letterId }: { letterId: string }) {
   const tAuthor = useTranslations('letter.author');
   const { data: letter, isLoading, isError, refetch } = useLetter(letterId);
   const { data: me } = useMe();
+
+  // 본인이 보낸 편지인데 /letter/[id] 로 deep-link 진입한 경우 (외부 공유 link
+  // 등) → /letter/sent 로 redirect (보낸 편지 상세 view 별도). 사용자 명시
+  // 2026-06-25 — 받은 / 보낸 편지 상세 view 다르게.
+  useEffect(() => {
+    if (letter?.isMine) {
+      router.replace(`/letter/sent?id=${encodeURIComponent(letterId)}`);
+    }
+  }, [letter, letterId, router]);
 
   if (isLoading) {
     return (
