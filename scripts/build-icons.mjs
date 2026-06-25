@@ -65,6 +65,22 @@ const ICONS = [
 const LUCIDE_DIR = resolve(ROOT, 'node_modules/lucide-static/icons');
 const OUTPUT = resolve(ROOT, 'public/icons.svg');
 
+/**
+ * BottomNav 5 탭 sprite key → Figma export SVG path. 같은 sprite key 의
+ * lucide 기본 path 덮어쓰기 (Figma 디자인 정합). 색은 `currentColor` 로 일괄
+ * 치환 — CSS color 로 active(primary) / off(disabled) 동적 변경.
+ */
+const LOCAL_OVERRIDES = {
+  home: 'public/nav-icons/home.svg',
+  'trending-up': 'public/nav-icons/rank.svg',
+  trophy: 'public/nav-icons/trophy.svg',
+  mail: 'public/nav-icons/letter.svg',
+  user: 'public/nav-icons/my.svg',
+};
+
+// SVG 안 hardcoded 색 (off/on) → currentColor 치환 패턴.
+const COLOR_PATTERN = /#B4B4B4|#00B334|#151515|#393939/gi;
+
 function extractInner(svgString) {
   // <svg ...>...</svg> 에서 내부 자식만 추출 (path/circle/line 등)
   // 외부 svg 의 viewBox/속성은 sprite 의 symbol 로 이동
@@ -77,7 +93,10 @@ function buildSprite() {
   const symbols = [];
 
   for (const name of ICONS) {
-    const path = join(LUCIDE_DIR, `${name}.svg`);
+    const override = LOCAL_OVERRIDES[name];
+    const path = override
+      ? resolve(ROOT, override)
+      : join(LUCIDE_DIR, `${name}.svg`);
     let raw;
     try {
       raw = readFileSync(path, 'utf-8');
@@ -86,7 +105,9 @@ function buildSprite() {
       process.exit(1);
     }
     const { viewBox, inner } = extractInner(raw);
-    symbols.push(`  <symbol id="${name}" viewBox="${viewBox}">${inner}</symbol>`);
+    // Local override 의 hardcoded 색을 currentColor 로 치환 (CSS 동적 색 가능).
+    const normalized = override ? inner.replace(COLOR_PATTERN, 'currentColor') : inner;
+    symbols.push(`  <symbol id="${name}" viewBox="${viewBox}">${normalized}</symbol>`);
   }
 
   const sprite = `<?xml version="1.0" encoding="UTF-8"?>

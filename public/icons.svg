@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
-  <symbol id="home" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
-  <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></symbol>
-  <symbol id="trending-up" viewBox="0 0 24 24"><path d="M16 7h6v6" />
-  <path d="m22 7-8.5 8.5-5-5L2 17" /></symbol>
-  <symbol id="trophy" viewBox="0 0 24 24"><path d="M10 14.66v1.626a2 2 0 0 1-.976 1.696A5 5 0 0 0 7 21.978" />
-  <path d="M14 14.66v1.626a2 2 0 0 0 .976 1.696A5 5 0 0 1 17 21.978" />
-  <path d="M18 9h1.5a1 1 0 0 0 0-5H18" />
-  <path d="M4 22h16" />
-  <path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z" />
-  <path d="M6 9H4.5a1 1 0 0 1 0-5H6" /></symbol>
-  <symbol id="mail" viewBox="0 0 24 24"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" />
-  <rect x="2" y="4" width="20" height="16" rx="2" /></symbol>
-  <symbol id="user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-  <circle cx="12" cy="7" r="4" /></symbol>
+  <symbol id="home" viewBox="0 0 24 24"><path d="M3 11L12 4L21 11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M5 10V19H19V10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="trending-up" viewBox="0 0 24 24"><path d="M12 5C14 9 17 9 17 14C17 15.3261 16.4732 16.5979 15.5355 17.5355C14.5979 18.4732 13.3261 19 12 19C10.6739 19 9.40215 18.4732 8.46447 17.5355C7.52678 16.5979 7 15.3261 7 14C7 12 8 10.5 9.5 9.5C9.5 11.5 10 13 11 13C12 13 12.2 12 12 10.5C11.5 8.5 12 6.5 12 5Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="trophy" viewBox="0 0 24 24"><path d="M7 4H17V8C17 9.32608 16.4732 10.5979 15.5355 11.5355C14.5979 12.4732 13.3261 13 12 13C10.6739 13 9.40215 12.4732 8.46447 11.5355C7.52678 10.5979 7 9.32608 7 8V4Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M7 5H4V7C4 7.79565 4.31607 8.55871 4.87868 9.12132C5.44129 9.68393 6.20435 10 7 10M17 5H20V7C20 7.79565 19.6839 8.55871 19.1213 9.12132C18.5587 9.68393 17.7956 10 17 10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12 13V17M9 20H15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="mail" viewBox="0 0 24 24"><path d="M19 6H5C4.44772 6 4 6.44772 4 7V17C4 17.5523 4.44772 18 5 18H19C19.5523 18 20 17.5523 20 17V7C20 6.44772 19.5523 6 19 6Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4 7L12 13L20 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="user" viewBox="0 0 24 24"><path d="M12.0001 11.4001C13.8779 11.4001 15.4001 9.87787 15.4001 8.0001C15.4001 6.12233 13.8779 4.6001 12.0001 4.6001C10.1223 4.6001 8.6001 6.12233 8.6001 8.0001C8.6001 9.87787 10.1223 11.4001 12.0001 11.4001Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M5 20C5 18.1435 5.7375 16.363 7.05025 15.0503C8.36301 13.7375 10.1435 13 12 13C13.8565 13 15.637 13.7375 16.9497 15.0503C18.2625 16.363 19 18.1435 19 20" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="bell" viewBox="0 0 24 24"><path d="M10.268 21a2 2 0 0 0 3.464 0" />
   <path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" /></symbol>
   <symbol id="settings" viewBox="0 0 24 24"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
