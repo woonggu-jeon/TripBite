@@ -36,3 +36,5 @@ export {
 } from './Tabs';
 export { ListRow, type ListRowVariant } from './ListRow';
 export { SeasonIcon, type SeasonIconSize } from './SeasonIcon';
+export { ThemeIcon, type ThemeKind } from './ThemeIcon';
+export { TravelTypeIcon } from './TravelTypeIcon';

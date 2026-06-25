@@ -1,7 +1,12 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { cardClasses, RadioGroup, RadioOption } from '@/components/ui';
+import {
+  cardClasses,
+  RadioGroup,
+  RadioOption,
+  ThemeIcon,
+} from '@/components/ui';
 import styles from './ThemeKindSelector.module.scss';
 
 export type ThemeKind = 'season' | 'random';
@@ -21,16 +26,24 @@ export interface ThemeKindSelectorProps {
 export function ThemeKindSelector({ value, onChange }: ThemeKindSelectorProps) {
   const t = useTranslations('tournament.setup.steps.themeKind');
 
+  // Figma "themeIcon" PNG asset 매핑 (2026-06-25 정합):
+  //   - season → public/icons/themes/season.png
+  //   - random → public/icons/themes/dice.png
   const KINDS: {
     value: ThemeKind;
-    emoji: string;
+    iconKind: 'season' | 'dice';
     labelKey: 'season' | 'random';
     descKey: 'seasonDesc' | 'randomDesc';
   }[] = [
-    { value: 'season', emoji: '🗓️', labelKey: 'season', descKey: 'seasonDesc' },
+    {
+      value: 'season',
+      iconKind: 'season',
+      labelKey: 'season',
+      descKey: 'seasonDesc',
+    },
     {
       value: 'random',
-      emoji: '🎲',
+      iconKind: 'dice',
       labelKey: 'random',
       descKey: 'randomDesc',
     },
@@ -53,7 +66,7 @@ export function ThemeKindSelector({ value, onChange }: ThemeKindSelectorProps) {
             })}
           >
             <span className={styles.emoji} aria-hidden>
-              {k.emoji}
+              <ThemeIcon theme={k.iconKind} size={36} />
             </span>
             <span className={styles.label}>{t(k.labelKey)}</span>
             <span className={styles.desc}>{t(k.descKey)}</span>
