@@ -347,7 +347,7 @@ function renderTournament(
           marginTop: 60,
         }}
       >
-        <BrandLogo width={66} ariaHidden style={{ display: 'block' }} />
+        <BrandLogo width={84} ariaHidden style={{ display: 'block' }} />
         <div
           style={{
             display: 'flex',
@@ -459,7 +459,9 @@ function renderQuiz(
         {typeName}
       </div>
 
-      {/* keyword pills row — secondary01 bg primary color Caption B_10 */}
+      {/* keyword pills row — Figma 명시 bg #FFFFFF (직전 #EAF6EF 회귀 정정,
+          사용자 명시 2026-06-25 정합). padding 4 12 ×3 = 12 36 (수직 12 ×3
+          유지, 수평 36). */}
       {keywords.length > 0 && (
         <div
           style={{
@@ -480,7 +482,7 @@ function renderQuiz(
                 paddingBottom: 12,
                 paddingLeft: 36,
                 paddingRight: 36,
-                background: '#EAF6EF',
+                background: '#FFFFFF',
                 borderRadius: 999,
                 fontSize: 30,
                 fontWeight: 700,
@@ -495,12 +497,13 @@ function renderQuiz(
         </div>
       )}
 
-      {/* description R_14 muted center */}
+      {/* description R_14 muted center. Figma Regular 400 명시 정합. */}
       {tagline && (
         <div
           style={{
             display: 'flex',
             fontSize: 42,
+            fontWeight: 400,
             color: '#393939',
             letterSpacing: '-0.02em',
             lineHeight: 1.4,
@@ -527,7 +530,7 @@ function renderQuiz(
             borderRadius: 999,
           }}
         >
-          <div style={{ display: 'flex', fontSize: 42, lineHeight: 1 }}>
+          <div style={{ display: 'flex', fontSize: 40.5, lineHeight: 1.185 }}>
             {bestEmoji || '💚'}
           </div>
           <div
@@ -900,7 +903,7 @@ function renderMaster(
           paddingLeft: 48,
           paddingRight: 48,
           background: '#FFFFFF',
-          border: '3px solid #E0E0E0',
+          border: '1px solid #E0E0E0',
           borderRadius: 36,
           marginBottom: 60,
         }}
@@ -931,7 +934,7 @@ function renderMaster(
           gap: 12,
         }}
       >
-        <BrandLogo width={66} ariaHidden style={{ display: 'block' }} />
+        <BrandLogo width={84} ariaHidden style={{ display: 'block' }} />
         <div
           style={{
             display: 'flex',
