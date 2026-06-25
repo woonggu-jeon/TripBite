@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { useTranslations } from 'next-intl';
 import { MediaThumb } from '@/components/ui';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
@@ -21,7 +22,7 @@ import styles from './WinnerCard.module.scss';
  *   - imageUrl 없으면 MediaThumb 가 emoji fallback (gradient overlay 위에서도
  *     읽힘 보장 위해 emoji는 어두운 배경 위 large emoji).
  */
-export function WinnerCard({ destination }: { destination: DestinationDto }) {
+function WinnerCardInner({ destination }: { destination: DestinationDto }) {
   const t = useTranslations('tournament');
   const tResult = useTranslations('tournament.result');
   const region = CHUNGBUK_REGIONS.find((r) => r.code === destination.region);
@@ -52,3 +53,7 @@ export function WinnerCard({ destination }: { destination: DestinationDto }) {
     </section>
   );
 }
+
+// React.memo — TournamentResultClient store/query 변경 시 불필요한 재렌더 회피.
+// destination prop 이 stable DTO 이면 skip (자율 검토 2026-06-25).
+export const WinnerCard = memo(WinnerCardInner);
