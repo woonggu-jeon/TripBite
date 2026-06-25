@@ -203,13 +203,15 @@ export function ChungbukMap({
       if (nearestText) p.setAttribute('data-region', nearestText);
     });
 
-    // 청주시는 4 path (상당/서원/청원/흥덕). 일부 path 가 진천/보은 label 에
-    // 더 가까워 잘못 매핑될 수 있음 (사용자 명시 2026-06-25 — 청주 부자연 fix).
-    // 청주 label center 와 가장 가까운 4 path 강제 청주시 매핑.
+    // 청주시는 4 path (상당/서원/청원/흥덕). 1단계 자동 매핑 결과가 '청주시'
+    // 인 path 들 중 거리 가까운 4개만 강제 매핑 (사용자 명시 2026-06-25 — 청주
+    // 부자연 fix + hijack 위험 차단). 1단계에서 진천/증평/보은 매핑된 path 는
+    // filter out → 인접 시군 path hijack 안 함.
     const cheongjuLabel = labelInfo.find((l) => l.text === '청주시');
     if (cheongjuLabel) {
       const cl = cheongjuLabel;
       const ranked = paths
+        .filter((p) => p.getAttribute('data-region') === '청주시')
         .map((p) => {
           const bbox = p.getBBox();
           return {
