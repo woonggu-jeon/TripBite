@@ -249,18 +249,35 @@ export function ChungbukMap({
 
     const cleanups: Array<() => void> = [];
     paths.forEach((p) => {
+      const region = p.getAttribute('data-region');
       const click = () => {
-        if (!onRegionClick) return;
-        const region = p.getAttribute('data-region');
-        if (!region) return;
+        if (!onRegionClick || !region) return;
         haptic.tap();
         onRegionClick(region);
       };
       p.addEventListener('click', click);
       p.style.cursor = onRegionClick ? 'pointer' : 'default';
-      cleanups.push(() => {
-        p.removeEventListener('click', click);
-      });
+      if (onRegionClick && region) {
+        // Keyboard 접근 (자율 검토 2026-06-25). SVG path 에 tabIndex/role/
+        // aria-label + Enter/Space handler.
+        p.setAttribute('tabindex', '0');
+        p.setAttribute('role', 'button');
+        p.setAttribute('aria-label', region);
+        const onKey = (e: KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            haptic.tap();
+            onRegionClick(region);
+          }
+        };
+        p.addEventListener('keydown', onKey);
+        cleanups.push(() => {
+          p.removeEventListener('click', click);
+          p.removeEventListener('keydown', onKey);
+        });
+      } else {
+        cleanups.push(() => p.removeEventListener('click', click));
+      }
     });
     return () => {
       cleanups.forEach((fn) => fn());

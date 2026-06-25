@@ -155,9 +155,26 @@ export function ChungbukStampMap({
       else p.removeAttribute('data-visited');
       p.style.cursor = onRegionClick ? 'pointer' : 'default';
       if (onRegionClick) {
+        // Keyboard 접근성 (자율 검토 2026-06-25). SVG path 에 tabIndex/role/
+        // aria-label 부여 + Enter/Space handler. 청주 4 path 모두 같은 region
+        // → focus 시 4번 Tab. UX 약간 불편하지만 keyboard 만으로 진입 가능.
+        const region = CHUNGBUK_REGIONS.find((r) => r.code === code);
+        p.setAttribute('tabindex', '0');
+        p.setAttribute('role', 'button');
+        p.setAttribute('aria-label', region?.ko ?? code);
         const onClick = () => onRegionClick(code);
+        const onKey = (e: KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onRegionClick(code);
+          }
+        };
         p.addEventListener('click', onClick);
-        cleanups.push(() => p.removeEventListener('click', onClick));
+        p.addEventListener('keydown', onKey);
+        cleanups.push(() => {
+          p.removeEventListener('click', onClick);
+          p.removeEventListener('keydown', onKey);
+        });
       }
     });
     labels.forEach((t) => {
