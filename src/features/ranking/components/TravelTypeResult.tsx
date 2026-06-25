@@ -17,6 +17,7 @@ import { toast } from '@/lib/toast';
 import { useShareCard } from '@/hooks/use-share-card';
 import { useRequireAuth } from '@/hooks/use-require-auth';
 import { categoryEmoji } from '@/constants/emoji-map';
+import { TravelTypeIcon } from '@/components/ui';
 import styles from './TravelTypeResult.module.scss';
 
 /**
@@ -117,7 +118,7 @@ export function TravelTypeResult() {
       {/* Figma banner — 320×247 padding 28 22 24 gap 8 secondary01 + primary 1px. */}
       <div className={styles.banner}>
         <span className={styles.bannerEmoji} aria-hidden>
-          {result.emoji}
+          <TravelTypeIcon code={result.code} size={52} priority />
         </span>
         <span className={styles.codePill}>{result.code}</span>
         <h2 className={styles.title}>{result.title}</h2>
