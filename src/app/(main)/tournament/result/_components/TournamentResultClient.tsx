@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useShallow } from 'zustand/react/shallow';
 import { useTournamentStore } from '@/features/tournament/store/tournament-store';
 import {
   TOURNAMENT_SIZE_OPTIONS,
@@ -40,21 +41,25 @@ export function TournamentResultClient() {
 
   const recordQuery = useTournamentRecord(recordId);
 
-  // 5개 분산 selector → 단일 selector + 객체 통합 (자율 검토 2026-06-25 — 매번
-  // store 변경 시 5번 re-render 가능성 → 1번). reset 은 action 이라 별도 selector.
+  // 5개 분산 selector → 단일 selector + 객체 통합 (자율 검토 2026-06-25). 단
+  // 객체 selector 는 매번 new instance → React getSnapshot 무한 loop. zustand
+  // 5의 `useShallow` 로 shallow compare → 같은 키 동일 값이면 같은 reference
+  // 유지 (사용자 보고 2026-06-25 — getSnapshot cache 회귀 fix).
   const {
     storeWinner,
     storeRunnerUp,
     storeMatchesPlayed,
     storeTournamentSize,
     storeSeason,
-  } = useTournamentStore((s) => ({
-    storeWinner: s.winner,
-    storeRunnerUp: s.runnerUp,
-    storeMatchesPlayed: s.matchesPlayed,
-    storeTournamentSize: s.config?.tournamentSize,
-    storeSeason: s.config?.theme.value,
-  }));
+  } = useTournamentStore(
+    useShallow((s) => ({
+      storeWinner: s.winner,
+      storeRunnerUp: s.runnerUp,
+      storeMatchesPlayed: s.matchesPlayed,
+      storeTournamentSize: s.config?.tournamentSize,
+      storeSeason: s.config?.theme.value,
+    })),
+  );
   const reset = useTournamentStore((s) => s.reset);
 
   const record = recordQuery.data;
