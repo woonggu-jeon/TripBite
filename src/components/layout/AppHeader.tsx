@@ -39,7 +39,7 @@ export function AppHeader() {
             aria-label={t('notification')}
             className={styles.iconButton}
           >
-            <Icon name="bell" size="lg" />
+            <Icon name="noti" size="lg" />
             {hasUnread && <span className={styles.dot} aria-hidden />}
           </Link>
           {MSW_ENABLED && (

@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Send, AlertCircle } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import { Button } from '@/components/ui';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { InfiniteList } from '@/features/list/components/InfiniteList';
@@ -36,7 +36,7 @@ export function LetterListPanel({ kind }: { kind: LetterListKind }) {
       <div className={styles.error}>
         <EmptyState
           variant="hero"
-          icon={<AlertCircle size={40} strokeWidth={1.6} aria-hidden />}
+          icon={<Icon name="alert-circle" size={36} />}
           title={t('listError')}
           action={
             <Button variant="secondary" size="sm" onClick={() => refetch()}>
@@ -60,7 +60,7 @@ export function LetterListPanel({ kind }: { kind: LetterListKind }) {
         emptyState={
           <EmptyState
             variant="hero"
-            icon={<Send size={38} strokeWidth={2.7} aria-hidden />}
+            icon={<Icon name="send" size={36} />}
             title={tEmpty(kind)}
           />
         }

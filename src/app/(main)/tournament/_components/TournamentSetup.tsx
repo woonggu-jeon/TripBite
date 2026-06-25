@@ -26,6 +26,7 @@ import type {
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { haptic } from '@/lib/haptic';
 import { Button, ButtonGrid } from '@/components/ui';
+import { SeasonIcon } from '@/components/ui/SeasonIcon';
 import styles from './TournamentSetup.module.scss';
 
 /**
@@ -70,13 +71,6 @@ const CATEGORIES: readonly DestinationCategory[] = [
   'attraction',
   'experience',
 ];
-
-const SEASON_EMOJI: Record<Season, string> = {
-  spring: '🌸',
-  summer: '☀️',
-  autumn: '🍁',
-  winter: '❄️',
-};
 
 // intro phase 자동 advance 시간 — 사용자 피드백 (2026-06-24) "굳이 시간이
 // 오래 걸릴 이유가 있나" → 2.5s → 1.0s. fetch 시점이 아닌 단순 시각 transition
@@ -265,7 +259,6 @@ export function TournamentSetup() {
   })();
 
   const showHeading = step <= 4;
-  const seasonEmoji = season ? SEASON_EMOJI[season] : '🍁';
 
   // step 6 (map) 의 placeholder destinations — ChungbukMap 표식용.
   const mapPlaceholders =
@@ -335,32 +328,61 @@ export function TournamentSetup() {
 
           {/* step 5 — intro: 로딩 (FallingPetals + circle-stack + dots + 안내) */}
           {step === 5 && (
-            <div className={styles.intro}>
-              <span className={styles.bgLeaf1} aria-hidden>
-                {seasonEmoji}
-              </span>
-              <span className={styles.bgLeaf2} aria-hidden>
-                {seasonEmoji}
-              </span>
-              <span className={styles.bgLeaf3} aria-hidden>
-                {seasonEmoji}
-              </span>
-              <span className={styles.bgLeaf4} aria-hidden>
-                {seasonEmoji}
-              </span>
-              <span className={styles.bgLeaf5} aria-hidden>
-                {seasonEmoji}
-              </span>
-              <span className={styles.bgLeaf6} aria-hidden>
-                {seasonEmoji}
-              </span>
-              <div className={styles.circleStack} aria-hidden>
+            <div
+              className={styles.intro}
+              data-season={season ?? 'autumn'}
+              aria-hidden
+            >
+              {/* Figma "TRN · 로딩 (지도 펼침)" (2026-06-25) — 6개 bgLeaf
+                  PNG (28×28) + center circle-stack (134 outer 색 + 100 white
+                  + 64 wrapper + 52 image). emoji → SeasonIcon PNG 교체. */}
+              {season && (
+                <>
+                  <SeasonIcon
+                    season={season}
+                    size={36}
+                    className={styles.bgLeaf1}
+                  />
+                  <SeasonIcon
+                    season={season}
+                    size={36}
+                    className={styles.bgLeaf2}
+                  />
+                  <SeasonIcon
+                    season={season}
+                    size={36}
+                    className={styles.bgLeaf3}
+                  />
+                  <SeasonIcon
+                    season={season}
+                    size={36}
+                    className={styles.bgLeaf4}
+                  />
+                  <SeasonIcon
+                    season={season}
+                    size={36}
+                    className={styles.bgLeaf5}
+                  />
+                  <SeasonIcon
+                    season={season}
+                    size={36}
+                    className={styles.bgLeaf6}
+                  />
+                </>
+              )}
+              <div className={styles.circleStack}>
                 <span className={styles.circleAmber} />
                 <span className={styles.circleWhite} />
-                <span className={styles.circleLeaf}>{seasonEmoji}</span>
+                {season && (
+                  <SeasonIcon
+                    season={season}
+                    size={64}
+                    className={styles.circleLeaf}
+                  />
+                )}
               </div>
               <h2 className={styles.introTitle}>{tPlay('introHint')}</h2>
-              <div className={styles.dots} aria-hidden>
+              <div className={styles.dots}>
                 <span className={styles.dot} />
                 <span className={styles.dot} />
                 <span className={styles.dot} />

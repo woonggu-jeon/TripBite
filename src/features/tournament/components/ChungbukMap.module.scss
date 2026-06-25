@@ -6,19 +6,24 @@
   // 폭 결정. desktop 에서 contentInner 폭까지 SVG 자연 확대.
   margin: 0 auto;
 
-  // light 톤 기본값
-  --map-region-fill: #dbeafe;
-  --map-region-stroke: #ffffff;
-  --map-region-hover: #93c5fd;
-  --map-label-fill: #111827;
+  // Figma "TRN · 여행지 준비 완료 (T-5)" 정합 (사용자 명시 2026-06-25):
+  // 기본 region = white + #9AA0A6 gray border, label = #393939 muted.
+  // 선택된 region (.region-active) = #EBF9EF primary-tint + #00B334 primary
+  // border + #00B334 label. dark mode 시 그대로 색 유지 (Figma spec light only,
+  // 향후 dark 도 동일 패턴이면 그대로 사용 가능).
+  --map-region-fill: #ffffff;
+  --map-region-stroke: #9aa0a6;
+  --map-region-active-fill: #ebf9ef;
+  --map-region-active-stroke: #00b334;
+  --map-label-fill: #393939;
+  --map-label-active-fill: #00b334;
   --map-label-stroke: #ffffff;
 
   @media (prefers-color-scheme: dark) {
-    --map-region-fill: #1e3a5f;
-    --map-region-stroke: #0f172a;
-    --map-region-hover: #60a5fa;
+    --map-region-fill: var(--color-surface, #1e1e1e);
+    --map-region-stroke: #4a4a4a;
     --map-label-fill: #e5e7eb;
-    --map-label-stroke: #0f172a;
+    --map-label-stroke: var(--color-surface, #1e1e1e);
   }
 }
 
@@ -37,16 +42,12 @@
     fill: var(--map-region-fill);
     stroke: var(--map-region-stroke);
     stroke-width: 2;
-    // transition 제거 (2026-06-24) — mount 시 fill/stroke 색이 transition 으로
-    // 깜빡이며 mapCard border 등장과 겹쳐 UX 어색. hover 인터랙션도 즉시
-    // 변경이 깔끔. drop pin keyframes 와 FallingPetals 만으로 충분한 motion.
   }
 
-  // 시군 그룹 hover — 같은 시군의 모든 path 에 클래스 부여 (JS 에서 토글).
-  // stroke 도 hover fill 과 동일 색 → 행정구 사이 분리선 사라져 시군이 한 덩어리로 보임.
-  :global(svg path.region.is-region-hovered) {
-    fill: var(--map-region-hover);
-    stroke: var(--map-region-hover);
+  // 선택된 시군 (destinations 의 region) — primary-tint fill + primary border.
+  :global(svg path.region.region-active) {
+    fill: var(--map-region-active-fill);
+    stroke: var(--map-region-active-stroke);
   }
 
   :global(svg text.label) {
@@ -60,6 +61,11 @@
     stroke-width: 6;
     stroke-linejoin: round;
     pointer-events: none;
+  }
+
+  // 선택된 시군 label — primary 색 (Figma 정합).
+  :global(svg text.label.region-active) {
+    fill: var(--map-label-active-fill);
   }
 }
 

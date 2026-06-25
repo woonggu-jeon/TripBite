@@ -164,11 +164,13 @@ export function LuckyLadder({
     return () => window.clearTimeout(id);
   }, [selected, mode]);
 
-  // Figma ladder svg 280×337 정합.
+  // Figma ladder svg 280×337 정합. bottomPad 40 → 56 — endpoint rect (height
+  // 26, y rowY+8 ~ rowY+34) 가 svg bottom edge (H=337) 와 너무 가까워 시각
+  // crop 발생 (사용자 명시 2026-06-25). 추가 16px 여유.
   const W = 280;
   const H = 337;
   const topPad = 32;
-  const bottomPad = 40;
+  const bottomPad = 56;
   const sidePad = 24;
   const colX = (i: number) => sidePad + (i * (W - sidePad * 2)) / (count - 1);
   const rowY = (r: number) => topPad + (r * (H - topPad - bottomPad)) / rows;
@@ -348,8 +350,9 @@ export function LuckyLadder({
                 />
                 <text
                   x={colX(i)}
-                  y={rowY(rows) + 25}
+                  y={rowY(rows) + 8 + 13}
                   textAnchor="middle"
+                  dominantBaseline="central"
                   fontSize={12}
                   fontWeight={700}
                   fill="var(--color-primary-fg)"

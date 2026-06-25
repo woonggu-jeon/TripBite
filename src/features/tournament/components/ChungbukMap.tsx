@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { RegionCode } from '@/constants/regions';
+import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import { haptic } from '@/lib/haptic';
 import type { DestinationDto } from '@/api/generated/schemas';
 import type { TournamentTheme } from '@/features/tournament/types';
+import { SeasonIcon } from '@/components/ui/SeasonIcon';
 import styles from './ChungbukMap.module.scss';
 
 /**
@@ -41,16 +42,9 @@ const POINTS: Record<RegionCode, { x: number; y: number }> = {
   yeongdong: norm(325, 790),
 };
 
-const SEASON_GLYPH = {
-  spring: '🌸',
-  summer: '💧',
-  autumn: '🍂',
-  winter: '❄️',
-} as const;
-
-function getGlyph(theme: TournamentTheme): string {
-  return SEASON_GLYPH[theme.value];
-}
+// theme.value (Season) → SeasonIcon PNG. 마커 wrapper (button/span) 의 .drop
+// transform/animation 은 그대로 — PNG 자식이 함께 scale/translate (사용자
+// 명시 2026-06-25 — emoji 전체 이미지 교체).
 
 interface Placed {
   id: string;
@@ -128,8 +122,26 @@ export function ChungbukMap({
   );
   const [svg, setSvg] = useState<string | null>(null);
   const svgWrapRef = useRef<HTMLDivElement>(null);
-  const glyph = getGlyph(theme);
   const selectable = !!selected && !!onToggle;
+
+  // Figma "TRN · 여행지 준비 완료 (T-5)" 정합 (사용자 명시 2026-06-25):
+  // destinations 의 region 코드 → 한글 시군명 set. SVG path/text 의 첫 단어
+  // (예: "청주시", "괴산군") 가 이 set 에 있으면 `region-active` 클래스 부여
+  // → primary-tint fill + primary stroke (선택된 시군 강조). 미선택은 white +
+  // gray border (기본 톤).
+  const activeKoSet = useMemo(() => {
+    const set = new Set<string>();
+    destinations.forEach((d) => {
+      const r = CHUNGBUK_REGIONS.find((rg) => rg.code === d.region);
+      if (r) set.add(r.ko);
+    });
+    return set;
+  }, [destinations]);
+  // useEffect deps 안정화 — Set instance 가 매번 새로 → string key 로 비교.
+  const activeKoKey = useMemo(
+    () => [...activeKoSet].sort().join('|'),
+    [activeKoSet],
+  );
 
   // SVG fetch + 내장 <style> 제거 (외부 CSS variable 로 컨트롤)
   useEffect(() => {
@@ -149,14 +161,9 @@ export function ChungbukMap({
     };
   }, []);
 
-  // path.region 에 click + 시군 그룹 hover 동기화
-  //
-  // 충북 SVG 는 청주시가 4 개 path("청주시 상당구/서원구/청원구/흥덕구") 로 쪼개져 있어
-  // 개별 path :hover 만 쓰면 하나의 시군이 4 조각으로 hover 됨.
-  // path id 의 첫 단어(예: '청주시', '괴산군')를 그룹 키로 묶어 mouseenter/leave 시
-  // 같은 그룹의 모든 path 에 .is-region-hovered 클래스를 토글 → 하나로 hover 보임.
-  //
-  // click 도 시군 단위로 통합 — onRegionClick 에는 그룹 키(예: '청주시') 전달.
+  // path.region 에 click 만 (hover 제거 — 사용자 명시 2026-06-25, 사용 안 함).
+  // click 은 시군 단위 통합 — onRegionClick 에는 그룹 키 (예: '청주시') 전달.
+  // 청주시는 4 path (상당/서원/청원/흥덕) 라 group key 매핑 유지.
   useEffect(() => {
     if (!svgWrapRef.current || !svg) return;
     const root = svgWrapRef.current;
@@ -166,34 +173,18 @@ export function ChungbukMap({
     if (paths.length === 0) return;
 
     const groupKey = (p: SVGPathElement) => p.id.split(/\s+/)[0] ?? p.id;
-    const groupMap = new Map<string, SVGPathElement[]>();
-    paths.forEach((p) => {
-      const key = groupKey(p);
-      const arr = groupMap.get(key) ?? [];
-      arr.push(p);
-      groupMap.set(key, arr);
-    });
 
     const cleanups: Array<() => void> = [];
     paths.forEach((p) => {
       const key = groupKey(p);
-      const siblings = groupMap.get(key) ?? [p];
-      const enter = () =>
-        siblings.forEach((s) => s.classList.add('is-region-hovered'));
-      const leave = () =>
-        siblings.forEach((s) => s.classList.remove('is-region-hovered'));
       const click = () => {
         if (!onRegionClick) return;
         haptic.tap();
         onRegionClick(key);
       };
-      p.addEventListener('mouseenter', enter);
-      p.addEventListener('mouseleave', leave);
       p.addEventListener('click', click);
       p.style.cursor = onRegionClick ? 'pointer' : 'default';
       cleanups.push(() => {
-        p.removeEventListener('mouseenter', enter);
-        p.removeEventListener('mouseleave', leave);
         p.removeEventListener('click', click);
       });
     });
@@ -201,6 +192,30 @@ export function ChungbukMap({
       cleanups.forEach((fn) => fn());
     };
   }, [svg, onRegionClick]);
+
+  // Figma 정합 — destinations 가 위치한 시군 path / text 에 `region-active`
+  // 클래스 부여. 청주시는 4 path (상당/서원/청원/흥덕) 라 group key 매칭 필수.
+  useEffect(() => {
+    if (!svgWrapRef.current || !svg) return;
+    const root = svgWrapRef.current;
+    const groupKey = (id: string) => id.split(/\s+/)[0] ?? id;
+    const paths = root.querySelectorAll<SVGPathElement>('path.region');
+    const labels = root.querySelectorAll<SVGTextElement>('text.label');
+    paths.forEach((p) => {
+      const key = groupKey(p.id);
+      p.classList.toggle('region-active', activeKoSet.has(key));
+    });
+    labels.forEach((tEl) => {
+      const key = groupKey(tEl.id || tEl.textContent || '');
+      tEl.classList.toggle('region-active', activeKoSet.has(key));
+    });
+    return () => {
+      paths.forEach((p) => p.classList.remove('region-active'));
+      labels.forEach((tEl) => tEl.classList.remove('region-active'));
+    };
+    // activeKoKey 로 set 변화 감지 (Set instance 매번 새로 → 직접 dep 비효율).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [svg, activeKoKey]);
 
   useEffect(() => {
     if (!onReady) return;
@@ -258,7 +273,7 @@ export function ChungbukMap({
                 aria-label={p.name}
                 title={p.name}
               >
-                {glyph}
+                <SeasonIcon season={theme.value} size={36} />
               </button>
             );
           }
@@ -274,7 +289,7 @@ export function ChungbukMap({
               }}
               aria-label={p.name}
             >
-              {glyph}
+              <SeasonIcon season={theme.value} size={36} />
             </span>
           );
         })}

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { Heart, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import { Button } from './Button';
 
 const meta = {
@@ -38,7 +39,7 @@ export const Loading: Story = {
 };
 export const WithIcons: Story = {
   args: {
-    leadingIcon: <Heart size={16} />,
+    leadingIcon: <Icon name="heart-fill" size={16} />,
     trailingIcon: <ArrowRight size={16} />,
     children: '좋아요',
   },

@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Settings } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import { ROUTES } from '@/constants/routes';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { MyPageClient } from './_components/MyPageClient';
@@ -67,7 +67,7 @@ export default async function MyPage() {
               color: 'var(--color-fg)',
             }}
           >
-            <Settings size={24} aria-hidden />
+            <Icon name="settings" size={24} />
           </Link>
         }
       />

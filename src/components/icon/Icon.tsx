@@ -42,12 +42,44 @@ export type IconName =
   | 'alert-triangle'
   | 'alert-circle'
   | 'x'
+  // Notification types
+  | 'send'
+  | 'shield-alert'
   // Status / connectivity
   | 'wifi-off'
   // Domain
   | 'sparkles'
-  | 'map-pin'
-  | 'heart';
+  // BottomModal (Figma export — Lucide 와 path 비율 다름)
+  | 'camera'
+  | 'image'
+  // DetailIcon (POI 상세 / badge — Figma detailIcon spec)
+  | 'location'
+  | 'compass'
+  | 'clock'
+  | 'calendar'
+  | 'parking'
+  | 'globe'
+  | 'ticket'
+  | 'award'
+  | 'heart-fill'
+  // CircleIcon (큰 일러스트 — EmptyState hero)
+  | 'circle-check'
+  | 'letter-large'
+  | 'lock'
+  | 'location-large'
+  | 'noti'
+  | 'heart-large'
+  | 'trophy-large'
+  // HeaderIcon
+  | 'settings-figma'
+  | 'back'
+  // UI state
+  | 'bookmark-on'
+  | 'bookmark-off'
+  | 'checkbox-on'
+  | 'checkbox-off'
+  | 'eye-on'
+  | 'eye-off';
 
 export type IconSize = 'sm' | 'md' | 'lg' | 'xl' | number;
 

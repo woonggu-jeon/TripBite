@@ -1,17 +1,25 @@
 // Figma rec-block "HOME · 홈" (2026-06-23) — 320×269 column gap 16.
+//
+// 우측 bleed (사용자 명시 2026-06-25) — Carousel slidesPerView 1.8/2.2 의
+// 우측 cut 이 contentInner padding edge 가 아니라 viewport edge 에서 일어나도록.
+// wrap 자체가 contentInner 우측 padding 만큼 음수 margin → 자식 중 mid/chips
+// 만 padding-right 으로 contentInner 정렬 보상. Carousel 만 우측까지 bleed.
 .wrap {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  margin-right: calc(-1 * var(--content-pad));
 }
 
 // Figma mid (sec-title) — row gap 2, Frame 28 column gap 2.
 // 우측 더보기 chevron (Link → /ranking) — flex space-between 으로 우측 정렬.
+// wrap 의 음수 margin-right 보상 — mid 는 contentInner padding 안 폭 유지.
 .mid {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 2px;
+  padding-right: var(--content-pad);
 }
 
 .midText {
@@ -78,13 +86,15 @@
   margin: 0;
 }
 
-// Figma chips row gap 4.
+// Figma chips row gap 4. wrap 의 음수 margin-right 보상 — chips 도 contentInner
+// padding 안 폭 유지 (wrap 의 padding-right 만 추가 적용).
 .chips {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   gap: 4px;
   padding: 0;
+  padding-right: var(--content-pad);
   margin: 0;
   list-style: none;
   flex-wrap: wrap;

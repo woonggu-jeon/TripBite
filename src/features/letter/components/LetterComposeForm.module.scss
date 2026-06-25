@@ -127,27 +127,6 @@
   border: 0;
 }
 
-// Figma Rectangle 30 — 20×20 primary fill radius 4 + Check 14 white (체크 시).
-.anonBox {
-  display: grid;
-  place-items: center;
-  width: 20px;
-  height: 20px;
-  background: var(--color-bg);
-  border: 1.5px solid var(--color-border);
-  border-radius: 4px;
-  color: transparent;
-  transition:
-    background var(--motion-base) ease,
-    border-color var(--motion-base) ease;
-}
-
-.anonChecked {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: var(--color-bg);
-}
-
 // Figma title Body/B_14_140% fg.
 .anonLabel {
   font-size: var(--text-sm);

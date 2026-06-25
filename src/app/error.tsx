@@ -2,9 +2,9 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { AlertCircle } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui';
+import { Icon } from '@/components/icon/Icon';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import styles from './error.module.scss';
 
@@ -37,7 +37,7 @@ export default function GlobalError({
     <main className={styles.main}>
       <EmptyState
         variant="hero"
-        icon={<AlertCircle size={40} strokeWidth={1.6} aria-hidden />}
+        icon={<Icon name="alert-circle" size={36} />}
         title="문제가 발생했어요"
         description={
           '잠시 후 다시 시도해주세요.\n문제가 계속되면 도움이 필요해요.'

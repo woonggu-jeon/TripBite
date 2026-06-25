@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { MapPin } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { Carousel } from '@/features/carousel';
 import { useRecommendedDestinations } from '@/features/ranking/hooks/use-ranking';
@@ -80,7 +80,7 @@ function HeroSlide({
         <span className={styles.heroEyebrow}>{eyebrow}</span>
         <h2 className={styles.heroTitle}>{title}</h2>
         <span className={styles.heroFooter}>
-          <MapPin size={12} aria-hidden />
+          <Icon name="location" size={12} />
           <span>
             {regionKo} · {item.name}
           </span>

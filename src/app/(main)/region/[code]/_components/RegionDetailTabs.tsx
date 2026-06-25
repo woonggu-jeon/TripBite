@@ -3,7 +3,7 @@
 import { useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { Compass } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import { toneFor } from '@/constants/region-tone';
 import type {
@@ -220,7 +220,7 @@ function RegionContentPanel({
         <div className={styles.empty}>
           <div className={styles.emptyInner}>
             <div className={styles.emptyCircle} aria-hidden>
-              <Compass size={40} strokeWidth={2.5} />
+              <Icon name="compass" size={40} />
             </div>
             <div className={styles.emptyText}>
               <p className={styles.emptyTitle}>{t('empty.title')}</p>

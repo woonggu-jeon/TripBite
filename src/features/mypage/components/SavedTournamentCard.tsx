@@ -1,6 +1,6 @@
 'use client';
 
-import { Heart } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import { DestinationCard } from '@/components/ui';
 import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import { toneFor } from '@/constants/region-tone';
@@ -58,13 +58,7 @@ export function SavedTournamentCard({
         onUnsave();
       }}
     >
-      <Heart
-        size={16}
-        aria-hidden
-        fill="currentColor"
-        strokeWidth={1.5}
-        className={styles.heartIcon}
-      />
+      <Icon name="heart-fill" size={16} className={styles.heartIcon} />
     </button>
   ) : undefined;
 

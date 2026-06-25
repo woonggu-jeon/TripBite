@@ -1,8 +1,14 @@
 // Figma "POI · 장소상세 hero" (2026-06-23) — 360×234. aspect-ratio 360/234
 // (사용자 명시 2026-06-24) — desktop 폭까지 grow 시 비율 유지. bg image +
 // #A8B29C fallback. overflow hidden.
+//
+// isolation: isolate (사용자 명시 2026-06-25) — 캐러셀 안 arrow/dots
+// (z 2) 와 SubHeader sticky (z 50) 의 stacking 격리. .wrap 자체가 새 stacking
+// context 가 되어 안의 z 가 외부 (SubHeader) 와 무관 — "캐러셀이 앞으로
+// 튀어나옴" 시각 회귀 회피.
 .wrap {
   position: relative;
+  isolation: isolate;
   width: 100%;
   aspect-ratio: 360 / 234;
   background: #a8b29c;

@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Heart, Trophy } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import { useRouter } from 'next/navigation';
 import { SkeletonList } from '@/components/feedback/SkeletonList';
 import { EmptyState } from '@/components/feedback/EmptyState';
@@ -60,7 +60,7 @@ export function SavedTournamentsAll() {
     return (
       <div className={styles.wrap}>
         <EmptyState
-          icon={<Trophy size={28} aria-hidden />}
+          icon={<Icon name="trophy-large" size={28} />}
           title={t('error')}
           action={
             <Button variant="secondary" size="sm" onClick={() => refetch()}>
@@ -79,7 +79,7 @@ export function SavedTournamentsAll() {
       <div className={styles.emptyWrap}>
         <div className={styles.emptyFrame}>
           <div className={styles.emptyCircle} aria-hidden>
-            <Heart size={38} strokeWidth={2} />
+            <Icon name="heart-large" size={38} />
           </div>
           <div className={styles.emptyText}>
             <h2 className={styles.emptyTitle}>{t('empty')}</h2>

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { Heart, X, Settings } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import { IconButton } from './IconButton';
 
 const meta = {
@@ -15,7 +15,7 @@ const meta = {
     'aria-label': 'Like',
     variant: 'ghost',
     size: 'md',
-    children: <Heart size={20} />,
+    children: <Icon name="heart-fill" size={20} />,
   },
 } satisfies Meta<typeof IconButton>;
 
@@ -29,13 +29,13 @@ export const Sizes: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
       <IconButton aria-label="close" size="sm" variant="ghost">
-        <X size={14} />
+        <Icon name="x" size={14} />
       </IconButton>
       <IconButton aria-label="close" size="md" variant="ghost">
-        <X size={16} />
+        <Icon name="x" size={16} />
       </IconButton>
       <IconButton aria-label="close" size="lg" variant="ghost">
-        <X size={20} />
+        <Icon name="x" size={20} />
       </IconButton>
     </div>
   ),
@@ -43,7 +43,7 @@ export const Sizes: Story = {
 export const Settings_: Story = {
   args: {
     'aria-label': 'Settings',
-    children: <Settings size={20} />,
+    children: <Icon name="settings" size={20} />,
     variant: 'outline',
   },
 };

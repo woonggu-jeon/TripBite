@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { Mail, Trophy } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import { EmptyState } from './EmptyState';
 import { Button } from '@/components/ui';
 
@@ -8,7 +8,7 @@ const meta = {
   component: EmptyState,
   tags: ['autodocs'],
   args: {
-    icon: <Mail size={28} />,
+    icon: <Icon name="mail" size={28} />,
     title: '아직 받은 편지가 없어요',
     description: '편지가 도착하면 여기에 표시돼요',
   },
@@ -23,7 +23,7 @@ export const WithAction: Story = {
 };
 export const Trophy_: Story = {
   args: {
-    icon: <Trophy size={28} />,
+    icon: <Icon name="award" size={28} />,
     title: '저장된 우승지가 없어요',
     description: '토너먼트를 진행하면 자동 저장돼요',
     action: <Button>토너먼트 시작</Button>,

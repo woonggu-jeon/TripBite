@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ChevronLeft } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import styles from './SubHeader.module.scss';
 
 /**
@@ -58,7 +58,7 @@ export function SubHeader({
           className={styles.back}
           onClick={handleBack}
         >
-          <ChevronLeft size={24} />
+          <Icon name="back" size={24} />
         </button>
         <h1 className={styles.title}>{title}</h1>
         <div className={styles.rightSlot}>{rightSlot}</div>

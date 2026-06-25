@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Trophy } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import { SkeletonList } from '@/components/feedback/SkeletonList';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
@@ -46,7 +46,7 @@ export function TournamentHistorySection() {
   if (isError) {
     return (
       <EmptyState
-        icon={<Trophy size={28} aria-hidden />}
+        icon={<Icon name="trophy-large" size={28} />}
         title={t('error')}
         action={
           <Button variant="secondary" size="sm" onClick={() => refetch()}>
@@ -77,7 +77,7 @@ export function TournamentHistorySection() {
         return (
           <li key={it.id} className={styles.row}>
             <span className={styles.iconBox} aria-hidden>
-              <Trophy size={20} strokeWidth={1.7} />
+              <Icon name="award" size={20} />
             </span>
             <div className={styles.body}>
               <p className={styles.title}>

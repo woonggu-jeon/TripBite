@@ -2,15 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import {
-  AlertCircle,
-  Compass,
-  MapPin,
-  Clock,
-  Calendar,
-  ParkingSquare,
-  Globe,
-} from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
@@ -64,7 +56,7 @@ export function DestinationDetailClient({ id }: { id: string }) {
         <SubHeader title={t('title')} />
         <div className={styles.wrap}>
           <EmptyState
-            icon={<AlertCircle size={28} aria-hidden />}
+            icon={<Icon name="alert-circle" size={28} />}
             title={t('errorTitle')}
             description={t('errorDescription')}
             action={
@@ -143,7 +135,7 @@ export function DestinationDetailClient({ id }: { id: string }) {
               <p className={styles.region}>{regionName}</p>
             </div>
             <span className={styles.typeChip}>
-              <Compass size={13} aria-hidden />
+              <Icon name="compass" size={13} />
               <span>{categoryLabel}</span>
             </span>
           </div>
@@ -196,7 +188,7 @@ function InfoCard({
   if (detail.address) {
     fields.push({
       key: 'address',
-      icon: <MapPin size={18} aria-hidden />,
+      icon: <Icon name="location" size={18} />,
       label: t('address'),
       value: detail.address,
     });
@@ -204,7 +196,7 @@ function InfoCard({
   if (detail.openingHours) {
     fields.push({
       key: 'openingHours',
-      icon: <Clock size={18} aria-hidden />,
+      icon: <Icon name="clock" size={18} />,
       label: t('openingHours'),
       value: detail.openingHours,
     });
@@ -212,7 +204,7 @@ function InfoCard({
   if (detail.restDate) {
     fields.push({
       key: 'restDate',
-      icon: <Calendar size={18} aria-hidden />,
+      icon: <Icon name="calendar" size={18} />,
       label: t('restDate'),
       value: detail.restDate,
     });
@@ -220,7 +212,7 @@ function InfoCard({
   if (detail.parking) {
     fields.push({
       key: 'parking',
-      icon: <ParkingSquare size={18} aria-hidden />,
+      icon: <Icon name="parking" size={18} />,
       label: t('parking'),
       value: detail.parking,
     });
@@ -228,7 +220,7 @@ function InfoCard({
   if (detail.website) {
     fields.push({
       key: 'website',
-      icon: <Globe size={18} aria-hidden />,
+      icon: <Icon name="globe" size={18} />,
       label: t('website'),
       value: detail.website,
       isLink: true,

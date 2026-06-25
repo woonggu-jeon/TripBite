@@ -128,6 +128,11 @@
   overflow: hidden;
 }
 
+// Figma "TRN · 로딩 (지도 펼침)" (2026-06-25) — 6 bgLeaf 36×36 PNG (안쪽
+// image 28×28). Figma 명시 위치 (360×786 기준):
+//   1: 49,81   2: 281,55   3: 75,212   4: 247,538   5: 63,627   6: 218,688
+// opacity 그대로 (~0.5 → 1, 사용자 시안은 풀 컬러). 떠다니는 sway 애니메이션
+// + 각자 지연. SeasonIcon wrapper 가 inline-flex (default) → absolute override.
 .bgLeaf1,
 .bgLeaf2,
 .bgLeaf3,
@@ -135,35 +140,67 @@
 .bgLeaf5,
 .bgLeaf6 {
   position: absolute;
-  font-size: 28px;
-  opacity: 0.5;
   pointer-events: none;
   user-select: none;
-  line-height: 1;
+  animation: leafSway 4s ease-in-out infinite;
 }
 .bgLeaf1 {
-  top: 11.5%;
-  left: 11.1%;
+  top: 81px;
+  left: 49px;
+  animation-delay: 0s;
 }
 .bgLeaf2 {
-  top: 17.8%;
-  left: 91.7%;
+  top: 55px;
+  left: 281px;
+  animation-delay: 0.6s;
 }
 .bgLeaf3 {
-  top: 81.4%;
-  left: 16.7%;
+  top: 212px;
+  left: 75px;
+  animation-delay: 1.2s;
 }
 .bgLeaf4 {
-  top: 71.3%;
-  left: 94.4%;
+  top: 538px;
+  left: 247px;
+  animation-delay: 1.8s;
 }
 .bgLeaf5 {
-  top: 31.8%;
-  left: 83.3%;
+  top: 627px;
+  left: 63px;
+  animation-delay: 2.4s;
 }
 .bgLeaf6 {
-  top: 45.8%;
-  left: 15.3%;
+  top: 688px;
+  left: 218px;
+  animation-delay: 3s;
+}
+
+// 부드럽게 떠다니는 효과 — 위아래 +6 + 좌우 -3~+3 sway. 4s loop.
+@keyframes leafSway {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(3px, -6px) rotate(2deg);
+  }
+  50% {
+    transform: translate(0, -3px) rotate(-1deg);
+  }
+  75% {
+    transform: translate(-3px, -6px) rotate(-2deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bgLeaf1,
+  .bgLeaf2,
+  .bgLeaf3,
+  .bgLeaf4,
+  .bgLeaf5,
+  .bgLeaf6 {
+    animation: none;
+  }
 }
 
 .circleStack {
@@ -171,6 +208,8 @@
   width: 134px;
   height: 134px;
 }
+// Figma "TRN · 로딩 (지도 펼침)" 계절별 outer circle 색 (2026-06-25 사용자
+// 명시) — .intro[data-season] cascade 로 동적. fallback 가을(#ffcd99).
 .circleAmber {
   position: absolute;
   inset: 0;
@@ -178,6 +217,30 @@
   height: 134px;
   border-radius: var(--radius-full);
   background: #ffcd99;
+  animation: circlePulse 2s ease-in-out infinite;
+}
+
+[data-season='spring'] .circleAmber {
+  background: #ffebeb;
+}
+[data-season='summer'] .circleAmber {
+  background: #e0ff89;
+}
+[data-season='autumn'] .circleAmber {
+  background: #ffcd99;
+}
+[data-season='winter'] .circleAmber {
+  background: #e8f1fd;
+}
+
+@keyframes circlePulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
 }
 .circleWhite {
   position: absolute;
@@ -188,16 +251,32 @@
   border-radius: var(--radius-full);
   background: var(--color-bg, #ffffff);
 }
+// SeasonIcon size=64 wrapper (64×64) 안 image 52×52. circleStack 134 의 정
+// 중앙: (134-64)/2 = 35. circleWhite 100×100 (17~117) 안 더 안쪽.
+// SeasonIcon 의 inline-flex default 가 absolute 와 함께 — position override.
 .circleLeaf {
   position: absolute;
-  top: 37px;
-  left: 37px;
-  width: 60px;
-  height: 60px;
-  font-size: 60px;
-  line-height: 60px;
-  text-align: center;
+  top: 35px;
+  left: 35px;
   user-select: none;
+  animation: leafBob 2.4s ease-in-out infinite;
+}
+
+@keyframes leafBob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .circleAmber,
+  .circleLeaf {
+    animation: none;
+  }
 }
 
 .introTitle {

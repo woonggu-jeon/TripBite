@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Mail, User } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { Button } from '@/components/ui';
 import { EmptyState } from '@/components/feedback/EmptyState';
@@ -77,7 +77,7 @@ export function LetterDetailClient({ letterId }: { letterId: string }) {
       <div className={styles.wrap}>
         <EmptyState
           variant="hero"
-          icon={<Mail size={36} strokeWidth={2.7} aria-hidden />}
+          icon={<Icon name="letter-large" size={36} />}
           title={t('loadError')}
           action={
             <div className={styles.errorActions}>
@@ -115,7 +115,7 @@ export function LetterDetailClient({ letterId }: { letterId: string }) {
             sub. */}
         <div className={styles.hero}>
           <span className={styles.circle} aria-hidden>
-            <Mail size={36} strokeWidth={2.7} />
+            <Icon name="letter-large" size={36} />
           </span>
           <div className={styles.headings}>
             <h1 className={styles.title}>{t('arrivedTitle')}</h1>
@@ -140,12 +140,7 @@ export function LetterDetailClient({ letterId }: { letterId: string }) {
                       className={styles.sqImage}
                     />
                   ) : (
-                    <User
-                      size={28}
-                      strokeWidth={1.6}
-                      className={styles.sqIcon}
-                      aria-hidden
-                    />
+                    <Icon name="user" size={28} className={styles.sqIcon} />
                   )}
                 </span>
                 {/* Figma pm — "도착\n여행한입" 멀티라인 도장. */}

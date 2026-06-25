@@ -3,12 +3,14 @@
   gap: var(--space-3);
 }
 
-// Figma "Header type=noti" rightSlot — muted text-link (iOS toolbar action
-// convention). action button 형태 아님. caption 12 + muted color +
-// transparent bg.
+// Figma "Header type=noti" rightSlot — "모두읽음" text-link (iOS toolbar
+// convention). Caption B_14 muted right (사용자 명시 2026-06-25).
 .allRead {
-  font-size: var(--font-caption);
+  font-size: var(--text-sm); /* 14 */
+  font-weight: var(--font-weight-bold);
   color: var(--color-muted);
+  letter-spacing: -0.02em;
+  line-height: var(--line-snug-relaxed);
   background: transparent;
   border: 0;
   cursor: pointer;
@@ -51,54 +53,118 @@
   border: 0;
   padding: 0;
   cursor: pointer;
-}
-
-.item {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  transition: background var(--motion-base) ease;
 
   @media (hover: hover) and (pointer: fine) {
-    &:hover {
+    &:hover .alrow {
       background: var(--color-hover);
     }
   }
 }
 
-.unread {
-  background: var(--color-primary-tint);
-  border-color: color-mix(
-    in srgb,
-    var(--color-primary) 25%,
-    var(--color-border)
-  );
+/* Figma "alrow" — flat row (no border/radius). padding 16 20 gap 12.
+   notiCircle(44 left) + mid(column gap 4 flex 1) + time(right top). */
+.alrow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 20px;
+  background: var(--color-bg);
+  transition: background var(--motion-base) ease;
 }
 
-.icon {
-  margin-top: 2px;
+/* Figma "notiCircle" — 44×44 wrap, bg primary-soft (#EAF6EF) for unread,
+   bg #F1F1F1 (gray) for read. icon 22 center. unread 시 좌상단 9×9 dot
+   primary + 2px white border. */
+.notiCircle {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.notiCircleUnread {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.notiCircleRead {
+  background: #f1f1f1;
+  color: var(--color-disabled);
+}
+
+.notiDot {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  border: 2px solid var(--color-bg);
+}
+
+/* Figma "mid" — column gap 4 flex 1. title B_14 fg + body R_12 muted +
+   (read 시 disabled). */
+.mid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.midTitle {
+  font-size: var(--text-sm); /* 14 */
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: -0.02em;
+  color: var(--color-fg);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.midTitleRead {
+  color: var(--color-disabled);
+}
+
+.midBody {
+  font-size: var(--font-caption); /* 12 */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: -0.01em;
   color: var(--color-muted);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: keep-all;
+}
+
+.midBodyRead {
+  color: var(--color-disabled);
+}
+
+/* Figma time R_12 disabled, right top (mid 와 baseline 정합). */
+.time {
+  font-size: var(--font-caption); /* 12 */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-snug-relaxed);
+  letter-spacing: -0.01em;
+  color: var(--color-disabled);
+  text-align: right;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 // 알림 빈 상태는 EmptyState primitive 의 variant=hero 로 위임 (2026-06-23
 // 정정 — 이전 inline markup 회귀를 EmptyState 컴포넌트 재사용으로 정합).
-
-.itemMessage {
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-fg);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  line-height: var(--line-snug);
-  word-break: keep-all;
-}
 
 /* push prompt — 페이지 상단 안내 + enable 버튼 */
 .pushPrompt {

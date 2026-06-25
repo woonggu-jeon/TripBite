@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { ChevronRight, Trophy } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import { useRouter } from 'next/navigation';
 import { Carousel } from '@/features/carousel';
 import { Skeleton } from '@/components/feedback/Skeleton';
@@ -43,7 +44,7 @@ export function SavedTournamentsSection() {
   if (isError) {
     return (
       <EmptyState
-        icon={<Trophy size={28} aria-hidden />}
+        icon={<Icon name="trophy-large" size={28} />}
         title={t('error')}
         action={
           <Button variant="secondary" size="sm" onClick={() => refetch()}>

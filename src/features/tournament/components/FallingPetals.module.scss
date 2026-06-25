@@ -35,53 +35,59 @@
   animation-name: fall-soft;
 }
 
+// PNG 마이그레이션 (2026-06-25) — random size 는 wrapper 의 `--scale` CSS
+// variable 로 받아 모든 keyframe transform 안에 scale 합성. fontSize 방식과
+// 동일 시각 효과 + Image 컴포넌트 width/height 유지.
 @keyframes fall {
   from {
     top: -10%;
-    transform: translateX(0) rotate(var(--rot, 0deg));
+    transform: translateX(0) rotate(var(--rot, 0deg)) scale(var(--scale, 1));
   }
   to {
     top: 110%;
-    transform: translateX(var(--sway, 0px)) rotate(540deg);
+    transform: translateX(var(--sway, 0px)) rotate(540deg)
+      scale(var(--scale, 1));
   }
 }
 
 @keyframes fall-sway {
   0% {
     top: -10%;
-    transform: translateX(0) rotate(var(--rot, 0deg));
+    transform: translateX(0) rotate(var(--rot, 0deg)) scale(var(--scale, 1));
   }
   50% {
-    transform: translateX(calc(var(--sway, 0px) * 1)) rotate(180deg);
+    transform: translateX(calc(var(--sway, 0px) * 1)) rotate(180deg)
+      scale(var(--scale, 1));
   }
   100% {
     top: 110%;
-    transform: translateX(calc(var(--sway, 0px) * -1)) rotate(540deg);
+    transform: translateX(calc(var(--sway, 0px) * -1)) rotate(540deg)
+      scale(var(--scale, 1));
   }
 }
 
 @keyframes fall-straight {
   from {
     top: -10%;
-    transform: translateX(0) rotate(0);
+    transform: translateX(0) rotate(0) scale(var(--scale, 1));
   }
   to {
     top: 110%;
-    transform: translateX(0) rotate(0);
+    transform: translateX(0) rotate(0) scale(var(--scale, 1));
   }
 }
 
 @keyframes fall-soft {
   0% {
     top: -10%;
-    transform: translateX(0) rotate(0);
+    transform: translateX(0) rotate(0) scale(var(--scale, 1));
   }
   50% {
-    transform: translateX(var(--sway, 0px)) rotate(90deg);
+    transform: translateX(var(--sway, 0px)) rotate(90deg) scale(var(--scale, 1));
   }
   100% {
     top: 110%;
-    transform: translateX(0) rotate(180deg);
+    transform: translateX(0) rotate(180deg) scale(var(--scale, 1));
   }
 }
 

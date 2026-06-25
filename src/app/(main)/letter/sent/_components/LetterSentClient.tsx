@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Send, User } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import { useLetter } from '@/features/letter/hooks/use-letters';
 import { useLetterStore } from '@/features/letter/store/letter-store';
 import { useMe } from '@/features/auth/hooks/use-auth';
@@ -94,7 +94,7 @@ export function LetterSentClient() {
       <div className={styles.wrap}>
         <EmptyState
           variant="hero"
-          icon={<Send size={36} strokeWidth={2.7} aria-hidden />}
+          icon={<Icon name="send" size={36} />}
           title={t('loadError')}
           action={
             <Button
@@ -115,7 +115,7 @@ export function LetterSentClient() {
       <div className={styles.wrap}>
         <EmptyState
           variant="hero"
-          icon={<Send size={36} strokeWidth={2.7} aria-hidden />}
+          icon={<Icon name="send" size={36} />}
           title={t('empty')}
           action={
             <Button
@@ -146,7 +146,7 @@ export function LetterSentClient() {
         {/* Figma Frame 7 hero. */}
         <div className={styles.hero}>
           <span className={styles.circle} aria-hidden>
-            <Send size={36} strokeWidth={2.7} />
+            <Icon name="send" size={36} />
           </span>
           <div className={styles.headings}>
             <h1 className={styles.title}>{t('noticeTitle')}</h1>
@@ -169,12 +169,7 @@ export function LetterSentClient() {
                     className={styles.sqImage}
                   />
                 ) : (
-                  <User
-                    size={28}
-                    strokeWidth={1.6}
-                    className={styles.sqIcon}
-                    aria-hidden
-                  />
+                  <Icon name="user" size={28} className={styles.sqIcon} />
                 )}
               </span>
               {/* Figma pm — "발송완료\n여행한입" 멀티라인 도장. */}

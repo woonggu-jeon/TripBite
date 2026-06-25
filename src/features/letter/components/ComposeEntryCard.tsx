@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Send } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import { useTranslations } from 'next-intl';
 import { ROUTES } from '@/constants/routes';
 import styles from './ComposeEntryCard.module.scss';
@@ -27,7 +27,7 @@ export function ComposeEntryCard() {
       aria-label={t('cta')}
     >
       <span className={styles.bic} aria-hidden>
-        <Send size={24} strokeWidth={1.7} />
+        <Icon name="send" size={24} />
       </span>
       <div className={styles.f}>
         <span className={styles.lead}>{t('lead')}</span>

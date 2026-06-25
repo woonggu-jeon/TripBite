@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import type { Route } from 'next';
 import { useTranslations } from 'next-intl';
-import { ChevronLeft } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import { haptic } from '@/lib/haptic';
 import styles from './AuthHeader.module.scss';
 
@@ -47,7 +47,7 @@ export function AuthHeader({
         onClick={handleBack}
         aria-label={t('back')}
       >
-        <ChevronLeft size={24} aria-hidden />
+        <Icon name="back" size={24} />
       </button>
     </header>
   );

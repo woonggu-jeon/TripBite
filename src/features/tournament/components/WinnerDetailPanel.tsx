@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { MapPin, Clock, CalendarX } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import type { DestinationDetailDto } from '@/api/generated/schemas';
 import styles from './WinnerDetailPanel.module.scss';
 
@@ -88,21 +88,21 @@ export function WinnerDetailPanel({ detail, isLoading }: Props) {
   if (detail.address)
     rows.push({
       key: 'address',
-      icon: <MapPin size={18} aria-hidden />,
+      icon: <Icon name="location" size={18} />,
       label: t('address'),
       value: detail.address,
     });
   if (detail.restDate)
     rows.push({
       key: 'restDate',
-      icon: <CalendarX size={18} aria-hidden />,
+      icon: <Icon name="calendar" size={18} />,
       label: t('restDate'),
       value: detail.restDate,
     });
   if (detail.openingHours)
     rows.push({
       key: 'hours',
-      icon: <Clock size={18} aria-hidden />,
+      icon: <Icon name="clock" size={18} />,
       label: t('openingHours'),
       value: detail.openingHours,
     });

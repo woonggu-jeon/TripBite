@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { MapPin } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import { Dialog } from './Dialog';
 import { Button } from './Button';
 
@@ -48,7 +48,7 @@ export const WithIcon: Story = {
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
-        icon={<MapPin size={28} />}
+        icon={<Icon name="location" size={28} />}
         title="위치 권한이 필요해요"
         description="가까운 여행지를 추천하려면 현재 위치가 필요해요."
         actions={

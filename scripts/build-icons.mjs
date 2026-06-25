@@ -54,12 +54,44 @@ const ICONS = [
   'alert-triangle',
   'alert-circle',
   'x',
+  // Notification types
+  'send',
+  'shield-alert',
   // Status / connectivity
   'wifi-off',
   // Domain
   'sparkles',
-  'map-pin',
-  'heart',
+  // BottomModal (Figma export — Lucide 와 path 비율 다름)
+  'camera',
+  'image',
+  // DetailIcon (POI 상세 / badge — Figma detailIcon spec)
+  'location',
+  'compass',
+  'clock',
+  'calendar',
+  'parking',
+  'globe',
+  'ticket',
+  'award',
+  'heart-fill',
+  // CircleIcon (EmptyState hero 84-circle 안 큰 일러스트 — size 가변 36/46)
+  'circle-check',
+  'letter-large',
+  'lock',
+  'location-large',
+  'noti',
+  'heart-large',
+  'trophy-large',
+  // HeaderIcon (Header 우측 — Figma 디자인이 Lucide 와 다름)
+  'settings-figma',
+  'back',
+  // UI state (on/off 별도 sprite — checkbox/bookmark/eye)
+  'bookmark-on',
+  'bookmark-off',
+  'checkbox-on',
+  'checkbox-off',
+  'eye-on',
+  'eye-off',
 ];
 
 const LUCIDE_DIR = resolve(ROOT, 'node_modules/lucide-static/icons');
@@ -71,15 +103,62 @@ const OUTPUT = resolve(ROOT, 'public/icons.svg');
  * 치환 — CSS color 로 active(primary) / off(disabled) 동적 변경.
  */
 const LOCAL_OVERRIDES = {
-  home: 'public/nav-icons/home.svg',
-  'trending-up': 'public/nav-icons/rank.svg',
-  trophy: 'public/nav-icons/trophy.svg',
-  mail: 'public/nav-icons/letter.svg',
-  user: 'public/nav-icons/my.svg',
+  // Nav (BottomNav 5 탭). 색은 `currentColor` 일괄 치환 — CSS color 로 active
+  // (primary) / off (disabled) 동적 변경.
+  home: 'public/icon-sources/nav/home.svg',
+  'trending-up': 'public/icon-sources/nav/rank.svg',
+  trophy: 'public/icon-sources/nav/trophy.svg',
+  mail: 'public/icon-sources/nav/letter.svg',
+  user: 'public/icon-sources/nav/my.svg',
+  // BottomModal (ProfileCard 카메라 / 갤러리). profile 은 nav user 와 동일 path
+  // 라 별도 override 불필요 (`user` 키 재사용).
+  camera: 'public/icon-sources/bottom-modal/camera.svg',
+  image: 'public/icon-sources/bottom-modal/photo.svg',
+  // DetailIcon — POI 상세 / badge (Figma detailIcon spec).
+  // `location` (map-pin 과 비율 다름), `compass`, `clock`, `calendar`,
+  // `parking`, `globe`, `ticket` = primary stroke icon.
+  // `award` = detail trophy (BottomNav trophy 와 디자인 다름 → 별도 key).
+  // `heart-fill` = fill 디자인 (Lucide stroke heart 와 별도 key).
+  // primary/white/muted/danger 색은 currentColor 변환으로 CSS 에서 동적 적용.
+  location: 'public/icon-sources/detail/location.svg',
+  compass: 'public/icon-sources/detail/compass.svg',
+  clock: 'public/icon-sources/detail/clock.svg',
+  calendar: 'public/icon-sources/detail/calendar.svg',
+  parking: 'public/icon-sources/detail/parking.svg',
+  globe: 'public/icon-sources/detail/globe.svg',
+  ticket: 'public/icon-sources/detail/ticket.svg',
+  award: 'public/icon-sources/detail/trophy.svg',
+  'heart-fill': 'public/icon-sources/detail/heart.svg',
+  // CircleIcon (큰 일러스트 — EmptyState hero 사용. size 36/46 path 비율 동일).
+  // `letter-large` (frame 16.67 vs nav letter 20.83 다름), `location-large`
+  // (detail location 과 inside circle 위치 미세 다름), `heart-large` (detail
+  // heart-fill 과 padding 다름), `trophy-large` (detail award 와 비율 다름).
+  // `noti` = fill bell (Lucide stroke bell 과 별도 key).
+  'circle-check': 'public/icon-sources/circle/check.svg',
+  'letter-large': 'public/icon-sources/circle/letter.svg',
+  lock: 'public/icon-sources/circle/lock.svg',
+  'location-large': 'public/icon-sources/circle/location.svg',
+  noti: 'public/icon-sources/circle/noti.svg',
+  'heart-large': 'public/icon-sources/circle/heart.svg',
+  'trophy-large': 'public/icon-sources/circle/trophy.svg',
+  // HeaderIcon — `settings-figma` (Lucide settings 와 Vector 구성 다름),
+  // `back` (Lucide chevron-left 는 ← path, Figma 는 rect 45도 rotated 디자인).
+  'settings-figma': 'public/icon-sources/header/setting.svg',
+  back: 'public/icon-sources/header/back.svg',
+  // UI state — bookmark / checkbox / eye 의 on/off 별도 path (CSS variant 보다
+  // sprite key 분리가 간단). color 는 currentColor 동적.
+  'bookmark-on': 'public/icon-sources/ui/bookmark-on.svg',
+  'bookmark-off': 'public/icon-sources/ui/bookmark-off.svg',
+  'checkbox-on': 'public/icon-sources/ui/checkbox-on.svg',
+  'checkbox-off': 'public/icon-sources/ui/checkbox-off.svg',
+  'eye-on': 'public/icon-sources/ui/eye-on.svg',
+  'eye-off': 'public/icon-sources/ui/eye-off.svg',
 };
 
-// SVG 안 hardcoded 색 (off/on) → currentColor 치환 패턴.
-const COLOR_PATTERN = /#B4B4B4|#00B334|#151515|#393939/gi;
+// SVG 안 hardcoded 색 (primary/muted/disabled/white/danger) → currentColor 치환.
+// stroke 와 fill 양쪽 모두 적용 (heart 는 fill 디자인).
+// `white` (named) 와 `#FFFFFF` 양쪽 매칭 — Figma export 패턴 호환.
+const COLOR_PATTERN = /#B4B4B4|#00B334|#151515|#393939|#E1493C|#FFFFFF|\bwhite\b/gi;
 
 function extractInner(svgString) {
   // <svg ...>...</svg> 에서 내부 자식만 추출 (path/circle/line 등)

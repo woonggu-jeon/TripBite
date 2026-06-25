@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Trophy, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import { ROUTES } from '@/constants/routes';
 import { getCurrentSeason } from '@/features/tournament/utils/season';
 import type { Season } from '@/api/generated/schemas';
@@ -40,7 +41,7 @@ export function HomeQuickActions() {
         aria-label={t(`tournamentBySeason.${season}`)}
       >
         <span className={`${styles.qaCircle} ${styles.qaCirclePrimary}`}>
-          <Trophy size={22} aria-hidden />
+          <Icon name="award" size={22} />
         </span>
         <span className={styles.qaText}>
           <span className={styles.qaTitle}>

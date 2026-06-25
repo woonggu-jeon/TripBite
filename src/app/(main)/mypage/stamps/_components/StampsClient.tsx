@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { MapPin } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
@@ -42,7 +42,7 @@ export function StampsClient() {
     return (
       <div className={styles.wrap}>
         <EmptyState
-          icon={<MapPin size={28} aria-hidden />}
+          icon={<Icon name="location-large" size={28} />}
           title={t('error')}
           action={
             <Button variant="secondary" size="sm" onClick={() => refetch()}>

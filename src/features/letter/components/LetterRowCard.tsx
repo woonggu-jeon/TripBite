@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Bookmark, User } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import { useTranslations } from 'next-intl';
 import { useDebouncedCallback } from '@/hooks/use-debounced-callback';
 import { haptic } from '@/lib/haptic';
@@ -91,7 +91,7 @@ export function LetterRowCard({ letter }: { letter: LetterDto }) {
           (사용자 명시 2026-06-24 — pill 형태 NEW 아니라 dot). */}
       <span className={styles.avatarWrap} aria-hidden>
         <span className={styles.avatar}>
-          <User size={24} strokeWidth={1.6} />
+          <Icon name="user" size={24} />
         </span>
         {isUnread && <span className={styles.unread} />}
       </span>
@@ -117,11 +117,7 @@ export function LetterRowCard({ letter }: { letter: LetterDto }) {
         aria-label={savedLocal ? t('detail.saved') : t('detail.save')}
         aria-pressed={savedLocal}
       >
-        <Bookmark
-          size={22}
-          fill={savedLocal ? 'currentColor' : 'none'}
-          aria-hidden
-        />
+        <Icon name={savedLocal ? 'bookmark-on' : 'bookmark-off'} size={22} />
       </button>
     </Link>
   );

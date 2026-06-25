@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Trophy } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import { SkeletonList } from '@/components/feedback/SkeletonList';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { Button } from '@/components/ui';
@@ -53,7 +53,7 @@ export function RankingPageContent() {
             </span>
           </div>
           <div className={styles.emptyCircle} aria-hidden>
-            <Trophy size={40} strokeWidth={2.5} />
+            <Icon name="trophy-large" size={40} />
           </div>
           <div className={styles.emptyText}>
             <p className={styles.emptyTextTitle}>{t('emptyPopular.heading')}</p>

@@ -2,26 +2,22 @@
 
 import { useState } from 'react';
 import type { Season } from '@/api/generated/schemas';
+import { SeasonIcon } from '@/components/ui/SeasonIcon';
 import styles from './FallingPetals.module.scss';
 
 /**
- * 계절별 파티클 layer (절대 위치 오버레이)
+ * 계절별 파티클 layer (절대 위치 오버레이) — PNG SeasonIcon 사용 (사용자
+ * 명시 2026-06-25, emoji → PNG 교체).
  *
- *   봄 → 🌸 벚꽃잎 (천천히 흔들리며)
- *   여름 → 💧 빗방울 (빠르게 직선)
- *   가을 → 🍂 낙엽 (느리게 회전)
- *   겨울 → ❄️ 눈송이 (가장 천천히, 부드럽게)
+ *   봄 → 벚꽃잎 (천천히 흔들리며)
+ *   여름 → 물방울 (빠르게 직선)
+ *   가을 → 낙엽 (느리게 회전)
+ *   겨울 → 눈송이 (가장 천천히, 부드럽게)
  *
  * 부모가 position: relative 인 한 inset:0 으로 채움. pointer-events: none.
- * prefers-reduced-motion 사용자에겐 정적 표시.
+ * prefers-reduced-motion 사용자에겐 정적 표시. random scale 은 wrapper 의
+ * `--scale` CSS variable → keyframe transform 안에서 합성.
  */
-
-const GLYPH: Record<Season, string> = {
-  spring: '🌸',
-  summer: '💧',
-  autumn: '🍂',
-  winter: '❄️',
-};
 
 interface Particle {
   left: number;
@@ -70,12 +66,12 @@ export function FallingPetals({
             left: `${p.left}%`,
             animationDelay: `${p.delay}s`,
             animationDuration: `${p.duration}s`,
-            fontSize: `${p.size}rem`,
+            ['--scale' as string]: p.size,
             ['--sway' as string]: `${p.sway}px`,
             ['--rot' as string]: `${p.rotateStart}deg`,
           }}
         >
-          {GLYPH[season]}
+          <SeasonIcon season={season} size={36} />
         </span>
       ))}
     </div>

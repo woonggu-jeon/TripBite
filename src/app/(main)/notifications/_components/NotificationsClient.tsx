@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Mail, Heart, Trophy, Bell, ShieldAlert, Send } from 'lucide-react';
+import { Icon, type IconName } from '@/components/icon/Icon';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
@@ -24,7 +24,30 @@ import type {
   AppNotificationDto,
   AppNotificationType,
 } from '@/api/generated/schemas';
+import { relativeTimeToken } from '@/lib/relative-time';
 import styles from './NotificationsClient.module.scss';
+
+/**
+ * 알림 createdAt → "방금 전 / N분 전 / N시간 전 / N일 전" 라벨. letter 와
+ * 동일 i18n 키 (`letter.relativeTime`) 재사용 — 메시지 내용 동일 (한국어 의미상
+ * 공통). 별도 `notification.relativeTime` 도입 가능하나 키 중복 회피.
+ */
+function useRelativeTime(iso: string): string {
+  const t = useTranslations('letter.relativeTime');
+  const tok = relativeTimeToken(iso);
+  switch (tok.kind) {
+    case 'justNow':
+      return t('justNow');
+    case 'minutes':
+      return t('minutesAgo', { n: tok.value });
+    case 'hours':
+      return t('hoursAgo', { n: tok.value });
+    case 'days':
+      return t('daysAgo', { n: tok.value });
+    case 'date':
+      return new Date(iso).toLocaleDateString();
+  }
+}
 
 const PUSH_PROMPT_DISMISS_KEY = 'tripbite.push-prompt.dismissed';
 
@@ -32,15 +55,15 @@ const PUSH_PROMPT_DISMISS_KEY = 'tripbite.push-prompt.dismissed';
  * type 별 아이콘 매핑.
  * unknown type 은 `?? Bell` 로 fallback (스키마 확장 전 BE 응답 호환).
  */
-const TYPE_ICON: Record<AppNotificationType, typeof Mail> = {
-  'letter.received': Mail,
-  'letter.liked': Heart,
+const TYPE_ICON: Record<AppNotificationType, IconName> = {
+  'letter.received': 'mail',
+  'letter.liked': 'heart-fill',
   // 보낸 편지가 누군가에게 도착 완료 — 발신자에게 알림.
-  'letter.delivered': Send,
-  'tournament.shared': Trophy,
+  'letter.delivered': 'send',
+  'tournament.shared': 'award',
   // 충북 마스터 달성 / 우승지 저장 한도 등은 BE 가 event type + 차별화된 link 로 발행.
-  event: Bell,
-  security: ShieldAlert,
+  event: 'bell',
+  security: 'shield-alert',
 };
 
 export function NotificationsClient() {
@@ -65,7 +88,7 @@ export function NotificationsClient() {
         <SubHeader title={t('title')} />
         <div className={styles.wrap}>
           <EmptyState
-            icon={<Bell size={28} aria-hidden />}
+            icon={<Icon name="noti" size={28} />}
             title={t('error')}
             action={
               <Button variant="secondary" size="sm" onClick={() => refetch()}>
@@ -129,7 +152,7 @@ export function NotificationsClient() {
               // (84 circle + primary-soft bg + primary 38 Bell + Body B_16).
               <EmptyState
                 variant="hero"
-                icon={<Bell size={38} aria-hidden />}
+                icon={<Icon name="noti" size={36} />}
                 title={t('empty')}
               />
             }
@@ -221,12 +244,34 @@ function Item({
   n: AppNotificationDto;
   onSelect: () => void;
 }) {
-  const Icon = TYPE_ICON[n.type] ?? Bell;
-  const message = n.body ?? n.title;
+  const iconName = TYPE_ICON[n.type] ?? 'bell';
+  const time = useRelativeTime(n.createdAt);
   const body = (
-    <div className={`${styles.item} ${!n.read ? styles.unread : ''}`}>
-      <Icon size={18} className={styles.icon} aria-hidden />
-      <div className={styles.itemMessage}>{message}</div>
+    <div className={styles.alrow}>
+      {/* Figma "notiCircle" 44×44 — unread: bg primary-soft + primary icon +
+          top-left dot badge. read: bg gray + disabled icon. */}
+      <span
+        className={`${styles.notiCircle} ${n.read ? styles.notiCircleRead : styles.notiCircleUnread}`}
+        aria-hidden
+      >
+        <Icon name={iconName} size={22} />
+        {!n.read && <span className={styles.notiDot} />}
+      </span>
+      <div className={styles.mid}>
+        <h3
+          className={`${styles.midTitle} ${n.read ? styles.midTitleRead : ''}`}
+        >
+          {n.title}
+        </h3>
+        {n.body && (
+          <p
+            className={`${styles.midBody} ${n.read ? styles.midBodyRead : ''}`}
+          >
+            {n.body}
+          </p>
+        )}
+      </div>
+      <time className={styles.time}>{time}</time>
     </div>
   );
 

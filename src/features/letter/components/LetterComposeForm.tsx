@@ -5,7 +5,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { MapPin, Check } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import {
   letterSchema,
   type LetterFormValues,
@@ -194,12 +194,10 @@ export function LetterComposeForm() {
                   name={field.name}
                   className={styles.anonNative}
                 />
-                <span
-                  className={`${styles.anonBox} ${field.value ? styles.anonChecked : ''}`}
-                  aria-hidden
-                >
-                  {field.value && <Check size={14} strokeWidth={3} />}
-                </span>
+                <Icon
+                  name={field.value ? 'checkbox-on' : 'checkbox-off'}
+                  size={20}
+                />
                 <span className={styles.anonLabel}>{t('anonymous')}</span>
               </label>
             )}
@@ -209,12 +207,7 @@ export function LetterComposeForm() {
               12 row. MapPin 20 primary + lm (column gap 3 — caption 위치명 +
               B_14 fg 라벨) + lbg pill primary-soft "위치 첨부". */}
           <div className={styles.locCard}>
-            <MapPin
-              size={20}
-              strokeWidth={1.4}
-              className={styles.locIcon}
-              aria-hidden
-            />
+            <Icon name="location" size={20} className={styles.locIcon} />
             <div className={styles.locMid}>
               {resolved ? (
                 <>

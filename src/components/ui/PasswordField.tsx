@@ -1,8 +1,8 @@
 'use client';
 
 import { forwardRef, useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { Icon } from '@/components/icon/Icon';
 import { TextField, type TextFieldProps } from './TextField';
 import styles from './PasswordField.module.scss';
 
@@ -29,7 +29,6 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
   function PasswordField(props, ref) {
     const t = useTranslations('common');
     const [visible, setVisible] = useState(false);
-    const Icon = visible ? EyeOff : Eye;
 
     return (
       <TextField
@@ -43,9 +42,9 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
             aria-pressed={visible}
             onClick={() => setVisible((v) => !v)}
           >
-            {/* Figma "IC-20px" (PasswordField password type 의 trailing icon)
-                — 20x20 visual 정합. button click 영역은 44 (touch target). */}
-            <Icon size={20} aria-hidden />
+            {/* Figma "IC-20px" — visible 시 eye-on (muted), hidden 시 eye-off
+                (disabled). path 동일, currentColor 동적 색. */}
+            <Icon name={visible ? 'eye-on' : 'eye-off'} size={20} />
           </button>
         }
         {...props}

@@ -2,8 +2,8 @@
 
 import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui';
+import { Icon } from '@/components/icon/Icon';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import styles from './SegmentError.module.scss';
 
@@ -33,7 +33,7 @@ export function SegmentError({
     <div className={styles.wrap}>
       <EmptyState
         variant="hero"
-        icon={<AlertCircle size={40} strokeWidth={1.6} aria-hidden />}
+        icon={<Icon name="alert-circle" size={36} />}
         title={t('errors.generic')}
         description={t('errors.tryAgainLater')}
         action={

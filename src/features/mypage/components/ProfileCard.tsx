@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { Camera, Compass, ImagePlus, Trash2, User } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
+import { Icon } from '@/components/icon/Icon';
 import { useMe } from '@/features/auth/hooks/use-auth';
 import {
   useMypage,
@@ -134,7 +135,7 @@ export function ProfileCard() {
                 />
               ) : (
                 <span className={styles.avatarFallback} aria-hidden>
-                  <User size={27} strokeWidth={1.9} />
+                  <Icon name="user" size={27} />
                 </span>
               )}
             </span>
@@ -148,7 +149,7 @@ export function ProfileCard() {
             onClick={onPick}
             aria-label={t('changeAvatar')}
           >
-            <Camera size={12} aria-hidden />
+            <Icon name="camera" size={12} />
           </button>
         </div>
         <input
@@ -182,7 +183,7 @@ export function ProfileCard() {
             role="status"
             aria-label={t('badgeAria')}
           >
-            <Compass size={13} className={styles.badgeIcon} aria-hidden />
+            <Icon name="compass" size={13} className={styles.badgeIcon} />
             <span className={styles.badgeLabel}>{badgeLabel}</span>
           </span>
         </div>
@@ -201,7 +202,7 @@ export function ProfileCard() {
           onClick={triggerCamera}
         >
           <span className={styles.sheetOptionIcon} aria-hidden>
-            <Camera size={22} strokeWidth={1.65} />
+            <Icon name="camera" size={22} />
           </span>
           <span className={styles.sheetOptionLabel}>
             {t('sheetOptionCamera')}
@@ -213,7 +214,7 @@ export function ProfileCard() {
           onClick={triggerGallery}
         >
           <span className={styles.sheetOptionIcon} aria-hidden>
-            <ImagePlus size={22} strokeWidth={1.65} />
+            <Icon name="image" size={22} />
           </span>
           <span className={styles.sheetOptionLabel}>
             {t('sheetOptionGallery')}
