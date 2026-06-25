@@ -1,13 +1,16 @@
 'use client';
 
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Mail } from 'lucide-react';
+import { Mail, User } from 'lucide-react';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { Button } from '@/components/ui';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { useLetter } from '@/features/letter/hooks/use-letters';
+import { useMe } from '@/features/auth/hooks/use-auth';
 import { LetterActions } from '@/features/letter/components/LetterActions';
+import { secureImageUrl } from '@/lib/secure-image-url';
 import styles from './LetterDetailClient.module.scss';
 
 /**
@@ -27,15 +30,14 @@ import styles from './LetterDetailClient.module.scss';
  *   - LetterActions absolute bottom 20.
  */
 
+// "2024.05.12 도착" 형식 — date only + dateLabel suffix.
 function formatKoreanDate(iso: string): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
-  const hh = String(d.getHours()).padStart(2, '0');
-  const mm = String(d.getMinutes()).padStart(2, '0');
-  return `${y}.${m}.${day} ${hh}:${mm}`;
+  return `${y}.${m}.${day}`;
 }
 
 export function LetterDetailClient({ letterId }: { letterId: string }) {
@@ -43,6 +45,7 @@ export function LetterDetailClient({ letterId }: { letterId: string }) {
   const t = useTranslations('letter.detail');
   const tAuthor = useTranslations('letter.author');
   const { data: letter, isLoading, isError, refetch } = useLetter(letterId);
+  const { data: me } = useMe();
 
   if (isLoading) {
     return (
@@ -88,6 +91,12 @@ export function LetterDetailClient({ letterId }: { letterId: string }) {
   const senderName = letter.author.nickname || tAuthor('anonymous');
   const senderLocation = letter.author.location;
   const arrivedAt = formatKoreanDate(letter.arrivedAt ?? letter.createdAt);
+  // 받는 사람 (To) = 본인 닉네임. BE author.avatarUrl 미제공 → sender 프로필
+  // 이미지는 sq 안 User icon fallback (사용자 명시 2026-06-25).
+  const myNickname = me?.nickname ?? tAuthor('anonymous');
+  const senderAvatarSrc = secureImageUrl(
+    (letter.author as { avatarUrl?: string }).avatarUrl,
+  );
 
   return (
     <div className={styles.wrap}>
@@ -109,13 +118,29 @@ export function LetterDetailClient({ letterId }: { letterId: string }) {
           <article className={styles.card} aria-label={t('letterAria')}>
             <div className={styles.top}>
               <div className={styles.pw} aria-hidden>
+                {/* sq — sender 프로필 (BE author.avatarUrl 추가 시 자동
+                    image, 현재 User icon fallback). */}
                 <span className={styles.sq}>
-                  <span className={styles.sqChar}>
-                    {Array.from(letter.body)[0] ?? ''}
-                  </span>
+                  {senderAvatarSrc ? (
+                    <Image
+                      src={senderAvatarSrc}
+                      alt=""
+                      fill
+                      sizes="60px"
+                      className={styles.sqImage}
+                    />
+                  ) : (
+                    <User
+                      size={28}
+                      strokeWidth={1.6}
+                      className={styles.sqIcon}
+                      aria-hidden
+                    />
+                  )}
                 </span>
+                {/* Figma pm — "도착\n여행한입" 멀티라인 도장. */}
                 <span className={styles.pm}>
-                  <span className={styles.pmTitle}>{t('stampTitle')}</span>
+                  <span className={styles.pmMain}>{t('stampMain')}</span>
                   <span className={styles.pmSub}>{t('stampSub')}</span>
                 </span>
               </div>
@@ -147,14 +172,18 @@ export function LetterDetailClient({ letterId }: { letterId: string }) {
 
             <div className={styles.div} aria-hidden />
 
+            {/* footer = To (수신자 = 본인). 사용자 명시 2026-06-25:
+                - 좌측 라벨 "To" (B_10 disabled)
+                - 우측 본인 닉네임 (B_14 fg)
+                - 아래: yyyy.MM.dd + "도착" (R_12 disabled right). */}
             <div className={styles.footer}>
               <div className={styles.footerRow}>
-                <span className={styles.footerStar} aria-hidden>
-                  ✦
-                </span>
-                <span className={styles.footerLabel}>{t('toYou')}</span>
+                <span className={styles.footerStar}>{t('to')}</span>
+                <span className={styles.footerLabel}>{myNickname}</span>
               </div>
-              <span className={styles.footerNote}>{arrivedAt}</span>
+              <span className={styles.footerNote}>
+                {arrivedAt} {t('dateLabel')}
+              </span>
             </div>
           </article>
 
