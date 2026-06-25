@@ -21,6 +21,7 @@
     "submit": "Submit",
     "submitting": "Processing...",
     "tryAgain": "Try again",
+    "mapFetchError": "Couldn't load the map.",
     "share": "Share",
     "shareLinkCopied": "Link copied to clipboard",
     "shareImageCopied": "Image copied. Paste it in chat.",

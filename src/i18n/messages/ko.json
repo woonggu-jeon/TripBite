@@ -21,6 +21,7 @@
     "submit": "제출",
     "submitting": "처리 중...",
     "tryAgain": "다시 시도",
+    "mapFetchError": "지도를 불러오지 못했어요.",
     "share": "공유",
     "shareLinkCopied": "링크가 복사되었어요",
     "shareImageCopied": "이미지가 복사되었어요. 채팅창에 붙여넣어 주세요.",

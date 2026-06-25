@@ -4,6 +4,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useTournamentStore } from '@/features/tournament/store/tournament-store';
 import {
+  TOURNAMENT_SIZE_OPTIONS,
+  type TournamentCount,
+} from '@/features/tournament/types';
+import {
   useDestinationDetail,
   useSaveTournament,
   useTournamentRecord,
@@ -36,21 +40,36 @@ export function TournamentResultClient() {
 
   const recordQuery = useTournamentRecord(recordId);
 
-  const storeWinner = useTournamentStore((s) => s.winner);
-  const storeRunnerUp = useTournamentStore((s) => s.runnerUp);
-  const storeMatchesPlayed = useTournamentStore((s) => s.matchesPlayed);
-  const storeTournamentSize = useTournamentStore(
-    (s) => s.config?.tournamentSize,
-  );
-  const storeSeason = useTournamentStore((s) => s.config?.theme.value);
+  // 5개 분산 selector → 단일 selector + 객체 통합 (자율 검토 2026-06-25 — 매번
+  // store 변경 시 5번 re-render 가능성 → 1번). reset 은 action 이라 별도 selector.
+  const {
+    storeWinner,
+    storeRunnerUp,
+    storeMatchesPlayed,
+    storeTournamentSize,
+    storeSeason,
+  } = useTournamentStore((s) => ({
+    storeWinner: s.winner,
+    storeRunnerUp: s.runnerUp,
+    storeMatchesPlayed: s.matchesPlayed,
+    storeTournamentSize: s.config?.tournamentSize,
+    storeSeason: s.config?.theme.value,
+  }));
   const reset = useTournamentStore((s) => s.reset);
 
   const record = recordQuery.data;
   const winner = record?.winner ?? storeWinner;
   const runnerUp = record?.runnerUp ?? storeRunnerUp;
   const matchesPlayed = record?.matchesPlayed ?? storeMatchesPlayed;
-  const tournamentSize = (record?.tournamentSize ??
-    storeTournamentSize) as typeof storeTournamentSize;
+  // BE record.tournamentSize 는 number, store 는 TournamentCount union.
+  // TOURNAMENT_SIZE_OPTIONS 로 type guard — `as` cast 우회 회피 (자율 검토
+  // 2026-06-25).
+  const recSize = record?.tournamentSize;
+  const tournamentSize: TournamentCount | undefined =
+    recSize != null &&
+    (TOURNAMENT_SIZE_OPTIONS as readonly number[]).includes(recSize)
+      ? (recSize as TournamentCount)
+      : storeTournamentSize;
 
   const save = useSaveTournament();
   const requireAuth = useRequireAuth();

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import styles from './ChungbukStampMap.module.scss';
 
@@ -31,6 +32,7 @@ export function ChungbukStampMap({
   visited: ReadonlySet<RegionCode>;
   onRegionClick?: (code: RegionCode) => void;
 }) {
+  const tCommon = useTranslations('common');
   const [svg, setSvg] = useState<string | null>(null);
   const [fetchError, setFetchError] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -181,7 +183,7 @@ export function ChungbukStampMap({
             margin: 'auto',
           }}
         >
-          지도를 불러오지 못했어요.
+          {tCommon('mapFetchError')}
         </p>
       </div>
     );

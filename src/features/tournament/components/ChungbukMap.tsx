@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import { haptic } from '@/lib/haptic';
 import type { DestinationDto } from '@/api/generated/schemas';
@@ -104,6 +105,7 @@ export function ChungbukMap({
   onReady,
   onRegionClick,
 }: ChungbukMapProps) {
+  const tCommon = useTranslations('common');
   // ⚠ useState initializer 로 두면 destinations prop 이 refetch 등으로 바뀌어도
   // mount 시점 값만 유지돼 시각이 그대로 — 다시하기 버튼이 무동작처럼 보임.
   // useMemo 로 destinations 변경 시 즉시 재계산.
@@ -309,7 +311,7 @@ export function ChungbukMap({
               color: 'var(--color-muted)',
             }}
           >
-            지도를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
+            {tCommon('mapFetchError')}
           </p>
         </div>
       ) : (
