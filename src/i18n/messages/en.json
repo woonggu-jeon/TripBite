@@ -22,6 +22,8 @@
     "submitting": "Processing...",
     "tryAgain": "Try again",
     "mapFetchError": "Couldn't load the map.",
+    "mapAriaLabel": "Chungbuk map",
+    "stampMapAriaLabel": "Chungbuk 11 region stamp book",
     "share": "Share",
     "shareLinkCopied": "Link copied to clipboard",
     "shareImageCopied": "Image copied. Paste it in chat.",

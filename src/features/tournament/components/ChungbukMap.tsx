@@ -321,7 +321,7 @@ export function ChungbukMap({
           // SVG 는 우리 정적 파일(public/images/chungbuk-final-map.svg) 이라 신뢰 가능.
           // 내장 <style> 만 제거하고 path/text 가 외부 CSS 로 cascade 되도록.
           dangerouslySetInnerHTML={{ __html: svg ?? '' }}
-          aria-label="충청북도 지도"
+          aria-label={tCommon('mapAriaLabel')}
         />
       )}
 

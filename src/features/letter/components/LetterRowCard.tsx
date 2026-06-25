@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Icon } from '@/components/icon/Icon';
 import { useTranslations } from 'next-intl';
@@ -46,7 +46,11 @@ function useRelativeTimeLabel(iso: string): string {
   }
 }
 
-export function LetterRowCard({ letter }: { letter: LetterDto }) {
+/**
+ * React.memo 적용 — InfiniteList (LetterListPanel) 안 다수 인스턴스. 부모
+ * re-render 시 letter prop 동일하면 재렌더 skip → 자율 검토 2026-06-25.
+ */
+function LetterRowCardInner({ letter }: { letter: LetterDto }) {
   const t = useTranslations('letter');
   const time = useRelativeTimeLabel(letter.arrivedAt ?? letter.createdAt);
   const isUnread = !letter.isMine && letter.read === false;
@@ -122,3 +126,5 @@ export function LetterRowCard({ letter }: { letter: LetterDto }) {
     </Link>
   );
 }
+
+export const LetterRowCard = memo(LetterRowCardInner);

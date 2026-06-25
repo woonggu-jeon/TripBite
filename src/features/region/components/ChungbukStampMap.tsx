@@ -195,7 +195,7 @@ export function ChungbukStampMap({
       // SVG 는 신뢰 가능한 자체 static asset
       dangerouslySetInnerHTML={{ __html: svg ?? '' }}
       role="group"
-      aria-label="충북 11개 시군 도장책"
+      aria-label={tCommon('stampMapAriaLabel')}
     />
   );
 }

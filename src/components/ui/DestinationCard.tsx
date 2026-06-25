@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import type { ComponentProps, ReactNode } from 'react';
+import { memo, type ComponentProps, type ReactNode } from 'react';
 import { Icon } from '@/components/icon/Icon';
 import { MediaThumb } from './MediaThumb';
 import styles from './DestinationCard.module.scss';
@@ -63,7 +63,12 @@ interface DestinationCardProps {
  * 톤은 시군 코드 → tone 매핑 (constants/region-tone.ts). 톤별 accent 색은
  * 전역 --accent-{tone} 토큰.
  */
-export function DestinationCard({
+/**
+ * React.memo 적용 — InfiniteList 안 다수 인스턴스 (HomeRecBlock / RelatedDestinations
+ * / TravelTypeResult / SavedTournamentCard 등). 부모 re-render 시 props 동일하면
+ * 재렌더 skip → 자율 검토 2026-06-25.
+ */
+function DestinationCardInner({
   href,
   imageUrl,
   emoji,
@@ -121,3 +126,5 @@ export function DestinationCard({
     </Link>
   );
 }
+
+export const DestinationCard = memo(DestinationCardInner);
