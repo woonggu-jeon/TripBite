@@ -561,15 +561,18 @@ function renderQuiz(
           gap: 18,
         }}
       >
-        <BrandLogo width={54} ariaHidden style={{ display: 'block' }} />
+        {/* footer — master/tournament 와 동일 spec 통일 (사용자 명시 2026-06-25):
+            BrandLogo 84 + Title B_18 fg (fontSize 54 / Bold 700 / #151515 /
+            lineHeight 1.4). 직전 quiz 만 13ExtraBold primary 였던 회귀 정정. */}
+        <BrandLogo width={84} ariaHidden style={{ display: 'block' }} />
         <div
           style={{
             display: 'flex',
-            fontSize: 39,
+            fontSize: 54,
             fontWeight: 700,
-            color: '#00B334',
+            color: '#151515',
             letterSpacing: '-0.02em',
-            lineHeight: 1.23,
+            lineHeight: 1.4,
           }}
         >
           여행 한입
