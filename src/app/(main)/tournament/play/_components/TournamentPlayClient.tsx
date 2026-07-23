@@ -94,6 +94,10 @@ export function TournamentPlayClient() {
           runnerUpId: pendingResult.runnerUp?.id ?? null,
           matchesPlayed: pendingResult.matchesPlayed,
           tournamentSize: config?.tournamentSize ?? 0,
+          // 신규 BE recordTournament 는 winnerName 필수 + region/category.
+          winnerName: pendingResult.winner.name,
+          region: pendingResult.winner.region,
+          category: pendingResult.winner.category,
         });
         recordId = record.id;
       } catch {

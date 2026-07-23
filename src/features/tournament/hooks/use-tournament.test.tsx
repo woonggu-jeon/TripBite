@@ -162,14 +162,20 @@ describe('useUnsaveTournament — optimistic remove + rollback', () => {
 
 describe('useRecordTournament', () => {
   it('성공 시 record cache set + history invalidate', async () => {
-    const recordId = 'rec-1';
+    const recordId = 4242;
+    // 신규 Spring BE: POST /mypage/tournament-history → ApiResponse<TournamentSummaryDto>.
     server.use(
-      http.post(`${apiUrl}/tournaments`, () =>
+      http.post(`${apiUrl}/mypage/tournament-history`, () =>
         HttpResponse.json({
-          id: recordId,
-          winner: { id: 'd-1', name: '우승지', region: 'cheongju' },
-          runnerUp: null,
-          matchesPlayed: 3,
+          success: true,
+          message: null,
+          data: {
+            id: recordId,
+            winnerName: '우승지',
+            tournamentSize: 8,
+            category: 'attraction',
+            completedAt: '2026-06-19T00:00:00Z',
+          },
         }),
       ),
     );
@@ -187,11 +193,12 @@ describe('useRecordTournament', () => {
         runnerUpId: null,
         matchesPlayed: 3,
         tournamentSize: 8,
+        winnerName: '우승지',
       });
     });
 
     // record cache 에 직접 set (refetch 없이 deep-link 진입 즉시 사용)
-    const cached = qc.getQueryData(tournamentKeys.record(recordId));
+    const cached = qc.getQueryData(tournamentKeys.record(String(recordId)));
     expect(cached).toBeDefined();
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: tournamentKeys.history(),
@@ -201,15 +208,18 @@ describe('useRecordTournament', () => {
   it('Idempotency-Key 헤더 전송 (BE dedup — 랭킹 이중 카운트 방지)', async () => {
     let capturedKey: string | null = null;
     server.use(
-      http.post(`${apiUrl}/tournaments`, ({ request }) => {
+      http.post(`${apiUrl}/mypage/tournament-history`, ({ request }) => {
         capturedKey = request.headers.get('Idempotency-Key');
         return HttpResponse.json({
-          id: 'rec-idem',
-          winner: { id: 'd-1', name: '우승지', region: 'cheongju' },
-          runnerUp: null,
-          matchesPlayed: 3,
-          tournamentSize: 8,
-          completedAt: '2026-06-19T00:00:00Z',
+          success: true,
+          message: null,
+          data: {
+            id: 5151,
+            winnerName: '우승지',
+            tournamentSize: 8,
+            category: 'attraction',
+            completedAt: '2026-06-19T00:00:00Z',
+          },
         });
       }),
     );
@@ -221,6 +231,7 @@ describe('useRecordTournament', () => {
         runnerUpId: null,
         matchesPlayed: 3,
         tournamentSize: 8,
+        winnerName: '우승지',
       });
     });
 

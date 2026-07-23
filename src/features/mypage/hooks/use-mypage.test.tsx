@@ -63,7 +63,9 @@ describe('useMypage / useStamps — enabled: isAuthenticated 가드', () => {
 describe('useUpdateNickname', () => {
   it('성공 시 mypage summary + auth.me 양쪽 invalidate', async () => {
     server.use(
-      http.patch(`${apiUrl}/mypage/profile`, () => HttpResponse.json(mockUser)),
+      http.patch(`${apiUrl}/me`, () =>
+        HttpResponse.json({ success: true, message: null, data: mockUser }),
+      ),
     );
     const qc = new QueryClient({
       defaultOptions: { queries: { retry: false, gcTime: 0 } },

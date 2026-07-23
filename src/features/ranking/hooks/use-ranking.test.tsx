@@ -50,9 +50,20 @@ describe('useMyTravelType — enabled: isAuthenticated 가드', () => {
 
 describe('useSubmitTravelType', () => {
   it('성공 시 travelType cache 에 직접 setQueryData', async () => {
+    // 신규 Spring BE: thin TravelTypeResultDto(tags) 엔벨로프 → 어댑터가 도메인 TravelTypeDto 로 매핑.
     server.use(
       http.post(`${apiUrl}/travel-types/submit`, () =>
-        HttpResponse.json(mockTravelType),
+        HttpResponse.json({
+          success: true,
+          message: null,
+          data: {
+            code: mockTravelType.code,
+            title: mockTravelType.title,
+            emoji: mockTravelType.emoji,
+            description: mockTravelType.description,
+            tags: mockTravelType.keywords,
+          },
+        }),
       ),
     );
     const qc = new QueryClient({
@@ -64,8 +75,8 @@ describe('useSubmitTravelType', () => {
     });
     await act(async () => {
       await result.current.mutateAsync([
-        { questionId: 'q1', optionId: 'q1-a' },
-        { questionId: 'q2', optionId: 'q2-b' },
+        { questionId: '1', optionId: '1' },
+        { questionId: '2', optionId: '6' },
       ]);
     });
 
@@ -140,19 +151,31 @@ describe('useRanking + alias hooks', () => {
     expect(result.current.data).toEqual(mockRankItems);
   });
 
-  it('useWeeklyTopDestinations — type=weekly-winners 로 호출', async () => {
-    let receivedType: string | null = null;
+  it('useWeeklyTopDestinations — 신규 BE /tournaments/rankings/weekly (size 전달)', async () => {
+    let receivedSize: string | null = null;
     server.use(
-      http.get(`${apiUrl}/rankings`, ({ request }) => {
-        receivedType = new URL(request.url).searchParams.get('type');
-        return HttpResponse.json([]);
+      http.get(`${apiUrl}/tournaments/rankings/weekly`, ({ request }) => {
+        receivedSize = new URL(request.url).searchParams.get('size');
+        return HttpResponse.json({
+          success: true,
+          message: null,
+          data: {
+            items: [{ destinationId: 7, destinationName: 'W', winCount: 12 }],
+          },
+        });
       }),
     );
     const { result } = renderHookWithProviders(() =>
       useWeeklyTopDestinations(3),
     );
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(receivedType).toBe('weekly-winners');
+    expect(receivedSize).toBe('3');
+    // 어댑터가 {destinationId,destinationName,winCount} → RankedDestination 매핑.
+    expect(result.current.data?.[0]).toEqual({
+      rank: 1,
+      destination: { id: '7', name: 'W' },
+      score: 12,
+    });
   });
 
   it('useRecommendedDestinations — type=recommended 로 호출', async () => {
@@ -176,15 +199,20 @@ describe('useTravelTypeQuiz — public (auth 가드 없음)', () => {
     useAuthStore.getState().clearAuth();
   });
 
-  it('비인증이라도 fetch — quiz 응답 반환', async () => {
+  it('비인증이라도 fetch — quiz 응답 반환 (신규 BE: id number → 도메인 string)', async () => {
+    // 신규 Spring BE: ApiResponse<QuizDto>, id 는 number.
     const mockQuiz = {
-      questions: [
-        {
-          id: 'q1',
-          text: 'Q1',
-          options: [{ id: 'q1-a', text: 'A' }],
-        },
-      ],
+      success: true,
+      message: null,
+      data: {
+        questions: [
+          {
+            id: 1,
+            text: 'Q1',
+            options: [{ id: 1, text: 'A' }],
+          },
+        ],
+      },
     };
     server.use(
       http.get(`${apiUrl}/travel-types/quiz`, () =>
@@ -194,5 +222,7 @@ describe('useTravelTypeQuiz — public (auth 가드 없음)', () => {
     const { result } = renderHookWithProviders(() => useTravelTypeQuiz());
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data?.questions.length).toBe(1);
+    // 어댑터가 number id 를 string 으로 정규화.
+    expect(result.current.data?.questions[0]?.id).toBe('1');
   });
 });

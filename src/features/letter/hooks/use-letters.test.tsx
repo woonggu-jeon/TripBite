@@ -175,7 +175,11 @@ describe('useSendLetter', () => {
   it('성공 시 sent list invalidateQueries 호출', async () => {
     server.use(
       http.post(`${apiUrl}/letters`, () =>
-        HttpResponse.json(makeLetter({ id: 'l-new' })),
+        HttpResponse.json({
+          success: true,
+          message: null,
+          data: makeLetter({ id: 'l-new' }),
+        }),
       ),
     );
     const qc = new QueryClient({
@@ -203,7 +207,11 @@ describe('useSendLetter', () => {
     server.use(
       http.post(`${apiUrl}/letters`, ({ request }) => {
         capturedKey = request.headers.get('Idempotency-Key');
-        return HttpResponse.json(makeLetter({ id: 'l-idem' }));
+        return HttpResponse.json({
+          success: true,
+          message: null,
+          data: makeLetter({ id: 'l-idem' }),
+        });
       }),
     );
     const { result } = renderHookWithProviders(() => useSendLetter());
@@ -264,7 +272,11 @@ describe('enabled: isAuthenticated 가드', () => {
     server.use(
       http.get(`${apiUrl}/letters/received`, () => {
         called++;
-        return HttpResponse.json({ items: [], nextCursor: null });
+        return HttpResponse.json({
+          success: true,
+          message: null,
+          data: { items: [], nextCursor: null },
+        });
       }),
     );
     const { result } = renderHookWithProviders(() =>
@@ -330,8 +342,9 @@ describe('useLettersInfinite — kind 별 분기', () => {
     server.use(
       http.get(`${apiUrl}/letters/sent`, () =>
         HttpResponse.json({
-          items: [makeLetter()],
-          nextCursor: null,
+          success: true,
+          message: null,
+          data: { items: [makeLetter()], nextCursor: null },
         }),
       ),
     );
@@ -347,8 +360,9 @@ describe('useLettersInfinite — kind 별 분기', () => {
     server.use(
       http.get(`${apiUrl}/letters/saved`, () =>
         HttpResponse.json({
-          items: [makeLetter(), makeLetter()],
-          nextCursor: null,
+          success: true,
+          message: null,
+          data: { items: [makeLetter(), makeLetter()], nextCursor: null },
         }),
       ),
     );
@@ -364,8 +378,9 @@ describe('useLettersInfinite — kind 별 분기', () => {
     server.use(
       http.get(`${apiUrl}/letters/received`, () =>
         HttpResponse.json({
-          items: [makeLetter()],
-          nextCursor: 5, // 다음 페이지 있음
+          success: true,
+          message: null,
+          data: { items: [makeLetter()], nextCursor: 5 }, // 다음 페이지 있음
         }),
       ),
     );

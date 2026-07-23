@@ -85,7 +85,9 @@ describe('useLogin', () => {
       http.post(`${apiUrl}/auth/login`, () =>
         HttpResponse.json({ success: true }),
       ),
-      http.get(`${apiUrl}/me`, () => HttpResponse.json(mockUser)),
+      http.get(`${apiUrl}/me`, () =>
+        HttpResponse.json({ success: true, message: null, data: mockUser }),
+      ),
     );
 
     const { result } = renderHookWithProviders(() =>
@@ -107,7 +109,9 @@ describe('useLogin', () => {
       http.post(`${apiUrl}/auth/login`, () =>
         HttpResponse.json({ success: true }),
       ),
-      http.get(`${apiUrl}/me`, () => HttpResponse.json(mockUser)),
+      http.get(`${apiUrl}/me`, () =>
+        HttpResponse.json({ success: true, message: null, data: mockUser }),
+      ),
     );
 
     const { result } = renderHookWithProviders(() => useLogin());
@@ -125,7 +129,9 @@ describe('useLogin', () => {
       http.post(`${apiUrl}/auth/login`, () =>
         HttpResponse.json({ success: true }),
       ),
-      http.get(`${apiUrl}/me`, () => HttpResponse.json(mockUser)),
+      http.get(`${apiUrl}/me`, () =>
+        HttpResponse.json({ success: true, message: null, data: mockUser }),
+      ),
     );
 
     const { result } = renderHookWithProviders(() => useLogin());
@@ -154,9 +160,10 @@ describe('useSignup', () => {
   });
 
   it('가입 시 pendingSignupUser 만 설정 + router.replace("/signup/complete") — setAuth 는 시작하기 클릭 시점으로 분리', async () => {
+    // 신규 Spring BE: signup 응답은 ApiResponseUnit(user 없음) → 폼 입력값으로 pendingUser 구성.
     server.use(
       http.post(`${apiUrl}/auth/signup`, () =>
-        HttpResponse.json({ user: mockUser }),
+        HttpResponse.json({ success: true, message: null, data: {} }),
       ),
     );
 
@@ -164,13 +171,17 @@ describe('useSignup', () => {
     await result.current.mutateAsync({
       username: 'tester01',
       password: 'Abcd1234!@',
+      name: '홍길동',
+      birthDate: '1998-05-20',
       nickname: '여행자',
       email: 't@e.st',
     });
 
     await waitFor(() => {
-      // 가입 직후엔 isAuthenticated false 유지 — pendingSignupUser 만 set.
-      expect(useAuthStore.getState().pendingSignupUser?.id).toBe('u-1');
+      // 가입 직후엔 isAuthenticated false 유지 — pendingSignupUser(입력값 기반) 만 set.
+      expect(useAuthStore.getState().pendingSignupUser?.nickname).toBe(
+        '여행자',
+      );
     });
     expect(useAuthStore.getState().isAuthenticated).toBe(false);
     expect(router.replace).toHaveBeenCalledWith('/signup/complete');
@@ -322,7 +333,11 @@ describe('useMe', () => {
     server.use(
       http.get(`${apiUrl}/me`, () => {
         fetchCount += 1;
-        return HttpResponse.json(refreshed);
+        return HttpResponse.json({
+          success: true,
+          message: null,
+          data: refreshed,
+        });
       }),
     );
 

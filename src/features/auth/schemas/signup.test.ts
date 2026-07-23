@@ -3,6 +3,8 @@ import { signupSchema } from './signup';
 
 const valid = {
   username: 'tester01',
+  name: '홍길동',
+  birthDate: '1998-05-20',
   nickname: '여행자',
   password: 'Abcd1234!@',
   passwordConfirm: 'Abcd1234!@',
@@ -87,5 +89,29 @@ describe('signupSchema', () => {
       signupSchema.safeParse({ ...valid, passwordConfirm: 'Different1!@' })
         .success,
     ).toBe(false);
+  });
+
+  it('이름 특수문자/숫자 거부', () => {
+    expect(signupSchema.safeParse({ ...valid, name: '홍길동1' }).success).toBe(
+      false,
+    );
+  });
+
+  it('생년월일 형식/존재하지 않는 날짜/미래 거부', () => {
+    expect(
+      signupSchema.safeParse({ ...valid, birthDate: '1998/05/20' }).success,
+    ).toBe(false);
+    expect(
+      signupSchema.safeParse({ ...valid, birthDate: '1998-02-31' }).success,
+    ).toBe(false);
+    expect(
+      signupSchema.safeParse({ ...valid, birthDate: '2999-01-01' }).success,
+    ).toBe(false);
+  });
+
+  it('유효한 생년월일 허용', () => {
+    expect(
+      signupSchema.safeParse({ ...valid, birthDate: '2000-12-31' }).success,
+    ).toBe(true);
   });
 });

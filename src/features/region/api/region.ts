@@ -1,6 +1,7 @@
+// 신규 Spring BE 지원: ongoing-festivals. (summary/contents 는 미지원 → 구 generated mock 유지)
+import { getOngoingFestivals } from '@/api/be/region/region';
 import {
   regionControllerContentsV1,
-  regionControllerOngoingFestivalsV1,
   regionControllerSummaryV1,
 } from '@/api/generated/regions/regions';
 import type { RegionCode } from '@/constants/regions';
@@ -71,12 +72,16 @@ export const regionApi = {
     };
   },
 
-  ongoingFestivals: async (region?: RegionCode) => {
-    const res = await regionControllerOngoingFestivalsV1({ region });
+  // 신규 Spring BE: GET /regions/ongoing-festivals — region 필터 없음(충북 전체).
+  // 응답은 ApiResponse<OngoingFestivalsDto> 엔벨로프 → .data unwrap.
+  // region 인자는 호환 위해 유지하나 새 BE 는 무시 (전체 반환 후 client 미필터).
+  ongoingFestivals: async (_region?: RegionCode) => {
+    const res = await getOngoingFestivals();
+    const data = res.data;
     // imageUrl 의 http → https 정규화 (BE 안전망). type / daysToStart 등은 그대로.
     return {
-      type: res.type,
-      items: res.items.map((item) => normalizeImageField(item)),
+      type: data?.type,
+      items: (data?.items ?? []).map((item) => normalizeImageField(item)),
     };
   },
 };

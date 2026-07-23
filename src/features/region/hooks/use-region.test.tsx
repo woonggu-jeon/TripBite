@@ -70,23 +70,24 @@ describe('useRegionContents — useInfiniteList wrapping', () => {
 });
 
 describe('useOngoingFestivals', () => {
-  it('region 인자 없이 호출 시 전체 축제 fetch', async () => {
+  it('전체 축제 fetch (신규 Spring BE: ApiResponse 엔벨로프)', async () => {
     server.use(
-      http.get(`${apiUrl}/regions/ongoing-festivals`, ({ request }) => {
-        const url = new URL(request.url);
-        // region 미지정 시 query param 없음
-        expect(url.searchParams.has('region')).toBe(false);
-        return HttpResponse.json({
-          type: 'ongoing',
-          items: [
-            {
-              id: 'f-1',
-              title: '진행 중 축제',
-              imageUrl: 'https://cdn.example.com/f.jpg',
-            },
-          ],
-        });
-      }),
+      http.get(`${apiUrl}/regions/ongoing-festivals`, () =>
+        HttpResponse.json({
+          success: true,
+          message: null,
+          data: {
+            type: 'ongoing',
+            items: [
+              {
+                id: 1,
+                name: '진행 중 축제',
+                imageUrl: 'https://cdn.example.com/f.jpg',
+              },
+            ],
+          },
+        }),
+      ),
     );
 
     const { result } = renderHookWithProviders(() => useOngoingFestivals());
@@ -95,12 +96,17 @@ describe('useOngoingFestivals', () => {
     expect(result.current.data?.items.length).toBe(1);
   });
 
-  it('region 지정 시 query string 포함', async () => {
+  it('region 인자 전달돼도 새 BE 는 region query 미전송 (전체 반환)', async () => {
     server.use(
       http.get(`${apiUrl}/regions/ongoing-festivals`, ({ request }) => {
         const url = new URL(request.url);
-        expect(url.searchParams.get('region')).toBe('danyang');
-        return HttpResponse.json({ type: 'upcoming', items: [] });
+        // 신규 BE 엔드포인트는 region 파라미터를 받지 않음.
+        expect(url.searchParams.has('region')).toBe(false);
+        return HttpResponse.json({
+          success: true,
+          message: null,
+          data: { type: 'upcoming', items: [] },
+        });
       }),
     );
 

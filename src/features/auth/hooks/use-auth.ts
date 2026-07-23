@@ -11,13 +11,14 @@ import { authApi } from '@/features/auth/api/auth';
 import { useAuthStore } from '@/stores/auth-store';
 import type {
   LoginDto,
-  SignupDto,
   ForgotPasswordDto,
   ResetPasswordDto,
   ChangePasswordDto,
   FindIdDto,
   UserDto,
 } from '@/api/generated/schemas';
+// 신규 Spring BE SignupRequestDto (username/password/name/birthDate/email/phone/nickname).
+import type { SignupRequestDto as SignupInput } from '@/api/be/schemas';
 import { isAxiosError } from '@/services/interceptors/auth';
 import { clearAllCaches } from '@/lib/sw-cache';
 
@@ -98,13 +99,20 @@ export function useSignup() {
   const setPendingSignupUser = useAuthStore((s) => s.setPendingSignupUser);
 
   return useMutation({
-    mutationFn: (data: SignupDto) => authApi.signup(data),
-    onSuccess: (response) => {
-      // BE 는 atomic 처리 (Set-Cookie: SID + { user: UserDto }) — SID 는 이미
-      // browser cookie jar 에 박힘. 그러나 FE 의 setAuth / queryClient cache
-      // hydrate 는 시작하기 클릭 시점으로 분리 (가입 ≠ 로그인 흐름 명시,
-      // 사용자 요청 2026-06-19). user 는 pendingSignupUser 에 임시 보존.
-      setPendingSignupUser(response.user);
+    mutationFn: (data: SignupInput) => authApi.signup(data),
+    // 신규 Spring BE signup 응답은 ApiResponseUnit (user 없음). 세션은 BE 가 발급
+    // (mock 은 setMockSignedIn) — pendingSignupUser 는 폼 입력값으로 구성(완료 화면의
+    // 닉네임 표시용). 시작하기 클릭 후 useMe 가 /me 로 실제 프로필 hydrate.
+    onSuccess: (_response, variables) => {
+      setPendingSignupUser({
+        id: '',
+        username: variables.username ?? '',
+        nickname: variables.nickname ?? '',
+        email: variables.email ?? '',
+        isOnboarded: false,
+        avatarUrl: null,
+        travelType: null,
+      } as UserDto);
       router.replace('/signup/complete');
       router.refresh();
     },

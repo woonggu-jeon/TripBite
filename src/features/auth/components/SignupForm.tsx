@@ -73,6 +73,8 @@ export function SignupForm() {
     mode: 'onChange',
     defaultValues: {
       username: '',
+      name: '',
+      birthDate: '',
       nickname: '',
       password: '',
       passwordConfirm: '',
@@ -197,6 +199,8 @@ export function SignupForm() {
 
   const allFilled =
     !!usernameValue &&
+    !!watch('name') &&
+    !!watch('birthDate') &&
     !!watch('nickname') &&
     !!watch('password') &&
     !!watch('passwordConfirm') &&
@@ -302,6 +306,35 @@ export function SignupForm() {
             : undefined
         }
         {...register('nickname')}
+      />
+
+      {/* 신규 Spring BE SignupRequestDto: name(실명)·birthDate(생년월일) 필수. */}
+      <TextField
+        id="name"
+        type="text"
+        autoComplete="name"
+        label={t('name')}
+        placeholder={t('namePlaceholder')}
+        errorMessage={
+          errors.name
+            ? tErr(errors.name.message as Parameters<typeof tErr>[0])
+            : undefined
+        }
+        {...register('name')}
+      />
+
+      <TextField
+        id="birthDate"
+        type="date"
+        autoComplete="bday"
+        label={t('birthDate')}
+        placeholder={t('birthDatePlaceholder')}
+        errorMessage={
+          errors.birthDate
+            ? tErr(errors.birthDate.message as Parameters<typeof tErr>[0])
+            : undefined
+        }
+        {...register('birthDate')}
       />
 
       <TextField

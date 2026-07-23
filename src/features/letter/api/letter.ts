@@ -1,48 +1,75 @@
+// 신규 Spring BE 지원: 편지 전체(list/detail/like/save/delete).
+// compose(POST /letters)는 Idempotency-Key 헤더 위해 api.post 직접 호출.
+import {
+  getReceived as beGetReceived,
+  getSent as beGetSent,
+  getLiked as beGetLiked,
+  getSaved as beGetSaved,
+  getById as beGetById,
+  like as beLike,
+  save1 as beSave,
+  _delete as beDelete,
+} from '@/api/be/letter/letter';
+import type {
+  ApiResponseLetterDto,
+  LetterDto as BeLetterDto,
+  LetterPageDto as BeLetterPageDto,
+} from '@/api/be/schemas';
+// mock(문자열 복합 id) 경로용 — 실 BE 모드(정수 id)는 be/, mock 은 구 generated.
 import {
   letterControllerGetV1,
   letterControllerLikeV1,
-  letterControllerLikedV1,
-  letterControllerReceivedV1,
   letterControllerRemoveV1,
   letterControllerSaveV1,
-  letterControllerSavedV1,
-  letterControllerSentV1,
 } from '@/api/generated/letters/letters';
 import { api } from '@/services/api/client';
-import type { ComposeLetterDto, LetterDto } from '@/api/generated/schemas';
+import type {
+  ComposeLetterDto,
+  LetterDto,
+  LetterPageDto,
+} from '@/api/generated/schemas';
 
-const PAGE_LIMIT = '10';
+const PAGE_SIZE = 10;
 
-function pageParams(cursor: number) {
-  // generated Params 가 string only — number → string 변환.
-  return { cursor: String(cursor), limit: PAGE_LIMIT };
+/** 신규 BE LetterDto(id number) → 도메인 LetterDto(id string). author 기본값 보강. */
+function mapLetter(l: BeLetterDto): LetterDto {
+  return {
+    id: String(l.id ?? ''),
+    body: l.body ?? '',
+    author: {
+      nickname: l.author?.nickname ?? '',
+      location: l.author?.location ?? '',
+    },
+    arrivedAt: l.arrivedAt ?? null,
+    createdAt: l.createdAt ?? '',
+    isMine: l.isMine ?? false,
+    liked: l.liked ?? false,
+    saved: l.saved ?? false,
+    likeCount: l.likeCount ?? 0,
+    read: l.read ?? false,
+  };
+}
+
+function mapPage(p: BeLetterPageDto | null | undefined): LetterPageDto {
+  return {
+    items: (p?.items ?? []).map(mapLetter),
+    nextCursor: p?.nextCursor ?? null,
+  };
 }
 
 /**
- * 다섯글자 편지 API — orval 가 BE swagger 로 자동 생성한 client functions wrap.
+ * 다섯글자 편지 API — 신규 Spring BE(be/) 연동.
  *
- * 서버 책임:
- *   - 본인 제외 1명에게 1회 매칭 (작성 후 15~60분 랜덤 지연)
- *   - 미저장 편지 3일 후 자동 삭제
+ * 서버 책임: 본인 제외 1명 매칭(작성 후 랜덤 지연), 미저장 편지 자동 삭제.
  *
- * 엔드포인트:
- *   POST   /letters                  — 작성 (ComposeLetterDto)
- *   GET    /letters/{received|sent|liked|saved}?cursor=&limit=  → LetterPageDto
- *   GET    /letters/:id              → LetterDto
- *   POST   /letters/:id/like         → LetterDto (토글)
- *   POST   /letters/:id/save         → LetterDto (토글)
- *   DELETE /letters/:id              → 204
+ * id 정책("실 BE 모드만 정수"): detail/like/save/remove 는 숫자 id → be/,
+ * 문자열(mock seed) → 구 generated. list/compose 는 항상 be/(엔벨로프).
  */
 export const letterApi = {
   /**
-   * 편지 작성 (POST /v1/letters).
-   *
-   * Idempotency-Key (BE 합의 2026-06-23): 호출 1회 = UUID 1개 → 같은 키
-   * 24h 내 동일 결과 반환 → 네트워크 재시도 / 더블 submit 시 letter 중복
-   * 생성 방지. 토너먼트 `recordResult` 와 동일 규약.
-   * generated `letterControllerComposeV1` 는 axios config override 불가
-   * (signal 만 받음) — generated 우회 후 axios 직접 호출. 다른 endpoint 는
-   * generated 그대로.
+   * 편지 작성 (POST /letters). Idempotency-Key 유지 위해 api.post 직접 호출.
+   * 도메인 ComposeLetterDto → 신규 ComposeLetterRequestDto (isAnonymous → anonymous,
+   * location → { regionCode, label }).
    */
   send: async (
     data: ComposeLetterDto,
@@ -51,18 +78,49 @@ export const letterApi = {
   ): Promise<LetterDto> => {
     const headers: Record<string, string> = {};
     if (idempotencyKey) headers['Idempotency-Key'] = idempotencyKey;
-    const res = await api.post<LetterDto>('/v1/letters', data, {
-      headers: Object.keys(headers).length > 0 ? headers : undefined,
-      signal,
-    });
-    return res.data;
+    const res = await api.post<ApiResponseLetterDto>(
+      '/letters',
+      {
+        body: data.body,
+        location: data.location
+          ? { regionCode: data.location.regionCode, label: data.location.label }
+          : undefined,
+        anonymous: data.isAnonymous,
+      },
+      {
+        headers: Object.keys(headers).length > 0 ? headers : undefined,
+        signal,
+      },
+    );
+    return mapLetter(res.data?.data ?? {});
   },
-  listReceived: (cursor = 0) => letterControllerReceivedV1(pageParams(cursor)),
-  listSent: (cursor = 0) => letterControllerSentV1(pageParams(cursor)),
-  listLiked: (cursor = 0) => letterControllerLikedV1(pageParams(cursor)),
-  listSaved: (cursor = 0) => letterControllerSavedV1(pageParams(cursor)),
-  get: letterControllerGetV1,
-  toggleLike: letterControllerLikeV1,
-  toggleSave: letterControllerSaveV1,
-  remove: letterControllerRemoveV1,
+
+  listReceived: async (cursor = 0): Promise<LetterPageDto> =>
+    mapPage((await beGetReceived({ cursor, size: PAGE_SIZE })).data),
+  listSent: async (cursor = 0): Promise<LetterPageDto> =>
+    mapPage((await beGetSent({ cursor, size: PAGE_SIZE })).data),
+  listLiked: async (cursor = 0): Promise<LetterPageDto> =>
+    mapPage((await beGetLiked({ cursor, size: PAGE_SIZE })).data),
+  listSaved: async (cursor = 0): Promise<LetterPageDto> =>
+    mapPage((await beGetSaved({ cursor, size: PAGE_SIZE })).data),
+
+  get: async (id: string): Promise<LetterDto> =>
+    /^\d+$/.test(id)
+      ? mapLetter((await beGetById(Number(id))).data ?? {})
+      : letterControllerGetV1(id),
+
+  toggleLike: async (id: string): Promise<LetterDto> =>
+    /^\d+$/.test(id)
+      ? mapLetter((await beLike(Number(id))).data ?? {})
+      : letterControllerLikeV1(id),
+
+  toggleSave: async (id: string): Promise<LetterDto> =>
+    /^\d+$/.test(id)
+      ? mapLetter((await beSave(Number(id))).data ?? {})
+      : letterControllerSaveV1(id),
+
+  remove: async (id: string): Promise<void> => {
+    if (/^\d+$/.test(id)) await beDelete(Number(id));
+    else await letterControllerRemoveV1(id);
+  },
 };

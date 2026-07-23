@@ -2,7 +2,8 @@ import type {
   TravelTypeCompatibilityDto,
   TravelTypeDto,
 } from '@/api/generated/schemas';
-import type { TravelTypeQuiz } from '@/features/ranking/types';
+// 신규 Spring BE 의 quiz 응답 shape (id: number). handler 가 ApiResponse 로 감싸 반환.
+import type { QuizDto } from '@/api/be/schemas';
 
 /**
  * 여행 유형 테스트 mock seed.
@@ -17,59 +18,60 @@ import type { TravelTypeQuiz } from '@/features/ranking/types';
  * 직접 import 하지 말 것 (handler/test 한정).
  */
 
-/** quiz API 응답 shape — 옵션에 점수 정보 X. */
-export const travelTypeQuizSeed: TravelTypeQuiz = {
+/** quiz API 응답 shape — 옵션에 점수 정보 X. 신규 BE 는 id 가 number.
+ *  optionId → 유형 매핑은 아래 travelTypeMockScoreMap (mock 전용). */
+export const travelTypeQuizSeed: QuizDto = {
   questions: [
     {
-      id: 'q1',
+      id: 1,
       text: '여행 첫날 아침, 가장 먼저 하고 싶은 일은?',
       options: [
-        { id: 'q1-a', text: '일찍 일어나 새로운 곳으로 출발' },
-        { id: 'q1-b', text: '박물관·유적지부터 들른다' },
-        { id: 'q1-c', text: '호텔 침대에서 느긋하게 일정 정리' },
-        { id: 'q1-d', text: '근처 맛집부터 검색' },
+        { id: 1, text: '일찍 일어나 새로운 곳으로 출발' },
+        { id: 2, text: '박물관·유적지부터 들른다' },
+        { id: 3, text: '호텔 침대에서 느긋하게 일정 정리' },
+        { id: 4, text: '근처 맛집부터 검색' },
       ],
     },
     {
-      id: 'q2',
+      id: 2,
       text: '갑자기 일주일 휴가가 생겼다면?',
       options: [
-        { id: 'q2-a', text: '처음 가보는 도시 비행기표를 끊는다' },
-        { id: 'q2-b', text: '한 도시를 깊게 둘러본다' },
-        { id: 'q2-c', text: '바닷가 풀빌라에서 푹 쉰다' },
-        { id: 'q2-d', text: '현지 시장 투어를 짠다' },
+        { id: 5, text: '처음 가보는 도시 비행기표를 끊는다' },
+        { id: 6, text: '한 도시를 깊게 둘러본다' },
+        { id: 7, text: '바닷가 풀빌라에서 푹 쉰다' },
+        { id: 8, text: '현지 시장 투어를 짠다' },
       ],
     },
     {
-      id: 'q3',
+      id: 3,
       text: '여행지에서 사진을 가장 많이 찍는 대상은?',
       options: [
-        { id: 'q3-a', text: '절벽·산 꼭대기의 풍경' },
-        { id: 'q3-b', text: '건축물·예술품' },
-        { id: 'q3-c', text: '노을·하늘·바다' },
-        { id: 'q3-d', text: '음식 플레이팅' },
+        { id: 9, text: '절벽·산 꼭대기의 풍경' },
+        { id: 10, text: '건축물·예술품' },
+        { id: 11, text: '노을·하늘·바다' },
+        { id: 12, text: '음식 플레이팅' },
       ],
     },
     {
-      id: 'q4',
+      id: 4,
       text: '동행자가 "어디 갈래?" 라고 물으면?',
       options: [
-        { id: 'q4-a', text: '"일단 차 몰고 가보자"' },
-        { id: 'q4-b', text: '"코스 미리 짜놨어, 이쪽으로"' },
-        { id: 'q4-c', text: '"근처 조용한 카페 어때?"' },
-        { id: 'q4-d', text: '"맛집 줄서야 해 일찍 가자"' },
+        { id: 13, text: '"일단 차 몰고 가보자"' },
+        { id: 14, text: '"코스 미리 짜놨어, 이쪽으로"' },
+        { id: 15, text: '"근처 조용한 카페 어때?"' },
+        { id: 16, text: '"맛집 줄서야 해 일찍 가자"' },
       ],
     },
     {
       // Q5 — Q3(사진) 와 중복되던 옛 "사진첩" 축 폐기, "소비" 축으로 교체.
       // BE 가 시드 갱신 시 GET /quiz 응답 자동 동기. mock 도 일관성 위해 미리 반영.
-      id: 'q5',
+      id: 5,
       text: '여행지에서 지갑이 가장 잘 열리는 순간은?',
       options: [
-        { id: 'q5-a', text: '액티비티·체험을 예약할 때' },
-        { id: 'q5-b', text: '입장권·가이드 투어 비용' },
-        { id: 'q5-c', text: '분위기 좋은 숙소나 카페' },
-        { id: 'q5-d', text: '현지 맛집·먹거리' },
+        { id: 17, text: '액티비티·체험을 예약할 때' },
+        { id: 18, text: '입장권·가이드 투어 비용' },
+        { id: 19, text: '분위기 좋은 숙소나 카페' },
+        { id: 20, text: '현지 맛집·먹거리' },
       ],
     },
   ],
@@ -86,27 +88,28 @@ export type TravelTypeMockCode =
   | 'relaxer'
   | 'foodie';
 
+// 신규 BE optionId(number) 기준 — resolveTravelType 가 String 키로 조회 (JS 숫자→문자 coercion).
 export const travelTypeMockScoreMap: Record<string, TravelTypeMockCode> = {
-  'q1-a': 'adventurer',
-  'q1-b': 'explorer',
-  'q1-c': 'relaxer',
-  'q1-d': 'foodie',
-  'q2-a': 'adventurer',
-  'q2-b': 'explorer',
-  'q2-c': 'relaxer',
-  'q2-d': 'foodie',
-  'q3-a': 'adventurer',
-  'q3-b': 'explorer',
-  'q3-c': 'relaxer',
-  'q3-d': 'foodie',
-  'q4-a': 'adventurer',
-  'q4-b': 'explorer',
-  'q4-c': 'relaxer',
-  'q4-d': 'foodie',
-  'q5-a': 'adventurer',
-  'q5-b': 'explorer',
-  'q5-c': 'relaxer',
-  'q5-d': 'foodie',
+  '1': 'adventurer',
+  '2': 'explorer',
+  '3': 'relaxer',
+  '4': 'foodie',
+  '5': 'adventurer',
+  '6': 'explorer',
+  '7': 'relaxer',
+  '8': 'foodie',
+  '9': 'adventurer',
+  '10': 'explorer',
+  '11': 'relaxer',
+  '12': 'foodie',
+  '13': 'adventurer',
+  '14': 'explorer',
+  '15': 'relaxer',
+  '16': 'foodie',
+  '17': 'adventurer',
+  '18': 'explorer',
+  '19': 'relaxer',
+  '20': 'foodie',
 };
 
 /** 유형별 메타 (서버가 결과 응답에 포함시켜 던지는 내용).

@@ -270,14 +270,21 @@ export const handlers = [
       );
     }
     setMockSignedIn(true);
-    return HttpResponse.json({ success: true });
+    // 신규 Spring BE: ApiResponse<LoginResponseDto> — userId 만. (프로필은 GET /me)
+    return HttpResponse.json({
+      success: true,
+      message: null,
+      data: { userId: Number(mockUser.id) || 1 },
+    });
   }),
-  // signup — BE 가 SID cookie + SignupResponseDto { user } atomic 발급.
-  // mock 도 정합: setMockSignedIn(true) + mockUser 반환. 빈 응답은 use-auth.ts
-  // 가 setAuth 실패해 store 미초기화 → 회귀.
+  // 신규 Spring BE: signup 은 세션 발급 + ApiResponseUnit(user 없음).
+  // FE(useSignup)는 폼 입력값으로 pendingUser 구성. mock 도 세션만 established.
   http.post(`${apiUrl}/auth/signup`, () => {
     setMockSignedIn(true);
-    return HttpResponse.json({ user: mockUser }, { status: 201 });
+    return HttpResponse.json(
+      { success: true, message: null, data: {} },
+      { status: 201 },
+    );
   }),
   // 회원가입 중복확인 — username/email 길이 등 검증 후 available 응답.
   // 'tester01' / 't@e.com' 만 taken 으로 시뮬 (mockUser 정합), 나머지 available.
@@ -312,9 +319,14 @@ export const handlers = [
     return new HttpResponse(null, { status: 204 });
   }),
   // POST /auth/refresh 는 sessionID 모델로 전환되며 폐기 (BE Swagger §Auth).
+  // 신규 Spring BE: ApiResponse<UserResponseDto> 엔벨로프.
   http.get(`${apiUrl}/me`, () =>
     getMockSignedIn()
-      ? HttpResponse.json({ ...mockUser, isOnboarded: onboardedState })
+      ? HttpResponse.json({
+          success: true,
+          message: null,
+          data: { ...mockUser, isOnboarded: onboardedState },
+        })
       : unauthorized(),
   ),
   // 회원탈퇴 — 204. 세션 무효 + 소프트 삭제 가정.
@@ -396,26 +408,33 @@ export const handlers = [
     };
     // /letters/:id GET 이 deep-link 진입 시 이 letter 를 찾도록 letterSeeds 에 prepend.
     letterSeeds.unshift(letter);
-    return new HttpResponse(JSON.stringify(letter), {
-      status: 201,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    // 신규 Spring BE: ApiResponse<LetterDto> 엔벨로프.
+    return HttpResponse.json(
+      { success: true, message: null, data: letter },
+      { status: 201 },
+    );
   }),
-  // 편지 목록 — 모두 cursor 기반 페이지네이션 통일
+  // 편지 목록 — 신규 Spring BE: cursor/size + ApiResponse<LetterPageDto> 엔벨로프.
   ...['received', 'sent', 'liked', 'saved'].map((kind) =>
     http.get(`${apiUrl}/letters/${kind}`, ({ request }) => {
       if (!getMockSignedIn()) return unauthorized();
       const url = new URL(request.url);
       const cursor = Number(url.searchParams.get('cursor') ?? 0);
-      const limit = Number(url.searchParams.get('limit') ?? 10);
+      const size = Number(
+        url.searchParams.get('size') ?? url.searchParams.get('limit') ?? 10,
+      );
       let pool = letterSeeds;
       if (kind === 'sent') pool = letterSeeds.filter((l) => l.isMine);
       else if (kind === 'received') pool = letterSeeds.filter((l) => !l.isMine);
       else if (kind === 'liked') pool = letterSeeds.filter((l) => l.liked);
       else if (kind === 'saved') pool = letterSeeds.filter((l) => l.saved);
-      const slice = pool.slice(cursor, cursor + limit);
-      const nextCursor = cursor + limit < pool.length ? cursor + limit : null;
-      return HttpResponse.json({ items: slice, nextCursor });
+      const slice = pool.slice(cursor, cursor + size);
+      const nextCursor = cursor + size < pool.length ? cursor + size : null;
+      return HttpResponse.json({
+        success: true,
+        message: null,
+        data: { items: slice, nextCursor },
+      });
     }),
   ),
   http.get(`${apiUrl}/letters/:id`, ({ params }) => {
@@ -478,25 +497,69 @@ export const handlers = [
   // 진행 중 축제 / 다가오는 축제 / 인기 여행지 — 홈 FestivalCarousel.
   // 실 BE 는 3단계 폴백 후 single response. mock 은 항상 'upcoming' 분기를 반환해
   // D-day 뱃지 UI 도 같이 검증 가능.
-  http.get(`${apiUrl}/regions/ongoing-festivals`, ({ request }) => {
-    const url = new URL(request.url);
-    const region = url.searchParams.get('region');
+  // 신규 Spring BE: region 필터 없음 + ApiResponse<OngoingFestivalsDto> 엔벨로프.
+  http.get(`${apiUrl}/regions/ongoing-festivals`, () => {
     const items = destinationSeeds
       .filter((d) => d.category === 'festival')
-      .filter((d) => !region || d.region === region)
       .slice(0, 8)
       .map((d, i) => ({
-        id: d.id,
+        id: Number(d.id) || i + 1,
         name: d.name,
         imageUrl: null,
         regionLabel: d.region,
         // 7, 14, 21 ... 일 후 시작 — D-day 뱃지 다양성 검증.
         daysToStart: 7 + i * 7,
+        eventStartDate: null,
+        eventEndDate: null,
       }));
-    return HttpResponse.json({ type: 'upcoming', items });
+    return HttpResponse.json({
+      success: true,
+      message: null,
+      data: { type: 'upcoming', items },
+    });
   }),
 
-  // ===== Rankings =====
+  // ===== Rankings (신규 Spring BE) =====
+  // 주간 top destination — ApiResponse<WeeklyTopDestinationsDto>.
+  // items 는 {destinationId,destinationName,winCount} (image/region 미제공 — 새 BE 계약).
+  http.get(`${apiUrl}/tournaments/rankings/weekly`, ({ request }) => {
+    const size = Number(new URL(request.url).searchParams.get('size') ?? 5);
+    const seenRegion = new Set<string>();
+    const deduped: typeof destinationSeeds = [];
+    for (const d of destinationSeeds) {
+      if (seenRegion.has(d.region)) continue;
+      seenRegion.add(d.region);
+      deduped.push(d);
+      if (deduped.length >= Math.min(size, 11)) break;
+    }
+    const items = deduped.map((d, i) => ({
+      destinationId: Number(d.id) || i + 1,
+      destinationName: d.name,
+      winCount: 28 - i * 3,
+    }));
+    return HttpResponse.json({
+      success: true,
+      message: null,
+      data: {
+        year: 2026,
+        month: 7,
+        weekOfMonth: 3,
+        weekStart: '2026-07-20',
+        weekEnd: '2026-07-26',
+        items,
+      },
+    });
+  }),
+  // 시군별 우승 횟수 — ApiResponse<RegionWinCountDto[]>.
+  http.get(`${apiUrl}/tournaments/rankings/regions`, () => {
+    const data = MOCK_REGIONS.map((r, i) => ({
+      region: r.regionCode,
+      winCount: 48 - i * 3 + ((i * 7) % 5),
+    })).sort((a, b) => b.winCount - a.winCount);
+    return HttpResponse.json({ success: true, message: null, data });
+  }),
+
+  // ===== Rankings (구 generated mock — recommended/by-category/seasonal 등) =====
   http.get(`${apiUrl}/rankings`, ({ request }) => {
     const url = new URL(request.url);
     const type = url.searchParams.get('type');
@@ -571,15 +634,16 @@ export const handlers = [
         })
       : unauthorized(),
   ),
-  // 닉네임 변경 (PATCH /mypage/profile)
-  http.patch(`${apiUrl}/mypage/profile`, async ({ request }) => {
+  // 신규 Spring BE: 프로필 수정 PATCH /me — ApiResponse<UserResponseDto>.
+  http.patch(`${apiUrl}/me`, async ({ request }) => {
     if (!getMockSignedIn()) return unauthorized();
     const body = (await request.json().catch(() => ({}))) as {
       nickname?: string;
     };
     return HttpResponse.json({
-      nickname: body.nickname ?? mockUser.nickname,
-      isDefault: false,
+      success: true,
+      message: null,
+      data: { ...mockUser, nickname: body.nickname ?? mockUser.nickname },
     });
   }),
   // 프로필 아바타 업로드 (POST /me/avatar) — multipart form-data 'file'.
@@ -641,9 +705,14 @@ export const handlers = [
     return HttpResponse.json({ avatarUrl: null });
   }),
   // 저장된 토너먼트 우승지 — 목록. summary 의 savedTournaments 와 같은 시드.
+  // 신규 Spring BE: ApiResponse<SavedTournamentDto[]> 엔벨로프.
   http.get(`${apiUrl}/mypage/tournaments`, () =>
     getMockSignedIn()
-      ? HttpResponse.json(savedTournamentSeeds)
+      ? HttpResponse.json({
+          success: true,
+          message: null,
+          data: savedTournamentSeeds,
+        })
       : unauthorized(),
   ),
 
@@ -687,29 +756,76 @@ export const handlers = [
   }),
 
   // ===== Stamps (도장깨기) =====
+  // 신규 Spring BE: ApiResponse<StampsDto> 엔벨로프.
   http.get(`${apiUrl}/mypage/stamps`, () => {
     if (!getMockSignedIn()) return unauthorized();
     const visited = Array.from(
       new Set(tournamentHistorySeeds.map((t) => t.winnerRegion)),
     );
-    return HttpResponse.json({ visited, total: 11 });
+    return HttpResponse.json({
+      success: true,
+      message: null,
+      data: { visited, total: 11 },
+    });
   }),
 
   // ===== Tournament =====
   // 페이지네이션 — 편지/시군콘텐츠와 동일 컨벤션: cursor=offset(기본 0),
   // limit=페이지 크기(기본 20, 최대 60). 마지막 페이지면 nextCursor=null.
-  http.get(`${apiUrl}/mypage/tournament-history`, ({ request }) => {
+  // 신규 Spring BE: ApiResponse<TournamentSummaryDto[]> (flat, cursor 없음).
+  http.get(`${apiUrl}/mypage/tournament-history`, () => {
     if (!getMockSignedIn()) return unauthorized();
-    const url = new URL(request.url);
-    const cursor = Math.max(0, Number(url.searchParams.get('cursor')) || 0);
-    const limit = Math.min(
-      60,
-      Math.max(1, Number(url.searchParams.get('limit')) || 20),
-    );
-    const slice = tournamentHistorySeeds.slice(cursor, cursor + limit);
-    const next = cursor + slice.length;
-    const nextCursor = next < tournamentHistorySeeds.length ? next : null;
-    return HttpResponse.json({ items: slice, nextCursor });
+    const data = tournamentHistorySeeds.map((t, i) => ({
+      id: Number(String(t.id).replace(/\D/g, '')) || i + 1,
+      winnerName: t.winnerName,
+      tournamentSize: t.count,
+      category: t.category,
+      completedAt: t.completedAt,
+    }));
+    return HttpResponse.json({ success: true, message: null, data });
+  }),
+
+  // 신규 Spring BE: 토너먼트 결과 기록 — POST /mypage/tournament-history.
+  // body: { winnerId?, winnerName, region?, category?, tournamentSize? }.
+  // 응답 thin ApiResponse<TournamentSummaryDto>. deep-link(getRecord) mock 유지 위해
+  // tournamentRecords 에도 저장(winnerName 으로 seed 매칭해 winner destination 복원).
+  http.post(`${apiUrl}/mypage/tournament-history`, async ({ request }) => {
+    const body = (await request.json()) as {
+      winnerId?: number;
+      winnerName?: string;
+      region?: string;
+      category?: string;
+      tournamentSize?: number;
+    };
+    const winner =
+      destinationSeeds.find((d) => d.name === body.winnerName) ??
+      ({
+        id: `w-${Date.now()}`,
+        name: body.winnerName ?? '',
+        region: body.region,
+        category: body.category,
+        imageUrl: null,
+      } as unknown as (typeof destinationSeeds)[number]);
+    const numId = Date.now();
+    tournamentRecords.set(String(numId), {
+      id: String(numId),
+      winner,
+      runnerUp: null,
+      matchesPlayed: 0,
+      tournamentSize: body.tournamentSize ?? 0,
+      completedAt: new Date().toISOString(),
+    });
+    return HttpResponse.json({
+      success: true,
+      message: null,
+      data: {
+        id: numId,
+        winnerName: body.winnerName,
+        tournamentSize: body.tournamentSize,
+        category: body.category,
+        completedAt: new Date().toISOString(),
+      },
+    });
   }),
 
   // 토너먼트 기록 — Play 종료 시 fire-and-forget. record id 반환.
@@ -828,17 +944,22 @@ export const handlers = [
   // 합의: count / pool / region(단일) param 폐기. 시군은 응답 destination.region 에서 추출.
   http.get(`${apiUrl}/destinations/random`, ({ request }) => {
     const url = new URL(request.url);
-    const categoriesParam = url.searchParams.get('categories') ?? '';
-    const regionsParam = url.searchParams.get('regions') ?? '';
+    // 신규 Spring BE: 단일 category/region/season + size. (구 categories/regions/tournamentSize 도 하위호환)
+    const category =
+      url.searchParams.get('category') ?? url.searchParams.get('categories');
+    const region =
+      url.searchParams.get('region') ?? url.searchParams.get('regions');
 
     const VALID_SIZES = [4, 8, 16, 32];
-    const rawSize = Number(url.searchParams.get('tournamentSize') ?? 8);
+    const rawSize = Number(
+      url.searchParams.get('size') ??
+        url.searchParams.get('tournamentSize') ??
+        8,
+    );
     const tournamentSize = VALID_SIZES.includes(rawSize) ? rawSize : 8;
 
-    const categories = categoriesParam
-      ? categoriesParam.split(',').filter(Boolean)
-      : [];
-    const regions = regionsParam ? regionsParam.split(',').filter(Boolean) : [];
+    const categories = category ? category.split(',').filter(Boolean) : [];
+    const regions = region ? region.split(',').filter(Boolean) : [];
 
     let pool = destinationSeeds;
     if (categories.length > 0) {
@@ -878,7 +999,7 @@ export const handlers = [
         if (picked.length >= tournamentSize) break;
       }
     }
-    return HttpResponse.json(picked);
+    return HttpResponse.json({ success: true, message: null, data: picked });
   }),
 
   // 여행지 상세 — id 기반 deterministic mock 메타 합성.
@@ -1055,14 +1176,31 @@ export const handlers = [
 
   // ===== Travel type test =====
   // 옵션은 단순 id+text만 반환 — 클라이언트는 점수 매핑 미인식
+  // 신규 Spring BE: ApiResponse<QuizDto> 엔벨로프 (id: number).
   http.get(`${apiUrl}/travel-types/quiz`, () =>
-    HttpResponse.json(travelTypeQuizSeed),
+    HttpResponse.json({
+      success: true,
+      message: null,
+      data: travelTypeQuizSeed,
+    }),
   ),
+  // 신규 Spring BE: 응답은 thin TravelTypeResultDto(code/title/emoji/description/tags) 엔벨로프.
+  // 단 /me mock 을 위해 내부적으로 full 결과(recommended/compatibility 포함)를 저장.
   http.post(`${apiUrl}/travel-types/submit`, async ({ request }) => {
     const body = (await request.json()) as { answers: TravelTypeAnswer[] };
     const result = resolveTravelType(body.answers ?? []);
     myTravelType = result;
-    return HttpResponse.json(result);
+    return HttpResponse.json({
+      success: true,
+      message: null,
+      data: {
+        code: result.code,
+        title: result.title,
+        emoji: result.emoji,
+        description: result.description,
+        tags: result.keywords,
+      },
+    });
   }),
   // 적용된 본인 유형 — 비로그인 시 null (getMockSignedIn() 무관, 비로그인은 적용 불가).
   http.get(`${apiUrl}/travel-types/me`, () =>

@@ -1,15 +1,19 @@
+// 신규 Spring BE 지원: stamps + updateMe(닉네임). (summary/avatar 는 미지원 → 구 generated mock 유지)
+import { getStamps as beGetStamps } from '@/api/be/mypage/mypage';
+import { updateMe as beUpdateMe } from '@/api/be/me/me';
 import {
   mypageControllerListSavedV1,
   mypageControllerRemoveSavedV1,
   mypageControllerSaveV1,
-  mypageControllerStampsV1,
   mypageControllerSummaryV1,
-  mypageControllerUpdateProfileV1,
 } from '@/api/generated/mypage/mypage';
+import type { UpdateProfileDto } from '@/api/generated/schemas';
 import {
   meControllerRemoveAvatarV1,
   meControllerUploadAvatarV1,
 } from '@/api/generated/me/me';
+import type { StampsDto } from '@/api/generated/schemas';
+import type { RegionCode } from '@/constants/regions';
 
 /**
  * 마이페이지 API — orval 가 BE swagger 로 자동 생성한 client functions wrap.
@@ -29,8 +33,17 @@ import {
  */
 export const mypageApi = {
   getSummary: mypageControllerSummaryV1,
-  updateNickname: mypageControllerUpdateProfileV1,
-  getStamps: mypageControllerStampsV1,
+  // 신규 Spring BE: PATCH /me (UpdateMeRequestDto). 닉네임만 전달.
+  updateNickname: (data: UpdateProfileDto) =>
+    beUpdateMe({ nickname: data.nickname }),
+  // 신규 Spring BE: GET /mypage/stamps — ApiResponse<StampsDto>. visited 는 region code 배열(구/신 동일).
+  getStamps: async (signal?: AbortSignal): Promise<StampsDto> => {
+    const res = await beGetStamps(signal);
+    return {
+      visited: (res.data?.visited ?? []) as RegionCode[],
+      total: res.data?.total ?? 0,
+    };
+  },
   listSaved: mypageControllerListSavedV1,
   saveTournament: mypageControllerSaveV1,
   removeSaved: mypageControllerRemoveSavedV1,
