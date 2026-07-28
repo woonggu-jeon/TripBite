@@ -4,10 +4,11 @@
   justify-content: center;
   gap: 0.375rem;
   font-family: inherit;
-  font-weight: var(--font-weight-bold);
-  letter-spacing: var(--tracking-snug);
-  border: 1.5px solid transparent;
-  border-radius: var(--radius-md);
+  /* Figma button: M_16_140% (Medium) + tracking -2% + radius 12 */
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-tight);
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
   cursor: pointer;
   user-select: none;
   transition:
@@ -40,10 +41,11 @@
 }
 
 // 사이즈 — 모바일 hit target 44px 보장 (md, default)
+// Figma 카탈로그는 52(lg) / 36(sm) 두 단계 — 양쪽 모두 16px Medium 텍스트
 .s-sm {
-  min-height: 32px;
-  padding: 0 var(--space-3);
-  font-size: var(--font-label);
+  min-height: 36px;
+  padding: 0 var(--space-4);
+  font-size: var(--font-body);
 }
 .s-md {
   min-height: 44px;
@@ -67,11 +69,60 @@
       opacity: var(--opacity-hover-dim);
     }
   }
+
+  // Figma disabled: solid → disabled 배경 + disabled 텍스트 (opacity 아닌 명시 색)
+  &:disabled {
+    background: var(--color-disabled);
+    border-color: var(--color-disabled);
+    color: var(--color-disabled-text);
+    opacity: 1;
+  }
 }
 
+// Figma "solid Accent" — 오렌지 포인트 CTA
+.v-accent {
+  background: var(--color-accent);
+  color: var(--color-primary-fg);
+  border-color: var(--color-accent);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      opacity: var(--opacity-hover-dim);
+    }
+  }
+
+  &:disabled {
+    background: var(--color-disabled);
+    border-color: var(--color-disabled);
+    color: var(--color-disabled-text);
+    opacity: 1;
+  }
+}
+
+// Figma "line Green" — primary 보더 + primary 텍스트
+.v-outline {
+  background: var(--color-bg);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      background: var(--color-secondary);
+    }
+  }
+
+  &:disabled {
+    background: var(--color-bg);
+    border-color: var(--color-border);
+    color: var(--color-disabled-text);
+    opacity: 1;
+  }
+}
+
+// Figma "line Gray" — gray 보더 + muted 텍스트
 .v-secondary {
   background: transparent;
-  color: var(--color-fg);
+  color: var(--color-muted);
   border-color: var(--color-border);
 
   @media (hover: hover) and (pointer: fine) {
@@ -79,6 +130,12 @@
       border-color: var(--color-primary-border);
       background: var(--color-surface-soft);
     }
+  }
+
+  &:disabled {
+    border-color: var(--color-border);
+    color: var(--color-disabled-text);
+    opacity: 1;
   }
 }
 

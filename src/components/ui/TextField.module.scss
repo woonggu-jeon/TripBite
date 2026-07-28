@@ -1,14 +1,16 @@
 // 폼 입력 primitive — label / input / error 한 세트.
-// auth/onboarding/settings 의 동일 패턴을 흡수. 토큰은 기존 AuthForm.module.scss 값 유지.
+// Figma inputField (3365:1351) 스펙: label R_12 + input 52px M_16 + caption M_10.
 
 .field {
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-1); // Figma: label ↔ input 4px
 }
 
 .label {
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-medium);
+  // Figma Caption/R_12 — 12px Regular, fg
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-normal);
+  letter-spacing: var(--tracking-snug);
   color: var(--color-fg);
 }
 
@@ -25,40 +27,100 @@
   border: 0;
 }
 
-.input {
-  width: 100%;
-  padding: var(--space-3);
+// Figma input 공통: 52px, px 16 / py 12, radius 12 (카탈로그 10/12 혼재 — 12 로 통일),
+// 값 텍스트 M_16 muted, placeholder disabled-text
+@mixin input-box {
+  min-height: 52px;
+  padding: var(--space-3) var(--space-4);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   background: var(--color-bg);
-  color: var(--color-fg);
-  font-size: var(--font-body-sm);
-  outline: none;
   transition: border-color var(--motion-base) ease;
+}
+
+.input {
+  @include input-box;
+
+  width: 100%;
+  color: var(--color-muted);
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-tight);
+  outline: none;
 
   &::placeholder {
-    color: var(--color-muted);
+    color: var(--color-disabled-text);
   }
   &:focus {
     border-color: var(--color-primary);
   }
   &[aria-invalid='true'] {
+    // Figma 카탈로그 border 는 raw #f73737 — variable(System/error) 로 통일
     border-color: var(--color-danger);
   }
   &:disabled {
-    opacity: 0.6;
+    background: var(--color-disabled-bg);
+    color: var(--color-disabled-text);
     cursor: not-allowed;
   }
 }
 
-.hint {
-  font-size: var(--font-label);
+// trailing (눈 아이콘 등) 있을 때 — 박스가 border 를 갖고 input 은 bare
+.inputBox {
+  @include input-box;
+
+  display: flex;
+  align-items: center;
+  gap: var(--space-3); // Figma pw: 텍스트 ↔ eye 12px
+
+  &:focus-within {
+    border-color: var(--color-primary);
+  }
+  &.invalid {
+    border-color: var(--color-danger);
+  }
+}
+
+.inputBare {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
   color: var(--color-muted);
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-tight);
+  outline: none;
+
+  &::placeholder {
+    color: var(--color-disabled-text);
+  }
+}
+
+.trailing {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--color-muted);
+}
+
+// Figma Caption/M_10 — 10px Medium, 좌우 4px 패딩
+.hint {
+  font-size: 0.625rem;
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
+  padding: 0 var(--space-1);
   margin: 0;
 }
 
 .error {
-  font-size: var(--font-label);
+  font-size: 0.625rem;
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-tight);
+  letter-spacing: var(--tracking-tight);
   color: var(--color-danger);
+  padding: 0 var(--space-1);
   margin: 0;
 }

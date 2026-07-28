@@ -4,14 +4,16 @@ import styles from './Button.module.scss';
 /**
  * 디자인 시스템 버튼 primitive — SCSS module + variant/size/fullWidth.
  *
- * variant:
- *   - primary   : 채움 (가장 강한 강조 — submit/CTA)
- *   - secondary : border + 투명 배경
- *   - ghost     : 배경/border 없음 — text-like
- *   - danger    : 위험 액션 (삭제 confirm 등)
+ * variant (Figma button 카탈로그 매핑 — style×color):
+ *   - primary   : solid Green — 채움 (가장 강한 강조 — submit/CTA)
+ *   - accent    : solid Accent — 오렌지 포인트 CTA
+ *   - outline   : line Green — primary 보더 + primary 텍스트
+ *   - secondary : line Gray — gray 보더 + muted 텍스트
+ *   - ghost     : 배경/border 없음 — text-like (Figma 외 코드 전용)
+ *   - danger    : 위험 액션 (삭제 confirm 등, Figma 외 코드 전용)
  *
  * size:
- *   - sm (32) / md (44, default) / lg (52)  — 모바일 hit target 44px 보장
+ *   - sm (36) / md (44, default) / lg (52)  — Figma 는 52/36 두 단계
  *
  * fullWidth: 부모 너비 100%
  *
@@ -24,7 +26,13 @@ import styles from './Button.module.scss';
  * 기존 컴포넌트의 .primary/.secondary 클래스 대체용. 자체 SCSS 의 padding/radius/
  * transition 반복 제거.
  */
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+export type ButtonVariant =
+  | 'primary'
+  | 'accent'
+  | 'outline'
+  | 'secondary'
+  | 'ghost'
+  | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

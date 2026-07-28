@@ -32,29 +32,20 @@ export function BottomNav() {
     <nav className={styles.nav} aria-label={t('home')}>
       {BOTTOM_NAV_ROUTES.map((route) => {
         const active = isActive(route.path);
-        const emphasized = 'emphasized' in route && route.emphasized;
 
         return (
           <Link
             key={route.path}
             href={route.path}
             onClick={() => haptic.tap()}
-            className={[
-              styles.item,
-              active ? styles.active : '',
-              emphasized ? styles.emphasized : '',
-            ]
-              .filter(Boolean)
-              .join(' ')}
+            className={active ? `${styles.item} ${styles.active}` : styles.item}
             aria-current={active ? 'page' : undefined}
           >
-            <span className={emphasized ? styles.emphasizedCircle : ''}>
-              <Icon
-                name={route.icon as IconName}
-                size={emphasized ? 26 : 22}
-                aria-label={t(route.labelKey)}
-              />
-            </span>
+            <Icon
+              name={route.icon as IconName}
+              size={24}
+              aria-label={t(route.labelKey)}
+            />
             <span className={styles.label}>{t(route.labelKey)}</span>
           </Link>
         );

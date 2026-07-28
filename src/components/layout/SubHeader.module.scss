@@ -14,7 +14,7 @@
   background: var(--color-glass);
   backdrop-filter: var(--blur-glass);
   -webkit-backdrop-filter: var(--blur-glass);
-  border-bottom: 1px solid var(--color-divider);
+  border-bottom: 1px solid var(--color-border); /* Figma header: gray solid */
 }
 
 .inner {
@@ -57,9 +57,10 @@
 
 .title {
   text-align: center;
-  font-size: var(--font-body);
+  /* Figma header type=sub: Title/B_18_140% */
+  font-size: var(--text-lg);
   font-weight: var(--font-weight-bold);
-  letter-spacing: var(--tracking-snug);
+  letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
   overflow: hidden;
   text-overflow: ellipsis;

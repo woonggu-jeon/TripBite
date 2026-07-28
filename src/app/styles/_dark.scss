@@ -7,17 +7,36 @@
      - [data-theme="light"] 가 명시되면 system 다크여도 light 강제 (override 가능하도록 specificity 동일).
 */
 @mixin dark-tokens {
-  /* Base color */
+  /* Base color — Figma 는 light 만 정의 ("맑은 잎새"). dark 는 코드 파생 (디자이너 미정의).
+     회색 계열은 blue-gray 아닌 neutral gray 로 통일 (light 팔레트와 톤 일치). */
   --color-bg: #0a0a0a;
   --color-fg: #fafafa;
-  --color-muted: #9ca3af;
-  --color-border: #1f2937;
-  --color-primary: #fafafa;
+  --color-muted: #a3a3a3;
+  --color-sub: #7a7a7a;
+  --color-border: #2e2e2e;
+  /* primary green — dark 배경 대비 위해 약간 밝게. 버튼 텍스트는 검정 (녹색 위 흰 글씨 2.4:1 미달) */
+  --color-primary: #00c93b;
   --color-primary-fg: #0a0a0a;
-  /* dark 배경에서 가독성 — light 의 500 톤 → 400 톤 */
-  --color-danger: #f87171;
+  --color-secondary: #16281c; /* 연한 그린 배경 → deep green tint */
+  --color-accent: #ffad3f;
+  --color-accent-soft: #2f2413;
+  /* dark 배경에서 가독성 — light 톤 → 밝은 톤 */
+  --color-danger: #f2695e;
   --color-success: #4ade80;
   --color-warning: #fbbf24;
+
+  /* Disabled 3종 — light 회색 램프의 dark 대응 */
+  --color-disabled-bg: #1c1c1c;
+  --color-disabled: #2e2e2e;
+  --color-disabled-text: #6b6b6b;
+
+  --color-section: #141414;
+
+  /* 계절 파스텔 — 어두운 톤 (아이콘 원 배경) */
+  --season-spring: #3a2426;
+  --season-summer: #2c3a12;
+  --season-autumn: #3d2c18;
+  --season-winter: #1c2a3d;
   /* 편지 — dark 에서 accent 밝게, 종이는 어두운 흙톤 */
   --color-letter-accent: #fbbf24;
   --color-letter-paper: #1f1610;

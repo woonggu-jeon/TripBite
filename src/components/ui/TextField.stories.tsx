@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { Eye } from 'lucide-react';
 import { TextField } from './TextField';
 
 const meta = {
@@ -26,6 +27,16 @@ export const Password: Story = {
     label: '비밀번호',
     type: 'password',
     placeholder: '8자 이상',
+  },
+};
+// Figma login_pw — 눈 아이콘 trailing (박스 focus-within 처리)
+export const PasswordWithEye: Story = {
+  args: {
+    id: 'tf-pw-eye',
+    label: '비밀번호',
+    type: 'password',
+    placeholder: '8자 이상',
+    trailing: <Eye size={20} aria-hidden />,
   },
 };
 export const VisuallyHiddenLabel: Story = {

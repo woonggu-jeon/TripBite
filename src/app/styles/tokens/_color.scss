@@ -2,16 +2,36 @@
    디자이너가 brand 색 변경 시 --color-primary 한 줄만 수정해도 derived 토큰
    (soft/tint/border/ring/muted 등) 이 자동 반영. */
 :root {
-  /* Base */
-  --color-bg: #ffffff;
-  --color-fg: #0a0a0a;
-  --color-muted: #5b6470; /* 4.5:1+ on #f5f5f5 (#6b7280=4.43 미달). 흰 배경 6.0:1 */
-  --color-border: #e5e7eb;
-  --color-primary: #0a0a0a;
+  /* Base — Figma "맑은 잎새 (Fresh Leaf)" 팔레트 (여행한입 진짜최종3 · 컴포넌트 페이지).
+     Figma variable → CSS 토큰 매핑은 docs/FIGMA_INTEGRATION.md §3-2 참조. */
+  --color-bg: #ffffff; /* Basic/BgColor/white */
+  --color-fg: #151515; /* Basic/TextColor/fg */
+  --color-muted: #393939; /* Basic/TextColor/muted — 보조 텍스트 */
+  --color-sub: #8a8a8a; /* Basic/TextColor/sub — 3차 텍스트 (흰 배경 3.5:1 — 큰 글씨/캡션 한정) */
+  --color-border: #e0e0e0; /* Basic/BorderColor/gray */
+  --color-primary: #00b334; /* Basic/MainColor/primary — 메인 CTA·활성·로고 */
   --color-primary-fg: #ffffff;
-  --color-danger: #dc2626;
+  --color-secondary: #eaf6ef; /* Basic/MainColor/secondary01 — 연한 그린 배경 */
+  --color-accent: #f79d26; /* Basic/MainColor/accent — 포인트·인기 배지 */
+  --color-accent-soft: #fcefd9; /* Basic/MainColor/accent-soft — 연한 배경·아이콘 원 */
+  --color-danger: #e1493c; /* Basic/System/error — 경고·삭제·NEW */
   --color-success: #16a34a;
   --color-warning: #d97706;
+
+  /* Disabled 3종 — Figma Basic/BgColor/disabled · Contents/Button/disabled · Basic/TextColor/disabled */
+  --color-disabled-bg: #f1f1f1;
+  --color-disabled: #e0e0e0;
+  --color-disabled-text: #b4b4b4;
+
+  /* 회색 섹션 배경 — Contents/section */
+  --color-section: #f6f6f6;
+
+  /* 계절 파스텔 — Contents/Season/* (seasonIcon 원 배경 전용. 텍스트 대비 검증 X.
+     추천 카드 시즌 accent 는 _accents.scss 의 --accent-{season} 별도 유지) */
+  --season-spring: #ffebeb;
+  --season-summer: #e0ff89;
+  --season-autumn: #ffcd99;
+  --season-winter: #e8f1fd;
 
   /* Sage — 도장책 visited 표시 전용. 차분한 녹색 톤으로 brand black 과 분리 */
   --color-sage-mist: #d4e2d4; /* visited fill (soft pale green) */

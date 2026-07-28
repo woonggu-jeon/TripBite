@@ -2,8 +2,8 @@
 
 Figma MCP 를 통해 디자인을 Claude Code 가 직접 코드로 반영하는 환경 셋업.
 
-> SoT: 디자이너 측 Tokens Studio variable 명과 본 문서의 매핑 표.
-> 마지막 갱신: 2026-06-14
+> SoT: 디자이너 측 Figma variable 명과 본 문서의 매핑 표.
+> 마지막 갱신: 2026-07-28 — "맑은 잎새 (Fresh Leaf)" 팔레트 반영 (여행한입 진짜최종3, fileKey `yFsjSKDp5vihlQKbRqCC6L`)
 
 ---
 
@@ -406,29 +406,34 @@ Figma 플러그인 → "Tokens Studio for Figma" 설치. Free tier 그대로 사
 
 #### Color (`tokens/_color.scss` + `_dark.scss` + `_accents.scss`)
 
-| Figma variable                    | CSS 변수              | light 값  | dark 값   |
-| --------------------------------- | --------------------- | --------- | --------- |
-| `color/bg`                        | `--color-bg`          | `#ffffff` | `#0a0a0a` |
-| `color/fg`                        | `--color-fg`          | `#0a0a0a` | `#fafafa` |
-| `color/muted`                     | `--color-muted`       | `#5b6470` | `#9ca3af` |
-| `color/border`                    | `--color-border`      | `#e5e7eb` | `#1f2937` |
-| `color/primary`                   | `--color-primary`     | `#0a0a0a` | `#fafafa` |
-| `color/primary-fg`                | `--color-primary-fg`  | `#ffffff` | `#0a0a0a` |
-| `color/danger`                    | `--color-danger`      | `#dc2626` | `#f87171` |
-| `color/success`                   | `--color-success`     | `#16a34a` | `#4ade80` |
-| `color/warning`                   | `--color-warning`     | `#d97706` | `#fbbf24` |
-| `color/sage-mist`                 | `--color-sage-mist`   | `#d4e2d4` | `#2f4a32` |
-| `color/sage`                      | `--color-sage`        | `#6b8e6b` | `#8fb38f` |
-| `color/sage-strong`               | `--color-sage-strong` | `#3d5d3d` | `#a8c8a8` |
-| `accent/red`                      | `--accent-red`        | `#c1272d` | `#f87171` |
-| `accent/amber`                    | `--accent-amber`      | `#b15402` | `#fbbf24` |
-| `accent/green`                    | `--accent-green`      | `#15803d` | `#4ade80` |
-| `accent/blue`                     | `--accent-blue`       | `#2563eb` | `#60a5fa` |
-| `accent/violet`                   | `--accent-violet`     | `#6d28d9` | `#a78bfa` |
-| `accent/spring` ~ `accent/winter` | `--accent-{season}`   | (시즌별)  | (시즌별)  |
-| `accent/festival`                 | `--accent-festival`   | `#b45309` | `#f59e0b` |
+"맑은 잎새 (Fresh Leaf)" 팔레트 — 디자이너가 실제 정의한 Figma variable 기준 (2026-07-28 sync).
+**dark 값은 Figma 미정의 — 코드 파생** (디자이너가 dark 정의 시 이 표 + `_dark.scss` 갱신).
 
-> 시즌/festival 의 gradient (`-grad-start` / `-grad-end`) 도 동일 명 패턴으로 추가.
+| Figma variable                | CSS 변수                | light 값  | dark 값 (파생) |
+| ----------------------------- | ----------------------- | --------- | -------------- |
+| `Basic/BgColor/white`         | `--color-bg`            | `#ffffff` | `#0a0a0a`      |
+| `Basic/TextColor/fg`          | `--color-fg`            | `#151515` | `#fafafa`      |
+| `Basic/TextColor/muted`       | `--color-muted`         | `#393939` | `#a3a3a3`      |
+| `Basic/TextColor/sub`         | `--color-sub`           | `#8a8a8a` | `#7a7a7a`      |
+| `Basic/BorderColor/gray`      | `--color-border`        | `#e0e0e0` | `#2e2e2e`      |
+| `Basic/MainColor/primary`     | `--color-primary`       | `#00b334` | `#00c93b`      |
+| —                             | `--color-primary-fg`    | `#ffffff` | `#0a0a0a`      |
+| `Basic/MainColor/secondary01` | `--color-secondary`     | `#eaf6ef` | `#16281c`      |
+| `Basic/MainColor/accent`      | `--color-accent`        | `#f79d26` | `#ffad3f`      |
+| `Basic/MainColor/accent-soft` | `--color-accent-soft`   | `#fcefd9` | `#2f2413`      |
+| `Basic/System/error`          | `--color-danger`        | `#e1493c` | `#f2695e`      |
+| `Basic/BgColor/disabled`      | `--color-disabled-bg`   | `#f1f1f1` | `#1c1c1c`      |
+| `Contents/Button/disabled`    | `--color-disabled`      | `#e0e0e0` | `#2e2e2e`      |
+| `Basic/TextColor/disabled`    | `--color-disabled-text` | `#b4b4b4` | `#6b6b6b`      |
+| `Contents/section`            | `--color-section`       | `#f6f6f6` | `#141414`      |
+| `Contents/Season/spring`      | `--season-spring`       | `#ffebeb` | `#3a2426`      |
+| `Contents/Season/summer`      | `--season-summer`       | `#e0ff89` | `#2c3a12`      |
+| `Contents/Season/autumn`      | `--season-autumn`       | `#ffcd99` | `#3d2c18`      |
+| `Contents/Season/winter`      | `--season-winter`       | `#e8f1fd` | `#1c2a3d`      |
+
+> `--color-success` / `--color-warning` / sage / `--accent-*` (추천 카드 시즌·축제 카테고리) 는
+> Figma 에 대응 variable 없음 — 코드 측 유지. 디자이너가 정의 시 여기에 행 추가.
+> ⚠ 카탈로그 스와치 라벨 텍스트 (`border #C6C6C6` 등) 가 variable 실값과 다른 경우 **variable 이 SoT**.
 
 #### Spacing (`tokens/_layout.scss`)
 

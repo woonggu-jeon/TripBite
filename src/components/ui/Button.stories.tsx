@@ -9,7 +9,7 @@ const meta = {
   argTypes: {
     variant: {
       control: 'select',
-      options: ['primary', 'secondary', 'ghost', 'danger'],
+      options: ['primary', 'accent', 'outline', 'secondary', 'ghost', 'danger'],
     },
     size: { control: 'select', options: ['sm', 'md', 'lg'] },
     fullWidth: { control: 'boolean' },
@@ -27,7 +27,10 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Primary: Story = { args: { variant: 'primary' } };
+export const Accent: Story = { args: { variant: 'accent' } };
+export const Outline: Story = { args: { variant: 'outline' } };
 export const Secondary: Story = { args: { variant: 'secondary' } };
+export const Disabled: Story = { args: { disabled: true, children: '비활성' } };
 export const Ghost: Story = { args: { variant: 'ghost' } };
 export const Danger: Story = { args: { variant: 'danger', children: '삭제' } };
 export const Small: Story = { args: { size: 'sm' } };

@@ -17,6 +17,8 @@ export interface TextFieldProps extends Omit<
   visuallyHiddenLabel?: boolean;
   /** 보조 설명 — invalid 가 아닐 때만 노출. aria-describedby 로 자동 연결. */
   hint?: ReactNode;
+  /** input 박스 우측에 렌더할 노드 (비밀번호 눈 아이콘 등 — Figma eyeIcon). */
+  trailing?: ReactNode;
 }
 
 /**
@@ -34,6 +36,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       errorMessage,
       visuallyHiddenLabel,
       hint,
+      trailing,
       type = 'text',
       className,
       ...rest
@@ -56,15 +59,40 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
             {label}
           </label>
         )}
-        <input
-          ref={ref}
-          id={id}
-          type={type}
-          aria-invalid={invalid ? true : undefined}
-          aria-describedby={describedBy}
-          className={className ? `${styles.input} ${className}` : styles.input}
-          {...rest}
-        />
+        {trailing ? (
+          <div
+            className={
+              invalid ? `${styles.inputBox} ${styles.invalid}` : styles.inputBox
+            }
+          >
+            <input
+              ref={ref}
+              id={id}
+              type={type}
+              aria-invalid={invalid ? true : undefined}
+              aria-describedby={describedBy}
+              className={
+                className
+                  ? `${styles.inputBare} ${className}`
+                  : styles.inputBare
+              }
+              {...rest}
+            />
+            <span className={styles.trailing}>{trailing}</span>
+          </div>
+        ) : (
+          <input
+            ref={ref}
+            id={id}
+            type={type}
+            aria-invalid={invalid ? true : undefined}
+            aria-describedby={describedBy}
+            className={
+              className ? `${styles.input} ${className}` : styles.input
+            }
+            {...rest}
+          />
+        )}
         {hint && !invalid && (
           <p id={hintId} className={styles.hint}>
             {hint}
