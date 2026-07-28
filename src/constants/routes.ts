@@ -39,9 +39,9 @@ export const ROUTES = {
  * (raised 강조 원은 Figma 정렬로 폐기 — 전 탭 플랫)
  */
 export const BOTTOM_NAV_ROUTES = [
-  { path: ROUTES.HOME, labelKey: 'home', icon: 'home' },
-  { path: ROUTES.RANKING, labelKey: 'ranking', icon: 'trending-up' },
-  { path: ROUTES.TOURNAMENT, labelKey: 'tournament', icon: 'trophy' },
-  { path: ROUTES.LETTER, labelKey: 'letter', icon: 'mail' },
-  { path: ROUTES.MYPAGE, labelKey: 'mypage', icon: 'user' },
+  { path: ROUTES.HOME, labelKey: 'home', icon: 'nav-home' },
+  { path: ROUTES.RANKING, labelKey: 'ranking', icon: 'nav-rank' },
+  { path: ROUTES.TOURNAMENT, labelKey: 'tournament', icon: 'nav-trophy' },
+  { path: ROUTES.LETTER, labelKey: 'letter', icon: 'nav-letter' },
+  { path: ROUTES.MYPAGE, labelKey: 'mypage', icon: 'nav-my' },
 ] as const;

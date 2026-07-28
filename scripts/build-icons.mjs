@@ -60,8 +60,22 @@ const ICONS = [
   'sparkles',
   'map-pin',
   'heart',
+  // Figma navIcon (여행한입 진짜최종3 / 3474:2183) — assets/icons/ 커스텀 소스
+  'nav-home',
+  'nav-home-active',
+  'nav-rank',
+  'nav-rank-active',
+  'nav-trophy',
+  'nav-trophy-active',
+  'nav-letter',
+  'nav-letter-active',
+  'nav-my',
+  'nav-my-active',
 ];
 
+// 커스텀 SVG (Figma export) 우선 — 없으면 lucide-static fallback.
+// 커스텀 소스는 stroke/fill 을 currentColor 로 정규화해서 커밋할 것.
+const CUSTOM_DIR = resolve(ROOT, 'assets/icons');
 const LUCIDE_DIR = resolve(ROOT, 'node_modules/lucide-static/icons');
 const OUTPUT = resolve(ROOT, 'public/icons.svg');
 
@@ -77,13 +91,18 @@ function buildSprite() {
   const symbols = [];
 
   for (const name of ICONS) {
-    const path = join(LUCIDE_DIR, `${name}.svg`);
     let raw;
     try {
-      raw = readFileSync(path, 'utf-8');
+      raw = readFileSync(join(CUSTOM_DIR, `${name}.svg`), 'utf-8');
     } catch {
-      console.error(`[icons] missing: ${name} (expected at ${path})`);
-      process.exit(1);
+      try {
+        raw = readFileSync(join(LUCIDE_DIR, `${name}.svg`), 'utf-8');
+      } catch {
+        console.error(
+          `[icons] missing: ${name} (checked ${CUSTOM_DIR} and ${LUCIDE_DIR})`,
+        );
+        process.exit(1);
+      }
     }
     const { viewBox, inner } = extractInner(raw);
     symbols.push(`  <symbol id="${name}" viewBox="${viewBox}">${inner}</symbol>`);

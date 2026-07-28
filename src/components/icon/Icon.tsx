@@ -47,7 +47,18 @@ export type IconName =
   // Domain
   | 'sparkles'
   | 'map-pin'
-  | 'heart';
+  | 'heart'
+  // Figma navIcon (assets/icons/) — off/on(-active) 글리프 분리
+  | 'nav-home'
+  | 'nav-home-active'
+  | 'nav-rank'
+  | 'nav-rank-active'
+  | 'nav-trophy'
+  | 'nav-trophy-active'
+  | 'nav-letter'
+  | 'nav-letter-active'
+  | 'nav-my'
+  | 'nav-my-active';
 
 export type IconSize = 'sm' | 'md' | 'lg' | 'xl' | number;
 

@@ -30,12 +30,20 @@
   font-size: var(--font-caption); // 12px
   padding: 4px 10px;
 }
+// Figma chip-on (3401:1095): h32 / px16 / 14px — 필터 chip
+.s-lg {
+  font-size: var(--text-sm);
+  padding: 4px var(--space-4);
+  min-height: 32px;
+}
 
 // variants
+// Figma chip state=off: white bg + gray border + muted Regular
 .v-default {
   background: var(--color-bg);
   border-color: var(--color-border);
-  color: var(--color-fg);
+  color: var(--color-muted);
+  font-weight: var(--font-weight-normal);
 }
 
 .v-primary {

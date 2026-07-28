@@ -3,27 +3,25 @@
   gap: var(--space-6);
 }
 
+// Figma wideTabMenu (3401:970): 풀폭 언더라인 탭.
+// active: primary Bold + primary 하단 보더 / inactive: muted Regular + gray 하단 보더
 .tabs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
-  padding: 0.375rem;
-  background: color-mix(in srgb, var(--color-fg) 4%, transparent);
-  border-radius: var(--radius-md);
   margin-bottom: var(--space-3);
 }
 
 .tab {
-  padding: 0.5rem 0.75rem;
-  border-radius: calc(var(--radius-md) - 2px);
+  padding: var(--space-3) 0;
   font-size: var(--text-sm);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-normal);
   color: var(--color-muted);
   background: transparent;
+  border-bottom: 1px solid var(--color-border);
   transition:
-    background var(--motion-base) ease,
+    border-color var(--motion-base) ease,
     color var(--motion-base) ease;
-  letter-spacing: var(--tracking-snug);
+  letter-spacing: var(--tracking-tight);
 
   &:focus-visible {
     outline: var(--focus-outline);
@@ -31,9 +29,9 @@
   }
 
   &.active {
-    background: var(--color-bg);
-    color: var(--color-fg);
-    box-shadow: var(--shadow-sm);
+    color: var(--color-primary);
+    font-weight: var(--font-weight-bold);
+    border-bottom-color: var(--color-primary);
   }
 }
 

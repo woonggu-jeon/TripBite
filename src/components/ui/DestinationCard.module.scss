@@ -2,16 +2,15 @@
 // 톤은 globals 의 --accent-{tone} 토큰 사용.
 // Fluid 반응형 — padding/gap 은 viewport 따라 부드럽게. aspect-ratio 는 단계 유지
 // (square → wide → narrow 는 의도된 다른 비율이라 step 의미 있음).
+// Figma DestinationCard (3331:27): 이미지 풀블리드 + 본문 px10/py12, border 1px gray, radius 12
 .card {
   position: relative;
   display: grid;
   // grid-rows 명시 — image(auto), body(1fr) → 카드 간 body 높이 통일
   grid-template-rows: auto 1fr;
-  gap: clamp(0.375rem, 1.2vw, 0.5rem);
-  padding: clamp(0.5rem, 2vw, 0.625rem);
   background: var(--color-bg);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   text-decoration: none;
   color: var(--color-fg);
   overflow: hidden;
@@ -37,13 +36,13 @@
 }
 
 // width 100% 명시 — aspect-ratio 가 width 기준 (ios safari 0 width 첫 frame 회피).
+// Figma: 152×108 (풀블리드 — 카드 radius 를 overflow 로 따라감)
 .image {
   position: relative;
   display: grid;
   place-items: center;
   width: 100%;
-  aspect-ratio: var(--aspect-square);
-  border-radius: var(--radius-sm);
+  aspect-ratio: 152 / 108;
   background: linear-gradient(
     135deg,
     color-mix(in srgb, var(--accent) 22%, var(--color-bg)),
@@ -91,49 +90,52 @@
   filter: var(--drop-shadow-icon);
 }
 
+// Figma body: px 10 / py 12, gap 4
 .body {
   display: grid;
-  gap: 0.125rem;
+  gap: var(--space-1);
   min-width: 0;
+  padding: var(--space-3) 10px;
+  align-content: start;
 }
 
+// Figma: 📍 12px 아이콘 + 10px Medium muted
 .region {
-  font-size: var(--font-eyebrow);
-  font-weight: var(--font-weight-bold);
-  color: var(--accent, var(--color-muted));
-  letter-spacing: var(--tracking-snug);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: 0.625rem;
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-tight);
+  color: var(--color-muted);
+  letter-spacing: var(--tracking-tight);
   margin: 0;
 }
 
-// 카드 간 높이 일관 — name 영역이 줄 수 만큼 자리 차지.
-// 짧은 이름도 동일 줄 수 만큼 자리 잡아 grid 안에서 카드 높이 정렬.
-// 모바일(≤380) 은 좁아 같은 문자가 더 많은 줄을 차지하므로 4 줄까지 허용,
-// 그 위는 3 줄. 4 줄째부터 ellipsis.
+// Figma: Bold 14 fg, 1줄 ellipsis
 .name {
-  font-size: clamp(var(--font-caption), 3vw, var(--font-label));
-  font-weight: var(--font-weight-extrabold);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-tight);
-  line-height: var(--line-tight);
-  min-height: calc(var(--line-tight) * 3 * 1em);
+  line-height: var(--line-snug);
   overflow: hidden;
   text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
+  white-space: nowrap;
   word-break: keep-all;
   margin: 0;
-
-  @media (max-width: 380px) {
-    -webkit-line-clamp: 4;
-    min-height: calc(var(--line-tight) * 4 * 1em);
-  }
 }
 
+// Figma desc: 10px Medium muted, 1줄 ellipsis
 .caption {
-  font-size: var(--font-eyebrow);
+  font-size: 0.625rem;
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-tight);
   color: var(--color-muted);
   font-variant-numeric: tabular-nums;
-  letter-spacing: var(--tracking-snug);
+  letter-spacing: var(--tracking-tight);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   margin: 0;
 }
 
@@ -152,18 +154,6 @@
 }
 .violet {
   --accent: var(--accent-violet);
-}
-
-// aspect-ratio 만 단계별 (모바일 viewport 에서 카드가 가로/세로 비율 자체가 바뀜).
-@media (max-width: 480px) {
-  .image {
-    aspect-ratio: var(--aspect-card-wide);
-  }
-}
-@media (max-width: 380px) {
-  .image {
-    aspect-ratio: var(--aspect-card-narrow);
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

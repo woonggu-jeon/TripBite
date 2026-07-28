@@ -15,6 +15,7 @@ import styles from './Chip.module.scss';
  *   - xs : 최소형 badge — NEW / HOT 같은 inline 라벨 (10px)
  *   - sm : 작은 chip (#태그용)
  *   - md : 기본
+ *   - lg : Figma 필터 chip (h32 / 14px) — on=solid, off=default 조합
  *
  * pill: 기본 true (radius-full). false 시 radius-md.
  */
@@ -24,7 +25,7 @@ export type ChipVariant =
   | 'outline'
   | 'subtle'
   | 'solid';
-export type ChipSize = 'xs' | 'sm' | 'md';
+export type ChipSize = 'xs' | 'sm' | 'md' | 'lg';
 
 interface ChipProps {
   variant?: ChipVariant;

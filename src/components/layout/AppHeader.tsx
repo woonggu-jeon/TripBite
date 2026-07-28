@@ -50,8 +50,16 @@ export function AppHeader() {
           )}
         </div>
 
-        {/* 2) 로고 */}
+        {/* 2) 로고 — Figma trip-bite-logo 베리언트4: 글리프 + 워드마크 (gap 4) */}
         <Link href={ROUTES.HOME} className={styles.logo} aria-label="Home">
+          {/* eslint-disable-next-line @next/next/no-img-element -- 정적 SVG 글리프, 최적화 불필요 */}
+          <img
+            src="/images/logo-glyph.svg"
+            alt=""
+            width={28}
+            height={26}
+            className={styles.logoGlyph}
+          />
           {t('logo')}
         </Link>
 

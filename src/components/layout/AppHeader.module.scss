@@ -62,6 +62,12 @@
   }
 }
 
+.logoGlyph {
+  display: block;
+  width: 28px;
+  height: 26px;
+}
+
 .dot {
   position: absolute;
   top: 7px;
@@ -77,6 +83,7 @@
 .logo {
   display: inline-flex;
   align-items: center;
+  gap: var(--space-1); // Figma: 글리프 ↔ 워드마크 4px
   justify-self: center;
   /* Figma trip-bite-logo: Pretendard Bold 18 / -2% */
   font-weight: var(--font-weight-bold);

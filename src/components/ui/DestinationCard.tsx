@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { ComponentProps, ReactNode } from 'react';
+import { Icon } from '@/components/icon';
 import { MediaThumb } from './MediaThumb';
 import styles from './DestinationCard.module.scss';
 
@@ -86,9 +87,13 @@ export function DestinationCard({
           />
         )}
       </MediaThumb>
+      {/* Figma DestinationCard (3331:27): 제목 → 📍지역 → 설명 순 */}
       <div className={styles.body}>
-        <p className={styles.region}>{regionLabel}</p>
         <h3 className={styles.name}>{name}</h3>
+        <p className={styles.region}>
+          <Icon name="map-pin" size={12} aria-hidden />
+          {regionLabel}
+        </p>
         {caption && <p className={styles.caption}>{caption}</p>}
       </div>
       {topRightAction && (

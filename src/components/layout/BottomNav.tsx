@@ -42,7 +42,7 @@ export function BottomNav() {
             aria-current={active ? 'page' : undefined}
           >
             <Icon
-              name={route.icon as IconName}
+              name={(active ? `${route.icon}-active` : route.icon) as IconName}
               size={24}
               aria-label={t(route.labelKey)}
             />

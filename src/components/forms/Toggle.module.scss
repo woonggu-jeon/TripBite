@@ -1,16 +1,14 @@
+/* Figma toggle (3386:347): 46×28 트랙, 22px 노브 (off: 좌4 / on: 좌20), off 트랙 disabled 색 */
 .track {
   position: relative;
   display: inline-block;
-  width: 44px;
-  height: 24px;
+  width: 46px;
+  height: 28px;
   border-radius: var(--radius-full);
-  background: color-mix(in srgb, var(--color-fg) 18%, transparent);
-  border: 1.5px solid transparent;
+  background: var(--color-disabled);
   cursor: pointer;
   flex-shrink: 0;
-  transition:
-    background var(--motion-base) ease,
-    border-color var(--motion-base) ease;
+  transition: background var(--motion-base) ease;
 
   &:focus-visible {
     outline: var(--focus-outline);
@@ -25,10 +23,10 @@
 
 .knob {
   position: absolute;
-  top: 1px;
-  left: 1px;
-  width: 18px;
-  height: 18px;
+  top: 3px;
+  left: 4px;
+  width: 22px;
+  height: 22px;
   background: var(--color-on-strong);
   border-radius: var(--radius-full);
   box-shadow: var(--shadow-sm);
@@ -39,7 +37,7 @@
   background: var(--color-primary);
 
   .knob {
-    transform: translateX(20px);
+    transform: translateX(16px);
   }
 }
 
