@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import type { QuizQuestionDto } from '@/api/generated/schemas';
 import { shuffle, shuffleQuizOptions } from './shuffle-options';
 
