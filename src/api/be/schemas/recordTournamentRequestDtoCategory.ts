@@ -5,8 +5,8 @@
  * OpenAPI spec version: v0
  */
 
-export type RecordTournamentRequestDtoCategory =
-  (typeof RecordTournamentRequestDtoCategory)[keyof typeof RecordTournamentRequestDtoCategory];
+export type RecordTournamentRequestDtoCategory = typeof RecordTournamentRequestDtoCategory[keyof typeof RecordTournamentRequestDtoCategory];
+
 
 export const RecordTournamentRequestDtoCategory = {
   attraction: 'attraction',

@@ -1,19 +1,19 @@
 'use client';
 
-import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import type { DestinationDetailDto } from '@/api/generated/schemas';
+import { EmptyState } from '@/components/feedback/EmptyState';
+import { Skeleton } from '@/components/feedback/Skeleton';
 import { Icon } from '@/components/icon/Icon';
 import { SubHeader } from '@/components/layout/SubHeader';
-import { Skeleton } from '@/components/feedback/Skeleton';
-import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { useDestinationDetail } from '@/features/tournament/hooks/use-tournament';
-import type { DestinationDetailDto } from '@/api/generated/schemas';
-import { DestinationPhotos } from './DestinationPhotos';
 import { DestinationActions } from './DestinationActions';
-import { RelatedDestinations } from './RelatedDestinations';
 import styles from './DestinationDetailClient.module.scss';
+import { DestinationPhotos } from './DestinationPhotos';
+import { RelatedDestinations } from './RelatedDestinations';
 
 /**
  * 여행지 상세 client — Figma "POI · 장소상세" (2026-06-23) 정합.

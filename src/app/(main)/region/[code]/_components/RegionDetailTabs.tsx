@@ -1,32 +1,32 @@
 'use client';
 
-import { useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { Icon } from '@/components/icon/Icon';
-import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
-import { toneFor } from '@/constants/region-tone';
+import { useCallback, useState } from 'react';
 import type {
   DestinationCategory,
   RegionContentDto,
 } from '@/api/generated/schemas';
-import {
-  regionKeys,
-  useRegionContents,
-} from '@/features/region/hooks/use-region';
-import {
-  regionApi,
-  type RegionContentFilter,
-} from '@/features/region/api/region';
-import { InfiniteList } from '@/features/list/components/InfiniteList';
+import { Icon } from '@/components/icon/Icon';
 import {
   Button,
   DestinationCard,
   DestinationCardSkeleton,
-  TabList,
   Tab,
+  TabList,
   TabPanel,
 } from '@/components/ui';
+import { toneFor } from '@/constants/region-tone';
+import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
+import { InfiniteList } from '@/features/list/components/InfiniteList';
+import {
+  type RegionContentFilter,
+  regionApi,
+} from '@/features/region/api/region';
+import {
+  regionKeys,
+  useRegionContents,
+} from '@/features/region/hooks/use-region';
 import styles from './RegionDetailTabs.module.scss';
 
 /**

@@ -1,19 +1,19 @@
 'use client';
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Icon } from '@/components/icon/Icon';
-import { SkeletonList } from '@/components/feedback/SkeletonList';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/feedback/Skeleton';
+import { SkeletonList } from '@/components/feedback/SkeletonList';
+import { Icon } from '@/components/icon/Icon';
 import { Button } from '@/components/ui';
 import { WeekLabel } from '@/components/ui/WeekLabel';
-import { useWeeklyTopDestinations } from '@/features/ranking/hooks/use-ranking';
-import { RegionWinsChart } from '@/features/ranking/components/RegionWinsChart';
 import { isRegionCode } from '@/constants/regions';
-import { secureImageUrl } from '@/lib/secure-image-url';
+import { RegionWinsChart } from '@/features/ranking/components/RegionWinsChart';
+import { useWeeklyTopDestinations } from '@/features/ranking/hooks/use-ranking';
 import { haptic } from '@/lib/haptic';
+import { secureImageUrl } from '@/lib/secure-image-url';
 import styles from './RankingPageContent.module.scss';
 
 /**

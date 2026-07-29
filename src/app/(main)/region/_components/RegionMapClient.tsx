@@ -1,8 +1,8 @@
 'use client';
 
-import { useMemo } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useMemo } from 'react';
 import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import { ChungbukStampMap } from '@/features/region/components/ChungbukStampMap';
 import styles from './RegionMapClient.module.scss';

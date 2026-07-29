@@ -1,8 +1,8 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useTranslations } from 'next-intl';
 import { Icon, type IconName } from '@/components/icon';
 import { BOTTOM_NAV_ROUTES, NAV_HIDE_ROUTES } from '@/constants/routes';
 import { haptic } from '@/lib/haptic';

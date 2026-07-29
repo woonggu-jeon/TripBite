@@ -1,11 +1,11 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { haptic } from '@/lib/haptic';
-import { MediaThumb } from '@/components/ui';
-import { CHUNGBUK_REGIONS } from '@/constants/regions';
-import { categoryEmoji } from '@/constants/emoji-map';
 import type { DestinationDto } from '@/api/generated/schemas';
+import { MediaThumb } from '@/components/ui';
+import { categoryEmoji } from '@/constants/emoji-map';
+import { CHUNGBUK_REGIONS } from '@/constants/regions';
+import { haptic } from '@/lib/haptic';
 import styles from './MatchupCard.module.scss';
 
 export interface MatchupCardProps {

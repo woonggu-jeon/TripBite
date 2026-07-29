@@ -1,8 +1,8 @@
-import { notFound } from 'next/navigation';
-import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
+import { notFound } from 'next/navigation';
 import { SubHeader } from '@/components/layout/SubHeader';
-import { isRegionCode, type RegionCode } from '@/constants/regions';
+import { type RegionCode, isRegionCode } from '@/constants/regions';
 import { RegionHero } from '@/features/region';
 import { JsonLd, breadcrumbList } from '@/lib/json-ld';
 import { RegionDetailTabs } from './_components/RegionDetailTabs';

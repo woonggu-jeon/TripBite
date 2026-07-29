@@ -1,6 +1,6 @@
 'use client';
 
-import { type KeyboardEvent, type ReactNode, type MouseEvent } from 'react';
+import { type KeyboardEvent, type MouseEvent, type ReactNode } from 'react';
 import { haptic } from '@/lib/haptic';
 
 export interface RadioGroupProps {

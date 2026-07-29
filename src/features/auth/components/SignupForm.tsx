@@ -1,20 +1,20 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Check, Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
-import { Check, Loader2 } from 'lucide-react';
-import { useSignup } from '@/features/auth/hooks/use-auth';
-import { authApi } from '@/features/auth/api/auth';
-import {
-  signupSchema,
-  type SignupFormValues,
-} from '@/features/auth/schemas/signup';
-import { isAxiosError } from '@/services/interceptors/auth';
-import { toast } from '@/lib/toast';
 import { Button, PasswordField, TextField } from '@/components/ui';
+import { authApi } from '@/features/auth/api/auth';
+import { useSignup } from '@/features/auth/hooks/use-auth';
+import {
+  type SignupFormValues,
+  signupSchema,
+} from '@/features/auth/schemas/signup';
+import { toast } from '@/lib/toast';
+import { isAxiosError } from '@/services/interceptors/auth';
 import styles from './AuthForm.module.scss';
 
 /**

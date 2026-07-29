@@ -1,32 +1,32 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import {
-  ThemeKindSelector,
-  type ThemeKind,
-} from '@/features/tournament/components/ThemeKindSelector';
-import { SeasonSelector } from '@/features/tournament/components/SeasonSelector';
-import { CategoryFilter } from '@/features/tournament/components/CategoryFilter';
-import { CountSelector } from '@/features/tournament/components/CountSelector';
-import { ChungbukMap } from '@/features/tournament/components/ChungbukMap';
-import { FallingPetals } from '@/features/tournament/components/FallingPetals';
-import { SubHeader } from '@/components/layout/SubHeader';
-import { useTournamentStore } from '@/features/tournament/store/tournament-store';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import type {
   DestinationCategory,
   RegionCode,
   Season,
 } from '@/api/generated/schemas';
+import { SubHeader } from '@/components/layout/SubHeader';
+import { Button, ButtonGrid } from '@/components/ui';
+import { SeasonIcon } from '@/components/ui/SeasonIcon';
+import { CHUNGBUK_REGIONS } from '@/constants/regions';
+import { CategoryFilter } from '@/features/tournament/components/CategoryFilter';
+import { ChungbukMap } from '@/features/tournament/components/ChungbukMap';
+import { CountSelector } from '@/features/tournament/components/CountSelector';
+import { FallingPetals } from '@/features/tournament/components/FallingPetals';
+import { SeasonSelector } from '@/features/tournament/components/SeasonSelector';
+import {
+  type ThemeKind,
+  ThemeKindSelector,
+} from '@/features/tournament/components/ThemeKindSelector';
+import { useTournamentStore } from '@/features/tournament/store/tournament-store';
 import type {
   TournamentCount,
   TournamentTheme,
 } from '@/features/tournament/types';
-import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { haptic } from '@/lib/haptic';
-import { Button, ButtonGrid } from '@/components/ui';
-import { SeasonIcon } from '@/components/ui/SeasonIcon';
 import styles from './TournamentSetup.module.scss';
 
 /**

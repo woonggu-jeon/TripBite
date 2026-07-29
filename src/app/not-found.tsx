@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { Icon } from '@/components/icon/Icon';
 import { EmptyState } from '@/components/feedback/EmptyState';
+import { Icon } from '@/components/icon/Icon';
 import styles from './error.module.scss';
 
 /**

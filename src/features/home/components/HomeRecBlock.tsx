@@ -1,21 +1,21 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useTranslations } from 'next-intl';
 import { ChevronRight } from 'lucide-react';
-import { Skeleton } from '@/components/feedback/Skeleton';
-import { DestinationCard } from '@/components/ui/DestinationCard';
-import { Carousel } from '@/features/carousel';
-import { useResponsiveSlidesPerView } from '@/hooks/use-responsive-slides-per-view';
-import { useRecommendationGroups } from '@/features/home/hooks/use-recommendations';
-import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
-import { toneFor } from '@/constants/region-tone';
-import { categoryEmoji } from '@/constants/emoji-map';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { useState } from 'react';
 import type {
   DestinationCategory,
   DestinationDto,
 } from '@/api/generated/schemas';
+import { Skeleton } from '@/components/feedback/Skeleton';
+import { DestinationCard } from '@/components/ui/DestinationCard';
+import { categoryEmoji } from '@/constants/emoji-map';
+import { toneFor } from '@/constants/region-tone';
+import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
+import { Carousel } from '@/features/carousel';
+import { useRecommendationGroups } from '@/features/home/hooks/use-recommendations';
+import { useResponsiveSlidesPerView } from '@/hooks/use-responsive-slides-per-view';
 import styles from './HomeRecBlock.module.scss';
 
 /**

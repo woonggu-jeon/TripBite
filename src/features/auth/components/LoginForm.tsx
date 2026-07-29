@@ -1,18 +1,18 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useSearchParams } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { Button, PasswordField, TextField } from '@/components/ui';
 import { useLogin } from '@/features/auth/hooks/use-auth';
 import {
-  loginSchema,
   type LoginFormValues,
+  loginSchema,
 } from '@/features/auth/schemas/login';
 import { isAxiosError } from '@/services/interceptors/auth';
-import { Button, PasswordField, TextField } from '@/components/ui';
 import styles from './AuthForm.module.scss';
 
 /**

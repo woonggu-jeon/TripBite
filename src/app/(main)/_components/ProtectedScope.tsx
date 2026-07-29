@@ -1,6 +1,7 @@
 'use client';
 
 import { type ReactNode } from 'react';
+
 // 2026-06-12 — 인증 redirect 를 middleware (SSR 단계) 로 이전.
 // 클라 가드 (AuthGuard) 는 hydration race 회귀가 반복되어 비활성화.
 // 안 되면 빠른 원복을 위해 주석 보존.

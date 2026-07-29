@@ -1,23 +1,23 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { haptic } from '@/lib/haptic';
-import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
-import { toneFor } from '@/constants/region-tone';
+import { useRouter } from 'next/navigation';
+import type { TravelTypeDto } from '@/api/generated/schemas';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
+import { TravelTypeIcon } from '@/components/ui';
 import { DestinationCard } from '@/components/ui/DestinationCard';
+import { categoryEmoji } from '@/constants/emoji-map';
+import { toneFor } from '@/constants/region-tone';
+import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import {
   useMyTravelType,
   useSetMyTravelType,
 } from '@/features/ranking/hooks/use-ranking';
-import type { TravelTypeDto } from '@/api/generated/schemas';
-import { toast } from '@/lib/toast';
-import { useShareCard } from '@/hooks/use-share-card';
 import { useRequireAuth } from '@/hooks/use-require-auth';
-import { categoryEmoji } from '@/constants/emoji-map';
-import { TravelTypeIcon } from '@/components/ui';
+import { useShareCard } from '@/hooks/use-share-card';
+import { haptic } from '@/lib/haptic';
+import { toast } from '@/lib/toast';
 import styles from './TravelTypeResult.module.scss';
 
 /**

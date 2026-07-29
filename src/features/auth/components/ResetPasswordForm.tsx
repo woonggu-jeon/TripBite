@@ -1,17 +1,17 @@
 'use client';
 
-import Link from 'next/link';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { Button, PasswordField } from '@/components/ui';
 import { useResetPassword } from '@/features/auth/hooks/use-auth';
 import {
-  resetPasswordSchema,
   type ResetPasswordValues,
+  resetPasswordSchema,
 } from '@/features/auth/schemas/password-reset';
 import { isAxiosError } from '@/services/interceptors/auth';
-import { Button, PasswordField } from '@/components/ui';
 import styles from './AuthForm.module.scss';
 
 /**

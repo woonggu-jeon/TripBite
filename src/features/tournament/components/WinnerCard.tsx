@@ -1,11 +1,11 @@
 'use client';
 
-import { memo } from 'react';
 import { useTranslations } from 'next-intl';
-import { MediaThumb } from '@/components/ui';
-import { CHUNGBUK_REGIONS } from '@/constants/regions';
-import { categoryEmoji } from '@/constants/emoji-map';
+import { memo } from 'react';
 import type { DestinationDto } from '@/api/generated/schemas';
+import { MediaThumb } from '@/components/ui';
+import { categoryEmoji } from '@/constants/emoji-map';
+import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import styles from './WinnerCard.module.scss';
 
 /**

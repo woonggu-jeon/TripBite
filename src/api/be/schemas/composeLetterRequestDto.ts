@@ -8,9 +8,9 @@ import type { LetterLocationRequestDto } from './letterLocationRequestDto';
 
 export interface ComposeLetterRequestDto {
   /**
-   * @minLength 5
-   * @maxLength 5
-   */
+     * @minLength 5
+     * @maxLength 5
+     */
   body?: string;
   location?: LetterLocationRequestDto;
   anonymous?: boolean;

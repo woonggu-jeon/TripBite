@@ -2,10 +2,10 @@
 import { getDetail, getRandom } from '@/api/be/destination/destination';
 // 신규 Spring BE 지원: 저장 목록/저장/삭제 + history. (record 는 shape 비호환 → 구 generated mock 유지)
 import {
-  getList as beListSaved,
-  getRecentTournaments as beHistory,
-  save as beSave,
   delete1 as beDeleteSaved,
+  getRecentTournaments as beHistory,
+  getList as beListSaved,
+  save as beSave,
 } from '@/api/be/mypage/mypage';
 import type {
   ApiResponseTournamentSummaryDto,
@@ -21,21 +21,21 @@ import {
   mypageControllerRemoveSavedV1,
   mypageControllerSaveV1,
 } from '@/api/generated/mypage/mypage';
-import { tournamentControllerGetV1 } from '@/api/generated/tournaments/tournaments';
-import { api } from '@/services/api/client';
-import {
-  normalizeImageField,
-  normalizePhotosField,
-} from '@/lib/secure-image-url';
 import type {
-  DestinationDto,
   DestinationDetailDto,
+  DestinationDto,
   SavedTournamentDto,
   TournamentHistoryItemDto,
   TournamentHistoryPageDto,
   TournamentRecordDto,
 } from '@/api/generated/schemas';
+import { tournamentControllerGetV1 } from '@/api/generated/tournaments/tournaments';
 import type { TournamentConfig } from '@/features/tournament/types';
+import {
+  normalizeImageField,
+  normalizePhotosField,
+} from '@/lib/secure-image-url';
+import { api } from '@/services/api/client';
 
 /**
  * 토너먼트 API — orval generated client wrap.

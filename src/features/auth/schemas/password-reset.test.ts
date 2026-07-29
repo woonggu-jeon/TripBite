@@ -1,8 +1,8 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
+  changePasswordSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
-  changePasswordSchema,
 } from './password-reset';
 
 describe('forgotPasswordSchema', () => {

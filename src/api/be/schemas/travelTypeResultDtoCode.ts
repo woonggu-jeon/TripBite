@@ -5,8 +5,8 @@
  * OpenAPI spec version: v0
  */
 
-export type TravelTypeResultDtoCode =
-  (typeof TravelTypeResultDtoCode)[keyof typeof TravelTypeResultDtoCode];
+export type TravelTypeResultDtoCode = typeof TravelTypeResultDtoCode[keyof typeof TravelTypeResultDtoCode];
+
 
 export const TravelTypeResultDtoCode = {
   adventurer: 'adventurer',

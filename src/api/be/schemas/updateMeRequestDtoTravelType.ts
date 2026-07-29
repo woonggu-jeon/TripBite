@@ -8,9 +8,8 @@
 /**
  * @nullable
  */
-export type UpdateMeRequestDtoTravelType =
-  | (typeof UpdateMeRequestDtoTravelType)[keyof typeof UpdateMeRequestDtoTravelType]
-  | null;
+export type UpdateMeRequestDtoTravelType = typeof UpdateMeRequestDtoTravelType[keyof typeof UpdateMeRequestDtoTravelType] | null;
+
 
 export const UpdateMeRequestDtoTravelType = {
   adventurer: 'adventurer',

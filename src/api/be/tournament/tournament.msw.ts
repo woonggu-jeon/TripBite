@@ -4,169 +4,56 @@
  * OpenAPI definition
  * OpenAPI spec version: v0
  */
-import { faker } from '@faker-js/faker';
+import {
+  faker
+} from '@faker-js/faker';
 
-import { HttpResponse, http } from 'msw';
-import type { RequestHandlerOptions } from 'msw';
+import {
+  HttpResponse,
+  http
+} from 'msw';
+import type {
+  RequestHandlerOptions
+} from 'msw';
 
 import type {
   ApiResponseListRegionWinCountDto,
   ApiResponseWeeklyTopDestinationsDto,
-  WeeklyTopDestinationsDto,
+  WeeklyTopDestinationsDto
 } from '../schemas';
 
-export const getGetWeeklyTopDestinationsResponseWeeklyTopDestinationsDtoMock = (
-  overrideResponse: Partial<WeeklyTopDestinationsDto> = {},
-): WeeklyTopDestinationsDto => ({
-  ...{
-    year: faker.helpers.arrayElement([faker.number.int(), undefined]),
-    month: faker.helpers.arrayElement([faker.number.int(), undefined]),
-    weekOfMonth: faker.helpers.arrayElement([faker.number.int(), undefined]),
-    weekStart: faker.helpers.arrayElement([
-      faker.date.past().toISOString().slice(0, 10),
-      undefined,
-    ]),
-    weekEnd: faker.helpers.arrayElement([
-      faker.date.past().toISOString().slice(0, 10),
-      undefined,
-    ]),
-    items: faker.helpers.arrayElement([
-      Array.from(
-        { length: faker.number.int({ min: 1, max: 10 }) },
-        (_, i) => i + 1,
-      ).map(() => ({
-        destinationId: faker.helpers.arrayElement([
-          faker.number.int(),
-          undefined,
-        ]),
-        destinationName: faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          undefined,
-        ]),
-        winCount: faker.helpers.arrayElement([faker.number.int(), undefined]),
-      })),
-      undefined,
-    ]),
-  },
-  ...overrideResponse,
-});
 
-export const getGetWeeklyTopDestinationsResponseMock = (
-  overrideResponse: Partial<
-    Extract<ApiResponseWeeklyTopDestinationsDto, object>
-  > = {},
-): ApiResponseWeeklyTopDestinationsDto => ({
-  success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-  message: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  data: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      { ...getGetWeeklyTopDestinationsResponseWeeklyTopDestinationsDtoMock() },
-      null,
-    ]),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
+export const getGetWeeklyTopDestinationsResponseWeeklyTopDestinationsDtoMock = (overrideResponse: Partial<WeeklyTopDestinationsDto> = {}): WeeklyTopDestinationsDto => ({...{year: faker.helpers.arrayElement([faker.number.int(), undefined]), month: faker.helpers.arrayElement([faker.number.int(), undefined]), weekOfMonth: faker.helpers.arrayElement([faker.number.int(), undefined]), weekStart: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 10), undefined]), weekEnd: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 10), undefined]), items: faker.helpers.arrayElement([Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => ({destinationId: faker.helpers.arrayElement([faker.number.int(), undefined]), destinationName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), winCount: faker.helpers.arrayElement([faker.number.int(), undefined])})), undefined])}, ...overrideResponse});
 
-export const getGetRegionRankingsResponseMock = (
-  overrideResponse: Partial<
-    Extract<ApiResponseListRegionWinCountDto, object>
-  > = {},
-): ApiResponseListRegionWinCountDto => ({
-  success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-  message: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  data: faker.helpers.arrayElement([
-    Array.from(
-      { length: faker.number.int({ min: 1, max: 10 }) },
-      (_, i) => i + 1,
-    ).map(() => ({
-      region: faker.helpers.arrayElement([
-        faker.helpers.arrayElement([
-          'cheongju',
-          'chungju',
-          'jecheon',
-          'boeun',
-          'okcheon',
-          'yeongdong',
-          'jincheon',
-          'goesan',
-          'eumseong',
-          'danyang',
-          'jeungpyeong',
-        ] as const),
-        undefined,
-      ]),
-      winCount: faker.helpers.arrayElement([faker.number.int(), undefined]),
-    })),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
+export const getGetWeeklyTopDestinationsResponseMock = (overrideResponse: Partial<Extract<ApiResponseWeeklyTopDestinationsDto, object>> = {}): ApiResponseWeeklyTopDestinationsDto => ({success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), message: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), data: faker.helpers.arrayElement([faker.helpers.arrayElement([{...getGetWeeklyTopDestinationsResponseWeeklyTopDestinationsDtoMock()},null,]), undefined]), ...overrideResponse})
 
-export const getGetWeeklyTopDestinationsMockHandler = (
-  overrideResponse?:
-    | ApiResponseWeeklyTopDestinationsDto
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) =>
-        | Promise<ApiResponseWeeklyTopDestinationsDto>
-        | ApiResponseWeeklyTopDestinationsDto),
-  options?: RequestHandlerOptions,
-) => {
-  return http.get(
-    '*/tournaments/rankings/weekly',
-    async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
-      return HttpResponse.json(
-        overrideResponse !== undefined
-          ? typeof overrideResponse === 'function'
-            ? await overrideResponse(info)
-            : overrideResponse
-          : getGetWeeklyTopDestinationsResponseMock(),
-        { status: 200 },
-      );
-    },
-    options,
-  );
-};
+export const getGetRegionRankingsResponseMock = (overrideResponse: Partial<Extract<ApiResponseListRegionWinCountDto, object>> = {}): ApiResponseListRegionWinCountDto => ({success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), message: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), data: faker.helpers.arrayElement([Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => ({region: faker.helpers.arrayElement([faker.helpers.arrayElement(['cheongju','chungju','jecheon','boeun','okcheon','yeongdong','jincheon','goesan','eumseong','danyang','jeungpyeong'] as const), undefined]), winCount: faker.helpers.arrayElement([faker.number.int(), undefined])})), undefined]), ...overrideResponse})
 
-export const getGetRegionRankingsMockHandler = (
-  overrideResponse?:
-    | ApiResponseListRegionWinCountDto
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) =>
-        | Promise<ApiResponseListRegionWinCountDto>
-        | ApiResponseListRegionWinCountDto),
-  options?: RequestHandlerOptions,
-) => {
-  return http.get(
-    '*/tournaments/rankings/regions',
-    async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
-      return HttpResponse.json(
-        overrideResponse !== undefined
-          ? typeof overrideResponse === 'function'
-            ? await overrideResponse(info)
-            : overrideResponse
-          : getGetRegionRankingsResponseMock(),
-        { status: 200 },
-      );
-    },
-    options,
-  );
-};
+
+export const getGetWeeklyTopDestinationsMockHandler = (overrideResponse?: ApiResponseWeeklyTopDestinationsDto | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<ApiResponseWeeklyTopDestinationsDto> | ApiResponseWeeklyTopDestinationsDto), options?: RequestHandlerOptions) => {
+  return http.get('*/tournaments/rankings/weekly', async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+
+
+    return HttpResponse.json(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getGetWeeklyTopDestinationsResponseMock(),
+      { status: 200
+      })
+  }, options)
+}
+
+export const getGetRegionRankingsMockHandler = (overrideResponse?: ApiResponseListRegionWinCountDto | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<ApiResponseListRegionWinCountDto> | ApiResponseListRegionWinCountDto), options?: RequestHandlerOptions) => {
+  return http.get('*/tournaments/rankings/regions', async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+
+
+    return HttpResponse.json(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getGetRegionRankingsResponseMock(),
+      { status: 200
+      })
+  }, options)
+}
 export const getTournamentMock = () => [
   getGetWeeklyTopDestinationsMockHandler(),
-  getGetRegionRankingsMockHandler(),
-];
+  getGetRegionRankingsMockHandler()
+]

@@ -4,119 +4,40 @@
  * OpenAPI definition
  * OpenAPI spec version: v0
  */
-import { faker } from '@faker-js/faker';
+import {
+  faker
+} from '@faker-js/faker';
 
-import { HttpResponse, http } from 'msw';
-import type { RequestHandlerOptions } from 'msw';
+import {
+  HttpResponse,
+  http
+} from 'msw';
+import type {
+  RequestHandlerOptions
+} from 'msw';
 
 import type {
   ApiResponseOngoingFestivalsDto,
-  OngoingFestivalsDto,
+  OngoingFestivalsDto
 } from '../schemas';
 
-export const getGetOngoingFestivalsResponseOngoingFestivalsDtoMock = (
-  overrideResponse: Partial<OngoingFestivalsDto> = {},
-): OngoingFestivalsDto => ({
-  ...{
-    type: faker.helpers.arrayElement([
-      faker.helpers.arrayElement(['ongoing', 'upcoming', 'popular'] as const),
-      undefined,
-    ]),
-    items: faker.helpers.arrayElement([
-      Array.from(
-        { length: faker.number.int({ min: 1, max: 10 }) },
-        (_, i) => i + 1,
-      ).map(() => ({
-        id: faker.helpers.arrayElement([faker.number.int(), undefined]),
-        name: faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          undefined,
-        ]),
-        imageUrl: faker.helpers.arrayElement([
-          faker.helpers.arrayElement([
-            faker.string.alpha({ length: { min: 10, max: 20 } }),
-            null,
-          ]),
-          undefined,
-        ]),
-        regionLabel: faker.helpers.arrayElement([
-          faker.helpers.arrayElement([
-            faker.string.alpha({ length: { min: 10, max: 20 } }),
-            null,
-          ]),
-          undefined,
-        ]),
-        daysToStart: faker.helpers.arrayElement([
-          faker.helpers.arrayElement([faker.number.int(), null]),
-          undefined,
-        ]),
-        eventStartDate: faker.helpers.arrayElement([
-          faker.helpers.arrayElement([
-            faker.string.alpha({ length: { min: 10, max: 20 } }),
-            null,
-          ]),
-          undefined,
-        ]),
-        eventEndDate: faker.helpers.arrayElement([
-          faker.helpers.arrayElement([
-            faker.string.alpha({ length: { min: 10, max: 20 } }),
-            null,
-          ]),
-          undefined,
-        ]),
-      })),
-      undefined,
-    ]),
-  },
-  ...overrideResponse,
-});
 
-export const getGetOngoingFestivalsResponseMock = (
-  overrideResponse: Partial<
-    Extract<ApiResponseOngoingFestivalsDto, object>
-  > = {},
-): ApiResponseOngoingFestivalsDto => ({
-  success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-  message: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  data: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      { ...getGetOngoingFestivalsResponseOngoingFestivalsDtoMock() },
-      null,
-    ]),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
+export const getGetOngoingFestivalsResponseOngoingFestivalsDtoMock = (overrideResponse: Partial<OngoingFestivalsDto> = {}): OngoingFestivalsDto => ({...{type: faker.helpers.arrayElement([faker.helpers.arrayElement(['ongoing','upcoming','popular'] as const), undefined]), items: faker.helpers.arrayElement([Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.number.int(), undefined]), name: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), imageUrl: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), regionLabel: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), daysToStart: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.int(), null]), undefined]), eventStartDate: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), eventEndDate: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined])})), undefined])}, ...overrideResponse});
 
-export const getGetOngoingFestivalsMockHandler = (
-  overrideResponse?:
-    | ApiResponseOngoingFestivalsDto
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) =>
-        | Promise<ApiResponseOngoingFestivalsDto>
-        | ApiResponseOngoingFestivalsDto),
-  options?: RequestHandlerOptions,
-) => {
-  return http.get(
-    '*/regions/ongoing-festivals',
-    async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
-      return HttpResponse.json(
-        overrideResponse !== undefined
-          ? typeof overrideResponse === 'function'
-            ? await overrideResponse(info)
-            : overrideResponse
-          : getGetOngoingFestivalsResponseMock(),
-        { status: 200 },
-      );
-    },
-    options,
-  );
-};
-export const getRegionMock = () => [getGetOngoingFestivalsMockHandler()];
+export const getGetOngoingFestivalsResponseMock = (overrideResponse: Partial<Extract<ApiResponseOngoingFestivalsDto, object>> = {}): ApiResponseOngoingFestivalsDto => ({success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), message: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), data: faker.helpers.arrayElement([faker.helpers.arrayElement([{...getGetOngoingFestivalsResponseOngoingFestivalsDtoMock()},null,]), undefined]), ...overrideResponse})
+
+
+export const getGetOngoingFestivalsMockHandler = (overrideResponse?: ApiResponseOngoingFestivalsDto | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<ApiResponseOngoingFestivalsDto> | ApiResponseOngoingFestivalsDto), options?: RequestHandlerOptions) => {
+  return http.get('*/regions/ongoing-festivals', async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+
+
+    return HttpResponse.json(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getGetOngoingFestivalsResponseMock(),
+      { status: 200
+      })
+  }, options)
+}
+export const getRegionMock = () => [
+  getGetOngoingFestivalsMockHandler()
+]

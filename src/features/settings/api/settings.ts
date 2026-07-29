@@ -1,11 +1,11 @@
-import {
-  settingsControllerGetV1,
-  settingsControllerUpdateNotificationsV1,
-} from '@/api/generated/settings/settings';
 import type {
   NotificationSettingsDto,
   UpdateNotificationSettingsDto,
 } from '@/api/generated/schemas';
+import {
+  settingsControllerGetV1,
+  settingsControllerUpdateNotificationsV1,
+} from '@/api/generated/settings/settings';
 
 /**
  * 사용자 설정 — orval generated client wrap.

@@ -8,31 +8,31 @@ import type { UpdateMeRequestDtoTravelType } from './updateMeRequestDtoTravelTyp
 
 export interface UpdateMeRequestDto {
   /**
-   * @minLength 10
-   * @maxLength 2147483647
-   * @nullable
-   */
+     * @minLength 10
+     * @maxLength 2147483647
+     * @nullable
+     */
   password?: string | null;
   /**
-   * @minLength 1
-   * @maxLength 2147483647
-   * @nullable
-   */
+     * @minLength 1
+     * @maxLength 2147483647
+     * @nullable
+     */
   name?: string | null;
   /** @nullable */
   birthDate?: string | null;
   /** @nullable */
   email?: string | null;
   /**
-   * @nullable
-   * @pattern ^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$
-   */
+     * @nullable
+     * @pattern ^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$
+     */
   phone?: string | null;
   /**
-   * @minLength 2
-   * @maxLength 23
-   * @nullable
-   */
+     * @minLength 2
+     * @maxLength 23
+     * @nullable
+     */
   nickname?: string | null;
   /** @nullable */
   travelType?: UpdateMeRequestDtoTravelType;

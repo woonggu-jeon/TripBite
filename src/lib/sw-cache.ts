@@ -10,6 +10,9 @@
  *   - SW가 비활성화된 환경 (dev mode 등) 에선 silently no-op
  *   - 실패는 throw하지 않음 (로그아웃이 캐시 때문에 실패하면 안 됨)
  */
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('sw-cache');
 
 export async function clearAllCaches(): Promise<void> {
   if (typeof window === 'undefined') return;
@@ -19,7 +22,7 @@ export async function clearAllCaches(): Promise<void> {
     const names = await caches.keys();
     await Promise.all(names.map((name) => caches.delete(name)));
   } catch (err) {
-    console.warn('[sw-cache] clearAllCaches failed', err);
+    log.warn({ err }, 'clearAllCaches failed');
   }
 }
 
@@ -35,6 +38,6 @@ export async function unregisterServiceWorker(): Promise<void> {
     const registrations = await navigator.serviceWorker.getRegistrations();
     await Promise.all(registrations.map((r) => r.unregister()));
   } catch (err) {
-    console.warn('[sw-cache] unregisterServiceWorker failed', err);
+    log.warn({ err }, 'unregisterServiceWorker failed');
   }
 }

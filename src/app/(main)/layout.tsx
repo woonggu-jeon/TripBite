@@ -1,7 +1,7 @@
-import type { ReactNode } from 'react';
 import { getTranslations } from 'next-intl/server';
-import { HeaderSwitch } from '@/components/layout/HeaderSwitch';
+import type { ReactNode } from 'react';
 import { BottomNav } from '@/components/layout/BottomNav';
+import { HeaderSwitch } from '@/components/layout/HeaderSwitch';
 import { ProtectedScope } from './_components/ProtectedScope';
 import styles from './layout.module.scss';
 

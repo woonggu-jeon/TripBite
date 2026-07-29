@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { DestinationDto } from '@/api/generated/schemas';
-import { pairRound, nextPow2, roundLabelKey } from './bracket';
+import { nextPow2, pairRound, roundLabelKey } from './bracket';
 
 function makeDest(id: number): DestinationDto {
   return {

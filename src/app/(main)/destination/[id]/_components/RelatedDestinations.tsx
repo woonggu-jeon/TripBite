@@ -1,13 +1,13 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Carousel } from '@/features/carousel';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { DestinationCard } from '@/components/ui';
-import { useRelatedDestinations } from '@/features/tournament/hooks/use-tournament';
-import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
-import { toneFor } from '@/constants/region-tone';
 import { categoryEmoji } from '@/constants/emoji-map';
+import { toneFor } from '@/constants/region-tone';
+import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
+import { Carousel } from '@/features/carousel';
+import { useRelatedDestinations } from '@/features/tournament/hooks/use-tournament';
 import { useResponsiveSlidesPerView } from '@/hooks/use-responsive-slides-per-view';
 import styles from './RelatedDestinations.module.scss';
 

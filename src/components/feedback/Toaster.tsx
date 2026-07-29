@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { Icon, type IconName } from '@/components/icon';
-import { useUIStore, type Toast } from '@/stores/ui-store';
+import { type Toast, useUIStore } from '@/stores/ui-store';
 import styles from './Toaster.module.scss';
 
 /**

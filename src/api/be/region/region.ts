@@ -4,7 +4,10 @@
  * OpenAPI definition
  * OpenAPI spec version: v0
  */
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useQuery
+} from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -18,12 +21,17 @@ import type {
   UseInfiniteQueryOptions,
   UseInfiniteQueryResult,
   UseQueryOptions,
-  UseQueryResult,
+  UseQueryResult
 } from '@tanstack/react-query';
 
-import type { ApiResponseOngoingFestivalsDto } from '../schemas';
+import type {
+  ApiResponseOngoingFestivalsDto
+} from '../schemas';
 
 import { orvalMutator } from '../../../services/api/orval-mutator';
+
+
+
 
 /**
  * 오늘(서버 KST 기준) 날짜로 충북 축제를 조회해 아래 우선순위로 반환한다.
@@ -37,281 +45,165 @@ import { orvalMutator } from '../../../services/api/orval-mutator';
  * **실호출로 확인한 현재 상태(2026-07 기준)**: 충북(areaCode=33)은 2026년 축제 일정이 TourAPI에 아직 하나도 등록되어 있지 않다 — 전국 단위로는 2026년 데이터가 있는 걸 확인했지만 충북만 비어 있음. 따라서 현재는 이 API를 호출하면 항상 type=popular로 응답한다(ongoing/upcoming은 지자체가 2026년 축제를 등록해야 실제로 나타남).
  * @summary 지금 열리고 있는 축제 조회 (3단계 폴백)
  */
-export const getOngoingFestivals = (signal?: AbortSignal) => {
-  return orvalMutator<ApiResponseOngoingFestivalsDto>({
-    url: `/regions/ongoing-festivals`,
-    method: 'GET',
-    signal,
-  });
-};
+export const getOngoingFestivals = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalMutator<ApiResponseOngoingFestivalsDto>(
+      {url: `/regions/ongoing-festivals`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
 
 export const getGetOngoingFestivalsInfiniteQueryKey = () => {
-  return ['infinite', `/regions/ongoing-festivals`] as const;
-};
+    return [
+    'infinite', `/regions/ongoing-festivals`
+    ] as const;
+    }
 
 export const getGetOngoingFestivalsQueryKey = () => {
-  return [`/regions/ongoing-festivals`] as const;
-};
+    return [
+    `/regions/ongoing-festivals`
+    ] as const;
+    }
 
-export const getGetOngoingFestivalsInfiniteQueryOptions = <
-  TData = InfiniteData<Awaited<ReturnType<typeof getOngoingFestivals>>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseInfiniteQueryOptions<
-      Awaited<ReturnType<typeof getOngoingFestivals>>,
-      TError,
-      TData
-    >
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getGetOngoingFestivalsInfiniteQueryKey();
+export const getGetOngoingFestivalsInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getOngoingFestivals>>>, TError = unknown>( options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOngoingFestivals>>, TError, TData>>, }
+) => {
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getOngoingFestivals>>
-  > = ({ signal }) => getOngoingFestivals(signal);
+const {query: queryOptions} = options ?? {};
 
-  return { queryKey, queryFn, ...queryOptions } as UseInfiniteQueryOptions<
-    Awaited<ReturnType<typeof getOngoingFestivals>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  const queryKey =  queryOptions?.queryKey ?? getGetOngoingFestivalsInfiniteQueryKey();
 
-export type GetOngoingFestivalsInfiniteQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getOngoingFestivals>>
->;
-export type GetOngoingFestivalsInfiniteQueryError = unknown;
 
-export function useGetOngoingFestivalsInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getOngoingFestivals>>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getOngoingFestivals>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOngoingFestivals>>> = ({ signal }) => getOngoingFestivals(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOngoingFestivals>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetOngoingFestivalsInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getOngoingFestivals>>>
+export type GetOngoingFestivalsInfiniteQueryError = unknown
+
+
+export function useGetOngoingFestivalsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOngoingFestivals>>>, TError = unknown>(
+  options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOngoingFestivals>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getOngoingFestivals>>,
           TError,
           Awaited<ReturnType<typeof getOngoingFestivals>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetOngoingFestivalsInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getOngoingFestivals>>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getOngoingFestivals>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOngoingFestivalsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOngoingFestivals>>>, TError = unknown>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOngoingFestivals>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getOngoingFestivals>>,
           TError,
           Awaited<ReturnType<typeof getOngoingFestivals>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetOngoingFestivalsInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getOngoingFestivals>>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getOngoingFestivals>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOngoingFestivalsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOngoingFestivals>>>, TError = unknown>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOngoingFestivals>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 지금 열리고 있는 축제 조회 (3단계 폴백)
  */
 
-export function useGetOngoingFestivalsInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getOngoingFestivals>>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getOngoingFestivals>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetOngoingFestivalsInfiniteQueryOptions(options);
+export function useGetOngoingFestivalsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getOngoingFestivals>>>, TError = unknown>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getOngoingFestivals>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useInfiniteQuery(
-    queryOptions,
-    queryClient,
-  ) as UseInfiniteQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-  };
+  const queryOptions = getGetOngoingFestivalsInfiniteQueryOptions(options)
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
 
-export const getGetOngoingFestivalsQueryOptions = <
-  TData = Awaited<ReturnType<typeof getOngoingFestivals>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof getOngoingFestivals>>,
-      TError,
-      TData
-    >
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetOngoingFestivalsQueryKey();
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getOngoingFestivals>>
-  > = ({ signal }) => getOngoingFestivals(signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getOngoingFestivals>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
 
-export type GetOngoingFestivalsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getOngoingFestivals>>
->;
-export type GetOngoingFestivalsQueryError = unknown;
 
-export function useGetOngoingFestivals<
-  TData = Awaited<ReturnType<typeof getOngoingFestivals>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getOngoingFestivals>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+export const getGetOngoingFestivalsQueryOptions = <TData = Awaited<ReturnType<typeof getOngoingFestivals>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOngoingFestivals>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetOngoingFestivalsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOngoingFestivals>>> = ({ signal }) => getOngoingFestivals(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getOngoingFestivals>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetOngoingFestivalsQueryResult = NonNullable<Awaited<ReturnType<typeof getOngoingFestivals>>>
+export type GetOngoingFestivalsQueryError = unknown
+
+
+export function useGetOngoingFestivals<TData = Awaited<ReturnType<typeof getOngoingFestivals>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOngoingFestivals>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getOngoingFestivals>>,
           TError,
           Awaited<ReturnType<typeof getOngoingFestivals>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetOngoingFestivals<
-  TData = Awaited<ReturnType<typeof getOngoingFestivals>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getOngoingFestivals>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOngoingFestivals<TData = Awaited<ReturnType<typeof getOngoingFestivals>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOngoingFestivals>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getOngoingFestivals>>,
           TError,
           Awaited<ReturnType<typeof getOngoingFestivals>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetOngoingFestivals<
-  TData = Awaited<ReturnType<typeof getOngoingFestivals>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getOngoingFestivals>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOngoingFestivals<TData = Awaited<ReturnType<typeof getOngoingFestivals>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOngoingFestivals>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 지금 열리고 있는 축제 조회 (3단계 폴백)
  */
 
-export function useGetOngoingFestivals<
-  TData = Awaited<ReturnType<typeof getOngoingFestivals>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getOngoingFestivals>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetOngoingFestivalsQueryOptions(options);
+export function useGetOngoingFestivals<TData = Awaited<ReturnType<typeof getOngoingFestivals>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOngoingFestivals>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetOngoingFestivalsQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+
+
+
+
+

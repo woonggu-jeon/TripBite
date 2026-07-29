@@ -1,15 +1,15 @@
 'use client';
 
-import Link from 'next/link';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { Button, TextField } from '@/components/ui';
 import { useForgotPassword } from '@/features/auth/hooks/use-auth';
 import {
-  forgotPasswordSchema,
   type ForgotPasswordValues,
+  forgotPasswordSchema,
 } from '@/features/auth/schemas/password-reset';
-import { Button, TextField } from '@/components/ui';
 import styles from './AuthForm.module.scss';
 
 /**

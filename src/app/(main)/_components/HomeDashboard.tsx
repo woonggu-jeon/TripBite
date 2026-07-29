@@ -1,8 +1,8 @@
 import { getTranslations } from 'next-intl/server';
 import { HomeHero } from '@/features/home/components/HomeHero';
 import { HomeRecBlock } from '@/features/home/components/HomeRecBlock';
-import { HomeQuickActions } from './HomeQuickActions';
 import styles from './HomeDashboard.module.scss';
+import { HomeQuickActions } from './HomeQuickActions';
 
 /**
  * 홈 대시보드 — Figma "HOME · 홈" (2026-06-23) 정합.

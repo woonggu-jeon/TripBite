@@ -1,17 +1,17 @@
 'use client';
 
 import {
+  type InfiniteData,
+  type QueryKey,
   useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
-  type InfiniteData,
-  type QueryKey,
 } from '@tanstack/react-query';
-import { notificationInboxApi } from '@/features/notification/api/inbox';
-import { useAuthStore } from '@/stores/auth-store';
-import { CACHE } from '@/lib/cache';
 import type { NotificationListDto } from '@/api/generated/schemas';
+import { notificationInboxApi } from '@/features/notification/api/inbox';
+import { CACHE } from '@/lib/cache';
+import { useAuthStore } from '@/stores/auth-store';
 
 export const notificationKeys = {
   all: ['notification'] as const,

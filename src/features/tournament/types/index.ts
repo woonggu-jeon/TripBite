@@ -6,8 +6,8 @@
  * 직접 import. 본 파일은 FE 가 빌드/렌더에 필요한 wrapper 타입만 보관.
  */
 import type {
-  DestinationDto,
   DestinationCategory,
+  DestinationDto,
   Season,
 } from '@/api/generated/schemas';
 

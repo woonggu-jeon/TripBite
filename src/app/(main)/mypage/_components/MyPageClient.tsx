@@ -1,16 +1,16 @@
 'use client';
 
+import { ChevronRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { ChevronRight } from 'lucide-react';
+import { PageSection } from '@/components/ui';
 import { ProfileCard } from '@/features/mypage/components/ProfileCard';
 import {
   SavedTournamentsSection,
   SavedTournamentsViewAll,
 } from '@/features/mypage/components/SavedTournamentsSection';
-import { TournamentHistorySection } from '@/features/mypage/components/TournamentHistorySection';
 import { StampBookBanner } from '@/features/mypage/components/StampBookBanner';
-import { PageSection } from '@/components/ui';
+import { TournamentHistorySection } from '@/features/mypage/components/TournamentHistorySection';
 import styles from './MyPageClient.module.scss';
 
 /**

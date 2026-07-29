@@ -1,14 +1,14 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useEffect, useRef, useState } from 'react';
+import { Button } from '@/components/ui';
+import { track } from '@/features/analytics';
 import { useGeolocation, usePermissionState } from '@/features/location';
 import { locationApi } from '@/features/location/api/location';
 import { useLocationStore } from '@/stores/location-store';
-import { track } from '@/features/analytics';
-import { Button } from '@/components/ui';
-import { OnboardingProgress } from './OnboardingProgress';
 import styles from './LocationStep.module.scss';
+import { OnboardingProgress } from './OnboardingProgress';
 
 /**
  * <LocationStep /> — 온보딩 step 2

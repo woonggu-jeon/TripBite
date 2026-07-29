@@ -1,12 +1,12 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { useGeolocation } from './use-geolocation';
 import { locationApi } from '@/features/location/api/location';
 import type {
   GeolocationError,
   ResolvedLocation,
 } from '@/features/location/types';
+import { useGeolocation } from './use-geolocation';
 
 /**
  * GPS 좌표 + BE reverse geocoding → 한글 라벨 확보.

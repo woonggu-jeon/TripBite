@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { TabList, Tab, TabPanel } from './Tabs';
+import { useState } from 'react';
+import { Tab, TabList, TabPanel } from './Tabs';
 
 const meta: Meta<typeof TabList> = {
   title: 'UI/Tabs',

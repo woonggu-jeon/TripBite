@@ -6,6 +6,6 @@
  */
 
 export type GetLikedParams = {
-  cursor?: number;
-  size?: number;
+cursor?: number;
+size?: number;
 };

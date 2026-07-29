@@ -1,8 +1,8 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
-  secureImageUrl,
   normalizeImageField,
   normalizePhotosField,
+  secureImageUrl,
 } from './secure-image-url';
 
 describe('secureImageUrl', () => {

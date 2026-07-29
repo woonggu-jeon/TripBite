@@ -1,13 +1,13 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import type { RegionCode } from '@/constants/regions';
 import { useInfiniteList } from '@/features/list';
 import {
-  regionApi,
   type RegionContentFilter,
+  regionApi,
 } from '@/features/region/api/region';
 import { CACHE } from '@/lib/cache';
-import type { RegionCode } from '@/constants/regions';
 
 export const regionKeys = {
   all: ['region'] as const,

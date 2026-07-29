@@ -1,9 +1,9 @@
 'use client';
 
+import { Monitor, Moon, Sun } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Monitor, Sun, Moon } from 'lucide-react';
 import { RadioGroup, RadioOption } from '@/components/ui';
-import { useUIStore, type ThemeMode } from '@/stores/ui-store';
+import { type ThemeMode, useUIStore } from '@/stores/ui-store';
 import styles from './ThemeSection.module.scss';
 
 /**

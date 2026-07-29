@@ -4,6 +4,9 @@
  * 운영 빌드 (production) 만 active. dev / mock 환경은 console 로 충분.
  * PII 누출 방지 — payload 에 token / cookie / 사용자 입력 절대 X.
  */
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('client-error');
 
 const ENDPOINT = '/api/client-error';
 const MAX_STACK_CHARS = 4000;
@@ -40,7 +43,7 @@ function truncate(s: string | undefined, max: number): string | undefined {
  */
 function send(payload: ErrorPayload): void {
   if (!isProd()) {
-    console.warn('[client-error:dev]', payload);
+    log.error(payload, 'client error (dev)');
     return;
   }
   if (typeof navigator === 'undefined') return;

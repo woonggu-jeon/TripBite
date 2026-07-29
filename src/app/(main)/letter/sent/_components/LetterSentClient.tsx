@@ -1,15 +1,15 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { EmptyState } from '@/components/feedback/EmptyState';
+import { Skeleton } from '@/components/feedback/Skeleton';
 import { Icon } from '@/components/icon/Icon';
+import { Button } from '@/components/ui';
+import { useMe } from '@/features/auth/hooks/use-auth';
 import { useLetter } from '@/features/letter/hooks/use-letters';
 import { useLetterStore } from '@/features/letter/store/letter-store';
-import { useMe } from '@/features/auth/hooks/use-auth';
-import { Button } from '@/components/ui';
-import { Skeleton } from '@/components/feedback/Skeleton';
-import { EmptyState } from '@/components/feedback/EmptyState';
 import { secureImageUrl } from '@/lib/secure-image-url';
 import styles from './LetterSentClient.module.scss';
 

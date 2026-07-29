@@ -1,8 +1,8 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Icon } from '@/components/icon/Icon';
-import { useTranslations } from 'next-intl';
 import { ROUTES } from '@/constants/routes';
 import styles from './ComposeEntryCard.module.scss';
 

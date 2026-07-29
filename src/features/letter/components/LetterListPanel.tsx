@@ -1,15 +1,15 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import type { LetterDto } from '@/api/generated/schemas';
+import { EmptyState } from '@/components/feedback/EmptyState';
 import { Icon } from '@/components/icon/Icon';
 import { Button } from '@/components/ui';
-import { EmptyState } from '@/components/feedback/EmptyState';
-import { InfiniteList } from '@/features/list/components/InfiniteList';
 import { useLettersInfinite } from '@/features/letter/hooks/use-letters';
-import type { LetterDto } from '@/api/generated/schemas';
 import type { LetterListKind } from '@/features/letter/types';
-import { LetterRowCard } from './LetterRowCard';
+import { InfiniteList } from '@/features/list/components/InfiniteList';
 import styles from './LetterListPanel.module.scss';
+import { LetterRowCard } from './LetterRowCard';
 
 /**
  * 편지 목록 패널 — 받은/좋아요/보낸 공통. EmptyState hero 패턴으로 Figma

@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { useState } from 'react';
 import styles from './ConsentBlock.module.scss';
 
 /**

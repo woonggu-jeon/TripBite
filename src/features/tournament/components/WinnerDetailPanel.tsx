@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Icon } from '@/components/icon/Icon';
+import { useEffect, useRef, useState } from 'react';
 import type { DestinationDetailDto } from '@/api/generated/schemas';
+import { Icon } from '@/components/icon/Icon';
 import styles from './WinnerDetailPanel.module.scss';
 
 /**

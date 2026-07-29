@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { useTranslations } from 'next-intl';
 import { Sparkles } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import type { Season } from '@/api/generated/schemas';
 import { Icon } from '@/components/icon/Icon';
 import { ROUTES } from '@/constants/routes';
 import { getCurrentSeason } from '@/features/tournament/utils/season';
-import type { Season } from '@/api/generated/schemas';
 import styles from './HomeDashboard.module.scss';
 
 /**

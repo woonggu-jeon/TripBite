@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useId, useRef, type ReactNode } from 'react';
+import { type ReactNode, useEffect, useId, useRef } from 'react';
+import { Button } from '@/components/ui';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
 import { useKeyboard } from '@/hooks/use-keyboard';
-import { Button } from '@/components/ui';
 import styles from './BottomSheet.module.scss';
 
 /**

@@ -1,16 +1,16 @@
 'use client';
 
-import { useMemo } from 'react';
-import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
 import { ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui';
-import { useRanking } from '@/features/ranking/hooks/use-ranking';
-import { isRegionCode, type RegionCode } from '@/constants/regions';
-import { haptic } from '@/lib/haptic';
-import { SkeletonList } from '@/components/feedback/SkeletonList';
-import { EmptyState } from '@/components/feedback/EmptyState';
 import { BarChart3 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useMemo } from 'react';
+import { EmptyState } from '@/components/feedback/EmptyState';
+import { SkeletonList } from '@/components/feedback/SkeletonList';
+import { Button } from '@/components/ui';
+import { type RegionCode, isRegionCode } from '@/constants/regions';
+import { useRanking } from '@/features/ranking/hooks/use-ranking';
+import { haptic } from '@/lib/haptic';
 import styles from './RegionWinsChart.module.scss';
 
 /**

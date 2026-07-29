@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { useState } from 'react';
 import { Toggle } from './Toggle';
 
 const meta: Meta<typeof Toggle> = {

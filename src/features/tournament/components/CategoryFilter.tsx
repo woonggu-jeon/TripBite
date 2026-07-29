@@ -1,8 +1,8 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { RadioGroup, RadioOption } from '@/components/ui';
 import type { DestinationCategory } from '@/api/generated/schemas';
+import { RadioGroup, RadioOption } from '@/components/ui';
 import styles from './CategoryFilter.module.scss';
 
 const CATEGORIES: { value: DestinationCategory }[] = [

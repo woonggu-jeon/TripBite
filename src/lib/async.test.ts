@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { sleep, debounce, throttle } from './async';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { debounce, sleep, throttle } from './async';
 
 beforeEach(() => vi.useFakeTimers());
 afterEach(() => vi.useRealTimers());

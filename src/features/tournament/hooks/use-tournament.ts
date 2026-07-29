@@ -1,18 +1,18 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { tournamentApi } from '@/features/tournament/api/tournament';
-import { CACHE } from '@/lib/cache';
-import { useAuthStore } from '@/stores/auth-store';
 import type {
   DestinationCategory,
   SavedTournamentDto,
 } from '@/api/generated/schemas';
+import { tournamentApi } from '@/features/tournament/api/tournament';
 import type {
   TournamentConfig,
   TournamentCount,
   TournamentTheme,
 } from '@/features/tournament/types';
+import { CACHE } from '@/lib/cache';
+import { useAuthStore } from '@/stores/auth-store';
 
 /**
  * Candidates query key — BE 호출에 실제 영향 주는 param 만 포함.

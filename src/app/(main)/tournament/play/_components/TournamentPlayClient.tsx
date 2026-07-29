@@ -1,19 +1,19 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
+import type { DestinationDto } from '@/api/generated/schemas';
+import { EmptyState } from '@/components/feedback/EmptyState';
+import { Button } from '@/components/ui';
 import { Bracket } from '@/features/tournament/components/Bracket';
 import { SeasonLoadingPanel } from '@/features/tournament/components/SeasonLoadingPanel';
-import type { DestinationDto } from '@/api/generated/schemas';
-import type { BracketResult } from '@/features/tournament/types';
-import { useTournamentStore } from '@/features/tournament/store/tournament-store';
 import {
   useRecordTournament,
   useTournamentCandidates,
 } from '@/features/tournament/hooks/use-tournament';
-import { Button } from '@/components/ui';
-import { EmptyState } from '@/components/feedback/EmptyState';
+import { useTournamentStore } from '@/features/tournament/store/tournament-store';
+import type { BracketResult } from '@/features/tournament/types';
 import { toast } from '@/lib/toast';
 import styles from './TournamentPlayClient.module.scss';
 

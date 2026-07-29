@@ -1,6 +1,10 @@
 // 신규 Spring BE 지원: stamps + updateMe(닉네임). (summary/avatar 는 미지원 → 구 generated mock 유지)
-import { getStamps as beGetStamps } from '@/api/be/mypage/mypage';
 import { updateMe as beUpdateMe } from '@/api/be/me/me';
+import { getStamps as beGetStamps } from '@/api/be/mypage/mypage';
+import {
+  meControllerRemoveAvatarV1,
+  meControllerUploadAvatarV1,
+} from '@/api/generated/me/me';
 import {
   mypageControllerListSavedV1,
   mypageControllerRemoveSavedV1,
@@ -8,10 +12,6 @@ import {
   mypageControllerSummaryV1,
 } from '@/api/generated/mypage/mypage';
 import type { UpdateProfileDto } from '@/api/generated/schemas';
-import {
-  meControllerRemoveAvatarV1,
-  meControllerUploadAvatarV1,
-} from '@/api/generated/me/me';
 import type { StampsDto } from '@/api/generated/schemas';
 import type { RegionCode } from '@/constants/regions';
 

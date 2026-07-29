@@ -1,7 +1,7 @@
 'use client';
 
-import { useUIStore } from '@/stores/ui-store';
 import { Button, Dialog } from '@/components/ui';
+import { useUIStore } from '@/stores/ui-store';
 import styles from './ConfirmDialog.module.scss';
 
 /**

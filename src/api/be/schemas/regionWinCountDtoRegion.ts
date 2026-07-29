@@ -5,8 +5,8 @@
  * OpenAPI spec version: v0
  */
 
-export type RegionWinCountDtoRegion =
-  (typeof RegionWinCountDtoRegion)[keyof typeof RegionWinCountDtoRegion];
+export type RegionWinCountDtoRegion = typeof RegionWinCountDtoRegion[keyof typeof RegionWinCountDtoRegion];
+
 
 export const RegionWinCountDtoRegion = {
   cheongju: 'cheongju',

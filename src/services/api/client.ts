@@ -1,8 +1,8 @@
 import axios, { type AxiosInstance } from 'axios';
-import { attachAuthInterceptor } from '@/services/interceptors/auth';
-import { attachTimingInterceptor } from '@/services/interceptors/timing';
-import { attachErrorNormalizeInterceptor } from '@/services/interceptors/error-normalize';
 import { assertRequiredEnv } from '@/lib/env';
+import { attachAuthInterceptor } from '@/services/interceptors/auth';
+import { attachErrorNormalizeInterceptor } from '@/services/interceptors/error-normalize';
+import { attachTimingInterceptor } from '@/services/interceptors/timing';
 
 // 클라이언트 부팅 시 필수 env 검증 (미설정 시 콘솔 경고)
 assertRequiredEnv();

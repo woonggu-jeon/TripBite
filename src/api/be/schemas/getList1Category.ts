@@ -5,8 +5,8 @@
  * OpenAPI spec version: v0
  */
 
-export type GetList1Category =
-  (typeof GetList1Category)[keyof typeof GetList1Category];
+export type GetList1Category = typeof GetList1Category[keyof typeof GetList1Category];
+
 
 export const GetList1Category = {
   attraction: 'attraction',

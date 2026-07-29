@@ -5,8 +5,8 @@
  * OpenAPI spec version: v0
  */
 
-export type GetRandomRegion =
-  (typeof GetRandomRegion)[keyof typeof GetRandomRegion];
+export type GetRandomRegion = typeof GetRandomRegion[keyof typeof GetRandomRegion];
+
 
 export const GetRandomRegion = {
   cheongju: 'cheongju',

@@ -5,8 +5,8 @@
  * OpenAPI spec version: v0
  */
 
-export type GetRandomCategory =
-  (typeof GetRandomCategory)[keyof typeof GetRandomCategory];
+export type GetRandomCategory = typeof GetRandomCategory[keyof typeof GetRandomCategory];
+
 
 export const GetRandomCategory = {
   attraction: 'attraction',

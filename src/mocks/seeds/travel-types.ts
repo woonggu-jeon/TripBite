@@ -1,9 +1,9 @@
+// 신규 Spring BE 의 quiz 응답 shape (id: number). handler 가 ApiResponse 로 감싸 반환.
+import type { QuizDto } from '@/api/be/schemas';
 import type {
   TravelTypeCompatibilityDto,
   TravelTypeDto,
 } from '@/api/generated/schemas';
-// 신규 Spring BE 의 quiz 응답 shape (id: number). handler 가 ApiResponse 로 감싸 반환.
-import type { QuizDto } from '@/api/be/schemas';
 
 /**
  * 여행 유형 테스트 mock seed.

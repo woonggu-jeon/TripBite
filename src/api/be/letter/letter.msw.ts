@@ -4,812 +4,164 @@
  * OpenAPI definition
  * OpenAPI spec version: v0
  */
-import { faker } from '@faker-js/faker';
+import {
+  faker
+} from '@faker-js/faker';
 
-import { HttpResponse, http } from 'msw';
-import type { RequestHandlerOptions } from 'msw';
+import {
+  HttpResponse,
+  http
+} from 'msw';
+import type {
+  RequestHandlerOptions
+} from 'msw';
 
 import type {
   ApiResponseLetterDto,
   ApiResponseLetterPageDto,
   LetterDto,
-  LetterPageDto,
+  LetterPageDto
 } from '../schemas';
 
-export const getComposeResponseLetterDtoMock = (
-  overrideResponse: Partial<LetterDto> = {},
-): LetterDto => ({
-  ...{
-    id: faker.helpers.arrayElement([faker.number.int(), undefined]),
-    body: faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      undefined,
-    ]),
-    author: faker.helpers.arrayElement([
-      {
-        nickname: faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          undefined,
-        ]),
-        location: faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          undefined,
-        ]),
-      },
-      undefined,
-    ]),
-    arrivedAt: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([
-        faker.date.past().toISOString().slice(0, 19) + 'Z',
-        null,
-      ]),
-      undefined,
-    ]),
-    createdAt: faker.helpers.arrayElement([
-      faker.date.past().toISOString().slice(0, 19) + 'Z',
-      undefined,
-    ]),
-    liked: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-    saved: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-    likeCount: faker.helpers.arrayElement([faker.number.int(), undefined]),
-    read: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-    isMine: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-  },
-  ...overrideResponse,
-});
 
-export const getComposeResponseMock = (
-  overrideResponse: Partial<Extract<ApiResponseLetterDto, object>> = {},
-): ApiResponseLetterDto => ({
-  success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-  message: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  data: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      { ...getComposeResponseLetterDtoMock() },
-      null,
-    ]),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
+export const getComposeResponseLetterDtoMock = (overrideResponse: Partial<LetterDto> = {}): LetterDto => ({...{id: faker.helpers.arrayElement([faker.number.int(), undefined]), body: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), author: faker.helpers.arrayElement([{nickname: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), location: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])}, undefined]), arrivedAt: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', null]), undefined]), createdAt: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', undefined]), liked: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), saved: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), likeCount: faker.helpers.arrayElement([faker.number.int(), undefined]), read: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), isMine: faker.helpers.arrayElement([faker.datatype.boolean(), undefined])}, ...overrideResponse});
 
-export const getSave1ResponseLetterDtoMock = (
-  overrideResponse: Partial<LetterDto> = {},
-): LetterDto => ({
-  ...{
-    id: faker.helpers.arrayElement([faker.number.int(), undefined]),
-    body: faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      undefined,
-    ]),
-    author: faker.helpers.arrayElement([
-      {
-        nickname: faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          undefined,
-        ]),
-        location: faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          undefined,
-        ]),
-      },
-      undefined,
-    ]),
-    arrivedAt: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([
-        faker.date.past().toISOString().slice(0, 19) + 'Z',
-        null,
-      ]),
-      undefined,
-    ]),
-    createdAt: faker.helpers.arrayElement([
-      faker.date.past().toISOString().slice(0, 19) + 'Z',
-      undefined,
-    ]),
-    liked: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-    saved: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-    likeCount: faker.helpers.arrayElement([faker.number.int(), undefined]),
-    read: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-    isMine: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-  },
-  ...overrideResponse,
-});
+export const getComposeResponseMock = (overrideResponse: Partial<Extract<ApiResponseLetterDto, object>> = {}): ApiResponseLetterDto => ({success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), message: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), data: faker.helpers.arrayElement([faker.helpers.arrayElement([{...getComposeResponseLetterDtoMock()},null,]), undefined]), ...overrideResponse})
 
-export const getSave1ResponseMock = (
-  overrideResponse: Partial<Extract<ApiResponseLetterDto, object>> = {},
-): ApiResponseLetterDto => ({
-  success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-  message: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  data: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([{ ...getSave1ResponseLetterDtoMock() }, null]),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
+export const getSave1ResponseLetterDtoMock = (overrideResponse: Partial<LetterDto> = {}): LetterDto => ({...{id: faker.helpers.arrayElement([faker.number.int(), undefined]), body: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), author: faker.helpers.arrayElement([{nickname: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), location: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])}, undefined]), arrivedAt: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', null]), undefined]), createdAt: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', undefined]), liked: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), saved: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), likeCount: faker.helpers.arrayElement([faker.number.int(), undefined]), read: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), isMine: faker.helpers.arrayElement([faker.datatype.boolean(), undefined])}, ...overrideResponse});
 
-export const getLikeResponseLetterDtoMock = (
-  overrideResponse: Partial<LetterDto> = {},
-): LetterDto => ({
-  ...{
-    id: faker.helpers.arrayElement([faker.number.int(), undefined]),
-    body: faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      undefined,
-    ]),
-    author: faker.helpers.arrayElement([
-      {
-        nickname: faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          undefined,
-        ]),
-        location: faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          undefined,
-        ]),
-      },
-      undefined,
-    ]),
-    arrivedAt: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([
-        faker.date.past().toISOString().slice(0, 19) + 'Z',
-        null,
-      ]),
-      undefined,
-    ]),
-    createdAt: faker.helpers.arrayElement([
-      faker.date.past().toISOString().slice(0, 19) + 'Z',
-      undefined,
-    ]),
-    liked: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-    saved: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-    likeCount: faker.helpers.arrayElement([faker.number.int(), undefined]),
-    read: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-    isMine: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-  },
-  ...overrideResponse,
-});
+export const getSave1ResponseMock = (overrideResponse: Partial<Extract<ApiResponseLetterDto, object>> = {}): ApiResponseLetterDto => ({success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), message: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), data: faker.helpers.arrayElement([faker.helpers.arrayElement([{...getSave1ResponseLetterDtoMock()},null,]), undefined]), ...overrideResponse})
 
-export const getLikeResponseMock = (
-  overrideResponse: Partial<Extract<ApiResponseLetterDto, object>> = {},
-): ApiResponseLetterDto => ({
-  success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-  message: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  data: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([{ ...getLikeResponseLetterDtoMock() }, null]),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
+export const getLikeResponseLetterDtoMock = (overrideResponse: Partial<LetterDto> = {}): LetterDto => ({...{id: faker.helpers.arrayElement([faker.number.int(), undefined]), body: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), author: faker.helpers.arrayElement([{nickname: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), location: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])}, undefined]), arrivedAt: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', null]), undefined]), createdAt: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', undefined]), liked: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), saved: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), likeCount: faker.helpers.arrayElement([faker.number.int(), undefined]), read: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), isMine: faker.helpers.arrayElement([faker.datatype.boolean(), undefined])}, ...overrideResponse});
 
-export const getGetByIdResponseLetterDtoMock = (
-  overrideResponse: Partial<LetterDto> = {},
-): LetterDto => ({
-  ...{
-    id: faker.helpers.arrayElement([faker.number.int(), undefined]),
-    body: faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      undefined,
-    ]),
-    author: faker.helpers.arrayElement([
-      {
-        nickname: faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          undefined,
-        ]),
-        location: faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          undefined,
-        ]),
-      },
-      undefined,
-    ]),
-    arrivedAt: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([
-        faker.date.past().toISOString().slice(0, 19) + 'Z',
-        null,
-      ]),
-      undefined,
-    ]),
-    createdAt: faker.helpers.arrayElement([
-      faker.date.past().toISOString().slice(0, 19) + 'Z',
-      undefined,
-    ]),
-    liked: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-    saved: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-    likeCount: faker.helpers.arrayElement([faker.number.int(), undefined]),
-    read: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-    isMine: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-  },
-  ...overrideResponse,
-});
+export const getLikeResponseMock = (overrideResponse: Partial<Extract<ApiResponseLetterDto, object>> = {}): ApiResponseLetterDto => ({success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), message: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), data: faker.helpers.arrayElement([faker.helpers.arrayElement([{...getLikeResponseLetterDtoMock()},null,]), undefined]), ...overrideResponse})
 
-export const getGetByIdResponseMock = (
-  overrideResponse: Partial<Extract<ApiResponseLetterDto, object>> = {},
-): ApiResponseLetterDto => ({
-  success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-  message: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  data: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      { ...getGetByIdResponseLetterDtoMock() },
-      null,
-    ]),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
+export const getGetByIdResponseLetterDtoMock = (overrideResponse: Partial<LetterDto> = {}): LetterDto => ({...{id: faker.helpers.arrayElement([faker.number.int(), undefined]), body: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), author: faker.helpers.arrayElement([{nickname: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), location: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])}, undefined]), arrivedAt: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', null]), undefined]), createdAt: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', undefined]), liked: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), saved: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), likeCount: faker.helpers.arrayElement([faker.number.int(), undefined]), read: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), isMine: faker.helpers.arrayElement([faker.datatype.boolean(), undefined])}, ...overrideResponse});
 
-export const getGetSentResponseLetterPageDtoMock = (
-  overrideResponse: Partial<LetterPageDto> = {},
-): LetterPageDto => ({
-  ...{
-    items: faker.helpers.arrayElement([
-      Array.from(
-        { length: faker.number.int({ min: 1, max: 10 }) },
-        (_, i) => i + 1,
-      ).map(() => ({
-        id: faker.helpers.arrayElement([faker.number.int(), undefined]),
-        body: faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          undefined,
-        ]),
-        author: faker.helpers.arrayElement([
-          {
-            nickname: faker.helpers.arrayElement([
-              faker.string.alpha({ length: { min: 10, max: 20 } }),
-              undefined,
-            ]),
-            location: faker.helpers.arrayElement([
-              faker.string.alpha({ length: { min: 10, max: 20 } }),
-              undefined,
-            ]),
-          },
-          undefined,
-        ]),
-        arrivedAt: faker.helpers.arrayElement([
-          faker.helpers.arrayElement([
-            faker.date.past().toISOString().slice(0, 19) + 'Z',
-            null,
-          ]),
-          undefined,
-        ]),
-        createdAt: faker.helpers.arrayElement([
-          faker.date.past().toISOString().slice(0, 19) + 'Z',
-          undefined,
-        ]),
-        liked: faker.helpers.arrayElement([
-          faker.datatype.boolean(),
-          undefined,
-        ]),
-        saved: faker.helpers.arrayElement([
-          faker.datatype.boolean(),
-          undefined,
-        ]),
-        likeCount: faker.helpers.arrayElement([faker.number.int(), undefined]),
-        read: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-        isMine: faker.helpers.arrayElement([
-          faker.datatype.boolean(),
-          undefined,
-        ]),
-      })),
-      undefined,
-    ]),
-    nextCursor: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([faker.number.int(), null]),
-      undefined,
-    ]),
-  },
-  ...overrideResponse,
-});
+export const getGetByIdResponseMock = (overrideResponse: Partial<Extract<ApiResponseLetterDto, object>> = {}): ApiResponseLetterDto => ({success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), message: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), data: faker.helpers.arrayElement([faker.helpers.arrayElement([{...getGetByIdResponseLetterDtoMock()},null,]), undefined]), ...overrideResponse})
 
-export const getGetSentResponseMock = (
-  overrideResponse: Partial<Extract<ApiResponseLetterPageDto, object>> = {},
-): ApiResponseLetterPageDto => ({
-  success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-  message: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  data: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      { ...getGetSentResponseLetterPageDtoMock() },
-      null,
-    ]),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
+export const getGetSentResponseLetterPageDtoMock = (overrideResponse: Partial<LetterPageDto> = {}): LetterPageDto => ({...{items: faker.helpers.arrayElement([Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.number.int(), undefined]), body: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), author: faker.helpers.arrayElement([{nickname: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), location: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])}, undefined]), arrivedAt: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', null]), undefined]), createdAt: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', undefined]), liked: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), saved: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), likeCount: faker.helpers.arrayElement([faker.number.int(), undefined]), read: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), isMine: faker.helpers.arrayElement([faker.datatype.boolean(), undefined])})), undefined]), nextCursor: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.int(), null]), undefined])}, ...overrideResponse});
 
-export const getGetSavedResponseLetterPageDtoMock = (
-  overrideResponse: Partial<LetterPageDto> = {},
-): LetterPageDto => ({
-  ...{
-    items: faker.helpers.arrayElement([
-      Array.from(
-        { length: faker.number.int({ min: 1, max: 10 }) },
-        (_, i) => i + 1,
-      ).map(() => ({
-        id: faker.helpers.arrayElement([faker.number.int(), undefined]),
-        body: faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          undefined,
-        ]),
-        author: faker.helpers.arrayElement([
-          {
-            nickname: faker.helpers.arrayElement([
-              faker.string.alpha({ length: { min: 10, max: 20 } }),
-              undefined,
-            ]),
-            location: faker.helpers.arrayElement([
-              faker.string.alpha({ length: { min: 10, max: 20 } }),
-              undefined,
-            ]),
-          },
-          undefined,
-        ]),
-        arrivedAt: faker.helpers.arrayElement([
-          faker.helpers.arrayElement([
-            faker.date.past().toISOString().slice(0, 19) + 'Z',
-            null,
-          ]),
-          undefined,
-        ]),
-        createdAt: faker.helpers.arrayElement([
-          faker.date.past().toISOString().slice(0, 19) + 'Z',
-          undefined,
-        ]),
-        liked: faker.helpers.arrayElement([
-          faker.datatype.boolean(),
-          undefined,
-        ]),
-        saved: faker.helpers.arrayElement([
-          faker.datatype.boolean(),
-          undefined,
-        ]),
-        likeCount: faker.helpers.arrayElement([faker.number.int(), undefined]),
-        read: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-        isMine: faker.helpers.arrayElement([
-          faker.datatype.boolean(),
-          undefined,
-        ]),
-      })),
-      undefined,
-    ]),
-    nextCursor: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([faker.number.int(), null]),
-      undefined,
-    ]),
-  },
-  ...overrideResponse,
-});
+export const getGetSentResponseMock = (overrideResponse: Partial<Extract<ApiResponseLetterPageDto, object>> = {}): ApiResponseLetterPageDto => ({success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), message: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), data: faker.helpers.arrayElement([faker.helpers.arrayElement([{...getGetSentResponseLetterPageDtoMock()},null,]), undefined]), ...overrideResponse})
 
-export const getGetSavedResponseMock = (
-  overrideResponse: Partial<Extract<ApiResponseLetterPageDto, object>> = {},
-): ApiResponseLetterPageDto => ({
-  success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-  message: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  data: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      { ...getGetSavedResponseLetterPageDtoMock() },
-      null,
-    ]),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
+export const getGetSavedResponseLetterPageDtoMock = (overrideResponse: Partial<LetterPageDto> = {}): LetterPageDto => ({...{items: faker.helpers.arrayElement([Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.number.int(), undefined]), body: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), author: faker.helpers.arrayElement([{nickname: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), location: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])}, undefined]), arrivedAt: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', null]), undefined]), createdAt: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', undefined]), liked: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), saved: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), likeCount: faker.helpers.arrayElement([faker.number.int(), undefined]), read: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), isMine: faker.helpers.arrayElement([faker.datatype.boolean(), undefined])})), undefined]), nextCursor: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.int(), null]), undefined])}, ...overrideResponse});
 
-export const getGetReceivedResponseLetterPageDtoMock = (
-  overrideResponse: Partial<LetterPageDto> = {},
-): LetterPageDto => ({
-  ...{
-    items: faker.helpers.arrayElement([
-      Array.from(
-        { length: faker.number.int({ min: 1, max: 10 }) },
-        (_, i) => i + 1,
-      ).map(() => ({
-        id: faker.helpers.arrayElement([faker.number.int(), undefined]),
-        body: faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          undefined,
-        ]),
-        author: faker.helpers.arrayElement([
-          {
-            nickname: faker.helpers.arrayElement([
-              faker.string.alpha({ length: { min: 10, max: 20 } }),
-              undefined,
-            ]),
-            location: faker.helpers.arrayElement([
-              faker.string.alpha({ length: { min: 10, max: 20 } }),
-              undefined,
-            ]),
-          },
-          undefined,
-        ]),
-        arrivedAt: faker.helpers.arrayElement([
-          faker.helpers.arrayElement([
-            faker.date.past().toISOString().slice(0, 19) + 'Z',
-            null,
-          ]),
-          undefined,
-        ]),
-        createdAt: faker.helpers.arrayElement([
-          faker.date.past().toISOString().slice(0, 19) + 'Z',
-          undefined,
-        ]),
-        liked: faker.helpers.arrayElement([
-          faker.datatype.boolean(),
-          undefined,
-        ]),
-        saved: faker.helpers.arrayElement([
-          faker.datatype.boolean(),
-          undefined,
-        ]),
-        likeCount: faker.helpers.arrayElement([faker.number.int(), undefined]),
-        read: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-        isMine: faker.helpers.arrayElement([
-          faker.datatype.boolean(),
-          undefined,
-        ]),
-      })),
-      undefined,
-    ]),
-    nextCursor: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([faker.number.int(), null]),
-      undefined,
-    ]),
-  },
-  ...overrideResponse,
-});
+export const getGetSavedResponseMock = (overrideResponse: Partial<Extract<ApiResponseLetterPageDto, object>> = {}): ApiResponseLetterPageDto => ({success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), message: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), data: faker.helpers.arrayElement([faker.helpers.arrayElement([{...getGetSavedResponseLetterPageDtoMock()},null,]), undefined]), ...overrideResponse})
 
-export const getGetReceivedResponseMock = (
-  overrideResponse: Partial<Extract<ApiResponseLetterPageDto, object>> = {},
-): ApiResponseLetterPageDto => ({
-  success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-  message: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  data: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      { ...getGetReceivedResponseLetterPageDtoMock() },
-      null,
-    ]),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
+export const getGetReceivedResponseLetterPageDtoMock = (overrideResponse: Partial<LetterPageDto> = {}): LetterPageDto => ({...{items: faker.helpers.arrayElement([Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.number.int(), undefined]), body: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), author: faker.helpers.arrayElement([{nickname: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), location: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])}, undefined]), arrivedAt: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', null]), undefined]), createdAt: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', undefined]), liked: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), saved: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), likeCount: faker.helpers.arrayElement([faker.number.int(), undefined]), read: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), isMine: faker.helpers.arrayElement([faker.datatype.boolean(), undefined])})), undefined]), nextCursor: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.int(), null]), undefined])}, ...overrideResponse});
 
-export const getGetLikedResponseLetterPageDtoMock = (
-  overrideResponse: Partial<LetterPageDto> = {},
-): LetterPageDto => ({
-  ...{
-    items: faker.helpers.arrayElement([
-      Array.from(
-        { length: faker.number.int({ min: 1, max: 10 }) },
-        (_, i) => i + 1,
-      ).map(() => ({
-        id: faker.helpers.arrayElement([faker.number.int(), undefined]),
-        body: faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          undefined,
-        ]),
-        author: faker.helpers.arrayElement([
-          {
-            nickname: faker.helpers.arrayElement([
-              faker.string.alpha({ length: { min: 10, max: 20 } }),
-              undefined,
-            ]),
-            location: faker.helpers.arrayElement([
-              faker.string.alpha({ length: { min: 10, max: 20 } }),
-              undefined,
-            ]),
-          },
-          undefined,
-        ]),
-        arrivedAt: faker.helpers.arrayElement([
-          faker.helpers.arrayElement([
-            faker.date.past().toISOString().slice(0, 19) + 'Z',
-            null,
-          ]),
-          undefined,
-        ]),
-        createdAt: faker.helpers.arrayElement([
-          faker.date.past().toISOString().slice(0, 19) + 'Z',
-          undefined,
-        ]),
-        liked: faker.helpers.arrayElement([
-          faker.datatype.boolean(),
-          undefined,
-        ]),
-        saved: faker.helpers.arrayElement([
-          faker.datatype.boolean(),
-          undefined,
-        ]),
-        likeCount: faker.helpers.arrayElement([faker.number.int(), undefined]),
-        read: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-        isMine: faker.helpers.arrayElement([
-          faker.datatype.boolean(),
-          undefined,
-        ]),
-      })),
-      undefined,
-    ]),
-    nextCursor: faker.helpers.arrayElement([
-      faker.helpers.arrayElement([faker.number.int(), null]),
-      undefined,
-    ]),
-  },
-  ...overrideResponse,
-});
+export const getGetReceivedResponseMock = (overrideResponse: Partial<Extract<ApiResponseLetterPageDto, object>> = {}): ApiResponseLetterPageDto => ({success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), message: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), data: faker.helpers.arrayElement([faker.helpers.arrayElement([{...getGetReceivedResponseLetterPageDtoMock()},null,]), undefined]), ...overrideResponse})
 
-export const getGetLikedResponseMock = (
-  overrideResponse: Partial<Extract<ApiResponseLetterPageDto, object>> = {},
-): ApiResponseLetterPageDto => ({
-  success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-  message: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      faker.string.alpha({ length: { min: 10, max: 20 } }),
-      null,
-    ]),
-    undefined,
-  ]),
-  data: faker.helpers.arrayElement([
-    faker.helpers.arrayElement([
-      { ...getGetLikedResponseLetterPageDtoMock() },
-      null,
-    ]),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
+export const getGetLikedResponseLetterPageDtoMock = (overrideResponse: Partial<LetterPageDto> = {}): LetterPageDto => ({...{items: faker.helpers.arrayElement([Array.from({ length: faker.number.int({min: 1, max: 10}) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.number.int(), undefined]), body: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), author: faker.helpers.arrayElement([{nickname: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), location: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])}, undefined]), arrivedAt: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', null]), undefined]), createdAt: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', undefined]), liked: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), saved: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), likeCount: faker.helpers.arrayElement([faker.number.int(), undefined]), read: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), isMine: faker.helpers.arrayElement([faker.datatype.boolean(), undefined])})), undefined]), nextCursor: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.number.int(), null]), undefined])}, ...overrideResponse});
 
-export const getComposeMockHandler = (
-  overrideResponse?:
-    | ApiResponseLetterDto
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Promise<ApiResponseLetterDto> | ApiResponseLetterDto),
-  options?: RequestHandlerOptions,
-) => {
-  return http.post(
-    '*/letters',
-    async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
-      return HttpResponse.json(
-        overrideResponse !== undefined
-          ? typeof overrideResponse === 'function'
-            ? await overrideResponse(info)
-            : overrideResponse
-          : getComposeResponseMock(),
-        { status: 200 },
-      );
-    },
-    options,
-  );
-};
+export const getGetLikedResponseMock = (overrideResponse: Partial<Extract<ApiResponseLetterPageDto, object>> = {}): ApiResponseLetterPageDto => ({success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), message: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), data: faker.helpers.arrayElement([faker.helpers.arrayElement([{...getGetLikedResponseLetterPageDtoMock()},null,]), undefined]), ...overrideResponse})
 
-export const getSave1MockHandler = (
-  overrideResponse?:
-    | ApiResponseLetterDto
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Promise<ApiResponseLetterDto> | ApiResponseLetterDto),
-  options?: RequestHandlerOptions,
-) => {
-  return http.post(
-    '*/letters/:id/save',
-    async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
-      return HttpResponse.json(
-        overrideResponse !== undefined
-          ? typeof overrideResponse === 'function'
-            ? await overrideResponse(info)
-            : overrideResponse
-          : getSave1ResponseMock(),
-        { status: 200 },
-      );
-    },
-    options,
-  );
-};
 
-export const getLikeMockHandler = (
-  overrideResponse?:
-    | ApiResponseLetterDto
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Promise<ApiResponseLetterDto> | ApiResponseLetterDto),
-  options?: RequestHandlerOptions,
-) => {
-  return http.post(
-    '*/letters/:id/like',
-    async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
-      return HttpResponse.json(
-        overrideResponse !== undefined
-          ? typeof overrideResponse === 'function'
-            ? await overrideResponse(info)
-            : overrideResponse
-          : getLikeResponseMock(),
-        { status: 200 },
-      );
-    },
-    options,
-  );
-};
+export const getComposeMockHandler = (overrideResponse?: ApiResponseLetterDto | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<ApiResponseLetterDto> | ApiResponseLetterDto), options?: RequestHandlerOptions) => {
+  return http.post('*/letters', async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
 
-export const getGetByIdMockHandler = (
-  overrideResponse?:
-    | ApiResponseLetterDto
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) => Promise<ApiResponseLetterDto> | ApiResponseLetterDto),
-  options?: RequestHandlerOptions,
-) => {
-  return http.get(
-    '*/letters/:id',
-    async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
-      return HttpResponse.json(
-        overrideResponse !== undefined
-          ? typeof overrideResponse === 'function'
-            ? await overrideResponse(info)
-            : overrideResponse
-          : getGetByIdResponseMock(),
-        { status: 200 },
-      );
-    },
-    options,
-  );
-};
 
-export const get_DeleteMockHandler = (
-  overrideResponse?:
-    | void
-    | ((
-        info: Parameters<Parameters<typeof http.delete>[1]>[0],
-      ) => Promise<void> | void),
-  options?: RequestHandlerOptions,
-) => {
-  return http.delete(
-    '*/letters/:id',
-    async (info: Parameters<Parameters<typeof http.delete>[1]>[0]) => {
-      if (typeof overrideResponse === 'function') {
-        await overrideResponse(info);
-      }
+    return HttpResponse.json(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getComposeResponseMock(),
+      { status: 200
+      })
+  }, options)
+}
 
-      return new HttpResponse(null, { status: 200 });
-    },
-    options,
-  );
-};
+export const getSave1MockHandler = (overrideResponse?: ApiResponseLetterDto | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<ApiResponseLetterDto> | ApiResponseLetterDto), options?: RequestHandlerOptions) => {
+  return http.post('*/letters/:id/save', async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
 
-export const getGetSentMockHandler = (
-  overrideResponse?:
-    | ApiResponseLetterPageDto
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) => Promise<ApiResponseLetterPageDto> | ApiResponseLetterPageDto),
-  options?: RequestHandlerOptions,
-) => {
-  return http.get(
-    '*/letters/sent',
-    async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
-      return HttpResponse.json(
-        overrideResponse !== undefined
-          ? typeof overrideResponse === 'function'
-            ? await overrideResponse(info)
-            : overrideResponse
-          : getGetSentResponseMock(),
-        { status: 200 },
-      );
-    },
-    options,
-  );
-};
 
-export const getGetSavedMockHandler = (
-  overrideResponse?:
-    | ApiResponseLetterPageDto
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) => Promise<ApiResponseLetterPageDto> | ApiResponseLetterPageDto),
-  options?: RequestHandlerOptions,
-) => {
-  return http.get(
-    '*/letters/saved',
-    async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
-      return HttpResponse.json(
-        overrideResponse !== undefined
-          ? typeof overrideResponse === 'function'
-            ? await overrideResponse(info)
-            : overrideResponse
-          : getGetSavedResponseMock(),
-        { status: 200 },
-      );
-    },
-    options,
-  );
-};
+    return HttpResponse.json(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getSave1ResponseMock(),
+      { status: 200
+      })
+  }, options)
+}
 
-export const getGetReceivedMockHandler = (
-  overrideResponse?:
-    | ApiResponseLetterPageDto
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) => Promise<ApiResponseLetterPageDto> | ApiResponseLetterPageDto),
-  options?: RequestHandlerOptions,
-) => {
-  return http.get(
-    '*/letters/received',
-    async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
-      return HttpResponse.json(
-        overrideResponse !== undefined
-          ? typeof overrideResponse === 'function'
-            ? await overrideResponse(info)
-            : overrideResponse
-          : getGetReceivedResponseMock(),
-        { status: 200 },
-      );
-    },
-    options,
-  );
-};
+export const getLikeMockHandler = (overrideResponse?: ApiResponseLetterDto | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<ApiResponseLetterDto> | ApiResponseLetterDto), options?: RequestHandlerOptions) => {
+  return http.post('*/letters/:id/like', async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
 
-export const getGetLikedMockHandler = (
-  overrideResponse?:
-    | ApiResponseLetterPageDto
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) => Promise<ApiResponseLetterPageDto> | ApiResponseLetterPageDto),
-  options?: RequestHandlerOptions,
-) => {
-  return http.get(
-    '*/letters/liked',
-    async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
-      return HttpResponse.json(
-        overrideResponse !== undefined
-          ? typeof overrideResponse === 'function'
-            ? await overrideResponse(info)
-            : overrideResponse
-          : getGetLikedResponseMock(),
-        { status: 200 },
-      );
-    },
-    options,
-  );
-};
+
+    return HttpResponse.json(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getLikeResponseMock(),
+      { status: 200
+      })
+  }, options)
+}
+
+export const getGetByIdMockHandler = (overrideResponse?: ApiResponseLetterDto | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<ApiResponseLetterDto> | ApiResponseLetterDto), options?: RequestHandlerOptions) => {
+  return http.get('*/letters/:id', async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+
+
+    return HttpResponse.json(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getGetByIdResponseMock(),
+      { status: 200
+      })
+  }, options)
+}
+
+export const get_DeleteMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
+  return http.delete('*/letters/:id', async (info: Parameters<Parameters<typeof http.delete>[1]>[0]) => {
+  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
+
+    return new HttpResponse(null,
+      { status: 200
+      })
+  }, options)
+}
+
+export const getGetSentMockHandler = (overrideResponse?: ApiResponseLetterPageDto | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<ApiResponseLetterPageDto> | ApiResponseLetterPageDto), options?: RequestHandlerOptions) => {
+  return http.get('*/letters/sent', async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+
+
+    return HttpResponse.json(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getGetSentResponseMock(),
+      { status: 200
+      })
+  }, options)
+}
+
+export const getGetSavedMockHandler = (overrideResponse?: ApiResponseLetterPageDto | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<ApiResponseLetterPageDto> | ApiResponseLetterPageDto), options?: RequestHandlerOptions) => {
+  return http.get('*/letters/saved', async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+
+
+    return HttpResponse.json(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getGetSavedResponseMock(),
+      { status: 200
+      })
+  }, options)
+}
+
+export const getGetReceivedMockHandler = (overrideResponse?: ApiResponseLetterPageDto | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<ApiResponseLetterPageDto> | ApiResponseLetterPageDto), options?: RequestHandlerOptions) => {
+  return http.get('*/letters/received', async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+
+
+    return HttpResponse.json(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getGetReceivedResponseMock(),
+      { status: 200
+      })
+  }, options)
+}
+
+export const getGetLikedMockHandler = (overrideResponse?: ApiResponseLetterPageDto | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<ApiResponseLetterPageDto> | ApiResponseLetterPageDto), options?: RequestHandlerOptions) => {
+  return http.get('*/letters/liked', async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+
+
+    return HttpResponse.json(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getGetLikedResponseMock(),
+      { status: 200
+      })
+  }, options)
+}
 export const getLetterMock = () => [
   getComposeMockHandler(),
   getSave1MockHandler(),
@@ -819,5 +171,5 @@ export const getLetterMock = () => [
   getGetSentMockHandler(),
   getGetSavedMockHandler(),
   getGetReceivedMockHandler(),
-  getGetLikedMockHandler(),
-];
+  getGetLikedMockHandler()
+]

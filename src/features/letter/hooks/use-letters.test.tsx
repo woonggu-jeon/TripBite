@@ -1,10 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { act, waitFor } from '@testing-library/react';
 import { QueryClient } from '@tanstack/react-query';
-import { renderHookWithProviders } from '@/test-utils';
-import { http, HttpResponse } from 'msw';
-import { server } from '@/mocks/server';
+import { act, waitFor } from '@testing-library/react';
+import { HttpResponse, http } from 'msw';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { LetterDto } from '@/api/generated/schemas';
 import { mockSeeds } from '@/mocks/handlers';
+import { server } from '@/mocks/server';
+import { useAuthStore } from '@/stores/auth-store';
+import { renderHookWithProviders } from '@/test-utils';
 import {
   letterKeys,
   useDeleteLetter,
@@ -14,8 +16,6 @@ import {
   useToggleLikeLetter,
   useToggleSaveLetter,
 } from './use-letters';
-import { useAuthStore } from '@/stores/auth-store';
-import type { LetterDto } from '@/api/generated/schemas';
 
 // handlers.ts 와 같은 base — test 환경에선 baseURL undefined 라 path-only 매칭.
 const apiUrl = mockSeeds.apiUrl;

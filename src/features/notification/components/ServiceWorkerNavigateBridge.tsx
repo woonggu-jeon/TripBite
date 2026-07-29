@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 /**
  * Service Worker → 클라이언트 NAVIGATE 메시지 브리지.

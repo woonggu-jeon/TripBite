@@ -1,11 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { act, waitFor } from '@testing-library/react';
 import { QueryClient } from '@tanstack/react-query';
-import { http, HttpResponse } from 'msw';
-import { server } from '@/mocks/server';
+import { act, waitFor } from '@testing-library/react';
+import { HttpResponse, http } from 'msw';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { SavedTournamentDto } from '@/api/generated/schemas';
 import { mockSeeds } from '@/mocks/handlers';
-import { renderHookWithProviders } from '@/test-utils';
+import { server } from '@/mocks/server';
 import { useAuthStore } from '@/stores/auth-store';
+import { renderHookWithProviders } from '@/test-utils';
 import {
   tournamentKeys,
   useRecordTournament,
@@ -14,7 +15,6 @@ import {
   useTournamentHistory,
   useUnsaveTournament,
 } from './use-tournament';
-import type { SavedTournamentDto } from '@/api/generated/schemas';
 
 const apiUrl = mockSeeds.apiUrl;
 

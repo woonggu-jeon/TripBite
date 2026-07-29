@@ -1,8 +1,8 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import type { Route } from 'next';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { Icon } from '@/components/icon/Icon';
 import { haptic } from '@/lib/haptic';
 import styles from './AuthHeader.module.scss';

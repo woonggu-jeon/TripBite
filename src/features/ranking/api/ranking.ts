@@ -1,28 +1,28 @@
-import { rankingControllerListV1 } from '@/api/generated/rankings/rankings';
-// 신규 Spring BE 지원: quiz(GET) + submit(POST). (me GET/PATCH 는 미지원 → 구 generated mock 유지)
-import { getQuiz, submit } from '@/api/be/travel-type/travel-type';
 // 신규 Spring BE 지원: 주간 top / 시군별 우승수 (그 외 랭킹 타입은 미지원 → 구 generated mock 유지)
 import {
   getRegionRankings,
   getWeeklyTopDestinations,
 } from '@/api/be/tournament/tournament';
+// 신규 Spring BE 지원: quiz(GET) + submit(POST). (me GET/PATCH 는 미지원 → 구 generated mock 유지)
+import { getQuiz, submit } from '@/api/be/travel-type/travel-type';
+import { rankingControllerListV1 } from '@/api/generated/rankings/rankings';
 import type { DestinationDto } from '@/api/generated/schemas';
-import {
-  quizControllerApplyV1,
-  quizControllerGetMeV1,
-} from '@/api/generated/travel-types/travel-types';
 import type {
   DestinationCategory,
   TravelTypeCode,
   TravelTypeDto,
 } from '@/api/generated/schemas';
-import { normalizeImageField } from '@/lib/secure-image-url';
+import {
+  quizControllerApplyV1,
+  quizControllerGetMeV1,
+} from '@/api/generated/travel-types/travel-types';
 import type {
   RankedDestination,
   RankingType,
   TravelTypeAnswer,
   TravelTypeQuiz,
 } from '@/features/ranking/types';
+import { normalizeImageField } from '@/lib/secure-image-url';
 
 /**
  * 랭킹 / 여행 유형 테스트 API — orval generated client wrap.

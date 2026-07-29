@@ -1,13 +1,13 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { rankingApi } from '@/features/ranking/api/ranking';
-import { CACHE } from '@/lib/cache';
-import { useAuthStore } from '@/stores/auth-store';
-import { mypageKeys } from '@/features/mypage/hooks/use-mypage';
-import type { RankingType, TravelTypeAnswer } from '@/features/ranking/types';
 import type { DestinationCategory } from '@/api/generated/schemas';
 import type { TravelTypeCode } from '@/api/generated/schemas';
+import { mypageKeys } from '@/features/mypage/hooks/use-mypage';
+import { rankingApi } from '@/features/ranking/api/ranking';
+import type { RankingType, TravelTypeAnswer } from '@/features/ranking/types';
+import { CACHE } from '@/lib/cache';
+import { useAuthStore } from '@/stores/auth-store';
 
 export const rankingKeys = {
   all: ['ranking'] as const,

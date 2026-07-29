@@ -1,18 +1,22 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import type {
+  AppNotificationDto,
+  AppNotificationType,
+} from '@/api/generated/schemas';
+import { EmptyState } from '@/components/feedback/EmptyState';
+import { Skeleton } from '@/components/feedback/Skeleton';
 import { Icon, type IconName } from '@/components/icon/Icon';
 import { SubHeader } from '@/components/layout/SubHeader';
-import { Skeleton } from '@/components/feedback/Skeleton';
-import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
 import { InfiniteList } from '@/features/list/components/InfiniteList';
 import {
-  useNotificationInboxInfinite,
   useMarkAllNotificationsRead,
   useMarkNotificationRead,
+  useNotificationInboxInfinite,
 } from '@/features/notification/hooks/use-notification-inbox';
 import { usePushNotification } from '@/features/notification/hooks/use-push-notification';
 import {
@@ -20,10 +24,6 @@ import {
   isIOS,
   isPushSupported,
 } from '@/features/notification/utils/subscription';
-import type {
-  AppNotificationDto,
-  AppNotificationType,
-} from '@/api/generated/schemas';
 import { relativeTimeToken } from '@/lib/relative-time';
 import styles from './NotificationsClient.module.scss';
 

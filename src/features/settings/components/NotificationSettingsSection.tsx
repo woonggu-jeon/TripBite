@@ -1,13 +1,13 @@
 'use client';
 
-import { useId } from 'react';
 import { useTranslations } from 'next-intl';
-import {
-  useUserSettings,
-  useUpdateNotificationSettings,
-} from '@/features/settings/hooks/use-notification-settings';
-import { usePushNotification } from '@/features/notification/hooks/use-push-notification';
+import { useId } from 'react';
 import { Toggle } from '@/components/forms/Toggle';
+import { usePushNotification } from '@/features/notification/hooks/use-push-notification';
+import {
+  useUpdateNotificationSettings,
+  useUserSettings,
+} from '@/features/settings/hooks/use-notification-settings';
 import styles from './SettingsRows.module.scss';
 
 /**

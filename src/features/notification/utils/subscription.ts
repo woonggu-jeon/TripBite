@@ -11,6 +11,9 @@
  * - service worker 등록됨 (next-pwa가 자동 처리)
  * - 백엔드 /notifications/subscribe API
  */
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('push');
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
@@ -117,13 +120,11 @@ export async function triggerMockPush(payload: {
   icon?: string;
 }): Promise<void> {
   if (typeof Notification === 'undefined') {
-    console.warn('[mock-push] Notification API 미지원 환경');
+    log.warn('Notification API 미지원 환경');
     return;
   }
   if (Notification.permission !== 'granted') {
-    console.warn(
-      `[mock-push] 권한 미허용 — Notification.permission=${Notification.permission}`,
-    );
+    log.warn({ permission: Notification.permission }, '권한 미허용');
     return;
   }
   try {
@@ -145,10 +146,8 @@ export async function triggerMockPush(payload: {
         n.close();
       };
     }
-    // dev/mock 흐름 가시화용 — eslint 의 no-console 은 warn/error 만 허용이라 disable.
-    // eslint-disable-next-line no-console
-    console.info('[mock-push] Notification dispatched:', payload.title);
+    log.info({ title: payload.title }, 'notification dispatched');
   } catch (err) {
-    console.error('[mock-push] Notification 생성 실패:', err);
+    log.error({ err }, 'notification 생성 실패');
   }
 }

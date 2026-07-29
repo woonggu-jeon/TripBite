@@ -1,12 +1,12 @@
+import { Analytics } from '@vercel/analytics/next';
 import type { Metadata, Viewport } from 'next';
-import localFont from 'next/font/local';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages, getTranslations } from 'next-intl/server';
-import { Analytics } from '@vercel/analytics/next';
-import { Providers } from './providers';
+import localFont from 'next/font/local';
 import { getApiOrigin } from '@/lib/api-origin';
 import { JsonLd, webSiteOrganization } from '@/lib/json-ld';
 import './globals.scss';
+import { Providers } from './providers';
 
 /**
  * Pretendard 한글 웹폰트 — self-host (next/font/local).

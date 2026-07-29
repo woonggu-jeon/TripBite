@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useState, type ReactNode } from 'react';
+import { type ReactNode, useState } from 'react';
 import { secureImageUrl } from '@/lib/secure-image-url';
 import styles from './MediaThumb.module.scss';
 

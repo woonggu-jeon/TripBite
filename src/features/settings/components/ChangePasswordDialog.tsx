@@ -1,16 +1,16 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
+import { useForm } from 'react-hook-form';
+import { Button, Dialog, PasswordField } from '@/components/ui';
 import { useChangePassword } from '@/features/auth/hooks/use-auth';
 import {
-  changePasswordSchema,
   type ChangePasswordValues,
+  changePasswordSchema,
 } from '@/features/auth/schemas/password-reset';
-import { isAxiosError } from '@/services/interceptors/auth';
 import { toast } from '@/lib/toast';
-import { Button, Dialog, PasswordField } from '@/components/ui';
+import { isAxiosError } from '@/services/interceptors/auth';
 import styles from './ChangePasswordDialog.module.scss';
 
 /**

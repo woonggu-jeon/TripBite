@@ -1,10 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useState, type ReactNode } from 'react';
-import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
-import { useTranslations } from 'next-intl';
+import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import type { CarouselOptions } from '@/features/carousel/types';
 import styles from './Carousel.module.scss';
 

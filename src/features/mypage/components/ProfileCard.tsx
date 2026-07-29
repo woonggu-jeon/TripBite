@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useState, type ChangeEvent } from 'react';
-import Image from 'next/image';
-import { useTranslations } from 'next-intl';
 import { Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import Image from 'next/image';
+import { type ChangeEvent, useEffect, useRef, useState } from 'react';
+import { BottomSheet } from '@/components/feedback/BottomSheet';
 import { Icon } from '@/components/icon/Icon';
 import { useMe } from '@/features/auth/hooks/use-auth';
 import {
@@ -11,9 +12,8 @@ import {
   useRemoveAvatar,
   useUpdateAvatar,
 } from '@/features/mypage/hooks/use-mypage';
-import { BottomSheet } from '@/components/feedback/BottomSheet';
-import { secureImageUrl } from '@/lib/secure-image-url';
 import { haptic } from '@/lib/haptic';
+import { secureImageUrl } from '@/lib/secure-image-url';
 import { toast } from '@/lib/toast';
 import styles from './ProfileCard.module.scss';
 

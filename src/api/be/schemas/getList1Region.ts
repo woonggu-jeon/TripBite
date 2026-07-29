@@ -5,8 +5,8 @@
  * OpenAPI spec version: v0
  */
 
-export type GetList1Region =
-  (typeof GetList1Region)[keyof typeof GetList1Region];
+export type GetList1Region = typeof GetList1Region[keyof typeof GetList1Region];
+
 
 export const GetList1Region = {
   cheongju: 'cheongju',

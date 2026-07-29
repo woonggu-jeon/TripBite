@@ -5,8 +5,8 @@
  * OpenAPI spec version: v0
  */
 
-export type DestinationDtoCategory =
-  (typeof DestinationDtoCategory)[keyof typeof DestinationDtoCategory];
+export type DestinationDtoCategory = typeof DestinationDtoCategory[keyof typeof DestinationDtoCategory];
+
 
 export const DestinationDtoCategory = {
   attraction: 'attraction',

@@ -1,14 +1,14 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import { LocationStep } from '@/features/onboarding/components/LocationStep';
 // ConceptStep — Figma "Walk 3 step" 도입 후 미노출 (2026-06-22). 회귀 복원 시
 // import 살리고 step 1 분기 복원 + TOTAL_STEPS 5.
 // import { ConceptStep } from '@/features/onboarding/components/ConceptStep';
 // import { AgeConfirmStep } from '@/features/onboarding/components/AgeConfirmStep';
 import { WalkStep } from '@/features/onboarding/components/WalkStep';
-import { LocationStep } from '@/features/onboarding/components/LocationStep';
 import { useCompleteOnboarding } from '@/features/onboarding/hooks/use-onboarding';
 import { useAuthStore } from '@/stores/auth-store';
 import { useLocationStore } from '@/stores/location-store';

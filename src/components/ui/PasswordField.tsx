@@ -1,10 +1,10 @@
 'use client';
 
-import { forwardRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { forwardRef, useState } from 'react';
 import { Icon } from '@/components/icon/Icon';
-import { TextField, type TextFieldProps } from './TextField';
 import styles from './PasswordField.module.scss';
+import { TextField, type TextFieldProps } from './TextField';
 
 export type PasswordFieldProps = Omit<TextFieldProps, 'type'>;
 

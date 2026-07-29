@@ -1,5 +1,5 @@
-import type { RegionCode } from './regions';
 import type { DestinationCardTone } from '@/components/ui';
+import type { RegionCode } from './regions';
 
 /**
  * 시군 → 카드 톤 매핑. 디자이너가 시군 색 조정 시 한 곳에서.

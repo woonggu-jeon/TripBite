@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
-import { Skeleton } from './Skeleton';
-import { EmptyState } from './EmptyState';
 import { Button } from '@/components/ui';
+import { EmptyState } from './EmptyState';
+import { Skeleton } from './Skeleton';
 
 /**
  * 표준 비동기 섹션 분기 wrapper.

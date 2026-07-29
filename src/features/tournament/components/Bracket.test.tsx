@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { renderWithProviders } from '@/test-utils';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { DestinationDto } from '@/api/generated/schemas';
 import type { BracketResult } from '@/features/tournament/types';
+import { renderWithProviders } from '@/test-utils';
 import { Bracket } from './Bracket';
 
 function makeDest(id: number, name?: string): DestinationDto {

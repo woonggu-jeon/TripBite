@@ -2,10 +2,10 @@
 
 import { useTranslations } from 'next-intl';
 import {
-  cardClasses,
   RadioGroup,
   RadioOption,
   ThemeIcon,
+  cardClasses,
 } from '@/components/ui';
 import styles from './ThemeKindSelector.module.scss';
 

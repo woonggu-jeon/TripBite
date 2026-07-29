@@ -4,7 +4,10 @@
  * OpenAPI definition
  * OpenAPI spec version: v0
  */
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useQuery
+} from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -18,404 +21,278 @@ import type {
   UseInfiniteQueryOptions,
   UseInfiniteQueryResult,
   UseQueryOptions,
-  UseQueryResult,
+  UseQueryResult
 } from '@tanstack/react-query';
 
 import type {
   ApiResponseQuizDto,
   ApiResponseTravelTypeResultDto,
-  SubmitQuizDto,
+  SubmitQuizDto
 } from '../schemas';
 
 import { orvalMutator } from '../../../services/api/orval-mutator';
+
+
+
 
 /**
  * 5문항 전체(questionId 1~5, 각 optionId 1~4)에 대한 답변을 받아 가장 많이 선택된 여행 유형을 결과로 반환한다. 동점일 경우 도전형 > 탐험형 > 휴식형 > 맛집형 순으로 우선한다.
  * @summary 여행 유형 테스트 결과 제출
  */
-export const submit = (submitQuizDto: SubmitQuizDto, signal?: AbortSignal) => {
-  return orvalMutator<ApiResponseTravelTypeResultDto>({
-    url: `/travel-types/submit`,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    data: submitQuizDto,
-    signal,
-  });
-};
-
-export const getSubmitQueryKey = (submitQuizDto?: SubmitQuizDto) => {
-  return ['POST', `/travel-types/submit`, submitQuizDto] as const;
-};
-
-export const getSubmitQueryOptions = <
-  TData = Awaited<ReturnType<typeof submit>>,
-  TError = unknown,
->(
-  submitQuizDto: SubmitQuizDto,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof submit>>, TError, TData>
-    >;
-  },
+export const submit = (
+    submitQuizDto: SubmitQuizDto,
+ signal?: AbortSignal
 ) => {
-  const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getSubmitQueryKey(submitQuizDto);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof submit>>> = ({
-    signal,
-  }) => submit(submitQuizDto, signal);
+      return orvalMutator<ApiResponseTravelTypeResultDto>(
+      {url: `/travel-types/submit`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: submitQuizDto, signal
+    },
+      );
+    }
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof submit>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
 
-export type SubmitQueryResult = NonNullable<Awaited<ReturnType<typeof submit>>>;
-export type SubmitQueryError = unknown;
 
-export function useSubmit<
-  TData = Awaited<ReturnType<typeof submit>>,
-  TError = unknown,
->(
-  submitQuizDto: SubmitQuizDto,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof submit>>, TError, TData>
-    > &
-      Pick<
+
+export const getSubmitQueryKey = (submitQuizDto?: SubmitQuizDto,) => {
+    return [
+    'POST', `/travel-types/submit`, submitQuizDto
+    ] as const;
+    }
+
+
+export const getSubmitQueryOptions = <TData = Awaited<ReturnType<typeof submit>>, TError = unknown>(submitQuizDto: SubmitQuizDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submit>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSubmitQueryKey(submitQuizDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof submit>>> = ({ signal }) => submit(submitQuizDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof submit>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SubmitQueryResult = NonNullable<Awaited<ReturnType<typeof submit>>>
+export type SubmitQueryError = unknown
+
+
+export function useSubmit<TData = Awaited<ReturnType<typeof submit>>, TError = unknown>(
+ submitQuizDto: SubmitQuizDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof submit>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof submit>>,
           TError,
           Awaited<ReturnType<typeof submit>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useSubmit<
-  TData = Awaited<ReturnType<typeof submit>>,
-  TError = unknown,
->(
-  submitQuizDto: SubmitQuizDto,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof submit>>, TError, TData>
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubmit<TData = Awaited<ReturnType<typeof submit>>, TError = unknown>(
+ submitQuizDto: SubmitQuizDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submit>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof submit>>,
           TError,
           Awaited<ReturnType<typeof submit>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useSubmit<
-  TData = Awaited<ReturnType<typeof submit>>,
-  TError = unknown,
->(
-  submitQuizDto: SubmitQuizDto,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof submit>>, TError, TData>
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSubmit<TData = Awaited<ReturnType<typeof submit>>, TError = unknown>(
+ submitQuizDto: SubmitQuizDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submit>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 여행 유형 테스트 결과 제출
  */
 
-export function useSubmit<
-  TData = Awaited<ReturnType<typeof submit>>,
-  TError = unknown,
->(
-  submitQuizDto: SubmitQuizDto,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof submit>>, TError, TData>
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getSubmitQueryOptions(submitQuizDto, options);
+export function useSubmit<TData = Awaited<ReturnType<typeof submit>>, TError = unknown>(
+ submitQuizDto: SubmitQuizDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof submit>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getSubmitQueryOptions(submitQuizDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+
+
+
+
 
 /**
  * 고정된 5개 문항과 문항별 4지선다 옵션을 반환한다. 옵션이 어떤 여행 유형(TravelTypeCode)에 매핑되는지는 응답에 노출하지 않는다.
  * @summary 여행 유형 테스트 문항 조회
  */
-export const getQuiz = (signal?: AbortSignal) => {
-  return orvalMutator<ApiResponseQuizDto>({
-    url: `/travel-types/quiz`,
-    method: 'GET',
-    signal,
-  });
-};
+export const getQuiz = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalMutator<ApiResponseQuizDto>(
+      {url: `/travel-types/quiz`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
 
 export const getGetQuizInfiniteQueryKey = () => {
-  return ['infinite', `/travel-types/quiz`] as const;
-};
+    return [
+    'infinite', `/travel-types/quiz`
+    ] as const;
+    }
 
 export const getGetQuizQueryKey = () => {
-  return [`/travel-types/quiz`] as const;
-};
+    return [
+    `/travel-types/quiz`
+    ] as const;
+    }
 
-export const getGetQuizInfiniteQueryOptions = <
-  TData = InfiniteData<Awaited<ReturnType<typeof getQuiz>>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseInfiniteQueryOptions<Awaited<ReturnType<typeof getQuiz>>, TError, TData>
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetQuizInfiniteQueryKey();
+export const getGetQuizInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getQuiz>>>, TError = unknown>( options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getQuiz>>, TError, TData>>, }
+) => {
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getQuiz>>> = ({
-    signal,
-  }) => getQuiz(signal);
+const {query: queryOptions} = options ?? {};
 
-  return { queryKey, queryFn, ...queryOptions } as UseInfiniteQueryOptions<
-    Awaited<ReturnType<typeof getQuiz>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  const queryKey =  queryOptions?.queryKey ?? getGetQuizInfiniteQueryKey();
 
-export type GetQuizInfiniteQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getQuiz>>
->;
-export type GetQuizInfiniteQueryError = unknown;
 
-export function useGetQuizInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getQuiz>>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getQuiz>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getQuiz>>> = ({ signal }) => getQuiz(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getQuiz>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetQuizInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getQuiz>>>
+export type GetQuizInfiniteQueryError = unknown
+
+
+export function useGetQuizInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getQuiz>>>, TError = unknown>(
+  options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getQuiz>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getQuiz>>,
           TError,
           Awaited<ReturnType<typeof getQuiz>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetQuizInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getQuiz>>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getQuiz>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetQuizInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getQuiz>>>, TError = unknown>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getQuiz>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getQuiz>>,
           TError,
           Awaited<ReturnType<typeof getQuiz>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetQuizInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getQuiz>>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getQuiz>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetQuizInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getQuiz>>>, TError = unknown>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getQuiz>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 여행 유형 테스트 문항 조회
  */
 
-export function useGetQuizInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getQuiz>>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getQuiz>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetQuizInfiniteQueryOptions(options);
+export function useGetQuizInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getQuiz>>>, TError = unknown>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getQuiz>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useInfiniteQuery(
-    queryOptions,
-    queryClient,
-  ) as UseInfiniteQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-  };
+  const queryOptions = getGetQuizInfiniteQueryOptions(options)
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
 
-export const getGetQuizQueryOptions = <
-  TData = Awaited<ReturnType<typeof getQuiz>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof getQuiz>>, TError, TData>
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetQuizQueryKey();
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getQuiz>>> = ({
-    signal,
-  }) => getQuiz(signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getQuiz>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
 
-export type GetQuizQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getQuiz>>
->;
-export type GetQuizQueryError = unknown;
 
-export function useGetQuiz<
-  TData = Awaited<ReturnType<typeof getQuiz>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getQuiz>>, TError, TData>
-    > &
-      Pick<
+export const getGetQuizQueryOptions = <TData = Awaited<ReturnType<typeof getQuiz>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getQuiz>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetQuizQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getQuiz>>> = ({ signal }) => getQuiz(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getQuiz>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetQuizQueryResult = NonNullable<Awaited<ReturnType<typeof getQuiz>>>
+export type GetQuizQueryError = unknown
+
+
+export function useGetQuiz<TData = Awaited<ReturnType<typeof getQuiz>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getQuiz>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getQuiz>>,
           TError,
           Awaited<ReturnType<typeof getQuiz>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetQuiz<
-  TData = Awaited<ReturnType<typeof getQuiz>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getQuiz>>, TError, TData>
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetQuiz<TData = Awaited<ReturnType<typeof getQuiz>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getQuiz>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getQuiz>>,
           TError,
           Awaited<ReturnType<typeof getQuiz>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetQuiz<
-  TData = Awaited<ReturnType<typeof getQuiz>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getQuiz>>, TError, TData>
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetQuiz<TData = Awaited<ReturnType<typeof getQuiz>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getQuiz>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 여행 유형 테스트 문항 조회
  */
 
-export function useGetQuiz<
-  TData = Awaited<ReturnType<typeof getQuiz>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getQuiz>>, TError, TData>
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetQuizQueryOptions(options);
+export function useGetQuiz<TData = Awaited<ReturnType<typeof getQuiz>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getQuiz>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetQuizQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+
+
+
+
+

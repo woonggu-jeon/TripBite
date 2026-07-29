@@ -1,16 +1,16 @@
 'use client';
 
-import { useEffect, useMemo, useReducer } from 'react';
 import { useTranslations } from 'next-intl';
+import { useEffect, useMemo, useReducer } from 'react';
 import type { DestinationDto } from '@/api/generated/schemas';
 import type { BracketResult } from '@/features/tournament/types';
 import {
+  type RoundState,
   pairRound,
   roundLabelKey,
-  type RoundState,
 } from '@/features/tournament/utils/bracket';
-import { MatchupCard } from './MatchupCard';
 import styles from './Bracket.module.scss';
+import { MatchupCard } from './MatchupCard';
 
 interface BracketState {
   rounds: RoundState[];

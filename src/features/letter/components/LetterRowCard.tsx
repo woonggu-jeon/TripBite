@@ -1,14 +1,14 @@
 'use client';
 
-import { memo, useEffect, useState } from 'react';
-import Link from 'next/link';
-import { Icon } from '@/components/icon/Icon';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { memo, useEffect, useState } from 'react';
+import type { LetterDto } from '@/api/generated/schemas';
+import { Icon } from '@/components/icon/Icon';
+import { useToggleSaveLetter } from '@/features/letter/hooks/use-letters';
 import { useDebouncedCallback } from '@/hooks/use-debounced-callback';
 import { haptic } from '@/lib/haptic';
 import { relativeTimeToken } from '@/lib/relative-time';
-import { useToggleSaveLetter } from '@/features/letter/hooks/use-letters';
-import type { LetterDto } from '@/api/generated/schemas';
 import styles from './LetterRowCard.module.scss';
 
 /**

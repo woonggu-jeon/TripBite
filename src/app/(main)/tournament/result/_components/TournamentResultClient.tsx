@@ -1,26 +1,26 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useShallow } from 'zustand/react/shallow';
-import { useTournamentStore } from '@/features/tournament/store/tournament-store';
-import {
-  TOURNAMENT_SIZE_OPTIONS,
-  type TournamentCount,
-} from '@/features/tournament/types';
+import { Button } from '@/components/ui';
+import { LuckyLadder } from '@/features/tournament/components/LuckyLadder';
+import { SeasonLoadingPanel } from '@/features/tournament/components/SeasonLoadingPanel';
+import { TournamentStats } from '@/features/tournament/components/TournamentStats';
+import { WinnerCard } from '@/features/tournament/components/WinnerCard';
+import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetailPanel';
 import {
   useDestinationDetail,
   useSaveTournament,
   useTournamentRecord,
 } from '@/features/tournament/hooks/use-tournament';
-import { Button } from '@/components/ui';
-import { WinnerCard } from '@/features/tournament/components/WinnerCard';
-import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetailPanel';
-import { TournamentStats } from '@/features/tournament/components/TournamentStats';
-import { LuckyLadder } from '@/features/tournament/components/LuckyLadder';
-import { SeasonLoadingPanel } from '@/features/tournament/components/SeasonLoadingPanel';
-import { useShareCard } from '@/hooks/use-share-card';
+import { useTournamentStore } from '@/features/tournament/store/tournament-store';
+import {
+  TOURNAMENT_SIZE_OPTIONS,
+  type TournamentCount,
+} from '@/features/tournament/types';
 import { useRequireAuth } from '@/hooks/use-require-auth';
+import { useShareCard } from '@/hooks/use-share-card';
 import styles from './TournamentResultClient.module.scss';
 
 /**

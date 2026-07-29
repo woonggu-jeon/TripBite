@@ -5,8 +5,8 @@
  * OpenAPI spec version: v0
  */
 
-export type OngoingFestivalsDtoType =
-  (typeof OngoingFestivalsDtoType)[keyof typeof OngoingFestivalsDtoType];
+export type OngoingFestivalsDtoType = typeof OngoingFestivalsDtoType[keyof typeof OngoingFestivalsDtoType];
+
 
 export const OngoingFestivalsDtoType = {
   ongoing: 'ongoing',

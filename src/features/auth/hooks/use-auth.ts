@@ -1,26 +1,29 @@
 'use client';
 
 import {
+  type UseQueryOptions,
   useMutation,
   useQuery,
   useQueryClient,
-  type UseQueryOptions,
 } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { authApi } from '@/features/auth/api/auth';
-import { useAuthStore } from '@/stores/auth-store';
-import type {
-  LoginDto,
-  ForgotPasswordDto,
-  ResetPasswordDto,
-  ChangePasswordDto,
-  FindIdDto,
-  UserDto,
-} from '@/api/generated/schemas';
 // 신규 Spring BE SignupRequestDto (username/password/name/birthDate/email/phone/nickname).
 import type { SignupRequestDto as SignupInput } from '@/api/be/schemas';
-import { isAxiosError } from '@/services/interceptors/auth';
+import type {
+  ChangePasswordDto,
+  FindIdDto,
+  ForgotPasswordDto,
+  LoginDto,
+  ResetPasswordDto,
+  UserDto,
+} from '@/api/generated/schemas';
+import { authApi } from '@/features/auth/api/auth';
+import { createLogger } from '@/lib/logger';
 import { clearAllCaches } from '@/lib/sw-cache';
+import { isAxiosError } from '@/services/interceptors/auth';
+import { useAuthStore } from '@/stores/auth-store';
+
+const log = createLogger('auth');
 
 export const authKeys = {
   all: ['auth'] as const,
@@ -138,8 +141,9 @@ export function useResetPassword() {
       // Set-Cookie 만료(Max-Age=0)로 정리. 정리 후 새 비번으로 /login 진입 가능.
       try {
         await authApi.logout();
-      } catch {
-        // logout 실패 (이미 세션 없거나 401) — 무시. 다음 navigate 진행.
+      } catch (err) {
+        // logout 실패 (이미 세션 없거나 401) — 흐름은 계속(무시)하되 관측 로깅.
+        log.warn({ err }, 'reset-password 후 logout 실패 — 진행');
       }
       clearAuth();
       queryClient.clear();

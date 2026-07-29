@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
 import { Check } from 'lucide-react';
-import { haptic } from '@/lib/haptic';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import type { QuizOptionDto } from '@/api/generated/schemas';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { Button, RadioGroup, RadioOption } from '@/components/ui';
@@ -14,7 +14,7 @@ import {
 } from '@/features/ranking/hooks/use-ranking';
 import type { TravelTypeAnswer } from '@/features/ranking/types';
 import { shuffleQuizOptions } from '@/features/ranking/utils/shuffle-options';
-import type { QuizOptionDto } from '@/api/generated/schemas';
+import { haptic } from '@/lib/haptic';
 import styles from './TravelTypeQuiz.module.scss';
 
 /**

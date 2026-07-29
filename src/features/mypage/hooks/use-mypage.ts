@@ -1,14 +1,14 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { mypageApi } from '@/features/mypage/api/mypage';
-import { CACHE } from '@/lib/cache';
-import { useAuthStore } from '@/stores/auth-store';
-import { authKeys } from '@/features/auth/hooks/use-auth';
 import type {
   MypageSummaryDto,
   UpdateProfileDto,
 } from '@/api/generated/schemas';
+import { authKeys } from '@/features/auth/hooks/use-auth';
+import { mypageApi } from '@/features/mypage/api/mypage';
+import { CACHE } from '@/lib/cache';
+import { useAuthStore } from '@/stores/auth-store';
 
 export const mypageKeys = {
   all: ['mypage'] as const,

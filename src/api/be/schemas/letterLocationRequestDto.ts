@@ -9,8 +9,8 @@ import type { LetterLocationRequestDtoRegionCode } from './letterLocationRequest
 export interface LetterLocationRequestDto {
   regionCode?: LetterLocationRequestDtoRegionCode;
   /**
-   * @minLength 1
-   * @maxLength 100
-   */
+     * @minLength 1
+     * @maxLength 100
+     */
   label?: string;
 }

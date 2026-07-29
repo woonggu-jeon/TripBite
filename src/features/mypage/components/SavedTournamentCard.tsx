@@ -1,11 +1,11 @@
 'use client';
 
+import type { SavedTournamentDto } from '@/api/generated/schemas';
 import { Icon } from '@/components/icon/Icon';
 import { DestinationCard } from '@/components/ui';
-import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
+import { FALLBACK_TROPHY_EMOJI, categoryEmoji } from '@/constants/emoji-map';
 import { toneFor } from '@/constants/region-tone';
-import { categoryEmoji, FALLBACK_TROPHY_EMOJI } from '@/constants/emoji-map';
-import type { SavedTournamentDto } from '@/api/generated/schemas';
+import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import styles from './SavedTournamentCard.module.scss';
 
 /**

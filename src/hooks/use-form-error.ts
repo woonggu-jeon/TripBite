@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import type { FieldValues, UseFormSetError, Path } from 'react-hook-form';
+import type { FieldValues, Path, UseFormSetError } from 'react-hook-form';
 import { isAxiosError } from '@/services/interceptors/auth';
 
 /**

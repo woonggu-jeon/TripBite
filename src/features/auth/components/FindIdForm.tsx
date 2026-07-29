@@ -1,16 +1,16 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
+import { Button, TextField } from '@/components/ui';
 import { useFindId } from '@/features/auth/hooks/use-auth';
 import {
-  findIdSchema,
   type FindIdValues,
+  findIdSchema,
 } from '@/features/auth/schemas/find-id';
-import { Button, TextField } from '@/components/ui';
 import styles from './AuthForm.module.scss';
 
 /**

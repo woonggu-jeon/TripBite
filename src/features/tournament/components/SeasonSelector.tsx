@@ -1,13 +1,13 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import type { Season } from '@/api/generated/schemas';
 import {
-  cardClasses,
   RadioGroup,
   RadioOption,
   SeasonIcon,
+  cardClasses,
 } from '@/components/ui';
-import type { Season } from '@/api/generated/schemas';
 import styles from './SeasonSelector.module.scss';
 
 const SEASONS: { value: Season }[] = [

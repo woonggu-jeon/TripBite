@@ -1,12 +1,15 @@
 'use client';
 
-import { useEffect } from 'react';
-import Link from 'next/link';
 import { useQueryClient } from '@tanstack/react-query';
-import { Button } from '@/components/ui';
-import { Icon } from '@/components/icon/Icon';
+import Link from 'next/link';
+import { useEffect } from 'react';
 import { EmptyState } from '@/components/feedback/EmptyState';
+import { Icon } from '@/components/icon/Icon';
+import { Button } from '@/components/ui';
+import { createLogger } from '@/lib/logger';
 import styles from './error.module.scss';
+
+const log = createLogger('app-error');
 
 /**
  * App Router root Error Boundary. EmptyState hero 패턴으로 디자인 통일
@@ -25,7 +28,7 @@ export default function GlobalError({
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    console.error('[App Error]', error);
+    log.error({ err: error, digest: error.digest }, 'app error boundary');
   }, [error]);
 
   const handleReset = () => {

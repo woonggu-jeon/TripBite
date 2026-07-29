@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { destinationSeeds } from '@/mocks/seeds/destinations';
-import { regionContentSeeds } from '@/mocks/seeds/regions';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { JsonLd, breadcrumbList, touristAttraction } from '@/lib/json-ld';
+import { destinationSeeds } from '@/mocks/seeds/destinations';
+import { regionContentSeeds } from '@/mocks/seeds/regions';
 import { DestinationDetailClient } from './_components/DestinationDetailClient';
 
 // dynamic rendering — i18n 의 `readLocaleFromCookie` 가 cookies() 호출하므로

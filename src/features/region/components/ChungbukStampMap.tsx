@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useEffect, useRef, useState } from 'react';
 import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import styles from './ChungbukStampMap.module.scss';
 

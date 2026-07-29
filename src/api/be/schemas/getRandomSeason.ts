@@ -5,8 +5,8 @@
  * OpenAPI spec version: v0
  */
 
-export type GetRandomSeason =
-  (typeof GetRandomSeason)[keyof typeof GetRandomSeason];
+export type GetRandomSeason = typeof GetRandomSeason[keyof typeof GetRandomSeason];
+
 
 export const GetRandomSeason = {
   spring: 'spring',

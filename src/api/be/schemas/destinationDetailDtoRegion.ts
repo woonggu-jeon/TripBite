@@ -8,9 +8,8 @@
 /**
  * @nullable
  */
-export type DestinationDetailDtoRegion =
-  | (typeof DestinationDetailDtoRegion)[keyof typeof DestinationDetailDtoRegion]
-  | null;
+export type DestinationDetailDtoRegion = typeof DestinationDetailDtoRegion[keyof typeof DestinationDetailDtoRegion] | null;
+
 
 export const DestinationDetailDtoRegion = {
   cheongju: 'cheongju',

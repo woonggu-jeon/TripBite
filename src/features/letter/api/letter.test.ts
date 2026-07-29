@@ -1,9 +1,9 @@
-import { describe, it, expect } from 'vitest';
-import { http, HttpResponse } from 'msw';
-import { server } from '@/mocks/server';
-import { mockSeeds } from '@/mocks/handlers';
-import { letterApi } from './letter';
+import { HttpResponse, http } from 'msw';
+import { describe, expect, it } from 'vitest';
 import type { ComposeLetterDto } from '@/api/generated/schemas';
+import { mockSeeds } from '@/mocks/handlers';
+import { server } from '@/mocks/server';
+import { letterApi } from './letter';
 
 /**
  * 편지 어댑터 매핑 단위 테스트 — 신규 Spring BE(ApiResponse 엔벨로프) → 도메인.

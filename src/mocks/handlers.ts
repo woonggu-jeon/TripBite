@@ -16,31 +16,30 @@
  *   axios baseURL 을 same-origin proxy 로 두거나, Next rewrites 로 우회 필요.
  *   테스트 (vitest/node) 에선 origin 제약 없이 모두 가로챔.
  */
-
-import { http, HttpResponse } from 'msw';
-import { regionContentSeeds } from './seeds/regions';
-import { letterSeeds } from './seeds/letters';
-import {
-  savedTournamentSeeds,
-  tournamentHistorySeeds,
-} from './seeds/tournament';
-import { destinationSeeds } from './seeds/destinations';
-import { notificationSeeds } from './seeds/notifications';
-import {
-  travelTypeCompatibilitySeed,
-  travelTypeMetaSeed,
-  travelTypeMockScoreMap,
-  travelTypeQuizSeed,
-  travelTypeRecommendCategoriesSeed,
-  type TravelTypeMockCode,
-} from './seeds/travel-types';
-import type { TravelTypeAnswer } from '@/features/ranking/types';
+import { HttpResponse, http } from 'msw';
 import type {
   AppNotificationDto,
   DestinationDto,
   TravelTypeDto,
 } from '@/api/generated/schemas';
 import { isRegionCode } from '@/constants/regions';
+import type { TravelTypeAnswer } from '@/features/ranking/types';
+import { destinationSeeds } from './seeds/destinations';
+import { letterSeeds } from './seeds/letters';
+import { notificationSeeds } from './seeds/notifications';
+import { regionContentSeeds } from './seeds/regions';
+import {
+  savedTournamentSeeds,
+  tournamentHistorySeeds,
+} from './seeds/tournament';
+import {
+  type TravelTypeMockCode,
+  travelTypeCompatibilitySeed,
+  travelTypeMetaSeed,
+  travelTypeMockScoreMap,
+  travelTypeQuizSeed,
+  travelTypeRecommendCategoriesSeed,
+} from './seeds/travel-types';
 
 /**
  * URL 매칭 base — axios baseURL 단일화 (`/api/backend`, services/api/client.ts).

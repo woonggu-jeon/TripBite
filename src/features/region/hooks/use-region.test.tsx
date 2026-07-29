@@ -1,8 +1,8 @@
-import { describe, it, expect } from 'vitest';
 import { waitFor } from '@testing-library/react';
-import { http, HttpResponse } from 'msw';
-import { server } from '@/mocks/server';
+import { HttpResponse, http } from 'msw';
+import { describe, expect, it } from 'vitest';
 import { mockSeeds } from '@/mocks/handlers';
+import { server } from '@/mocks/server';
 import { renderHookWithProviders } from '@/test-utils';
 import {
   useOngoingFestivals,

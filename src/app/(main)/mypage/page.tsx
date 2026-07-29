@@ -1,9 +1,9 @@
-import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { Icon } from '@/components/icon/Icon';
-import { ROUTES } from '@/constants/routes';
 import { SubHeader } from '@/components/layout/SubHeader';
+import { ROUTES } from '@/constants/routes';
 import { MyPageClient } from './_components/MyPageClient';
 
 /**

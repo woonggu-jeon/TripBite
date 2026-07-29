@@ -1,8 +1,8 @@
-import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
-import { ForgotPasswordForm } from '@/features/auth/components/ForgotPasswordForm';
-import { AuthLayout } from '@/components/layout/AuthLayout';
+import { getTranslations } from 'next-intl/server';
 import { AuthHeader } from '@/components/layout/AuthHeader';
+import { AuthLayout } from '@/components/layout/AuthLayout';
+import { ForgotPasswordForm } from '@/features/auth/components/ForgotPasswordForm';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('auth.forgotPassword');

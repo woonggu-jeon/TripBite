@@ -4,7 +4,10 @@
  * OpenAPI definition
  * OpenAPI spec version: v0
  */
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useQuery
+} from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -18,7 +21,7 @@ import type {
   UseInfiniteQueryOptions,
   UseInfiniteQueryResult,
   UseQueryOptions,
-  UseQueryResult,
+  UseQueryResult
 } from '@tanstack/react-query';
 
 import type {
@@ -26,10 +29,13 @@ import type {
   ApiResponseDestinationPageDto,
   ApiResponseListDestinationDto,
   GetList1Params,
-  GetRandomParams,
+  GetRandomParams
 } from '../schemas';
 
 import { orvalMutator } from '../../../services/api/orval-mutator';
+
+
+
 
 /**
  * category(attraction/festival/experience)는 필수, region(충북 11개 시군)은 선택 — 생략하면 충북 전체를 대상으로 조회한다.
@@ -44,279 +50,168 @@ import { orvalMutator } from '../../../services/api/orval-mutator';
  * 2. attraction 탭과 experience 탭은 TourAPI 분류상 일부 겹친다(체험관광지도 관광지 탭에 함께 나옴). 겹침 없이 분리하려면 TourAPI가 계산해주는 totalCount 기반 페이지네이션과 어긋나서, 정확한 페이지네이션을 우선하고 겹침은 허용했다.
  * @summary 관광지/축제/체험관광 목록 조회
  */
-export const getList1 = (params: GetList1Params, signal?: AbortSignal) => {
-  return orvalMutator<ApiResponseDestinationPageDto>({
-    url: `/destinations`,
-    method: 'GET',
-    params,
-    signal,
-  });
-};
-
-export const getGetList1InfiniteQueryKey = (params?: GetList1Params) => {
-  return ['infinite', `/destinations`, ...(params ? [params] : [])] as const;
-};
-
-export const getGetList1QueryKey = (params?: GetList1Params) => {
-  return [`/destinations`, ...(params ? [params] : [])] as const;
-};
-
-export const getGetList1InfiniteQueryOptions = <
-  TData = InfiniteData<Awaited<ReturnType<typeof getList1>>>,
-  TError = unknown,
->(
-  params: GetList1Params,
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getList1>>,
-        TError,
-        TData
-      >
-    >;
-  },
+export const getList1 = (
+    params: GetList1Params,
+ signal?: AbortSignal
 ) => {
-  const { query: queryOptions } = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getGetList1InfiniteQueryKey(params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getList1>>> = ({
-    signal,
-  }) => getList1(params, signal);
+      return orvalMutator<ApiResponseDestinationPageDto>(
+      {url: `/destinations`, method: 'GET',
+        params, signal
+    },
+      );
+    }
 
-  return { queryKey, queryFn, ...queryOptions } as UseInfiniteQueryOptions<
-    Awaited<ReturnType<typeof getList1>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
 
-export type GetList1InfiniteQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getList1>>
->;
-export type GetList1InfiniteQueryError = unknown;
 
-export function useGetList1Infinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getList1>>>,
-  TError = unknown,
->(
-  params: GetList1Params,
-  options: {
-    query: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getList1>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+
+export const getGetList1InfiniteQueryKey = (params?: GetList1Params,) => {
+    return [
+    'infinite', `/destinations`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+export const getGetList1QueryKey = (params?: GetList1Params,) => {
+    return [
+    `/destinations`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetList1InfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getList1>>>, TError = unknown>(params: GetList1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getList1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetList1InfiniteQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getList1>>> = ({ signal }) => getList1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getList1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetList1InfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getList1>>>
+export type GetList1InfiniteQueryError = unknown
+
+
+export function useGetList1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof getList1>>>, TError = unknown>(
+ params: GetList1Params, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getList1>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getList1>>,
           TError,
           Awaited<ReturnType<typeof getList1>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetList1Infinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getList1>>>,
-  TError = unknown,
->(
-  params: GetList1Params,
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getList1>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetList1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof getList1>>>, TError = unknown>(
+ params: GetList1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getList1>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getList1>>,
           TError,
           Awaited<ReturnType<typeof getList1>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetList1Infinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getList1>>>,
-  TError = unknown,
->(
-  params: GetList1Params,
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getList1>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetList1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof getList1>>>, TError = unknown>(
+ params: GetList1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getList1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 관광지/축제/체험관광 목록 조회
  */
 
-export function useGetList1Infinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getList1>>>,
-  TError = unknown,
->(
-  params: GetList1Params,
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getList1>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetList1InfiniteQueryOptions(params, options);
+export function useGetList1Infinite<TData = InfiniteData<Awaited<ReturnType<typeof getList1>>>, TError = unknown>(
+ params: GetList1Params, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getList1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useInfiniteQuery(
-    queryOptions,
-    queryClient,
-  ) as UseInfiniteQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-  };
+  const queryOptions = getGetList1InfiniteQueryOptions(params,options)
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
 
-export const getGetList1QueryOptions = <
-  TData = Awaited<ReturnType<typeof getList1>>,
-  TError = unknown,
->(
-  params: GetList1Params,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getList1>>, TError, TData>
-    >;
-  },
+
+
+
+
+
+export const getGetList1QueryOptions = <TData = Awaited<ReturnType<typeof getList1>>, TError = unknown>(params: GetList1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getList1>>, TError, TData>>, }
 ) => {
-  const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetList1QueryKey(params);
+const {query: queryOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getList1>>> = ({
-    signal,
-  }) => getList1(params, signal);
+  const queryKey =  queryOptions?.queryKey ?? getGetList1QueryKey(params);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getList1>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
 
-export type GetList1QueryResult = NonNullable<
-  Awaited<ReturnType<typeof getList1>>
->;
-export type GetList1QueryError = unknown;
 
-export function useGetList1<
-  TData = Awaited<ReturnType<typeof getList1>>,
-  TError = unknown,
->(
-  params: GetList1Params,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getList1>>, TError, TData>
-    > &
-      Pick<
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getList1>>> = ({ signal }) => getList1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getList1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetList1QueryResult = NonNullable<Awaited<ReturnType<typeof getList1>>>
+export type GetList1QueryError = unknown
+
+
+export function useGetList1<TData = Awaited<ReturnType<typeof getList1>>, TError = unknown>(
+ params: GetList1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getList1>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getList1>>,
           TError,
           Awaited<ReturnType<typeof getList1>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetList1<
-  TData = Awaited<ReturnType<typeof getList1>>,
-  TError = unknown,
->(
-  params: GetList1Params,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getList1>>, TError, TData>
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetList1<TData = Awaited<ReturnType<typeof getList1>>, TError = unknown>(
+ params: GetList1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getList1>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getList1>>,
           TError,
           Awaited<ReturnType<typeof getList1>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetList1<
-  TData = Awaited<ReturnType<typeof getList1>>,
-  TError = unknown,
->(
-  params: GetList1Params,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getList1>>, TError, TData>
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetList1<TData = Awaited<ReturnType<typeof getList1>>, TError = unknown>(
+ params: GetList1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getList1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 관광지/축제/체험관광 목록 조회
  */
 
-export function useGetList1<
-  TData = Awaited<ReturnType<typeof getList1>>,
-  TError = unknown,
->(
-  params: GetList1Params,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getList1>>, TError, TData>
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetList1QueryOptions(params, options);
+export function useGetList1<TData = Awaited<ReturnType<typeof getList1>>, TError = unknown>(
+ params: GetList1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getList1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetList1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+
+
+
+
 
 /**
  * 주소/유형/입장료/설명/태그/사진을 반환한다.
@@ -327,285 +222,167 @@ export function useGetList1<
  * - 사진(images): 대표사진(imageUrl) 1장 외에 갤러리 API(detailImage2)를 추가 호출해서 최대 3장까지 반환한다. 갤러리 사진이 없는 destination은 imageUrl 하나만 담겨 온다.
  * @summary 관광지/축제/체험관광 상세 조회
  */
-export const getDetail = (id: number, signal?: AbortSignal) => {
-  return orvalMutator<ApiResponseDestinationDetailDto>({
-    url: `/destinations/${id}`,
-    method: 'GET',
-    signal,
-  });
-};
-
-export const getGetDetailInfiniteQueryKey = (id: number) => {
-  return ['infinite', `/destinations/${id}`] as const;
-};
-
-export const getGetDetailQueryKey = (id: number) => {
-  return [`/destinations/${id}`] as const;
-};
-
-export const getGetDetailInfiniteQueryOptions = <
-  TData = InfiniteData<Awaited<ReturnType<typeof getDetail>>>,
-  TError = unknown,
->(
-  id: number,
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getDetail>>,
-        TError,
-        TData
-      >
-    >;
-  },
+export const getDetail = (
+    id: number,
+ signal?: AbortSignal
 ) => {
-  const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetDetailInfiniteQueryKey(id);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getDetail>>> = ({
-    signal,
-  }) => getDetail(id, signal);
+      return orvalMutator<ApiResponseDestinationDetailDto>(
+      {url: `/destinations/${id}`, method: 'GET', signal
+    },
+      );
+    }
 
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseInfiniteQueryOptions<
-    Awaited<ReturnType<typeof getDetail>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
 
-export type GetDetailInfiniteQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getDetail>>
->;
-export type GetDetailInfiniteQueryError = unknown;
 
-export function useGetDetailInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getDetail>>>,
-  TError = unknown,
->(
-  id: number,
-  options: {
-    query: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getDetail>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+
+export const getGetDetailInfiniteQueryKey = (id: number,) => {
+    return [
+    'infinite', `/destinations/${id}`
+    ] as const;
+    }
+
+export const getGetDetailQueryKey = (id: number,) => {
+    return [
+    `/destinations/${id}`
+    ] as const;
+    }
+
+
+export const getGetDetailInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getDetail>>>, TError = unknown>(id: number, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDetail>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDetailInfiniteQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDetail>>> = ({ signal }) => getDetail(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDetail>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetDetailInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getDetail>>>
+export type GetDetailInfiniteQueryError = unknown
+
+
+export function useGetDetailInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getDetail>>>, TError = unknown>(
+ id: number, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDetail>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getDetail>>,
           TError,
           Awaited<ReturnType<typeof getDetail>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetDetailInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getDetail>>>,
-  TError = unknown,
->(
-  id: number,
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getDetail>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDetailInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getDetail>>>, TError = unknown>(
+ id: number, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDetail>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getDetail>>,
           TError,
           Awaited<ReturnType<typeof getDetail>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetDetailInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getDetail>>>,
-  TError = unknown,
->(
-  id: number,
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getDetail>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDetailInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getDetail>>>, TError = unknown>(
+ id: number, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDetail>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 관광지/축제/체험관광 상세 조회
  */
 
-export function useGetDetailInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getDetail>>>,
-  TError = unknown,
->(
-  id: number,
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getDetail>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetDetailInfiniteQueryOptions(id, options);
+export function useGetDetailInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getDetail>>>, TError = unknown>(
+ id: number, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getDetail>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useInfiniteQuery(
-    queryOptions,
-    queryClient,
-  ) as UseInfiniteQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-  };
+  const queryOptions = getGetDetailInfiniteQueryOptions(id,options)
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
 
-export const getGetDetailQueryOptions = <
-  TData = Awaited<ReturnType<typeof getDetail>>,
-  TError = unknown,
->(
-  id: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getDetail>>, TError, TData>
-    >;
-  },
+
+
+
+
+
+export const getGetDetailQueryOptions = <TData = Awaited<ReturnType<typeof getDetail>>, TError = unknown>(id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDetail>>, TError, TData>>, }
 ) => {
-  const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetDetailQueryKey(id);
+const {query: queryOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getDetail>>> = ({
-    signal,
-  }) => getDetail(id, signal);
+  const queryKey =  queryOptions?.queryKey ?? getGetDetailQueryKey(id);
 
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<Awaited<ReturnType<typeof getDetail>>, TError, TData> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-  };
-};
 
-export type GetDetailQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getDetail>>
->;
-export type GetDetailQueryError = unknown;
 
-export function useGetDetail<
-  TData = Awaited<ReturnType<typeof getDetail>>,
-  TError = unknown,
->(
-  id: number,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getDetail>>, TError, TData>
-    > &
-      Pick<
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDetail>>> = ({ signal }) => getDetail(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDetail>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetDetailQueryResult = NonNullable<Awaited<ReturnType<typeof getDetail>>>
+export type GetDetailQueryError = unknown
+
+
+export function useGetDetail<TData = Awaited<ReturnType<typeof getDetail>>, TError = unknown>(
+ id: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDetail>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getDetail>>,
           TError,
           Awaited<ReturnType<typeof getDetail>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetDetail<
-  TData = Awaited<ReturnType<typeof getDetail>>,
-  TError = unknown,
->(
-  id: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getDetail>>, TError, TData>
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDetail<TData = Awaited<ReturnType<typeof getDetail>>, TError = unknown>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDetail>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getDetail>>,
           TError,
           Awaited<ReturnType<typeof getDetail>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetDetail<
-  TData = Awaited<ReturnType<typeof getDetail>>,
-  TError = unknown,
->(
-  id: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getDetail>>, TError, TData>
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDetail<TData = Awaited<ReturnType<typeof getDetail>>, TError = unknown>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDetail>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 관광지/축제/체험관광 상세 조회
  */
 
-export function useGetDetail<
-  TData = Awaited<ReturnType<typeof getDetail>>,
-  TError = unknown,
->(
-  id: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getDetail>>, TError, TData>
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetDetailQueryOptions(id, options);
+export function useGetDetail<TData = Awaited<ReturnType<typeof getDetail>>, TError = unknown>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDetail>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetDetailQueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+
+
+
+
 
 /**
  * size(4/8/16/32 중 요청값 이하로 자동 스냅다운)만큼 무작위로 섞어서 뽑는다.
@@ -616,280 +393,166 @@ export function useGetDetail<
  * - 필터링 후 후보가 4개 미만이면 409 TOURNAMENT_POOL_TOO_SMALL
  * @summary 토너먼트용 랜덤 관광지 뽑기
  */
-export const getRandom = (params?: GetRandomParams, signal?: AbortSignal) => {
-  return orvalMutator<ApiResponseListDestinationDto>({
-    url: `/destinations/random`,
-    method: 'GET',
-    params,
-    signal,
-  });
-};
-
-export const getGetRandomInfiniteQueryKey = (params?: GetRandomParams) => {
-  return [
-    'infinite',
-    `/destinations/random`,
-    ...(params ? [params] : []),
-  ] as const;
-};
-
-export const getGetRandomQueryKey = (params?: GetRandomParams) => {
-  return [`/destinations/random`, ...(params ? [params] : [])] as const;
-};
-
-export const getGetRandomInfiniteQueryOptions = <
-  TData = InfiniteData<Awaited<ReturnType<typeof getRandom>>>,
-  TError = unknown,
->(
-  params?: GetRandomParams,
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getRandom>>,
-        TError,
-        TData
-      >
-    >;
-  },
+export const getRandom = (
+    params?: GetRandomParams,
+ signal?: AbortSignal
 ) => {
-  const { query: queryOptions } = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getGetRandomInfiniteQueryKey(params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getRandom>>> = ({
-    signal,
-  }) => getRandom(params, signal);
+      return orvalMutator<ApiResponseListDestinationDto>(
+      {url: `/destinations/random`, method: 'GET',
+        params, signal
+    },
+      );
+    }
 
-  return { queryKey, queryFn, ...queryOptions } as UseInfiniteQueryOptions<
-    Awaited<ReturnType<typeof getRandom>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
 
-export type GetRandomInfiniteQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getRandom>>
->;
-export type GetRandomInfiniteQueryError = unknown;
 
-export function useGetRandomInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getRandom>>>,
-  TError = unknown,
->(
-  params: undefined | GetRandomParams,
-  options: {
-    query: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getRandom>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+
+export const getGetRandomInfiniteQueryKey = (params?: GetRandomParams,) => {
+    return [
+    'infinite', `/destinations/random`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+export const getGetRandomQueryKey = (params?: GetRandomParams,) => {
+    return [
+    `/destinations/random`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetRandomInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getRandom>>>, TError = unknown>(params?: GetRandomParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRandom>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetRandomInfiniteQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRandom>>> = ({ signal }) => getRandom(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRandom>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetRandomInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getRandom>>>
+export type GetRandomInfiniteQueryError = unknown
+
+
+export function useGetRandomInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getRandom>>>, TError = unknown>(
+ params: undefined |  GetRandomParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRandom>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getRandom>>,
           TError,
           Awaited<ReturnType<typeof getRandom>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetRandomInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getRandom>>>,
-  TError = unknown,
->(
-  params?: GetRandomParams,
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getRandom>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetRandomInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getRandom>>>, TError = unknown>(
+ params?: GetRandomParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRandom>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getRandom>>,
           TError,
           Awaited<ReturnType<typeof getRandom>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetRandomInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getRandom>>>,
-  TError = unknown,
->(
-  params?: GetRandomParams,
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getRandom>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetRandomInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getRandom>>>, TError = unknown>(
+ params?: GetRandomParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRandom>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 토너먼트용 랜덤 관광지 뽑기
  */
 
-export function useGetRandomInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getRandom>>>,
-  TError = unknown,
->(
-  params?: GetRandomParams,
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getRandom>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetRandomInfiniteQueryOptions(params, options);
+export function useGetRandomInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getRandom>>>, TError = unknown>(
+ params?: GetRandomParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRandom>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useInfiniteQuery(
-    queryOptions,
-    queryClient,
-  ) as UseInfiniteQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-  };
+  const queryOptions = getGetRandomInfiniteQueryOptions(params,options)
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
 
-export const getGetRandomQueryOptions = <
-  TData = Awaited<ReturnType<typeof getRandom>>,
-  TError = unknown,
->(
-  params?: GetRandomParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRandom>>, TError, TData>
-    >;
-  },
+
+
+
+
+
+export const getGetRandomQueryOptions = <TData = Awaited<ReturnType<typeof getRandom>>, TError = unknown>(params?: GetRandomParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRandom>>, TError, TData>>, }
 ) => {
-  const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetRandomQueryKey(params);
+const {query: queryOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getRandom>>> = ({
-    signal,
-  }) => getRandom(params, signal);
+  const queryKey =  queryOptions?.queryKey ?? getGetRandomQueryKey(params);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getRandom>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
 
-export type GetRandomQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getRandom>>
->;
-export type GetRandomQueryError = unknown;
 
-export function useGetRandom<
-  TData = Awaited<ReturnType<typeof getRandom>>,
-  TError = unknown,
->(
-  params: undefined | GetRandomParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRandom>>, TError, TData>
-    > &
-      Pick<
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRandom>>> = ({ signal }) => getRandom(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getRandom>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetRandomQueryResult = NonNullable<Awaited<ReturnType<typeof getRandom>>>
+export type GetRandomQueryError = unknown
+
+
+export function useGetRandom<TData = Awaited<ReturnType<typeof getRandom>>, TError = unknown>(
+ params: undefined |  GetRandomParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRandom>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getRandom>>,
           TError,
           Awaited<ReturnType<typeof getRandom>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetRandom<
-  TData = Awaited<ReturnType<typeof getRandom>>,
-  TError = unknown,
->(
-  params?: GetRandomParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRandom>>, TError, TData>
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetRandom<TData = Awaited<ReturnType<typeof getRandom>>, TError = unknown>(
+ params?: GetRandomParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRandom>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getRandom>>,
           TError,
           Awaited<ReturnType<typeof getRandom>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetRandom<
-  TData = Awaited<ReturnType<typeof getRandom>>,
-  TError = unknown,
->(
-  params?: GetRandomParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRandom>>, TError, TData>
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetRandom<TData = Awaited<ReturnType<typeof getRandom>>, TError = unknown>(
+ params?: GetRandomParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRandom>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 토너먼트용 랜덤 관광지 뽑기
  */
 
-export function useGetRandom<
-  TData = Awaited<ReturnType<typeof getRandom>>,
-  TError = unknown,
->(
-  params?: GetRandomParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getRandom>>, TError, TData>
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetRandomQueryOptions(params, options);
+export function useGetRandom<TData = Awaited<ReturnType<typeof getRandom>>, TError = unknown>(
+ params?: GetRandomParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRandom>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetRandomQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+
+
+
+
+

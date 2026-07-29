@@ -8,8 +8,8 @@ import type { GetList1Category } from './getList1Category';
 import type { GetList1Region } from './getList1Region';
 
 export type GetList1Params = {
-  category: GetList1Category;
-  region?: GetList1Region;
-  pageNo?: number;
-  numOfRows?: number;
+category: GetList1Category;
+region?: GetList1Region;
+pageNo?: number;
+numOfRows?: number;
 };

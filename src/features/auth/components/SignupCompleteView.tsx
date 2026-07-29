@@ -1,12 +1,12 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { Button } from '@/components/ui';
-import { useAuthStore } from '@/stores/auth-store';
 import { authKeys } from '@/features/auth/hooks/use-auth';
+import { useAuthStore } from '@/stores/auth-store';
 import styles from './AuthForm.module.scss';
 
 /**

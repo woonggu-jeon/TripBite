@@ -5,8 +5,8 @@
  * OpenAPI spec version: v0
  */
 
-export type TournamentSummaryDtoCategory =
-  (typeof TournamentSummaryDtoCategory)[keyof typeof TournamentSummaryDtoCategory];
+export type TournamentSummaryDtoCategory = typeof TournamentSummaryDtoCategory[keyof typeof TournamentSummaryDtoCategory];
+
 
 export const TournamentSummaryDtoCategory = {
   attraction: 'attraction',

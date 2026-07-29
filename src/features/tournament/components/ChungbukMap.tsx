@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
-import { haptic } from '@/lib/haptic';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { DestinationDto } from '@/api/generated/schemas';
-import type { TournamentTheme } from '@/features/tournament/types';
 import { SeasonIcon } from '@/components/ui/SeasonIcon';
+import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
+import type { TournamentTheme } from '@/features/tournament/types';
+import { haptic } from '@/lib/haptic';
 import styles from './ChungbukMap.module.scss';
 
 /**

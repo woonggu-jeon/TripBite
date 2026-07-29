@@ -1,5 +1,5 @@
-import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { SavedTournamentsAll } from './_components/SavedTournamentsAll';
 

@@ -1,8 +1,8 @@
 import { ImageResponse } from 'next/og';
+import { BrandLogo } from '@/components/ui/BrandLogo';
+import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { destinationSeeds } from '@/mocks/seeds/destinations';
 import { regionContentSeeds } from '@/mocks/seeds/regions';
-import { CHUNGBUK_REGIONS } from '@/constants/regions';
-import { BrandLogo } from '@/components/ui/BrandLogo';
 
 /**
  * 결과 이미지 카드 — Next.js ImageResponse(Satori) 기반.

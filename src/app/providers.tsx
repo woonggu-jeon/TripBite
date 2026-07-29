@@ -1,39 +1,41 @@
 'use client';
 
 import {
-  QueryClient,
-  QueryCache,
-  QueryClientProvider,
   type DefaultOptions,
+  MutationCache,
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
 } from '@tanstack/react-query';
-import { toast } from '@/lib/toast';
-import { isAxiosError } from '@/services/interceptors/auth';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { useEffect, useRef, useState } from 'react';
-import { useTranslations } from 'next-intl';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import { useTranslations } from 'next-intl';
+import { useEffect, useRef, useState } from 'react';
+import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
+import { Toaster } from '@/components/feedback/Toaster';
+import { WebVitalsTracker } from '@/features/analytics/components/web-vitals';
+import { usePageView } from '@/features/analytics/hooks/use-page-view';
+import { SessionExpiredWatcher } from '@/features/auth/components/SessionExpiredWatcher';
+import { ServiceWorkerNavigateBridge } from '@/features/notification/components/ServiceWorkerNavigateBridge';
+import {
+  InstallPromptBanner,
+  OfflineBanner,
+  PwaUpdateBanner,
+} from '@/features/pwa';
 // 2026-06-12 — AuthBootstrap mount 비활성. 인증 redirect 는 middleware (SSR) +
 // interceptor (401) 가 담당, 로그인 직후 store sync 는 useLogin.onSuccess 의
 // fetchQuery 가 처리. 다른 기기 user 변경 stale 만 trade-off (다음 navigation 까지).
 // 회귀 시 본 import 와 아래 <AuthBootstrap /> mount 주석 복원.
 // import { AuthBootstrap } from '@/features/auth/components/AuthBootstrap';
 import { ThemeApplier } from '@/features/theme/components/ThemeApplier';
-import { ServiceWorkerNavigateBridge } from '@/features/notification/components/ServiceWorkerNavigateBridge';
-import { SessionExpiredWatcher } from '@/features/auth/components/SessionExpiredWatcher';
-import { Toaster } from '@/components/feedback/Toaster';
-import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
-import {
-  PwaUpdateBanner,
-  OfflineBanner,
-  InstallPromptBanner,
-} from '@/features/pwa';
-import { usePageView } from '@/features/analytics/hooks/use-page-view';
-import { WebVitalsTracker } from '@/features/analytics/components/web-vitals';
 import {
   installGlobalErrorReporters,
   reportClientError,
 } from '@/lib/client-error-reporter';
+import { createLogger } from '@/lib/logger';
+import { toast } from '@/lib/toast';
+import { isAxiosError } from '@/services/interceptors/auth';
 
 /**
  * react-query 정책:
@@ -101,15 +103,19 @@ function PageViewTracker() {
  */
 const MSW_ENABLED = process.env.NEXT_PUBLIC_USE_MSW === 'true';
 
-// 빌드 시점에 inline 된 env 상태를 클라이언트 콘솔에 한 줄로 노출 (트러블슈팅용).
+const log = createLogger('providers');
+
+// 빌드 시점에 inline 된 env 상태를 클라이언트에 한 줄로 노출 (트러블슈팅용).
 // Next.js 가 NEXT_PUBLIC_* 를 빌드 시 치환 → 런타임에 `process.env` 직접 접근 불가.
-// 콘솔에서 이 줄을 확인해 Vercel env 가 실제 빌드에 들어갔는지 즉시 판별.
+// 로그에서 이 줄을 확인해 Vercel env 가 실제 빌드에 들어갔는지 즉시 판별.
 if (typeof window !== 'undefined') {
-  // eslint-disable-next-line no-console
-  console.info(
-    `[boot] MSW_ENABLED=${MSW_ENABLED} ` +
-      `NEXT_PUBLIC_USE_MSW=${JSON.stringify(process.env.NEXT_PUBLIC_USE_MSW)} ` +
-      `NEXT_PUBLIC_API_URL=${JSON.stringify(process.env.NEXT_PUBLIC_API_URL)}`,
+  log.info(
+    {
+      mswEnabled: MSW_ENABLED,
+      useMsw: process.env.NEXT_PUBLIC_USE_MSW,
+      apiUrl: process.env.NEXT_PUBLIC_API_URL,
+    },
+    'boot',
   );
 }
 
@@ -146,6 +152,19 @@ export function Providers({ children }: { children: React.ReactNode }) {
             }
           },
         }),
+        // 글로벌 mutation 에러 → 관측 로깅만 (toast 는 각 폼이 담당 — 중복 방지).
+        // 5xx / 네트워크만 보고(4xx 는 사용자 입력 검증). 401 은 interceptor 처리.
+        mutationCache: new MutationCache({
+          onError: (error) => {
+            if (isAxiosError(error) && error.response?.status === 401) return;
+            const status = isAxiosError(error)
+              ? error.response?.status
+              : undefined;
+            if (status === undefined || status >= 500) {
+              reportClientError('react-query', error);
+            }
+          },
+        }),
       }),
   );
   const [mswReady, setMswReady] = useState(!MSW_ENABLED);
@@ -173,9 +192,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
         // 콘솔에만 경고하고 mswReady=true 로 진행 — 이후 API 호출은 실 백엔드로 감.
         // (실 백엔드 없으면 각 fetch 가 404 → 화면별 에러 UI 가 처리)
         if (typeof window !== 'undefined') {
-          console.warn(
-            '[mock] MSW worker 등록 실패 — 앱은 진행하되 API 호출이 실 백엔드로 갑니다.',
-            err,
+          log.warn(
+            { err },
+            'MSW worker 등록 실패 — 앱은 진행하되 API 호출이 실 백엔드로 갑니다',
           );
         }
       }

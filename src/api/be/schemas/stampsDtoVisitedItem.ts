@@ -5,8 +5,8 @@
  * OpenAPI spec version: v0
  */
 
-export type StampsDtoVisitedItem =
-  (typeof StampsDtoVisitedItem)[keyof typeof StampsDtoVisitedItem];
+export type StampsDtoVisitedItem = typeof StampsDtoVisitedItem[keyof typeof StampsDtoVisitedItem];
+
 
 export const StampsDtoVisitedItem = {
   cheongju: 'cheongju',

@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 import { ListRow } from '@/components/ui';
 import { usePermissionState } from '@/features/location';
 import { useMypage } from '@/features/mypage/hooks/use-mypage';
-import { NicknameEditDialog } from './NicknameEditDialog';
 import { ChangePasswordDialog } from './ChangePasswordDialog';
+import { NicknameEditDialog } from './NicknameEditDialog';
 import styles from './SettingsRows.module.scss';
 
 /**

@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useTranslations } from 'next-intl';
 import { X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
 import { useServiceWorkerUpdate } from '@/features/pwa/hooks/use-service-worker-update';
 import styles from './Banner.module.scss';
 

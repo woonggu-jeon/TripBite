@@ -2,11 +2,11 @@
 import { defaultCache } from '@serwist/next/worker';
 import type { PrecacheEntry, SerwistGlobalConfig } from 'serwist';
 import {
-  Serwist,
   CacheFirst,
-  StaleWhileRevalidate,
-  ExpirationPlugin,
   CacheableResponsePlugin,
+  ExpirationPlugin,
+  Serwist,
+  StaleWhileRevalidate,
 } from 'serwist';
 
 /**

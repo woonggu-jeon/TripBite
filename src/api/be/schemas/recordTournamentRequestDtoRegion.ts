@@ -5,8 +5,8 @@
  * OpenAPI spec version: v0
  */
 
-export type RecordTournamentRequestDtoRegion =
-  (typeof RecordTournamentRequestDtoRegion)[keyof typeof RecordTournamentRequestDtoRegion];
+export type RecordTournamentRequestDtoRegion = typeof RecordTournamentRequestDtoRegion[keyof typeof RecordTournamentRequestDtoRegion];
+
 
 export const RecordTournamentRequestDtoRegion = {
   cheongju: 'cheongju',

@@ -6,8 +6,8 @@
  */
 
 export type GetWeeklyTopDestinationsParams = {
-  year?: number;
-  month?: number;
-  weekOfMonth?: number;
-  size?: number;
+year?: number;
+month?: number;
+weekOfMonth?: number;
+size?: number;
 };

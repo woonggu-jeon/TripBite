@@ -1,6 +1,6 @@
-import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'node:path';
+import { defineConfig } from 'vitest/config';
 
 /**
  * Vitest 설정
@@ -106,6 +106,8 @@ export default defineConfig({
       'node_modules/**',
       '.next/**',
       '**/*.stories.@(js|jsx|ts|tsx)',
+      // jest 병행 — `*.jest.test.*` 는 jest 담당(중복 실행 방지)
+      '**/*.jest.test.@(ts|tsx)',
     ],
     css: false,
   },

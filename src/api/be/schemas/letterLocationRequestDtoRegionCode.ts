@@ -5,8 +5,8 @@
  * OpenAPI spec version: v0
  */
 
-export type LetterLocationRequestDtoRegionCode =
-  (typeof LetterLocationRequestDtoRegionCode)[keyof typeof LetterLocationRequestDtoRegionCode];
+export type LetterLocationRequestDtoRegionCode = typeof LetterLocationRequestDtoRegionCode[keyof typeof LetterLocationRequestDtoRegionCode];
+
 
 export const LetterLocationRequestDtoRegionCode = {
   cheongju: 'cheongju',

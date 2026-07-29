@@ -2,8 +2,8 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  settingsApi,
   type NotificationSettings,
+  settingsApi,
 } from '@/features/settings/api/settings';
 import { useAuthStore } from '@/stores/auth-store';
 

@@ -1,7 +1,10 @@
+import { createLogger } from '@/lib/logger';
 import { consoleProvider } from './providers/console';
 import { noopProvider } from './providers/noop';
 import { vercelProvider } from './providers/vercel';
 import type { AnalyticsProvider, TrackEventMap, TrackEventName } from './types';
+
+const log = createLogger('analytics');
 
 /**
  * Analytics 추상화 — 호출부 변경 없이 도구 교체 가능
@@ -46,7 +49,7 @@ export function track<K extends TrackEventName>(
     try {
       p.track(event, payload);
     } catch (err) {
-      console.warn(`[analytics:${p.name}] failed`, err);
+      log.warn({ provider: p.name, err }, 'analytics provider failed');
     }
   }
 }

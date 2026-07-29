@@ -1,5 +1,5 @@
-import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
 import { Loader2 } from 'lucide-react';
+import { type ButtonHTMLAttributes, type ReactNode, forwardRef } from 'react';
 import styles from './IconButton.module.scss';
 
 /**

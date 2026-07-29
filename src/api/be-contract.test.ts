@@ -1,15 +1,15 @@
 // @vitest-environment node
 // (node 환경 필수 — happy-dom 은 브라우저처럼 Set-Cookie 를 JS 에서 숨겨 세션 주입 불가)
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { authApi } from '@/features/auth/api/auth';
+import { letterApi } from '@/features/letter/api/letter';
+import { mypageApi } from '@/features/mypage/api/mypage';
+import { rankingApi } from '@/features/ranking/api/ranking';
+import { regionApi } from '@/features/region/api/region';
+import { tournamentApi } from '@/features/tournament/api/tournament';
+import type { TournamentConfig } from '@/features/tournament/types';
 import { server } from '@/mocks/server';
 import { api } from '@/services/api/client';
-import { authApi } from '@/features/auth/api/auth';
-import { regionApi } from '@/features/region/api/region';
-import { rankingApi } from '@/features/ranking/api/ranking';
-import { mypageApi } from '@/features/mypage/api/mypage';
-import { tournamentApi } from '@/features/tournament/api/tournament';
-import { letterApi } from '@/features/letter/api/letter';
-import type { TournamentConfig } from '@/features/tournament/types';
 
 /**
  * 실 BE contract 테스트 — **mock(MSW) 이 아니라 실제 Spring BE 응답**으로 어댑터 매핑 검증.

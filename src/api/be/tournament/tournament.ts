@@ -4,7 +4,10 @@
  * OpenAPI definition
  * OpenAPI spec version: v0
  */
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useQuery
+} from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -18,16 +21,19 @@ import type {
   UseInfiniteQueryOptions,
   UseInfiniteQueryResult,
   UseQueryOptions,
-  UseQueryResult,
+  UseQueryResult
 } from '@tanstack/react-query';
 
 import type {
   ApiResponseListRegionWinCountDto,
   ApiResponseWeeklyTopDestinationsDto,
-  GetWeeklyTopDestinationsParams,
+  GetWeeklyTopDestinationsParams
 } from '../schemas';
 
 import { orvalMutator } from '../../../services/api/orval-mutator';
+
+
+
 
 /**
  * 월요일 시작 기준 한 주(한국시간) 동안 가장 많이 우승한 여행지를 우승 횟수와 함께 상위 size개 반환한다.
@@ -39,594 +45,331 @@ import { orvalMutator } from '../../../services/api/orval-mutator';
  * @summary 주간 우승 여행지 TOP N
  */
 export const getWeeklyTopDestinations = (
-  params?: GetWeeklyTopDestinationsParams,
-  signal?: AbortSignal,
+    params?: GetWeeklyTopDestinationsParams,
+ signal?: AbortSignal
 ) => {
-  return orvalMutator<ApiResponseWeeklyTopDestinationsDto>({
-    url: `/tournaments/rankings/weekly`,
-    method: 'GET',
-    params,
-    signal,
-  });
-};
 
-export const getGetWeeklyTopDestinationsInfiniteQueryKey = (
-  params?: GetWeeklyTopDestinationsParams,
+
+      return orvalMutator<ApiResponseWeeklyTopDestinationsDto>(
+      {url: `/tournaments/rankings/weekly`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getGetWeeklyTopDestinationsInfiniteQueryKey = (params?: GetWeeklyTopDestinationsParams,) => {
+    return [
+    'infinite', `/tournaments/rankings/weekly`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+export const getGetWeeklyTopDestinationsQueryKey = (params?: GetWeeklyTopDestinationsParams,) => {
+    return [
+    `/tournaments/rankings/weekly`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetWeeklyTopDestinationsInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getWeeklyTopDestinations>>>, TError = unknown>(params?: GetWeeklyTopDestinationsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getWeeklyTopDestinations>>, TError, TData>>, }
 ) => {
-  return [
-    'infinite',
-    `/tournaments/rankings/weekly`,
-    ...(params ? [params] : []),
-  ] as const;
-};
 
-export const getGetWeeklyTopDestinationsQueryKey = (
-  params?: GetWeeklyTopDestinationsParams,
-) => {
-  return [`/tournaments/rankings/weekly`, ...(params ? [params] : [])] as const;
-};
+const {query: queryOptions} = options ?? {};
 
-export const getGetWeeklyTopDestinationsInfiniteQueryOptions = <
-  TData = InfiniteData<Awaited<ReturnType<typeof getWeeklyTopDestinations>>>,
-  TError = unknown,
->(
-  params?: GetWeeklyTopDestinationsParams,
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getWeeklyTopDestinations>>,
-        TError,
-        TData
-      >
-    >;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
+  const queryKey =  queryOptions?.queryKey ?? getGetWeeklyTopDestinationsInfiniteQueryKey(params);
 
-  const queryKey =
-    queryOptions?.queryKey ??
-    getGetWeeklyTopDestinationsInfiniteQueryKey(params);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getWeeklyTopDestinations>>
-  > = ({ signal }) => getWeeklyTopDestinations(params, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseInfiniteQueryOptions<
-    Awaited<ReturnType<typeof getWeeklyTopDestinations>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getWeeklyTopDestinations>>> = ({ signal }) => getWeeklyTopDestinations(params, signal);
 
-export type GetWeeklyTopDestinationsInfiniteQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getWeeklyTopDestinations>>
->;
-export type GetWeeklyTopDestinationsInfiniteQueryError = unknown;
 
-export function useGetWeeklyTopDestinationsInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getWeeklyTopDestinations>>>,
-  TError = unknown,
->(
-  params: undefined | GetWeeklyTopDestinationsParams,
-  options: {
-    query: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getWeeklyTopDestinations>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getWeeklyTopDestinations>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetWeeklyTopDestinationsInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getWeeklyTopDestinations>>>
+export type GetWeeklyTopDestinationsInfiniteQueryError = unknown
+
+
+export function useGetWeeklyTopDestinationsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getWeeklyTopDestinations>>>, TError = unknown>(
+ params: undefined |  GetWeeklyTopDestinationsParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getWeeklyTopDestinations>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getWeeklyTopDestinations>>,
           TError,
           Awaited<ReturnType<typeof getWeeklyTopDestinations>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetWeeklyTopDestinationsInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getWeeklyTopDestinations>>>,
-  TError = unknown,
->(
-  params?: GetWeeklyTopDestinationsParams,
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getWeeklyTopDestinations>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetWeeklyTopDestinationsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getWeeklyTopDestinations>>>, TError = unknown>(
+ params?: GetWeeklyTopDestinationsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getWeeklyTopDestinations>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getWeeklyTopDestinations>>,
           TError,
           Awaited<ReturnType<typeof getWeeklyTopDestinations>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetWeeklyTopDestinationsInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getWeeklyTopDestinations>>>,
-  TError = unknown,
->(
-  params?: GetWeeklyTopDestinationsParams,
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getWeeklyTopDestinations>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetWeeklyTopDestinationsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getWeeklyTopDestinations>>>, TError = unknown>(
+ params?: GetWeeklyTopDestinationsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getWeeklyTopDestinations>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 주간 우승 여행지 TOP N
  */
 
-export function useGetWeeklyTopDestinationsInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getWeeklyTopDestinations>>>,
-  TError = unknown,
->(
-  params?: GetWeeklyTopDestinationsParams,
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getWeeklyTopDestinations>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetWeeklyTopDestinationsInfiniteQueryOptions(
-    params,
-    options,
-  );
+export function useGetWeeklyTopDestinationsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getWeeklyTopDestinations>>>, TError = unknown>(
+ params?: GetWeeklyTopDestinationsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getWeeklyTopDestinations>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useInfiniteQuery(
-    queryOptions,
-    queryClient,
-  ) as UseInfiniteQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-  };
+  const queryOptions = getGetWeeklyTopDestinationsInfiniteQueryOptions(params,options)
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
 
-export const getGetWeeklyTopDestinationsQueryOptions = <
-  TData = Awaited<ReturnType<typeof getWeeklyTopDestinations>>,
-  TError = unknown,
->(
-  params?: GetWeeklyTopDestinationsParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getWeeklyTopDestinations>>,
-        TError,
-        TData
-      >
-    >;
-  },
+
+
+
+
+
+export const getGetWeeklyTopDestinationsQueryOptions = <TData = Awaited<ReturnType<typeof getWeeklyTopDestinations>>, TError = unknown>(params?: GetWeeklyTopDestinationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWeeklyTopDestinations>>, TError, TData>>, }
 ) => {
-  const { query: queryOptions } = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getGetWeeklyTopDestinationsQueryKey(params);
+const {query: queryOptions} = options ?? {};
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getWeeklyTopDestinations>>
-  > = ({ signal }) => getWeeklyTopDestinations(params, signal);
+  const queryKey =  queryOptions?.queryKey ?? getGetWeeklyTopDestinationsQueryKey(params);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getWeeklyTopDestinations>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
 
-export type GetWeeklyTopDestinationsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getWeeklyTopDestinations>>
->;
-export type GetWeeklyTopDestinationsQueryError = unknown;
 
-export function useGetWeeklyTopDestinations<
-  TData = Awaited<ReturnType<typeof getWeeklyTopDestinations>>,
-  TError = unknown,
->(
-  params: undefined | GetWeeklyTopDestinationsParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getWeeklyTopDestinations>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getWeeklyTopDestinations>>> = ({ signal }) => getWeeklyTopDestinations(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getWeeklyTopDestinations>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetWeeklyTopDestinationsQueryResult = NonNullable<Awaited<ReturnType<typeof getWeeklyTopDestinations>>>
+export type GetWeeklyTopDestinationsQueryError = unknown
+
+
+export function useGetWeeklyTopDestinations<TData = Awaited<ReturnType<typeof getWeeklyTopDestinations>>, TError = unknown>(
+ params: undefined |  GetWeeklyTopDestinationsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWeeklyTopDestinations>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getWeeklyTopDestinations>>,
           TError,
           Awaited<ReturnType<typeof getWeeklyTopDestinations>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetWeeklyTopDestinations<
-  TData = Awaited<ReturnType<typeof getWeeklyTopDestinations>>,
-  TError = unknown,
->(
-  params?: GetWeeklyTopDestinationsParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getWeeklyTopDestinations>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetWeeklyTopDestinations<TData = Awaited<ReturnType<typeof getWeeklyTopDestinations>>, TError = unknown>(
+ params?: GetWeeklyTopDestinationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWeeklyTopDestinations>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getWeeklyTopDestinations>>,
           TError,
           Awaited<ReturnType<typeof getWeeklyTopDestinations>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetWeeklyTopDestinations<
-  TData = Awaited<ReturnType<typeof getWeeklyTopDestinations>>,
-  TError = unknown,
->(
-  params?: GetWeeklyTopDestinationsParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getWeeklyTopDestinations>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetWeeklyTopDestinations<TData = Awaited<ReturnType<typeof getWeeklyTopDestinations>>, TError = unknown>(
+ params?: GetWeeklyTopDestinationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWeeklyTopDestinations>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 주간 우승 여행지 TOP N
  */
 
-export function useGetWeeklyTopDestinations<
-  TData = Awaited<ReturnType<typeof getWeeklyTopDestinations>>,
-  TError = unknown,
->(
-  params?: GetWeeklyTopDestinationsParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getWeeklyTopDestinations>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetWeeklyTopDestinationsQueryOptions(params, options);
+export function useGetWeeklyTopDestinations<TData = Awaited<ReturnType<typeof getWeeklyTopDestinations>>, TError = unknown>(
+ params?: GetWeeklyTopDestinationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getWeeklyTopDestinations>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetWeeklyTopDestinationsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+
+
+
+
 
 /**
  * 유저 구분 없이 전체 토너먼트 기록을 시/군(RegionCode)별로 집계해 우승 횟수 내림차순으로 반환한다. 예: cheongju 12회, chungju 9회 ...
  * @summary 지역별 누적 우승 횟수
  */
-export const getRegionRankings = (signal?: AbortSignal) => {
-  return orvalMutator<ApiResponseListRegionWinCountDto>({
-    url: `/tournaments/rankings/regions`,
-    method: 'GET',
-    signal,
-  });
-};
+export const getRegionRankings = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalMutator<ApiResponseListRegionWinCountDto>(
+      {url: `/tournaments/rankings/regions`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
 
 export const getGetRegionRankingsInfiniteQueryKey = () => {
-  return ['infinite', `/tournaments/rankings/regions`] as const;
-};
+    return [
+    'infinite', `/tournaments/rankings/regions`
+    ] as const;
+    }
 
 export const getGetRegionRankingsQueryKey = () => {
-  return [`/tournaments/rankings/regions`] as const;
-};
+    return [
+    `/tournaments/rankings/regions`
+    ] as const;
+    }
 
-export const getGetRegionRankingsInfiniteQueryOptions = <
-  TData = InfiniteData<Awaited<ReturnType<typeof getRegionRankings>>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseInfiniteQueryOptions<
-      Awaited<ReturnType<typeof getRegionRankings>>,
-      TError,
-      TData
-    >
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getGetRegionRankingsInfiniteQueryKey();
+export const getGetRegionRankingsInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof getRegionRankings>>>, TError = unknown>( options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRegionRankings>>, TError, TData>>, }
+) => {
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getRegionRankings>>
-  > = ({ signal }) => getRegionRankings(signal);
+const {query: queryOptions} = options ?? {};
 
-  return { queryKey, queryFn, ...queryOptions } as UseInfiniteQueryOptions<
-    Awaited<ReturnType<typeof getRegionRankings>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  const queryKey =  queryOptions?.queryKey ?? getGetRegionRankingsInfiniteQueryKey();
 
-export type GetRegionRankingsInfiniteQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getRegionRankings>>
->;
-export type GetRegionRankingsInfiniteQueryError = unknown;
 
-export function useGetRegionRankingsInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getRegionRankings>>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getRegionRankings>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRegionRankings>>> = ({ signal }) => getRegionRankings(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRegionRankings>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetRegionRankingsInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof getRegionRankings>>>
+export type GetRegionRankingsInfiniteQueryError = unknown
+
+
+export function useGetRegionRankingsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getRegionRankings>>>, TError = unknown>(
+  options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRegionRankings>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getRegionRankings>>,
           TError,
           Awaited<ReturnType<typeof getRegionRankings>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetRegionRankingsInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getRegionRankings>>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getRegionRankings>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetRegionRankingsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getRegionRankings>>>, TError = unknown>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRegionRankings>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getRegionRankings>>,
           TError,
           Awaited<ReturnType<typeof getRegionRankings>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetRegionRankingsInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getRegionRankings>>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getRegionRankings>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetRegionRankingsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getRegionRankings>>>, TError = unknown>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRegionRankings>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 지역별 누적 우승 횟수
  */
 
-export function useGetRegionRankingsInfinite<
-  TData = InfiniteData<Awaited<ReturnType<typeof getRegionRankings>>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseInfiniteQueryOptions<
-        Awaited<ReturnType<typeof getRegionRankings>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseInfiniteQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetRegionRankingsInfiniteQueryOptions(options);
+export function useGetRegionRankingsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof getRegionRankings>>>, TError = unknown>(
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof getRegionRankings>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useInfiniteQuery(
-    queryOptions,
-    queryClient,
-  ) as UseInfiniteQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-  };
+  const queryOptions = getGetRegionRankingsInfiniteQueryOptions(options)
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as  UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
 
-export const getGetRegionRankingsQueryOptions = <
-  TData = Awaited<ReturnType<typeof getRegionRankings>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof getRegionRankings>>,
-      TError,
-      TData
-    >
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetRegionRankingsQueryKey();
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getRegionRankings>>
-  > = ({ signal }) => getRegionRankings(signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getRegionRankings>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
 
-export type GetRegionRankingsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getRegionRankings>>
->;
-export type GetRegionRankingsQueryError = unknown;
 
-export function useGetRegionRankings<
-  TData = Awaited<ReturnType<typeof getRegionRankings>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getRegionRankings>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+export const getGetRegionRankingsQueryOptions = <TData = Awaited<ReturnType<typeof getRegionRankings>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRegionRankings>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetRegionRankingsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRegionRankings>>> = ({ signal }) => getRegionRankings(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getRegionRankings>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetRegionRankingsQueryResult = NonNullable<Awaited<ReturnType<typeof getRegionRankings>>>
+export type GetRegionRankingsQueryError = unknown
+
+
+export function useGetRegionRankings<TData = Awaited<ReturnType<typeof getRegionRankings>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRegionRankings>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getRegionRankings>>,
           TError,
           Awaited<ReturnType<typeof getRegionRankings>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetRegionRankings<
-  TData = Awaited<ReturnType<typeof getRegionRankings>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getRegionRankings>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetRegionRankings<TData = Awaited<ReturnType<typeof getRegionRankings>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRegionRankings>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getRegionRankings>>,
           TError,
           Awaited<ReturnType<typeof getRegionRankings>>
-        >,
-        'initialData'
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetRegionRankings<
-  TData = Awaited<ReturnType<typeof getRegionRankings>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getRegionRankings>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetRegionRankings<TData = Awaited<ReturnType<typeof getRegionRankings>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRegionRankings>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 지역별 누적 우승 횟수
  */
 
-export function useGetRegionRankings<
-  TData = Awaited<ReturnType<typeof getRegionRankings>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getRegionRankings>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetRegionRankingsQueryOptions(options);
+export function useGetRegionRankings<TData = Awaited<ReturnType<typeof getRegionRankings>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRegionRankings>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetRegionRankingsQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+
+
+
+
+

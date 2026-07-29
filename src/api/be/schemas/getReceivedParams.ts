@@ -6,6 +6,6 @@
  */
 
 export type GetReceivedParams = {
-  cursor?: number;
-  size?: number;
+cursor?: number;
+size?: number;
 };

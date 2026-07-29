@@ -1,7 +1,7 @@
-import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
-import { SubHeader } from '@/components/layout/SubHeader';
+import { getTranslations } from 'next-intl/server';
 import { PolicyArticle } from '@/components/layout/PolicyArticle';
+import { SubHeader } from '@/components/layout/SubHeader';
 import styles from './page.module.scss';
 
 /**

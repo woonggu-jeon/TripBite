@@ -2,8 +2,8 @@
 
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui';
-import styles from './OnboardingStep.module.scss';
 import conceptIllustrationStyles from './ConceptIllustration.module.scss';
+import styles from './OnboardingStep.module.scss';
 
 /**
  * <ConceptStep /> — 온보딩 step 1

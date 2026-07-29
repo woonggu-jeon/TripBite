@@ -7,13 +7,13 @@
 
 export interface QuizAnswerDto {
   /**
-   * @minimum 1
-   * @maximum 5
-   */
+     * @minimum 1
+     * @maximum 5
+     */
   questionId?: number;
   /**
-   * @minimum 1
-   * @maximum 4
-   */
+     * @minimum 1
+     * @maximum 4
+     */
   optionId?: number;
 }

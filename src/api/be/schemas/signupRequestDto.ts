@@ -9,9 +9,9 @@ export interface SignupRequestDto {
   /** @pattern ^[a-zA-Z0-9]{4,20}$ */
   username?: string;
   /**
-   * @minLength 10
-   * @maxLength 2147483647
-   */
+     * @minLength 10
+     * @maxLength 2147483647
+     */
   password?: string;
   /** @minLength 1 */
   name: string;
@@ -20,8 +20,8 @@ export interface SignupRequestDto {
   /** @pattern ^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$ */
   phone?: string;
   /**
-   * @minLength 2
-   * @maxLength 23
-   */
+     * @minLength 2
+     * @maxLength 23
+     */
   nickname?: string;
 }

@@ -1,17 +1,17 @@
 'use client';
 
-import { useMemo } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Icon } from '@/components/icon/Icon';
-import { Skeleton } from '@/components/feedback/Skeleton';
+import { useRouter } from 'next/navigation';
+import { useMemo } from 'react';
 import { EmptyState } from '@/components/feedback/EmptyState';
+import { Skeleton } from '@/components/feedback/Skeleton';
+import { Icon } from '@/components/icon/Icon';
 import { Button } from '@/components/ui';
+import { type RegionCode, isRegionCode } from '@/constants/regions';
 import { useStamps } from '@/features/mypage/hooks/use-mypage';
 import { ChungbukStampMap } from '@/features/region/components/ChungbukStampMap';
 import { useShareCard } from '@/hooks/use-share-card';
 import { haptic } from '@/lib/haptic';
-import { isRegionCode, type RegionCode } from '@/constants/regions';
 import styles from './StampsClient.module.scss';
 
 /**

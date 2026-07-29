@@ -9,8 +9,8 @@ import type { GetRandomRegion } from './getRandomRegion';
 import type { GetRandomSeason } from './getRandomSeason';
 
 export type GetRandomParams = {
-  region?: GetRandomRegion;
-  season?: GetRandomSeason;
-  category?: GetRandomCategory;
-  size?: number;
+region?: GetRandomRegion;
+season?: GetRandomSeason;
+category?: GetRandomCategory;
+size?: number;
 };

@@ -1,8 +1,8 @@
-import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { useState } from 'react';
 import { Icon } from '@/components/icon/Icon';
-import { Dialog } from './Dialog';
 import { Button } from './Button';
+import { Dialog } from './Dialog';
 
 const meta: Meta<typeof Dialog> = {
   title: 'UI/Dialog',

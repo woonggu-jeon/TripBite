@@ -1,13 +1,13 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import { notificationApi } from '@/features/notification/api/notification';
 import {
   getOrCreatePushSubscription,
   isPushSupported,
   requestNotificationPermission,
   unsubscribePush,
 } from '@/features/notification/utils/subscription';
-import { notificationApi } from '@/features/notification/api/notification';
 
 /**
  * 아키텍처 문서 19번 - Push Notification 구조

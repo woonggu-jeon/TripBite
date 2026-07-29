@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, type InputHTMLAttributes, type ReactNode } from 'react';
+import { type InputHTMLAttributes, type ReactNode, forwardRef } from 'react';
 import styles from './TextField.module.scss';
 
 export interface TextFieldProps extends Omit<

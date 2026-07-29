@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useTranslations } from 'next-intl';
 import { X } from 'lucide-react';
-import { useInstallPrompt } from '@/features/pwa/hooks/use-install-prompt';
+import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
 import { track } from '@/features/analytics';
+import { useInstallPrompt } from '@/features/pwa/hooks/use-install-prompt';
 import { isIOS, isStandalone } from '@/lib/platform';
 import styles from './Banner.module.scss';
 

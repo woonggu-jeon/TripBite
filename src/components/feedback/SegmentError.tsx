@@ -1,11 +1,14 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { Button } from '@/components/ui';
-import { Icon } from '@/components/icon/Icon';
+import { useEffect } from 'react';
 import { EmptyState } from '@/components/feedback/EmptyState';
+import { Icon } from '@/components/icon/Icon';
+import { Button } from '@/components/ui';
+import { createLogger } from '@/lib/logger';
 import styles from './SegmentError.module.scss';
+
+const log = createLogger('segment-error');
 
 /**
  * App Router 세그먼트별 error.tsx 의 공통 UI. EmptyState hero 패턴으로
@@ -26,7 +29,7 @@ export function SegmentError({
   const t = useTranslations();
 
   useEffect(() => {
-    console.error('[SegmentError]', error);
+    log.error({ err: error, digest: error.digest }, 'segment error boundary');
   }, [error]);
 
   return (

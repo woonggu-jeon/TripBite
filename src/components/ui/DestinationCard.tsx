@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import { memo, type ComponentProps, type ReactNode } from 'react';
+import { type ComponentProps, type ReactNode, memo } from 'react';
 import { Icon } from '@/components/icon/Icon';
-import { MediaThumb } from './MediaThumb';
 import styles from './DestinationCard.module.scss';
+import { MediaThumb } from './MediaThumb';
 
 export type DestinationCardTone = 'red' | 'amber' | 'green' | 'blue' | 'violet';
 

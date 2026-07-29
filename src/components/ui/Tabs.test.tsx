@@ -1,7 +1,7 @@
-import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { TabList, Tab, TabPanel } from './Tabs';
+import { describe, expect, it, vi } from 'vitest';
+import { Tab, TabList, TabPanel } from './Tabs';
 
 describe('TabList / Tab / TabPanel', () => {
   it('TabList role=tablist + aria-label', () => {

@@ -1,9 +1,9 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Icon } from '@/components/icon/Icon';
-import { SkeletonList } from '@/components/feedback/SkeletonList';
 import { EmptyState } from '@/components/feedback/EmptyState';
+import { SkeletonList } from '@/components/feedback/SkeletonList';
+import { Icon } from '@/components/icon/Icon';
 import { Button } from '@/components/ui';
 import { useTournamentHistory } from '@/features/tournament/hooks/use-tournament';
 import styles from './TournamentHistorySection.module.scss';

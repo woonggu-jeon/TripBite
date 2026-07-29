@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, type ReactNode } from 'react';
-import { useIntersection } from '@/hooks/use-intersection';
+import { type ReactNode, useEffect } from 'react';
 import { SkeletonList } from '@/components/feedback/SkeletonList';
+import { useIntersection } from '@/hooks/use-intersection';
 
 /**
  * <InfiniteList />

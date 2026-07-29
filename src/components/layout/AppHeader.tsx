@@ -1,14 +1,14 @@
 'use client';
 
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { Icon } from '@/components/icon';
 import { BrandLogo } from '@/components/ui/BrandLogo';
 import { ROUTES } from '@/constants/routes';
+import { MockAuthToggle } from '@/features/auth/components/MockAuthToggle';
+import { MockPushTrigger } from '@/features/notification/components/MockPushTrigger';
 import { useNotificationBadge } from '@/features/notification/hooks/use-notification-inbox';
 import { MockModeBanner } from '@/features/pwa/components/MockModeBanner';
-import { MockPushTrigger } from '@/features/notification/components/MockPushTrigger';
-import { MockAuthToggle } from '@/features/auth/components/MockAuthToggle';
 import styles from './AppHeader.module.scss';
 
 const MSW_ENABLED = process.env.NEXT_PUBLIC_USE_MSW === 'true';

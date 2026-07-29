@@ -1,9 +1,9 @@
-import { describe, it, expect } from 'vitest';
-import { http, HttpResponse } from 'msw';
-import { server } from '@/mocks/server';
-import { mockSeeds } from '@/mocks/handlers';
-import { tournamentApi } from './tournament';
+import { HttpResponse, http } from 'msw';
+import { describe, expect, it } from 'vitest';
 import type { TournamentConfig } from '@/features/tournament/types';
+import { mockSeeds } from '@/mocks/handlers';
+import { server } from '@/mocks/server';
+import { tournamentApi } from './tournament';
 
 /**
  * 어댑터 매핑 단위 테스트 — 신규 Spring BE(ApiResponse 엔벨로프) → 도메인 shape 매핑 검증.

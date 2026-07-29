@@ -4,12 +4,12 @@ import {
   regionControllerContentsV1,
   regionControllerSummaryV1,
 } from '@/api/generated/regions/regions';
-import type { RegionCode } from '@/constants/regions';
-import { normalizeImageField, secureImageUrl } from '@/lib/secure-image-url';
 import type {
   DestinationCategory,
   RegionContentDto,
 } from '@/api/generated/schemas';
+import type { RegionCode } from '@/constants/regions';
+import { normalizeImageField, secureImageUrl } from '@/lib/secure-image-url';
 
 /**
  * 시군 contents 필터 — 응답 enum (`DestinationCategory`) 과 분리.

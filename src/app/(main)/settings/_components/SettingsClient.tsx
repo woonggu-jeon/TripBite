@@ -1,13 +1,13 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-// 언어 섹션 일단 미노출 (사용자 요청) — LanguageSwitcher 자체는 추후 복원용으로 유지.
-// import { LanguageSwitcher } from '@/features/i18n/components/LanguageSwitcher';
-import { NotificationSettingsSection } from '@/features/settings/components/NotificationSettingsSection';
-import { AccountSettingsSection } from '@/features/settings/components/AccountSettingsSection';
 // 약관 섹션 미노출 (사용자 요청, 2026-06-18). 정책 본문 확정 시 복원 — import + 아래 PageSection 만 살리면 됨.
 // import { PolicySection } from '@/features/settings/components/PolicySection';
 import { AccountActionsSection } from '@/features/settings/components/AccountActionsSection';
+import { AccountSettingsSection } from '@/features/settings/components/AccountSettingsSection';
+// 언어 섹션 일단 미노출 (사용자 요청) — LanguageSwitcher 자체는 추후 복원용으로 유지.
+// import { LanguageSwitcher } from '@/features/i18n/components/LanguageSwitcher';
+import { NotificationSettingsSection } from '@/features/settings/components/NotificationSettingsSection';
 // 테마 섹션 미노출 (사용자 요청, 재노출 대비 import 유지)
 // import { ThemeSection } from '@/features/theme/components/ThemeSection';
 import styles from './SettingsClient.module.scss';

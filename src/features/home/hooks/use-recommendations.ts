@@ -2,12 +2,12 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { destinationControllerRecommendationsV1 } from '@/api/generated/destinations/destinations';
-import { CACHE } from '@/lib/cache';
-import { secureImageUrl } from '@/lib/secure-image-url';
 import type {
   DestinationDto,
   RecommendationsDto,
 } from '@/api/generated/schemas';
+import { CACHE } from '@/lib/cache';
+import { secureImageUrl } from '@/lib/secure-image-url';
 
 /**
  * 메인 "이런 여행 어때요" — Figma rec-block 전용 endpoint.

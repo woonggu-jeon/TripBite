@@ -8,9 +8,8 @@
 /**
  * @nullable
  */
-export type UserResponseDtoTravelType =
-  | (typeof UserResponseDtoTravelType)[keyof typeof UserResponseDtoTravelType]
-  | null;
+export type UserResponseDtoTravelType = typeof UserResponseDtoTravelType[keyof typeof UserResponseDtoTravelType] | null;
+
 
 export const UserResponseDtoTravelType = {
   adventurer: 'adventurer',

@@ -1,5 +1,5 @@
-import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import { AuthLayout } from '@/components/layout/AuthLayout';
 import { SignupCompleteView } from '@/features/auth/components/SignupCompleteView';
 

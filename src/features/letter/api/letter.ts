@@ -1,14 +1,14 @@
 // 신규 Spring BE 지원: 편지 전체(list/detail/like/save/delete).
 // compose(POST /letters)는 Idempotency-Key 헤더 위해 api.post 직접 호출.
 import {
-  getReceived as beGetReceived,
-  getSent as beGetSent,
-  getLiked as beGetLiked,
-  getSaved as beGetSaved,
+  _delete as beDelete,
   getById as beGetById,
+  getLiked as beGetLiked,
+  getReceived as beGetReceived,
+  getSaved as beGetSaved,
+  getSent as beGetSent,
   like as beLike,
   save1 as beSave,
-  _delete as beDelete,
 } from '@/api/be/letter/letter';
 import type {
   ApiResponseLetterDto,
@@ -22,12 +22,12 @@ import {
   letterControllerRemoveV1,
   letterControllerSaveV1,
 } from '@/api/generated/letters/letters';
-import { api } from '@/services/api/client';
 import type {
   ComposeLetterDto,
   LetterDto,
   LetterPageDto,
 } from '@/api/generated/schemas';
+import { api } from '@/services/api/client';
 
 const PAGE_SIZE = 10;
 

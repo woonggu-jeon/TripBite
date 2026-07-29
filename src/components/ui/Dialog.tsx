@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { type ReactNode, useEffect, useId, useRef } from 'react';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
 import { useKeyboard } from '@/hooks/use-keyboard';
-import { IconButton } from './IconButton';
 import styles from './Dialog.module.scss';
+import { IconButton } from './IconButton';
 
 export interface DialogProps {
   /** 열림 여부. false 면 미렌더. */

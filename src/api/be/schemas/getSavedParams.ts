@@ -6,6 +6,6 @@
  */
 
 export type GetSavedParams = {
-  cursor?: number;
-  size?: number;
+cursor?: number;
+size?: number;
 };

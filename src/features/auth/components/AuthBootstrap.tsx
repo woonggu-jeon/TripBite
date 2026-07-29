@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
 import { useMe } from '@/features/auth/hooks/use-auth';
 import { useAuthStore } from '@/stores/auth-store';
 

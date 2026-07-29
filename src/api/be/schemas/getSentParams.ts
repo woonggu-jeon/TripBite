@@ -6,6 +6,6 @@
  */
 
 export type GetSentParams = {
-  cursor?: number;
-  size?: number;
+cursor?: number;
+size?: number;
 };

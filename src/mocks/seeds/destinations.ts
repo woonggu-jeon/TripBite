@@ -1,6 +1,6 @@
 import type {
-  DestinationDto,
   DestinationCategory,
+  DestinationDto,
 } from '@/api/generated/schemas';
 import type { RegionCode } from '@/constants/regions';
 
