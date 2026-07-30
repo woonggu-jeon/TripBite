@@ -22,7 +22,7 @@
   gap: var(--space-1);
   min-height: 60px;
   color: var(--color-disabled-text);
-  font-size: 0.625rem; /* Caption/M_10 */
+  font-size: var(--font-eyebrow); /* Caption/M_10 */
   font-weight: var(--font-weight-medium);
   line-height: var(--line-tight);
   transition: color var(--motion-base) ease;

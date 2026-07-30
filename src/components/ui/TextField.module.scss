@@ -106,7 +106,7 @@
 
 // Figma Caption/M_10 — 10px Medium, 좌우 4px 패딩
 .hint {
-  font-size: 0.625rem;
+  font-size: var(--font-eyebrow);
   font-weight: var(--font-weight-medium);
   line-height: var(--line-tight);
   letter-spacing: var(--tracking-tight);
@@ -116,7 +116,7 @@
 }
 
 .error {
-  font-size: 0.625rem;
+  font-size: var(--font-eyebrow);
   font-weight: var(--font-weight-medium);
   line-height: var(--line-tight);
   letter-spacing: var(--tracking-tight);

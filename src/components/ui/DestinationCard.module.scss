@@ -104,7 +104,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  font-size: 0.625rem;
+  font-size: var(--font-eyebrow);
   font-weight: var(--font-weight-medium);
   line-height: var(--line-tight);
   color: var(--color-muted);
@@ -127,7 +127,7 @@
 
 // Figma desc: 10px Medium muted, 1줄 ellipsis
 .caption {
-  font-size: 0.625rem;
+  font-size: var(--font-eyebrow);
   font-weight: var(--font-weight-medium);
   line-height: var(--line-tight);
   color: var(--color-muted);
