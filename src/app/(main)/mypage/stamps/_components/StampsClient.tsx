@@ -26,16 +26,12 @@ export function StampsClient() {
   const shareCard = useShareCard();
   const { data, isLoading, isError, refetch } = useStamps();
 
-  if (isLoading) {
-    return (
-      <div className={styles.wrap}>
-        <Skeleton width="100%" height={68} radius="md" />
-        <Skeleton width="100%" height={360} radius="lg" />
-      </div>
-    );
-  }
-
-  if (isError || !data) {
+  // 실제 fetch 실패(isError)일 때만 에러 상태를 노출한다.
+  // 쿼리가 아직 disabled(인증 하이드레이션 전) 이거나 로딩 중이면
+  // React Query v5 에서 status='pending' + fetchStatus='idle' 이라 isLoading=false 지만
+  // data 도 undefined 다. 이 경우를 "로드 실패"로 오표시하지 않고 skeleton 으로 처리
+  // (직접 진입/하드 리프레시 시 /me 해석 전 false 에러 플래시 방지).
+  if (isError) {
     return (
       <div className={styles.wrap}>
         <EmptyState
@@ -47,6 +43,15 @@ export function StampsClient() {
             </Button>
           }
         />
+      </div>
+    );
+  }
+
+  if (isLoading || !data) {
+    return (
+      <div className={styles.wrap}>
+        <Skeleton width="100%" height={68} radius="md" />
+        <Skeleton width="100%" height={360} radius="lg" />
       </div>
     );
   }
