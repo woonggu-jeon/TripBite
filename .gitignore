@@ -16,6 +16,7 @@ coverage/
 playwright-report/
 test-results/
 /blob-report/
+e2e/__sweep__/
 
 # load test 산출물 (artillery)
 loadtest/report.json
