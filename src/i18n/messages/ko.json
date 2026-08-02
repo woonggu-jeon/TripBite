@@ -759,6 +759,7 @@
       "licenses": "오픈소스 라이선스"
     },
     "actions": {
+      "section": "계정 관리",
       "logout": "로그아웃",
       "loggingOut": "로그아웃 중...",
       "logoutConfirmTitle": "로그아웃 할까요?",

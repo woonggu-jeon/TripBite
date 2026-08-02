@@ -759,6 +759,7 @@
       "licenses": "Open-source licenses"
     },
     "actions": {
+      "section": "Account management",
       "logout": "Sign out",
       "loggingOut": "Signing out...",
       "logoutConfirmTitle": "Sign out?",

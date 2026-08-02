@@ -56,7 +56,7 @@ export function SettingsClient() {
       </PageSection>
       */}
 
-      <PageSection title={t('account.section')}>
+      <PageSection title={t('actions.section')}>
         <AccountActionsSection />
       </PageSection>
     </div>
