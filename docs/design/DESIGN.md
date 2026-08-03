@@ -172,17 +172,32 @@ Blue    50 #E8F1FD · 900 #17243A
 아이콘: `check` `letter` `lock` `location` `noti` `trophy` `heart`.
 84px일 때 내부 아이콘 36px.
 
-### 상태 안내 블록 (`authItme` / `emptyItme`)
+### 상태 안내 블록 — `authItme` 와 `emptyItme` 은 **다른 규격이다**
 
-제품 전체에서 쓰는 빈 상태·완료·안내 패턴.
+둘 다 84px 원형 배지 + 제목 + 설명 구조지만 크기가 다르다. 섞어 쓰지 말 것.
+
+**`authItme`** — auth · 완료 화면 (로그인/가입/찾기 결과)
 
 ```
-[원형 배지 84px]          ← 중앙
+[원형 배지 84px]              ← 중앙
    ↕ 10px
-제목  Title/B_24, #151515  ← 중앙
+제목  Title/B_24_130%, #151515
    ↕ 12px
-설명  R_14, #393939, 2줄   ← 중앙
+설명  Basic Body/R_14_140%, #393939, 2줄
 ```
+
+**`emptyItme`** — 빈 상태 (편지함/알림/기록 등). 설명 유무로 규격이 갈린다.
+
+```
+type=title (설명 없음)         type=desc · type=button (설명 있음)
+[원형 배지 84px]               [원형 배지 84px]
+   ↕ 16px                        ↕ 20px
+제목 Basic Body/B_16_140%      제목 Basic Body/B_14_140%
+                                  설명 Caption/R_12, #393939
+                                  (button 변형은 + SB_16 버튼)
+```
+
+원형 배지 공통 — 72 / 84 / 96px, 면 `MainColor/secondary01`, 글리프 `MainColor/primary`.
 
 설명문은 2줄로 끊어 쓴다. 한 줄로 길게 늘이지 않는다.
 

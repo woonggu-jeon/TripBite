@@ -31,8 +31,21 @@ export function EmptyState({
   action?: ReactNode;
   className?: string;
 }) {
+  // Figma emptyItme 은 설명 유무로 규격이 갈린다.
+  //   type=title : gap 16, 제목 Basic Body/B_16_140%
+  //   type=desc  : gap 20, 제목 Basic Body/B_14_140% + 설명 Caption/R_12
+  const withDescription = Boolean(description);
+
   return (
-    <div className={`${styles.wrap} ${className ?? ''}`}>
+    <div
+      className={[
+        styles.wrap,
+        withDescription ? styles.hasDescription : '',
+        className ?? '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
       {icon && <div className={styles.icon}>{icon}</div>}
       <h3 className={styles.title}>{title}</h3>
       {description && <p className={styles.description}>{description}</p>}

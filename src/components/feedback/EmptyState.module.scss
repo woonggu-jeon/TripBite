@@ -1,32 +1,50 @@
+// Figma emptyItme 실측 — 84px 원형 배지 + 제목 + 설명, 세로 중앙 정렬.
+// 설명이 있으면 gap 20 / 제목 14px, 없으면 gap 16 / 제목 16px (.hasDescription).
+// authItme(24px 제목)과는 다른 패턴이다 — 그쪽은 auth·완료 화면 전용.
+
 .wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: var(--space-3);
+  gap: var(--space-4); // Figma type=title gap 16 (구 12px)
   padding: var(--space-8) var(--space-4);
   min-height: 200px;
   justify-content: center;
 }
 
+.hasDescription {
+  gap: var(--space-5); // Figma type=desc / type=button gap 20
+}
+
+// Figma circle — 84px, 면 MainColor/secondary01, 글리프 MainColor/primary.
+// 글리프 대비는 2.53:1 로 비텍스트 3:1 미달이나, 제목·설명이 같은 의미를 전달하는
+// 장식 요소라 허용한다 (docs/design/DESIGN.md §7-1).
 .icon {
-  width: 56px;
-  height: 56px;
+  width: 84px;
+  height: 84px;
   display: grid;
   place-items: center;
   border-radius: var(--radius-full);
-  background: color-mix(in srgb, var(--color-border) 50%, transparent);
-  color: var(--color-muted);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
 }
 
 .title {
-  font-size: var(--text-base);
+  // 설명이 있으면 14px (.hasDescription 에서 override)
+  font-size: var(--text-base); // 16px — Basic Body/B_16_140%
   font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
 }
 
+.hasDescription .title {
+  font-size: var(--font-body-sm); // 14px — Basic Body/B_14_140%
+}
+
 .description {
-  font-size: var(--text-sm);
+  font-size: var(--font-caption); // 12px — Caption/R_12 (구 14px)
+  letter-spacing: var(--tracking-snug); // Caption/R_12 은 -1%
   color: var(--color-muted);
   max-width: 28ch;
   line-height: var(--line-normal);
