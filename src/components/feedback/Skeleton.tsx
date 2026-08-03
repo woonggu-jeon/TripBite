@@ -15,18 +15,21 @@ import styles from './Skeleton.module.scss';
 export function Skeleton({
   width,
   height,
+  aspectRatio,
   radius = 'md',
   className,
 }: {
   width?: number | string;
   height?: number | string;
+  /** 고정 height 대신 비율로 자리잡기 (예: hero 카드 `'20 / 11'`) */
+  aspectRatio?: string;
   radius?: 'sm' | 'md' | 'lg' | 'full';
   className?: string;
 }) {
   return (
     <div
       className={`${styles.skeleton} ${styles[`radius-${radius}`]} ${className ?? ''}`}
-      style={{ width, height }}
+      style={{ width, height, aspectRatio }}
       aria-hidden="true"
     />
   );

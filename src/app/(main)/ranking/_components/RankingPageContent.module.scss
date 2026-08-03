@@ -1,6 +1,11 @@
 .wrap {
   display: grid;
   gap: var(--space-6);
+  // grid item min-width:auto → 0. aspect-ratio 를 쓰는 1위 hero 가 폭을
+  // min-content 높이에서 역산해 트랙을 넘기는 것 방지 (HomeDashboard 동일).
+  > * {
+    min-width: 0;
+  }
 }
 
 // 상단 주차/업데이트 안내 — 좌우 양끝
@@ -34,6 +39,10 @@
 .list {
   display: grid;
   gap: 0.5rem;
+
+  > * {
+    min-width: 0;
+  }
 }
 
 .error {

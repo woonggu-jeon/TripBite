@@ -2,6 +2,13 @@
 .grid {
   display: grid;
   gap: clamp(1.25rem, 4vw, 1.5rem);
+  // grid item default min-width:auto(= min-content) 를 0 으로 잠금.
+  // hero 처럼 aspect-ratio 를 쓰는 자식은 폭이 indefinite 하면 "min-content
+  // 높이 x 비율" 로 폭을 역산해 버려서(예: 357 x 20/11 = 649px) 트랙을 넘긴다.
+  // layout.module.scss 의 minmax(0, 1fr) 와 같은 취지.
+  > * {
+    min-width: 0;
+  }
 }
 
 .placeholder {
@@ -25,7 +32,8 @@
 // 위젯 min-height — fluid clamp() 로 RecommendationBanner fluid height 와 매칭.
 // fetch 가 늦어도 layout shift 안 일어나도록. 카카오/Naver 인앱 webview 떨림 방지.
 .grid [data-widget='weather-recommendation'] {
-  // banner clamp(140, 28vw, 172) + dots + title margin ≈ clamp(196, ?, 232)
+  // hero 20/11 (컨텐츠 폭 x 0.55) + dots + title margin.
+  // 320px 폭에서 176 + 18 + 30 ≈ 224 → 하한만 잡아 layout shift 방지.
   min-height: clamp(196px, 32vw, 232px);
 }
 .grid [data-widget='ongoing-festivals'] {

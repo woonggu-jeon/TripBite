@@ -1,108 +1,72 @@
-// Fluid 반응형 — 320~desktop viewport 따라 부드럽게.
+// Figma `RGN · 시군상세` 의 banner — 320x103, 단색 면 + 1px 보더, radius 12.
+// 이전엔 radial + linear 그라디언트 레이어(.bg) + 원형 썸네일 조합이었으나
+// 시안은 평평한 연초록 면 하나다.
 .wrap {
   position: relative;
+  display: grid;
+  gap: var(--space-3); // Figma gap 12
   width: 100%;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  background: var(--color-surface-soft);
-  border: 1px solid var(--color-border);
-  padding: clamp(0.75rem, 3vw, 1rem) clamp(1rem, 4vw, 1.25rem);
-  isolation: isolate;
+  min-width: 0;
+  padding: var(--space-4); // Figma padding 16
+  border-radius: var(--radius-md); // 12
+  // Figma #EAF6EF ≒ primary 8% over bg (#EBF9EF) — 토큰으로 두어 브랜드색
+  // 변경 시 함께 따라간다.
+  background: var(--color-primary-soft);
+  border: var(--border-thin) solid var(--color-border);
 }
 
-.bg {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(
-      circle at 100% 0%,
-      var(--color-primary-tint),
-      transparent 60%
-    ),
-    linear-gradient(
-      180deg,
-      var(--color-primary-surface-grad-start),
-      var(--color-bg)
-    );
-  z-index: -1;
-}
-
-.content {
+// Figma `Frame 30` — 시군명 + 영문명을 gap 4 로 묶은 한 그룹
+.titleGroup {
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--space-4);
-  align-items: center;
-}
-
-// heroImage 있으면 image, 없으면 emoji — MediaThumb 가 분기.
-.thumbWrap {
-  position: relative;
-  width: clamp(48px, 14vw, 64px);
-  height: clamp(48px, 14vw, 64px);
-  border-radius: var(--radius-full);
-  overflow: hidden;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-sm);
-  flex-shrink: 0;
-}
-
-.thumb {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-}
-
-.emoji {
-  font-size: clamp(var(--emoji-md), 8vw, var(--emoji-lg));
-  line-height: 1;
-}
-
-.body {
-  display: grid;
-  gap: 2px;
+  gap: var(--space-1);
   min-width: 0;
 }
 
+// Title/B_20_130% — 20px Bold, lh 130%, ls -2%
 .title {
-  font-size: clamp(var(--font-h2), 5.5vw, var(--font-h1));
-  font-weight: var(--font-weight-extrabold);
+  font-size: var(--font-h2);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug);
   color: var(--color-fg);
   letter-spacing: var(--tracking-tight);
   margin: 0;
 }
 
+// Caption/B_10 — 10px Bold. 시안 색은 MainColor/primary(#00B334) 지만 텍스트로
+// 쓰면 2.80:1 로 AA 미달 → --color-primary-text-bold(5.10:1) 사용 (결정 2).
 .subtitle {
-  font-size: var(--font-caption);
-  color: var(--color-muted);
-  letter-spacing: var(--tracking-wide);
+  font-size: var(--font-eyebrow);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-tight);
+  color: var(--color-primary-text-bold);
+  letter-spacing: var(--tracking-tight);
   text-transform: uppercase;
   margin: 0;
 }
 
+// Caption/R_12 — 12px Regular, lh 140%, #393939 = --color-muted
 .description {
-  font-size: var(--font-body-sm);
-  color: var(--color-fg);
-  margin: var(--space-2) 0 0;
-  line-height: var(--line-relaxed);
+  font-size: var(--font-caption);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-normal);
+  color: var(--color-muted);
+  letter-spacing: var(--tracking-snug);
+  margin: 0;
   word-break: keep-all;
 }
 
+// 시안에 없는 추가 요소 — API popularity 노출 (RegionHero.tsx 주석 참고).
 .popularity {
   position: absolute;
-  top: var(--space-3);
-  right: var(--space-3);
+  top: var(--space-4);
+  right: var(--space-4);
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   padding: 4px var(--space-2);
   background: var(--color-primary-tint);
   color: var(--color-primary-text-bold);
   border-radius: var(--radius-full);
-  font-size: var(--font-caption);
+  font-size: var(--font-eyebrow);
   font-weight: var(--font-weight-bold);
 }
-
-// fluid clamp() 가 단계별 media query 대체.

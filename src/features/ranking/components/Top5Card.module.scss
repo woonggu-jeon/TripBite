@@ -49,10 +49,8 @@
   font-variant-numeric: tabular-nums;
 }
 
-.rank1 .rank {
-  background: linear-gradient(135deg, #fde047, #f59e0b);
-  color: #422006;
-}
+// .rank1 은 없음 — 1위는 Figma `visualCard` (사진 배경 hero) 로 분기되어
+// 이 row 레이아웃을 타지 않는다. Top5Card.tsx 의 rank === 1 분기 참고.
 .rank2 .rank {
   background: linear-gradient(135deg, #e5e7eb, #9ca3af);
   color: #1f2937;

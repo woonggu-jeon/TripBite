@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { Skeleton } from '@/components/feedback/Skeleton';
 import { SkeletonList } from '@/components/feedback/SkeletonList';
 import { PageSection } from '@/components/ui';
 import { useWeeklyTopDestinations } from '@/features/ranking/hooks/use-ranking';
@@ -36,7 +37,9 @@ export function RankingPageContent() {
       <PageSection title={tSection('weeklyWinners', { limit: 5 })}>
         {isLoading && (
           <div className={styles.list}>
-            <SkeletonList count={5} height={72} radius="lg" />
+            {/* 1위는 사진 배경 hero (20/11), 2~5위는 row — 로딩도 같은 형태로 */}
+            <Skeleton width="100%" aspectRatio="20 / 11" radius="md" />
+            <SkeletonList count={4} height={72} radius="lg" />
           </div>
         )}
         {isError && (

@@ -111,6 +111,11 @@
     var(--color-bg)
   );
 
+  /* 사진 hero 의 이미지 로드 전/실패 시 바닥면. Figma hero-img 의 solid
+     플레이스홀더(#A8B29C, sage) 실측값. 위에 좌→우 검정 scrim 이 얹히므로
+     흰 텍스트 기준 좌측단 8.9:1 확보 (--color-scrim-* 주석 참고). */
+  --color-media-placeholder: #a8b29c;
+
   /* Divider / hover / overlay — fg 알파 mix */
   --color-divider: color-mix(in srgb, var(--color-fg) 7%, transparent);
   --color-hover: color-mix(in srgb, var(--color-fg) 8%, transparent);
