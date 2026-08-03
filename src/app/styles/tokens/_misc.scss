@@ -11,6 +11,7 @@
   --radius-md: 0.75rem; /* 12px — Figma 주력 (구 8px) */
   --radius-lg: 0.75rem; /* 12px — md 와 동일. 호환용 별칭 */
   --radius-xl: 1rem; /* 16px */
+  --radius-2xl: 1.125rem; /* 18px — Figma modal */
   --radius-full: 9999px;
 
   /* Opacity scale — 명확한 의미만. 컴포넌트 unique 미세 조정은 raw 유지. */

@@ -1,3 +1,7 @@
+/* Figma nav 실측 — 360x60, 5탭, 흰 배경 + 상단선 #E0E0E0,
+   라벨 비활성 Caption/M_10 / 활성 Caption/B_10 + MainColor/primary. 그림자 없음.
+   ⚠ Figma nav 에는 가운데 돌출 버튼(.emphasized*)이 없다 — 레포 전용 요소이며
+     제거는 내비게이션 UX 변경이라 디자인/기획 판단 필요. 아래는 그대로 유지. */
 .nav {
   position: fixed;
   bottom: 0;
@@ -6,8 +10,9 @@
   z-index: var(--z-bottom-nav);
   display: grid;
   grid-template-columns: repeat(5, 1fr);
+  min-height: var(--bottom-nav-h); /* Figma 60px */
   background: var(--color-bg);
-  border-top: 1px solid var(--color-border);
+  border-top: var(--border-thin) solid var(--color-border);
   padding-bottom: env(safe-area-inset-bottom);
   // emphasized 버튼이 위로 튀어나오므로 overflow 허용
   overflow: visible;
@@ -32,8 +37,12 @@
   }
 }
 
+/* Figma 활성 탭 — Caption/B_10 (10px Bold) + MainColor/primary.
+   primary 는 텍스트로 2.80:1 미달이라 --color-primary-text-bold(5.10:1) 사용.
+   비활성은 Figma #B4B4B4 가 2.07:1 미달이라 --color-muted(6.00:1) 유지. */
 .active {
-  color: var(--color-fg);
+  color: var(--color-primary-text-bold);
+  font-weight: var(--font-weight-bold);
 }
 
 .label {
