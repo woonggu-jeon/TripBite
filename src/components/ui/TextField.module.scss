@@ -1,14 +1,17 @@
 // 폼 입력 primitive — label / input / error 한 세트.
 // auth/onboarding/settings 의 동일 패턴을 흡수. 토큰은 기존 AuthForm.module.scss 값 유지.
 
+// Figma inputField 실측 — 라벨(Caption/R_12) → 입력(52px) → 헬퍼 캡션(Caption/M_10),
+// 3단 구성에 간격 4px. 입력 박스는 radius 12 / padding 12px 16px / 테두리 1px.
+
 .field {
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-1); // Figma 4px (구 8px)
 }
 
 .label {
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-medium);
+  font-size: var(--font-caption); // Figma Caption/R_12 = 12px (구 14px)
+  font-weight: var(--font-weight-normal); // Caption/R_12 는 Regular (구 medium)
   color: var(--color-fg);
 }
 
@@ -27,23 +30,29 @@
 
 .input {
   width: 100%;
-  padding: var(--space-3);
-  border: 1px solid var(--color-border);
+  min-height: 52px; // Figma 입력 박스 높이
+  padding: var(--space-3) var(--space-4); // Figma 12px 16px (구 12px 전방향)
+  border: var(--border-thin) solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-bg);
   color: var(--color-fg);
-  font-size: var(--font-body-sm);
+  font-size: var(--font-body); // Figma Basic Body/M_16_140% (구 14px)
+  font-weight: var(--font-weight-medium);
   outline: none;
   transition: border-color var(--motion-base) ease;
 
   &::placeholder {
+    // Figma default 상태 값 색은 #B4B4B4 지만 흰 배경 2.07:1 로 AA 크게 미달.
+    // 레포 기준 유지(HANDOFF.md 결정 2) — --color-muted 는 6.00:1.
     color: var(--color-muted);
   }
+  // Figma 는 focus 시 테두리 색을 정의하지 않지만, 키보드 포커스 가시성은
+  // 접근성 요건이라 유지한다.
   &:focus {
     border-color: var(--color-primary-text-bold);
   }
   &[aria-invalid='true'] {
-    border-color: var(--color-danger);
+    border-color: var(--color-border-error); // Figma #F73737 (캡션 색과 별개)
   }
   &:disabled {
     opacity: 0.6;
@@ -51,14 +60,18 @@
   }
 }
 
+// Figma Caption/M_10 — 10px Medium. 정상 시 fg, 에러 시 error 색.
+// 입력 규칙을 미리 보여주는 슬롯이므로 에러가 없을 때도 계속 노출한다.
 .hint {
-  font-size: var(--font-label);
-  color: var(--color-muted);
+  font-size: var(--font-helper);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-fg);
   margin: 0;
 }
 
 .error {
-  font-size: var(--font-label);
+  font-size: var(--font-helper);
+  font-weight: var(--font-weight-medium);
   color: var(--color-danger);
   margin: 0;
 }
