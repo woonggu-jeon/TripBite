@@ -1,6 +1,21 @@
+// Figma 섹션 헤더 실측 (홈 `rec-block > mid`, 랭킹 `rv-card > Frame 29`):
+//   제목   Basic Body/B_16_140%  #151515
+//   보조   Caption/R_12          #393939   (제목과 gap 2)
+//   더보기 Caption/R_12          #393939 + 16px chevron
+//   헤더 ↔ 본문 간격 16 (rv-card 의 Frame 29 padding-bottom 16)
 .section {
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+// Figma `rv-card` — 목록을 카드 하나로 묶는 변형. 320 폭, radius 12,
+// 1px #E0E0E0 보더, padding 20/16. 행마다 개별 카드를 쓰던 곳에 적용.
+.card {
+  padding: var(--space-5) var(--space-4);
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-md);
 }
 
 .header {
@@ -16,29 +31,67 @@
   min-width: 0;
 }
 
+// Basic Body/B_16_140% — 16px Bold (구 18px extrabold)
 .title {
-  font-size: var(--font-h3);
-  font-weight: var(--font-weight-extrabold);
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
-  line-height: var(--line-snug);
+  line-height: var(--line-normal);
+}
+
+// Figma `bl` 은 라벨 아래 여백이 8 (섹션 헤더의 16 보다 좁다)
+.sectionGroup {
+  gap: var(--space-2);
+}
+
+// Basic Body/SB_14_140% — Figma 설정의 `bl` 라벨 ("알림" / "계정")
+.titleGroup {
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-semibold);
 }
 
 .hint {
   font-size: var(--font-caption);
   color: var(--color-muted);
   letter-spacing: var(--tracking-snug);
-  line-height: var(--line-snug);
+  line-height: var(--line-normal);
 }
 
+// Figma 의 "더보기" 는 primary 초록이 아니라 보조 텍스트색(#393939) 이다.
 .action {
   display: inline-flex;
   align-items: center;
+  gap: 2px;
   white-space: nowrap;
-  font-size: var(--font-label);
-  color: var(--color-primary-muted);
+  font-size: var(--font-caption);
+  color: var(--color-muted);
+
+  a,
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    color: inherit;
+    font-size: inherit;
+    text-decoration: none;
+
+    &:focus-visible {
+      outline: var(--focus-outline);
+      outline-offset: var(--focus-outline-offset);
+      border-radius: var(--radius-sm);
+    }
+  }
 }
 
 .body {
   display: contents;
+}
+
+// card 변형은 본문이 카드 안에 들어가야 해서 display: contents 를 쓸 수 없다
+// (grid 의 직접 자식이 되어 카드 padding 밖으로 나간다).
+.card .body {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
 }

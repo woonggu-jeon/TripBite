@@ -33,13 +33,16 @@ export function RankingPageContent() {
         <span className={styles.updateNote}>{t('updateNote')}</span>
       </div>
 
-      {/* 1) Top 5 */}
-      <PageSection title={tSection('weeklyWinners', { limit: 5 })}>
+      {/* 1) Top 5 — Figma `rv-card`: 제목 + 1위 hero + 2~5위 행을 카드 하나로 */}
+      <PageSection
+        title={tSection('weeklyWinners', { limit: 5 })}
+        variant="card"
+      >
         {isLoading && (
           <div className={styles.list}>
             {/* 1위는 사진 배경 hero (20/11), 2~5위는 row — 로딩도 같은 형태로 */}
             <Skeleton width="100%" aspectRatio="20 / 11" radius="md" />
-            <SkeletonList count={4} height={72} radius="lg" />
+            <SkeletonList count={4} height={64} radius="md" />
           </div>
         )}
         {isError && (
@@ -69,10 +72,11 @@ export function RankingPageContent() {
         )}
       </PageSection>
 
-      {/* 2) 시군별 우승 횟수 차트 */}
+      {/* 2) 시군별 우승 횟수 — 같은 `rv-card` 묶음, 행마다 하단 구분선 */}
       <PageSection
         title={tSection('byRegionChart')}
         hint={tSection('byRegionChartHint')}
+        variant="card"
       >
         <RegionWinsChart />
       </PageSection>

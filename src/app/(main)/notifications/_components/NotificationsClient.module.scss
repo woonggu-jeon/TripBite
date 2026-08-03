@@ -1,11 +1,16 @@
 .wrap {
   display: grid;
   gap: var(--space-3);
+
+  > * {
+    min-width: 0;
+  }
 }
 
 .allRead {
   font-size: var(--font-caption);
   color: var(--color-muted);
+  white-space: nowrap;
   background: transparent;
   border: 0;
   cursor: pointer;
@@ -26,12 +31,10 @@
 
 .skeletonItem {
   display: grid;
-  grid-template-columns: 32px 1fr;
+  grid-template-columns: 44px 1fr;
   gap: var(--space-3);
   align-items: center;
-  padding: var(--space-3);
-  background: var(--color-surface-soft);
-  border-radius: var(--radius-md);
+  padding: var(--space-4) 0;
 }
 
 .skeletonLines {
@@ -40,6 +43,8 @@
   min-width: 0;
 }
 
+// Figma `notiIcon` — 화면 폭 전체를 쓰는 흰 행. 카드가 아니다.
+// 컨텐츠 여백(--content-pad 20)을 음수 마진으로 상쇄하고 행이 다시 만든다.
 .link {
   display: block;
   width: 100%;
@@ -48,50 +53,102 @@
   border: 0;
   padding: 0;
   cursor: pointer;
+  margin-inline: calc(var(--content-pad) * -1);
+
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: calc(var(--focus-outline-offset) * -1);
+  }
 }
 
 .item {
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  gap: var(--space-3); // Figma gap 12
+  align-items: center;
+  padding: var(--space-4) var(--content-pad); // Figma 16 / 20
+  background: var(--color-surface);
   transition: background var(--motion-base) ease;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      background: var(--color-hover);
+      background: var(--color-hover-soft);
     }
   }
 }
 
-.unread {
-  background: var(--color-primary-tint);
-  border-color: color-mix(
-    in srgb,
-    var(--color-primary) 25%,
-    var(--color-border)
-  );
+// Figma `notiCircle` 44x44 — 읽지 않음은 연초록 면 + 초록 아이콘
+.iconCircle {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-soft);
+  color: var(--color-primary-text-bold);
 }
 
-.icon {
-  margin-top: 2px;
-  color: var(--color-muted);
+// 우하단 9px 초록 점 + 2px 흰 링 (읽지 않음 표시)
+.dot {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-surface);
 }
 
-.itemMessage {
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-semibold);
+// 읽은 알림 — 시안은 전체를 #B4B4B4 로 흐리게 (2.07:1 미달 → --color-muted)
+.read {
+  .iconCircle {
+    background: var(--color-surface-elevated);
+    color: var(--color-muted);
+  }
+  .itemTitle,
+  .itemBody {
+    color: var(--color-muted);
+  }
+}
+
+.itemText {
+  display: grid;
+  gap: var(--space-1); // Figma `mid` gap 4
+  min-width: 0;
+}
+
+// Basic Body/B_14_140%
+.itemTitle {
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-normal);
   color: var(--color-fg);
+  letter-spacing: var(--tracking-tight);
   overflow: hidden;
   text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  line-height: var(--line-snug);
-  word-break: keep-all;
+  white-space: nowrap;
+}
+
+// Caption/R_12
+.itemBody {
+  font-size: var(--font-caption);
+  line-height: var(--line-normal);
+  color: var(--color-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// 우측 시각 Caption/R_12.
+// Figma 는 제목+본문 2줄을 전제로 상단 정렬이지만, 본문이 없는 알림(목/실데이터
+// 모두 존재)에서 어긋나 보이므로 세로 중앙으로 둔다.
+.itemTime {
+  align-self: center;
+  font-size: var(--font-caption);
+  color: var(--color-muted);
+  white-space: nowrap;
 }
 
 /* push prompt — 페이지 상단 안내 + enable 버튼 */

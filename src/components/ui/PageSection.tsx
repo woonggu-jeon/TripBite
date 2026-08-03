@@ -14,15 +14,29 @@ import styles from './PageSection.module.scss';
  *
  * - title 만 있으면 H2 + 본문
  * - hint 는 title 아래 보조 텍스트
- * - action 은 우측 상단 정렬
+ * - action 은 우측 상단 정렬 (Figma "더보기 >")
  * - level 로 h2/h3 시멘틱 조정 (default h2)
- * - 본문 gap 은 children 책임 (PageSection 은 header 와 body 사이 간격만 보장)
+ * - variant="card" 는 Figma `rv-card` — 본문 전체를 카드 하나로 묶는다
+ * - 본문 gap 은 children 책임 (PageSection 은 header 와 body 사이 간격만 보장.
+ *   단 variant="card" 는 body 가 grid 라 gap 을 직접 준다)
  */
 interface PageSectionProps {
   title?: string;
   hint?: string;
   action?: ReactNode;
   level?: 'h2' | 'h3';
+  /**
+   * `card` — Figma `rv-card`. 목록 전체를 흰 카드 하나(radius 12, 1px 보더,
+   * padding 20/16)로 묶는다. 항목마다 개별 카드를 쓰던 화면을 시안에 맞출 때.
+   */
+  variant?: 'plain' | 'card';
+  /**
+   * 제목 크기. Figma 는 두 단계를 쓴다.
+   *   `section` — Basic Body/B_16_140% (홈 "이런 여행 어때요?", 랭킹 rv-card)
+   *   `group`   — Basic Body/SB_14_140% (설정의 "알림" / "계정" 처럼
+   *               풀블리드 행 묶음 위에 붙는 작은 라벨)
+   */
+  titleScale?: 'section' | 'group';
   className?: string;
   children: ReactNode;
 }
@@ -32,17 +46,38 @@ export function PageSection({
   hint,
   action,
   level = 'h2',
+  variant = 'plain',
+  titleScale = 'section',
   className,
   children,
 }: PageSectionProps) {
   const Heading = level;
   const hasHeader = !!title || !!action;
   return (
-    <section className={[styles.section, className].filter(Boolean).join(' ')}>
+    <section
+      className={[
+        styles.section,
+        variant === 'card' ? styles.card : '',
+        titleScale === 'group' ? styles.sectionGroup : '',
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
       {hasHeader && (
         <header className={styles.header}>
           <div className={styles.titleBlock}>
-            {title && <Heading className={styles.title}>{title}</Heading>}
+            {title && (
+              <Heading
+                className={
+                  titleScale === 'group'
+                    ? `${styles.title} ${styles.titleGroup}`
+                    : styles.title
+                }
+              >
+                {title}
+              </Heading>
+            )}
             {hint && <p className={styles.hint}>{hint}</p>}
           </div>
           {action && <div className={styles.action}>{action}</div>}

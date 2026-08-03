@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { cardClasses, HeroCard } from '@/components/ui';
+import { HeroCard, MediaThumb } from '@/components/ui';
 import { categoryEmoji } from '@/constants/emoji-map';
 import { isRegionCode } from '@/constants/regions';
 import type { RankedDestination } from '@/features/ranking/types';
@@ -30,8 +30,6 @@ export function Top5Card({ item }: { item: RankedDestination }) {
   const regionName = isRegionCode(code)
     ? tRegion(code as Parameters<typeof tRegion>[0])
     : code;
-  // 시군명에서 시/군 글자 제거 (예: "단양군" → "단양", "청주시" → "청주")
-  const shortRegion = regionName.replace(/(시|군)$/u, '');
 
   // 1위 — Figma `visualCard`. 보조 줄은 시안의 "괴산군 · 28회" 구조를 그대로
   // 쓰되 문구는 기존 i18n(winsUnit) 조합으로만 만든다 (새 문구 도입 없음).
@@ -55,24 +53,26 @@ export function Top5Card({ item }: { item: RankedDestination }) {
     <Link
       href={{ pathname: `/destination/${item.destination.id}` }}
       prefetch={false}
-      className={cardClasses({
-        variant: 'surface',
-        padding: 'none',
-        className: `${styles.card} ${styles[`rank${Math.min(item.rank, 5)}`] ?? ''}`,
-      })}
+      className={styles.row}
       aria-label={`${item.rank}위 ${item.destination.name}`}
     >
-      <div className={styles.rank} aria-hidden>
+      <span className={styles.rank} aria-hidden>
         {item.rank}
-      </div>
-      <div className={styles.body}>
-        <h3 className={styles.name}>{item.destination.name}</h3>
-        <p className={styles.region}>{shortRegion}</p>
-      </div>
-      <div className={styles.score}>
-        <span className={styles.scoreNum}>{item.score}</span>
-        <span className={styles.scoreLabel}>{t('winsUnit')}</span>
-      </div>
+      </span>
+      <MediaThumb
+        src={item.destination.imageUrl}
+        emoji={categoryEmoji(item.destination.category, '📍')}
+        sizes="48px"
+        className={styles.thumb}
+        emojiClassName={styles.thumbEmoji}
+      />
+      <span className={styles.body}>
+        <span className={styles.name}>{item.destination.name}</span>
+        <span className={styles.meta}>
+          {regionName} · {item.score}
+          {t('winsUnit')}
+        </span>
+      </span>
     </Link>
   );
 }

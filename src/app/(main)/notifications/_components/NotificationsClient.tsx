@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Mail, Heart, Trophy, Bell, ShieldAlert, Send } from 'lucide-react';
 import { SubHeader } from '@/components/layout/SubHeader';
+import { relativeTimeToken } from '@/lib/relative-time';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
@@ -101,7 +102,7 @@ export function NotificationsClient() {
           <div className={styles.skeletonList} aria-label={tCommon('loading')}>
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className={styles.skeletonItem}>
-                <Skeleton width={32} height={32} radius="full" />
+                <Skeleton width={44} height={44} radius="full" />
                 <div className={styles.skeletonLines}>
                   <Skeleton width="80%" height={14} radius="sm" />
                   <Skeleton width="55%" height={12} radius="sm" />
@@ -211,6 +212,17 @@ function PushPrompt() {
   );
 }
 
+/**
+ * 알림 행 하나 — Figma `notiIcon` (360x76, H gap 12, padding 16/20).
+ *
+ *   원형 44 (읽지 않음: #EAF6EF 면 + 초록 아이콘 + 우하단 9px 초록 점 /
+ *            읽음: 회색 면 + 회색 아이콘)
+ *   + 제목 Basic Body/B_14_140% + 본문 Caption/R_12  (V gap 4)
+ *   + 우측 시각 Caption/R_12
+ *
+ * 시안은 읽은 알림 전체를 #B4B4B4 로 흐리게 하지만 2.07:1 로 AA 미달이라
+ * --color-muted 로 대체한다 (결정 2).
+ */
 function Item({
   n,
   onSelect,
@@ -219,11 +231,18 @@ function Item({
   onSelect: () => void;
 }) {
   const Icon = TYPE_ICON[n.type] ?? Bell;
-  const message = n.body ?? n.title;
+  const time = useRelativeTimeLabel(n.createdAt);
   const body = (
-    <div className={`${styles.item} ${!n.read ? styles.unread : ''}`}>
-      <Icon size={18} className={styles.icon} aria-hidden />
-      <div className={styles.itemMessage}>{message}</div>
+    <div className={`${styles.item} ${n.read ? styles.read : ''}`}>
+      <span className={styles.iconCircle} aria-hidden>
+        <Icon size={22} />
+        {!n.read && <span className={styles.dot} />}
+      </span>
+      <span className={styles.itemText}>
+        <span className={styles.itemTitle}>{n.title}</span>
+        {n.body && <span className={styles.itemBody}>{n.body}</span>}
+      </span>
+      <span className={styles.itemTime}>{time}</span>
     </div>
   );
 
@@ -248,4 +267,24 @@ function Item({
       {body}
     </button>
   );
+}
+
+/** letter.relativeTime 키 재사용 — 알림 전용 문구를 새로 만들지 않는다. */
+function useRelativeTimeLabel(iso: string): string {
+  const t = useTranslations('letter.relativeTime');
+  const tok = relativeTimeToken(iso);
+  switch (tok.kind) {
+    case 'justNow':
+      return t('justNow');
+    case 'minutes':
+      return t('minutesAgo', { n: tok.value });
+    case 'hours':
+      return t('hoursAgo', { n: tok.value });
+    case 'days':
+      return t('daysAgo', { n: tok.value });
+    case 'date': {
+      const d = new Date(iso);
+      return `${d.getMonth() + 1}/${d.getDate()}`;
+    }
+  }
 }

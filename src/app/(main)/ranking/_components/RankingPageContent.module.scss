@@ -36,9 +36,11 @@
   margin-bottom: var(--space-3);
 }
 
+// Figma `rv-card` 안의 top5-row 는 각자 padding 8/0 을 갖는다 →
+// 행 사이 실제 간격 16. gap 을 추가하면 시안보다 벌어진다.
 .list {
   display: grid;
-  gap: 0.5rem;
+  gap: 0;
 
   > * {
     min-width: 0;

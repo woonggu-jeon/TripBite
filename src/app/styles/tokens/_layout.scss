@@ -19,7 +19,9 @@
 
   /* Container / layout dimensions */
   --content-max: 720px;
-  --content-pad: 1rem;
+  /* Figma 는 360 화면에 컨텐츠 320 — 좌우 20px. 구 16px(360에서는 12px 까지
+     축소) 이었어서 모든 화면이 시안보다 넓게 퍼져 있었다. */
+  --content-pad: 1.25rem;
   --header-h: 56px;
   --bottom-nav-h: 60px; /* Figma nav 높이 (구 64px) */
 

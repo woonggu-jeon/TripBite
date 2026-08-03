@@ -48,7 +48,8 @@ export function RegionWinsChart() {
       const full = tRegion(code as Parameters<typeof tRegion>[0]);
       return {
         rank: i + 1,
-        region: full.replace(/(시|군)$/u, ''),
+        // Figma gun-row 는 "단양군" 처럼 시/군 을 그대로 쓴다 (구: 축약)
+        region: full,
         code,
         wins: r.score,
         ratio: r.score / max,
@@ -104,19 +105,23 @@ export function RegionWinsChart() {
               wins: r.wins,
             })}
           >
-            <span className={styles.rank}>{r.rank}</span>
-            <span className={styles.regionName}>{r.region}</span>
+            {/* Figma `Frame 36` — 등수 + 시군명을 한 그룹으로 묶는다 */}
+            <span className={styles.rowLabel}>
+              <span className={styles.rank}>{r.rank}</span>
+              <span className={styles.regionName}>{r.region}</span>
+            </span>
             <span className={styles.barTrack} aria-hidden>
               <span
                 className={styles.barFill}
                 style={{ width: `${Math.max(4, r.ratio * 100)}%` }}
               />
             </span>
+            {/* Figma `Frame 35` — 우승수 + chevron 한 그룹 */}
             <span className={styles.wins}>
               <span className={styles.winsNumber}>{r.wins}</span>
               <span className={styles.winsUnit}>{t('winsUnit')}</span>
+              <ChevronRight className={styles.chevron} size={20} aria-hidden />
             </span>
-            <ChevronRight className={styles.chevron} size={16} aria-hidden />
           </button>
         </li>
       ))}

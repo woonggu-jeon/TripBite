@@ -1,4 +1,12 @@
+// Figma 설정 — `bl`(섹션 라벨) padding top 26 / bottom 8 구조.
+// 4px 그리드로 24 + 8 → 섹션 사이 간격을 --space-6(24) 로 두고 PageSection 이
+// 라벨↔본문 간격을 담당한다.
 .wrap {
   display: grid;
   gap: var(--space-6);
+
+  // 풀블리드 행 묶음이 폭을 늘리지 못하게
+  > * {
+    min-width: 0;
+  }
 }

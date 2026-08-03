@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui';
 import { useDeleteAccount, useLogout } from '@/features/auth/hooks/use-auth';
 import { useConfirm } from '@/hooks/use-confirm';
 import { toast } from '@/lib/toast';
@@ -50,19 +51,23 @@ export function AccountActionsSection() {
     });
   };
 
+  // Figma `bw` (V gap 12, padding 20):
+  //   로그아웃  320x52 흰 버튼 + 1px 보더, 16px Medium #393939 → Button secondary
+  //   회원탈퇴  버튼이 아니라 중앙 정렬 텍스트, 16px Medium #E1493C
   return (
-    <div className={styles.list}>
-      <button
-        type="button"
-        className={styles.button}
+    <div className={styles.actions}>
+      <Button
+        variant="secondary"
+        size="lg"
+        fullWidth
         onClick={handleLogout}
         disabled={isLoggingOut}
       >
         {isLoggingOut ? t('loggingOut') : t('logout')}
-      </button>
+      </Button>
       <button
         type="button"
-        className={`${styles.button} ${styles.danger}`}
+        className={styles.withdraw}
         onClick={handleWithdraw}
         disabled={isWithdrawing}
       >

@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { usePermissionState } from '@/features/location';
 import { NicknameEditDialog } from './NicknameEditDialog';
 import { ChangePasswordDialog } from './ChangePasswordDialog';
+import { ChevronRight } from 'lucide-react';
 import styles from './SettingsRows.module.scss';
 
 /**
@@ -25,36 +26,28 @@ export function AccountSettingsSection() {
     null,
   );
 
+  const locationValue =
+    permission === 'granted'
+      ? t('locationGranted')
+      : permission === 'denied'
+        ? t('locationDenied')
+        : permission === 'prompt'
+          ? t('locationPrompt')
+          : t('locationUnsupported');
+
   return (
     <div className={styles.list}>
-      <button
-        type="button"
-        className={styles.button}
+      {/* Figma `row` 360x54 — 라벨 좌측, 우측에 값(있으면) + 20px chevron */}
+      <Row
+        label={t('changeNickname')}
         onClick={() => setOpenDialog('nickname')}
-      >
-        {t('changeNickname')}
-      </button>
-
-      <button
-        type="button"
-        className={styles.button}
+      />
+      <Row
+        label={t('changePassword')}
         onClick={() => setOpenDialog('password')}
-      >
-        {t('changePassword')}
-      </button>
-
-      <button type="button" className={styles.button}>
-        <div>{t('locationPermission')}</div>
-        <div className={styles.rowHint}>
-          {permission === 'granted' && t('locationGranted')}
-          {permission === 'denied' && t('locationDenied')}
-          {permission === 'prompt' && t('locationPrompt')}
-          {permission === 'unsupported' && t('locationUnsupported')}
-        </div>
-      </button>
-      <button type="button" className={styles.button}>
-        {t('blockedUsers')}
-      </button>
+      />
+      <Row label={t('locationPermission')} value={locationValue} />
+      <Row label={t('blockedUsers')} />
 
       {openDialog === 'nickname' && (
         <NicknameEditDialog onClose={() => setOpenDialog(null)} />
@@ -63,5 +56,29 @@ export function AccountSettingsSection() {
         <ChangePasswordDialog onClose={() => setOpenDialog(null)} />
       )}
     </div>
+  );
+}
+
+/**
+ * 설정 행 하나 — Figma `row` (360x54, padding 16/20).
+ * 값 텍스트는 Basic Body/R_14_140%, chevron 은 20px.
+ */
+function Row({
+  label,
+  value,
+  onClick,
+}: {
+  label: string;
+  value?: string;
+  onClick?: () => void;
+}) {
+  return (
+    <button type="button" className={styles.button} onClick={onClick}>
+      <span>{label}</span>
+      <span className={styles.rowTrailing}>
+        {value && <span className={styles.rowValue}>{value}</span>}
+        <ChevronRight size={20} className={styles.rowChevron} aria-hidden />
+      </span>
+    </button>
   );
 }

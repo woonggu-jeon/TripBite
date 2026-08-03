@@ -29,7 +29,8 @@ export function SettingsClient() {
 
   return (
     <div className={styles.wrap}>
-      <PageSection title={t('notifications.section')}>
+      {/* Figma 설정의 `bl` 라벨 — 14px SemiBold, 행 묶음은 풀블리드 */}
+      <PageSection title={t('notifications.section')} titleScale="group">
         <NotificationSettingsSection />
       </PageSection>
 
@@ -39,7 +40,7 @@ export function SettingsClient() {
       </PageSection>
       */}
 
-      <PageSection title={t('account.section')}>
+      <PageSection title={t('account.section')} titleScale="group">
         <AccountSettingsSection />
       </PageSection>
 
@@ -56,9 +57,8 @@ export function SettingsClient() {
       </PageSection>
       */}
 
-      <PageSection title={t('actions.section')}>
-        <AccountActionsSection />
-      </PageSection>
+      {/* Figma `bw` 는 섹션 라벨이 없다 — 버튼 + 텍스트만 */}
+      <AccountActionsSection />
     </div>
   );
 }

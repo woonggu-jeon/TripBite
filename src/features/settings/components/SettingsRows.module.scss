@@ -1,73 +1,96 @@
+// Figma `설정` 실측 — 행이 카드가 아니라 **화면 폭 전체(360)** 를 쓰는
+// 흰 리스트 행이다. padding 16/20, gap 12, 보더·radius·구분선 없음.
+//
+// 페이지 컨텐츠에는 이미 --content-pad(20) 좌우 여백이 있으므로, 행 묶음을
+// 음수 마진으로 끝까지 늘리고 행이 자기 padding 으로 20 을 다시 만든다.
 .list {
   display: grid;
-  gap: var(--space-2);
+  gap: 0;
+  margin-inline: calc(var(--content-pad) * -1);
 }
 
 .row {
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-bg);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
-  transition: border-color var(--motion-base) ease;
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      border-color: color-mix(
-        in srgb,
-        var(--color-fg) 18%,
-        var(--color-border)
-      );
-    }
-  }
+  gap: var(--space-3); // Figma gap 12
+  padding: var(--space-4) var(--content-pad); // Figma 16 / 20
+  background: var(--color-surface);
+  border: 0;
+  border-radius: 0;
 }
 
 .rowText {
   display: grid;
-  gap: 2px;
+  gap: 2px; // Figma `mid` gap 2
   min-width: 0;
 }
 
+// Basic Body/SB_16_140% (구 14px)
 .rowLabel {
-  font-size: var(--font-body-sm);
+  font-size: var(--font-body);
   font-weight: var(--font-weight-semibold);
+  line-height: var(--line-normal);
   color: var(--color-fg);
   letter-spacing: var(--tracking-tight);
 }
 
+// Caption/R_12
 .rowHint {
   font-size: var(--font-caption);
+  line-height: var(--line-normal);
   color: var(--color-muted);
 }
 
-.button {
-  display: block;
-  width: 100%;
-  padding: var(--space-3) var(--space-4);
-  text-align: left;
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-bg);
-  color: var(--color-fg);
+// 우측 값 텍스트 — Basic Body/R_14_140% ("여행한입러", "허용")
+.rowValue {
   font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-fg);
+  white-space: nowrap;
+}
+
+// chevron — Figma detailIcon 20x20, stroke #B4B4B4
+.rowChevron {
+  color: var(--color-muted);
+  flex-shrink: 0;
+}
+
+// 값 + chevron 묶음 (Figma 는 둘을 우측에 나란히 둔다)
+.rowTrailing {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+// 탭 가능한 행 — 행 자체가 button
+.button {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-4) var(--content-pad);
+  text-align: left;
+  border: 0;
+  border-radius: 0;
+  background: var(--color-surface);
+  color: var(--color-fg);
+  font-size: var(--font-body);
   font-weight: var(--font-weight-semibold);
-  transition: border-color var(--motion-base) ease;
+  letter-spacing: var(--tracking-tight);
+  cursor: pointer;
+  transition: background var(--motion-base) ease;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      border-color: color-mix(
-        in srgb,
-        var(--color-fg) 18%,
-        var(--color-border)
-      );
+      background: var(--color-hover-soft);
     }
   }
   &:focus-visible {
     outline: var(--focus-outline);
-    outline-offset: var(--focus-outline-offset);
+    outline-offset: calc(var(--focus-outline-offset) * -1);
   }
 }
 
@@ -76,8 +99,37 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .row,
   .button {
     transition: none;
+  }
+}
+
+// Figma `bw` — 로그아웃 버튼 + 회원탈퇴 텍스트, V gap 12, padding 20 0
+.actions {
+  display: grid;
+  gap: var(--space-3);
+  padding-block: var(--space-5);
+}
+
+// Basic Body/M_16_140% #E1493C 중앙 정렬. 시안색은 4.02:1 로 AA 미달이라
+// --color-danger(#dc2626) 유지 (결정 2).
+.withdraw {
+  padding: var(--space-1) 0;
+  background: none;
+  border: 0;
+  color: var(--color-danger);
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+    border-radius: var(--radius-sm);
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
   }
 }
