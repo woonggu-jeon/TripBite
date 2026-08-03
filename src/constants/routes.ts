@@ -35,18 +35,13 @@ export const ROUTES = {
 /**
  * 하단 네비게이션 5탭
  *
- * emphasized: true → 가운데 강조 버튼 (BottomNav에서 raised로 렌더)
- * 사이트맵 기준: 토너먼트가 중앙 강조 위치
+ * Figma nav 는 5탭이 모두 동일한 평면 탭 (72x60, 아이콘 24, gap 4).
+ * 이전에 토너먼트에 있던 `emphasized: true` (가운데 돌출 버튼) 는 시안에 없어 제거됨.
  */
 export const BOTTOM_NAV_ROUTES = [
   { path: ROUTES.HOME, labelKey: 'home', icon: 'home' },
   { path: ROUTES.RANKING, labelKey: 'ranking', icon: 'trending-up' },
-  {
-    path: ROUTES.TOURNAMENT,
-    labelKey: 'tournament',
-    icon: 'trophy',
-    emphasized: true,
-  },
+  { path: ROUTES.TOURNAMENT, labelKey: 'tournament', icon: 'trophy' },
   { path: ROUTES.LETTER, labelKey: 'letter', icon: 'mail' },
   { path: ROUTES.MYPAGE, labelKey: 'mypage', icon: 'user' },
 ] as const;
