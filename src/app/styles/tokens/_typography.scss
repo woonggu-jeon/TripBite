@@ -1,25 +1,29 @@
 /* Typography tokens — font size scale + 시멘틱 + 도메인 + line/tracking/weight + emoji.
    디자이너가 typography hierarchy 조정 시 한 파일만 수정. */
 :root {
-  /* primitive scale (크기만) */
+  /* primitive scale (크기만) — Figma 는 10·12·14·16·18·20·24 를 쓴다. */
+  --text-2xs: 0.625rem; /* 10px — Figma Caption/*_10 */
   --text-xs: 0.75rem; /* 12px */
   --text-sm: 0.875rem; /* 14 */
   --text-base: 1rem; /* 16 */
   --text-lg: 1.125rem; /* 18 */
   --text-xl: 1.25rem; /* 20 */
   --text-2xl: 1.5rem; /* 24 */
-  --text-3xl: 1.875rem; /* 30 */
+  --text-3xl: 1.875rem; /* 30 — Figma 대응 없음 */
 
-  /* 의미별 시멘틱 — 컴포넌트는 가급적 이쪽 사용 */
-  --font-display: 2.5rem; /* 결과 숫자 등 큰 임팩트 */
-  --font-h1: 1.5rem;
-  --font-h2: 1.25rem;
-  --font-h3: 1.0625rem;
-  --font-body: 1rem;
-  --font-body-sm: 0.9375rem;
-  --font-label: 0.8125rem;
-  --font-caption: 0.75rem;
-  --font-eyebrow: 0.6875rem;
+  /* 의미별 시멘틱 — 컴포넌트는 가급적 이쪽 사용.
+     Figma 텍스트 스타일 14개에 맞춰 크기를 정렬했다(docs/design/HANDOFF.md §4-1).
+     label 과 caption 이 같은 12px 인 것은 Figma 가 입력 라벨과 캡션에
+     동일한 Caption/R_12 를 쓰기 때문이다. */
+  --font-display: 2.5rem; /* 40px — Figma 대응 없음 (결과 숫자 등) */
+  --font-h1: 1.5rem; /* 24 — Title/B_24_130% */
+  --font-h2: 1.25rem; /* 20 — Title/B_20_130% */
+  --font-h3: 1.125rem; /* 18 — Title/B_18_140% (구 17px) */
+  --font-body: 1rem; /* 16 — Basic Body/*_16_140% */
+  --font-body-sm: 0.875rem; /* 14 — Basic Body/*_14_140% (구 15px) */
+  --font-label: 0.75rem; /* 12 — Caption/R_12 (구 13px) */
+  --font-caption: 0.75rem; /* 12 — Caption/R_12 */
+  --font-eyebrow: 0.625rem; /* 10 — Caption/M_10 (구 11px) */
 
   /* 도메인 font — letter / tournament */
   --font-letter-body: 1.625rem; /* 26px — 편지 본문 5글자 큰 글씨 */
@@ -37,12 +41,13 @@
   --emoji-3xl: 5rem; /* celebration emoji (80px) */
   --emoji-4xl: 6rem; /* hero illustration glyph (96px) */
 
-  /* line-height */
-  --line-display: 1.1; /* 큰 글씨 (CountSelector) */
-  --line-tight: 1.2;
-  --line-snug: 1.35;
-  --line-normal: 1.5;
-  --line-relaxed: 1.65;
+  /* line-height — Figma 는 120% / 130% / 140% 세 값만 쓴다.
+     14개 텍스트 스타일 중 11개가 140% 이므로 normal 을 1.4 로 맞췄다. */
+  --line-display: 1.1; /* Figma 대응 없음 (CountSelector 큰 숫자) */
+  --line-tight: 1.2; /* 120% — Caption/*_10 */
+  --line-snug: 1.3; /* 130% — Title/B_24, Title/B_20 (구 1.35) */
+  --line-normal: 1.4; /* 140% — 본문 전반 (구 1.5) */
+  --line-relaxed: 1.65; /* Figma 대응 없음 (긴 문단) */
 
   /* letter-spacing */
   --tracking-tight: -0.02em;

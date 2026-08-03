@@ -1,15 +1,21 @@
 /* Layout tokens — spacing (4px grid) + content/header/nav 치수 + aspect-ratio + z-index + icon size */
 :root {
-  /* Spacing scale (4px grid) */
+  /* Spacing scale (4px grid) — 이름의 숫자 = px / 4.
+     Figma 시안은 4px 그리드가 아니지만(2·10·22·26·30 등) 이 레포는 그리드를 유지한다.
+     Figma 값 중 4의 배수인 28 / 36 / 60 만 추가했고, 그리드 밖 값은 도입하지 않는다.
+     시안의 26px·22px 카드 패딩 등은 가까운 그리드 값(24 / 20)으로 맞춘다. */
   --space-1: 0.25rem; /* 4px */
   --space-2: 0.5rem; /* 8 */
   --space-3: 0.75rem; /* 12 */
   --space-4: 1rem; /* 16 */
   --space-5: 1.25rem; /* 20 */
   --space-6: 1.5rem; /* 24 */
+  --space-7: 1.75rem; /* 28 — Figma 완료 화면 하단 여백 */
   --space-8: 2rem; /* 32 */
+  --space-9: 2.25rem; /* 36 — Figma 안내 블록 ↔ 폼 간격 */
   --space-10: 2.5rem; /* 40 */
   --space-12: 3rem; /* 48 */
+  --space-15: 3.75rem; /* 60 — Figma 안내 화면 상단 여백 */
 
   /* Container / layout dimensions */
   --content-max: 720px;
