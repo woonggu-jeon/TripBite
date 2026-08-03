@@ -1,4 +1,9 @@
 /* outer — 풀폭 sticky (배경/blur/border). max-width 제한 없음. */
+/* Figma header 실측 — h 56 / padding 0 20px / border-bottom #E0E0E0 1px /
+   타이틀 Title/B_18_140%.
+   배경은 Figma 가 solid #FFFFFF 지만, 정적 프레임에는 blur 가 표현되지 않으므로
+   "glass 를 쓰지 말라"는 근거로 보지 않는다. sticky glass 는 docs/STYLES.md 에
+   정의된 이 레포의 패턴이라 유지한다. */
 .header {
   position: sticky;
   top: 0;
@@ -6,7 +11,8 @@
   background: var(--color-glass);
   backdrop-filter: var(--blur-glass);
   -webkit-backdrop-filter: var(--blur-glass);
-  border-bottom: 1px solid var(--color-divider);
+  /* Figma #E0E0E0 ≒ --color-border (구 --color-divider = fg 7% alpha) */
+  border-bottom: var(--border-thin) solid var(--color-border);
 }
 
 /* inner — content 와 동일하게 720px 정렬 + 좌우 auto 슬롯 (mock 도구 들어갈 때 자동 확장). */
@@ -19,7 +25,7 @@
   width: 100%;
   height: var(--header-h);
   margin: 0 auto;
-  padding: 0 var(--space-3);
+  padding: 0 var(--space-5); /* Figma 0 20px (구 12px) */
 }
 
 .slot {
@@ -78,7 +84,8 @@
   display: inline-flex;
   align-items: center;
   justify-self: center;
-  font-weight: var(--font-weight-extrabold);
+  /* Figma Title/B_18_140% = Bold 700. 시안에 800 웨이트는 없다 (구 extrabold) */
+  font-weight: var(--font-weight-bold);
   font-size: var(--font-h3);
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);

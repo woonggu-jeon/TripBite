@@ -14,7 +14,8 @@
   background: var(--color-glass);
   backdrop-filter: var(--blur-glass);
   -webkit-backdrop-filter: var(--blur-glass);
-  border-bottom: 1px solid var(--color-divider);
+  /* Figma header type=sub 의 하단선 #E0E0E0 ≒ --color-border (구 --color-divider) */
+  border-bottom: var(--border-thin) solid var(--color-border);
 }
 
 .inner {
@@ -26,7 +27,7 @@
   width: 100%;
   height: var(--header-h);
   margin: 0 auto;
-  padding: 0 var(--space-3);
+  padding: 0 var(--space-5); /* Figma 0 20px (구 12px) */
 }
 
 .back {
@@ -57,7 +58,8 @@
 
 .title {
   text-align: center;
-  font-size: var(--font-body);
+  /* Figma header type=sub 타이틀 = Title/B_18_140% (구 16px) */
+  font-size: var(--font-h3);
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
