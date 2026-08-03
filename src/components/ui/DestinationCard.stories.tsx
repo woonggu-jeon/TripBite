@@ -27,7 +27,6 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 export const WithCaption: Story = {
   args: {
-    caption: '10/14 — 10/16',
     emoji: '🌸',
     regionLabel: '단양',
     name: '봄꽃 축제',

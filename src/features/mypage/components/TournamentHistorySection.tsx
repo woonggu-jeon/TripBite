@@ -39,7 +39,7 @@ export function TournamentHistorySection() {
   if (isLoading) {
     return (
       <div className={styles.skeletonList}>
-        <SkeletonList count={3} height={56} radius="md" />
+        <SkeletonList count={2} height={68} radius="md" />
       </div>
     );
   }
@@ -69,10 +69,14 @@ export function TournamentHistorySection() {
     <ul className={styles.list}>
       {items.slice(0, 10).map((it) => {
         const themeEmoji = seasonEmoji(it.theme);
+        // category 가 비어 오는 기록이 있어 "undefined강" 으로 새던 것 방지 —
+        // 빈 조각은 빼고 " · " 로 잇는다.
         const categoryLabel = CATEGORY_KO[it.category] ?? it.category;
         const date = new Date(it.completedAt);
         const dateLabel = `${date.getMonth() + 1}월 ${date.getDate()}일`;
-        const meta = `${categoryLabel} · ${it.count}${t('countUnit')} · ${dateLabel}`;
+        const meta = [categoryLabel, `${it.count}${t('countUnit')}`, dateLabel]
+          .filter(Boolean)
+          .join(' · ');
         return (
           <li key={it.id} className={styles.row}>
             <span className={styles.emoji} aria-hidden>

@@ -1,26 +1,40 @@
-// Card primitive variant="highlighted" 가 bg/border/radius 담당.
+// Figma `pf` 실측 — 360x96, HORIZONTAL gap 12, padding 20, 흰 배경 +
+// 하단 1px #E0E0E0. 카드가 아니라 헤더 바로 아래 붙는 풀블리드 블록이다.
+// (구: 중앙 정렬 100px 아바타 + highlighted 카드)
 .card {
   display: grid;
-  place-items: center;
-  gap: 0.625rem;
-  text-align: center;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--content-pad);
+  margin-inline: calc(var(--content-pad) * -1);
+  background: var(--color-surface);
+  border-bottom: var(--border-thin) solid var(--color-border);
+  text-align: left;
 }
 
-// avatar + remove(X) 둘 다 absolute 정렬할 wrapper.
+// Figma `pmid` — 닉네임 + 배지, V gap 4
+.body {
+  display: grid;
+  gap: var(--space-1);
+  justify-items: start;
+  min-width: 0;
+}
+
+// avatar + remove(X) 둘 다 absolute 정렬할 wrapper. Figma `av` 56x56.
 .avatarWrap {
   position: relative;
-  width: 100px;
-  height: 100px;
+  width: 56px;
+  height: 56px;
 }
-
 // X 버튼 — avatar 있을 때만 우상단. avatar 클릭 (변경) 과 분리.
 .avatarRemoveBtn {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  z-index: 1;
-  width: 24px;
-  height: 24px;
+  top: -6px;
+  right: -6px;
+  z-index: 2;
+  width: 20px;
+  height: 20px;
   display: grid;
   place-items: center;
   padding: 0;
@@ -57,8 +71,8 @@
 // 별도 absolute 띄우는 요소가 없어 primitive 와 spec 충돌이 발생할 구조 자체 없음.
 .avatarBtn {
   position: relative;
-  width: 100px;
-  height: 100px;
+  width: 56px;
+  height: 56px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -83,18 +97,33 @@
   }
 }
 
+// Figma `av` — 56x56, 연초록 면, 보더/그림자 없음
 .avatar {
   position: relative; // next/image fill 자식의 absolute 기준
-  width: 100px;
-  height: 100px;
+  width: 56px;
+  height: 56px;
   border-radius: var(--radius-full);
-  background: var(--color-bg);
-  border: 2px solid var(--color-primary-border);
+  background: var(--color-primary-soft);
   display: grid;
   place-items: center;
   overflow: hidden;
-  box-shadow: var(--shadow-md);
   transition: filter var(--motion-base) ease;
+}
+
+// Figma `cam-badge` 22x22 — 초록 원 + 2px 흰 링, 아바타 우하단
+.camBadge {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-on-strong);
+  box-shadow: 0 0 0 2px var(--color-surface);
 }
 
 .avatarImg {
@@ -103,13 +132,13 @@
   object-fit: cover;
 }
 
+// Figma 는 아바타 미설정 시 연초록 면 + 초록 사람 아이콘
 .avatarFallback {
   display: grid;
   place-items: center;
   width: 100%;
   height: 100%;
-  color: color-mix(in srgb, var(--color-fg) 40%, var(--color-muted));
-  background: color-mix(in srgb, var(--color-fg) 4%, transparent);
+  color: var(--color-primary-text-bold);
 }
 
 .fileInput {
@@ -123,9 +152,11 @@
   border: 0;
 }
 
+// Title/B_18_140% — 18px Bold
 .nickname {
-  font-size: var(--text-lg);
-  font-weight: var(--font-weight-extrabold);
+  font-size: var(--font-h3);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-normal);
   color: var(--color-fg);
   letter-spacing: var(--tracking-tight);
   min-height: 1.4em;
@@ -139,16 +170,22 @@
   border-radius: var(--radius-sm);
 }
 
+// Figma `badge` — 연초록 pill (radius 999), padding 4/12, gap 4
 .travelType {
   display: inline-flex;
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-primary-tint);
-  border-radius: var(--radius-md);
+  align-items: center;
+  gap: var(--space-1);
+  padding: 4px var(--space-3);
+  background: var(--color-primary-soft);
+  border-radius: var(--radius-full);
 }
 
+// Caption/B_10 — 10px Bold
 .travelTypeTitle {
-  font-size: var(--font-body);
-  font-weight: var(--font-weight-extrabold);
+  font-size: var(--font-eyebrow);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-tight);
   color: var(--color-primary-text-bold);
+  letter-spacing: var(--tracking-tight);
   margin: 0;
 }

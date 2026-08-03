@@ -213,7 +213,6 @@ function RegionContentPanel({
           tone={tone}
           regionLabel={label}
           name={i.title}
-          description={i.description}
         />
       )}
       renderSkeleton={() => <DestinationCardSkeleton />}

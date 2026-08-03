@@ -4,9 +4,9 @@ import styles from './DestinationCard.module.scss';
 /**
  * DestinationCard 모양의 skeleton.
  *
- * 카드와 동일한 외곽 (.card) + body 구조 — image aspect-square 자리 +
- * region eyebrow + name (3줄 min) + description (1줄). 실 카드와 높이/너비/
- * gap 정확히 일치 → grid 안에서 skeleton ↔ 실 카드 전환 시 CLS 0.
+ * 실 카드와 동일한 외곽 (.card) + 같은 구조 — 이미지 38/27 자리 + 제목 1줄 +
+ * 핀/시군 1줄. 높이/너비/gap 이 정확히 일치해 grid 안에서 skeleton ↔ 실 카드
+ * 전환 시 CLS 0.
  *
  * tone prop 안 받음 — skeleton 은 톤 시각 안 함 (단순 회색).
  */
@@ -18,14 +18,10 @@ export function DestinationCardSkeleton() {
         <Skeleton width="100%" height="100%" radius="sm" />
       </div>
       <div className={styles.body}>
-        {/* region eyebrow */}
-        <Skeleton width="40%" height={10} radius="sm" />
-        {/* name — 3줄 min-height 영역 reserved (DestinationCard.name 과 동일) */}
-        <div className={styles.name}>
-          <Skeleton width="80%" height={13} radius="sm" />
-        </div>
-        {/* description — 1줄 (nbsp reserve 영역과 동일) */}
-        <Skeleton width="70%" height={10} radius="sm" />
+        {/* 제목 (14px) */}
+        <Skeleton width="80%" height={20} radius="sm" />
+        {/* 핀 + 시군 (10px) */}
+        <Skeleton width="45%" height={12} radius="sm" />
       </div>
     </div>
   );

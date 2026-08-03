@@ -1,16 +1,5 @@
-// FestivalCarousel — section + h2 자체 렌더. 빈 응답 시 wrapper 자체 미노출.
-// 디자인 토큰은 HomeDashboard 의 sectionTitle 과 동일.
-
-.title {
-  font-size: var(--font-body);
-  font-weight: var(--font-weight-extrabold);
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-fg);
-  margin-bottom: var(--space-3);
-}
-
-@media (max-width: 480px) {
-  .title {
-    margin-bottom: var(--space-2);
-  }
+// FestivalCarousel — 섹션 헤더는 PageSection 이 담당 (Figma `rec-block > mid`
+// 규격: 제목 16 Bold + 보조 12). 빈 응답 시 wrapper 자체 미노출.
+.section {
+  min-width: 0;
 }

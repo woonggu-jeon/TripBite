@@ -1,77 +1,86 @@
-// 마이페이지 도장책 진입 배너. tap → /mypage/stamps.
+// Figma `stamp-banner` — 320x99, 흰 카드 + 1px 보더, V gap 12, padding 20/16.
 .banner {
   display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-sage-mist);
-  border: 1.5px solid var(--color-sage);
-  border-radius: var(--radius-lg);
-  color: var(--color-sage-strong);
+  gap: var(--space-3); // Figma gap 12
+  padding: var(--space-5) var(--space-4); // Figma 20 / 16
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-fg);
   text-decoration: none;
-  transition:
-    transform var(--motion-fast) ease,
-    box-shadow var(--motion-base) ease;
+  min-width: 0;
+  transition: border-color var(--motion-base) ease;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      box-shadow: var(--shadow-md);
+      border-color: var(--color-primary-border);
     }
   }
-  &:active {
-    transform: scale(0.99);
-  }
   &:focus-visible {
-    outline: 2px solid var(--color-sage);
+    outline: var(--focus-outline);
     outline-offset: var(--focus-outline-offset);
   }
 }
 
-.master {
-  background: var(--color-sage);
-  border-color: var(--color-sage-strong);
-  color: var(--color-bg);
-}
-
-.iconBox {
+// Figma `f` — 제목 좌측 / 카운트 우측 (H gap 13 → 4px 그리드로 12)
+.head {
   display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-full);
-  background: var(--color-bg);
-  color: var(--color-sage-strong);
-  flex-shrink: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: var(--space-3);
 }
 
-.master .iconBox {
-  background: var(--color-sage-strong);
-  color: var(--color-bg);
-}
-
-.body {
-  display: grid;
-  gap: 2px;
-  min-width: 0;
-}
-
+// Basic Body/B_14_140%
 .title {
-  font-size: var(--font-body);
-  font-weight: var(--font-weight-extrabold);
-  letter-spacing: var(--tracking-tight);
-  color: inherit;
-}
-
-.progress {
   font-size: var(--font-body-sm);
-  color: inherit;
-  // opacity 0.85 → sage-strong(#4a6e4a) on sage-mist(#d4e2d4) 가 3.33:1 로 미달.
-  // 풀 opacity 유지 → 7.4:1 통과 (WCAG AA 4.5:1+).
-  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-normal);
+  color: var(--color-fg);
+  letter-spacing: var(--tracking-tight);
+  word-break: keep-all;
 }
 
-.chevron {
-  color: inherit;
-  opacity: 0.7;
+.count {
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-normal);
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+// 찍은 수만 초록. primary 는 텍스트로 2.80:1 미달 → primary-text-bold (결정 2).
+.countVisited {
+  color: var(--color-primary-text-bold);
+}
+
+.countTotal {
+  color: var(--color-muted);
+}
+
+// Figma `track` 288x7 (#F1F1F1) / `fill` (#00B334), radius 999
+.track {
+  position: relative;
+  height: 7px;
+  width: 100%;
+  background: var(--color-surface-elevated);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: inherit;
+  transition: width var(--motion-emphasis) var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banner {
+    transition: none;
+  }
+  .fill {
+    transition: none;
+  }
 }

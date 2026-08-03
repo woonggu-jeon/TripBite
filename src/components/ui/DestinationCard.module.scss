@@ -1,16 +1,19 @@
-// Destination 형태 카드 — FestivalCarousel/RelatedDestinations/SavedTournaments tile 통일.
-// 톤은 globals 의 --accent-{tone} 토큰 사용.
-// Fluid 반응형 — padding/gap 은 viewport 따라 부드럽게. aspect-ratio 는 단계 유지
-// (square → wide → narrow 는 의도된 다른 비율이라 step 의미 있음).
+// Figma `DestinationCard` 실측 — 152x168, radius 12, 1px #E0E0E0, VERTICAL gap 0.
+//   Frame 2  152x108  이미지 (풀블리드, 카드 padding 없음)
+//   Frame 4  152x60   V gap 4, padding 12/10
+//              ├ 제목   Basic Body/B_14_140%  #151515
+//              └ 핀 12 + 시군  Caption/M_10   #393939
+//
+// 구 구조는 카드에 padding 을 주고 이미지를 정사각으로, 시군(eyebrow) 을 제목
+// 위에 뒀으며 설명/캡션 줄이 더 있어 시안보다 훨씬 높았다.
 .card {
   position: relative;
   display: grid;
-  // grid-rows 명시 — image(auto), body(1fr) → 카드 간 body 높이 통일
   grid-template-rows: auto 1fr;
-  gap: clamp(0.375rem, 1.2vw, 0.5rem);
-  padding: clamp(0.5rem, 2vw, 0.625rem);
-  background: var(--color-bg);
-  border: 1.5px solid var(--color-border);
+  gap: 0;
+  padding: 0;
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border);
   border-radius: var(--radius-md);
   text-decoration: none;
   color: var(--color-fg);
@@ -18,17 +21,15 @@
   width: 100%;
   transition:
     border-color var(--motion-base) ease,
-    transform var(--motion-fast) ease,
-    box-shadow var(--motion-base) ease;
+    transform var(--motion-fast) ease;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
       border-color: var(--accent, var(--color-primary));
-      box-shadow: var(--shadow-md);
     }
   }
   &:active {
-    transform: scale(0.97);
+    transform: scale(0.98);
   }
   &:focus-visible {
     outline: var(--focus-outline);
@@ -36,14 +37,13 @@
   }
 }
 
-// width 100% 명시 — aspect-ratio 가 width 기준 (ios safari 0 width 첫 frame 회피).
+// Figma 152x108 = 38/27. 카드 상단을 꽉 채우고 radius 는 카드가 클리핑.
 .image {
   position: relative;
   display: grid;
   place-items: center;
   width: 100%;
-  aspect-ratio: var(--aspect-square);
-  border-radius: var(--radius-sm);
+  aspect-ratio: 38 / 27;
   background: linear-gradient(
     135deg,
     color-mix(in srgb, var(--accent) 22%, var(--color-bg)),
@@ -56,8 +56,8 @@
 // 자식 button 의 onClick 이 e.preventDefault() + stopPropagation() 책임.
 .topRight {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 6px;
+  right: 6px;
   z-index: 1;
   display: grid;
   place-items: center;
@@ -66,8 +66,8 @@
 // 좌상단 뱃지 슬롯 (예: D-day). Link 영역 위 absolute. 자체 인터랙션 X.
 .topLeft {
   position: absolute;
-  top: 6px;
-  left: 6px;
+  top: 8px;
+  left: 8px;
   z-index: 1;
   display: grid;
   place-items: center;
@@ -77,8 +77,8 @@
 // 좌상단 작은 색 dot (예: luckyColor) — 시각 메타.
 .accentDot {
   position: absolute;
-  top: 6px;
-  left: 6px;
+  top: 8px;
+  left: 8px;
   width: 10px;
   height: 10px;
   border-radius: var(--radius-full);
@@ -86,71 +86,63 @@
 }
 
 .emoji {
-  font-size: clamp(var(--emoji-sm), 6vw, var(--emoji-md));
+  font-size: var(--emoji-md);
   line-height: 1;
   filter: var(--drop-shadow-icon);
 }
 
+// Figma `Frame 4` — 152x60, V gap 4, padding 12/10
 .body {
   display: grid;
-  gap: 0.125rem;
+  align-content: start;
+  gap: var(--space-1);
+  padding: var(--space-3) 10px;
   min-width: 0;
 }
 
-.region {
-  font-size: var(--font-eyebrow);
+// Basic Body/B_14_140% — 제목이 먼저 온다 (구: 시군이 먼저)
+.name {
+  font-size: var(--font-body-sm);
   font-weight: var(--font-weight-bold);
-  color: var(--accent, var(--color-muted));
+  line-height: var(--line-normal);
+  color: var(--color-fg);
   letter-spacing: var(--tracking-tight);
   margin: 0;
-}
-
-// 카드 간 높이 일관 — name 영역이 줄 수 만큼 자리 차지.
-// 짧은 이름도 동일 줄 수 만큼 자리 잡아 grid 안에서 카드 높이 정렬.
-// 모바일(≤380) 은 좁아 같은 문자가 더 많은 줄을 차지하므로 4 줄까지 허용,
-// 그 위는 3 줄. 4 줄째부터 ellipsis.
-.name {
-  font-size: clamp(var(--font-caption), 3vw, var(--font-label));
-  font-weight: var(--font-weight-extrabold);
-  letter-spacing: var(--tracking-tight);
-  line-height: var(--line-tight);
-  min-height: calc(var(--line-tight) * 3 * 1em);
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   word-break: keep-all;
-  margin: 0;
-
-  @media (max-width: 380px) {
-    -webkit-line-clamp: 4;
-    min-height: calc(var(--line-tight) * 4 * 1em);
-  }
 }
 
-// 여행지명 하단 한 줄 설명 — RegionContentDto.description 매핑.
-// 한 줄 초과 시 ellipsis. 미지정 시 영역 자체 미노출 (카드 높이 그대로).
-.description {
+// Figma `Container` — 12px 핀 아이콘 + 시군, H gap 4
+.region {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
   font-size: var(--font-eyebrow);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-tight);
   color: var(--color-muted);
   letter-spacing: var(--tracking-tight);
-  line-height: var(--line-snug);
   margin: 0;
+  min-width: 0;
+}
+
+.regionIcon {
+  flex-shrink: 0;
+  color: var(--color-muted);
+}
+
+.regionLabel {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.caption {
-  font-size: var(--font-eyebrow);
-  color: var(--color-muted);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: var(--tracking-tight);
-  margin: 0;
-}
-
 // 톤별 accent — globals.scss --accent-{color} 토큰 사용.
+// Figma 카드는 흰 면 + 회색 보더라 accent 는 hover 보더와 emoji fallback 면에만.
 .red {
   --accent: var(--accent-red);
 }
@@ -165,18 +157,6 @@
 }
 .violet {
   --accent: var(--accent-violet);
-}
-
-// aspect-ratio 만 단계별 (모바일 viewport 에서 카드가 가로/세로 비율 자체가 바뀜).
-@media (max-width: 480px) {
-  .image {
-    aspect-ratio: var(--aspect-card-wide);
-  }
-}
-@media (max-width: 380px) {
-  .image {
-    aspect-ratio: var(--aspect-card-narrow);
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

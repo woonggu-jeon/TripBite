@@ -27,12 +27,12 @@ export async function HomeDashboard() {
 
   return (
     <div className={styles.grid}>
-      {/* 1) 오늘의 추천 — RecommendationBanner 만 노출 (날씨 위젯 미노출). */}
+      {/* 1) 오늘의 추천 — Figma `hero-block` 에는 섹션 제목이 없다 (hero 안의
+             eyebrow "오늘의 추천" 이 그 역할). aria-label 로만 라벨 유지. */}
       <section
         data-widget="weather-recommendation"
         aria-label={t('weatherRecommendation')}
       >
-        <h2 className={styles.sectionTitle}>{t('weatherRecommendation')}</h2>
         <RecommendationBanner />
       </section>
 

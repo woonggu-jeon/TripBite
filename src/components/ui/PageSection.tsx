@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 import styles from './PageSection.module.scss';
 
 /**
@@ -20,7 +20,7 @@ import styles from './PageSection.module.scss';
  * - 본문 gap 은 children 책임 (PageSection 은 header 와 body 사이 간격만 보장.
  *   단 variant="card" 는 body 가 grid 라 gap 을 직접 준다)
  */
-interface PageSectionProps {
+interface PageSectionProps extends HTMLAttributes<HTMLElement> {
   title?: string;
   hint?: string;
   action?: ReactNode;
@@ -50,6 +50,9 @@ export function PageSection({
   titleScale = 'section',
   className,
   children,
+  // data-* 등 나머지 속성은 section 요소로 그대로 전달 (홈 위젯의
+  // data-widget / data-type 처럼 CSS 훅으로 쓰이는 것들).
+  ...rest
 }: PageSectionProps) {
   const Heading = level;
   const hasHeader = !!title || !!action;
@@ -63,6 +66,7 @@ export function PageSection({
       ]
         .filter(Boolean)
         .join(' ')}
+      {...rest}
     >
       {hasHeader && (
         <header className={styles.header}>

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { MapPin } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
 import { MediaThumb } from './MediaThumb';
 import styles from './DestinationCard.module.scss';
@@ -22,13 +23,6 @@ interface DestinationCardProps {
   regionLabel: string;
   /** 메인 제목 */
   name: string;
-  /**
-   * 여행지명 하단 한 줄 설명 (RegionContentDto.description 매핑).
-   * 한 줄 넘으면 ellipsis. 미지정 시 영역 자체 미노출 (카드 높이 그대로).
-   */
-  description?: string;
-  /** 하단 보조 텍스트 (예: "10/14 — 10/16" 축제 기간) */
-  caption?: string;
   /** 카드 좌상단 액센트 dot 색 (예: luckyColor). 미지정 시 미노출 */
   accentDot?: string;
   /** 접근성 라벨 — 미지정 시 "name · region" 자동 */
@@ -47,10 +41,16 @@ interface DestinationCardProps {
 }
 
 /**
- * Destination 형태 카드 — 정사각 이미지(emoji) 위, 본문(region eyebrow + name + caption?) 아래.
+ * Destination 형태 카드 — Figma `DestinationCard` (152x168).
+ *
+ *   이미지 152x108 (풀블리드)
+ *   └ 본문 152x60 : 제목(14 Bold) → 핀 12 + 시군(10 Medium)
+ *
+ * 시안에 설명/캡션 줄이 없어 `description` / `caption` prop 을 제거했다.
+ * 그 정보가 필요한 화면은 카드 밖(섹션 hint, D-day 뱃지 등)에서 표현한다.
  *
  * 사용처:
- *   - FestivalCarousel — caption 으로 축제 기간 전달
+ *   - FestivalCarousel — topLeftBadge 로 D-day
  *   - RelatedDestinations — emoji + region/name
  *   - SavedTournamentsSection 의 tile — accentDot 으로 luckyColor 표시
  *
@@ -64,8 +64,6 @@ export function DestinationCard({
   tone,
   regionLabel,
   name,
-  description,
-  caption,
   accentDot,
   ariaLabel,
   topRightAction,
@@ -92,22 +90,13 @@ export function DestinationCard({
           />
         )}
       </MediaThumb>
+      {/* Figma `Frame 4` — 제목이 먼저, 그 아래 핀 + 시군 */}
       <div className={styles.body}>
-        <p className={styles.region}>{regionLabel}</p>
         <h3 className={styles.name}>{name}</h3>
-        {/*
-          description 영역은 prop 유무와 무관하게 항상 렌더 — 카드 높이를
-          그리드 안에서 일관 유지하기 위함. 값 없으면 nbsp 로 한 줄 자리만
-          차지하고 시각상 비어 보임 (color: var(--color-muted) 라 nbsp 안 보임).
-          aria-hidden 으로 스크린리더에 빈 paragraph 노출 차단.
-        */}
-        <p
-          className={styles.description}
-          aria-hidden={description ? undefined : true}
-        >
-          {description || ' '}
+        <p className={styles.region}>
+          <MapPin size={12} className={styles.regionIcon} aria-hidden />
+          <span className={styles.regionLabel}>{regionLabel}</span>
         </p>
-        {caption && <p className={styles.caption}>{caption}</p>}
       </div>
       {topRightAction && (
         <div className={styles.topRight}>{topRightAction}</div>

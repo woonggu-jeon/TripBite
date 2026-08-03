@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { Carousel } from '@/features/carousel';
 import { Skeleton } from '@/components/feedback/Skeleton';
-import { DestinationCard } from '@/components/ui';
+import { DestinationCard, PageSection } from '@/components/ui';
 import { useOngoingFestivals } from '@/features/region';
 import {
   CHUNGBUK_REGIONS,
@@ -60,14 +60,16 @@ function regionCodeOf(label: string | undefined): RegionCode {
   return matched?.code ?? 'cheongju';
 }
 
+/**
+ * 카드에 노출할 시군명 — 항상 한글.
+ * BE/목이 regionLabel 을 코드('cheongju') 로 보내는 케이스가 있어 그대로 쓰면
+ * 카드에 영문 코드가 노출됐다. 코드는 한글명으로 변환한다.
+ */
 function regionLabelOf(item: OngoingFestivalItemDto): string {
-  if (item.regionLabel) return item.regionLabel;
-  return CHUNGBUK_REGIONS.find((r) => r.code === 'cheongju')?.ko ?? '';
-}
-
-function periodCaption(item: OngoingFestivalItemDto): string | undefined {
-  if (!item.eventStartDate && !item.eventEndDate) return undefined;
-  return `${item.eventStartDate ?? ''}${item.eventEndDate ? ` — ${item.eventEndDate}` : ''}`;
+  const code = regionCodeOf(item.regionLabel);
+  const ko = CHUNGBUK_REGIONS.find((r) => r.code === code)?.ko;
+  if (ko) return ko;
+  return item.regionLabel ?? '';
 }
 
 export function FestivalCarousel() {
@@ -84,12 +86,12 @@ export function FestivalCarousel() {
   const showDday = data?.type === 'upcoming';
 
   return (
-    <section
+    <PageSection
+      title={sectionTitle}
+      className={styles.section}
       data-widget="ongoing-festivals"
       data-type={data?.type}
-      aria-label={sectionTitle}
     >
-      <h2 className={styles.title}>{sectionTitle}</h2>
       {isLoading || !data ? (
         <Skeleton width="100%" height={200} radius="lg" />
       ) : (
@@ -103,7 +105,6 @@ export function FestivalCarousel() {
               tone={toneFor(regionCodeOf(item.regionLabel))}
               regionLabel={regionLabelOf(item)}
               name={item.name}
-              caption={periodCaption(item)}
               ariaLabel={`${item.name} · ${regionLabelOf(item)}`}
               topLeftBadge={
                 showDday && typeof item.daysToStart === 'number' ? (
@@ -119,6 +120,6 @@ export function FestivalCarousel() {
           ariaLabel={sectionTitle}
         />
       )}
-    </section>
+    </PageSection>
   );
 }

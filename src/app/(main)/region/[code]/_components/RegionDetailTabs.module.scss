@@ -5,49 +5,69 @@
 
 // 탭 수가 3 (관광지/축제/체험) ~ 4 (전체 추가 시) 로 변동 — auto-fit 으로 동적.
 // minmax(0, 1fr) 의 0 은 grid track 안 ellipsis 동작 보장.
+// Figma `chips` 실측 — H gap 4, 개별 pill 칩 (세그먼트 트랙이 아니다).
+// chip 32px, padding 4/16, radius 999.
+//   선택   : #00B334 면 + 흰 글씨 14 Bold
+//   미선택 : 흰 면 + 1px #E0E0E0 + #393939 14 Regular
 .tabs {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(0, 1fr);
-  gap: 0.5rem;
-  padding: 0.375rem;
-  background: color-mix(in srgb, var(--color-fg) 4%, transparent);
-  border-radius: var(--radius-md);
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--space-1);
+  padding: 0;
+  background: none;
+  border-radius: 0;
+  // 칩이 많아지면 가로 스크롤 (시안 4개는 320 안에 들어감)
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .tab {
-  padding: 0.5rem 0.75rem;
-  border-radius: calc(var(--radius-md) - 2px);
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-bold);
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 4px var(--space-4);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-normal);
   color: var(--color-muted);
-  background: transparent;
+  letter-spacing: var(--tracking-tight);
+  white-space: nowrap;
   transition:
     background var(--motion-base) ease,
-    color var(--motion-base) ease;
-  letter-spacing: var(--tracking-tight);
+    color var(--motion-base) ease,
+    border-color var(--motion-base) ease;
 
   &:focus-visible {
     outline: var(--focus-outline);
     outline-offset: var(--focus-outline-offset);
   }
 
+  // 시안은 #00B334 면 + 흰 글씨지만 2.80:1 로 AA 미달 →
+  // --color-primary-strong(#00821F, 4.98:1) 사용 (결정 2).
   &.active {
-    background: var(--color-bg);
-    color: var(--color-fg);
-    box-shadow: var(--shadow-sm);
+    background: var(--color-primary-strong);
+    border-color: var(--color-primary-strong);
+    color: var(--color-primary-fg);
+    font-weight: var(--font-weight-bold);
+    box-shadow: none;
   }
 }
 
 // 탭 panel 영역 — skeleton ↔ data 전환 시 CLS 0 보장.
-// DestinationCard (세로 카드) 2 columns 그리드, 카드 ≈ 220px (image aspect-square
-// + body 3줄 + padding). 2 행 노출이 첫 skeleton 기준 → min-height ≈ 460.
+// Figma DestinationCard 는 152x168 (이미지 108 + 본문 60). 2열 2행 + gap 12
+// = 348 → min-height 348 (구 460 은 설명 줄이 있던 시절 높이).
 //
 // display: block (default) — 자식 InfiniteList 가 자체 grid 를 가지므로
 // 여기서 grid 를 추가로 걸면 nested grid 가 되어 자식 카드의 너비/gap 이 깨짐.
 .panelArea {
   position: relative;
-  min-height: 460px;
+  min-height: 348px;
 }
 
 // .panel 도 block. [hidden] 일 때만 숨김.
@@ -58,7 +78,7 @@
 
 @media (max-width: 380px) {
   .panelArea {
-    min-height: 420px;
+    min-height: 320px;
   }
 }
 

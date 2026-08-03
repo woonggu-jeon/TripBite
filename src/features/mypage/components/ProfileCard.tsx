@@ -3,14 +3,13 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { User, X } from 'lucide-react';
+import { Camera, User, X } from 'lucide-react';
 import { useMe } from '@/features/auth/hooks/use-auth';
 import {
   useMypage,
   useRemoveAvatar,
   useUpdateAvatar,
 } from '@/features/mypage/hooks/use-mypage';
-import { Card } from '@/components/ui';
 import { secureImageUrl } from '@/lib/secure-image-url';
 import { haptic } from '@/lib/haptic';
 import { toast } from '@/lib/toast';
@@ -99,12 +98,7 @@ export function ProfileCard() {
   const hasAvatar = !!avatarSrc;
 
   return (
-    <Card
-      as="article"
-      variant="highlighted"
-      padding="md"
-      className={styles.card}
-    >
+    <article className={styles.card}>
       <div className={styles.avatarWrap}>
         <button
           type="button"
@@ -134,9 +128,13 @@ export function ProfileCard() {
               />
             ) : (
               <span className={styles.avatarFallback} aria-hidden>
-                <User size={36} />
+                <User size={24} />
               </span>
             )}
+          </span>
+          {/* Figma `cam-badge` 22px — 아바타 우하단 초록 원 + 2px 흰 링 */}
+          <span className={styles.camBadge} aria-hidden>
+            <Camera size={12} />
           </span>
         </button>
         {hasAvatar && (
@@ -163,12 +161,15 @@ export function ProfileCard() {
         tabIndex={-1}
       />
 
-      <h2 className={styles.nickname}>
-        {nickname || <span className={styles.nicknameSkeleton} aria-hidden />}
-      </h2>
+      {/* Figma `pmid` — 닉네임(18 Bold) + 유형 배지(pill), V gap 4 */}
+      <div className={styles.body}>
+        <h2 className={styles.nickname}>
+          {nickname || <span className={styles.nicknameSkeleton} aria-hidden />}
+        </h2>
 
-      <TravelTypeField travelType={data?.travelType ?? undefined} />
-    </Card>
+        <TravelTypeField travelType={data?.travelType ?? undefined} />
+      </div>
+    </article>
   );
 }
 

@@ -1,6 +1,9 @@
+// Figma `recent-box` 안의 `recent-row` — 288x68, H gap 12, padding 12/0,
+// 행 하단 1px #E0E0E0 (마지막 행 제외). 개별 카드가 아니다.
+// 카드 껍데기(radius 12 / 보더 / padding 20-16)는 PageSection variant="card".
 .list {
   display: grid;
-  gap: var(--space-2);
+  gap: 0;
   padding: 0;
   margin: 0;
   list-style: none;
@@ -13,30 +16,45 @@
 
 .row {
   display: grid;
-  grid-template-columns: 36px 1fr;
-  gap: var(--space-3);
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: var(--space-3); // Figma gap 12
   align-items: center;
-  padding: var(--space-3);
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  padding: var(--space-3) 0; // Figma 12 / 0
+  background: transparent;
+  border: 0;
+  border-bottom: var(--border-thin) solid var(--color-border);
+  border-radius: 0;
+
+  &:last-child {
+    border-bottom: 0;
+  }
 }
 
+// Figma `circle` 40x40 — 연초록 원 안에 20px 아이콘.
+// 레포는 계절 emoji 를 쓰므로 emoji 를 그 원 안에 담는다.
 .emoji {
-  font-size: var(--emoji-md);
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-soft);
+  font-size: var(--font-body-sm);
   line-height: 1;
-  text-align: center;
 }
 
+// Figma `f` — V gap 3 (4px 그리드로 4)
 .body {
   display: grid;
-  gap: 2px;
+  gap: var(--space-1);
   min-width: 0;
 }
 
+// Basic Body/B_14_140% (구 16 extrabold)
 .title {
-  font-size: var(--font-body);
-  font-weight: var(--font-weight-extrabold);
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-normal);
   color: var(--color-fg);
   letter-spacing: var(--tracking-tight);
   margin: 0;
@@ -45,8 +63,13 @@
   white-space: nowrap;
 }
 
+// Figma 보조 줄은 10px (Caption 계열)
 .meta {
-  font-size: var(--font-caption);
+  font-size: var(--font-eyebrow);
+  line-height: var(--line-tight);
   color: var(--color-muted);
   margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
