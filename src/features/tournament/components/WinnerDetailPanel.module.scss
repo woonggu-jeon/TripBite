@@ -16,7 +16,7 @@
   font-size: var(--font-body-sm);
   line-height: var(--line-normal);
   color: var(--color-fg);
-  letter-spacing: var(--tracking-snug);
+  letter-spacing: var(--tracking-tight);
   word-break: keep-all;
   margin: 0;
 }
@@ -81,7 +81,7 @@
 }
 
 .ratingValue {
-  letter-spacing: var(--tracking-snug);
+  letter-spacing: var(--tracking-tight);
 }
 
 .ratingCount {
@@ -146,7 +146,7 @@
 }
 
 .rowLabelText {
-  letter-spacing: var(--tracking-snug);
+  letter-spacing: var(--tracking-tight);
 }
 
 .rowValue {
@@ -155,7 +155,7 @@
   color: var(--color-fg);
   margin: 0;
   word-break: break-word;
-  letter-spacing: var(--tracking-snug);
+  letter-spacing: var(--tracking-tight);
 }
 
 .rowLink {

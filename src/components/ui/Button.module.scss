@@ -4,9 +4,12 @@
   justify-content: center;
   gap: 0.375rem;
   font-family: inherit;
-  font-weight: var(--font-weight-bold);
-  letter-spacing: var(--tracking-snug);
-  border: 1.5px solid transparent;
+  /* Figma: solid/icon = Basic Body/SB_16_140% (SemiBold 600),
+            line     = Basic Body/M_16_140%  (Medium 500, .v-secondary 에서 override) */
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-tight);
+  /* Figma: line 스타일 테두리 1px (구 1.5px) */
+  border: var(--border-thin) solid transparent;
   border-radius: var(--radius-md);
   cursor: pointer;
   user-select: none;
@@ -73,6 +76,8 @@
   background: transparent;
   color: var(--color-fg);
   border-color: var(--color-border);
+  /* Figma line 스타일은 Medium(500) */
+  font-weight: var(--font-weight-medium);
 
   @media (hover: hover) and (pointer: fine) {
     &:hover:not(:disabled) {

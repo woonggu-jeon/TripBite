@@ -23,7 +23,7 @@
   transition:
     background var(--motion-base) ease,
     color var(--motion-base) ease;
-  letter-spacing: var(--tracking-snug);
+  letter-spacing: var(--tracking-tight);
 
   &:focus-visible {
     outline: var(--focus-outline);

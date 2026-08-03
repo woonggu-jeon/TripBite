@@ -20,7 +20,7 @@
 .introSub {
   font-size: var(--font-body-sm);
   color: var(--color-muted);
-  letter-spacing: var(--tracking-snug);
+  letter-spacing: var(--tracking-tight);
   word-break: keep-all;
 }
 
@@ -33,7 +33,7 @@
   font-size: var(--font-body-sm);
   font-weight: var(--font-weight-bold);
   color: var(--color-fg);
-  letter-spacing: var(--tracking-snug);
+  letter-spacing: var(--tracking-tight);
 }
 
 .countRow {
@@ -76,7 +76,7 @@
   font-size: var(--font-body-sm);
   font-weight: var(--font-weight-bold);
   color: var(--color-fg);
-  letter-spacing: var(--tracking-snug);
+  letter-spacing: var(--tracking-tight);
 }
 
 .anonymousHint {
@@ -138,7 +138,7 @@
   background: var(--color-primary-tint);
   color: var(--color-primary-text-bold);
   border-radius: var(--radius-sm);
-  letter-spacing: var(--tracking-snug);
+  letter-spacing: var(--tracking-tight);
 }
 
 .allowBtn {
