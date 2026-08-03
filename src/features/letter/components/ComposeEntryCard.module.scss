@@ -1,23 +1,17 @@
-// cardClasses 가 bg/border/radius 담당. 본 SCSS 는 layout + interactive 만.
-// radius-xl 이 필요한 경우 override 가능 (Card primitive 는 radius-lg).
+// Figma `banner` — 320x147, 연초록 면 + 1px 초록 보더, radius 12,
+// VERTICAL gap 12, padding 20/16.
 .card {
   display: grid;
-  grid-template-rows: 140px auto;
-  border-radius: var(--radius-xl);
+  justify-items: start;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-4);
+  background: var(--color-primary-soft);
+  border: var(--border-thin) solid var(--color-primary);
+  border-radius: var(--radius-md);
   text-decoration: none;
   color: var(--color-fg);
-  overflow: hidden;
-  transition:
-    border-color var(--motion-base) ease,
-    transform var(--motion-fast) ease,
-    box-shadow var(--motion-base) ease;
+  transition: transform var(--motion-fast) ease;
 
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      border-color: var(--color-primary-text-bold);
-      box-shadow: var(--shadow-card-strong);
-    }
-  }
   &:active {
     transform: scale(0.99);
   }
@@ -27,77 +21,42 @@
   }
 }
 
-.hero {
-  position: relative;
+// Figma `bic` 50x50 — 흰 면 radius 12 + 24px 아이콘
+.iconBox {
   display: grid;
   place-items: center;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--accent-spring-grad-start) 22%, var(--color-bg)),
-    color-mix(in srgb, var(--accent-festival-grad-start) 18%, var(--color-bg))
-      50%,
-    color-mix(in srgb, var(--accent-winter-grad-start) 22%, var(--color-bg))
-  );
-  overflow: hidden;
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-primary-text-bold);
 }
 
-.envelope {
-  font-size: var(--font-letter-envelope);
-  line-height: 1;
-  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.15));
-  z-index: 1;
-}
-
-.sparkle1,
-.sparkle2 {
-  position: absolute;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: var(--font-body);
-  filter: var(--drop-shadow-sm);
-}
-
-.sparkle1 {
-  top: 20%;
-  left: 22%;
-  font-size: var(--text-sm);
-}
-
-.sparkle2 {
-  bottom: 22%;
-  right: 24%;
-  font-size: var(--font-h2);
-}
-
+// Figma `f` — V gap 3 (4px 그리드로 4)
 .body {
   display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-4);
+  gap: var(--space-1);
+  min-width: 0;
 }
 
-.title {
-  font-size: var(--font-h3);
-  font-weight: var(--font-weight-extrabold);
+// Basic Body/B_14_140% #151515 — 시안은 보조 문구가 위에 온다
+.subtitle {
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-normal);
   color: var(--color-fg);
   letter-spacing: var(--tracking-tight);
-  line-height: var(--line-snug);
+  word-break: keep-all;
 }
 
-.subtitle {
-  font-size: var(--font-label);
-  color: var(--color-muted);
-  margin-top: 0.25rem;
-}
-
-.arrow {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-full);
-  background: var(--color-primary-strong);
-  color: var(--color-primary-fg);
+// Basic Body/B_16_140% 초록 — CTA 문구.
+// 시안 #00B334 는 텍스트로 2.80:1 미달 → --color-primary-text-bold (결정 2).
+.title {
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-normal);
+  color: var(--color-primary-text-bold);
+  letter-spacing: var(--tracking-tight);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,11 +1,12 @@
+// Figma `letterItem` — 320x82, H gap 12, padding 16, 흰 카드 radius 12.
+// 좌측 `stamp` 48x48 (radius 8) 이라 구 80px 미리보기보다 작다.
 // cardClasses({variant:'surface'}) 가 bg/border/radius 담당.
-// 본 SCSS 는 Link 의 grid layout + hover/active 만.
 .card {
   display: grid;
-  grid-template-columns: 80px 1fr auto;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
   gap: var(--space-3);
   align-items: center;
-  padding: var(--space-3);
+  padding: var(--space-4);
   text-decoration: none;
   color: var(--color-fg);
   transition:
@@ -28,19 +29,21 @@
   }
 }
 
+// Figma `stamp` 48x48, radius 8
 .image {
-  width: 80px;
-  height: 80px;
-  border-radius: var(--radius-md);
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
   display: grid;
   place-items: center;
   flex-shrink: 0;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
 }
 
+// 5글자 미리보기 — 48px 안에 들어가도록 12px 로 (구 16px)
 .body {
-  font-size: var(--font-body);
-  font-weight: var(--font-weight-extrabold);
+  font-size: var(--font-caption);
+  font-weight: var(--font-weight-bold);
   color: var(--color-on-strong);
   letter-spacing: var(--tracking-wide);
   text-shadow: var(--text-shadow-soft);

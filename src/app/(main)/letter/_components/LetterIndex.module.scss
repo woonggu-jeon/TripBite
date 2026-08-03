@@ -1,50 +1,64 @@
 .wrap {
   display: grid;
   gap: var(--space-6);
+
+  // 풀블리드 탭이 트랙 폭을 늘리지 못하게
+  > * {
+    min-width: 0;
+  }
 }
 
+// Figma `wideTabMenu` — 360x44 풀블리드, 3탭 균등(120 each).
+// 활성   : 하단 2px 초록 + 초록 14 Bold
+// 비활성 : 하단 1px #E0E0E0 + #393939 14 Regular
+// 컨텐츠 여백(--content-pad)을 음수 마진으로 상쇄해 화면 끝까지 늘린다.
 .tabs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
-  padding: 0.375rem;
-  background: color-mix(in srgb, var(--color-fg) 4%, transparent);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--space-3);
+  gap: 0;
+  padding: 0;
+  background: none;
+  border-radius: 0;
+  margin-inline: calc(var(--content-pad) * -1);
+  margin-bottom: var(--space-5);
 }
 
 .tab {
-  padding: 0.5rem 0.75rem;
-  border-radius: calc(var(--radius-md) - 2px);
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-bold);
+  min-height: 44px;
+  padding: var(--space-3) 0;
+  border: 0;
+  border-bottom: var(--border-thin) solid var(--color-border);
+  border-radius: 0;
+  background: none;
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-normal);
   color: var(--color-muted);
-  background: transparent;
-  transition:
-    background var(--motion-base) ease,
-    color var(--motion-base) ease;
   letter-spacing: var(--tracking-tight);
+  transition: color var(--motion-base) ease;
 
   &:focus-visible {
     outline: var(--focus-outline);
-    outline-offset: var(--focus-outline-offset);
+    outline-offset: calc(var(--focus-outline-offset) * -1);
   }
 
   &.active {
-    background: var(--color-bg);
-    color: var(--color-fg);
-    box-shadow: var(--shadow-sm);
+    // 밑줄은 브랜드 초록 그대로 (텍스트가 아니라 면이라 대비 규칙 무관)
+    border-bottom: 2px solid var(--color-primary);
+    color: var(--color-primary-text-bold);
+    font-weight: var(--font-weight-bold);
+    background: none;
+    box-shadow: none;
   }
 }
 
 // 탭 panel 영역 — skeleton ↔ data 전환 시 CLS 0.
-// LetterRowCard ≈ 107px (padding 24 + image 80 + border 3) + gap 12.
-// 3 row + sentinel 가 안정적으로 들어갈 높이.
+// Figma letterItem 은 82px + gap 12 → 3 row + sentinel ≈ 300.
 //
 // display: block — 자식 InfiniteList 가 자체 grid 를 가지므로 wrapper 는 block.
 .list {
   position: relative;
-  min-height: 360px;
+  min-height: 300px;
 }
 
 // 비활성 panel 만 숨김. [hidden] specificity 가 .panel 보다 높아 안전.
@@ -54,7 +68,7 @@
 
 @media (max-width: 380px) {
   .list {
-    min-height: 320px;
+    min-height: 280px;
   }
 }
 
