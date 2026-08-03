@@ -40,7 +40,7 @@
 
 .v-primary {
   background: var(--color-primary-tint);
-  color: var(--color-primary);
+  color: var(--color-primary-text-bold);
 }
 
 .v-outline {
@@ -55,6 +55,6 @@
 }
 
 .v-solid {
-  background: var(--color-primary);
+  background: var(--color-primary-strong);
   color: var(--color-primary-fg);
 }

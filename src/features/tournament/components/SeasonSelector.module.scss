@@ -22,7 +22,7 @@
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      border-color: var(--color-primary);
+      border-color: var(--color-primary-text-bold);
     }
   }
   &:active {
@@ -34,8 +34,8 @@
   }
 
   &.active {
-    border-color: var(--color-primary);
-    color: var(--color-primary);
+    border-color: var(--color-primary-text-bold);
+    color: var(--color-primary-text-bold);
   }
 }
 

@@ -19,7 +19,7 @@
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      border-color: var(--color-primary);
+      border-color: var(--color-primary-text-bold);
     }
   }
   &:active {

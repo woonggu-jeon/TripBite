@@ -53,7 +53,7 @@
   cursor: pointer;
 
   &:focus-within {
-    border-color: var(--color-primary);
+    border-color: var(--color-primary-text-bold);
     outline: var(--focus-outline);
     outline-offset: 1px;
   }
@@ -144,7 +144,7 @@
 .allowBtn {
   margin-top: 0.25rem;
   padding: 4px 10px;
-  background: var(--color-primary);
+  background: var(--color-primary-strong);
   color: var(--color-primary-fg);
   font-size: var(--font-caption);
   font-weight: var(--font-weight-bold);

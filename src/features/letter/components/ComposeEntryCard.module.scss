@@ -14,7 +14,7 @@
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      border-color: var(--color-primary);
+      border-color: var(--color-primary-text-bold);
       box-shadow: var(--shadow-card-strong);
     }
   }
@@ -96,7 +96,7 @@
   width: 36px;
   height: 36px;
   border-radius: var(--radius-full);
-  background: var(--color-primary);
+  background: var(--color-primary-strong);
   color: var(--color-primary-fg);
 }
 

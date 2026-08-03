@@ -58,9 +58,9 @@
 
 // variants
 .v-primary {
-  background: var(--color-primary);
+  background: var(--color-primary-strong);
   color: var(--color-primary-fg);
-  border-color: var(--color-primary);
+  border-color: var(--color-primary-strong);
 
   @media (hover: hover) and (pointer: fine) {
     &:hover:not(:disabled) {

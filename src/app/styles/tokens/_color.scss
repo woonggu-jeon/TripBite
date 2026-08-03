@@ -7,8 +7,17 @@
   --color-fg: #0a0a0a;
   --color-muted: #5b6470; /* 4.5:1+ on #f5f5f5 (#6b7280=4.43 미달). 흰 배경 6.0:1 */
   --color-border: #e5e7eb;
-  --color-primary: #0a0a0a;
+  /* Brand green (Figma Basic/MainColor/primary). 두 모드 동일.
+     ⚠ 대비 규칙 — primary 는 "면·테두리·ring" 용이고 텍스트로 쓰지 않는다.
+        · primary 텍스트 on 흰 배경 = 2.80:1 (AA 미달) → --color-primary-text-bold (5.10:1)
+        · 흰 텍스트 on primary      = 2.80:1 (AA 미달) → --color-primary-strong (4.98:1)
+        dark 에서는 primary 텍스트가 7.07:1 로 통과하지만, 두 모드 일관성을 위해
+        텍스트는 항상 text-bold 를 쓴다 (dark 9.23:1). */
+  --color-primary: #00b334;
   --color-primary-fg: #ffffff;
+  /* 흰 라벨이 올라가는 채움 면 전용 (버튼/배지). primary 로는 2.80:1 이라 미달.
+     #00a02f=3.46:1, #009029=4.18:1 도 미달 — #00821f 부터 4.98:1 통과. */
+  --color-primary-strong: #00821f;
   --color-danger: #dc2626;
   --color-success: #16a34a;
   --color-warning: #d97706;

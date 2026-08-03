@@ -56,7 +56,7 @@
     background: color-mix(in srgb, var(--color-danger) 5%, var(--color-bg));
   }
   &.saved {
-    color: var(--color-primary);
+    color: var(--color-primary-text-bold);
     border-color: color-mix(
       in srgb,
       var(--color-primary) 50%,

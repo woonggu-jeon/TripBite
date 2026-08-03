@@ -20,7 +20,7 @@
 
 .round {
   font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
+  color: var(--color-primary-text-bold);
   font-size: var(--font-body);
 }
 
@@ -71,7 +71,7 @@
   justify-self: center;
   font-size: var(--text-lg);
   font-weight: var(--font-weight-extrabold);
-  color: var(--color-primary);
+  color: var(--color-primary-text-bold);
   letter-spacing: var(--tracking-uppercase);
   padding: 0.25rem 0.625rem;
   border-radius: var(--radius-full);

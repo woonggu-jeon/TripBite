@@ -39,7 +39,7 @@
 
 // 계정 잠금 등 — error 안에 inline 액션 링크.
 .errorLink {
-  color: var(--color-primary);
+  color: var(--color-primary-text-bold);
   font-weight: var(--font-weight-bold);
   text-decoration: underline;
   align-self: flex-start;
@@ -65,7 +65,7 @@
 }
 
 .footLinkPrimary {
-  color: var(--color-primary);
+  color: var(--color-primary-text-bold);
   font-weight: var(--font-weight-semibold);
 }
 

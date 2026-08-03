@@ -12,8 +12,11 @@
   --color-fg: #fafafa;
   --color-muted: #9ca3af;
   --color-border: #1f2937;
-  --color-primary: #fafafa;
-  --color-primary-fg: #0a0a0a;
+  /* Brand green — Figma 는 Light/Dark 동일 값. dark 에서 primary 텍스트는 7.07:1 로
+     통과하지만 텍스트는 light 와 동일하게 text-bold(9.23:1) 를 쓴다.
+     --color-primary-strong 은 :root 값(#00821f) 을 그대로 상속 (흰 글자 4.98:1). */
+  --color-primary: #00b334;
+  --color-primary-fg: #ffffff;
   /* dark 배경에서 가독성 — light 의 500 톤 → 400 톤 */
   --color-danger: #f87171;
   --color-success: #4ade80;
@@ -64,6 +67,12 @@
   --accent-festival: #f59e0b;
   --accent-festival-grad-start: #fcd64f;
   --accent-festival-grad-end: #fae7a8;
+
+  /* 시즌 surface — Figma Contents/Season/* dark 값 (면색 전용). */
+  --accent-spring-surface: #3a1e1b;
+  --accent-summer-surface: #2e3a14;
+  --accent-autumn-surface: #3a2a18;
+  --accent-winter-surface: #17243a;
 
   /* 축제 카테고리 — light 500 톤 → dark 400 톤 (대비 ↑) */
   --accent-red: #f87171;

@@ -35,7 +35,7 @@
 .expandToggle {
   background: none;
   border: none;
-  color: var(--color-primary);
+  color: var(--color-primary-text-bold);
   padding: 0;
   font-size: var(--font-body-sm);
   font-weight: var(--font-weight-medium);
@@ -165,7 +165,7 @@
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      color: var(--color-primary);
+      color: var(--color-primary-text-bold);
     }
   }
 }

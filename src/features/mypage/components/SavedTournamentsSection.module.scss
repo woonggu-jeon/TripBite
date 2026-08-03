@@ -4,7 +4,7 @@
 // PageSection action 슬롯 — 타이틀 우측 inline 링크 "전체보기 (N)"
 .viewAll {
   font-size: var(--font-body-sm);
-  color: var(--color-primary);
+  color: var(--color-primary-text-bold);
   font-weight: var(--font-weight-bold);
 
   @media (hover: hover) and (pointer: fine) {

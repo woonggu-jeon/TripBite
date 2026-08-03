@@ -28,7 +28,7 @@
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      border-color: var(--color-primary);
+      border-color: var(--color-primary-text-bold);
       background: var(--color-hover);
     }
   }
@@ -45,15 +45,17 @@
 
 // 길찾기 — primary 강조 (어떤 provider 든 동일 톤)
 .directions {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
+  background: var(--color-primary-strong);
+  border-color: var(--color-primary-strong);
   color: var(--color-primary-fg);
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
       opacity: var(--opacity-hover-dim);
-      background: var(--color-primary);
-      border-color: var(--color-primary);
+      /* 라벨(--color-primary-fg, 흰색) 을 기본 상태에서 물려받으므로
+         hover 에서도 strong 유지 — primary 로 되돌리면 흰 글자 2.80:1 로 떨어짐. */
+      background: var(--color-primary-strong);
+      border-color: var(--color-primary-strong);
     }
   }
 }

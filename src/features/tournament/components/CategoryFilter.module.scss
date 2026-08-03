@@ -24,7 +24,7 @@
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      border-color: var(--color-primary);
+      border-color: var(--color-primary-text-bold);
     }
   }
   &:active {
@@ -36,9 +36,9 @@
   }
 
   &.active {
-    border-color: var(--color-primary);
+    border-color: var(--color-primary-text-bold);
     background: var(--color-primary-soft);
-    color: var(--color-primary);
+    color: var(--color-primary-text-bold);
   }
 }
 
@@ -55,7 +55,7 @@
 .check {
   font-size: var(--font-body);
   font-weight: var(--font-weight-extrabold);
-  color: var(--color-primary);
+  color: var(--color-primary-text-bold);
   text-align: right;
 }
 

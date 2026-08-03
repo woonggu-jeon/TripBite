@@ -26,7 +26,7 @@
 
   @media (hover: hover) and (pointer: fine) {
     &:hover:not(:disabled) {
-      border-color: var(--color-primary);
+      border-color: var(--color-primary-text-bold);
     }
   }
   &:active:not(:disabled) {
@@ -43,8 +43,8 @@
   }
 
   &.active {
-    border-color: var(--color-primary);
-    background: var(--color-primary);
+    border-color: var(--color-primary-strong);
+    background: var(--color-primary-strong);
     color: var(--color-primary-fg);
   }
 }

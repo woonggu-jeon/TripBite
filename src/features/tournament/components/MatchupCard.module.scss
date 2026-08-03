@@ -20,7 +20,7 @@
   // 남는 회귀의 원인 → @media (hover: hover) and (pointer: fine) 로 격리.
   @media (hover: hover) and (pointer: fine) {
     &:hover:not(:disabled) {
-      border-color: var(--color-primary);
+      border-color: var(--color-primary-text-bold);
       background: var(--color-primary-fade);
       box-shadow: var(--shadow-md);
     }

@@ -40,7 +40,7 @@
     color: var(--color-muted);
   }
   &:focus {
-    border-color: var(--color-primary);
+    border-color: var(--color-primary-text-bold);
   }
   &[aria-invalid='true'] {
     border-color: var(--color-danger);

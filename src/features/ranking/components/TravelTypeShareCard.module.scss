@@ -80,7 +80,7 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 0.875rem 1rem;
-  background: var(--color-primary);
+  background: var(--color-primary-strong);
   color: var(--color-primary-fg);
   border: 0;
   border-radius: var(--radius-md);
@@ -122,7 +122,7 @@
 
 .retry {
   padding: 0.625rem 1rem;
-  background: var(--color-primary);
+  background: var(--color-primary-strong);
   color: var(--color-primary-fg);
   border-radius: var(--radius-md);
   font-size: var(--text-sm);

@@ -10,7 +10,7 @@
 }
 
 .icon {
-  color: var(--color-primary);
+  color: var(--color-primary-text-bold);
 }
 
 .title {
@@ -38,7 +38,7 @@
 
 .accept {
   padding: var(--space-2) var(--space-5);
-  background: var(--color-primary);
+  background: var(--color-primary-strong);
   color: var(--color-primary-fg);
   border-radius: var(--radius-md);
   font-size: var(--text-sm);

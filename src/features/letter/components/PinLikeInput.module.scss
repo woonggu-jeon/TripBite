@@ -28,7 +28,7 @@
 }
 
 .cell.active {
-  border-color: var(--color-primary);
+  border-color: var(--color-primary-text-bold);
   background: var(--color-primary-fade);
   // 깜빡이는 caret
   &::after {

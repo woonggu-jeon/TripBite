@@ -16,7 +16,7 @@
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      border-color: var(--color-primary);
+      border-color: var(--color-primary-text-bold);
       box-shadow: var(--shadow-pop);
     }
   }
@@ -36,7 +36,7 @@
   align-self: flex-start;
   padding: 0.125rem 0.5rem;
   background: var(--color-primary-tint-strong);
-  color: var(--color-primary);
+  color: var(--color-primary-text-bold);
   border-radius: var(--radius-full);
   font-size: var(--font-eyebrow);
   font-weight: var(--font-weight-bold);
