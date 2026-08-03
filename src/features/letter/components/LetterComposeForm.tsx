@@ -31,8 +31,7 @@ import styles from './LetterComposeForm.module.scss';
  *      · 한국어 IME 안전 (5칸 분리 input 대신 1개 input + 시각)
  *      · inputMode="text" — 모바일 일반 키패드
  *   3) 하단 현재 위치 노출 (location store + 권한 prompt)
- *   4) 또 쓰기 / 편지 보내기 두 버튼
- *      · 또 쓰기 = 입력 초기화 (form.reset)
+ *   4) 편지 보내기 버튼 (Figma 는 단일 버튼 — 구 "또 쓰기" 제거)
  *      · 편지 보내기 → store.setLastSent + /letter/sent 이동
  */
 export function LetterComposeForm() {
@@ -71,7 +70,6 @@ export function LetterComposeForm() {
     control,
     handleSubmit,
     watch,
-    reset,
     formState: { isSubmitting },
   } = useForm<LetterFormValues>({
     resolver: zodResolver(letterSchema),
@@ -134,11 +132,6 @@ export function LetterComposeForm() {
     },
   );
 
-  const handleReset = () => {
-    haptic.tap();
-    reset({ body: '', isAnonymous: false });
-  };
-
   // 정상 UX: 빈 입력 또는 위치 미허용 시 보내기 버튼 disabled.
   //   - graphemeLength 로 1~5자 검증
   //   - resolved !== null (위치 허용 또는 IP fallback)
@@ -155,7 +148,8 @@ export function LetterComposeForm() {
 
       {/* 1) 편지 내용 라벨 + PIN 5칸 입력 + 우측 하단 카운터 */}
       <div className={styles.inputSection}>
-        <label htmlFor="body" className={styles.label}>
+        {/* Figma 입력 카드에는 라벨이 없다 — 스크린리더용으로만 유지 */}
+        <label htmlFor="body" className={styles.labelHidden}>
           {t('label')}
         </label>
         <Controller
@@ -179,37 +173,36 @@ export function LetterComposeForm() {
           </span>
         </div>
 
-        {/* 익명 발송 체크박스 — 받는 사람에게 닉네임 미노출.
-            서버는 위치는 그대로 받되 author.nickname 만 가림 ("익명의 여행자"). */}
-        <Controller
-          name="isAnonymous"
-          control={control}
-          render={({ field }) => (
-            // input id + htmlFor 로 연결되어 있고 label 자식 span 이 accessible text 를
-            // 제공. rule 이 nested span 안 텍스트를 detect 못 해 disable.
-            // eslint-disable-next-line jsx-a11y/label-has-associated-control
-            <label htmlFor="isAnonymous" className={styles.anonymous}>
-              <input
-                id="isAnonymous"
-                type="checkbox"
-                checked={field.value}
-                onChange={(e) => field.onChange(e.target.checked)}
-                onBlur={field.onBlur}
-                name={field.name}
-                className={styles.anonymousCheckbox}
-              />
-              <span className={styles.anonymousText}>
-                <span className={styles.anonymousLabel}>{t('anonymous')}</span>
-                <span className={styles.anonymousHint}>
-                  {t('anonymousHint')}
-                </span>
-              </span>
-            </label>
-          )}
-        />
         {/* 인라인 에러 메시지 제거 — 보내기 버튼 클릭 시 toast 로 안내.
             disabled 자체는 시각적으로 dim 처리해 빈 상태를 명확히 표시. */}
       </div>
+
+      {/* 익명 발송 체크박스 — 받는 사람에게 닉네임 미노출.
+            서버는 위치는 그대로 받되 author.nickname 만 가림 ("익명의 여행자"). */}
+      <Controller
+        name="isAnonymous"
+        control={control}
+        render={({ field }) => (
+          // input id + htmlFor 로 연결되어 있고 label 자식 span 이 accessible text 를
+          // 제공. rule 이 nested span 안 텍스트를 detect 못 해 disable.
+          // eslint-disable-next-line jsx-a11y/label-has-associated-control
+          <label htmlFor="isAnonymous" className={styles.anonymous}>
+            <input
+              id="isAnonymous"
+              type="checkbox"
+              checked={field.value}
+              onChange={(e) => field.onChange(e.target.checked)}
+              onBlur={field.onBlur}
+              name={field.name}
+              className={styles.anonymousCheckbox}
+            />
+            <span className={styles.anonymousText}>
+              <span className={styles.anonymousLabel}>{t('anonymous')}</span>
+              <span className={styles.anonymousHint}>{t('anonymousHint')}</span>
+            </span>
+          </label>
+        )}
+      />
 
       {/* 3) 하단 위치 — 2줄 안내 (자동 첨부 + 지역) */}
       <div className={styles.locationSection}>
@@ -247,15 +240,8 @@ export function LetterComposeForm() {
       {/* 4) 액션 — 보내기 버튼은 빈 입력 시 disabled.
               인라인 에러는 표시 안 함 (시각적 중복). DevTools 등으로 disabled
               를 우회해 클릭한 경우는 onSubmit 의 invalid 콜백이 toast 로 안내. */}
+      {/* Figma 는 "편지 보내기" 한 개뿐 — 구 "또 쓰기"(입력 초기화) 버튼 제거. */}
       <div className={styles.actions}>
-        <Button
-          variant="secondary"
-          fullWidth
-          onClick={handleReset}
-          disabled={isSubmitting || body.length === 0}
-        >
-          {t('reset')}
-        </Button>
         <Button
           type="submit"
           variant="primary"

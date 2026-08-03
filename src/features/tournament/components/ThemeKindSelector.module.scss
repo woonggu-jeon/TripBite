@@ -1,22 +1,23 @@
-// 2행 1열 — 카드 한 장씩 가로 100% 차지.
-// 가로 layout 안에서 emoji(좌측) + label/desc(우측 세로 stack) — grid-area 로
-// tsx 의 span 3 개 (emoji/label/desc) 를 wrapper 없이 배치.
+// Figma `cards` — V gap 12, big-card 320x94.
 .grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0.75rem;
+  gap: var(--space-3);
 }
 
-// Fluid 반응형 — emoji col 44~56, padding/gap 부드럽게.
+// Figma `big-card` — 320x94, H gap 12, padding 20, radius 12.
+//   미선택 : 흰 면 + 1px #E0E0E0, 제목 #151515 / 보조 #393939
+//   선택   : #EAF6EF 면 + 1px #00B334, 제목·보조 모두 초록
 // cardClasses 가 bg/border/radius 담당. layout + interactive 만.
 .card {
   display: grid;
-  grid-template-columns: clamp(44px, 14vw, 56px) 1fr;
+  grid-template-columns: 54px minmax(0, 1fr);
   grid-template-rows: auto auto;
-  column-gap: clamp(0.75rem, 3vw, 1rem);
-  row-gap: 0.125rem;
+  column-gap: var(--space-3);
+  row-gap: var(--space-1); // Figma `t5-text` gap 4
   align-items: center;
-  padding: clamp(0.875rem, 3vw, 1rem) clamp(1rem, 4vw, 1.25rem);
+  min-height: 94px;
+  padding: var(--space-5);
   text-align: left;
   color: var(--color-fg);
   cursor: pointer;
@@ -27,7 +28,7 @@
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      border-color: var(--color-primary-text-bold);
+      border-color: var(--color-primary);
     }
   }
   &:active {
@@ -39,44 +40,53 @@
   }
 
   &.active {
-    border-color: var(--color-primary-text-bold);
-    background: var(--color-primary-surface-grad-start);
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
     color: var(--color-primary-text-bold);
   }
 }
 
+// Figma `circle` 54x54 — 흰 원 안에 36px 아이콘.
+// 레포는 계절/랜덤 emoji 를 쓰므로 그 원 안에 emoji 를 담는다.
 .emoji {
-  // 두 row 가로질러 중앙 정렬 — label/desc 의 시각 중심과 일치.
   grid-column: 1;
   grid-row: 1 / 3;
   align-self: center;
   justify-self: center;
-  font-size: clamp(var(--emoji-lg), 9vw, var(--emoji-xl));
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  font-size: var(--emoji-lg); // 36px
   line-height: 1;
 }
 
+// Basic Body/B_14_140% (구 18px)
 .label {
   grid-column: 2;
   grid-row: 1;
   align-self: end;
-  font-size: var(--font-h3);
+  font-size: var(--font-body-sm);
   font-weight: var(--font-weight-bold);
-  line-height: var(--line-tight);
+  line-height: var(--line-normal);
+  letter-spacing: var(--tracking-tight);
 }
 
+// Caption/R_12
 .desc {
   grid-column: 2;
   grid-row: 2;
   align-self: start;
   font-size: var(--font-caption);
+  line-height: var(--line-normal);
   color: var(--color-muted);
 
   .active & {
     color: var(--color-primary-text-bold);
   }
 }
-
-// fluid clamp() 가 단계별 media query 대체.
 
 @media (prefers-reduced-motion: reduce) {
   .card {

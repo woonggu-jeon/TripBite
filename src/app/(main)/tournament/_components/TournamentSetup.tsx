@@ -66,6 +66,7 @@ export function TournamentSetup() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const t = useTranslations('tournament.setup');
+  const tTournament = useTranslations('tournament');
   const tSeason = useTranslations('tournament.season');
   const setConfig = useTournamentStore((s) => s.setConfig);
 
@@ -172,10 +173,15 @@ export function TournamentSetup() {
 
   return (
     <>
-      <SubHeader title={heading.title} onBack={goBack} />
+      {/* Figma 는 헤더 제목이 "토너먼트" 고, 단계 제목(20 Bold) + 보조(12) 는
+          본문 상단 `Frame 41` 에 놓인다. 기존 문구를 재배치만 했다. */}
+      <SubHeader title={tTournament('title')} onBack={goBack} />
       <div className={styles.wrap}>
         <div className={styles.section}>
-          <p className={styles.hint}>{heading.hint}</p>
+          <div className={styles.heading}>
+            <h2 className={styles.headingTitle}>{heading.title}</h2>
+            <p className={styles.hint}>{heading.hint}</p>
+          </div>
 
           {step === 1 && (
             <ThemeKindSelector value={themeKind} onChange={handleKind} />

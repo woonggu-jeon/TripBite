@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Info } from 'lucide-react';
 import { haptic } from '@/lib/haptic';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Skeleton } from '@/components/feedback/Skeleton';
@@ -169,14 +168,11 @@ export function TravelTypeQuiz() {
             );
           })}
         </div>
-        <p className={styles.progressMeta}>
-          <span className={styles.progressIndex}>
-            {t('progress', { current: stepIdx + 1, total })}
-          </span>
-          <span className={styles.progressHint}>
-            <Info size={12} aria-hidden /> {t('progressHint')}
-          </span>
-        </p>
+        {/* Figma `progress` 는 세그먼트 아래 안내문 한 줄만 있다 —
+            "1/5" 카운터와 ⓘ 아이콘은 시안에 없어 제거.
+            진행 상황은 세그먼트가 시각적으로, progressbar role 이
+            스크린리더에 전달한다. */}
+        <p className={styles.progressHint}>{t('progressHint')}</p>
       </div>
 
       <h2 className={styles.question}>{current.text}</h2>
