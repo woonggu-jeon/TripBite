@@ -2,30 +2,29 @@
    흰 배경 + 상단선 #E0E0E0, 그림자 없음.
    라벨 비활성 Caption/M_10 / 활성 Caption/B_10 + MainColor/primary.
    가운데 돌출 버튼은 시안에 없어 제거됨 — 5탭이 모두 평면 탭이다. */
-/* 바 자체는 풀폭 — 배경/상단선이 화면 끝까지 이어져야 한다. */
+/* 바는 풀폭(배경/상단선), 탭 5개는 컨텐츠(--content-max) 폭에 맞춰 중앙 정렬.
+   좌우 padding 을 (100% - 720) / 2 로 줘서 content box 가 정확히 720 이 된다.
+   좁은 화면에서는 max(0px, ...) 가 0 이라 화면 전체를 쓴다.
+
+   래퍼 div 를 쓰지 않는 이유 — .nav 자체가 grid 를 유지해야 한다.
+   래퍼 방식은 브라우저에 옛 CSS(.nav 가 grid) 가 캐시된 상태에서 새 마크업이
+   오면 래퍼가 스타일 없는 block 이 되어 탭 5개가 세로로 쌓인다.
+   이 방식은 그런 조합에서도 가로 배치가 유지된다. */
 .nav {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   z-index: var(--z-bottom-nav);
-  background: var(--color-bg);
-  border-top: var(--border-thin) solid var(--color-border);
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-/* inner — 컨텐츠(--content-max) 와 동일 폭으로 정렬.
-   구현은 .nav 가 직접 5열 grid 라 넓은 화면에서 탭이 뷰포트 전체로 퍼졌다
-   (1280 에서 탭 하나가 253px). AppHeader/SubHeader 의 .inner 와 같은 취지. */
-.inner {
   /* Figma navIcon stroke 는 1.7 (스프라이트 기본 2) */
   --icon-stroke: 1.7;
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  max-width: var(--content-max);
-  width: 100%;
   min-height: var(--bottom-nav-h); /* Figma 60px */
-  margin: 0 auto;
+  padding-inline: max(0px, calc((100% - var(--content-max)) / 2));
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--color-bg);
+  border-top: var(--border-thin) solid var(--color-border);
 }
 
 .item {
