@@ -83,6 +83,7 @@
 .logo {
   display: inline-flex;
   align-items: center;
+  gap: var(--space-1);
   justify-self: center;
   /* Figma Title/B_18_140% = Bold 700. 시안에 800 웨이트는 없다 (구 extrabold) */
   font-weight: var(--font-weight-bold);
@@ -112,4 +113,9 @@
       transform: none;
     }
   }
+}
+
+/* 헤더 안의 로고 마크 — 텍스트 baseline 과 시각 중심 맞춤 */
+.logoMark {
+  flex-shrink: 0;
 }

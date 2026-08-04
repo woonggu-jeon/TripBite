@@ -869,5 +869,9 @@
     "prev": "Previous",
     "next": "Next",
     "slide": "Slide {n}/{total}"
+  },
+  "brand": {
+    "name": "TripBite",
+    "tagline": "Chungbuk trips, one bite at a time"
   }
 }

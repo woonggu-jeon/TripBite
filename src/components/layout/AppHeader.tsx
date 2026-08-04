@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Icon } from '@/components/icon';
+import { LogoMark } from '@/components/brand/LogoMark';
 import { ROUTES } from '@/constants/routes';
 import { useNotificationBadge } from '@/features/notification/hooks/use-notification-inbox';
 import { MockModeBanner } from '@/features/pwa/components/MockModeBanner';
@@ -25,6 +26,7 @@ const MSW_ENABLED = process.env.NEXT_PUBLIC_USE_MSW === 'true';
  */
 export function AppHeader() {
   const t = useTranslations('header');
+  const tBrand = useTranslations('brand');
   const { data: unreadCount } = useNotificationBadge();
   const hasUnread = (unreadCount ?? 0) > 0;
 
@@ -50,9 +52,16 @@ export function AppHeader() {
           )}
         </div>
 
-        {/* 2) 로고 */}
-        <Link href={ROUTES.HOME} className={styles.logo} aria-label="Home">
-          {t('logo')}
+        {/* 2) 로고 — Figma HOME 헤더는 마크 + "여행한입" 이다.
+               구현은 header.logo("Travel") 텍스트만 있어 스플래시/로그인의
+               브랜드 표기와 어긋나 있었다. */}
+        <Link
+          href={ROUTES.HOME}
+          className={styles.logo}
+          aria-label={tBrand('name')}
+        >
+          <LogoMark size={24} className={styles.logoMark} />
+          {tBrand('name')}
         </Link>
 
         {/* 3) 설정 */}
