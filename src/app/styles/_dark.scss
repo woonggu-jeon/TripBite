@@ -8,17 +8,17 @@
 */
 @mixin dark-tokens {
   /* Base color */
-  --color-bg: #0a0a0a;
-  --color-fg: #fafafa;
-  --color-muted: #9ca3af;
-  --color-border: #1f2937;
+  --color-bg: #1a1a1a; /* Figma Neutral/900 */
+  --color-fg: #ececec; /* Figma Neutral/150 — bg 대비 14.73:1 */
+  --color-muted: #b4b4b4; /* Figma Neutral/400 — bg 대비 8.39:1 */
+  --color-border: #393939; /* Figma Neutral/700 (구 #1f2937 — 너무 어둡고 파란기) */
   /* Brand green — Figma 는 Light/Dark 동일 값. dark 에서 primary 텍스트는 7.07:1 로
-     통과하지만 텍스트는 light 와 동일하게 text-bold(9.23:1) 를 쓴다.
+     통과하지만 텍스트는 light 와 동일하게 text-bold(8.21:1) 를 쓴다.
      --color-primary-strong 은 :root 값(#00821f) 을 그대로 상속 (흰 글자 4.98:1). */
   --color-primary: #00b334;
   --color-primary-fg: #ffffff;
   /* dark 배경에서 가독성 — light 의 500 톤 → 400 톤 */
-  --color-danger: #f87171;
+  --color-danger: #f2685b; /* Figma Red/300 — bg 대비 5.72:1 */
   --color-success: #4ade80;
   --color-warning: #fbbf24;
   /* 편지 — dark 에서 accent 밝게, 종이는 어두운 흙톤 */

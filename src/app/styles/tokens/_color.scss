@@ -4,15 +4,23 @@
 :root {
   /* Base */
   --color-bg: #ffffff;
-  --color-fg: #0a0a0a;
-  --color-muted: #5b6470; /* 4.5:1+ on #f5f5f5 (#6b7280=4.43 미달). 흰 배경 6.0:1 */
-  --color-border: #e5e7eb;
+  /* Figma Color/Neutral/950. 흰 배경 18.26:1.
+     이 값이어야 아래 파생 면이 시안 중성색과 정확히 맞는다:
+       surface-soft(fg 4%)     = #F6F6F6 = Contents/section
+       surface-elevated(fg 6%) = #F1F1F1 = BgColor/disabled */
+  --color-fg: #151515;
+  /* Figma Color/Neutral/700 = Basic/TextColor/muted.
+     흰 배경 11.55:1 / #F6F6F6 10.69:1 / #EAF6EF 10.41:1 — 전부 AA 통과.
+     구 #5b6470 은 파란기 도는 회색이라 시안의 중성 회색과 톤이 달랐다. */
+  --color-muted: #393939;
+  /* Figma Color/Neutral/200 = Basic/BorderColor/gray (구 #e5e7eb — 파란기) */
+  --color-border: #e0e0e0;
   /* Brand green (Figma Basic/MainColor/primary). 두 모드 동일.
      ⚠ 대비 규칙 — primary 는 "면·테두리·ring" 용이고 텍스트로 쓰지 않는다.
-        · primary 텍스트 on 흰 배경 = 2.80:1 (AA 미달) → --color-primary-text-bold (5.10:1)
+        · primary 텍스트 on 흰 배경 = 2.80:1 (AA 미달) → --color-primary-text-bold (5.49:1)
         · 흰 텍스트 on primary      = 2.80:1 (AA 미달) → --color-primary-strong (4.98:1)
         dark 에서는 primary 텍스트가 7.07:1 로 통과하지만, 두 모드 일관성을 위해
-        텍스트는 항상 text-bold 를 쓴다 (dark 9.23:1). */
+        텍스트는 항상 text-bold 를 쓴다 (dark 8.21:1). */
   --color-primary: #00b334;
   --color-primary-fg: #ffffff;
   /* 흰 라벨이 올라가는 채움 면 전용 (버튼/배지). primary 로는 2.80:1 이라 미달.
@@ -71,9 +79,13 @@
     var(--color-primary) 60%,
     var(--color-fg)
   );
+  /* 초록 텍스트 — primary 자체는 흰 배경 2.80:1 로 미달이라 fg 를 섞어 낮춘다.
+     70% 였을 때 fg 가 #151515 로 바뀌며 연초록 면(#EBF9EF) 위에서 4.36:1 로
+     떨어졌다 → 64% 로. 흰 5.49:1 / #EBF9EF 5.05:1 / #F6F6F6 5.08:1,
+     dark 8.21:1 (soft 7.43:1) 로 전부 통과. */
   --color-primary-text-bold: color-mix(
     in srgb,
-    var(--color-primary) 70%,
+    var(--color-primary) 64%,
     var(--color-fg)
   );
   --color-primary-ring-soft: color-mix(

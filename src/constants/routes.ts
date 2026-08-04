@@ -40,7 +40,8 @@ export const ROUTES = {
  */
 export const BOTTOM_NAV_ROUTES = [
   { path: ROUTES.HOME, labelKey: 'home', icon: 'home' },
-  { path: ROUTES.RANKING, labelKey: 'ranking', icon: 'trending-up' },
+  // Figma navIcon `name=rank` 는 불꽃(flame) — 상승 화살표가 아니다
+  { path: ROUTES.RANKING, labelKey: 'ranking', icon: 'flame' },
   { path: ROUTES.TOURNAMENT, labelKey: 'tournament', icon: 'trophy' },
   { path: ROUTES.LETTER, labelKey: 'letter', icon: 'mail' },
   { path: ROUTES.MYPAGE, labelKey: 'mypage', icon: 'user' },

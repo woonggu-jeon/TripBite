@@ -26,6 +26,7 @@ export type IconName =
   // BottomNav
   | 'home'
   | 'trending-up'
+  | 'flame'
   | 'trophy'
   | 'mail'
   | 'user'

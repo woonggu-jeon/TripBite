@@ -11,6 +11,8 @@ const meta = {
       options: [
         'home',
         'trending-up',
+        'flame',
+        'flame',
         'trophy',
         'mail',
         'user',
