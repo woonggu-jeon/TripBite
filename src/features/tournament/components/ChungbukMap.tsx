@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import { haptic } from '@/lib/haptic';
+import { Illustration } from '@/components/brand/Illustration';
+import { seasonIllustration } from '@/constants/illustration-map';
 import type { DestinationDto } from '@/api/generated/schemas';
 import type { TournamentTheme } from '@/features/tournament/types';
 import styles from './ChungbukMap.module.scss';
@@ -41,15 +43,14 @@ const POINTS: Record<RegionCode, { x: number; y: number }> = {
   yeongdong: norm(325, 790),
 };
 
-const SEASON_GLYPH = {
-  spring: '🌸',
-  summer: '💧',
-  autumn: '🍂',
-  winter: '❄️',
-} as const;
-
-function getGlyph(theme: TournamentTheme): string {
-  return SEASON_GLYPH[theme.value];
+/**
+ * 지도 마커 그림 — Figma `여행지 준비 완료` 는 36px `seasonIcon` 을 쓴다.
+ * 구 구현은 OS 이모지(🌸 💧 🍂 ❄️) 여서 계절 카드·로딩 화면의 아이콘과
+ * 달랐다 (특히 여름이 시안의 태양이 아니라 빗방울).
+ */
+function seasonMarker(theme: TournamentTheme) {
+  const art = seasonIllustration(theme.value);
+  return art ? <Illustration name={art} size={36} /> : null;
 }
 
 interface Placed {
@@ -128,7 +129,7 @@ export function ChungbukMap({
   );
   const [svg, setSvg] = useState<string | null>(null);
   const svgWrapRef = useRef<HTMLDivElement>(null);
-  const glyph = getGlyph(theme);
+  const marker = seasonMarker(theme);
   const selectable = !!selected && !!onToggle;
 
   // SVG fetch + 내장 <style> 제거 (외부 CSS variable 로 컨트롤)
@@ -277,7 +278,7 @@ export function ChungbukMap({
                 aria-label={p.name}
                 title={p.name}
               >
-                {glyph}
+                {marker}
               </button>
             );
           }
@@ -293,7 +294,7 @@ export function ChungbukMap({
               }}
               aria-label={p.name}
             >
-              {glyph}
+              {marker}
             </span>
           );
         })}

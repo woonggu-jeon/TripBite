@@ -6,9 +6,17 @@
   z-index: 1;
 }
 
+// 파티클 그림은 layer 의 --particle-img (Figma seasonIcon PNG), 크기는
+// 파티클별 --p-size. 구 구현은 이모지 텍스트라 font-size 로 크기를 줬다.
 .particle {
   position: absolute;
   top: -10%;
+  width: var(--p-size, 1rem);
+  height: var(--p-size, 1rem);
+  background-image: var(--particle-img);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
   animation-name: fall;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
