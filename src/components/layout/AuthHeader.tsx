@@ -39,16 +39,19 @@ export function AuthHeader({
 
   return (
     <header className={`${styles.bar} ${title ? styles.bordered : ''}`}>
-      <button
-        type="button"
-        aria-label="뒤로가기"
-        className={styles.back}
-        onClick={handleBack}
-      >
-        <ChevronLeft size={24} />
-      </button>
-      {title && <p className={styles.title}>{title}</p>}
-      <span className={styles.spacer} aria-hidden />
+      {/* inner — 컨텐츠와 동일하게 720px 정렬 (AppHeader/SubHeader 와 동일) */}
+      <div className={styles.inner}>
+        <button
+          type="button"
+          aria-label="뒤로가기"
+          className={styles.back}
+          onClick={handleBack}
+        >
+          <ChevronLeft size={24} />
+        </button>
+        {title && <p className={styles.title}>{title}</p>}
+        <span className={styles.spacer} aria-hidden />
+      </div>
     </header>
   );
 }

@@ -1,13 +1,20 @@
 // Figma auth `header` — 360x56, padding 0 20, 흰 배경.
+// 바는 풀폭(배경/하단선), inner 가 컨텐츠 폭에 맞춰 정렬.
 .bar {
+  width: 100%;
+  background: var(--color-bg);
+}
+
+.inner {
   display: grid;
   grid-template-columns: 40px 1fr 40px;
   align-items: center;
   gap: var(--space-2);
+  max-width: var(--content-max);
   width: 100%;
   height: var(--header-h); // 56
+  margin: 0 auto;
   padding: 0 var(--space-5); // Figma 0 20
-  background: var(--color-bg);
 }
 
 // 제목이 있는 화면(회원가입) 만 하단선 — 시안대로.

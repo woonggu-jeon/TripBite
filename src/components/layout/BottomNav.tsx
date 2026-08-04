@@ -30,29 +30,32 @@ export function BottomNav() {
 
   return (
     <nav className={styles.nav} aria-label={t('home')}>
-      {BOTTOM_NAV_ROUTES.map((route) => {
-        const active = isActive(route.path);
+      {/* inner — 컨텐츠와 동일하게 720px 정렬. 바(배경/상단선) 는 풀폭 유지. */}
+      <div className={styles.inner}>
+        {BOTTOM_NAV_ROUTES.map((route) => {
+          const active = isActive(route.path);
 
-        return (
-          <Link
-            key={route.path}
-            href={route.path}
-            onClick={() => haptic.tap()}
-            className={[styles.item, active ? styles.active : '']
-              .filter(Boolean)
-              .join(' ')}
-            aria-current={active ? 'page' : undefined}
-          >
-            {/* Figma navIcon 24x24 — 5탭 동일 */}
-            <Icon
-              name={route.icon as IconName}
-              size={24}
-              aria-label={t(route.labelKey)}
-            />
-            <span className={styles.label}>{t(route.labelKey)}</span>
-          </Link>
-        );
-      })}
+          return (
+            <Link
+              key={route.path}
+              href={route.path}
+              onClick={() => haptic.tap()}
+              className={[styles.item, active ? styles.active : '']
+                .filter(Boolean)
+                .join(' ')}
+              aria-current={active ? 'page' : undefined}
+            >
+              {/* Figma navIcon 24x24 — 5탭 동일 */}
+              <Icon
+                name={route.icon as IconName}
+                size={24}
+                aria-label={t(route.labelKey)}
+              />
+              <span className={styles.label}>{t(route.labelKey)}</span>
+            </Link>
+          );
+        })}
+      </div>
     </nav>
   );
 }
