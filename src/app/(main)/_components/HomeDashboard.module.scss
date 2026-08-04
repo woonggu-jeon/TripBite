@@ -111,13 +111,36 @@
   flex-shrink: 0;
 }
 
-// Basic Body/B_14_140%
+// Figma `Frame 38` — 제목 + 보조, V gap 4
+.quickActionBody {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+// Basic Body/B_14_140% — 시안은 2줄까지 쓴다
 .quickActionLabel {
   font-size: var(--font-body-sm);
   font-weight: var(--font-weight-bold);
   line-height: var(--line-normal);
   color: var(--color-fg);
   letter-spacing: var(--tracking-tight);
+  text-align: left;
+  word-break: keep-all;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-width: 0;
+}
+
+// Caption/R_12
+.quickActionHint {
+  font-size: var(--font-caption);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-normal);
+  color: var(--color-muted);
+  letter-spacing: var(--tracking-snug);
   text-align: left;
   word-break: keep-all;
   display: -webkit-box;

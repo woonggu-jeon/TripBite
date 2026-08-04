@@ -231,13 +231,16 @@
       "quick": {
         "tournament": "토너먼트",
         "letter": "편지 쓰기",
-        "quiz": "유형 테스트",
+        "quiz": "나는 어떤 여행자일까?",
         "tournamentBySeason": {
-          "spring": "이번 봄 토너먼트 시작하기 🌸",
-          "summer": "이번 여름 토너먼트 시작하기 ☀",
-          "autumn": "이번 가을 토너먼트 시작하기 🍂",
-          "winter": "이번 겨울 토너먼트 시작하기 ❄"
-        }
+          "spring": "봄 토너먼트 시작하기",
+          "summer": "여름 토너먼트 시작하기",
+          "autumn": "가을 토너먼트 시작하기",
+          "winter": "겨울 토너먼트 시작하기"
+        },
+        "tournamentHint": "16강부터 시작 · 약 2분 소요",
+        "quizHint": "5가지 질문으로 내 여행 유형 찾기",
+        "cta": "시작"
       }
     },
     "recommendation": {
@@ -262,6 +265,18 @@
       "minutesAgo": "{n}분 전",
       "hoursAgo": "{n}시간 전",
       "daysAgo": "{n}일 전"
+    },
+    "picks": {
+      "title": "이런 여행 어때요?",
+      "hint": "카테고리별 추천 여행지",
+      "categoryAria": "카테고리 선택",
+      "empty": "추천 여행지를 준비하고 있어요",
+      "categories": {
+        "all": "전체",
+        "attraction": "관광지",
+        "festival": "축제",
+        "experience": "체험관광"
+      }
     }
   },
   "weather": {
@@ -499,7 +514,23 @@
       "subtitle": "단 다섯 글자, 누군가에게 닿습니다"
     },
     "received": "도착한 편지",
-    "sent": "내가 보낸 편지",
+    "sent": {
+      "title": "보낸 편지",
+      "noticeTitle": "전송 완료",
+      "noticeBody": "익명의 한 명에게 곧 도착할 거예요",
+      "letterAria": "보낸 편지 카드",
+      "from": "From",
+      "to": "To",
+      "toRecipient": "익명의 여행자 님에게",
+      "toArrival": "랜덤 시간에 도착해요",
+      "sentBadge": "전송됨",
+      "again": "또 쓰기",
+      "home": "홈으로",
+      "empty": "방금 보낸 편지가 없어요",
+      "goCompose": "편지 쓰러 가기",
+      "loadError": "편지를 불러오지 못했어요",
+      "retry": "다시 시도"
+    },
     "liked": "좋아요한 편지",
     "saved": "저장한 편지",
     "tabs": {
@@ -566,23 +597,6 @@
     },
     "author": {
       "anonymous": "익명의 여행자"
-    },
-    "sent": {
-      "title": "보낸 편지",
-      "noticeTitle": "전송 완료",
-      "noticeBody": "익명의 한 명에게 곧 도착할 거예요",
-      "letterAria": "보낸 편지 카드",
-      "from": "From",
-      "to": "To",
-      "toRecipient": "익명의 여행자 님에게",
-      "toArrival": "랜덤 시간에 도착해요",
-      "sentBadge": "전송됨",
-      "again": "또 쓰기",
-      "home": "홈으로",
-      "empty": "방금 보낸 편지가 없어요",
-      "goCompose": "편지 쓰러 가기",
-      "loadError": "편지를 불러오지 못했어요",
-      "retry": "다시 시도"
     }
   },
   "quiz": {

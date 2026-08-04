@@ -231,13 +231,16 @@
       "quick": {
         "tournament": "Bracket",
         "letter": "Write letter",
-        "quiz": "Type test",
+        "quiz": "What kind of traveler am I?",
         "tournamentBySeason": {
-          "spring": "Start spring bracket 🌸",
-          "summer": "Start summer bracket ☀",
-          "autumn": "Start autumn bracket 🍂",
-          "winter": "Start winter bracket ❄"
-        }
+          "spring": "Start the spring bracket",
+          "summer": "Start the summer bracket",
+          "autumn": "Start the autumn bracket",
+          "winter": "Start the winter bracket"
+        },
+        "tournamentHint": "Starts at the round of 16 · about 2 min",
+        "quizHint": "Find your travel type in 5 questions",
+        "cta": "Start"
       }
     },
     "recommendation": {
@@ -262,6 +265,18 @@
       "minutesAgo": "{n}m ago",
       "hoursAgo": "{n}h ago",
       "daysAgo": "{n}d ago"
+    },
+    "picks": {
+      "title": "How about these trips?",
+      "hint": "Recommendations by category",
+      "categoryAria": "Choose a category",
+      "empty": "Preparing recommendations",
+      "categories": {
+        "all": "All",
+        "attraction": "Attractions",
+        "festival": "Festivals",
+        "experience": "Experiences"
+      }
     }
   },
   "weather": {
@@ -499,7 +514,23 @@
       "subtitle": "Just five letters, reaching someone"
     },
     "received": "Received",
-    "sent": "Sent",
+    "sent": {
+      "title": "Sent letter",
+      "noticeTitle": "Sent!",
+      "noticeBody": "It will reach an anonymous traveler soon",
+      "letterAria": "Sent letter card",
+      "from": "From",
+      "to": "To",
+      "toRecipient": "To an anonymous traveler",
+      "toArrival": "Arrives at a random time",
+      "sentBadge": "Sent",
+      "again": "Write again",
+      "home": "Home",
+      "empty": "No letter just sent",
+      "goCompose": "Write a letter",
+      "loadError": "Couldn't load the letter",
+      "retry": "Try again"
+    },
     "liked": "Liked",
     "saved": "Saved",
     "tabs": {
@@ -566,23 +597,6 @@
     },
     "author": {
       "anonymous": "Anonymous traveler"
-    },
-    "sent": {
-      "title": "Sent letter",
-      "noticeTitle": "Sent!",
-      "noticeBody": "It will reach an anonymous traveler soon",
-      "letterAria": "Sent letter card",
-      "from": "From",
-      "to": "To",
-      "toRecipient": "To an anonymous traveler",
-      "toArrival": "Arrives at a random time",
-      "sentBadge": "Sent",
-      "again": "Write again",
-      "home": "Home",
-      "empty": "No letter just sent",
-      "goCompose": "Write a letter",
-      "loadError": "Couldn't load the letter",
-      "retry": "Try again"
     }
   },
   "quiz": {

@@ -10,7 +10,7 @@ import type { Season } from '@/api/generated/schemas';
 import styles from './HomeDashboard.module.scss';
 
 /**
- * 홈 빠른시작 2 버튼 — 현재 계절 결정 + 동적 라벨 / 토너먼트 query.
+ * 홈 빠른시작 2 배너 — 현재 계절 결정 + 동적 라벨 / 토너먼트 query.
  *
  * Client island 로 분리한 이유: getCurrentSeason() 의 시간대 의존성 격리.
  * SSR 의 server time 과 client time 이 다르면 hydration mismatch. mount 후
@@ -18,7 +18,6 @@ import styles from './HomeDashboard.module.scss';
  */
 export function HomeQuickActions() {
   const t = useTranslations('home.widgets');
-  const tCommon = useTranslations('common');
   const [season, setSeason] = useState<Season>('spring');
 
   useEffect(() => {
@@ -34,14 +33,16 @@ export function HomeQuickActions() {
         }}
         icon={<Trophy size={20} />}
         label={t(`quick.tournamentBySeason.${season}`)}
-        cta={tCommon('start')}
+        hint={t('quick.tournamentHint')}
+        cta={t('quick.cta')}
         tone="primary"
       />
       <QuickActionLink
         href={ROUTES.QUIZ}
         icon={<Sparkles size={20} />}
         label={t('quick.quiz')}
-        cta={tCommon('start')}
+        hint={t('quick.quizHint')}
+        cta={t('quick.cta')}
         tone="amber"
       />
     </section>
@@ -50,10 +51,10 @@ export function HomeQuickActions() {
 
 /**
  * Figma `qa-banner` — 320x85, H gap 12, padding 12/20, radius 12.
- *   원형 40 (채운 브랜드색 + 흰 아이콘) + 라벨 14 Bold + 우측 "시작" 버튼 80x36
  *
- * 시안에는 라벨 아래 보조 설명 한 줄("16강부터 시작 · 약 2분 소요") 이 더
- * 있으나 레포에 대응 문구가 없어 넣지 않았다 (문구 신설 금지).
+ *   원형 40 (채운 브랜드색 + 흰 아이콘)
+ *   + 제목 Basic Body/B_14_140% (2줄까지) → 보조 Caption/R_12
+ *   + 우측 "시작" 버튼 80x36
  *
  * tone: 토너먼트 = 초록(#EAF6EF 면 / #00B334), 유형테스트 = 주황(#FCEFD9 / #F79D26).
  */
@@ -61,12 +62,14 @@ function QuickActionLink({
   href,
   icon,
   label,
+  hint,
   cta,
   tone,
 }: {
   href: React.ComponentProps<typeof Link>['href'];
   icon: React.ReactNode;
   label: string;
+  hint: string;
   cta: string;
   tone: 'primary' | 'amber';
 }) {
@@ -75,7 +78,11 @@ function QuickActionLink({
       <span className={styles.quickActionIcon} aria-hidden>
         {icon}
       </span>
-      <span className={styles.quickActionLabel}>{label}</span>
+      {/* Figma `Frame 38` — 제목 + 보조, V gap 4 */}
+      <span className={styles.quickActionBody}>
+        <span className={styles.quickActionLabel}>{label}</span>
+        <span className={styles.quickActionHint}>{hint}</span>
+      </span>
       {/* 시안의 `button` 인스턴스 — Link 안이라 실제 button 요소는 아니다 */}
       <span className={styles.quickActionCta} aria-hidden>
         {cta}
