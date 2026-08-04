@@ -8,6 +8,8 @@ import { EmptyState } from '@/components/feedback/EmptyState';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { Button, Card, Chip, IconButton } from '@/components/ui';
 import { useMyTravelType } from '@/features/ranking/hooks/use-ranking';
+import { Illustration } from '@/components/brand/Illustration';
+import { travelTypeIllustration } from '@/constants/illustration-map';
 import styles from './TravelTypeShareCard.module.scss';
 
 /**
@@ -57,6 +59,7 @@ export function TravelTypeShareCard() {
     );
   }
 
+  const cardArt = travelTypeIllustration(data.code);
   const keywords = data.keywords ?? [];
   const shareText =
     keywords.length > 0
@@ -116,8 +119,10 @@ export function TravelTypeShareCard() {
         className={styles.card}
         aria-label={data.title}
       >
+        {/* Figma `tripTypeIcon` 에셋 — 공유 문구(shareText) 는 이모지를 그대로
+            쓴다 (텍스트 공유라 이미지를 넣을 수 없다). */}
         <span className={styles.cardEmoji} aria-hidden>
-          {data.emoji}
+          {cardArt ? <Illustration name={cardArt} size={52} /> : data.emoji}
         </span>
         <Chip variant="outline" size="sm" className={styles.cardCode}>
           {data.code}

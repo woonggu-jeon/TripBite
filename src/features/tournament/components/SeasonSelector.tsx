@@ -2,15 +2,14 @@
 
 import { useTranslations } from 'next-intl';
 import { cardClasses, RadioGroup, RadioOption } from '@/components/ui';
+import { Illustration } from '@/components/brand/Illustration';
+import { seasonIllustration } from '@/constants/illustration-map';
 import type { Season } from '@/api/generated/schemas';
 import styles from './SeasonSelector.module.scss';
 
-const SEASONS: { value: Season; emoji: string }[] = [
-  { value: 'spring', emoji: '🌸' },
-  { value: 'summer', emoji: '🌊' },
-  { value: 'autumn', emoji: '🍂' },
-  { value: 'winter', emoji: '❄️' },
-];
+// 일러스트는 Figma `seasonIcon` 에셋 — 구 이모지(🌸 🌊 🍂 ❄) 대체.
+// 시안의 여름은 파도가 아니라 태양이다.
+const SEASONS: Season[] = ['spring', 'summer', 'autumn', 'winter'];
 
 export interface SeasonSelectorProps {
   value: Season | null;
@@ -26,22 +25,23 @@ export function SeasonSelector({ value, onChange }: SeasonSelectorProps) {
 
   return (
     <RadioGroup label={t('setup.steps.season.title')} className={styles.grid}>
-      {SEASONS.map((s) => {
-        const active = value === s.value;
+      {SEASONS.map((season) => {
+        const active = value === season;
+        const art = seasonIllustration(season);
         return (
           <RadioOption
-            key={s.value}
+            key={season}
             checked={active}
-            onSelect={() => onChange(s.value)}
+            onSelect={() => onChange(season)}
             className={cardClasses({
               variant: 'surface',
-              className: `${styles.card} ${active ? styles.active : ''} ${styles[s.value] ?? ''}`,
+              className: `${styles.card} ${active ? styles.active : ''} ${styles[season] ?? ''}`,
             })}
           >
             <span className={styles.emoji} aria-hidden>
-              {s.emoji}
+              {art && <Illustration name={art} size={64} />}
             </span>
-            <span className={styles.label}>{t(`season.${s.value}`)}</span>
+            <span className={styles.label}>{t(`season.${season}`)}</span>
           </RadioOption>
         );
       })}

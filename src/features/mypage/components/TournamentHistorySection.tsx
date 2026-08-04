@@ -7,6 +7,8 @@ import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
 import { useTournamentHistory } from '@/features/tournament/hooks/use-tournament';
 import { seasonEmoji } from '@/constants/emoji-map';
+import { Illustration } from '@/components/brand/Illustration';
+import { seasonIllustration } from '@/constants/illustration-map';
 import styles from './TournamentHistorySection.module.scss';
 
 const CATEGORY_KO: Record<string, string> = {
@@ -68,6 +70,8 @@ export function TournamentHistorySection() {
   return (
     <ul className={styles.list}>
       {items.slice(0, 10).map((it) => {
+        // Figma `seasonIcon` 에셋. 계절을 못 알아보면 기존 이모지 fallback.
+        const themeArt = seasonIllustration(it.theme);
         const themeEmoji = seasonEmoji(it.theme);
         // category 가 비어 오는 기록이 있어 "undefined강" 으로 새던 것 방지 —
         // 빈 조각은 빼고 " · " 로 잇는다.
@@ -80,7 +84,11 @@ export function TournamentHistorySection() {
         return (
           <li key={it.id} className={styles.row}>
             <span className={styles.emoji} aria-hidden>
-              {themeEmoji}
+              {themeArt ? (
+                <Illustration name={themeArt} size={24} />
+              ) : (
+                themeEmoji
+              )}
             </span>
             <div className={styles.body}>
               <p className={styles.title}>

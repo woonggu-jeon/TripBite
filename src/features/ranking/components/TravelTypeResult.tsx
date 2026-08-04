@@ -18,6 +18,8 @@ import { useRequireAuth } from '@/hooks/use-require-auth';
 import Image from 'next/image';
 import { categoryEmoji } from '@/constants/emoji-map';
 import { secureImageUrl } from '@/lib/secure-image-url';
+import { Illustration } from '@/components/brand/Illustration';
+import { travelTypeIllustration } from '@/constants/illustration-map';
 import styles from './TravelTypeResult.module.scss';
 
 /**
@@ -102,14 +104,20 @@ export function TravelTypeResult() {
   }
 
   const result: TravelTypeDto = data;
+  const resultArt = travelTypeIllustration(result.code);
   const keywords = result.keywords ?? [];
   const recommended = result.recommended ?? [];
 
   return (
     <div className={styles.wrap}>
       <Card variant="highlighted" padding="lg" className={styles.hero}>
+        {/* Figma `tripTypeIcon` 에셋. 서버 코드가 매핑에 없으면 API emoji fallback */}
         <div className={styles.heroEmoji} aria-hidden>
-          {result.emoji}
+          {resultArt ? (
+            <Illustration name={resultArt} size={52} />
+          ) : (
+            result.emoji
+          )}
         </div>
         <Chip variant="primary" size="sm" className={styles.codeBadge}>
           {result.code}
