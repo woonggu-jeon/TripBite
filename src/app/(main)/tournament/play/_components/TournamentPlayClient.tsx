@@ -259,7 +259,9 @@ export function TournamentPlayClient() {
 
   return (
     <div className={styles.wrap}>
-      {theme.kind === 'season' && (phase === 'intro' || phase === 'map') && (
+      {/* 계절 파티클은 intro 에서만 — 여행지가 선정된 map 단계에서는 마커까지
+          같이 떨어져 어수선하다. 시안의 준비 완료 화면에도 파티클이 없다. */}
+      {theme.kind === 'season' && phase === 'intro' && (
         <FallingPetals season={theme.value} active />
       )}
 
