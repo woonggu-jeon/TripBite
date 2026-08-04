@@ -1,7 +1,8 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { RadioGroup, RadioOption } from '@/components/ui';
+import { RadioGroup } from '@/components/ui';
+import { SelectCard } from './SelectCard';
 import {
   DESTINATION_COUNT_OPTIONS,
   TOURNAMENT_SIZE_OPTIONS,
@@ -110,17 +111,26 @@ export function CountSelector({
   return (
     <RadioGroup label={ariaLabel} className={styles.grid}>
       {options.map((c) => {
-        const active = value === c;
+        // Figma `t5-text` 는 숫자(24 Bold)와 단위(14 Bold)를 따로 조판한다.
+        // 문구는 i18n 한 덩어리("4강" / "4 rounds") 라 앞의 숫자만 떼어낸다.
+        const label = titleOf(c);
+        const num = String(c);
+        const unit = label.startsWith(num) ? label.slice(num.length) : '';
         return (
-          <RadioOption
+          <SelectCard
             key={c}
-            checked={active}
+            layout="column"
+            selected={value === c}
             onSelect={() => onChange(c)}
-            className={`${styles.card} ${active ? styles.active : ''}`}
-          >
-            <span className={styles.title}>{titleOf(c)}</span>
-            {showLabel && <span className={styles.sub}>{subOf(c)}</span>}
-          </RadioOption>
+            ariaLabel={showLabel ? `${label} ${subOf(c)}` : label}
+            title={
+              <span className={styles.amount}>
+                <span className={styles.num}>{num}</span>
+                {unit && <span className={styles.unit}>{unit}</span>}
+              </span>
+            }
+            desc={showLabel ? subOf(c) : undefined}
+          />
         );
       })}
     </RadioGroup>

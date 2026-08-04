@@ -404,18 +404,35 @@
           "6": "Generous",
           "8": "Thorough"
         }
+      },
+      "headers": {
+        "themeKind": "Tournament",
+        "season": "Pick a season",
+        "category": "Pick a category",
+        "count": "How many places"
       }
     },
     "season": {
       "spring": "Spring",
       "summer": "Summer",
       "autumn": "Autumn",
-      "winter": "Winter"
+      "winter": "Winter",
+      "desc": {
+        "spring": "Cherry blossoms in the air",
+        "summer": "Blue water and bright sun",
+        "autumn": "Hills turning red and gold",
+        "winter": "Snow and hot springs"
+      }
     },
     "category": {
       "festival": "Festival",
       "attraction": "Attraction",
-      "experience": "Experience"
+      "experience": "Experience",
+      "desc": {
+        "festival": "Local festivals and events",
+        "attraction": "Landmarks, nature, views",
+        "experience": "Hands-on programs"
+      }
     },
     "play": {
       "loading": "Loading destinations…",
@@ -457,11 +474,14 @@
         "roundOfN": "Round of {n}",
         "matchCount": "Match {current} / {total}",
         "progressLabel": "Bracket progress",
-        "autoWin": "Your single pick wins automatically"
+        "autoWin": "Your single pick wins automatically",
+        "remaining": "{n} matches left",
+        "prompt": "Which one would you rather visit?"
       },
       "celebration": {
         "title": "🎊 Winner!"
-      }
+      },
+      "mapSummaryHint": "Places picked across Chungbuk for the {season} theme.\nReady to start?"
     },
     "result": {
       "luckyColor": "Lucky color",

@@ -1,34 +1,18 @@
+// Figma `circle-stack` — 바깥 원 134 (계절 파스텔, 인라인 style) +
+// 안쪽 원 100 (흰색) + 64px seasonIcon.
 .bubble {
   position: relative;
   display: grid;
   place-items: center;
-  width: 200px;
-  height: 200px;
+  width: 134px;
+  height: 134px;
+  padding: 0;
   border-radius: var(--radius-full);
   border: none;
-  background: radial-gradient(
-    circle at 30% 30%,
-    color-mix(in srgb, var(--tone, var(--color-primary)) 30%, transparent),
-    transparent 70%
-  );
   cursor: pointer;
   z-index: 2;
   animation: float 4.5s ease-in-out infinite;
   transition: transform var(--motion-base) ease;
-  isolation: isolate;
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 12%;
-    border-radius: var(--radius-full);
-    background: color-mix(
-      in srgb,
-      var(--tone, var(--color-primary)) 18%,
-      var(--color-bg)
-    );
-    z-index: -1;
-  }
 
   @media (hover: hover) and (pointer: fine) {
     &:hover:not(:disabled) {
@@ -47,27 +31,14 @@
   }
 }
 
-.glyph {
-  font-size: var(--emoji-4xl);
-  line-height: 1;
-  filter: var(--drop-shadow-md);
-}
-
-/* 톤 색상 (각 계절·특별한 날별 그라데이션 베이스) — accent token 으로 dark mode 자동 분기 */
-.spring {
-  --tone: var(--accent-spring-grad-start);
-}
-.summer {
-  --tone: var(--accent-summer-grad-start);
-}
-.autumn {
-  --tone: var(--accent-autumn-grad-start);
-}
-.winter {
-  --tone: var(--accent-winter-grad-start);
-}
-.special {
-  --tone: var(--accent-festival-grad-start);
+// Figma 안쪽 원 — 100px 흰색
+.inner {
+  display: grid;
+  place-items: center;
+  width: 100px;
+  height: 100px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg);
 }
 
 /* 부드러운 부유 */
@@ -88,7 +59,7 @@
 
 @keyframes pulse {
   0% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--tone) 50%, transparent);
+    box-shadow: 0 0 0 0 var(--color-primary-ring);
   }
   100% {
     box-shadow: 0 0 0 60px transparent;

@@ -2,35 +2,27 @@
 
 import { useTranslations } from 'next-intl';
 import { haptic } from '@/lib/haptic';
+import { Illustration } from '@/components/brand/Illustration';
+import { seasonIllustration } from '@/constants/illustration-map';
 import type { TournamentTheme } from '@/features/tournament/types';
 import styles from './CenterIllustration.module.scss';
 
 /**
- * 토너먼트 시작 페이지(/play) 중앙 일러스트.
+ * 토너먼트 시작 페이지(/play) 중앙 일러스트 — Figma `circle-stack`.
  *
- *   season.spring  → 🌸 벚꽃
- *   season.summer  → ☂️ 우산
- *   season.autumn  → 🍁 단풍
- *   season.winter  → ⛄ 눈사람
+ * 실측: 바깥 원 134 (계절 파스텔) + 안쪽 원 100 (흰색) + 64px `seasonIcon`.
+ * 구 구현은 200px 흐릿한 radial-gradient 원 + OS 이모지(🌸 ☂️ 🍁 ⛄) 였다.
  *
- * 탭하면 onTap 호출. 부드러운 부유 애니메이션 + 탭 시 펄스.
- * SVG 일러스트 대신 emoji 사용(빠른 구현). 추후 SVG 일러스트로 교체 가능.
+ * 탭하면 onTap 호출. 부드러운 부유 애니메이션 + 탭 시 펄스는 유지.
  */
 
-const SEASON_GLYPH = {
-  spring: '🌸',
-  summer: '☂️',
-  autumn: '🍁',
-  winter: '⛄',
+/** Figma `circle` 바깥 원 면색 — 계절 카드와 같은 파스텔 세트. */
+const CIRCLE_TONE = {
+  spring: '#ffebeb',
+  summer: '#e0ff89',
+  autumn: '#ffcd99',
+  winter: '#e8f1fd',
 } as const;
-
-function getGlyph(theme: TournamentTheme): string {
-  return SEASON_GLYPH[theme.value];
-}
-
-function getToneClass(theme: TournamentTheme): string {
-  return theme.value;
-}
 
 export interface CenterIllustrationProps {
   theme: TournamentTheme;
@@ -49,17 +41,15 @@ export function CenterIllustration({
 }: CenterIllustrationProps) {
   const t = useTranslations('tournament');
   const label = t(`season.${theme.value}`);
+  const art = seasonIllustration(theme.value);
 
   return (
     <button
       type="button"
-      className={[
-        styles.bubble,
-        styles[getToneClass(theme)],
-        tapped ? styles.tapped : '',
-      ]
+      className={[styles.bubble, tapped ? styles.tapped : '']
         .filter(Boolean)
         .join(' ')}
+      style={{ background: CIRCLE_TONE[theme.value] }}
       onClick={() => {
         if (disabled) return;
         haptic.success();
@@ -68,8 +58,8 @@ export function CenterIllustration({
       disabled={disabled}
       aria-label={label}
     >
-      <span className={styles.glyph} aria-hidden>
-        {getGlyph(theme)}
+      <span className={styles.inner} aria-hidden>
+        {art && <Illustration name={art} size={64} />}
       </span>
     </button>
   );

@@ -1,10 +1,17 @@
+// 좌우 여백은 (main) layout 의 --content-pad(20) — 여기서 더 주면 시안의
+// 카드 폭 320 이 안 나온다 (구 구현은 phase 마다 8~16 을 더 줘서 304 였다).
 .wrap {
   position: relative;
   display: grid;
-  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
   min-height: 480px;
-  padding: 1rem 0;
+  min-width: 0;
   overflow: hidden;
+
+  > * {
+    min-width: 0;
+  }
 }
 
 .empty {
@@ -16,13 +23,63 @@
   text-align: center;
 }
 
+// Figma `TRN · 로딩 (지도 펼침)` — 원 스택 → 제목(sp 30) → 점(sp 18)
 .center {
   position: relative;
   z-index: 2;
   display: grid;
-  gap: 1rem;
+  gap: var(--space-5);
   place-items: center;
-  padding: 2.5rem 1rem;
+  padding: var(--space-10) var(--space-4);
+}
+
+// Title/B_20_130% 중앙 2줄
+.introTitle {
+  font-size: var(--font-h2);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
+  text-align: center;
+  word-break: keep-all;
+  max-width: 12ch;
+}
+
+// Figma `dots` — 9px 원 3개, gap 8, #00B334. 순차 페이드로 로딩감만 준다.
+.dots {
+  display: inline-flex;
+  gap: var(--space-2);
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  animation: dot-fade 1.2s ease-in-out infinite;
+
+  &:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  &:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+}
+
+@keyframes dot-fade {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot {
+    animation: none;
+  }
 }
 
 .hint {
@@ -41,26 +98,60 @@
   cursor: pointer;
 }
 
+// Figma `TRN · 여행지 준비 완료` — 지도 카드 → 요약 텍스트 → 하단 버튼 2개
 .map {
   position: relative;
   z-index: 2;
-  display: grid;
-  gap: 1rem;
-  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+  min-height: calc(
+    100dvh -
+      56px - var(--content-pad) - var(--space-8) - var(--bottom-nav-h) - env(
+        safe-area-inset-bottom
+      )
+  );
 }
 
+// Figma `map-card` — 흰 면 + 1px #E0E0E0(시안 #C6C6C6), radius 12, padding 12
+.mapCard {
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-md);
+  min-width: 0;
+}
+
+// Figma `Frame 1` — 제목 + 설명, V gap 12
+.mapText {
+  display: grid;
+  gap: var(--space-3);
+}
+
+// Figma `rbtns` — 155x52 버튼 2개, 화면 하단 고정
 .mapFooter {
   display: grid;
-  gap: 0.5rem;
-  text-align: center;
-  margin-top: 0.5rem;
+  gap: var(--space-3);
+  margin-top: auto;
 }
 
+// Figma `Frame 1` — 24/Bold 제목 + 14/Regular 2줄 설명
 .counter {
-  font-size: var(--font-body);
+  font-size: var(--font-h2);
   font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug);
+  letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
-  letter-spacing: var(--tracking-wide);
+}
+
+.mapDesc {
+  font-size: var(--font-body-sm);
+  line-height: var(--line-normal);
+  color: var(--color-muted);
+  text-align: center;
+  white-space: pre-line;
+  word-break: keep-all;
 }
 
 .mapHint {
@@ -108,31 +199,52 @@
 
 // contentInner 가 이미 좌우 padding 을 담당하므로 sizePhase 는 좌우 padding 0.
 // 이중 padding 으로 카드 영역이 좁아져 깨지던 문제 해결.
+// Figma `TRN · 토너먼트 규모` — 제목 블록(gap 8) → 카드 → 하단 고정 버튼
 .sizePhase {
   position: relative;
   z-index: 2;
-  display: grid;
-  gap: var(--space-4);
-  padding: var(--space-2) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+  min-height: calc(
+    100dvh -
+      56px - var(--content-pad) - var(--space-8) - var(--bottom-nav-h) - env(
+        safe-area-inset-bottom
+      )
+  );
 }
 
+.sizeHeading {
+  display: grid;
+  gap: var(--space-2);
+}
+
+// Title/B_20_130%
 .sizeTitle {
   font-size: var(--font-h2);
   font-weight: var(--font-weight-bold);
-  color: var(--color-fg);
   line-height: var(--line-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
+  word-break: keep-all;
 }
 
+// Caption/R_12
 .sizeHint {
-  font-size: var(--text-sm);
+  font-size: var(--font-caption);
+  line-height: var(--line-normal);
   color: var(--color-muted);
-  margin-top: -0.5rem;
+}
+
+.sizeAction {
+  margin-top: auto;
 }
 
 .bracket {
   position: relative;
   z-index: 2;
-  padding: 0.5rem;
+  min-width: 0;
 }
 
 // 우승자 celebration — bracket 마지막 매치 → 1.8s 강조 → result 자동 이동

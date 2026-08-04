@@ -1,83 +1,32 @@
+// Figma `grid` — 2열, 행/열 gap 12. 카드 규격은 SelectCard 담당.
 .grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.625rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+
+  > * {
+    min-width: 0;
+  }
 }
 
-// aspect-ratio 1.6/1 + padding 1.25rem 이 좁은 모바일에서 카드 내부 콘텐츠가
-// 빡빡해 글자 겹침 발생. min-height 로 자리잡되 자체 padding 만으로 높이 조절.
-.card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+// Figma `Frame 42` — 숫자 + 단위 가로 조합, baseline 정렬
+.amount {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
   justify-content: center;
-  gap: var(--space-1);
-  padding: var(--space-3) var(--space-2);
-  min-height: 96px;
-  background: var(--color-bg);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  color: var(--color-fg);
-  cursor: pointer;
-  transition:
-    border-color var(--motion-base) ease,
-    background var(--motion-base) ease,
-    transform var(--motion-fast) ease;
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover:not(:disabled) {
-      border-color: var(--color-primary-text-bold);
-    }
-  }
-  &:active:not(:disabled) {
-    transform: scale(0.96);
-  }
-  &:focus-visible {
-    outline: var(--focus-outline);
-    outline-offset: var(--focus-outline-offset);
-  }
-  &:disabled,
-  &[aria-disabled='true'] {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-
-  &.active {
-    border-color: var(--color-primary-strong);
-    background: var(--color-primary-strong);
-    color: var(--color-primary-fg);
-  }
+  font-variant-numeric: tabular-nums;
 }
 
-.title {
-  font-size: var(--text-xl);
-  font-weight: var(--font-weight-extrabold);
-  letter-spacing: var(--tracking-tight);
-  line-height: var(--line-display);
+// Title/B_24
+.num {
+  font-size: var(--font-h2);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug);
 }
 
-@media (min-width: 480px) {
-  .title {
-    font-size: var(--font-h1);
-  }
-}
-
-.sub {
-  font-size: var(--font-caption);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: var(--tracking-snug);
-  opacity: var(--opacity-muted);
-
-  .active & {
-    opacity: 0.9;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .card {
-    transition: none;
-    &:active:not(:disabled) {
-      transform: none;
-    }
-  }
+// Basic Body/B_14_140%
+.unit {
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-bold);
 }

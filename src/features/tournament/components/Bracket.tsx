@@ -181,21 +181,27 @@ export function Bracket({ destinations, onComplete }: BracketProps) {
   const progress = Math.min(100, (decided / totalMatchesNeeded) * 100);
   const segments = Array.from({ length: totalMatchesNeeded });
 
+  // Figma `top` 우측 — 남은 매치 수 (전체 필요 매치 − 결정된 매치)
+  const remaining = Math.max(0, totalMatchesNeeded - decided);
+
   return (
     <div className={styles.wrap}>
       <header className={styles.head}>
-        <p className={styles.roundLabel}>
-          <span className={styles.round}>{label}</span>
-          <span aria-hidden className={styles.dot}>
-            ·
-          </span>
-          <span className={styles.matchCount}>
-            {t('matchCount', {
-              current: state.currentMatchIndex + 1,
-              total: round.matches.length,
-            })}
-          </span>
-        </p>
+        <div className={styles.top}>
+          <p className={styles.roundLabel}>
+            <span className={styles.round}>{label}</span>
+            <span aria-hidden className={styles.dot}>
+              ·
+            </span>
+            <span className={styles.matchCount}>
+              {t('matchCount', {
+                current: state.currentMatchIndex + 1,
+                total: round.matches.length,
+              })}
+            </span>
+          </p>
+          <p className={styles.remaining}>{t('remaining', { n: remaining })}</p>
+        </div>
         <div
           className={styles.progressBar}
           role="progressbar"
@@ -218,6 +224,9 @@ export function Bracket({ destinations, onComplete }: BracketProps) {
         </div>
       </header>
 
+      {/* Figma `content` — 진행 표시 아래 질문 한 줄 (Title/B_20_130%) */}
+      <h2 className={styles.prompt}>{t('prompt')}</h2>
+
       <div className={styles.matchup}>
         {/* key 에 match.a.id / match.b.id — 매치 변경 시 button DOM 자체가
             unmount/remount 되어 focus + (touch 환경의) sticky 상태가 강제
@@ -228,9 +237,10 @@ export function Bracket({ destinations, onComplete }: BracketProps) {
           destination={match.a}
           onPick={() => dispatch({ type: 'pick', winner: match.a })}
         />
-        <div className={styles.vs} aria-hidden>
+        {/* Figma `vs` — 두 카드 사이에 겹쳐 놓이는 36px 흰 원형 배지 */}
+        <span className={styles.vs} aria-hidden>
           VS
-        </div>
+        </span>
         <MatchupCard
           key={match.b.id}
           destination={match.b}

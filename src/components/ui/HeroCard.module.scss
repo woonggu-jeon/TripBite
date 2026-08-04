@@ -10,6 +10,12 @@
   isolation: isolate;
   color: var(--color-on-strong); // Figma hero 텍스트 3단 모두 #FFFFFF
   text-decoration: none;
+  // button 으로 렌더될 때(토너먼트 매치 선택) 기본 스타일 제거
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   transition: transform var(--motion-base) ease;
 
   &:active {

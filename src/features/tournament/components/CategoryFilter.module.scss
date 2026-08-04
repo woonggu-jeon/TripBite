@@ -1,69 +1,7 @@
+// Figma `list` — 1열, V gap 12 (시안 11 → 4px 그리드로 12).
+// 카드 자체 규격은 SelectCard 담당.
 .list {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.625rem;
-}
-
-.row {
-  display: grid;
-  grid-template-columns: 2.5rem 1fr 1.25rem;
-  align-items: center;
-  gap: 0.875rem;
-  width: 100%;
-  padding: 0.875rem 1rem;
-  background: var(--color-bg);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  color: var(--color-fg);
-  text-align: left;
-  cursor: pointer;
-  transition:
-    border-color var(--motion-base) ease,
-    background var(--motion-base) ease,
-    transform var(--motion-fast) ease;
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      border-color: var(--color-primary-text-bold);
-    }
-  }
-  &:active {
-    transform: scale(0.99);
-  }
-  &:focus-visible {
-    outline: var(--focus-outline);
-    outline-offset: var(--focus-outline-offset);
-  }
-
-  &.active {
-    border-color: var(--color-primary-text-bold);
-    background: var(--color-primary-soft);
-    color: var(--color-primary-text-bold);
-  }
-}
-
-.emoji {
-  font-size: var(--font-h1);
-  line-height: 1;
-}
-
-.label {
-  font-size: var(--font-body);
-  font-weight: var(--font-weight-bold);
-}
-
-.check {
-  font-size: var(--font-body);
-  font-weight: var(--font-weight-extrabold);
-  color: var(--color-primary-text-bold);
-  text-align: right;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .row {
-    transition: none;
-    &:active {
-      transform: none;
-    }
-  }
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
 }

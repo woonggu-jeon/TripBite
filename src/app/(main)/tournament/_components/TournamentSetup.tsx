@@ -66,7 +66,6 @@ export function TournamentSetup() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const t = useTranslations('tournament.setup');
-  const tTournament = useTranslations('tournament');
   const tSeason = useTranslations('tournament.season');
   const setConfig = useTournamentStore((s) => s.setConfig);
 
@@ -155,6 +154,15 @@ export function TournamentSetup() {
     router.push('/tournament/play');
   };
 
+  // Figma 는 단계마다 헤더 제목이 다르다 (토너먼트 / 계절 선택 / 카테고리 선택
+  // / 여행지 수). 구현은 4단계 모두 "토너먼트" 였다.
+  const headerTitle = (() => {
+    if (step === 1) return t('headers.themeKind');
+    if (step === 2) return t('headers.season');
+    if (step === 3) return t('headers.category');
+    return t('headers.count');
+  })();
+
   const heading = (() => {
     if (step === 1)
       return {
@@ -173,9 +181,9 @@ export function TournamentSetup() {
 
   return (
     <>
-      {/* Figma 는 헤더 제목이 "토너먼트" 고, 단계 제목(20 Bold) + 보조(12) 는
-          본문 상단 `Frame 41` 에 놓인다. 기존 문구를 재배치만 했다. */}
-      <SubHeader title={tTournament('title')} onBack={goBack} />
+      {/* Figma 는 단계 제목(20 Bold) + 보조(12) 를 본문 상단 `Frame 41` 에 두고,
+          헤더에는 단계 이름을 넣는다. 기존 문구를 재배치만 했다. */}
+      <SubHeader title={headerTitle} onBack={goBack} />
       <div className={styles.wrap}>
         <div className={styles.section}>
           <div className={styles.heading}>
@@ -184,14 +192,21 @@ export function TournamentSetup() {
           </div>
 
           {step === 1 && (
-            <ThemeKindSelector value={themeKind} onChange={handleKind} />
+            <>
+              <ThemeKindSelector value={themeKind} onChange={handleKind} />
+              <p className={styles.autoHint}>{t('selectToContinue')}</p>
+            </>
           )}
           {step === 2 && (
-            <SeasonSelector value={season} onChange={handleSeason} />
+            <>
+              <SeasonSelector value={season} onChange={handleSeason} />
+              <p className={styles.autoHint}>{t('selectToContinue')}</p>
+            </>
           )}
           {step === 3 && (
             <>
               <CategoryFilter value={category} onChange={handleCategory} />
+              <p className={styles.autoHint}>{t('selectToContinue')}</p>
               {/*
                 BE 동작 고지 — 계절 필터는 'festival' 에만 적용 (eventStart 월 기반).
                 attraction/experience/local 선택 시 BE 가 계절 무관 응답 → 사용자가
@@ -230,19 +245,17 @@ export function TournamentSetup() {
         </div>
 
         {step === 4 && (
-          <Button
-            variant="primary"
-            size="lg"
-            fullWidth
-            onClick={handleStart}
-            disabled={!canStart}
-          >
-            {t('start')}
-          </Button>
-        )}
-
-        {(step === 1 || step === 2 || step === 3) && (
-          <p className={styles.autoHint}>{t('selectToContinue')}</p>
+          <div className={styles.action}>
+            <Button
+              variant="primary"
+              size="lg"
+              fullWidth
+              onClick={handleStart}
+              disabled={!canStart}
+            >
+              {t('start')}
+            </Button>
+          </div>
         )}
       </div>
     </>

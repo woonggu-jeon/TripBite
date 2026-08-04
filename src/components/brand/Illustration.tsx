@@ -20,7 +20,12 @@ export type IllustrationName =
   | 'triptype-rest'
   | 'triptype-taste'
   | 'theme-season'
-  | 'theme-dice';
+  | 'theme-dice'
+  // Figma `cateIcon` 36 변형 (festival / tour / experience) — 토너먼트
+  // 카테고리 선택. 이쪽은 아틀라스가 아니라 노드 단위 export(108px) 다.
+  | 'cate-festival'
+  | 'cate-tour'
+  | 'cate-experience';
 
 export function Illustration({
   name,

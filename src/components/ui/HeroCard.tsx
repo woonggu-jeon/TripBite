@@ -15,6 +15,11 @@ export type HeroCardAlign = 'center' | 'bottom';
 interface HeroCardProps {
   /** 진입 경로. 없으면 링크 아닌 순수 표시용 블록으로 렌더. */
   href?: ComponentProps<typeof Link>['href'];
+  /**
+   * href 없이 클릭 동작만 필요한 경우 (토너먼트 매치 선택) — button 으로 렌더.
+   * Figma `visualCard` 는 링크와 선택지 두 용도로 같은 모양을 쓴다.
+   */
+  onClick?: () => void;
   /** 배경 사진 URL (TourAPI). http → https 정규화는 MediaThumb 담당. */
   imageUrl?: string | null;
   /** 사진 없을 때 fallback emoji */
@@ -55,6 +60,7 @@ interface HeroCardProps {
  */
 export function HeroCard({
   href,
+  onClick,
   imageUrl,
   emoji,
   eyebrow,
@@ -96,6 +102,24 @@ export function HeroCard({
       </div>
     </>
   );
+
+  if (!href && onClick) {
+    return (
+      <button
+        type="button"
+        className={cls}
+        aria-label={ariaLabel}
+        onClick={(e) => {
+          // iOS Safari/PWA — tap 후 focus 가 남아 다음 매치에서 이전 선택지가
+          // 강조된 듯 보이는 것 차단 (Bracket 의 key 교체와 이중 안전망).
+          e.currentTarget.blur();
+          onClick();
+        }}
+      >
+        {inner}
+      </button>
+    );
+  }
 
   if (!href) {
     return (

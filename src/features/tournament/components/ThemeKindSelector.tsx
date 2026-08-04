@@ -1,11 +1,12 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { cardClasses, RadioGroup, RadioOption } from '@/components/ui';
+import { RadioGroup } from '@/components/ui';
 import {
   Illustration,
   type IllustrationName,
 } from '@/components/brand/Illustration';
+import { SelectCard } from './SelectCard';
 import styles from './ThemeKindSelector.module.scss';
 
 export type ThemeKind = 'season' | 'random';
@@ -18,58 +19,49 @@ export interface ThemeKindSelectorProps {
 /**
  * 토너먼트 1단계 — 계절 직접선택 / 랜덤테마 2지선택.
  *
+ * Figma `big-card` 320x94 — 원형 배지(54) + 36px `themeIcon` + 이름 + 설명.
+ * 세로 1열 2행 (구 구현은 2열 그리드였다).
+ *
  * 동작 (TournamentSetup 측):
  *   - season: 다음 step 으로 → 계절 선택 → 유형 선택 → 갯수
  *   - random: 계절 + 유형을 즉시 랜덤 선택 → 바로 갯수 step
  */
+const KINDS: {
+  value: ThemeKind;
+  art: IllustrationName;
+  labelKey: 'season' | 'random';
+  descKey: 'seasonDesc' | 'randomDesc';
+}[] = [
+  {
+    value: 'season',
+    art: 'theme-season',
+    labelKey: 'season',
+    descKey: 'seasonDesc',
+  },
+  {
+    value: 'random',
+    art: 'theme-dice',
+    labelKey: 'random',
+    descKey: 'randomDesc',
+  },
+];
+
 export function ThemeKindSelector({ value, onChange }: ThemeKindSelectorProps) {
   const t = useTranslations('tournament.setup.steps.themeKind');
 
-  // 일러스트는 Figma `themeIcon` 에셋 — 구 이모지(🌿 🎲) 대체.
-  const KINDS: {
-    value: ThemeKind;
-    art: IllustrationName;
-    labelKey: 'season' | 'random';
-    descKey: 'seasonDesc' | 'randomDesc';
-  }[] = [
-    {
-      value: 'season',
-      art: 'theme-season',
-      labelKey: 'season',
-      descKey: 'seasonDesc',
-    },
-    {
-      value: 'random',
-      art: 'theme-dice',
-      labelKey: 'random',
-      descKey: 'randomDesc',
-    },
-  ];
-
   return (
-    <RadioGroup label={t('title')} className={styles.grid}>
-      {KINDS.map((k) => {
-        const active = value === k.value;
-        return (
-          <RadioOption
-            key={k.value}
-            checked={active}
-            onSelect={() => onChange(k.value)}
-            className={cardClasses({
-              variant: 'surface',
-              // padding 은 module .card 가 직접 명시 — Card primitive 의 .p-*
-              // 와 source order 충돌 방지 (cardClasses padding 옵션 미사용)
-              className: `${styles.card} ${active ? styles.active : ''}`,
-            })}
-          >
-            <span className={styles.emoji} aria-hidden>
-              <Illustration name={k.art} size={36} />
-            </span>
-            <span className={styles.label}>{t(k.labelKey)}</span>
-            <span className={styles.desc}>{t(k.descKey)}</span>
-          </RadioOption>
-        );
-      })}
+    <RadioGroup label={t('title')} className={styles.list}>
+      {KINDS.map((k) => (
+        <SelectCard
+          key={k.value}
+          layout="row"
+          selected={value === k.value}
+          onSelect={() => onChange(k.value)}
+          media={<Illustration name={k.art} size={36} />}
+          title={t(k.labelKey)}
+          desc={t(k.descKey)}
+        />
+      ))}
     </RadioGroup>
   );
 }

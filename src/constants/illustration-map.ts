@@ -25,6 +25,22 @@ const TRAVEL_TYPE_ILLUSTRATION: Record<string, IllustrationName> = {
   foodie: 'triptype-taste',
 };
 
+/**
+ * 여행 카테고리 → 시안 `cateIcon` 변형.
+ * 시안은 tour, 레포는 attraction 으로 이름만 다르고 같은 것을 가리킨다.
+ */
+const CATEGORY_ILLUSTRATION: Record<string, IllustrationName> = {
+  festival: 'cate-festival',
+  attraction: 'cate-tour',
+  experience: 'cate-experience',
+};
+
+export function categoryIllustration(
+  category: string,
+): IllustrationName | null {
+  return CATEGORY_ILLUSTRATION[category] ?? null;
+}
+
 export function seasonIllustration(season: string): IllustrationName | null {
   return (
     (SEASON_ILLUSTRATION as Record<string, IllustrationName>)[season] ?? null

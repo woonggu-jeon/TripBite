@@ -97,6 +97,7 @@ function pickRandomRegions(config: {
 export function TournamentPlayClient() {
   const router = useRouter();
   const t = useTranslations('tournament.play');
+  const tSeason = useTranslations('tournament.season');
   const config = useTournamentStore((s) => s.config);
   const setSelectedRegions = useTournamentStore((s) => s.setSelectedRegions);
   const setTournamentSize = useTournamentStore((s) => s.setTournamentSize);
@@ -265,7 +266,13 @@ export function TournamentPlayClient() {
       {phase === 'intro' && (
         <div className={styles.center}>
           <CenterIllustration theme={theme} onTap={() => {}} disabled />
-          <p className={styles.hint}>{t('introHint')}</p>
+          {/* Figma `TRN · 로딩` — 20/Bold 제목 + 9px 점 3개 */}
+          <p className={styles.introTitle}>{t('introHint')}</p>
+          <span className={styles.dots} aria-hidden>
+            <span className={styles.dot} />
+            <span className={styles.dot} />
+            <span className={styles.dot} />
+          </span>
         </div>
       )}
 
@@ -273,12 +280,20 @@ export function TournamentPlayClient() {
         <div className={styles.map}>
           {mapPlaceholders.length > 0 && (
             <>
-              {/* 자동 표시 — 사용자 선택 X. fetch 전 placeholder 로 시군 위치만 시각화 */}
-              <ChungbukMap destinations={mapPlaceholders} theme={theme} />
-              <div className={styles.mapFooter}>
+              {/* Figma `map-card` — 지도를 흰 카드(padding 12) 안에 넣는다.
+                  자동 표시 — 사용자 선택 X. 시군 위치만 시각화 */}
+              <div className={styles.mapCard}>
+                <ChungbukMap destinations={mapPlaceholders} theme={theme} />
+              </div>
+              <div className={styles.mapText}>
                 <p className={styles.counter}>
                   {t('mapSummary', { destinations: N })}
                 </p>
+                <p className={styles.mapDesc}>
+                  {t('mapSummaryHint', { season: tSeason(theme.value) })}
+                </p>
+              </div>
+              <div className={styles.mapFooter}>
                 <ButtonGrid>
                   <Button
                     variant="secondary"
@@ -305,22 +320,28 @@ export function TournamentPlayClient() {
 
       {phase === 'tournamentSize' && (
         <div className={styles.sizePhase}>
-          <h2 className={styles.sizeTitle}>{t('tournamentSize.title')}</h2>
-          <p className={styles.sizeHint}>{t('tournamentSize.hint')}</p>
+          {/* Figma `Frame 41` — 제목(20 Bold) + 보조(12), V gap 8 */}
+          <div className={styles.sizeHeading}>
+            <h2 className={styles.sizeTitle}>{t('tournamentSize.title')}</h2>
+            <p className={styles.sizeHint}>{t('tournamentSize.hint')}</p>
+          </div>
           <CountSelector
             value={pendingSize}
             onChange={setPendingSize}
             mode="tournament"
           />
-          <Button
-            variant="primary"
-            size="md"
-            fullWidth
-            disabled={!canStartBracket}
-            onClick={handleConfirmSize}
-          >
-            {t('next')}
-          </Button>
+          {/* Figma 는 시작 버튼을 화면 하단에 붙인다 */}
+          <div className={styles.sizeAction}>
+            <Button
+              variant="primary"
+              size="lg"
+              fullWidth
+              disabled={!canStartBracket}
+              onClick={handleConfirmSize}
+            >
+              {t('startBracket')}
+            </Button>
+          </div>
         </div>
       )}
 

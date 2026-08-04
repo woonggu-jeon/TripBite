@@ -1,12 +1,10 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-import { haptic } from '@/lib/haptic';
-import { cardClasses, MediaThumb } from '@/components/ui';
+import { MapPin } from 'lucide-react';
+import { HeroCard } from '@/components/ui';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { categoryEmoji } from '@/constants/emoji-map';
 import type { DestinationDto } from '@/api/generated/schemas';
-import styles from './MatchupCard.module.scss';
 
 export interface MatchupCardProps {
   destination: DestinationDto;
@@ -15,54 +13,40 @@ export interface MatchupCardProps {
 }
 
 /**
- * 1:1 매치업 카드. 클릭/탭 시 onPick. 세로 2칸 레이아웃의 한 칸.
+ * 1:1 매치업 카드 — Figma `visualCard` (320x176 사진 hero).
  *
- * imageUrl 있으면 next/image fill, 없으면 카테고리 이모지 placeholder.
+ * 시안은 매치 선택지도 홈·랭킹과 같은 `hero` 컴포넌트를 쓴다: 풀블리드 사진 +
+ * 좌→우 검정 scrim + 하단 좌측 흰 텍스트(이름 20 Bold / 핀+시군 12). 그래서
+ * 여기서는 `HeroCard` 를 그대로 재사용한다 (구 구현은 정사각 썸네일 + 중앙
+ * 정렬 텍스트의 흰 카드였다).
+ *
+ * 시안 hero-text 의 세 번째 줄(여행지 한 줄 소개)은 `DestinationDto` 에 대응
+ * 필드가 없어 생략한다.
+ *
+ * disabled 는 현재 사용처가 없지만 API 는 유지 (Bracket 이 전달 가능).
  */
 export function MatchupCard({
   destination,
   onPick,
-  disabled = false,
+  disabled,
 }: MatchupCardProps) {
-  const t = useTranslations('tournament');
   const region = CHUNGBUK_REGIONS.find((r) => r.code === destination.region);
   const regionLabel = region?.ko ?? destination.region;
-  const categoryLabel = t(`category.${destination.category}`);
 
   return (
-    <button
-      type="button"
-      className={cardClasses({
-        variant: 'surface',
-        className: styles.card,
-      })}
-      onClick={(e) => {
-        if (disabled) return;
-        haptic.tap();
-        // iOS Safari / PWA — tap 후 focus 가 button 에 남고, React 가 같은
-        // DOM 을 다음 매치에서 재사용하면 "이전 선택지가 다시 강조된 것처럼"
-        // 보임. blur() 로 focus 명시 해제 (Bracket.tsx 의 key 교체와 이중 안전망).
-        e.currentTarget.blur();
-        onPick();
-      }}
-      disabled={disabled}
-      aria-label={`${destination.name} 선택`}
-    >
-      <MediaThumb
-        src={destination.imageUrl}
-        emoji={categoryEmoji(destination.category)}
-        sizes="(max-width: 380px) 40vw, 160px"
-        className={styles.image}
-        emojiClassName={styles.emoji}
-      />
-      <div className={styles.body}>
-        <h3 className={styles.name}>{destination.name}</h3>
-        <p className={styles.meta}>
-          <span className={styles.region}>{regionLabel}</span>
-          <span aria-hidden> · </span>
-          <span className={styles.category}>{categoryLabel}</span>
-        </p>
-      </div>
-    </button>
+    <HeroCard
+      onClick={disabled ? undefined : onPick}
+      imageUrl={destination.imageUrl}
+      emoji={categoryEmoji(destination.category)}
+      title={destination.name}
+      meta={regionLabel}
+      metaIcon={<MapPin size={12} aria-hidden />}
+      titleAs="h3"
+      align="bottom"
+      sizes="(max-width: 720px) 100vw, 720px"
+      // "{이름} 선택" — 선택지 버튼이라 동작을 읽어주는 기존 라벨 유지.
+      // (시군은 카드에 보이는 텍스트라 라벨에 중복하지 않는다)
+      ariaLabel={`${destination.name} 선택`}
+    />
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { RegionCode } from '@/constants/regions';
+import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import { haptic } from '@/lib/haptic';
 import type { DestinationDto } from '@/api/generated/schemas';
 import type { TournamentTheme } from '@/features/tournament/types';
@@ -174,6 +174,25 @@ export function ChungbukMap({
       groupMap.set(key, arr);
     });
 
+    // Figma `cbmap` — 뽑힌 시군은 연초록 면 + 초록 테두리, 라벨도 초록.
+    // (markers 의 계절 아이콘과 함께 두 겹으로 표시)
+    const pickedKo = new Set<string>(
+      destinations
+        .map<
+          string | undefined
+        >((d) => CHUNGBUK_REGIONS.find((r) => r.code === d.region)?.ko)
+        .filter((ko): ko is string => typeof ko === 'string'),
+    );
+    paths.forEach((p) => {
+      if (pickedKo.has(groupKey(p))) p.setAttribute('data-picked', 'true');
+      else p.removeAttribute('data-picked');
+    });
+    root.querySelectorAll<SVGTextElement>('text.label').forEach((label) => {
+      const ko = (label.textContent ?? '').trim().split(/\s+/)[0] ?? '';
+      if (pickedKo.has(ko)) label.setAttribute('data-picked', 'true');
+      else label.removeAttribute('data-picked');
+    });
+
     const cleanups: Array<() => void> = [];
     paths.forEach((p) => {
       const key = groupKey(p);
@@ -200,7 +219,7 @@ export function ChungbukMap({
     return () => {
       cleanups.forEach((fn) => fn());
     };
-  }, [svg, onRegionClick]);
+  }, [svg, onRegionClick, destinations]);
 
   useEffect(() => {
     if (!onReady) return;

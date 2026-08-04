@@ -404,18 +404,35 @@
           "6": "넉넉히",
           "8": "꼼꼼히"
         }
+      },
+      "headers": {
+        "themeKind": "토너먼트",
+        "season": "계절 선택",
+        "category": "카테고리 선택",
+        "count": "여행지 수"
       }
     },
     "season": {
       "spring": "봄",
       "summer": "여름",
       "autumn": "가을",
-      "winter": "겨울"
+      "winter": "겨울",
+      "desc": {
+        "spring": "벚꽃이 흩날리는 계절",
+        "summer": "푸른 바다와 태양의 계절",
+        "autumn": "단풍으로 물드는 계절",
+        "winter": "눈과 온천의 계절"
+      }
     },
     "category": {
       "festival": "축제",
       "attraction": "관광지",
-      "experience": "체험관광"
+      "experience": "체험관광",
+      "desc": {
+        "festival": "지역 축제와 행사 위주",
+        "attraction": "명소·자연·전망 위주",
+        "experience": "직접 즐기는 체험 프로그램"
+      }
     },
     "play": {
       "loading": "여행지를 불러오는 중이에요",
@@ -457,11 +474,14 @@
         "roundOfN": "{n}강",
         "matchCount": "매치 {current} / {total}",
         "progressLabel": "토너먼트 진행도",
-        "autoWin": "선택한 한 곳이 바로 우승이에요"
+        "autoWin": "선택한 한 곳이 바로 우승이에요",
+        "remaining": "남은 매치 {n}",
+        "prompt": "더 가고 싶은 곳을 골라주세요"
       },
       "celebration": {
         "title": "🎊 우승!"
-      }
+      },
+      "mapSummaryHint": "{season} 테마로 충북 곳곳에서 고른 여행지예요.\n이제 대결을 시작할까요?"
     },
     "result": {
       "luckyColor": "행운의 색",
