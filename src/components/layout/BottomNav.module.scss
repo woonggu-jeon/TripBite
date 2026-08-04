@@ -18,6 +18,8 @@
    구현은 .nav 가 직접 5열 grid 라 넓은 화면에서 탭이 뷰포트 전체로 퍼졌다
    (1280 에서 탭 하나가 253px). AppHeader/SubHeader 의 .inner 와 같은 취지. */
 .inner {
+  /* Figma navIcon stroke 는 1.7 (스프라이트 기본 2) */
+  --icon-stroke: 1.7;
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   max-width: var(--content-max);
@@ -45,11 +47,10 @@
   }
 }
 
-/* Figma 활성 탭 — Caption/B_10 (10px Bold) + MainColor/primary.
-   primary 는 텍스트로 2.80:1 미달이라 --color-primary-text-bold(5.10:1) 사용.
+/* Figma 활성 탭 — Caption/B_10 (10px Bold) + MainColor/primary 그대로.
    비활성은 Figma #B4B4B4 가 2.07:1 미달이라 --color-muted(6.00:1) 유지. */
 .active {
-  color: var(--color-primary-text-bold);
+  color: var(--color-primary);
   font-weight: var(--font-weight-bold);
 }
 

@@ -86,21 +86,22 @@
   }
 }
 
-// 토너먼트 — 초록 (#EAF6EF 면 / #00B334 원·버튼)
+// 토너먼트 — 시안 그대로 #EAF6EF 면 + #00B334 원·버튼.
 .primary {
   --qa-surface: var(--color-primary-soft);
-  --qa-solid: var(--color-primary-strong); // 흰 글씨/아이콘 대비 4.98:1
+  --qa-solid: var(--color-primary);
 }
 
-// 유형 테스트 — 시안은 #FCEFD9 면 + #F79D26 원·버튼. 주황 위 흰 글씨는
-// 시안값이 2.2:1 로 크게 미달이라 --accent-amber(5.0:1) 사용 (결정 2).
+// 유형 테스트 — 시안 그대로 #FCEFD9 면 + #F79D26 원·버튼.
 .amber {
-  --qa-surface: color-mix(in srgb, var(--accent-amber) 12%, var(--color-bg));
-  --qa-solid: var(--accent-amber);
+  --qa-surface: var(--color-accent-soft);
+  --qa-solid: var(--color-accent);
 }
 
 // Figma `circle` 40x40 — 채운 브랜드색 + 흰 아이콘 (구: 연한 면 + 색 아이콘)
 .quickActionIcon {
+  /* Figma detailIcon stroke 1.42 (스프라이트 기본 2) */
+  --icon-stroke: 1.4;
   display: grid;
   place-items: center;
   width: 40px;

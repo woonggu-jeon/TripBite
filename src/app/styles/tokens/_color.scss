@@ -40,6 +40,14 @@
   --color-success: #16a34a;
   --color-warning: #d97706;
 
+  /* Figma Basic/MainColor/accent — 주황 브랜드 보조색 (유형테스트 계열).
+     primary 와 같은 규칙: 면·아이콘 용이고 텍스트로 쓰지 않는다.
+     · 흰 텍스트 on accent = 2.14:1 (AA 미달)
+     · accent 텍스트 on 흰 배경 = 2.14:1 (AA 미달) → --accent-amber(5.07:1) */
+  --color-accent: #f79d26;
+  /* Figma Basic/MainColor/accent-soft — 주황 배너 면 */
+  --color-accent-soft: #fcefd9;
+
   /* Sage — 도장책 visited 표시 전용. 차분한 녹색 톤으로 brand black 과 분리 */
   --color-sage-mist: #d4e2d4; /* visited fill (soft pale green) */
   --color-sage: #6b8e6b; /* visited border (muted sage) */

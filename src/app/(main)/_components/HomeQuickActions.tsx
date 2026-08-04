@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Trophy, Sparkles } from 'lucide-react';
+import { Icon } from '@/components/icon';
 import { ROUTES } from '@/constants/routes';
 import { getCurrentSeason } from '@/features/tournament/utils/season';
 import type { Season } from '@/api/generated/schemas';
@@ -31,7 +31,7 @@ export function HomeQuickActions() {
           pathname: ROUTES.TOURNAMENT,
           query: { theme: 'season', season },
         }}
-        icon={<Trophy size={20} />}
+        icon={<Icon name="trophy-detail" size={20} />}
         label={t(`quick.tournamentBySeason.${season}`)}
         hint={t('quick.tournamentHint')}
         cta={t('quick.cta')}
@@ -39,7 +39,8 @@ export function HomeQuickActions() {
       />
       <QuickActionLink
         href={ROUTES.QUIZ}
-        icon={<Sparkles size={20} />}
+        // 시안 유형테스트 아이콘은 sparkles 가 아니라 나침반이다
+        icon={<Icon name="compass" size={20} />}
         label={t('quick.quiz')}
         hint={t('quick.quizHint')}
         cta={t('quick.cta')}

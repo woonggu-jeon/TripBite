@@ -48,11 +48,10 @@
     outline-offset: var(--focus-outline-offset);
   }
 
-  // 시안은 #00B334 면 + 흰 글씨지만 2.80:1 로 AA 미달 →
-  // --color-primary-strong(#00821F, 4.98:1) 사용 (결정 2).
+  // 시안 그대로 #00B334 면 + 흰 글씨.
   &.active {
-    background: var(--color-primary-strong);
-    border-color: var(--color-primary-strong);
+    background: var(--color-primary);
+    border-color: var(--color-primary);
     color: var(--color-primary-fg);
     font-weight: var(--font-weight-bold);
     box-shadow: none;

@@ -27,6 +27,8 @@ export type IconName =
   | 'home'
   | 'trending-up'
   | 'flame'
+  | 'trophy-detail'
+  | 'compass'
   | 'trophy'
   | 'mail'
   | 'user'
