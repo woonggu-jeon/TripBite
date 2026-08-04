@@ -30,7 +30,8 @@ import styles from './HomeCategoryPicks.module.scss';
  *
  *   섹션 헤더 : 제목 16 Bold + 보조 12 + 우측 "더보기 >"
  *   `chips`   : 전체 / 관광지 / 축제 / 체험관광 (pill 32px, H gap 4)
- *   `section` : DestinationCard 152x168 가로 스크롤
+ *   `section` : DestinationCard 가로 스크롤 (시안 152x168 이지만 이름 2줄분을
+ *               확보해 189 — DestinationCard.module.scss 의 .name 주석 참고)
  *
  * 데이터 두 곳을 합친다:
  *   - `/rankings?type=recommended` — 전 카테고리 추천
@@ -163,7 +164,7 @@ export function HomeCategoryPicks() {
       </TabList>
 
       {isLoading ? (
-        <Skeleton width="100%" height={168} radius="md" />
+        <Skeleton width="100%" height={189} radius="md" />
       ) : visible.length === 0 ? (
         <p className={styles.empty}>{t('empty')}</p>
       ) : (
@@ -189,7 +190,7 @@ export function HomeCategoryPicks() {
             keyExtractor={(s) => s.id}
             options={{ slidesPerView, gap: 8 }}
             showDots={false}
-            fallbackHeight={168}
+            fallbackHeight={189}
             ariaLabel={t('hint')}
           />
         </div>

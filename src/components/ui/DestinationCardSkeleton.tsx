@@ -18,8 +18,10 @@ export function DestinationCardSkeleton() {
         <Skeleton width="100%" height="100%" radius="sm" />
       </div>
       <div className={styles.body}>
-        {/* 제목 (14px) */}
-        <Skeleton width="80%" height={20} radius="sm" />
+        {/* 제목 — 실 카드와 같이 2줄 자리를 차지해야 CLS 0 */}
+        <div className={styles.name}>
+          <Skeleton width="80%" height={20} radius="sm" />
+        </div>
         {/* 핀 + 시군 (10px) */}
         <Skeleton width="45%" height={12} radius="sm" />
       </div>

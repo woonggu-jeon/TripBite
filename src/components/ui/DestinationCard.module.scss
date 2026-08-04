@@ -101,10 +101,16 @@
 }
 
 // Basic Body/B_14_140% — 제목이 먼저 온다 (구: 시군이 먼저)
+//
+// 2줄 고정: 3줄 이상은 말줄임(-webkit-line-clamp) 하고, 1줄짜리 이름도 항상
+// 2줄만큼 자리를 차지하게 min-height 를 준다. 그래서 이름 길이와 무관하게
+// 카드 높이가 같아지고 그리드/캐러셀에서 아래 라인이 들쭉날쭉하지 않는다.
+// (시안 152x168 은 이름 1줄 기준이라 본문 60 이었다 — 2줄분 확보로 높아진다.)
 .name {
   font-size: var(--font-body-sm);
   font-weight: var(--font-weight-bold);
   line-height: var(--line-normal);
+  min-height: calc(var(--line-normal) * 2 * 1em);
   color: var(--color-fg);
   letter-spacing: var(--tracking-tight);
   margin: 0;

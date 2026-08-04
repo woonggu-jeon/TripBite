@@ -58,15 +58,15 @@
   }
 }
 
-// 탭 panel 영역 — skeleton ↔ data 전환 시 CLS 0 보장.
-// Figma DestinationCard 는 152x168 (이미지 108 + 본문 60). 2열 2행 + gap 12
-// = 348 → min-height 348 (구 460 은 설명 줄이 있던 시절 높이).
+// 탭 panel 영역 — 첫 페인트에서 영역이 접히지 않게 하는 하한값.
+// 카드가 이름 2줄분을 확보해 360 화면에서 189, 2행 + gap 12 = 390.
+// (스켈레톤도 같은 2줄을 확보하므로 skeleton ↔ data 전환 자체는 CLS 0.)
 //
 // display: block (default) — 자식 InfiniteList 가 자체 grid 를 가지므로
 // 여기서 grid 를 추가로 걸면 nested grid 가 되어 자식 카드의 너비/gap 이 깨짐.
 .panelArea {
   position: relative;
-  min-height: 348px;
+  min-height: 390px;
 }
 
 // .panel 도 block. [hidden] 일 때만 숨김.
@@ -75,9 +75,10 @@
   display: none;
 }
 
+// 320 화면은 컨텐츠 288 → 카드 177, 2행 + gap = 366
 @media (max-width: 380px) {
   .panelArea {
-    min-height: 320px;
+    min-height: 366px;
   }
 }
 
