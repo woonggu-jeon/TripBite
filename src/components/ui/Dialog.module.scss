@@ -33,6 +33,12 @@
   animation: pop-in 0.18s var(--ease-out);
 }
 
+// Figma `Frame 18` — 제목 + 설명, V gap 4
+.textBlock {
+  display: grid;
+  gap: var(--space-1);
+}
+
 .header {
   display: flex;
   align-items: center;
@@ -51,25 +57,32 @@
   color: var(--color-primary-text-bold);
 }
 
+// Basic Body/B_16_140% (구 18px extrabold)
 .title {
-  font-size: var(--font-h3);
-  font-weight: var(--font-weight-extrabold);
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-normal);
+  letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
   margin: 0;
 }
 
+// Caption/R_12 — Figma 는 모달 설명도 본문색(#151515) 이다 (구 14px muted)
 .description {
-  font-size: var(--text-sm);
-  color: var(--color-muted);
+  font-size: var(--font-caption);
+  color: var(--color-fg);
   line-height: var(--line-normal);
+  letter-spacing: var(--tracking-snug);
   margin: 0;
 }
 
+// Figma `Frame 15` — 138x52 버튼 2개, H gap 12, 등폭.
+// 버튼 1개면 그대로 풀폭이 된다.
 .actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--space-2);
-  margin-top: var(--space-1);
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: var(--space-3);
 }
 
 @keyframes fade-in {

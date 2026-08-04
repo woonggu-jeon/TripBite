@@ -13,12 +13,13 @@
     display: block;
   }
 
-  /* 시군 path 기본 — 미획득 dashed 회색 외곽선. dark 자동 분기. */
+  /* Figma `cbmap` 실측 — 미방문은 흰 면 + 1px #E0E0E0 **실선**이다.
+     구 구현은 dashed + #393939 로 시안보다 훨씬 강했다. */
   :global(path.region) {
     fill: var(--color-bg);
-    stroke: var(--color-muted);
+    stroke: var(--color-border);
     stroke-width: 1.25;
-    stroke-dasharray: 4 3;
+    stroke-dasharray: none;
     transition:
       fill var(--motion-base) ease,
       stroke var(--motion-base) ease,
@@ -28,15 +29,15 @@
   @media (hover: hover) and (pointer: fine) {
     :global(path.region:hover) {
       fill: var(--color-hover);
-      stroke: var(--color-sage);
+      stroke: var(--color-primary);
     }
   }
 
-  /* visited 시군 — Sage Mist fill + Sage 외곽선 (solid). 도장 획득 표현. */
+  /* 도장 완료 — Figma 는 #EAF6EF 면 + #00B334 외곽선 (sage 톤이 아니다). */
   :global(path.region[data-visited='true']) {
-    fill: var(--color-sage-mist);
-    stroke: var(--color-sage);
-    stroke-width: 2;
+    fill: var(--color-primary-soft);
+    stroke: var(--color-primary);
+    stroke-width: 1.25;
     stroke-dasharray: none;
   }
 
@@ -57,11 +58,13 @@
   /* 라벨 텍스트 (SVG 내장) — 원본 SVG 의 text-anchor:middle / 24px / 외곽선 복원.
      내장 <style> 을 제거했기 때문에 명시적으로 다시 선언하지 않으면 좌측 정렬되어
      `x="675"` 좌표가 텍스트 중앙이 아닌 좌상 기준이 됨. */
+  /* Figma 라벨은 10px Bold. 이 SVG 는 viewBox 800 을 약 288px 로 그리므로
+     (배율 0.36) 화면상 10px 이 되려면 SVG 단위로 28px 이어야 한다. */
   :global(text.label) {
     font-family: Pretendard, Arial, sans-serif;
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 700;
-    fill: var(--color-fg);
+    fill: var(--color-muted);
     text-anchor: middle;
     paint-order: stroke;
     stroke: var(--color-bg);
@@ -71,6 +74,6 @@
   }
 
   :global(text.label[data-visited='true']) {
-    fill: var(--color-sage-strong);
+    fill: var(--color-primary-text-bold);
   }
 }

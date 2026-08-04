@@ -47,8 +47,12 @@ export function EmptyState({
         .join(' ')}
     >
       {icon && <div className={styles.icon}>{icon}</div>}
-      <h3 className={styles.title}>{title}</h3>
-      {description && <p className={styles.description}>{description}</p>}
+      {/* Figma `f` — 제목+설명은 gap 3 의 한 블록이다. 따로 두면 wrap 의
+          gap 16 이 그대로 적용돼 시안보다 훨씬 벌어진다. */}
+      <div className={styles.text}>
+        <h3 className={styles.title}>{title}</h3>
+        {description && <p className={styles.description}>{description}</p>}
+      </div>
       {action && <div className={styles.action}>{action}</div>}
     </div>
   );

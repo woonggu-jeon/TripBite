@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Trophy } from 'lucide-react';
+import { Heart, Trophy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { SkeletonList } from '@/components/feedback/SkeletonList';
 import { EmptyState } from '@/components/feedback/EmptyState';
@@ -37,7 +37,9 @@ export function SavedTournamentsAll() {
       description: t('removeConfirmBody'),
       confirmLabel: t('removeConfirmYes'),
       cancelLabel: t('removeConfirmNo'),
-      destructive: true,
+      // Figma `저장한 우승 지 삭제` 모달의 확인 버튼은 primary 초록이다.
+      // destructive(빨강) 로 두면 시안과 색이 달라진다.
+      destructive: false,
     });
     if (!ok) return;
     unsave.mutate(savedId, {
@@ -50,7 +52,7 @@ export function SavedTournamentsAll() {
     return (
       <div className={styles.wrap}>
         <div className={styles.grid}>
-          <SkeletonList count={6} height={180} radius="md" />
+          <SkeletonList count={6} height={189} radius="md" />
         </div>
       </div>
     );
@@ -75,14 +77,16 @@ export function SavedTournamentsAll() {
   if (!data || data.length === 0) {
     return (
       <div className={styles.wrap}>
+        {/* Figma 빈 상태의 circleIcon 은 트로피가 아니라 하트(IC-like) 이고,
+            버튼은 320x52 풀폭이다. */}
         <EmptyState
-          icon={<Trophy size={28} aria-hidden />}
+          icon={<Heart size={36} aria-hidden />}
           title={t('empty')}
           description={t('emptyHint')}
           action={
             <Button
               variant="primary"
-              size="sm"
+              fullWidth
               onClick={() => router.push('/tournament')}
             >
               {t('startTournament')}

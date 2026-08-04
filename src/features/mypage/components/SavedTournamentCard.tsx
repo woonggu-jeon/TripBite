@@ -51,7 +51,7 @@ export function SavedTournamentCard({
       }}
     >
       <Heart
-        size={18}
+        size={16}
         aria-hidden
         fill="currentColor"
         strokeWidth={1.5}
@@ -68,7 +68,8 @@ export function SavedTournamentCard({
       tone={toneFor(saved.destination.region as RegionCode)}
       regionLabel={regionLabel}
       name={saved.destination.name}
-      accentDot={saved.luckyColor}
+      // Figma 의 DestinationCard 에는 좌상단 색점이 없다 (마이페이지 carousel /
+      // 저장한 우승지 목록 둘 다). luckyColor 점은 시안에 없어 표시하지 않는다.
       ariaLabel={`${saved.destination.name} · ${regionLabel}`}
       topRightAction={heart}
     />

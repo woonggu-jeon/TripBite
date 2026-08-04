@@ -735,7 +735,10 @@
       "error": "도장 정보를 불러오지 못했어요",
       "retry": "다시 시도",
       "bannerErrorTitle": "충북 도장책",
-      "bannerErrorHint": "지도 보러 가기"
+      "bannerErrorHint": "지도 보러 가기",
+      "masterHint": "11개 시군을 모두 모으면 충북 마스터 카드를 받아요",
+      "legendVisited": "도장 완료",
+      "legendUnvisited": "미방문"
     }
   },
   "settings": {

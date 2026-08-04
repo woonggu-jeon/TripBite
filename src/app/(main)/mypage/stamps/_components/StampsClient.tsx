@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { MapPin, Share2 } from 'lucide-react';
+import { MapPin, ChevronRight } from 'lucide-react';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
@@ -15,10 +15,12 @@ import styles from './StampsClient.module.scss';
 /**
  * 도장책 전체 페이지 client.
  *
- * 구성:
- *   1) 진행 배너 — "충북 마스터까지 N개 남음" 또는 "충북 마스터 달성!"
- *   2) 정밀 지도 — ChungbukStampMap (Sage Mist 색 / dashed 미획득)
- *   3) (11/11 도달 시) 마스터 OG 카드 공유 버튼
+ * 구성 (Figma `MY · 충북 도장책` 실측):
+ *   1) progCard — 큰 숫자 N / 11 + 남은 개수 라벨 + 진행률 바 + 안내 문구
+ *   2) map-card — 정밀 지도 + 범례(도장 완료 / 미방문)
+ *
+ * 11/11 달성 시 progCard 테두리가 초록으로 바뀌고, 안내 문구 자리에
+ * 마스터 카드 공유 행이 들어간다 (구 구현은 카드 밖 별도 버튼이었다).
  */
 export function StampsClient() {
   const t = useTranslations('mypage.stampBook');
@@ -50,8 +52,8 @@ export function StampsClient() {
   if (isLoading || !data) {
     return (
       <div className={styles.wrap}>
-        <Skeleton width="100%" height={68} radius="md" />
-        <Skeleton width="100%" height={360} radius="lg" />
+        <Skeleton width="100%" height={120} radius="md" />
+        <Skeleton width="100%" height={420} radius="md" />
       </div>
     );
   }
@@ -70,37 +72,73 @@ export function StampsClient() {
       filename: 'tripbite-chungbuk-master.png',
     });
 
+  const percent =
+    data.total > 0 ? Math.round((visitedCount / data.total) * 100) : 0;
+
   return (
     <div className={styles.wrap}>
-      <div
-        className={`${styles.banner} ${isMaster ? styles.bannerMaster : ''}`}
+      <section
+        className={`${styles.progCard} ${isMaster ? styles.progCardMaster : ''}`}
       >
-        <div className={styles.bannerText}>
-          <p className={styles.bannerTitle}>
+        <div className={styles.progTop}>
+          <p className={styles.count}>
+            <span className={styles.countNow}>{visitedCount}</span>
+            <span className={styles.countTotal}>/ {data.total}</span>
+          </p>
+          <p className={styles.progLabel}>
             {isMaster
               ? t('masterAchieved')
               : t('remainingTitle', { remaining })}
           </p>
-          <p className={styles.bannerProgress}>
-            {t('progress', { visited: visitedCount, total: data.total })}
-          </p>
         </div>
-      </div>
 
-      <ChungbukStampMap
-        visited={visited}
-        onRegionClick={(code) => router.push(`/region/${code}`)}
-      />
-
-      {isMaster && (
-        <Button
-          variant="primary"
-          onClick={handleShareMaster}
-          leadingIcon={<Share2 size={16} aria-hidden />}
+        <div
+          className={styles.track}
+          role="progressbar"
+          aria-valuenow={visitedCount}
+          aria-valuemin={0}
+          aria-valuemax={data.total}
+          aria-label={t('progress', {
+            visited: visitedCount,
+            total: data.total,
+          })}
         >
-          {t('shareMaster')}
-        </Button>
-      )}
+          <div className={styles.fill} style={{ width: `${percent}%` }} />
+        </div>
+
+        {isMaster ? (
+          <button
+            type="button"
+            className={styles.masterLink}
+            onClick={handleShareMaster}
+          >
+            {t('shareMaster')}
+            <ChevronRight size={20} aria-hidden />
+          </button>
+        ) : (
+          <p className={styles.hint}>{t('masterHint')}</p>
+        )}
+      </section>
+
+      <section className={styles.mapCard}>
+        <ChungbukStampMap
+          visited={visited}
+          onRegionClick={(code) => router.push(`/region/${code}`)}
+        />
+        <ul className={styles.legend}>
+          <li className={styles.legendItem}>
+            <span
+              className={`${styles.swatch} ${styles.swatchVisited}`}
+              aria-hidden
+            />
+            {t('legendVisited')}
+          </li>
+          <li className={styles.legendItem}>
+            <span className={styles.swatch} aria-hidden />
+            {t('legendUnvisited')}
+          </li>
+        </ul>
+      </section>
     </div>
   );
 }

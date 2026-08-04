@@ -1,52 +1,181 @@
+// Figma `MY · 충북 도장책` 실측 — 진행률 카드 + 지도 카드 두 장으로 끝난다.
+// (구 구현은 sage 톤 배너 + 지도 단독이었다)
+//
+// 좌우 여백은 (main) layout 의 .contentInner(--content-pad) 가 담당한다.
+// 구 구현은 여기서 padding 16 을 한 번 더 줘서 실제 36 이 되어 있었다.
 .wrap {
   display: grid;
-  gap: var(--space-4);
-  padding: var(--space-4);
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5); // Figma body gap 18 → 4px 그리드로 20
+  min-width: 0;
 }
 
-// 진행 배너 — sage 톤. 마스터 달성 시 stronger.
-.banner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-sage-mist);
-  border: 1.5px solid var(--color-sage);
-  border-radius: var(--radius-lg);
-}
-
-.bannerMaster {
-  background: var(--color-sage);
-  border-color: var(--color-sage-strong);
-  color: var(--color-on-strong);
-}
-
-.bannerText {
+// Figma `progCard` — 흰 면 + 1px #E0E0E0, radius 12, padding 20/16, V gap 12
+.progCard {
   display: grid;
-  gap: 2px;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-4);
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-md);
 }
 
-.bannerTitle {
-  font-size: var(--font-body);
-  font-weight: var(--font-weight-extrabold);
-  color: var(--color-sage-strong);
+// 마스터 달성 — 테두리가 초록으로 바뀐다
+.progCardMaster {
+  border-color: var(--color-primary);
+}
+
+// Figma `prog-top` — 숫자 묶음 + 라벨, H gap 8, 숫자 baseline 정렬
+.progTop {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+// Figma `Frame 19` — "8" + "/ 11", H gap 4
+.count {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
   margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+// 24/Bold. 시안은 #00B334 지만 텍스트라 대비 확보된 text-bold 를 쓴다
+// (#00B334 텍스트 = 흰 배경 2.80:1, AA 미달).
+.countNow {
+  font-size: var(--font-h2);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug);
+  color: var(--color-primary-text-bold);
+}
+
+// 18/Bold #151515
+.countTotal {
+  font-size: var(--font-h3);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-fg);
+}
+
+// Basic Body/B_14_140% #151515 — "충북 마스터까지 N개 남음"
+.progLabel {
+  margin: 0;
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-normal);
+  color: var(--color-fg);
   letter-spacing: var(--tracking-tight);
 }
 
-.bannerMaster .bannerTitle {
-  color: var(--color-bg);
+// 마스터 달성 시 라벨은 16/Bold + 초록
+.progCardMaster .progLabel {
+  font-size: var(--font-body);
+  color: var(--color-primary-text-bold);
 }
 
-.bannerProgress {
-  font-size: var(--font-body-sm);
-  color: var(--color-sage-strong);
-  font-variant-numeric: tabular-nums;
+// Figma `track` — 높이 8, #F1F1F1, radius 999
+.track {
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-elevated);
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  transition: width var(--motion-slow) var(--ease-out);
+}
+
+// Caption/R_12 #393939
+.hint {
   margin: 0;
+  font-size: var(--font-caption);
+  line-height: var(--line-normal);
+  color: var(--color-muted);
+  letter-spacing: var(--tracking-snug);
 }
 
-.bannerMaster .bannerProgress {
-  color: var(--color-bg);
-  opacity: 0.92;
+// 마스터 달성 시 hint 자리에 들어가는 공유 행 —
+// Figma `Frame 2614122`: Basic Body/M_14_140% #00B334 + 20px chevron
+.masterLink {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--color-primary-text-bold);
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-normal);
+  letter-spacing: var(--tracking-tight);
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+    border-radius: var(--radius-sm);
+  }
+}
+
+// Figma `map-card` — 흰 면 + 1px #E0E0E0, radius 12, padding 20, V gap 12
+.mapCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-md);
+  min-width: 0;
+
+  > * {
+    min-width: 0;
+  }
+}
+
+// Figma `legend` — 위쪽 1px 구분선 + padding-top 12, 항목 H gap 12
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding: var(--space-3) 0 0;
+  margin: 0;
+  list-style: none;
+  border-top: var(--border-thin) solid var(--color-border);
+}
+
+// 12px 스와치 + Caption/R_12 #151515, H gap 4
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-caption);
+  line-height: var(--line-normal);
+  color: var(--color-fg);
+}
+
+// 미방문 — 흰 면 + #E0E0E0 (지도 path 와 같은 규칙)
+.swatch {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  border: var(--border-thin) solid var(--color-border);
+}
+
+// 도장 완료 — 연초록 면 + #00B334
+.swatchVisited {
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fill {
+    transition: none;
+  }
 }

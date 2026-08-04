@@ -1,19 +1,26 @@
+// Figma `MY · 저장한 우승지` — 안내 한 줄 + 2열 그리드(gap 12).
+// 좌우 여백은 (main) layout 의 .contentInner(--content-pad) 담당.
+// 구 구현은 여기서 padding 16 을 한 번 더 줘 실제 36 이었다.
 .wrap {
   display: grid;
-  gap: var(--space-3);
-  padding: var(--space-4);
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3); // Figma body gap 12
+  min-width: 0;
 }
 
+// Caption/R_12 #393939 (구 14px)
 .summary {
-  font-size: var(--font-body-sm);
-  color: var(--color-muted);
   margin: 0;
+  font-size: var(--font-caption);
+  line-height: var(--line-normal);
+  color: var(--color-muted);
+  letter-spacing: var(--tracking-snug);
 }
 
-// 2열 그리드 — 모바일 360px 까지 안정. 좁아지면 폭은 자동 축소.
+// Figma `grid` — 2열, 행/열 gap 12
 .grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-3);
   padding: 0;
   margin: 0;

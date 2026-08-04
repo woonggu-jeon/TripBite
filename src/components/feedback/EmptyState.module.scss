@@ -13,8 +13,11 @@
   justify-content: center;
 }
 
-.hasDescription {
-  gap: var(--space-5); // Figma type=desc / type=button gap 20
+// Figma `f` — 제목 ↔ 설명 3 (wrap 의 gap 16 과 별개)
+.text {
+  display: grid;
+  gap: 3px;
+  justify-items: center;
 }
 
 // Figma circle — 84px, 면 MainColor/secondary01, 글리프 MainColor/primary.
@@ -48,8 +51,12 @@
   color: var(--color-muted);
   max-width: 28ch;
   line-height: var(--line-normal);
+  // 한글은 어절 단위로 끊어야 "골라보세 / 요." 처럼 잘리지 않는다
+  word-break: keep-all;
 }
 
+// Figma 는 텍스트 블록 ↔ 버튼이 20 — wrap gap 16 + 4
 .action {
-  margin-top: var(--space-2);
+  width: 100%;
+  margin-top: var(--space-1);
 }

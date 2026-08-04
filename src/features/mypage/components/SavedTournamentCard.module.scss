@@ -1,15 +1,18 @@
 // SavedTournamentCard — 우상단 하트 (unsave) 스타일.
 // row layout 은 폐기 — DestinationCard primitive 만 사용.
 
+// Figma `heart-btn` — 28x28 흰 원(radius 14), 테두리·그림자 없음.
+// 글리프는 채운 하트 16px. 시안색 #E1493C 대신 레포 토큰 --color-danger
+// (#dc2626, 흰 배경 4.83:1) 유지 — 결정 2 (HANDOFF.md) 와 동일 기준.
 .heart {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   padding: 0;
-  background: color-mix(in srgb, var(--color-bg) 86%, transparent);
-  color: var(--accent-red);
-  border: 1px solid color-mix(in srgb, var(--accent-red) 18%, transparent);
+  background: var(--color-bg);
+  color: var(--color-danger);
+  border: 0;
   border-radius: var(--radius-full);
   cursor: pointer;
   transition:
@@ -27,14 +30,14 @@
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      background: var(--color-bg);
+      background: var(--color-surface-soft);
     }
   }
 }
 
 .heartIcon {
-  // lucide stroke color 상속 — accent-red.
-  color: var(--accent-red);
+  // lucide stroke color 상속 — 버튼 color 를 그대로 물려받는다.
+  color: inherit;
 }
 
 @media (prefers-reduced-motion: reduce) {
