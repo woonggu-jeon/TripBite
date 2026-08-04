@@ -1,13 +1,22 @@
-// section wrap + title 만. 카드 자체는 ui/DestinationCard 가 담당.
+// Figma `POI · 장소상세 > near-sec` — 제목 Basic Body/B_16_140% + 카드 3개(gap 8).
+// 카드 자체는 ui/DestinationCard 가 담당.
 .wrap {
   display: grid;
-  gap: var(--space-3);
-  margin-top: var(--space-5);
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3); // Figma near-sec V gap 12
+  min-width: 0;
+
+  // aspect-ratio 카드가 트랙을 밀어내지 못하게
+  > * {
+    min-width: 0;
+  }
 }
 
+// Basic Body/B_16_140% (구 18px extrabold)
 .title {
-  font-size: var(--font-h3);
-  font-weight: var(--font-weight-extrabold);
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-normal);
   color: var(--color-fg);
   letter-spacing: var(--tracking-tight);
   margin: 0;

@@ -32,7 +32,7 @@ export function RelatedDestinations({ id }: { id: string }) {
     return (
       <section className={styles.wrap} aria-label={t('label')}>
         <h2 className={styles.title}>{t('label')}</h2>
-        <Skeleton width="100%" height={200} radius="lg" />
+        <Skeleton width="100%" height={189} radius="lg" />
       </section>
     );
   }
@@ -58,7 +58,7 @@ export function RelatedDestinations({ id }: { id: string }) {
         keyExtractor={(d) => d.id}
         options={{ slidesPerView, gap: 8 }}
         showDots={false}
-        fallbackHeight={200}
+        fallbackHeight={189}
         ariaLabel={t('label')}
       />
     </section>

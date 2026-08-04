@@ -1,37 +1,35 @@
-// 길찾기 + 공유 2버튼 동일 비율. provider 중립 톤 (브랜드 컬러 미사용).
+// Figma `POI · 장소상세 > action-bar` 실측 — 156x52 버튼 2개, H gap 8, radius 12.
+//   왼쪽 `길찾기`  : 채움 #00B334 + 흰 라벨
+//   오른쪽 `링크 공유`: 흰 면 + 1px #00B334 테두리 + #00B334 라벨
+// ⚠ 흰 라벨 on #00B334 = 2.80:1 (AA 미달). 시안값을 우선한다는 사용자 지시에 따라
+//   채택. 되돌릴 때는 `.directions` 의 background/border 를
+//   --color-primary-strong(#00821f, 4.98:1) 으로 한 줄씩 바꾸면 된다.
 .row {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-2);
-  margin: var(--space-3) 0 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2); // Figma gap 8
+  margin: 0;
 }
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  min-height: 44px; // WCAG 2.1 target size
+  gap: var(--space-2); // Figma 아이콘↔라벨 8
+  min-height: 52px; // Figma 버튼 높이
   padding: var(--space-2) var(--space-3);
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-fg);
-  font-size: var(--font-body-sm);
-  font-weight: var(--font-weight-bold);
+  border-radius: var(--radius-md); // 12
+  font-size: var(--font-body-sm); // Basic Body/SB_14_140%
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-normal);
+  letter-spacing: var(--tracking-tight);
   text-align: center;
+  white-space: nowrap;
   cursor: pointer;
   transition:
-    border-color var(--motion-base) ease,
+    opacity var(--motion-base) ease,
     background var(--motion-base) ease,
     transform var(--motion-fast) ease;
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      border-color: var(--color-primary-text-bold);
-      background: var(--color-hover);
-    }
-  }
 
   &:active {
     transform: scale(0.97);
@@ -43,32 +41,41 @@
   }
 }
 
-// 길찾기 — primary 강조 (어떤 provider 든 동일 톤)
+// 길찾기 — 시안 채움 버튼
 .directions {
-  background: var(--color-primary-strong);
-  border-color: var(--color-primary-strong);
+  background: var(--color-primary);
+  border: var(--border-thin) solid var(--color-primary);
   color: var(--color-primary-fg);
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
       opacity: var(--opacity-hover-dim);
-      /* 라벨(--color-primary-fg, 흰색) 을 기본 상태에서 물려받으므로
-         hover 에서도 strong 유지 — primary 로 되돌리면 흰 글자 2.80:1 로 떨어짐. */
-      background: var(--color-primary-strong);
-      border-color: var(--color-primary-strong);
     }
   }
 }
 
-// 공유 — 기본 surface 톤 그대로
+// 링크 공유 — 시안 라인 버튼. 라벨은 텍스트라 대비 확보된 text-bold 사용.
+.share {
+  background: var(--color-bg);
+  border: var(--border-thin) solid var(--color-primary);
+  color: var(--color-primary-text-bold);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: var(--color-primary-soft);
+    }
+  }
+}
 
 @media (max-width: 380px) {
-  .row {
-    gap: var(--space-1);
-  }
   .btn {
-    font-size: var(--font-caption);
+    gap: var(--space-1);
     padding: var(--space-2);
-    gap: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn {
+    transition: none;
   }
 }

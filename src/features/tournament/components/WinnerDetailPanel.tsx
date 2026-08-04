@@ -55,6 +55,11 @@ function ExpandableSummary({ text }: { text: string }) {
 interface Props {
   detail: DestinationDetailDto | undefined;
   isLoading: boolean;
+  /**
+   * Figma 껍데기 변형 — `card` 는 토너먼트 결과(흰 면 + 보더 + padding),
+   * `plain` 은 장소상세(본문에 그대로 붙는 형태).
+   */
+  variant?: 'card' | 'plain';
 }
 
 /**
@@ -68,7 +73,11 @@ interface Props {
  *   - 로딩 중엔 skeleton — 우승 카드만 먼저 보이고 상세는 비동기로 채워짐
  *     ("렌더 속도 최우선" 정책: 상세 fetch 가 늦어도 winner/stats 는 즉시 표시)
  */
-export function WinnerDetailPanel({ detail, isLoading }: Props) {
+export function WinnerDetailPanel({
+  detail,
+  isLoading,
+  variant = 'card',
+}: Props) {
   const t = useTranslations('tournament.result.detail');
 
   if (isLoading) {
@@ -92,42 +101,42 @@ export function WinnerDetailPanel({ detail, isLoading }: Props) {
   if (detail.address)
     rows.push({
       key: 'address',
-      icon: <MapPin size={16} aria-hidden />,
+      icon: <MapPin size={18} aria-hidden />,
       label: t('address'),
       value: detail.address,
     });
   if (detail.openingHours)
     rows.push({
       key: 'hours',
-      icon: <Clock size={16} aria-hidden />,
+      icon: <Clock size={18} aria-hidden />,
       label: t('openingHours'),
       value: detail.openingHours,
     });
   if (detail.restDate)
     rows.push({
       key: 'restDate',
-      icon: <CalendarX size={16} aria-hidden />,
+      icon: <CalendarX size={18} aria-hidden />,
       label: t('restDate'),
       value: detail.restDate,
     });
   if (detail.parking)
     rows.push({
       key: 'parking',
-      icon: <CircleParking size={16} aria-hidden />,
+      icon: <CircleParking size={18} aria-hidden />,
       label: t('parking'),
       value: detail.parking,
     });
   if (detail.phone)
     rows.push({
       key: 'phone',
-      icon: <Phone size={16} aria-hidden />,
+      icon: <Phone size={18} aria-hidden />,
       label: t('phone'),
       value: detail.phone,
     });
   if (detail.website)
     rows.push({
       key: 'website',
-      icon: <Globe size={16} aria-hidden />,
+      icon: <Globe size={18} aria-hidden />,
       label: t('website'),
       value: detail.website,
     });
@@ -139,12 +148,17 @@ export function WinnerDetailPanel({ detail, isLoading }: Props) {
 
   if (!hasLead && !hasRows) return null;
 
+  // Figma `info-card` 는 필드 목록 → divider → overview 순서다
+  // (POI · 장소상세 / TRN · 토너먼트 결과 둘 다 동일). 구현은 반대였다.
   return (
-    <section className={styles.panel} aria-label={t('panelLabel')}>
-      {hasLead && <ExpandableSummary text={lead} />}
-
+    <section
+      className={`${styles.panel} ${variant === 'plain' ? styles.plain : styles.card}`}
+      aria-label={t('panelLabel')}
+    >
       {hasRows && (
-        <dl className={styles.rows}>
+        <dl
+          className={`${styles.rows} ${hasLead ? styles.rowsDivided : ''}`.trim()}
+        >
           {rows.map((r) => {
             // website 인 경우 BE 응답이 http(s) prefix 인지 강제 검증 (javascript:
             // 같은 URL scheme XSS 차단). BE 가 신뢰 source 라도 다층 방어.
@@ -174,6 +188,8 @@ export function WinnerDetailPanel({ detail, isLoading }: Props) {
           })}
         </dl>
       )}
+
+      {hasLead && <ExpandableSummary text={lead} />}
     </section>
   );
 }

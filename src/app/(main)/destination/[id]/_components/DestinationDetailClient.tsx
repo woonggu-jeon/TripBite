@@ -1,17 +1,14 @@
 'use client';
 
-import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { AlertCircle } from 'lucide-react';
 import { SubHeader } from '@/components/layout/SubHeader';
+import { Icon } from '@/components/icon';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
-import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { useDestinationDetail } from '@/features/tournament/hooks/use-tournament';
 import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetailPanel';
-import { categoryEmoji } from '@/constants/emoji-map';
-import { secureImageUrl } from '@/lib/secure-image-url';
 import { DestinationPhotos } from './DestinationPhotos';
 import { DestinationActions } from './DestinationActions';
 import { RelatedDestinations } from './RelatedDestinations';
@@ -67,71 +64,54 @@ export function DestinationDetailClient({ id }: { id: string }) {
       <>
         <SubHeader title={t('title')} />
         <div className={styles.wrap}>
-          <div className={styles.hero} aria-hidden>
-            <Skeleton width={64} height={64} radius="full" />
-            <Skeleton width="40%" height={14} radius="sm" />
+          {/* 새 레이아웃과 같은 자리잡이 — 풀블리드 hero → 제목 → 정보 카드 */}
+          <div className={styles.heroSkeleton} aria-hidden />
+          <div className={styles.infoSec}>
+            <Skeleton width="60%" height={26} radius="md" />
+            <Skeleton width="100%" height={140} radius="md" />
           </div>
-          <Skeleton width="70%" height={28} radius="md" />
-          <Skeleton width="100%" height={120} radius="lg" />
         </div>
       </>
     );
   }
 
-  const regionName =
-    CHUNGBUK_REGIONS.find((r) => r.code === detail.region)?.ko ?? detail.region;
-  const emoji = categoryEmoji(detail.category);
-  const safeHeroImg = secureImageUrl(detail.imageUrl);
-
   return (
     <>
       <SubHeader title={title} />
       <article className={styles.wrap} aria-labelledby="destination-name">
-        {/* 1) 사진 영역 — photos 있으면 carousel, 없으면 imageUrl 단일 hero */}
+        {/* 1) hero — Figma 360x234 풀블리드 사진 + 그라디언트. photos 있으면 캐러셀 */}
         <DestinationPhotos
           photos={detail.photos}
           imageUrl={detail.imageUrl}
           alt={detail.name}
         />
 
-        {/* 2) Hero — 대표사진(imageUrl) thumbnail + 시군 · 카테고리. 사진 없으면 emoji fallback */}
-        <header className={styles.hero}>
-          <div className={styles.heroEmoji} aria-hidden>
-            {safeHeroImg ? (
-              <Image
-                src={safeHeroImg}
-                alt=""
-                fill
-                sizes="80px"
-                className={styles.heroPhoto}
-              />
-            ) : (
-              <span className={styles.heroEmojiGlyph}>{emoji}</span>
-            )}
-          </div>
-          <p className={styles.heroMeta}>
-            <span className={styles.heroRegion}>{regionName}</span>
-            <span aria-hidden className={styles.dot}>
-              ·
-            </span>
-            <span className={styles.heroCategory}>
+        {/* 2) info-sec — Figma V gap 20 / padding 하단 24 */}
+        <section className={styles.infoSec}>
+          {/* title-area — 이름(20 Bold) + 카테고리 배지. 시안의 영문명은
+              DTO 에 대응 필드가 없어 생략 (없는 데이터를 만들지 않는다). */}
+          <div className={styles.titleArea}>
+            <h2 id="destination-name" className={styles.name}>
+              {detail.name}
+            </h2>
+            <span className={styles.badge}>
+              <Icon name="compass" size={12} />
               {tCategory(detail.category as Parameters<typeof tCategory>[0])}
             </span>
-          </p>
-        </header>
+          </div>
 
-        {/* 3) Name — SubHeader 가 페이지 h1 이므로 h2 로 위계 보존 */}
-        <h2 id="destination-name" className={styles.name}>
-          {detail.name}
-        </h2>
+          {/* info-card — 주소/운영시간/휴무일/주차/전화/웹사이트 + 구분선 + 설명(더보기) */}
+          <WinnerDetailPanel
+            detail={detail}
+            isLoading={false}
+            variant="plain"
+          />
+        </section>
 
-        {/* 4) 장소 정보 (summary / description / 주소 / 시간 / 휴무 / 주차 / 연락처 / web) */}
-        <WinnerDetailPanel detail={detail} isLoading={false} />
-
-        {/* 5) 이 시군의 다른 여행지 (Carousel) */}
+        {/* 3) 이 시군의 다른 여행지 */}
         <RelatedDestinations id={id} />
 
-        {/* 6) Actions row — 카카오 길찾기 + 공유. (네이버 분기는 코드에 주석으로 유지) */}
+        {/* 4) action-bar — 길찾기(채움) + 링크 공유(라인) */}
         <DestinationActions
           id={id}
           name={detail.name}

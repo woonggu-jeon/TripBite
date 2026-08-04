@@ -1,104 +1,60 @@
+// Figma `POI · 장소상세` — hero(풀블리드) → info-sec → near-sec → action-bar.
+// 좌우 여백은 (main) layout 의 contentInner 가 담당한다.
 .wrap {
   display: grid;
-  gap: var(--space-4);
-  // SubHeader 와 페이지 padding 외에 자체 좌우 여백 X — (main) layout 의
-  // contentInner 가 담당.
+  gap: 0;
 }
 
-// Hero — 카테고리 이모지 + 시군·카테고리 메타. Fluid 반응형 (320~desktop).
-.hero {
-  display: grid;
-  grid-template-columns: clamp(64px, 20vw, 80px) 1fr;
-  align-items: center;
-  gap: clamp(0.75rem, 3vw, 1rem);
-  padding: clamp(0.75rem, 3vw, 1rem);
+// 로딩 자리잡이 — 실 hero 와 같은 비율/풀블리드
+.heroSkeleton {
+  margin-inline: calc(var(--content-pad) * -1);
+  margin-top: calc(var(--content-pad) * -1);
+  aspect-ratio: 360 / 234;
   background: var(--color-surface-soft);
-  border-radius: var(--radius-lg);
 }
 
-// 대표사진 (imageUrl) thumbnail 컨테이너. next/image fill 위해 position relative.
-// imageUrl 없을 때 emoji fallback — .heroEmojiGlyph 가 폰트 사이즈 담당.
-.heroEmoji {
-  position: relative;
-  width: clamp(64px, 20vw, 80px);
-  height: clamp(64px, 20vw, 80px);
+// Figma `info-sec` — V gap 20, 하단 padding 24
+.infoSec {
   display: grid;
-  place-items: center;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  overflow: hidden;
+  gap: var(--space-5);
+  padding-top: var(--space-5);
+  padding-bottom: var(--space-6);
 }
 
-.heroPhoto {
-  object-fit: cover;
+// Figma `title-area` — 이름 + 카테고리 배지, H gap 10
+.titleArea {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
-.heroEmojiGlyph {
-  font-size: clamp(var(--emoji-xl), 8vw, var(--emoji-2xl));
-  line-height: 1;
+// Title/B_20_130%
+.name {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--font-h2);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug);
+  color: var(--color-fg);
+  letter-spacing: var(--tracking-tight);
+  word-break: keep-all;
 }
 
-.heroMeta {
+// Figma `badge` — 연초록 pill (radius 999), padding 4/12, H gap 4,
+// 12px 아이콘 + Caption/B_10. 초록은 텍스트라 primary-text-bold 사용.
+.badge {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
-  font-size: var(--font-caption);
-  color: var(--color-muted);
-}
-
-.heroRegion {
-  font-weight: var(--font-weight-bold);
-  color: var(--color-fg);
-}
-
-.dot {
-  color: var(--color-muted);
-}
-
-.heroCategory {
-  font-weight: var(--font-weight-semibold);
-}
-
-.name {
-  font-size: var(--font-h1);
-  font-weight: var(--font-weight-extrabold);
-  letter-spacing: var(--tracking-tight);
-  line-height: var(--line-tight);
-  color: var(--color-fg);
-  // h1 기본 margin 제거 — 부모 grid gap 으로 간격 통일.
-  margin: 0;
-}
-
-.seasons {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.sectionTitle {
-  font-size: var(--font-label);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-muted);
-  letter-spacing: var(--tracking-snug);
-  margin: 0;
-}
-
-.seasonChips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-.seasonChip {
-  padding: 4px 12px;
-  background: var(--color-primary-tint);
-  color: var(--color-primary-text-bold);
+  gap: var(--space-1);
+  flex-shrink: 0;
+  padding: 4px var(--space-3);
   border-radius: var(--radius-full);
-  font-size: var(--font-caption);
-  font-weight: var(--font-weight-semibold);
+  background: var(--color-primary-soft);
+  color: var(--color-primary-text-bold);
+  font-size: var(--font-eyebrow);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-tight);
+  letter-spacing: var(--tracking-tight);
+  white-space: nowrap;
 }
-
-// fluid clamp() 가 단계별 media query 대체.

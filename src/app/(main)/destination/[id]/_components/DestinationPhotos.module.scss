@@ -1,13 +1,36 @@
-// next/image fill 모드 — wrap 이 dimension 정의. Carousel slide 의 raw img 도
-// 동일 selector 재사용 (fill 외 케이스는 .image 가 width/aspect-ratio 처리).
+// Figma `POI · 장소상세 > hero` — 360x234, **풀블리드**(좌우 여백 없음),
+// radius 없음. 사진 위에 상→하 어두운 그라디언트가 얹힌다.
+//
+// 컨텐츠에는 --content-pad 여백이 있으므로 음수 마진으로 화면 끝까지 늘린다.
+// (설정 행 / 알림 행 / 편지 탭과 같은 idiom)
 .wrap {
   position: relative; // next/image fill 필수
-  width: 100%;
-  aspect-ratio: 3 / 2;
-  border-radius: var(--radius-lg);
+  width: auto;
+  margin-inline: calc(var(--content-pad) * -1);
+  margin-top: calc(var(--content-pad) * -1); // 헤더 바로 아래에 붙는다
+  aspect-ratio: 360 / 234;
+  border-radius: 0;
   overflow: hidden;
-  background: var(--color-surface-soft);
-  margin-bottom: var(--space-3);
+  background: var(--color-media-placeholder);
+  isolation: isolate;
+}
+
+// Figma `hero-ov` — 검정 20% 면 위에 상→하 그라디언트
+// (gradientTransform 항등회전 = 세로축, stops 0 → .08@64% → .5@100%)
+.wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to bottom,
+      rgb(0 0 0 / 0%) 0%,
+      rgb(0 0 0 / 8%) 64%,
+      rgb(0 0 0 / 50%) 100%
+    ),
+    rgb(0 0 0 / 20%);
 }
 
 .image {
@@ -15,11 +38,25 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  background: var(--color-surface-soft);
+  background: var(--color-media-placeholder);
 }
 
-@media (max-width: 380px) {
-  .wrap {
-    aspect-ratio: 4 / 3;
-  }
+// Figma `hero-dots` — 사진 위 하단 중앙 오버레이 (구현은 사진 아래 별도 줄).
+// 활성 18x6 흰색 / 비활성 6x6 #8A8A8A. 크기는 Carousel 기본값이 이미 시안과 같아
+// 위치와 색만 덮는다. Carousel 의 dots 는 자체 CSS Module(해시 클래스) 이므로
+// 클래스 대신 구조 선택자(role/aria-selected)로 지정한다.
+.wrap [role='tablist'] {
+  position: absolute;
+  inset-inline: 0;
+  bottom: var(--space-3);
+  z-index: 2;
+  margin-top: 0;
+}
+
+.wrap [role='tab'] {
+  background: var(--color-fg-weak);
+}
+
+.wrap [role='tab'][aria-selected='true'] {
+  background: var(--color-on-strong);
 }

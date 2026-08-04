@@ -60,7 +60,7 @@ export function DestinationActions({
           rel="noopener noreferrer"
           className={`${styles.btn} ${styles.directions}`}
         >
-          <MapPin size={16} aria-hidden />
+          <MapPin size={18} aria-hidden />
           <span>{t('directions')}</span>
         </a>
       )}
@@ -69,7 +69,7 @@ export function DestinationActions({
         onClick={handleShare}
         className={`${styles.btn} ${styles.share}`}
       >
-        <Share2 size={16} aria-hidden />
+        <Share2 size={18} aria-hidden />
         <span>{t('share')}</span>
       </button>
     </nav>
