@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { SubHeader } from '@/components/layout/SubHeader';
 import { TournamentPlayClient } from './_components/TournamentPlayClient';
 
 /**
@@ -46,12 +45,10 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function TournamentPlayPage() {
-  const t = await getTranslations('tournament');
-  return (
-    <>
-      <SubHeader title={t('title')} />
-      <TournamentPlayClient />
-    </>
-  );
+/**
+ * 헤더는 `TournamentPlayClient` 가 직접 렌더한다 — 뒤로가기가 페이지 이탈이
+ * 아니라 "직전 선택 취소 / 이전 단계"로 동작해야 해서 phase 상태가 필요하다.
+ */
+export default function TournamentPlayPage() {
+  return <TournamentPlayClient />;
 }

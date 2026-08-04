@@ -1,13 +1,16 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { CenterIllustration } from '@/features/tournament/components/CenterIllustration';
 import { FallingPetals } from '@/features/tournament/components/FallingPetals';
 import { ChungbukMap } from '@/features/tournament/components/ChungbukMap';
 import { CountSelector } from '@/features/tournament/components/CountSelector';
-import { Bracket } from '@/features/tournament/components/Bracket';
+import {
+  Bracket,
+  type BracketHandle,
+} from '@/features/tournament/components/Bracket';
 import type { DestinationDto } from '@/api/generated/schemas';
 import type {
   BracketResult,
@@ -20,6 +23,7 @@ import {
 } from '@/features/tournament/hooks/use-tournament';
 import { Button, ButtonGrid } from '@/components/ui';
 import { EmptyState } from '@/components/feedback/EmptyState';
+import { SubHeader } from '@/components/layout/SubHeader';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { toast } from '@/lib/toast';
 import styles from './TournamentPlayClient.module.scss';
@@ -98,6 +102,7 @@ export function TournamentPlayClient() {
   const router = useRouter();
   const t = useTranslations('tournament.play');
   const tSeason = useTranslations('tournament.season');
+  const tTournament = useTranslations('tournament');
   const config = useTournamentStore((s) => s.config);
   const setSelectedRegions = useTournamentStore((s) => s.setSelectedRegions);
   const setTournamentSize = useTournamentStore((s) => s.setTournamentSize);
@@ -110,6 +115,30 @@ export function TournamentPlayClient() {
     null,
   );
   const pendingWinner = pendingResult?.winner ?? null;
+  const bracketRef = useRef<BracketHandle>(null);
+
+  /**
+   * 헤더 뒤로가기 — 페이지를 떠나는 대신 한 단계씩 되돌린다.
+   *
+   *   매치 진행 중 → 직전에 고른 매치로 (선택 취소)
+   *   첫 매치      → 토너먼트 규모 선택으로
+   *   규모 선택    → 지도로
+   *   그 외        → 브라우저 뒤로 (설정 화면)
+   *
+   * intro 는 2.5초 후 자동으로 map 이 되므로 되돌릴 대상이 아니다.
+   */
+  const handleBack = () => {
+    if (phase === 'bracket') {
+      if (bracketRef.current?.undo()) return;
+      setPhase('tournamentSize');
+      return;
+    }
+    if (phase === 'tournamentSize') {
+      setPhase('map');
+      return;
+    }
+    router.back();
+  };
 
   const {
     data: pool,
@@ -218,12 +247,18 @@ export function TournamentPlayClient() {
 
   if (!config) {
     return (
-      <div className={styles.empty}>
-        <p>{t('noConfig')}</p>
-        <Button variant="primary" onClick={() => router.replace('/tournament')}>
-          {t('goSetup')}
-        </Button>
-      </div>
+      <>
+        <SubHeader title={tTournament('title')} onBack={() => router.back()} />
+        <div className={styles.empty}>
+          <p>{t('noConfig')}</p>
+          <Button
+            variant="primary"
+            onClick={() => router.replace('/tournament')}
+          >
+            {t('goSetup')}
+          </Button>
+        </div>
+      </>
     );
   }
 
@@ -258,159 +293,165 @@ export function TournamentPlayClient() {
   const canStartBracket = pendingSize !== null;
 
   return (
-    <div className={styles.wrap}>
-      {/* 계절 파티클은 intro 에서만 — 여행지가 선정된 map 단계에서는 마커까지
+    <>
+      {/* 헤더를 클라이언트에서 렌더하는 이유 — 뒤로가기가 페이지 이탈이 아니라
+          "직전 선택 취소"로 동작해야 해서 phase 상태에 접근해야 한다. */}
+      <SubHeader title={tTournament('title')} onBack={handleBack} />
+      <div className={styles.wrap}>
+        {/* 계절 파티클은 intro 에서만 — 여행지가 선정된 map 단계에서는 마커까지
           같이 떨어져 어수선하다. 시안의 준비 완료 화면에도 파티클이 없다. */}
-      {theme.kind === 'season' && phase === 'intro' && (
-        <FallingPetals season={theme.value} active />
-      )}
+        {theme.kind === 'season' && phase === 'intro' && (
+          <FallingPetals season={theme.value} active />
+        )}
 
-      {phase === 'intro' && (
-        <div className={styles.center}>
-          <CenterIllustration theme={theme} onTap={() => {}} disabled />
-          {/* Figma `TRN · 로딩` — 20/Bold 제목 + 9px 점 3개 */}
-          <p className={styles.introTitle}>{t('introHint')}</p>
-          <span className={styles.dots} aria-hidden>
-            <span className={styles.dot} />
-            <span className={styles.dot} />
-            <span className={styles.dot} />
-          </span>
-        </div>
-      )}
+        {phase === 'intro' && (
+          <div className={styles.center}>
+            <CenterIllustration theme={theme} onTap={() => {}} disabled />
+            {/* Figma `TRN · 로딩` — 20/Bold 제목 + 9px 점 3개 */}
+            <p className={styles.introTitle}>{t('introHint')}</p>
+            <span className={styles.dots} aria-hidden>
+              <span className={styles.dot} />
+              <span className={styles.dot} />
+              <span className={styles.dot} />
+            </span>
+          </div>
+        )}
 
-      {phase === 'map' && (
-        <div className={styles.map}>
-          {mapPlaceholders.length > 0 && (
-            <>
-              {/* Figma `map-card` — 지도를 흰 카드(padding 12) 안에 넣는다.
+        {phase === 'map' && (
+          <div className={styles.map}>
+            {mapPlaceholders.length > 0 && (
+              <>
+                {/* Figma `map-card` — 지도를 흰 카드(padding 12) 안에 넣는다.
                   자동 표시 — 사용자 선택 X. 시군 위치만 시각화 */}
-              <div className={styles.mapCard}>
-                <ChungbukMap destinations={mapPlaceholders} theme={theme} />
-              </div>
-              <div className={styles.mapText}>
-                <p className={styles.counter}>
-                  {t('mapSummary', { destinations: N })}
-                </p>
-                <p className={styles.mapDesc}>
-                  {t('mapSummaryHint', { season: tSeason(theme.value) })}
-                </p>
-              </div>
-              <div className={styles.mapFooter}>
-                <ButtonGrid>
-                  <Button
-                    variant="secondary"
-                    size="lg"
-                    fullWidth
-                    onClick={handleReshuffle}
-                  >
-                    {t('reshuffle')}
-                  </Button>
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    fullWidth
-                    onClick={handleMapNext}
-                  >
-                    {t('next')}
-                  </Button>
-                </ButtonGrid>
-              </div>
-            </>
-          )}
-        </div>
-      )}
-
-      {phase === 'tournamentSize' && (
-        <div className={styles.sizePhase}>
-          {/* Figma `Frame 41` — 제목(20 Bold) + 보조(12), V gap 8 */}
-          <div className={styles.sizeHeading}>
-            <h2 className={styles.sizeTitle}>{t('tournamentSize.title')}</h2>
-            <p className={styles.sizeHint}>{t('tournamentSize.hint')}</p>
+                <div className={styles.mapCard}>
+                  <ChungbukMap destinations={mapPlaceholders} theme={theme} />
+                </div>
+                <div className={styles.mapText}>
+                  <p className={styles.counter}>
+                    {t('mapSummary', { destinations: N })}
+                  </p>
+                  <p className={styles.mapDesc}>
+                    {t('mapSummaryHint', { season: tSeason(theme.value) })}
+                  </p>
+                </div>
+                <div className={styles.mapFooter}>
+                  <ButtonGrid>
+                    <Button
+                      variant="secondary"
+                      size="lg"
+                      fullWidth
+                      onClick={handleReshuffle}
+                    >
+                      {t('reshuffle')}
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="lg"
+                      fullWidth
+                      onClick={handleMapNext}
+                    >
+                      {t('next')}
+                    </Button>
+                  </ButtonGrid>
+                </div>
+              </>
+            )}
           </div>
-          <CountSelector
-            value={pendingSize}
-            onChange={setPendingSize}
-            mode="tournament"
-          />
-          {/* Figma 는 시작 버튼을 화면 하단에 붙인다 */}
-          <div className={styles.sizeAction}>
-            <Button
-              variant="primary"
-              size="lg"
-              fullWidth
-              disabled={!canStartBracket}
-              onClick={handleConfirmSize}
-            >
-              {t('startBracket')}
-            </Button>
-          </div>
-        </div>
-      )}
+        )}
 
-      {phase === 'bracket' && (
-        <div className={styles.bracket}>
-          {isLoading && <p className={styles.hint}>{t('loading')}</p>}
-          {isError && (
-            <div className={styles.errorBox}>
-              <p>{t('error')}</p>
-              <Button variant="secondary" size="sm" onClick={() => refetch()}>
-                {t('retry')}
+        {phase === 'tournamentSize' && (
+          <div className={styles.sizePhase}>
+            {/* Figma `Frame 41` — 제목(20 Bold) + 보조(12), V gap 8 */}
+            <div className={styles.sizeHeading}>
+              <h2 className={styles.sizeTitle}>{t('tournamentSize.title')}</h2>
+              <p className={styles.sizeHint}>{t('tournamentSize.hint')}</p>
+            </div>
+            <CountSelector
+              value={pendingSize}
+              onChange={setPendingSize}
+              mode="tournament"
+            />
+            {/* Figma 는 시작 버튼을 화면 하단에 붙인다 */}
+            <div className={styles.sizeAction}>
+              <Button
+                variant="primary"
+                size="lg"
+                fullWidth
+                disabled={!canStartBracket}
+                onClick={handleConfirmSize}
+              >
+                {t('startBracket')}
               </Button>
             </div>
-          )}
-          {/* 빈 풀 — BE 응답 0건 또는 매치업 못 만드는 조합 (예: 시군+카테고리 교집합 없음) */}
-          {!isLoading &&
-            !isError &&
-            pool &&
-            matchupDestinations.length === 0 && (
-              <EmptyState
-                icon={
-                  <span aria-hidden style={{ fontSize: 32 }}>
-                    🗺️
-                  </span>
-                }
-                title={t('emptyPool.title')}
-                description={t('emptyPool.hint')}
-                action={
-                  <Button
-                    variant="primary"
-                    size="md"
-                    onClick={() => router.replace('/tournament')}
-                  >
-                    {t('emptyPool.back')}
-                  </Button>
-                }
+          </div>
+        )}
+
+        {phase === 'bracket' && (
+          <div className={styles.bracket}>
+            {isLoading && <p className={styles.hint}>{t('loading')}</p>}
+            {isError && (
+              <div className={styles.errorBox}>
+                <p>{t('error')}</p>
+                <Button variant="secondary" size="sm" onClick={() => refetch()}>
+                  {t('retry')}
+                </Button>
+              </div>
+            )}
+            {/* 빈 풀 — BE 응답 0건 또는 매치업 못 만드는 조합 (예: 시군+카테고리 교집합 없음) */}
+            {!isLoading &&
+              !isError &&
+              pool &&
+              matchupDestinations.length === 0 && (
+                <EmptyState
+                  icon={
+                    <span aria-hidden style={{ fontSize: 32 }}>
+                      🗺️
+                    </span>
+                  }
+                  title={t('emptyPool.title')}
+                  description={t('emptyPool.hint')}
+                  action={
+                    <Button
+                      variant="primary"
+                      size="md"
+                      onClick={() => router.replace('/tournament')}
+                    >
+                      {t('emptyPool.back')}
+                    </Button>
+                  }
+                />
+              )}
+            {matchupDestinations.length > 0 && (
+              <Bracket
+                ref={bracketRef}
+                destinations={matchupDestinations}
+                onComplete={handleBracketComplete}
               />
             )}
-          {matchupDestinations.length > 0 && (
-            <Bracket
-              destinations={matchupDestinations}
-              onComplete={handleBracketComplete}
-            />
-          )}
-        </div>
-      )}
-
-      {phase === 'celebration' && pendingWinner && (
-        <div className={styles.celebration} role="status" aria-live="polite">
-          <div className={styles.celebGlow} aria-hidden />
-          <div className={styles.celebTrophy} aria-hidden>
-            🏆
           </div>
-          <p className={styles.celebTitle}>{t('celebration.title')}</p>
-          <p className={styles.celebName}>{pendingWinner.name}</p>
-          <p className={styles.celebRegion}>{pendingWinner.region}</p>
-          <span className={styles.celebSparkle1} aria-hidden>
-            ✦
-          </span>
-          <span className={styles.celebSparkle2} aria-hidden>
-            ✦
-          </span>
-          <span className={styles.celebSparkle3} aria-hidden>
-            ✧
-          </span>
-        </div>
-      )}
-    </div>
+        )}
+
+        {phase === 'celebration' && pendingWinner && (
+          <div className={styles.celebration} role="status" aria-live="polite">
+            <div className={styles.celebGlow} aria-hidden />
+            <div className={styles.celebTrophy} aria-hidden>
+              🏆
+            </div>
+            <p className={styles.celebTitle}>{t('celebration.title')}</p>
+            <p className={styles.celebName}>{pendingWinner.name}</p>
+            <p className={styles.celebRegion}>{pendingWinner.region}</p>
+            <span className={styles.celebSparkle1} aria-hidden>
+              ✦
+            </span>
+            <span className={styles.celebSparkle2} aria-hidden>
+              ✦
+            </span>
+            <span className={styles.celebSparkle3} aria-hidden>
+              ✧
+            </span>
+          </div>
+        )}
+      </div>
+    </>
   );
 }

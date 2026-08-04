@@ -1,6 +1,12 @@
 'use client';
 
-import { useEffect, useMemo, useReducer } from 'react';
+import {
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useReducer,
+  type Ref,
+} from 'react';
 import { useTranslations } from 'next-intl';
 import type { DestinationDto } from '@/api/generated/schemas';
 import type { BracketResult } from '@/features/tournament/types';
@@ -20,7 +26,7 @@ interface BracketState {
   winner: DestinationDto | null;
 }
 
-type Action = { type: 'pick'; winner: DestinationDto };
+type Action = { type: 'pick'; winner: DestinationDto } | { type: 'undo' };
 
 function reducer(state: BracketState, action: Action): BracketState {
   switch (action.type) {
@@ -69,7 +75,69 @@ function reducer(state: BracketState, action: Action): BracketState {
         winner: null,
       };
     }
+    case 'undo':
+      return undoState(state);
   }
+}
+
+/**
+ * 직전 선택 취소 — 헤더 뒤로가기로 "방금 고른 매치"로 되돌아간다.
+ *
+ *   같은 라운드에 이전 매치가 있으면  → 그 매치의 winner 를 지우고 그리로
+ *   라운드 첫 매치면                  → 이전 라운드의 마지막 매치로 (현재 라운드 폐기)
+ *   첫 라운드 첫 매치면              → 되돌릴 게 없어 그대로 (호출 측이 판단)
+ *
+ * 라운드를 폐기해야 하는 이유 — 다음 라운드는 이전 라운드의 승자들로 짜였으므로
+ * 승자가 바뀌면 대진 자체가 무효다.
+ */
+function undoState(state: BracketState): BracketState {
+  const clearWinnerAt = (
+    rounds: RoundState[],
+    roundIndex: number,
+    matchIndex: number,
+  ): RoundState[] => {
+    const round = rounds[roundIndex];
+    if (!round) return rounds;
+    const next = rounds.slice();
+    next[roundIndex] = {
+      ...round,
+      matches: round.matches.map((m, i) =>
+        i === matchIndex ? { ...m, winner: undefined } : m,
+      ),
+    };
+    return next;
+  };
+
+  if (state.currentMatchIndex > 0) {
+    const target = state.currentMatchIndex - 1;
+    return {
+      ...state,
+      rounds: clearWinnerAt(state.rounds, state.currentRoundIndex, target),
+      currentMatchIndex: target,
+      done: false,
+      winner: null,
+    };
+  }
+
+  if (state.currentRoundIndex > 0) {
+    const prevIndex = state.currentRoundIndex - 1;
+    const prevRound = state.rounds[prevIndex];
+    if (!prevRound) return state;
+    const target = Math.max(0, prevRound.matches.length - 1);
+    return {
+      rounds: clearWinnerAt(
+        state.rounds.slice(0, state.currentRoundIndex),
+        prevIndex,
+        target,
+      ),
+      currentRoundIndex: prevIndex,
+      currentMatchIndex: target,
+      done: false,
+      winner: null,
+    };
+  }
+
+  return state;
 }
 
 function initState(destinations: DestinationDto[]): BracketState {
@@ -116,9 +184,17 @@ function useRoundLabel(participants: number): string {
   return t('roundOfN', { n: key.n });
 }
 
+/** 부모(진행 화면)가 헤더 뒤로가기에서 직전 선택을 취소하기 위한 핸들. */
+export interface BracketHandle {
+  /** 되돌릴 선택이 있으면 되돌리고 true. 첫 매치면 아무 것도 안 하고 false. */
+  undo: () => boolean;
+}
+
 export interface BracketProps {
   destinations: DestinationDto[];
   onComplete: (result: BracketResult) => void;
+  /** 뒤로가기용 핸들 — React 19 스타일 ref prop. */
+  ref?: Ref<BracketHandle>;
 }
 
 /**
@@ -130,9 +206,25 @@ export interface BracketProps {
  *   - 라운드 종료 시 winners + bye 로 다음 라운드 자동 생성
  *   - 마지막 1명 → onComplete(winner)
  */
-export function Bracket({ destinations, onComplete }: BracketProps) {
+export function Bracket({ destinations, onComplete, ref }: BracketProps) {
   const t = useTranslations('tournament.play.matchup');
   const [state, dispatch] = useReducer(reducer, destinations, initState);
+
+  // 헤더 뒤로가기 → 직전 매치로. 되돌릴 게 없으면 false 를 돌려 부모가
+  // 이전 단계(토너먼트 규모)로 나갈지 결정한다.
+  useImperativeHandle(
+    ref,
+    () => ({
+      undo: () => {
+        if (state.currentMatchIndex === 0 && state.currentRoundIndex === 0) {
+          return false;
+        }
+        dispatch({ type: 'undo' });
+        return true;
+      },
+    }),
+    [state.currentMatchIndex, state.currentRoundIndex],
+  );
 
   const round = state.rounds[state.currentRoundIndex];
   const label = useRoundLabel(round?.participants.length ?? 0);
