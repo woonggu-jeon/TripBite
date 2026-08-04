@@ -404,12 +404,6 @@
           "6": "Generous",
           "8": "Thorough"
         }
-      },
-      "headers": {
-        "themeKind": "Tournament",
-        "season": "Pick a season",
-        "category": "Pick a category",
-        "count": "How many places"
       }
     },
     "season": {

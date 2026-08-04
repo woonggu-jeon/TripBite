@@ -66,6 +66,7 @@ export function TournamentSetup() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const t = useTranslations('tournament.setup');
+  const tTournament = useTranslations('tournament');
   const tSeason = useTranslations('tournament.season');
   const setConfig = useTournamentStore((s) => s.setConfig);
 
@@ -119,9 +120,10 @@ export function TournamentSetup() {
     advanceTo(3);
   };
 
+  // 카테고리는 시안에 "선택하면 다음으로 진행해요" 안내가 없고 `다음` 버튼이
+  // 있다 — 즉 선택 후 명시적으로 눌러 넘어가는 화면이다. (테마·계절만 자동 진행)
   const handleCategory = (c: DestinationCategory) => {
     setCategory(c);
-    advanceTo(4);
   };
 
   const handleCount = (c: TournamentCount) => {
@@ -154,15 +156,6 @@ export function TournamentSetup() {
     router.push('/tournament/play');
   };
 
-  // Figma 는 단계마다 헤더 제목이 다르다 (토너먼트 / 계절 선택 / 카테고리 선택
-  // / 여행지 수). 구현은 4단계 모두 "토너먼트" 였다.
-  const headerTitle = (() => {
-    if (step === 1) return t('headers.themeKind');
-    if (step === 2) return t('headers.season');
-    if (step === 3) return t('headers.category');
-    return t('headers.count');
-  })();
-
   const heading = (() => {
     if (step === 1)
       return {
@@ -181,9 +174,10 @@ export function TournamentSetup() {
 
   return (
     <>
-      {/* Figma 는 단계 제목(20 Bold) + 보조(12) 를 본문 상단 `Frame 41` 에 두고,
-          헤더에는 단계 이름을 넣는다. 기존 문구를 재배치만 했다. */}
-      <SubHeader title={headerTitle} onBack={goBack} />
+      {/* 헤더 제목은 4단계 모두 "토너먼트" — 시안 확인 결과 프레임 이름(계절 선택
+          등)이 화면 제목은 아니었다. 단계 제목(20 Bold) + 보조(12) 는 본문 상단
+          `Frame 41` 에 놓인다. */}
+      <SubHeader title={tTournament('title')} onBack={goBack} />
       <div className={styles.wrap}>
         <div className={styles.section}>
           <div className={styles.heading}>
@@ -206,7 +200,6 @@ export function TournamentSetup() {
           {step === 3 && (
             <>
               <CategoryFilter value={category} onChange={handleCategory} />
-              <p className={styles.autoHint}>{t('selectToContinue')}</p>
               {/*
                 BE 동작 고지 — 계절 필터는 'festival' 에만 적용 (eventStart 월 기반).
                 attraction/experience/local 선택 시 BE 가 계절 무관 응답 → 사용자가
@@ -243,6 +236,20 @@ export function TournamentSetup() {
             </>
           )}
         </div>
+
+        {step === 3 && (
+          <div className={styles.action}>
+            <Button
+              variant="primary"
+              size="lg"
+              fullWidth
+              onClick={() => advanceTo(4)}
+              disabled={category === null}
+            >
+              {t('next')}
+            </Button>
+          </div>
+        )}
 
         {step === 4 && (
           <div className={styles.action}>
