@@ -1,3 +1,6 @@
+// 마커를 시군 라벨 아래로 내리는 양 — 라벨과 겹치지 않게.
+$marker-offset-y: 10px;
+
 .wrap {
   position: relative;
   width: 100%;
@@ -79,7 +82,8 @@
 // 계절 아이콘이 지도 위에 그냥 놓여 있다.
 .drop {
   position: absolute;
-  transform: translate(-50%, -50%);
+  // 시군 중심에 그대로 두면 지도 라벨(시군 이름)을 가린다 → 10px 아래로.
+  transform: translate(-50%, calc(-50% + #{$marker-offset-y}));
   font-size: var(--font-h1);
   line-height: 1;
   animation-name: marker-in;
@@ -138,7 +142,7 @@
 @media (prefers-reduced-motion: reduce) {
   .drop {
     animation: none;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, calc(-50% + #{$marker-offset-y}));
     opacity: 1;
   }
   .button {
