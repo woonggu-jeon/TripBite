@@ -96,7 +96,14 @@
       "toLogin": "로그인으로 돌아가기",
       "errors": {
         "emailInvalid": "올바른 이메일 형식이 아니에요."
-      }
+      },
+      "heroTitle": "아이디를 잊으셨나요?",
+      "heroDescription": "가입할 때 사용한 이메일을 입력하면\n아이디를 찾아드려요.",
+      "foundTitle": "아이디를 찾았어요",
+      "foundDescription": "{email} 로 가입된 계정이에요.",
+      "myIdLabel": "내 아이디",
+      "toLoginCta": "로그인하기",
+      "toForgotPassword": "비밀번호 찾기"
     },
     "changePassword": {
       "currentPassword": "현재 비밀번호",
@@ -155,7 +162,9 @@
         "passwordInvalid": "허용되지 않는 문자가 포함되어 있어요.",
         "passwordMismatch": "비밀번호가 일치하지 않아요.",
         "emailInvalid": "올바른 이메일 형식이 아니에요."
-      }
+      },
+      "haveAccount": "이미 계정이 있으신가요?",
+      "loginLink": "로그인"
     },
     "forgotPassword": {
       "title": "비밀번호 찾기",
@@ -171,7 +180,8 @@
       "errors": {
         "usernameInvalid": "아이디는 영문/숫자 4~20자여야 해요.",
         "emailInvalid": "올바른 이메일 형식이 아니에요."
-      }
+      },
+      "heroTitle": "비밀번호를 잊으셨나요?"
     },
     "resetPassword": {
       "title": "새 비밀번호 설정",

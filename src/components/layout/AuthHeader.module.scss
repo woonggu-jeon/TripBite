@@ -1,0 +1,53 @@
+// Figma auth `header` — 360x56, padding 0 20, 흰 배경.
+.bar {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  height: var(--header-h); // 56
+  padding: 0 var(--space-5); // Figma 0 20
+  background: var(--color-bg);
+}
+
+// 제목이 있는 화면(회원가입) 만 하단선 — 시안대로.
+.bordered {
+  border-bottom: var(--border-thin) solid var(--color-border);
+}
+
+.back {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-left: calc(var(--space-2) * -1);
+  border: 0;
+  border-radius: var(--radius-full);
+  background: none;
+  color: var(--color-fg);
+  cursor: pointer;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: var(--color-hover-soft);
+    }
+  }
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+  }
+}
+
+// Title/B_18_140% — 중앙 정렬. 페이지 h1 은 본문(AuthHero) 이 갖는다.
+.title {
+  font-size: var(--font-h3);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-normal);
+  color: var(--color-fg);
+  letter-spacing: var(--tracking-tight);
+  text-align: center;
+}
+
+.spacer {
+  width: 40px;
+}

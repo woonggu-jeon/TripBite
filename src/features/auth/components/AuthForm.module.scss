@@ -227,3 +227,155 @@
   background: var(--color-border);
   flex-shrink: 0;
 }
+
+/* ── auth 화면 공통 패널 (Figma 아이디/비밀번호 찾기, 결과) ─────────────
+   body padding 60 / 24, 블록 사이 gap 36, 하단 링크는 화면 바닥에 붙는다. */
+.authPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-9); /* Figma 36 */
+  /* AuthLayout `.body` 의 남은 높이를 채운다 — 하단 링크의 margin-top:auto 가
+     동작하려면 컨테이너에 높이가 있어야 한다 (시안 링크 y 663 / 720). */
+  flex: 1;
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+  padding: var(--space-15) var(--space-6) var(--space-6); /* Figma 60 / 24 */
+}
+
+/* Figma `Frame 3` / `Frame 13` — 입력·버튼 묶음, V gap 24 */
+.authFields {
+  display: grid;
+  gap: var(--space-6);
+}
+
+/* 화면 하단에 붙는 링크 (시안 y 663 / 720). Basic Body/B_14_140% 초록. */
+.authBottomLink {
+  margin-top: auto;
+  padding-top: var(--space-6);
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-text-bold);
+  text-align: center;
+  text-decoration: none;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+    border-radius: var(--radius-sm);
+  }
+}
+
+/* ── 아이디 찾기 결과 (Figma `아이디 찾기 결과 (D)`) ────────────────── */
+.resultHead {
+  display: grid;
+  gap: var(--space-3); /* Figma 12 */
+}
+
+/* Title/B_24_130% */
+.resultTitle {
+  font-size: var(--font-h1);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug);
+  color: var(--color-fg);
+  letter-spacing: var(--tracking-tight);
+}
+
+/* Basic Body/R_14_140% */
+.resultDesc {
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-normal);
+  color: var(--color-muted);
+  letter-spacing: var(--tracking-tight);
+  word-break: keep-all;
+}
+
+/* Figma `card` — 320x104, 연초록 면, radius 12, padding 26/22, V gap 4.
+   26 은 4px 그리드가 아니라 24 로 맞춘다. */
+.idCard {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-6) var(--space-5);
+  background: var(--color-primary-soft);
+  border-radius: var(--radius-md);
+}
+
+/* Caption/R_12 초록 */
+.idCardLabel {
+  font-size: var(--font-caption);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-normal);
+  color: var(--color-primary-text-bold);
+}
+
+/* Title/B_24_130% #151515 */
+.idCardValue {
+  font-size: var(--font-h1);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug);
+  color: var(--color-fg);
+  letter-spacing: var(--tracking-tight);
+  word-break: break-all;
+}
+
+/* ── 회원가입 (Figma `AUTH · 회원가입`) ─────────────────────────────────
+   body padding 20, 필드 5개 gap 16, 버튼과 24, 하단 안내 24.
+   제목("회원가입") 은 AuthHeader 가 갖는다. 카드 없음. */
+.signupForm {
+  display: grid;
+  gap: var(--space-4); /* 필드 사이 16 */
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+  padding: var(--space-5);
+}
+
+/* 버튼과 하단 안내는 필드 묶음보다 넓게 떨어진다 (Figma 24) */
+.signupForm > button[type='submit'] {
+  margin-top: var(--space-2); /* 16 + 8 = 24 */
+}
+
+/* Figma `Frame 69` — H gap 4, 가운데 정렬 */
+.signupFoot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-fg);
+}
+
+/* 2px 원형 구분점 — 시안 #C2C2C2 (Figma Neutral/300) */
+.signupFootDot {
+  width: 2px;
+  height: 2px;
+  border-radius: var(--radius-full);
+  background: var(--color-fg-weak);
+  flex-shrink: 0;
+}
+
+/* Basic Body/B_14_140% 초록 */
+.signupFootLink {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-text-bold);
+  text-decoration: none;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+    border-radius: var(--radius-sm);
+  }
+}

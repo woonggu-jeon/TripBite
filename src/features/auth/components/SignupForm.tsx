@@ -211,9 +211,9 @@ export function SignupForm() {
     emailStatus !== 'available';
 
   return (
-    <form onSubmit={onSubmit} noValidate className={styles.form}>
-      <h1 className={styles.title}>{t('title')}</h1>
-
+    // Figma `AUTH · 회원가입` — 제목은 헤더가 갖고, body 는 필드 5개(gap 16)
+    // → 버튼(gap 24) → "이미 계정이 있으신가요? · 로그인".
+    <form onSubmit={onSubmit} noValidate className={styles.signupForm}>
       <TextField
         id="username"
         type="text"
@@ -363,9 +363,14 @@ export function SignupForm() {
         {isSubmitting ? t('submitting') : t('submit')}
       </Button>
 
-      <Link href="/login" className={styles.footCenter}>
-        {t('toLogin')}
-      </Link>
+      {/* Figma `Frame 69` — 안내 문구 + 2px 점 + 초록 "로그인" 링크 */}
+      <p className={styles.signupFoot}>
+        {t('haveAccount')}
+        <span className={styles.signupFootDot} aria-hidden />
+        <Link href="/login" className={styles.signupFootLink}>
+          {t('loginLink')}
+        </Link>
+      </p>
     </form>
   );
 }

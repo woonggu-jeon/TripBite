@@ -96,7 +96,14 @@
       "toLogin": "Back to sign in",
       "errors": {
         "emailInvalid": "Please enter a valid email."
-      }
+      },
+      "heroTitle": "Forgot your ID?",
+      "heroDescription": "Enter the email you signed up with\nand we will find your ID.",
+      "foundTitle": "We found your ID",
+      "foundDescription": "An account is registered with {email}.",
+      "myIdLabel": "Your ID",
+      "toLoginCta": "Go to login",
+      "toForgotPassword": "Find password"
     },
     "changePassword": {
       "currentPassword": "Current password",
@@ -155,7 +162,9 @@
         "passwordInvalid": "Contains disallowed characters.",
         "passwordMismatch": "Passwords do not match.",
         "emailInvalid": "Please enter a valid email."
-      }
+      },
+      "haveAccount": "Already have an account?",
+      "loginLink": "Log in"
     },
     "forgotPassword": {
       "title": "Forgot password",
@@ -171,7 +180,8 @@
       "errors": {
         "usernameInvalid": "Username must be 4-20 letters/digits.",
         "emailInvalid": "Please enter a valid email."
-      }
+      },
+      "heroTitle": "Forgot your password?"
     },
     "resetPassword": {
       "title": "Set new password",

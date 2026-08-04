@@ -2,6 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { SignupForm } from '@/features/auth/components/SignupForm';
 import { AuthLayout } from '@/components/layout/AuthLayout';
+import { AuthHeader } from '@/components/layout/AuthHeader';
 
 /**
  * 회원가입 (/signup) — 비인증 전용 (middleware).
@@ -11,9 +12,10 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('title') };
 }
 
-export default function SignupPage() {
+export default async function SignupPage() {
+  const t = await getTranslations('auth.signup');
   return (
-    <AuthLayout>
+    <AuthLayout variant="column" header={<AuthHeader title={t('title')} />}>
       <SignupForm />
     </AuthLayout>
   );

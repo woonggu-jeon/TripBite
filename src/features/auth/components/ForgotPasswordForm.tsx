@@ -9,7 +9,9 @@ import {
   forgotPasswordSchema,
   type ForgotPasswordValues,
 } from '@/features/auth/schemas/password-reset';
+import { Lock, Mail } from 'lucide-react';
 import { Button, TextField } from '@/components/ui';
+import { AuthHero } from './AuthHero';
 import styles from './AuthForm.module.scss';
 
 /**
@@ -42,10 +44,14 @@ export function ForgotPasswordForm() {
 
   if (isSuccess) {
     return (
-      <div className={`${styles.form} ${styles.center}`}>
-        <h1 className={styles.title}>{t('sentTitle')}</h1>
-        <p className={styles.subtitle}>{t('sentDescription')}</p>
-        <Link href="/login" className={styles.footLinkPrimary}>
+      // 시안에 "발송 완료" 화면은 없다 — authItme 규격(원형 84 + 24/14)만 맞췄다.
+      <div className={styles.authPanel}>
+        <AuthHero
+          icon={<Mail size={36} />}
+          title={t('sentTitle')}
+          description={t('sentDescription')}
+        />
+        <Link href="/login" className={styles.authBottomLink}>
           {t('toLogin')}
         </Link>
       </div>
@@ -53,50 +59,59 @@ export function ForgotPasswordForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className={styles.form}>
-      <h1 className={styles.title}>{t('title')}</h1>
-      <p className={styles.subtitle}>{t('description')}</p>
-
-      <TextField
-        id="username"
-        type="text"
-        autoComplete="username"
-        label={t('username')}
-        placeholder={t('usernamePlaceholder')}
-        errorMessage={
-          errors.username
-            ? tErr(errors.username.message as Parameters<typeof tErr>[0])
-            : undefined
-        }
-        {...register('username')}
+    <form onSubmit={onSubmit} noValidate className={styles.authPanel}>
+      {/* Figma `authItme` — 원형 84(자물쇠) + 제목 24 + 설명.
+          설명은 시안이 "이메일만" 이라고 하지만 이 폼은 아이디+이메일 두 개를
+          받으므로 기존 description(사실과 맞는 문구) 을 그대로 쓴다. */}
+      <AuthHero
+        icon={<Lock size={36} />}
+        title={t('heroTitle')}
+        description={t('description')}
       />
 
-      <TextField
-        id="email"
-        type="email"
-        autoComplete="email"
-        label={t('email')}
-        placeholder="you@example.com"
-        errorMessage={
-          errors.email
-            ? tErr(errors.email.message as Parameters<typeof tErr>[0])
-            : undefined
-        }
-        {...register('email')}
-      />
+      <div className={styles.authFields}>
+        <TextField
+          id="username"
+          type="text"
+          autoComplete="username"
+          label={t('username')}
+          placeholder={t('usernamePlaceholder')}
+          errorMessage={
+            errors.username
+              ? tErr(errors.username.message as Parameters<typeof tErr>[0])
+              : undefined
+          }
+          {...register('username')}
+        />
 
-      <Button
-        type="submit"
-        variant="primary"
-        size="lg"
-        fullWidth
-        loading={isPending}
-        disabled={isPending}
-      >
-        {isPending ? t('submitting') : t('submit')}
-      </Button>
+        <TextField
+          id="email"
+          type="email"
+          autoComplete="email"
+          label={t('email')}
+          placeholder="you@example.com"
+          errorMessage={
+            errors.email
+              ? tErr(errors.email.message as Parameters<typeof tErr>[0])
+              : undefined
+          }
+          {...register('email')}
+        />
 
-      <Link href="/login" className={styles.footCenter}>
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          fullWidth
+          loading={isPending}
+          disabled={isPending}
+        >
+          {isPending ? t('submitting') : t('submit')}
+        </Button>
+      </div>
+
+      {/* 시안은 이 링크를 화면 하단에 붙인다 */}
+      <Link href="/login" className={styles.authBottomLink}>
         {t('toLogin')}
       </Link>
     </form>

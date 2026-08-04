@@ -79,3 +79,32 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     );
   },
 );
+
+/**
+ * Button 스타일만 필요할 때 — Next/Link 처럼 polymorphic 으로 받기 어려운
+ * 컴포넌트에 className 으로 직접 적용. Button primitive 와 동일한 클래스 매핑.
+ * (Card 의 `cardClasses` 와 같은 idiom)
+ *
+ *   <Link className={buttonClasses({ variant: 'primary', size: 'lg', fullWidth: true })}>
+ */
+export function buttonClasses({
+  variant = 'primary',
+  size = 'md',
+  fullWidth,
+  className,
+}: {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  fullWidth?: boolean;
+  className?: string;
+} = {}): string {
+  return [
+    styles.btn,
+    styles[`v-${variant}`],
+    styles[`s-${size}`],
+    fullWidth ? styles.fullWidth : '',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
+}
