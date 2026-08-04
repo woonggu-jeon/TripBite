@@ -107,6 +107,8 @@ export function LoginForm() {
             type={f.type}
             autoComplete={f.autoComplete}
             label={t(f.name)}
+            // 비밀번호 필드에만 눈 토글 (Figma `eyeIcon`)
+            passwordToggle={f.type === 'password'}
             errorMessage={
               errors[f.name]
                 ? t(errors[f.name]?.message as Parameters<typeof t>[0])

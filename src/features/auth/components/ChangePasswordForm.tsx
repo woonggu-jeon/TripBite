@@ -69,6 +69,7 @@ export function ChangePasswordForm({ onDone }: { onDone?: () => void }) {
           type="password"
           autoComplete={f.auto}
           label={t(f.name)}
+          passwordToggle
           errorMessage={
             errors[f.name]
               ? tErr(errors[f.name]?.message as Parameters<typeof tErr>[0])

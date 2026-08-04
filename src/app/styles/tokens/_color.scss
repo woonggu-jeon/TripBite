@@ -13,6 +13,10 @@
      흰 배경 11.55:1 / #F6F6F6 10.69:1 / #EAF6EF 10.41:1 — 전부 AA 통과.
      구 #5b6470 은 파란기 도는 회색이라 시안의 중성 회색과 톤이 달랐다. */
   --color-muted: #393939;
+  /* Figma Color/Neutral/500 = Basic/TextColor/sub.
+     흰 배경 3.45:1 — 본문 텍스트로는 AA 미달이라 텍스트엔 쓰지 않고,
+     아이콘 등 비텍스트 UI(3:1 기준) 에만 쓴다. Light/Dark 동일 값. */
+  --color-fg-weak: #8a8a8a;
   /* Figma Color/Neutral/200 = Basic/BorderColor/gray (구 #e5e7eb — 파란기) */
   --color-border: #e0e0e0;
   /* Brand green (Figma Basic/MainColor/primary). 두 모드 동일.

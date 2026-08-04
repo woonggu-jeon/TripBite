@@ -24,7 +24,9 @@
     "previous": "Previous",
     "skip": "Skip",
     "start": "Start",
-    "complete": "Done"
+    "complete": "Done",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "pwa": {
     "update": {

@@ -76,6 +76,7 @@ export function ResetPasswordForm() {
           type="password"
           autoComplete={f.auto}
           label={t(f.name)}
+          passwordToggle
           errorMessage={
             errors[f.name]
               ? tErr(errors[f.name]?.message as Parameters<typeof tErr>[0])

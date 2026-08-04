@@ -96,3 +96,52 @@
 .suffix > * {
   height: 100%;
 }
+
+/* ── 비밀번호 눈 토글 (Figma `eyeIcon`) ─────────────────────────────────
+   시안은 입력 박스 **안쪽** 우측에 20px 아이콘을 둔다.
+   `Input` 프레임이 H gap 12 / padding 12,16 이므로 텍스트 오른쪽 여백은
+   16(패딩) + 20(아이콘) + 12(gap) = 48. */
+.inputWrap {
+  position: relative;
+  display: grid;
+}
+
+.hasToggle {
+  padding-right: 48px;
+}
+
+.toggle {
+  position: absolute;
+  top: 50%;
+  right: var(--space-4);
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  /* 시안 off 는 #B4B4B4 지만 UI 컴포넌트 비텍스트 기준 3:1 에 미달(2.07:1).
+     같은 계열의 Figma Neutral/500(#8A8A8A, 3.45:1) 으로 올린다. */
+  color: var(--color-fg-weak);
+  transition: color var(--motion-base) ease;
+
+  /* 표시 중 — 시안 on 색 #393939 (= --color-muted) */
+  &[data-revealed='true'] {
+    color: var(--color-muted);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+    border-radius: var(--radius-sm);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toggle {
+    transition: none;
+  }
+}

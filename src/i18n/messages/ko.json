@@ -24,7 +24,9 @@
     "previous": "이전",
     "skip": "건너뛰기",
     "start": "시작하기",
-    "complete": "완료"
+    "complete": "완료",
+    "showPassword": "비밀번호 표시",
+    "hidePassword": "비밀번호 숨기기"
   },
   "pwa": {
     "update": {

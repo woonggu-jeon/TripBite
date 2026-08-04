@@ -283,6 +283,7 @@ export function SignupForm() {
             ? tErr(errors.password.message as Parameters<typeof tErr>[0])
             : undefined
         }
+        passwordToggle
         {...register('password')}
       />
 
@@ -297,6 +298,7 @@ export function SignupForm() {
             ? tErr(errors.passwordConfirm.message as Parameters<typeof tErr>[0])
             : undefined
         }
+        passwordToggle
         {...register('passwordConfirm')}
       />
 
