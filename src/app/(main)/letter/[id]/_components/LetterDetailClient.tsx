@@ -7,6 +7,7 @@ import { Button } from '@/components/ui';
 import { Icon } from '@/components/icon';
 import { useLetter } from '@/features/letter/hooks/use-letters';
 import { LetterActions } from '@/features/letter/components/LetterActions';
+import { LetterPaper } from '@/features/letter/components/LetterPaper';
 import styles from './LetterDetailClient.module.scss';
 
 /**
@@ -77,8 +78,6 @@ export function LetterDetailClient({ letterId }: { letterId: string }) {
   const senderName = letter.author.nickname || tAuthor('anonymous');
   const senderLocation = letter.author.location;
   const arrivedIso = letter.arrivedAt ?? letter.createdAt;
-  // Figma letterBox 는 5칸 고정 — 본문이 짧으면 남은 칸은 빈 칸으로 둔다.
-  const cells = Array.from({ length: 5 }, (_, i) => [...letter.body][i] ?? '');
 
   return (
     <div className={styles.wrap}>
@@ -95,48 +94,22 @@ export function LetterDetailClient({ letterId }: { letterId: string }) {
       </header>
 
       <div className={styles.cardGroup}>
-        {/* Figma `Frame 79` — 회색 면 카드 */}
-        <article className={styles.card} aria-label={t('letterAria')}>
-          <div className={styles.top}>
-            {/* Figma `pw` — 사진 60 + 도착 도장 70 겹침 */}
-            <div className={styles.postmarkWrap} aria-hidden>
-              <span className={styles.photo} />
-              <span className={styles.postmark}>
-                <span className={styles.postmarkLabel}>
-                  {t('postmarkArrived')}
-                </span>
-                <span className={styles.postmarkName}>{senderLocation}</span>
-              </span>
-            </div>
-            <div className={styles.meta}>
-              <p className={styles.metaLabel}>{t('from')}</p>
-              <p className={styles.metaValue}>{senderName}</p>
-            </div>
-          </div>
-
-          {/* Figma `letterBox` — 5칸, 칸마다 흰 면 + 빨간 보더 */}
-          <div className={styles.letterBox} aria-label={letter.body}>
-            {cells.map((ch, i) => (
-              <span key={i} className={styles.cell} aria-hidden>
-                {ch}
-              </span>
-            ))}
-          </div>
-
-          <div className={styles.footer}>
-            <span className={styles.divider} aria-hidden />
-            <div className={styles.footerText}>
-              <p className={styles.toRow}>
-                <span className={styles.metaLabel}>{t('to')}</span>
-                <span className={styles.toName}>{t('toYou')}</span>
-              </p>
-              <p className={styles.arrivedAt}>
-                <time dateTime={arrivedIso}>{formatArrival(arrivedIso)}</time>{' '}
-                {t('postmarkArrived')}
-              </p>
-            </div>
-          </div>
-        </article>
+        <LetterPaper
+          ariaLabel={t('letterAria')}
+          postmarkLabel={t('postmarkArrived')}
+          postmarkName={senderLocation}
+          fromLabel={t('from')}
+          fromName={senderName}
+          body={letter.body}
+          toLabel={t('to')}
+          toName={t('toYou')}
+          dateText={
+            <>
+              <time dateTime={arrivedIso}>{formatArrival(arrivedIso)}</time>{' '}
+              {t('postmarkArrived')}
+            </>
+          }
+        />
 
         {/* 자동 삭제 안내 — saved 면 숨김 */}
         {!letter.saved && (

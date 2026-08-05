@@ -2,7 +2,8 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Check, MailOpen } from 'lucide-react';
+import { Icon } from '@/components/icon';
+import { LetterPaper } from '@/features/letter/components/LetterPaper';
 import { useLetter } from '@/features/letter/hooks/use-letters';
 import { useLetterStore } from '@/features/letter/store/letter-store';
 import { Button, ButtonGrid } from '@/components/ui';
@@ -140,77 +141,44 @@ export function LetterSentClient() {
 
   return (
     <div className={styles.wrap}>
-      {/* 1) 전송 알림 */}
-      <header className={styles.notice} role="status">
-        <span className={styles.noticeIcon} aria-hidden>
-          <MailOpen size={20} />
+      {/* Figma `편지 발송완료` — 84 원 + 36 letter 아이콘 + 제목/보조 (중앙) */}
+      <header className={styles.sentHead} role="status">
+        <span className={styles.sentCircle} aria-hidden>
+          <Icon name="letter-36" size={36} />
         </span>
-        <div>
-          <p className={styles.noticeTitle}>{t('noticeTitle')}</p>
-          <p className={styles.noticeBody}>{t('noticeBody')}</p>
-        </div>
+        <span className={styles.sentText}>
+          <span className={styles.sentTitle}>{t('noticeTitle')}</span>
+          <span className={styles.sentBody}>{t('noticeBody')}</span>
+        </span>
       </header>
 
-      {/* 2) 편지 카드 */}
-      <article className={styles.letter} aria-label={t('letterAria')}>
-        {/* From */}
-        <section className={styles.from}>
-          <p className={styles.label}>{t('from')}</p>
-          <div className={styles.fromRow}>
-            <div>
-              <p className={styles.author}>{tAuthor('anonymous')}</p>
-              <p className={styles.fromLocation}>{senderLocation}</p>
-            </div>
-            <div className={styles.stamp} aria-hidden>
-              <span className={styles.stampEmoji}>✉︎</span>
-              <span className={styles.stampTag}>STAMP</span>
-            </div>
-          </div>
-        </section>
+      <LetterPaper
+        ariaLabel={t('letterAria')}
+        postmarkLabel={t('sentBadge')}
+        postmarkName={senderLocation}
+        fromLabel={t('from')}
+        fromName={tAuthor('anonymous')}
+        body={view.body}
+        toLabel={t('to')}
+        toName={t('toRecipient')}
+        dateText={`${formatKoreanDate(view.sentAt)} · ${t('toArrival')}`}
+      />
 
-        {/* Message — 5칸 박스 + 좌측 하단 날짜 */}
-        <section className={styles.message}>
-          <div className={styles.pinBoxes} aria-label={view.body}>
-            {Array.from({ length: 5 }).map((_, i) => {
-              const ch = Array.from(view.body)[i] ?? '';
-              return (
-                <div
-                  key={i}
-                  className={`${styles.pinCell} ${ch ? styles.pinFilled : ''}`}
-                >
-                  {ch && <span className={styles.pinChar}>{ch}</span>}
-                </div>
-              );
-            })}
-          </div>
-          <p className={styles.date}>{formatKoreanDate(view.sentAt)}</p>
-        </section>
-
-        {/* To — 2줄 + 전송완료 배지 */}
-        <section className={styles.to}>
-          <p className={styles.label}>{t('to')}</p>
-          <div className={styles.toRow}>
-            <div className={styles.toLines}>
-              <p className={styles.toLine1}>{t('toRecipient')}</p>
-              <p className={styles.toLine2}>{t('toArrival')}</p>
-            </div>
-            <span className={styles.status} aria-label={t('sentBadge')}>
-              <Check size={14} aria-hidden />
-              {t('sentBadge')}
-            </span>
-          </div>
-        </section>
-      </article>
-
-      {/* 3) 액션 */}
-      <ButtonGrid gap="md">
-        <Button variant="secondary" fullWidth onClick={handleAgain}>
+      {/* 시안은 하단에 라인 버튼 하나 (홈으로). "또 쓰기" 는 유지 */}
+      <div className={styles.actions}>
+        <Button variant="secondary" size="lg" fullWidth onClick={handleAgain}>
           {t('again')}
         </Button>
-        <Button variant="primary" fullWidth onClick={handleHome}>
+        <Button
+          variant="secondary"
+          size="lg"
+          fullWidth
+          className={styles.lineButton}
+          onClick={handleHome}
+        >
           {t('home')}
         </Button>
-      </ButtonGrid>
+      </div>
     </div>
   );
 }

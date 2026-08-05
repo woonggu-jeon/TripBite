@@ -1,6 +1,13 @@
+// Figma `편지 발송완료` — wb padding 20, 상단 블록 ↔ 카드 gap 40
 .wrap {
   display: grid;
-  gap: var(--space-5);
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-10);
+  min-width: 0;
+
+  > * {
+    min-width: 0;
+  }
 }
 
 .empty {
@@ -229,3 +236,64 @@
 }
 
 /* .primary / .secondary / .actions 는 ButtonGrid primitive 로 마이그레이션 — 제거 */
+
+// ── Figma `편지 발송완료` 상단 (emptyItme) — 84 원 + 아이콘 + 제목/보조
+.sentHead {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-5);
+  text-align: center;
+}
+
+.sentCircle {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-soft);
+  color: var(--color-primary-text-bold);
+}
+
+.sentText {
+  display: grid;
+  gap: 3px;
+  justify-items: center;
+}
+
+// Basic Body/B_14_140%
+.sentTitle {
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-normal);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
+}
+
+// Caption/R_12
+.sentBody {
+  font-size: var(--font-caption);
+  line-height: var(--line-normal);
+  letter-spacing: var(--tracking-snug);
+  color: var(--color-muted);
+  word-break: keep-all;
+}
+
+// 하단 버튼 — 시안은 라인 버튼 하나(홈으로). "또 쓰기" 는 기능상 유지.
+.actions {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.lineButton {
+  border-color: var(--color-primary);
+  color: var(--color-primary-text-bold);
+  font-weight: var(--font-weight-medium);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      background: var(--color-primary-soft);
+      border-color: var(--color-primary);
+    }
+  }
+}
