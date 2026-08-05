@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { Camera, User, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { Icon } from '@/components/icon';
 import { useMe } from '@/features/auth/hooks/use-auth';
 import {
@@ -129,13 +129,15 @@ export function ProfileCard() {
               />
             ) : (
               <span className={styles.avatarFallback} aria-hidden>
-                <User size={24} />
+                {/* Figma `profileIcon` 24px — sprite 의 user 심볼이 같은 벡터다 */}
+                <Icon name="user" size={24} />
               </span>
             )}
           </span>
           {/* Figma `cam-badge` 22px — 아바타 우하단 초록 원 + 2px 흰 링 */}
           <span className={styles.camBadge} aria-hidden>
-            <Camera size={12} />
+            {/* Figma `detailIcon` 12px camera */}
+            <Icon name="camera" size={12} />
           </span>
         </button>
         {hasAvatar && (

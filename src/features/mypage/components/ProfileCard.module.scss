@@ -124,6 +124,7 @@
   background: var(--color-primary);
   color: var(--color-on-strong);
   box-shadow: 0 0 0 2px var(--color-surface);
+  --icon-stroke: 1; // Figma cameraIcon 은 1px stroke
 }
 
 .avatarImg {
@@ -132,8 +133,9 @@
   object-fit: cover;
 }
 
-// Figma 는 아바타 미설정 시 연초록 면 + 초록 사람 아이콘
+// Figma 는 아바타 미설정 시 연초록 면 + 초록 사람 아이콘 (profileIcon, stroke 1.7)
 .avatarFallback {
+  --icon-stroke: 1.7;
   display: grid;
   place-items: center;
   width: 100%;

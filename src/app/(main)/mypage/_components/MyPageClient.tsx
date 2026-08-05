@@ -2,7 +2,8 @@
 
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { ChevronRight, Settings } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
+import { Icon } from '@/components/icon';
 import { ROUTES } from '@/constants/routes';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { ProfileCard } from '@/features/mypage/components/ProfileCard';
@@ -43,7 +44,7 @@ export function MyPageClient() {
             className={styles.settingsLink}
             aria-label={t('goToSettings')}
           >
-            <Settings size={24} aria-hidden />
+            <Icon name="settings" size={24} />
           </Link>
         }
       />

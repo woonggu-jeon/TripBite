@@ -11,3 +11,9 @@
   /* GPU 합성 힌트 — 메뉴 활성 색상 변경 시 부드러움 */
   will-change: auto;
 }
+
+/* 시안이 채움으로 그린 아이콘 (headerIcon setting·noti) — stroke 기본값을 끈다. */
+.icon[data-filled='true'] {
+  fill: currentColor;
+  stroke: none;
+}

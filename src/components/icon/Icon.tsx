@@ -17,9 +17,9 @@ import styles from './Icon.module.scss';
  *   <Icon name="trophy" size="md" aria-label={t('nav.tournament')} />
  *
  * 새 아이콘 추가:
- *   1) scripts/build-icons.mjs 의 ICONS 배열에 추가
+ *   1) scripts/build-icons.mjs 의 ICONS(lucide) 또는 FIGMA_ICONS 에 추가
  *   2) npm run build:icons → public/icons.svg 자동 갱신
- *   3) 아래 IconName 에 등록
+ *   3) 아래 IconName 에 등록 (채움 아이콘이면 FILLED_ICONS 에도)
  */
 
 export type IconName =
@@ -32,9 +32,12 @@ export type IconName =
   | 'trophy'
   | 'mail'
   | 'user'
-  // Header
+  // Header — Figma `headerIcon` (back / setting / noti). setting·noti 는 채움.
+  | 'back'
   | 'bell'
   | 'settings'
+  // Figma `detailIcon` 12px camera (프로필 아바타 배지)
+  | 'camera'
   // Navigation
   | 'chevron-left'
   | 'chevron-right'
@@ -62,6 +65,12 @@ const SIZE_MAP: Record<Exclude<IconSize, number>, number> = {
 };
 
 /**
+ * 시안이 **채움**으로 그린 아이콘 — stroke 기반 기본값을 쓰면 안 된다.
+ * (Figma headerIcon 의 setting·noti 가 채움 벡터다)
+ */
+const FILLED_ICONS = new Set<IconName>(['settings', 'bell']);
+
+/**
  * 핵심: <svg> 안에 <use> 를 두어 외부 sprite 의 symbol 참조.
  *
  * Server Component 가능 — `'use client'` 없음 (단순 SVG render).
@@ -84,6 +93,7 @@ export function Icon({
       width={px}
       height={px}
       className={`${styles.icon} ${className ?? ''}`}
+      data-filled={FILLED_ICONS.has(name) ? 'true' : undefined}
       role={ariaLabel ? 'img' : undefined}
       aria-label={ariaLabel}
       aria-hidden={ariaLabel ? undefined : true}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ChevronLeft } from 'lucide-react';
+import { Icon } from '@/components/icon';
 import styles from './AuthHeader.module.scss';
 
 /**
@@ -47,7 +47,7 @@ export function AuthHeader({
           className={styles.back}
           onClick={handleBack}
         >
-          <ChevronLeft size={24} />
+          <Icon name="back" size={24} />
         </button>
         {title && <p className={styles.title}>{title}</p>}
         <span className={styles.spacer} aria-hidden />
