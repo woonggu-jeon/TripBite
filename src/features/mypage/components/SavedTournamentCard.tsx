@@ -1,6 +1,6 @@
 'use client';
 
-import { Heart } from 'lucide-react';
+import { Icon } from '@/components/icon';
 import { DestinationCard } from '@/components/ui';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { categoryEmoji, FALLBACK_TROPHY_EMOJI } from '@/constants/emoji-map';
@@ -49,13 +49,8 @@ export function SavedTournamentCard({
         onUnsave();
       }}
     >
-      <Heart
-        size={16}
-        aria-hidden
-        fill="currentColor"
-        strokeWidth={1.5}
-        className={styles.heartIcon}
-      />
+      {/* Figma `detailIcon` 20px heart — 채움 벡터 */}
+      <Icon name="heart-20" size={16} className={styles.heartIcon} />
     </button>
   ) : undefined;
 

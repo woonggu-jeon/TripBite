@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { ChevronRight } from 'lucide-react';
+import { Icon } from '@/components/icon';
 import { Carousel } from '@/features/carousel';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { DestinationCard, PageSection, TabList, Tab } from '@/components/ui';
@@ -143,7 +143,7 @@ export function HomeCategoryPicks() {
       action={
         <Link href={ROUTES.REGION}>
           {tCommon('showMore')}
-          <ChevronRight size={16} aria-hidden />
+          <Icon name="right-20" size={16} />
         </Link>
       }
     >

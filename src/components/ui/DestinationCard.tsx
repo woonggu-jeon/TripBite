@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { MapPin } from 'lucide-react';
+import { Icon } from '@/components/icon';
 import type { ComponentProps, ReactNode } from 'react';
 import { MediaThumb } from './MediaThumb';
 import styles from './DestinationCard.module.scss';
@@ -90,7 +90,7 @@ export function DestinationCard({
       <div className={styles.body}>
         <h3 className={styles.name}>{name}</h3>
         <p className={styles.region}>
-          <MapPin size={12} className={styles.regionIcon} aria-hidden />
+          <Icon name="location-12" size={12} className={styles.regionIcon} />
           <span className={styles.regionLabel}>{regionLabel}</span>
         </p>
       </div>

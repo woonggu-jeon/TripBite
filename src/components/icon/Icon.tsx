@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import styles from './Icon.module.scss';
 
 /**
@@ -36,8 +37,19 @@ export type IconName =
   | 'back'
   | 'bell'
   | 'settings'
-  // Figma `detailIcon` 12px camera (프로필 아바타 배지)
+  // Figma `detailIcon` — 필드 행(18px) / 목록 pin(12px) / 하트·chevron(20px).
+  // 이름에 크기를 붙인 이유: 같은 글리프라도 시안이 크기별로 stroke 와 디테일을
+  // 다르게 그려서 (예: location 18 은 1.28, 12 는 0.85) 하나로 합칠 수 없다.
   | 'camera'
+  | 'location-18'
+  | 'location-12'
+  | 'clock-18'
+  | 'calendar-18'
+  | 'parking-18'
+  | 'internet-18'
+  | 'share-18'
+  | 'right-20'
+  | 'heart-20'
   // Navigation
   | 'chevron-left'
   | 'chevron-right'
@@ -68,7 +80,23 @@ const SIZE_MAP: Record<Exclude<IconSize, number>, number> = {
  * 시안이 **채움**으로 그린 아이콘 — stroke 기반 기본값을 쓰면 안 된다.
  * (Figma headerIcon 의 setting·noti 가 채움 벡터다)
  */
-const FILLED_ICONS = new Set<IconName>(['settings', 'bell']);
+const FILLED_ICONS = new Set<IconName>(['settings', 'bell', 'heart-20']);
+
+/**
+ * 시안이 지정한 아이콘별 stroke (viewBox 단위) — 렌더 크기와 무관하게 같은 굵기로
+ * 보인다. 여기 있는 아이콘은 부모의 --icon-stroke 대신 이 값을 쓴다.
+ */
+const STROKE_WIDTHS: Partial<Record<IconName, number>> = {
+  'location-18': 1.28,
+  'location-12': 0.85,
+  'clock-18': 1.275,
+  'calendar-18': 1.275,
+  'parking-18': 1.275,
+  'internet-18': 1.275,
+  'share-18': 1.28,
+  'right-20': 1.5,
+  camera: 1,
+};
 
 /**
  * 핵심: <svg> 안에 <use> 를 두어 외부 sprite 의 symbol 참조.
@@ -87,11 +115,17 @@ export function Icon({
   'aria-label'?: string;
 }) {
   const px = typeof size === 'number' ? size : SIZE_MAP[size];
+  const stroke = STROKE_WIDTHS[name];
 
   return (
     <svg
       width={px}
       height={px}
+      style={
+        stroke === undefined
+          ? undefined
+          : ({ '--icon-stroke': stroke } as CSSProperties)
+      }
       className={`${styles.icon} ${className ?? ''}`}
       data-filled={FILLED_ICONS.has(name) ? 'true' : undefined}
       role={ariaLabel ? 'img' : undefined}

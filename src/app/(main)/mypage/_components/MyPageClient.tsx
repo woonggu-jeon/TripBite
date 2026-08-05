@@ -2,7 +2,6 @@
 
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { ChevronRight } from 'lucide-react';
 import { Icon } from '@/components/icon';
 import { ROUTES } from '@/constants/routes';
 import { SubHeader } from '@/components/layout/SubHeader';
@@ -58,7 +57,7 @@ export function MyPageClient() {
           action={
             <Link href="/mypage/stamps">
               {tCommon('showMore')}
-              <ChevronRight size={16} aria-hidden />
+              <Icon name="right-20" size={16} />
             </Link>
           }
         >

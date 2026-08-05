@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Share2 } from 'lucide-react';
+import { Icon } from '@/components/icon';
 import { useTournamentStore } from '@/features/tournament/store/tournament-store';
 import {
   useDestinationDetail,
@@ -182,7 +182,7 @@ export function TournamentResultClient() {
             variant="secondary"
             fullWidth
             onClick={handleShare}
-            leadingIcon={<Share2 size={16} aria-hidden />}
+            leadingIcon={<Icon name="share-18" size={16} />}
           >
             {t('share')}
           </Button>

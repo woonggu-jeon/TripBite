@@ -2,14 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import {
-  MapPin,
-  Phone,
-  Globe,
-  Clock,
-  CalendarX,
-  CircleParking,
-} from 'lucide-react';
+import { Phone } from 'lucide-react';
+import { Icon } from '@/components/icon';
 import type { DestinationDetailDto } from '@/api/generated/schemas';
 import styles from './WinnerDetailPanel.module.scss';
 
@@ -101,31 +95,33 @@ export function WinnerDetailPanel({
   if (detail.address)
     rows.push({
       key: 'address',
-      icon: <MapPin size={18} aria-hidden />,
+      icon: <Icon name="location-18" size={18} />,
       label: t('address'),
       value: detail.address,
     });
   if (detail.openingHours)
     rows.push({
       key: 'hours',
-      icon: <Clock size={18} aria-hidden />,
+      icon: <Icon name="clock-18" size={18} />,
       label: t('openingHours'),
       value: detail.openingHours,
     });
   if (detail.restDate)
     rows.push({
       key: 'restDate',
-      icon: <CalendarX size={18} aria-hidden />,
+      icon: <Icon name="calendar-18" size={18} />,
       label: t('restDate'),
       value: detail.restDate,
     });
   if (detail.parking)
     rows.push({
       key: 'parking',
-      icon: <CircleParking size={18} aria-hidden />,
+      icon: <Icon name="parking-18" size={18} />,
       label: t('parking'),
       value: detail.parking,
     });
+  // 전화 행은 시안 `info-card` 에 없다 (주소/운영시간/휴무/주차/웹사이트 5개).
+  // 데이터가 오면 표시는 하되 대응 detailIcon 이 없어 lucide 를 남겨둔다.
   if (detail.phone)
     rows.push({
       key: 'phone',
@@ -136,7 +132,7 @@ export function WinnerDetailPanel({
   if (detail.website)
     rows.push({
       key: 'website',
-      icon: <Globe size={18} aria-hidden />,
+      icon: <Icon name="internet-18" size={18} />,
       label: t('website'),
       value: detail.website,
     });

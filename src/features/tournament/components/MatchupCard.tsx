@@ -1,6 +1,6 @@
 'use client';
 
-import { MapPin } from 'lucide-react';
+import { Icon } from '@/components/icon';
 import { HeroCard } from '@/components/ui';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { categoryEmoji } from '@/constants/emoji-map';
@@ -40,7 +40,7 @@ export function MatchupCard({
       emoji={categoryEmoji(destination.category)}
       title={destination.name}
       meta={regionLabel}
-      metaIcon={<MapPin size={12} aria-hidden />}
+      metaIcon={<Icon name="location-12" size={12} />}
       titleAs="h3"
       align="bottom"
       sizes="(max-width: 720px) 100vw, 720px"

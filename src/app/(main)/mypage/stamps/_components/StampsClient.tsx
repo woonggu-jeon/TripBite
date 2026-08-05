@@ -2,7 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { MapPin, ChevronRight } from 'lucide-react';
+import { MapPin } from 'lucide-react';
+import { Icon } from '@/components/icon';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
@@ -113,7 +114,7 @@ export function StampsClient() {
             onClick={handleShareMaster}
           >
             {t('shareMaster')}
-            <ChevronRight size={20} aria-hidden />
+            <Icon name="right-20" size={20} />
           </button>
         ) : (
           <p className={styles.hint}>{t('masterHint')}</p>
