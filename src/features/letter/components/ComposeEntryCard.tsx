@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Mail } from 'lucide-react';
+import { Icon } from '@/components/icon';
 import { useTranslations } from 'next-intl';
 import { ROUTES } from '@/constants/routes';
 import styles from './ComposeEntryCard.module.scss';
@@ -24,7 +24,7 @@ export function ComposeEntryCard() {
     <Link href={ROUTES.LETTER_COMPOSE} className={styles.card}>
       {/* Figma `bic` 50x50 — 흰 면 radius 12 안에 24px 아이콘 */}
       <span className={styles.iconBox} aria-hidden>
-        <Mail size={24} />
+        <Icon name="letter-24" size={24} />
       </span>
       {/* Figma `f` — 보조 문구(14 Bold 검정) 위, CTA 문구(16 Bold 초록) 아래 */}
       <span className={styles.body}>

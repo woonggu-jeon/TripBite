@@ -1,23 +1,23 @@
-// Figma `letterItem` — 320x82, H gap 12, padding 16, 흰 카드 radius 12.
-// 좌측 `stamp` 48x48 (radius 8) 이라 구 80px 미리보기보다 작다.
-// cardClasses({variant:'surface'}) 가 bg/border/radius 담당.
+// Figma `letterItem` — 320x82, 흰 카드 radius 12 + 1px #E0E0E0,
+// padding 16, HORIZONTAL gap 12, 3열 (stamp / 본문 / 북마크).
 .card {
   display: grid;
-  grid-template-columns: 48px minmax(0, 1fr) auto;
-  gap: var(--space-3);
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
+  gap: var(--space-3);
   padding: var(--space-4);
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-md);
   text-decoration: none;
   color: var(--color-fg);
   transition:
     border-color var(--motion-base) ease,
-    background var(--motion-base) ease,
     transform var(--motion-fast) ease;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      border-color: var(--color-primary-text-bold);
-      background: var(--color-primary-fade);
+      border-color: var(--color-primary);
     }
   }
   &:active {
@@ -29,102 +29,135 @@
   }
 }
 
-// Figma `stamp` 48x48, radius 8
-.image {
+// Figma `stamp` — 48x48, radius 8, 연초록 면
+.stamp {
+  display: grid;
+  place-items: center;
   width: 48px;
   height: 48px;
   border-radius: var(--radius-sm);
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+  background: var(--color-primary-soft);
 }
 
-// 5글자 미리보기 — 48px 안에 들어가도록 12px 로 (구 16px)
-.body {
-  font-size: var(--font-caption);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-on-strong);
-  letter-spacing: var(--tracking-wide);
-  text-shadow: var(--text-shadow-soft);
-  text-align: center;
-  word-break: keep-all;
-  padding: 0 0.25rem;
+// profileIcon 은 시안에서 stroke 1.7
+.stampIcon {
+  --icon-stroke: 1.7;
+  color: var(--color-primary-text-bold);
 }
 
-.meta {
+// Figma `m` — V gap 7 (4px 그리드로 8)
+.mid {
   display: grid;
-  gap: 0.125rem;
+  gap: var(--space-2);
   min-width: 0;
 }
 
-.author {
-  font-size: var(--font-body-sm);
+// 본문 + 안읽음 점, H gap 10
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+// Title/B_18_140% — 다섯 글자 본문
+.body {
+  font-size: var(--font-h3);
   font-weight: var(--font-weight-bold);
+  line-height: var(--line-normal);
+  letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
 
-.location {
+// Figma 안읽음 표시 — 4px 빨간 점 (구 구현은 NEW 칩)
+.unread {
+  flex-shrink: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: var(--color-danger);
+}
+
+// Figma `r2` — H gap 8
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
   font-size: var(--font-caption);
+  line-height: var(--line-normal);
+}
+
+// Figma `rp` — 지역 pill 36x18, padding 3/9, 연초록, radius 999
+.region {
+  flex-shrink: 0;
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-soft);
+  color: var(--color-primary-text-bold);
+  font-size: var(--font-caption);
+  line-height: var(--line-tight);
+  letter-spacing: var(--tracking-snug);
+  white-space: nowrap;
+}
+
+// Caption/R_12 #393939
+.author {
   color: var(--color-muted);
+  letter-spacing: var(--tracking-snug);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.right {
-  display: grid;
-  gap: 0.25rem;
-  justify-items: end;
-  align-items: center;
+// Caption/R_12 #B4B4B4 — 상대시각은 한 단계 더 연하다
+.time {
+  flex-shrink: 0;
+  color: var(--color-fg-weak);
+  letter-spacing: var(--tracking-snug);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
-.heart {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-full);
-  color: var(--color-muted);
+// Figma 우측 bookmarkIcon 20 — off #B4B4B4 / on 초록 채움
+.save {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--color-fg-weak);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   transition:
     color var(--motion-base) ease,
-    background var(--motion-base) ease,
     transform var(--motion-fast) ease;
 
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      background: var(--color-hover-soft);
-    }
+  &[aria-pressed='true'] {
+    color: var(--color-primary);
   }
   &:active {
     transform: scale(0.92);
   }
-  &.liked {
-    color: var(--color-danger);
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+    border-radius: var(--radius-full);
   }
-}
-
-.time {
-  font-size: var(--font-caption);
-  color: var(--color-muted);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: var(--tracking-snug);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .card,
-  .heart {
+  .save {
     transition: none;
   }
   .card:active,
-  .heart:active {
+  .save:active {
     transform: none;
   }
 }

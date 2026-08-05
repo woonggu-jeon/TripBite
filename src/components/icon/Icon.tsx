@@ -50,6 +50,11 @@ export type IconName =
   | 'share-18'
   | 'right-20'
   | 'heart-20'
+  // Figma `bookmarkIcon` (편지 저장) / `circleIcon letter` (편지 빈 상태·배너)
+  | 'bookmark'
+  | 'bookmark-on'
+  | 'letter-24'
+  | 'letter-36'
   // Navigation
   | 'chevron-left'
   | 'chevron-right'
@@ -80,7 +85,12 @@ const SIZE_MAP: Record<Exclude<IconSize, number>, number> = {
  * 시안이 **채움**으로 그린 아이콘 — stroke 기반 기본값을 쓰면 안 된다.
  * (Figma headerIcon 의 setting·noti 가 채움 벡터다)
  */
-const FILLED_ICONS = new Set<IconName>(['settings', 'bell', 'heart-20']);
+const FILLED_ICONS = new Set<IconName>([
+  'settings',
+  'bell',
+  'heart-20',
+  'bookmark-on',
+]);
 
 /**
  * 시안이 지정한 아이콘별 stroke (viewBox 단위) — 렌더 크기와 무관하게 같은 굵기로
@@ -96,6 +106,9 @@ const STROKE_WIDTHS: Partial<Record<IconName, number>> = {
   'share-18': 1.28,
   'right-20': 1.5,
   camera: 1,
+  bookmark: 1.558,
+  'letter-24': 1.7,
+  'letter-36': 2.7,
 };
 
 /**

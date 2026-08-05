@@ -18,7 +18,7 @@ import styles from './LetterIndex.module.scss';
  *   ┌────────────────────────────┐
  *   │ ComposeEntryCard (hero)    │ ← 편지 보내러 가기
  *   ├────────────────────────────┤
- *   │ 받은 · 보낸 · 하트 (탭)     │
+ *   │ 받은 · 보낸 · 저장한 (탭)    │
  *   ├────────────────────────────┤
  *   │ LetterRowCard × N          │ ← InfiniteList (useLettersInfinite)
  *   └────────────────────────────┘
@@ -28,11 +28,16 @@ import styles from './LetterIndex.module.scss';
  *   2) pointerdown / focus prefetch — 터치 다운 ~ 클릭 사이 latency 흡수
  *   3) min-height — list 영역 고정 → CLS 0
  */
-const TABS: { key: LetterListKind; labelKey: 'received' | 'sent' | 'liked' }[] =
+/**
+ * 시안 `wideTabMenu` 는 받은 / 보낸 / **저장한** 편지 3탭이다.
+ * 구 구현의 3번째 탭은 하트(liked) 였는데, 목록 행의 우측 액션도 시안에서는
+ * 하트가 아니라 북마크(저장) 라 저장 탭이 맞다. liked API 는 남아 있다.
+ */
+const TABS: { key: LetterListKind; labelKey: 'received' | 'sent' | 'saved' }[] =
   [
     { key: 'received', labelKey: 'received' },
     { key: 'sent', labelKey: 'sent' },
-    { key: 'liked', labelKey: 'liked' },
+    { key: 'saved', labelKey: 'saved' },
   ];
 
 const FETCHERS = {
@@ -42,7 +47,7 @@ const FETCHERS = {
   saved: letterApi.listSaved,
 } as const;
 
-const VALID_TABS = new Set<LetterListKind>(['received', 'sent', 'liked']);
+const VALID_TABS = new Set<LetterListKind>(['received', 'sent', 'saved']);
 
 function readInitialTab(value: string | null): LetterListKind {
   return value && VALID_TABS.has(value as LetterListKind)
@@ -53,7 +58,7 @@ function readInitialTab(value: string | null): LetterListKind {
 export function LetterIndex() {
   const t = useTranslations('letter.tabs');
   const queryClient = useQueryClient();
-  // 알림 / deep-link 에서 `?tab=sent|liked` 으로 직접 진입 가능 — 초기 active 분기.
+  // 알림 / deep-link 에서 `?tab=sent|saved` 으로 직접 진입 가능 — 초기 active 분기.
   const searchParams = useSearchParams();
   const initial = readInitialTab(searchParams.get('tab'));
   const [active, setActive] = useState<LetterListKind>(initial);
