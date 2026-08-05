@@ -37,12 +37,14 @@ export function SavedTournamentsSection() {
       emptyAction={
         <Button
           variant="primary"
-          size="sm"
+          fullWidth
           onClick={() => router.push('/tournament')}
         >
           {t('startTournament')}
         </Button>
       }
+      // Figma `empty-saved` — 섹션 안 흰 카드. 84px 원형 아이콘은 없다.
+      emptyVariant="card"
       isEmpty={(d) => d.length === 0}
     >
       {(data) => (

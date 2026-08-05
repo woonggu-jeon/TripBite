@@ -63,7 +63,11 @@ export function TournamentHistorySection() {
   const items = (data?.items as HistoryItem[] | undefined) ?? [];
   if (items.length === 0) {
     return (
-      <EmptyState icon={<Trophy size={28} aria-hidden />} title={t('empty')} />
+      <EmptyState
+        icon={<Trophy size={28} aria-hidden />}
+        title={t('empty')}
+        variant="card"
+      />
     );
   }
 

@@ -1,12 +1,16 @@
-// Figma `recent-box` 안의 `recent-row` — 288x68, H gap 12, padding 12/0,
-// 행 하단 1px #E0E0E0 (마지막 행 제외). 개별 카드가 아니다.
-// 카드 껍데기(radius 12 / 보더 / padding 20-16)는 PageSection variant="card".
+// Figma `recent-box` — 흰 카드(radius 12, 1px #E0E0E0, padding 20/16) 안에
+// `recent-row` 288x68 이 쌓인다. 행 하단 1px 구분선(마지막 행 제외).
+// 섹션 제목은 카드 **밖**에 있다 — 그래서 PageSection variant="card" 가 아니라
+// 이 목록이 직접 카드 껍데기를 갖는다.
 .list {
   display: grid;
   gap: 0;
-  padding: 0;
+  padding: var(--space-5) var(--space-4);
   margin: 0;
   list-style: none;
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-md);
 }
 
 .skeletonList {

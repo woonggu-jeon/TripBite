@@ -707,7 +707,8 @@
       "avatarRemoved": "Profile image removed.",
       "avatarRemoveFailed": "Couldn't remove image.",
       "travelType": {
-        "label": "Travel type"
+        "label": "Travel type",
+        "rookie": "New traveler"
       }
     },
     "savedTournaments": {
@@ -752,7 +753,8 @@
       "bannerErrorHint": "View the map",
       "masterHint": "Collect all 11 regions to earn the Chungbuk Master card",
       "legendVisited": "Stamped",
-      "legendUnvisited": "Not visited"
+      "legendUnvisited": "Not visited",
+      "bannerHint": "Collect all {total} to share the Master card"
     }
   },
   "settings": {

@@ -72,8 +72,9 @@ export function MyPageClient() {
           <SavedTournamentsSection />
         </PageSection>
 
-        {/* 4) 토너먼트 기록 — Figma `recent-box`: 묶음 카드 + 행 하단 구분선 */}
-        <PageSection title={t('tournamentHistory')} variant="card">
+        {/* 4) 토너먼트 기록 — Figma 는 섹션 제목이 카드 밖이고 `recent-box` 가
+            따로 카드다. 카드 껍데기는 TournamentHistorySection 이 직접 갖는다. */}
+        <PageSection title={t('tournamentHistory')}>
           <TournamentHistorySection />
         </PageSection>
       </div>

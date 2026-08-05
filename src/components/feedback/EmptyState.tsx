@@ -24,29 +24,39 @@ export function EmptyState({
   description,
   action,
   className,
+  variant = 'default',
 }: {
   icon?: ReactNode;
   title: string;
   description?: string;
   action?: ReactNode;
   className?: string;
+  /**
+   * `card` — Figma 마이페이지의 `empty-saved` / `empty-recent`.
+   * 섹션 안에 들어가는 흰 카드(1px, radius 12, padding 20/16) 형태로,
+   * 84px 원형 아이콘과 큰 최소 높이를 쓰지 않는다.
+   */
+  variant?: 'default' | 'card';
 }) {
   // Figma emptyItme 은 설명 유무로 규격이 갈린다.
   //   type=title : gap 16, 제목 Basic Body/B_16_140%
   //   type=desc  : gap 20, 제목 Basic Body/B_14_140% + 설명 Caption/R_12
   const withDescription = Boolean(description);
+  const isCard = variant === 'card';
 
   return (
     <div
       className={[
         styles.wrap,
         withDescription ? styles.hasDescription : '',
+        isCard ? styles.card : '',
         className ?? '',
       ]
         .filter(Boolean)
         .join(' ')}
     >
-      {icon && <div className={styles.icon}>{icon}</div>}
+      {/* 카드형은 시안에 원형 아이콘이 없다 */}
+      {icon && !isCard && <div className={styles.icon}>{icon}</div>}
       {/* Figma `f` — 제목+설명은 gap 3 의 한 블록이다. 따로 두면 wrap 의
           gap 16 이 그대로 적용돼 시안보다 훨씬 벌어진다. */}
       <div className={styles.text}>

@@ -53,8 +53,14 @@ export function StampBookBanner() {
       }
     >
       <span className={styles.head}>
-        <span className={styles.title}>
-          {isMaster ? t('masterAchieved') : t('remainingTitle', { remaining })}
+        {/* Figma `f` — 제목 + 보조 한 줄, V gap 3 */}
+        <span className={styles.headText}>
+          <span className={styles.title}>
+            {isMaster
+              ? t('masterAchieved')
+              : t('remainingTitle', { remaining })}
+          </span>
+          <span className={styles.hint}>{t('bannerHint', { total })}</span>
         </span>
         {/* Figma 는 "8" 만 초록, "/11" 은 회색 */}
         <span className={styles.count} aria-hidden>

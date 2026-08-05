@@ -180,6 +180,12 @@
   border-radius: var(--radius-full);
 }
 
+// Figma `detailIcon` 12x12 compass
+.travelTypeIcon {
+  flex-shrink: 0;
+  color: var(--color-primary-text-bold);
+}
+
 // Caption/B_10 — 10px Bold
 .travelTypeTitle {
   font-size: var(--font-eyebrow);

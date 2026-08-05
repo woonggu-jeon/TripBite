@@ -60,3 +60,29 @@
   width: 100%;
   margin-top: var(--space-1);
 }
+
+// Figma `empty-saved`(320x148) / `empty-recent`(320x60) — 섹션 안 흰 카드.
+// 원형 아이콘 없이 텍스트(+CTA)만, 최소 높이도 없다.
+.card {
+  gap: var(--space-4); // Figma gap 16
+  padding: var(--space-5) var(--space-4); // Figma 20 / 16
+  min-height: 0;
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+// 카드형 제목은 설명 유무와 무관하게 Basic Body/B_14_140%
+.card .title {
+  font-size: var(--font-body-sm);
+}
+
+// 카드형은 카드 폭(288)을 그대로 쓴다 — 28ch 제한이 걸리면 시안(1줄)과 달리
+// 설명이 2줄로 접혀 카드가 18px 높아진다.
+.card .description {
+  max-width: none;
+}
+
+.card .action {
+  margin-top: 0;
+}

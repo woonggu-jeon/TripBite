@@ -30,6 +30,21 @@
   gap: var(--space-3);
 }
 
+// Figma `f` 내부 — 제목 + 보조, V gap 3
+.headText {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+// Caption/R_12 #393939
+.hint {
+  font-size: var(--font-caption);
+  line-height: var(--line-normal);
+  color: var(--color-muted);
+  letter-spacing: var(--tracking-snug);
+}
+
 // Basic Body/B_14_140%
 .title {
   font-size: var(--font-body-sm);

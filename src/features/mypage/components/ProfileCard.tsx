@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Camera, User, X } from 'lucide-react';
+import { Icon } from '@/components/icon';
 import { useMe } from '@/features/auth/hooks/use-auth';
 import {
   useMypage,
@@ -174,10 +175,11 @@ export function ProfileCard() {
 }
 
 /**
- * 여행 유형 표시 영역 — 유형이 저장되어 있을 때만 렌더.
+ * 여행 유형 배지 — Figma `badge`: 연초록 pill + 12px compass + Caption/B_10.
  *
- * 미설정 상태에서는 어떤 UI 도 노출하지 않는다 (CTA 도 X).
- * 유형 적용은 /quiz 결과 페이지의 "내 유형으로 적용" 버튼으로만 수행.
+ * 유형 테스트를 한 번도 안 했으면 "새내기 여행자" 로 표시한다 (시안도 이 상태를
+ * 그려두었다). 이전 구현은 유형이 없으면 아무 것도 렌더하지 않아 닉네임 아래가
+ * 비어 있었다. 유형 적용은 /quiz 결과의 "내 유형으로 적용" 으로만 수행.
  */
 function TravelTypeField({
   travelType,
@@ -190,10 +192,16 @@ function TravelTypeField({
   };
 }) {
   const t = useTranslations('mypage.profile.travelType');
-  if (!travelType?.title) return null;
+  const label = travelType?.title ? `#${travelType.title}` : t('rookie');
   return (
     <div className={styles.travelType} role="group" aria-label={t('label')}>
-      <p className={styles.travelTypeTitle}>#{travelType.title}</p>
+      <Icon
+        name="compass"
+        size={12}
+        className={styles.travelTypeIcon}
+        aria-hidden
+      />
+      <p className={styles.travelTypeTitle}>{label}</p>
     </div>
   );
 }

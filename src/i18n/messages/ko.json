@@ -707,7 +707,8 @@
       "avatarRemoved": "프로필 이미지가 제거됐어요.",
       "avatarRemoveFailed": "이미지 제거에 실패했어요.",
       "travelType": {
-        "label": "여행 유형"
+        "label": "여행 유형",
+        "rookie": "새내기 여행자"
       }
     },
     "savedTournaments": {
@@ -752,7 +753,8 @@
       "bannerErrorHint": "지도 보러 가기",
       "masterHint": "11개 시군을 모두 모으면 충북 마스터 카드를 받아요",
       "legendVisited": "도장 완료",
-      "legendUnvisited": "미방문"
+      "legendUnvisited": "미방문",
+      "bannerHint": "{total}개 달성 시 마스터 카드 공유"
     }
   },
   "settings": {
