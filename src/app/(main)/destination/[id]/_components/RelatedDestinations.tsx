@@ -6,7 +6,6 @@ import { Skeleton } from '@/components/feedback/Skeleton';
 import { DestinationCard } from '@/components/ui';
 import { useRelatedDestinations } from '@/features/tournament/hooks/use-tournament';
 import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
-import { toneFor } from '@/constants/region-tone';
 import { categoryEmoji } from '@/constants/emoji-map';
 import { useResponsiveSlidesPerView } from '@/hooks/use-responsive-slides-per-view';
 import styles from './RelatedDestinations.module.scss';
@@ -15,7 +14,7 @@ import styles from './RelatedDestinations.module.scss';
  * 이 시군의 다른 여행지 — 메인의 "지금 열리는 충북 축제" 와 동일한 카드 + Carousel UI.
  *
  * 카드는 `DestinationCard` primitive (`ui/DestinationCard`) — FestivalCarousel /
- * SavedTournamentCard tile 과 같은 디자인. 톤은 시군 코드 → REGION_TONE.
+ * SavedTournamentCard tile 과 같은 디자인.
  */
 function regionLabelFor(code: RegionCode): string {
   return CHUNGBUK_REGIONS.find((r) => r.code === code)?.ko ?? code;
@@ -49,7 +48,6 @@ export function RelatedDestinations({ id }: { id: string }) {
             href={{ pathname: `/destination/${d.id}` }}
             imageUrl={d.imageUrl}
             emoji={categoryEmoji(d.category)}
-            tone={toneFor(d.region as RegionCode)}
             regionLabel={regionLabelFor(d.region as RegionCode)}
             name={d.name}
             ariaLabel={`${d.name} · ${regionLabelFor(d.region as RegionCode)}`}

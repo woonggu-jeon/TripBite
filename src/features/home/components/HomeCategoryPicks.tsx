@@ -14,7 +14,6 @@ import {
   isRegionCode,
   type RegionCode,
 } from '@/constants/regions';
-import { toneFor } from '@/constants/region-tone';
 import { categoryEmoji } from '@/constants/emoji-map';
 import { useResponsiveSlidesPerView } from '@/hooks/use-responsive-slides-per-view';
 import { ROUTES } from '@/constants/routes';
@@ -176,7 +175,6 @@ export function HomeCategoryPicks() {
                 href={{ pathname: `/destination/${item.id}` }}
                 imageUrl={item.imageUrl}
                 emoji={categoryEmoji(item.category, '✨')}
-                tone={toneFor(item.regionCode)}
                 regionLabel={item.regionLabel}
                 name={item.name}
                 ariaLabel={`${item.name} · ${item.regionLabel}`}

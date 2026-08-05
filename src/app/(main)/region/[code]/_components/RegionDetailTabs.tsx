@@ -4,7 +4,6 @@ import { useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
-import { toneFor } from '@/constants/region-tone';
 import type {
   DestinationCategory,
   RegionContentDto,
@@ -194,7 +193,6 @@ function RegionContentPanel({
     | 'empty.attraction'
     | 'empty.festival'
     | 'empty.experience';
-  const tone = toneFor(code);
   const label = regionLabel(code);
 
   return (
@@ -210,7 +208,6 @@ function RegionContentPanel({
           imageUrl={i.imageUrl}
           // 'all' 탭이라도 응답 item 의 type 은 항상 attraction|festival|experience.
           emoji={TYPE_EMOJI[i.type] ?? ALL_EMOJI}
-          tone={tone}
           regionLabel={label}
           name={i.title}
         />

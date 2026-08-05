@@ -25,7 +25,7 @@
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      border-color: var(--accent, var(--color-primary));
+      border-color: var(--color-primary);
     }
   }
   &:active {
@@ -44,10 +44,11 @@
   place-items: center;
   width: 100%;
   aspect-ratio: 38 / 27;
+  // 사진 없을 때만 보이는 바닥면 — 브랜드 초록 연한 그라데이션.
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--accent) 22%, var(--color-bg)),
-    color-mix(in srgb, var(--accent) 8%, var(--color-bg))
+    color-mix(in srgb, var(--color-primary) 22%, var(--color-bg)),
+    color-mix(in srgb, var(--color-primary) 8%, var(--color-bg))
   );
   overflow: hidden;
 }
@@ -146,24 +147,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-// 톤별 accent — globals.scss --accent-{color} 토큰 사용.
-// Figma 카드는 흰 면 + 회색 보더라 accent 는 hover 보더와 emoji fallback 면에만.
-.red {
-  --accent: var(--accent-red);
-}
-.amber {
-  --accent: var(--accent-amber);
-}
-.green {
-  --accent: var(--accent-green);
-}
-.blue {
-  --accent: var(--accent-blue);
-}
-.violet {
-  --accent: var(--accent-violet);
 }
 
 @media (prefers-reduced-motion: reduce) {

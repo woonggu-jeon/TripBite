@@ -4,21 +4,17 @@ import type { ComponentProps, ReactNode } from 'react';
 import { MediaThumb } from './MediaThumb';
 import styles from './DestinationCard.module.scss';
 
-export type DestinationCardTone = 'red' | 'amber' | 'green' | 'blue' | 'violet';
-
 interface DestinationCardProps {
   /** 진입 경로. next/link 가 받는 형식 그대로 — typedRoutes 의 dynamic path 도 호환. */
   href: ComponentProps<typeof Link>['href'];
   /**
    * 실 이미지 URL (TourAPI). 있으면 next/image 로 표시.
-   * 없으면 emoji + tone gradient fallback.
+   * 없으면 emoji + 연초록 그라데이션 fallback.
    * http URL 은 자동 https 정규화 (lib/secure-image-url).
    */
   imageUrl?: string | null;
   /** 카테고리 emoji (또는 임의 단일 글리프) — imageUrl 없을 때 fallback */
   emoji: string;
-  /** 톤 키 — region 별 매핑. 색은 globals 의 --accent-{tone} 토큰 사용 */
-  tone: DestinationCardTone;
   /** 시군 라벨 (eyebrow) */
   regionLabel: string;
   /** 메인 제목 */
@@ -54,14 +50,14 @@ interface DestinationCardProps {
  *   - RelatedDestinations — emoji + region/name
  *   - SavedTournamentsSection 의 tile — accentDot 으로 luckyColor 표시
  *
- * 톤은 시군 코드 → tone 매핑 (constants/region-tone.ts) 으로 결정. 톤별 accent 색은
- * 전역 --accent-{red|amber|green|blue|violet} 토큰. 디자이너가 한 곳에서 조정.
+ * hover 강조는 브랜드 초록 하나다 (2026-08-05 결정). 이전에는 시군 코드를 5색에
+ * 나눠 담아 카드마다 hover 색이 달랐는데, 색과 시군 사이에 의미 연결이 없었고
+ * 시안(Figma)에도 시군별 색 개념이 없다 — 카드는 흰 면 + #E0E0E0 보더 하나뿐.
  */
 export function DestinationCard({
   href,
   imageUrl,
   emoji,
-  tone,
   regionLabel,
   name,
   accentDot,
@@ -73,7 +69,7 @@ export function DestinationCard({
     <Link
       href={href}
       prefetch={false}
-      className={`${styles.card} ${styles[tone]}`}
+      className={styles.card}
       aria-label={ariaLabel ?? `${name} · ${regionLabel}`}
     >
       <MediaThumb

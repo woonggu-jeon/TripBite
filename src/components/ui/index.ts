@@ -18,7 +18,7 @@ export {
   type ButtonVariant,
   type ButtonSize,
 } from './button';
-export { DestinationCard, type DestinationCardTone } from './DestinationCard';
+export { DestinationCard } from './DestinationCard';
 export { HeroCard, type HeroCardAlign } from './HeroCard';
 export { DestinationCardSkeleton } from './DestinationCardSkeleton';
 export { ButtonGrid } from './ButtonGrid';

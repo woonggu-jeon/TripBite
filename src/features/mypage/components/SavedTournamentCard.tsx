@@ -2,8 +2,7 @@
 
 import { Heart } from 'lucide-react';
 import { DestinationCard } from '@/components/ui';
-import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
-import { toneFor } from '@/constants/region-tone';
+import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { categoryEmoji, FALLBACK_TROPHY_EMOJI } from '@/constants/emoji-map';
 import type { SavedTournamentDto } from '@/api/generated/schemas';
 import styles from './SavedTournamentCard.module.scss';
@@ -65,7 +64,6 @@ export function SavedTournamentCard({
       href={{ pathname: `/destination/${saved.destination.id}` }}
       imageUrl={saved.destination.imageUrl}
       emoji={emoji}
-      tone={toneFor(saved.destination.region as RegionCode)}
       regionLabel={regionLabel}
       name={saved.destination.name}
       // Figma 의 DestinationCard 에는 좌상단 색점이 없다 (마이페이지 carousel /
