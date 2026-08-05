@@ -619,7 +619,8 @@
       "deletedToast": "편지가 삭제됐어요",
       "deleteFailedToast": "편지를 삭제하지 못했어요",
       "retry": "다시 시도",
-      "backToList": "편지함으로"
+      "backToList": "편지함으로",
+      "postmarkArrived": "도착"
     },
     "author": {
       "anonymous": "익명의 여행자"

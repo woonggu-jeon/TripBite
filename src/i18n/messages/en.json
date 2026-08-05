@@ -619,7 +619,8 @@
       "deletedToast": "Letter deleted",
       "deleteFailedToast": "Couldn't delete the letter",
       "retry": "Try again",
-      "backToList": "Back to inbox"
+      "backToList": "Back to inbox",
+      "postmarkArrived": "Arrived"
     },
     "author": {
       "anonymous": "Anonymous traveler"

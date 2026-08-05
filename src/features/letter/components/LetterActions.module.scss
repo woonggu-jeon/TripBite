@@ -1,85 +1,26 @@
+// Figma `받은 편지 상세 > buttons` — 156x52 두 개(gap 8) + 320x52 라인(gap 10→12).
 .actions {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
+  gap: var(--space-3);
 }
 
-.action {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.375rem;
-  padding: 0.875rem 0.5rem;
-  background: var(--color-bg);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  color: var(--color-fg);
-  font-size: var(--font-label);
-  font-weight: var(--font-weight-semibold);
-  cursor: pointer;
-  transition:
-    background var(--motion-base) ease,
-    border-color var(--motion-base) ease,
-    color var(--motion-base) ease,
-    transform var(--motion-fast) ease;
+.row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+// 시안 3번째 버튼 — 흰 면 + 1px 초록 보더 + 초록 라벨(16 Medium).
+// secondary(회색 보더) 위에 색만 덮는다.
+.lineButton {
+  border-color: var(--color-primary);
+  color: var(--color-primary-text-bold);
+  font-weight: var(--font-weight-medium);
 
   @media (hover: hover) and (pointer: fine) {
     &:hover:not(:disabled) {
-      border-color: color-mix(
-        in srgb,
-        var(--color-fg) 25%,
-        var(--color-border)
-      );
-      background: var(--color-surface-soft);
-    }
-  }
-  &:active:not(:disabled) {
-    transform: scale(0.96);
-  }
-  &:focus-visible {
-    outline: var(--focus-outline);
-    outline-offset: var(--focus-outline-offset);
-  }
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  &.liked {
-    color: var(--color-danger);
-    border-color: color-mix(
-      in srgb,
-      var(--color-danger) 50%,
-      var(--color-border)
-    );
-    background: color-mix(in srgb, var(--color-danger) 5%, var(--color-bg));
-  }
-  &.saved {
-    color: var(--color-primary-text-bold);
-    border-color: color-mix(
-      in srgb,
-      var(--color-primary) 50%,
-      var(--color-border)
-    );
-    background: var(--color-primary-fade);
-  }
-  &.danger:hover:not(:disabled) {
-    color: var(--color-danger);
-    border-color: color-mix(
-      in srgb,
-      var(--color-danger) 45%,
-      var(--color-border)
-    );
-    background: color-mix(in srgb, var(--color-danger) 5%, var(--color-bg));
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .action {
-    transition: none;
-    &:active:not(:disabled) {
-      transform: none;
+      background: var(--color-primary-soft);
+      border-color: var(--color-primary);
     }
   }
 }
