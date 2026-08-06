@@ -84,7 +84,7 @@ function isOnProtectedPath(): boolean {
  */
 function isAuthEndpoint(requestUrl: string | undefined): boolean {
   if (!requestUrl) return false;
-  return /\/v1\/auth\/(login|signup|check-username|check-email|find-id|forgot-password|reset-password)\b/.test(
+  return /\/(v1\/)?auth\/(login|signup|check-username|check-email|find-id|forgot-password|reset-password)\b/.test(
     requestUrl,
   );
 }
@@ -93,16 +93,22 @@ export function attachAuthInterceptor(instance: AxiosInstance) {
   instance.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
-      // 401 만 처리 대상. 그 외는 그대로 throw.
-      if (!error.response || error.response.status !== 401) {
+      // 미인증/세션만료 판정 — BE 별 상태코드 상이 (2026-08 Spring 전환):
+      //   · 구 NestJS : 401 + code=AUTH_REQUIRED
+      //   · 새 Spring : 403 (Spring Security 미인증 — body/code 없음)
+      // 그 외는 그대로 throw:
+      //   · 401 INVALID_CREDENTIALS 등 → 로그인 폼이 인라인 처리
+      //   · 403 + 도메인 code (business forbidden) → 호출처가 처리 (오작동 로그아웃 방지)
+      const status = error.response?.status;
+      if (!error.response || (status !== 401 && status !== 403)) {
         return Promise.reject(error);
       }
-
-      // BE code 기반 분기 (2026-06-22) — AUTH_REQUIRED 만 자동 로그아웃 분기.
-      // AUTH_INVALID_CREDENTIALS / 기타 401 은 호출처가 처리 (인라인 에러 등).
       const data = error.response.data as { code?: string } | undefined;
       const code = data?.code;
-      if (code !== 'AUTH_REQUIRED') {
+      const isSessionExpiry =
+        (status === 401 && code === 'AUTH_REQUIRED') ||
+        (status === 403 && !code);
+      if (!isSessionExpiry) {
         return Promise.reject(error);
       }
 
@@ -115,9 +121,8 @@ export function attachAuthInterceptor(instance: AxiosInstance) {
       const isMock = process.env.NEXT_PUBLIC_USE_MSW === 'true';
       const onAuthPage = isAlreadyOnAuthPage();
 
-      // public 경로에서 401 자동 로그아웃 처리 — 탈퇴/세션만료 사용자의 stale
-      // store 동기화. BE 가 응답에 Set-Cookie SID 만료 헤더 자동 포함하므로
-      // FE 는 cookie 청소 불필요.
+      // stale store 동기화 (탈퇴/세션만료) — clearAuth 는 네비게이션 없음이라 항상 안전.
+      // wasAuthenticated 일 때만 세션만료 이벤트 → 비로그인 공개 페이지(403)엔 토스트 안 뜸.
       if (!isMock && !onAuthPage && typeof window !== 'undefined') {
         const { useAuthStore } = await import('@/stores/auth-store');
         const wasAuthenticated = useAuthStore.getState().isAuthenticated;
@@ -129,7 +134,13 @@ export function attachAuthInterceptor(instance: AxiosInstance) {
         }
       }
 
+      // 보호경로 hard redirect → /login 은 **401(구 NestJS)** 에서만.
+      // 구 BE 는 401 응답에 Set-Cookie SID=;Max-Age=0 로 쿠키를 정리 → /login 재진입 안전.
+      // 새 Spring 403 은 쿠키를 정리하지 않고 오히려 익명 JSESSIONID 를 재발급 →
+      // redirect 시 middleware(hasSession=쿠키존재) 가 /login→보호경로로 되돌려 **무한 루프**.
+      // 따라서 403 은 clearAuth+토스트까지만 (navigation X). 미들웨어 인증 신호 재설계 전까지 안전판.
       if (
+        status === 401 &&
         !isMock &&
         !onAuthPage &&
         isOnProtectedPath() &&

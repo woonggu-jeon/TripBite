@@ -54,10 +54,9 @@ export function useMe(
     initialDataUpdatedAt: 0,
     staleTime: 5 * 60 * 1000,
     retry: (failureCount, error) => {
-      // 401은 미인증 상태로 간주 (재시도 X)
-      if (isAxiosError(error) && error.response?.status === 401) {
-        return false;
-      }
+      // 미인증은 재시도 무의미 — 구 NestJS 401, 새 Spring 403 둘 다.
+      const s = isAxiosError(error) ? error.response?.status : undefined;
+      if (s === 401 || s === 403) return false;
       return failureCount < 1;
     },
     ...options,

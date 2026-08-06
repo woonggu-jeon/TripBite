@@ -135,7 +135,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
         // mutation 에러는 각 폼에서 setError로 root 표시 → 자동 toast 중복 방지(여기 제외).
         queryCache: new QueryCache({
           onError: (error) => {
-            if (isAxiosError(error) && error.response?.status === 401) return;
+            // 미인증(구 401 / 새 Spring 403)은 interceptor 가 세션정리/redirect 처리 → 중복 토스트·오보고 skip.
+            if (
+              isAxiosError(error) &&
+              (error.response?.status === 401 || error.response?.status === 403)
+            )
+              return;
             const t = tErrorsRef.current;
             // attachErrorNormalizeInterceptor 가 error.normalized 부착 — cast 우회.
             const message = isAxiosError(error)
@@ -156,7 +161,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
         // 5xx / 네트워크만 보고(4xx 는 사용자 입력 검증). 401 은 interceptor 처리.
         mutationCache: new MutationCache({
           onError: (error) => {
-            if (isAxiosError(error) && error.response?.status === 401) return;
+            // 미인증(구 401 / 새 Spring 403)은 interceptor 가 세션정리/redirect 처리 → 중복 토스트·오보고 skip.
+            if (
+              isAxiosError(error) &&
+              (error.response?.status === 401 || error.response?.status === 403)
+            )
+              return;
             const status = isAxiosError(error)
               ? error.response?.status
               : undefined;
