@@ -37,10 +37,20 @@ function normalize(input: RecommendationsDto): RecommendationsDto {
   };
 }
 
+const EMPTY_GROUPS: RecommendationsDto = {
+  festival: [],
+  attraction: [],
+  experience: [],
+};
+
 export function useRecommendationGroups() {
   return useQuery({
     queryKey: recommendationsKeys.all,
     queryFn: async () => {
+      // `/destinations/recommendations` 는 새 Spring BE 미지원 (구 NestJS 전용).
+      // real-BE 모드(USE_MSW=false)에선 dead(400) → 빈 그룹 반환해 섹션 미노출.
+      // mock 모드에서만 실제 호출(MSW handler 가 데이터 제공).
+      if (process.env.NEXT_PUBLIC_USE_MSW !== 'true') return EMPTY_GROUPS;
       const res =
         (await destinationControllerRecommendationsV1()) as RecommendationsDto;
       return normalize(res);

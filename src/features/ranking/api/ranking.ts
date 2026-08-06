@@ -66,7 +66,10 @@ export const rankingApi = {
       }));
     }
 
-    // 그 외 타입(recommended/by-category/seasonal/by-travel-type)은 BE 미지원 → 구 generated mock.
+    // 그 외 타입(recommended/by-category/seasonal/by-travel-type)은 새 Spring BE 미지원.
+    // real-BE 모드(USE_MSW=false)에선 dead(500) → 빈 배열로 degrade (호출부가 빈 상태 처리).
+    // mock 모드에서만 구 generated 호출(MSW handler 가 데이터 제공).
+    if (process.env.NEXT_PUBLIC_USE_MSW !== 'true') return [];
     // generated Params 가 type/limit 만 (category/season/region 미정의). type 만 매핑.
     const res = await rankingControllerListV1({
       type: params.type,
