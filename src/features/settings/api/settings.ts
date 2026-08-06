@@ -1,16 +1,18 @@
 import type {
   NotificationSettingsDto,
   UpdateNotificationSettingsDto,
-} from '@/api/generated/schemas';
+} from '@/api/be/schemas';
 import {
-  settingsControllerGetV1,
-  settingsControllerUpdateNotificationsV1,
-} from '@/api/generated/settings/settings';
+  getSettings,
+  updateNotificationSettings,
+} from '@/api/be/settings/settings';
 
 /**
- * 사용자 설정 — orval generated client wrap.
+ * 사용자 설정 — 신규 Spring BE (`@/api/be/settings`) client wrap.
  *
  * 알림 토글: pushEnabled / inAppEnabled / letterReceived / letterLiked.
+ * 신규 BE 는 `ApiResponse<SettingsDto>` 엔벨로프 → `.data` 언랩.
+ * 부분 수정 시 없는(null) 필드는 BE 가 기존 값 유지.
  */
 export type NotificationSettings = NotificationSettingsDto;
 export type UserSettings = {
@@ -18,7 +20,14 @@ export type UserSettings = {
 };
 
 export const settingsApi = {
-  get: () => settingsControllerGetV1() as Promise<UserSettings>,
-  updateNotifications: (patch: UpdateNotificationSettingsDto) =>
-    settingsControllerUpdateNotificationsV1(patch) as Promise<UserSettings>,
+  get: async (signal?: AbortSignal): Promise<UserSettings> => {
+    const res = await getSettings(signal);
+    return { notifications: res.data?.notifications ?? {} };
+  },
+  updateNotifications: async (
+    patch: UpdateNotificationSettingsDto,
+  ): Promise<UserSettings> => {
+    const res = await updateNotificationSettings(patch);
+    return { notifications: res.data?.notifications ?? {} };
+  },
 };

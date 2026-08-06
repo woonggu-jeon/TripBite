@@ -16,7 +16,7 @@ export function useUserSettings() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   return useQuery({
     queryKey: settingsKeys.user(),
-    queryFn: settingsApi.get,
+    queryFn: ({ signal }) => settingsApi.get(signal),
     enabled: isAuthenticated,
     staleTime: 5 * 60 * 1000,
   });

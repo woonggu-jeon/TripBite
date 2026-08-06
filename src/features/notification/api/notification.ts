@@ -1,7 +1,4 @@
-import {
-  notificationControllerSubscribeV1,
-  notificationControllerUnsubscribeV1,
-} from '@/api/generated/notifications/notifications';
+import { subscribe, unsubscribe } from '@/api/be/notification/notification';
 
 function toPayload(subscription: PushSubscription) {
   const json = subscription.toJSON();
@@ -15,7 +12,7 @@ function toPayload(subscription: PushSubscription) {
 }
 
 /**
- * Web Push subscribe / unsubscribe — orval generated client wrap.
+ * Web Push subscribe / unsubscribe — 신규 Spring BE (`@/api/be/notification`) client wrap.
  *
  * BE 가 VAPID + endpoint upsert.
  *   POST /notifications/subscribe   {endpoint, keys:{p256dh, auth}}
@@ -23,7 +20,6 @@ function toPayload(subscription: PushSubscription) {
  */
 export const notificationApi = {
   subscribe: (subscription: PushSubscription) =>
-    notificationControllerSubscribeV1(toPayload(subscription)),
-  unsubscribe: (endpoint: string) =>
-    notificationControllerUnsubscribeV1({ endpoint }),
+    subscribe(toPayload(subscription)),
+  unsubscribe: (endpoint: string) => unsubscribe({ endpoint }),
 };

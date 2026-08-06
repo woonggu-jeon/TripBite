@@ -726,14 +726,19 @@ export const handlers = [
   }),
 
   // ===== Settings ===== (모두 로그인 필요)
+  // 신규 Spring BE: ApiResponse<SettingsDto> 엔벨로프.
   http.get(`${apiUrl}/settings`, () =>
     getMockSignedIn()
       ? HttpResponse.json({
-          notifications: {
-            pushEnabled: false,
-            inAppEnabled: true,
-            letterReceived: true,
-            letterLiked: true,
+          success: true,
+          message: null,
+          data: {
+            notifications: {
+              pushEnabled: false,
+              inAppEnabled: true,
+              letterReceived: true,
+              letterLiked: true,
+            },
           },
         })
       : unauthorized(),
@@ -745,11 +750,15 @@ export const handlers = [
       boolean
     >;
     return HttpResponse.json({
-      notifications: {
-        pushEnabled: patch.pushEnabled ?? false,
-        inAppEnabled: patch.inAppEnabled ?? true,
-        letterReceived: patch.letterReceived ?? true,
-        letterLiked: patch.letterLiked ?? true,
+      success: true,
+      message: null,
+      data: {
+        notifications: {
+          pushEnabled: patch.pushEnabled ?? false,
+          inAppEnabled: patch.inAppEnabled ?? true,
+          letterReceived: patch.letterReceived ?? true,
+          letterLiked: patch.letterLiked ?? true,
+        },
       },
     });
   }),
@@ -1097,27 +1106,35 @@ export const handlers = [
   // ===== Notifications ===== (모두 로그인 필요)
   // cursor 기반 페이지네이션 — 편지/시군콘텐츠와 동일 컨벤션.
   // unreadCount 는 매 페이지 응답에 포함 (전체 통합 수). badge 는 별도 unread-count endpoint.
+  // 신규 Spring BE: ApiResponse<UnreadCountDto> 엔벨로프.
   http.get(`${apiUrl}/notifications/unread-count`, () => {
     if (!getMockSignedIn()) return unauthorized();
     return HttpResponse.json({
-      unreadCount: notificationItems.filter((n) => !n.read).length,
+      success: true,
+      message: null,
+      data: { unreadCount: notificationItems.filter((n) => !n.read).length },
     });
   }),
+  // 신규 Spring BE: ApiResponse<NotificationListDto> 엔벨로프. 페이지 크기 param 은 `size`.
   http.get(`${apiUrl}/notifications`, ({ request }) => {
     if (!getMockSignedIn()) return unauthorized();
     const url = new URL(request.url);
     const cursor = Math.max(0, Number(url.searchParams.get('cursor')) || 0);
-    const limit = Math.min(
+    const size = Math.min(
       60,
-      Math.max(1, Number(url.searchParams.get('limit')) || 20),
+      Math.max(1, Number(url.searchParams.get('size')) || 20),
     );
-    const slice = notificationItems.slice(cursor, cursor + limit);
+    const slice = notificationItems.slice(cursor, cursor + size);
     const next = cursor + slice.length;
     const nextCursor = next < notificationItems.length ? next : null;
     return HttpResponse.json({
-      items: slice,
-      unreadCount: notificationItems.filter((n) => !n.read).length,
-      nextCursor,
+      success: true,
+      message: null,
+      data: {
+        items: slice,
+        unreadCount: notificationItems.filter((n) => !n.read).length,
+        nextCursor,
+      },
     });
   }),
   http.post(`${apiUrl}/notifications/:id/read`, ({ params }) => {
