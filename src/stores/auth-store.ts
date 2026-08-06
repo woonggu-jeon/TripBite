@@ -51,6 +51,28 @@ type AuthActions = {
   setPendingSignupUser: (user: UserDto | undefined) => void;
 };
 
+/**
+ * 미들웨어 인증 마커 쿠키 (2026-08 Spring 전환).
+ *
+ * 새 Spring BE 는 익명 요청에도 JSESSIONID 를 항상 발급 → 미들웨어가 세션 쿠키
+ * 존재만으로 로그인 판정 불가 (익명도 쿠키 있음 → 보호경로 게이팅 무력화 + 로그아웃
+ * 사용자가 /login 진입 불가). 따라서 **FE 가 실제 인증 여부를 나타내는 non-HttpOnly
+ * 마커 쿠키**를 관리하고, 미들웨어는 이 마커를 본다 (`tripbite.visited` 와 동일 패턴).
+ *
+ * setAuth → 마커 set, clearAuth → 마커 clear. 로그인/로그아웃/세션만료(interceptor)/
+ * AuthBootstrap(/me 결과) 이 전부 이 두 함수를 거치므로 마커가 자동 동기화된다.
+ * API 403 이 실제 인증 게이트 — 마커는 UX(SSR redirect)용 신호일 뿐.
+ */
+const AUTH_MARKER_COOKIE = 'tripbite.authed';
+
+function writeAuthMarker(authed: boolean): void {
+  if (typeof document === 'undefined') return;
+  const secure = location.protocol === 'https:' ? '; secure' : '';
+  document.cookie = authed
+    ? `${AUTH_MARKER_COOKIE}=1; path=/; max-age=${60 * 60 * 24 * 30}; samesite=lax${secure}`
+    : `${AUTH_MARKER_COOKIE}=; path=/; max-age=0; samesite=lax${secure}`;
+}
+
 function toPersistedUser(user: UserDto | undefined): PersistedUser | undefined {
   if (!user) return undefined;
   return {
@@ -69,13 +91,18 @@ export const useAuthStore = create<AuthState & AuthActions>()(
       user: undefined,
       pendingSignupUser: undefined,
 
-      setAuth: (user) => set({ isAuthenticated: true, user }),
-      clearAuth: () =>
+      setAuth: (user) => {
+        writeAuthMarker(true);
+        set({ isAuthenticated: true, user });
+      },
+      clearAuth: () => {
+        writeAuthMarker(false);
         set({
           isAuthenticated: false,
           user: undefined,
           pendingSignupUser: undefined,
-        }),
+        });
+      },
       setPendingSignupUser: (user) => set({ pendingSignupUser: user }),
     }),
     {

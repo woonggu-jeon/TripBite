@@ -57,8 +57,12 @@ function safeRedirectParam(raw: string | null): string {
   return '/';
 }
 
-// BE 가 발급하는 sessionID cookie 이름. env override 가능 (운영/스테이징 분리용).
-const SESSION_COOKIE = process.env.NEXT_PUBLIC_SESSION_COOKIE || 'SID';
+// 인증 마커 쿠키 (FE 관리, non-HttpOnly). env override 가능.
+// ⚠️ BE 세션 쿠키(JSESSIONID)를 직접 보지 않는다 — 새 Spring 은 익명 요청에도
+// JSESSIONID 를 항상 발급하므로 "쿠키 존재 = 로그인" 이 성립 안 함 (익명도 통과 +
+// 로그아웃 사용자가 /login 진입 불가). 대신 auth-store 가 setAuth/clearAuth 시
+// 관리하는 `tripbite.authed` 마커를 본다. 실제 인증 게이트는 API 403.
+const AUTH_COOKIE = process.env.NEXT_PUBLIC_AUTH_COOKIE || 'tripbite.authed';
 
 // onboarding skip — auth/policy/offline/onboarding 자체 (무한 redirect 회피).
 const SKIP_ONBOARDING_PATHS = [
@@ -94,7 +98,7 @@ export function middleware(request: NextRequest) {
   // mock 환경 skip 토글: MSW handler 가 Set-Cookie SID 발급 안 함 — 검사 시 무한 루프.
   // MockAuthToggle + 401 분기로 dev UX 보호 (interceptor 도 동일하게 skip).
   const isMockMode = process.env.NEXT_PUBLIC_USE_MSW === 'true';
-  const hasSession = request.cookies.has(SESSION_COOKIE);
+  const hasSession = request.cookies.has(AUTH_COOKIE);
 
   // ── 인증된 사용자의 /login·/signup 진입 차단 ──
   // 뒤로가기로 다시 form 보는 비정상 UX 회피. ?redirect= 안전 경로 우선, 없으면 /.
