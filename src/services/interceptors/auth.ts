@@ -134,13 +134,11 @@ export function attachAuthInterceptor(instance: AxiosInstance) {
         }
       }
 
-      // 보호경로 hard redirect → /login 은 **401(구 NestJS)** 에서만.
-      // 구 BE 는 401 응답에 Set-Cookie SID=;Max-Age=0 로 쿠키를 정리 → /login 재진입 안전.
-      // 새 Spring 403 은 쿠키를 정리하지 않고 오히려 익명 JSESSIONID 를 재발급 →
-      // redirect 시 middleware(hasSession=쿠키존재) 가 /login→보호경로로 되돌려 **무한 루프**.
-      // 따라서 403 은 clearAuth+토스트까지만 (navigation X). 미들웨어 인증 신호 재설계 전까지 안전판.
+      // 보호경로 hard redirect → /login (401·403 공통).
+      // 루프 안전: 위 clearAuth 가 인증 마커(tripbite.authed)를 제거하므로, /login 진입 시
+      // middleware 의 hasSession(=마커 존재) 이 false → /login→보호경로 bounce 없음.
+      // (마커 도입 전엔 새 Spring 이 JSESSIONID 를 안 지워 루프가 났었음 — 이제 해소.)
       if (
-        status === 401 &&
         !isMock &&
         !onAuthPage &&
         isOnProtectedPath() &&
