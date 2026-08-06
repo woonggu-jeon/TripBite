@@ -2,7 +2,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { act } from '@testing-library/react';
 import { waitFor } from '@testing-library/react';
 import { HttpResponse, http } from 'msw';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mockSeeds } from '@/mocks/handlers';
 import { server } from '@/mocks/server';
 import { useAuthStore } from '@/stores/auth-store';
@@ -122,6 +122,12 @@ describe('useSetMyTravelType', () => {
 });
 
 describe('useRanking + alias hooks', () => {
+  // 추천/미지원 랭킹 타입(recommended 등)은 real-BE 모드(USE_MSW≠true)에서 dead
+  // endpoint 를 skip(빈배열)한다. 이 블록은 mock 경로(구 generated /rankings) 어댑터
+  // 매핑을 검증하므로 mock 모드로 고정.
+  beforeEach(() => vi.stubEnv('NEXT_PUBLIC_USE_MSW', 'true'));
+  afterEach(() => vi.unstubAllEnvs());
+
   const mockRankItems = [
     {
       rank: 1,
