@@ -9,7 +9,7 @@ Next.js 15 App Router · React 19 · TypeScript · sessionID 단일 쿠키 인�
 ```bash
 npm install
 cp .env.example .env.local        # 기본값 그대로 BE 미준비 시 mock 모드
-npm run dev                       # http://localhost:3900
+npm run dev                       # http://localhost:3000
 ```
 
 ```bash
@@ -22,7 +22,7 @@ npm run build && npm start        # 프로덕션 빌드 (PWA 활성)
 
 | 서비스          | URL                             | 비고                 |
 | --------------- | ------------------------------- | -------------------- |
-| FE dev          | http://localhost:3900           | `npm run dev`        |
+| FE dev          | http://localhost:3000           | `npm run dev`        |
 | FE e2e          | http://localhost:3901           | Playwright webServer |
 | BE NestJS       | http://localhost:3000           | 별도 실행            |
 | BE Swagger      | http://localhost:3000/docs      | endpoint try-it      |
