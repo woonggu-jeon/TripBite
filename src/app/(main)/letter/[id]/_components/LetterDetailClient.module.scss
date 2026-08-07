@@ -84,3 +84,17 @@
   display: flex;
   gap: var(--space-2);
 }
+
+// 보낸 편지 상세의 하단 버튼 — 흰 면 + 초록 보더 + 초록 라벨
+.lineButton {
+  border-color: var(--color-primary);
+  color: var(--color-primary-text-bold);
+  font-weight: var(--font-weight-medium);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      background: var(--color-primary-soft);
+      border-color: var(--color-primary);
+    }
+  }
+}
