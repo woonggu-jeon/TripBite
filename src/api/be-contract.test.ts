@@ -147,30 +147,29 @@ d('실 BE contract — 어댑터 ↔ 실제 응답 (mock 아님)', () => {
     ).toBe(true);
   });
 
-  // ── 현재 BE 버그(500) — 고쳐지면 이 테스트가 실패하여 알림 (그때 .fails 제거) ──
-  it.fails(
-    '[KNOWN BE BUG] letterApi.send(compose) 는 현재 500 (고쳐지면 실패)',
-    async () => {
-      await letterApi.send({
-        body: '오늘도맑음',
-        location: { label: '청주시', regionCode: 'cheongju' },
-        isAnonymous: false,
-      } as unknown as Parameters<typeof letterApi.send>[0]);
-    },
-  );
+  // ── 2026-08 BE 수정 확인 — compose/signup 정상 (계약 변경: isAnonymous + location.regionCode 필수) ──
+  it('letterApi.send(compose) 성공 — 편지 생성', async () => {
+    const letter = await letterApi.send({
+      body: '오늘도맑음',
+      location: { label: '청주시', regionCode: 'cheongju' },
+      isAnonymous: false,
+    } as unknown as Parameters<typeof letterApi.send>[0]);
+    expect(typeof letter.id).toBe('string');
+    expect(letter.id.length).toBeGreaterThan(0);
+    expect(letter.body).toBe('오늘도맑음');
+  });
 
-  it.fails(
-    '[KNOWN BE BUG] POST /auth/signup 은 현재 500 (고쳐지면 실패)',
-    async () => {
-      const uniq = `contract${Date.now().toString().slice(-6)}`;
-      await api.post('/auth/signup', {
-        username: uniq,
-        password: 'Abcd1234!@',
-        name: '계약',
-        birthDate: '1999-01-01',
-        email: `${uniq}@bite.com`,
-        nickname: '계약이',
-      });
-    },
-  );
+  it('POST /auth/signup 성공(201) — 유효 payload', async () => {
+    const uniq = `qa${Date.now().toString().slice(-8)}`; // 영숫자 4-20
+    const res = await api.post('/auth/signup', {
+      username: uniq,
+      password: 'Testpass1234', // 10자↑ 영문+숫자
+      name: '계약',
+      birthDate: '1999-01-01',
+      email: `${uniq}@bite.com`,
+      phone: '01011112222',
+      nickname: uniq, // 유니크 — 중복 닉네임(409) 회피
+    });
+    expect(res.status).toBe(201);
+  });
 });
