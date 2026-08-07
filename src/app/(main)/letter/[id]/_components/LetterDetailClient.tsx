@@ -39,15 +39,18 @@ function formatDate(iso: string): string {
 export function LetterDetailClient({ letterId }: { letterId: string }) {
   const router = useRouter();
   const t = useTranslations('letter.detail');
+  const tLetter = useTranslations('letter');
   const tSent = useTranslations('letter.sent');
   const tAuthor = useTranslations('letter.author');
   const myAvatarUrl = useAuthStore((s) => s.user?.avatarUrl);
   const { data: letter, isLoading, isError, refetch } = useLetter(letterId);
 
   if (isLoading) {
+    // 아직 편지를 모르면 받은/보낸 중 어느 쪽인지도 모른다 — 중립 제목을 쓴다.
+    // (목록에서 들어온 경우엔 캐시 seed 로 이 분기를 타지 않는다)
     return (
       <>
-        <SubHeader title={t('title')} />
+        <SubHeader title={tLetter('title')} />
         <div className={styles.wrap}>
           <Skeleton width="100%" height={144} radius="lg" />
           <Skeleton width="100%" height={274} radius="lg" />
@@ -60,7 +63,7 @@ export function LetterDetailClient({ letterId }: { letterId: string }) {
   if (isError || !letter) {
     return (
       <>
-        <SubHeader title={t('title')} />
+        <SubHeader title={tLetter('title')} />
         <div className={styles.empty}>
           <p>{t('loadError')}</p>
           <div className={styles.emptyActions}>

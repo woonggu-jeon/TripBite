@@ -5,6 +5,8 @@ import {
   useMutation,
   useQuery,
   useQueryClient,
+  type InfiniteData,
+  type QueryClient,
 } from '@tanstack/react-query';
 import { letterApi } from '@/features/letter/api/letter';
 import { CACHE } from '@/lib/cache';
@@ -48,12 +50,36 @@ export function useLettersInfinite(kind: LetterListKind) {
   });
 }
 
+/**
+ * 목록 캐시에서 같은 편지를 찾아 상세의 초기 데이터로 쓴다.
+ *
+ * 목록에서 카드를 눌러 들어오면 이미 같은 LetterDto 를 갖고 있으므로, fetch 를
+ * 기다리는 동안 빈 화면/잘못된 화면을 보여줄 이유가 없다. 특히 상세는
+ * `isMine` 으로 화면 전체(제목·배치·액션)가 갈려서, 로딩 중 기본값으로 그리면
+ * 보낸 편지를 눌렀는데 "도착한 편지" 가 잠깐 보이는 문제가 생긴다.
+ */
+function findCachedLetter(qc: QueryClient, id: string): LetterDto | undefined {
+  const caches = qc.getQueriesData<InfiniteData<LetterPageDto>>({
+    queryKey: [...letterKeys.all, 'list'],
+  });
+  for (const [, data] of caches) {
+    for (const page of data?.pages ?? []) {
+      const hit = page.items.find((l) => l.id === id);
+      if (hit) return hit;
+    }
+  }
+  return undefined;
+}
+
 export function useLetter(id: string) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const qc = useQueryClient();
   return useQuery({
     queryKey: letterKeys.detail(id),
     queryFn: () => letterApi.get(id),
     enabled: isAuthenticated && !!id,
+    // 목록에서 진입한 경우 즉시 렌더 (깜빡임 0). 서버 응답이 오면 교체된다.
+    placeholderData: () => findCachedLetter(qc, id),
     ...CACHE.slow, // 단일 편지는 거의 변화 없음
   });
 }
