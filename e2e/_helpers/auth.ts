@@ -16,7 +16,7 @@ import type { BrowserContext, Page } from '@playwright/test';
  */
 
 const MOCK_SID = 'e2e-mock-sid';
-const E2E_BASE_URL = 'http://localhost:3901';
+const E2E_BASE_URL = 'http://localhost:3000';
 
 export async function injectAuthCookie(context: BrowserContext) {
   await context.addCookies([
