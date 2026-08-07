@@ -1,5 +1,5 @@
 // 전역에서 자주 쓰는 자체 도메인 타입.
-// generated DTO (`UserDto` 등) 는 직접 `@/api/generated/schemas` 에서 import.
+// generated DTO (`UserDto` 등) 는 직접 `@/types/api-domain` 에서 import.
 
 export type { Toast } from '@/stores/ui-store';
 

@@ -2,7 +2,7 @@
  * 토너먼트 도메인 타입 — FE 전용 union / config / bracket meta 한정.
  *
  * DTO (Season/DestinationCategory/Destination/DestinationDetail/SavedTournament/
- * TournamentRecord) 는 `@/api/generated/schemas` 의 generated 형을 사용처에서
+ * TournamentRecord) 는 `@/types/api-domain` 의 generated 형을 사용처에서
  * 직접 import. 본 파일은 FE 가 빌드/렌더에 필요한 wrapper 타입만 보관.
  */
 import type {
