@@ -68,8 +68,9 @@ function mapPage(p: BeLetterPageDto | null | undefined): LetterPageDto {
 export const letterApi = {
   /**
    * 편지 작성 (POST /letters). Idempotency-Key 유지 위해 api.post 직접 호출.
-   * 도메인 ComposeLetterDto → 신규 ComposeLetterRequestDto (isAnonymous → anonymous,
-   * location → { regionCode, label }).
+   * 도메인 ComposeLetterDto → 신규 ComposeLetterRequestDto.
+   * BE 계약(2026-08-07): body(5자) + location{regionCode(필수 enum), label} + isAnonymous.
+   * (구 `anonymous` 필드명 → 새 `isAnonymous`; regionCode·isAnonymous 는 non-null 필수.)
    */
   send: async (
     data: ComposeLetterDto,
@@ -85,7 +86,7 @@ export const letterApi = {
         location: data.location
           ? { regionCode: data.location.regionCode, label: data.location.label }
           : undefined,
-        anonymous: data.isAnonymous,
+        isAnonymous: data.isAnonymous,
       },
       {
         headers: Object.keys(headers).length > 0 ? headers : undefined,

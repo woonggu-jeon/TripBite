@@ -46,7 +46,7 @@ describe('letterApi.listReceived — 신규 BE 매핑', () => {
 });
 
 describe('letterApi.send — 신규 BE compose 요청/응답 매핑', () => {
-  it('isAnonymous → anonymous, location → {regionCode,label}, 응답 id → string', async () => {
+  it('isAnonymous(그대로) + location → {regionCode,label}, 응답 id → string', async () => {
     let sent: Record<string, unknown> | undefined;
     server.use(
       http.post(`${apiUrl}/letters`, async ({ request }) => {
@@ -65,7 +65,7 @@ describe('letterApi.send — 신규 BE compose 요청/응답 매핑', () => {
     expect(sent).toEqual({
       body: '다섯글자편',
       location: { regionCode: 'cheongju', label: '청주' },
-      anonymous: true,
+      isAnonymous: true,
     });
     expect(res.id).toBe('88');
   });

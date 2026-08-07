@@ -83,7 +83,9 @@ export function LetterComposeForm() {
 
   const onSubmit = handleSubmit(
     async (values) => {
-      if (!resolved) {
+      // BE 계약: location.regionCode(충북 시군) 필수 non-null. reverse-geocode 가
+      // regionCode 를 못 주면(충북 밖/실패) 편지를 놓을 수 없음 → 전송 차단.
+      if (!resolved || !resolved.regionCode) {
         haptic.tap();
         pushToast({
           type: 'warning',
@@ -98,6 +100,7 @@ export function LetterComposeForm() {
           body: values.body,
           isAnonymous: values.isAnonymous,
           location: {
+            regionCode: resolved.regionCode,
             label: resolved.label,
             latitude: resolved.latitude,
             longitude: resolved.longitude,

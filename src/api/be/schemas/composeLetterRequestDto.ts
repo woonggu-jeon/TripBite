@@ -13,5 +13,5 @@ export interface ComposeLetterRequestDto {
      */
   body?: string;
   location?: LetterLocationRequestDto;
-  anonymous?: boolean;
+  isAnonymous?: boolean;
 }
