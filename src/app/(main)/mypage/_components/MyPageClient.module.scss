@@ -1,44 +1,32 @@
-// Figma "MY_01" body — bg #F8F8F8. layout content-pad 무시하고 viewport
-// 가장자리까지 bleed — Figma pf row width 360 풀너비 정합. .grid 의 좌우
-// padding 없음 (직전 padding-left/right content-pad 가 ProfileCard 까지
-// 영향 → row 폭 줄어드는 회귀, 사용자 명시 2026-06-24 fix).
+// Figma `body` — V gap 24, 프로필 블록은 gap 위에서 풀블리드로 빠져나간다.
 .grid {
   display: grid;
-  background: var(--color-gray-10); /* #F8F8F8 */
-  margin-left: calc(-1 * var(--content-pad));
-  margin-right: calc(-1 * var(--content-pad));
-  margin-bottom: calc(-1 * var(--content-pad));
-  :global(:root[data-theme='dark']) & {
-    background: var(--color-bg);
+  gap: var(--space-6);
+
+  // grid item min-width:auto 를 0 으로 (풀블리드 블록이 트랙을 넘기지 않게)
+  > * {
+    min-width: 0;
   }
 }
 
-// Figma "MY_01" body — column padding 20 0 24 gap 24. 좌우 20 의 sections
-// 은 .body padding 으로 처리 (Figma section padding 0 20). 가로 스크롤
-// saved-grid 만 SavedTournamentsSection 자체에서 음수 margin 으로 viewport
-// edge bleed.
-.body {
+// 헤더 우측 톱니 — Figma headerIcon 24x24. 구 하단 "설정으로 이동" 링크 대체.
+.settingsLink {
   display: grid;
-  gap: var(--space-6); /* 24 */
-  padding: var(--space-5) var(--space-5) var(--space-6); /* 20 20 24 */
-}
-
-// Figma "MY_01" sec-title 우측 muted text slot (Caption R_12 #393939) —
-// "전체보기" link + chevron icon (도장책 영역). PageSection action 슬롯
-// className. Figma sec-title 우측 spec 자체에 chev 명시 없으나 view-all
-// UX 표준 + 사용자 요청으로 chevron 14 추가 (2026-06-23).
-.sectionViewAll {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  font-size: var(--font-caption);
-  font-weight: var(--font-weight-regular);
-  letter-spacing: -0.01em;
-  color: var(--color-muted);
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-right: calc(var(--space-2) * -1);
+  border-radius: var(--radius-full);
+  color: var(--color-fg);
+  transition: background var(--motion-base) ease;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      color: var(--color-fg);
+      background: var(--color-hover-soft);
     }
+  }
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
   }
 }

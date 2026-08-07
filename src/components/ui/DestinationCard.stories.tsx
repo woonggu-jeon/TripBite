@@ -5,16 +5,9 @@ const meta = {
   title: 'UI/DestinationCard',
   component: DestinationCard,
   tags: ['autodocs'],
-  argTypes: {
-    tone: {
-      control: 'select',
-      options: ['red', 'amber', 'green', 'blue', 'violet'],
-    },
-  },
   args: {
     href: '#',
     emoji: '🏯',
-    tone: 'amber',
     regionLabel: '청주',
     name: '청남대',
     imageUrl: null,
@@ -27,7 +20,6 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 export const WithCaption: Story = {
   args: {
-    caption: '10/14 — 10/16',
     emoji: '🌸',
     regionLabel: '단양',
     name: '봄꽃 축제',
@@ -36,7 +28,12 @@ export const WithCaption: Story = {
 export const WithAccentDot: Story = {
   args: { accentDot: '#ff6b6b', name: '저장한 우승지' },
 };
-export const Tones: Story = {
+
+/**
+ * 2열 그리드 — 이름 길이에 따른 높이 고정(2줄) 확인용.
+ * 톤(시군별 색) variant 는 폐기됐다 — hover 강조는 브랜드 초록 하나다.
+ */
+export const Grid: Story = {
   render: () => (
     <div
       style={{
@@ -46,16 +43,17 @@ export const Tones: Story = {
         width: 320,
       }}
     >
-      {(['red', 'amber', 'green', 'blue', 'violet'] as const).map((t) => (
-        <DestinationCard
-          key={t}
-          href="#"
-          emoji="🏯"
-          tone={t}
-          regionLabel="청주"
-          name={`tone: ${t}`}
-        />
-      ))}
+      {['청남대', '만천하 스카이워크', '속리산 법주사', '대청호'].map(
+        (name) => (
+          <DestinationCard
+            key={name}
+            href="#"
+            emoji="🏯"
+            regionLabel="청주"
+            name={name}
+          />
+        ),
+      )}
     </div>
   ),
 };

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { useState } from 'react';
 import { Icon } from '@/components/icon/Icon';
-import { Button } from './Button';
+import { Button } from './button';
 import { Dialog } from './Dialog';
 
 const meta: Meta<typeof Dialog> = {

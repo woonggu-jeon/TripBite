@@ -6,7 +6,7 @@
    대부분의 사용자가 여기. 큰 글씨 / hero emoji 축소. */
 @media (max-width: 480px) {
   :root {
-    --content-pad: 0.875rem;
+    /* --content-pad 는 20px 유지 — Figma 시안이 360 화면을 좌우 20 으로 그린다 */
     /* hero emoji 축소 */
     --emoji-xl: 3.25rem; /* 4rem → 3.25rem */
     --emoji-2xl: 3.75rem; /* 4.5rem → 3.75rem */
@@ -24,7 +24,7 @@
 /* 작은 모바일 (≤ 380px) — 갤럭시 S8(360), iPhone SE 2/3(375), Fold 펼침. */
 @media (max-width: 380px) {
   :root {
-    --content-pad: 0.75rem;
+    /* --content-pad 20px 유지 (시안 기준 폭이 360) */
     --emoji-xl: 3rem;
     --emoji-2xl: 3.5rem;
     --emoji-3xl: 3.5rem;
@@ -47,7 +47,8 @@
 /* 더 작은 화면 (≤ 320px) — iPhone SE 1세대, 갤럭시 Fold 닫힘. */
 @media (max-width: 320px) {
   :root {
-    --content-pad: 0.625rem;
+    /* 시안에 320 대응은 없다 — 20 은 좁아서 16 으로 (4px 그리드) */
+    --content-pad: 1rem;
     --emoji-md: 1.5rem;
     --emoji-lg: 1.875rem;
     --emoji-xl: 2.5rem;

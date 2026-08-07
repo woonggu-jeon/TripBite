@@ -90,7 +90,7 @@ export function BottomSheet({
         <div className={styles.options}>{children}</div>
 
         <div className={styles.cancelWrap}>
-          <Button variant="outline" size="lg" fullWidth onClick={onClose}>
+          <Button variant="secondary" size="lg" fullWidth onClick={onClose}>
             {cancelLabel}
           </Button>
         </div>

@@ -1,16 +1,16 @@
 'use client';
 
-import { ChevronRight } from 'lucide-react';
-import { BarChart3 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import { useMemo } from 'react';
-import { EmptyState } from '@/components/feedback/EmptyState';
-import { SkeletonList } from '@/components/feedback/SkeletonList';
+import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui';
-import { type RegionCode, isRegionCode } from '@/constants/regions';
 import { useRanking } from '@/features/ranking/hooks/use-ranking';
+import { isRegionCode, type RegionCode } from '@/constants/regions';
 import { haptic } from '@/lib/haptic';
+import { SkeletonList } from '@/components/feedback/SkeletonList';
+import { EmptyState } from '@/components/feedback/EmptyState';
+import { BarChart3 } from 'lucide-react';
 import styles from './RegionWinsChart.module.scss';
 
 /**
@@ -48,7 +48,8 @@ export function RegionWinsChart() {
       const full = tRegion(code as Parameters<typeof tRegion>[0]);
       return {
         rank: i + 1,
-        region: full.replace(/(시|군)$/u, ''),
+        // Figma gun-row 는 "단양군" 처럼 시/군 을 그대로 쓴다 (구: 축약)
+        region: full,
         code,
         wins: r.score,
         ratio: r.score / max,
@@ -57,16 +58,15 @@ export function RegionWinsChart() {
   }, [data, tRegion]);
 
   if (isLoading) {
-    // 11 row skeleton (충북 시군 11개) × 44 height (실 row .row padding 12 0 +
-    // content 20 ≈ 44h). 직전 5×32 placeholder 는 실 mount 후 11×44 와 큰 jump
-    // 발생 — 사용자 피드백 2026-06-24 정합.
+    // 5 row skeleton — 시각적 자리잡이 (CLS 0). role=status — axe-core prohibited
+    // attr 회피 + 스크린리더에 로딩 상태 announce.
     return (
       <div
         className={styles.skeletonList}
         role="status"
         aria-label={t('chart.loading')}
       >
-        <SkeletonList count={11} height={44} radius="md" />
+        <SkeletonList count={5} height={32} radius="md" />
       </div>
     );
   }
@@ -105,26 +105,21 @@ export function RegionWinsChart() {
               wins: r.wins,
             })}
           >
-            {/* Figma Frame 36 — rank + region 같은 row gap 8. */}
-            <span className={styles.label}>
-              <span
-                className={`${styles.rank} ${r.rank === 1 ? styles.rankFirst : ''}`}
-              >
-                {r.rank}
-              </span>
+            {/* Figma `Frame 36` — 등수 + 시군명을 한 그룹으로 묶는다 */}
+            <span className={styles.rowLabel}>
+              <span className={styles.rank}>{r.rank}</span>
               <span className={styles.regionName}>{r.region}</span>
             </span>
-            {/* Figma bar — 160×8 #F1F1F1 + primary fill. */}
             <span className={styles.barTrack} aria-hidden>
               <span
                 className={styles.barFill}
                 style={{ width: `${Math.max(4, r.ratio * 100)}%` }}
               />
             </span>
-            {/* Figma Frame 35 — wins + chevron row gap 4. */}
+            {/* Figma `Frame 35` — 우승수 + chevron 한 그룹 */}
             <span className={styles.wins}>
-              {r.wins}
-              {t('winsUnit')}
+              <span className={styles.winsNumber}>{r.wins}</span>
+              <span className={styles.winsUnit}>{t('winsUnit')}</span>
               <ChevronRight className={styles.chevron} size={20} aria-hidden />
             </span>
           </button>

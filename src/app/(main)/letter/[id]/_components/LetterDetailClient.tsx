@@ -1,40 +1,35 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import { EmptyState } from '@/components/feedback/EmptyState';
+import { useTranslations } from 'next-intl';
 import { Skeleton } from '@/components/feedback/Skeleton';
-import { Icon } from '@/components/icon/Icon';
 import { Button } from '@/components/ui';
-import { useMe } from '@/features/auth/hooks/use-auth';
-import { LetterActions } from '@/features/letter/components/LetterActions';
+import { Icon } from '@/components/icon';
+import { SubHeader } from '@/components/layout/SubHeader';
 import { useLetter } from '@/features/letter/hooks/use-letters';
-import { secureImageUrl } from '@/lib/secure-image-url';
+import { LetterActions } from '@/features/letter/components/LetterActions';
+import { LetterPaper } from '@/features/letter/components/LetterPaper';
+import { useAuthStore } from '@/stores/auth-store';
 import styles from './LetterDetailClient.module.scss';
 
 /**
- * 받은 편지 상세 (/letter/[id]) — Figma "받은 편지 상세" (2026-06-24) 정합.
+ * 편지 상세 (/letter/[id]) — `letter.isMine` 으로 두 화면이 갈린다.
  *
- * 구조 (Frame 77 column align center gap 40):
- *   - Frame 7 hero: circle 72 EAF6EF + Mail 36 primary stroke 2.69 + title
- *     B_24 fg "편지가 도착했어요" + sub R_14 muted "어디에서 왔을까요?…"
- *   - Frame 81 (gap 8 column align center):
- *     · Frame 79 stamp card (편지 발송완료 와 동일 spec — bg #F8F8F8 + border
- *       12 + padding 20 16):
- *       - top: pw (sq 60 우표 + 도착 도장 pm) + meta (from/닉네임/위치 right)
- *       - ms: 5 stamp cells (border-y error / cell border-right error) B_24 fg
- *       - div 1px gray
- *       - footer: B_10 disabled star + B_14 fg row + R_12 disabled note
- *     · sub R_12 fg center (자동 삭제 안내 등).
- *   - LetterActions absolute bottom 20.
+ * 받은 편지 (Figma `받은 편지 상세`)
+ *   84 원 + letter 아이콘 / "편지가 도착했어요"
+ *   카드: 사진 옆 From·보낸이 (좌측 정렬), 하단 To·받는이 + 도착일
+ *   액션: [삭제][저장] + [편지함으로], 저장 안 하면 3일 후 삭제 안내
+ *
+ * 보낸 편지 (Figma `편지 발송완료` 와 같은 배치)
+ *   84 원 + **체크** 아이콘 / "전송 완료"
+ *   카드: 사진 반대편 To·받는이 (우측 정렬), 하단 From·나 + 발송일
+ *   액션: [편지함으로] 하나 — 저장/삭제는 받은 편지의 개념이라 노출하지 않는다
+ *
+ * 보낸 편지 목록에서 눌렀는데 "도착한 편지" 화면이 뜨던 버그를 고친 부분이다.
+ * 헤더 제목도 isMine 에 따라 달라지므로 page.tsx 대신 여기서 렌더한다.
  */
-
-// "2024.05.12 도착" 형식 — date only + dateLabel suffix.
-function formatKoreanDate(iso: string): string {
+function formatDate(iso: string): string {
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
@@ -44,165 +39,132 @@ function formatKoreanDate(iso: string): string {
 export function LetterDetailClient({ letterId }: { letterId: string }) {
   const router = useRouter();
   const t = useTranslations('letter.detail');
+  const tLetter = useTranslations('letter');
+  const tSent = useTranslations('letter.sent');
   const tAuthor = useTranslations('letter.author');
+  const myAvatarUrl = useAuthStore((s) => s.user?.avatarUrl);
   const { data: letter, isLoading, isError, refetch } = useLetter(letterId);
-  const { data: me } = useMe();
-
-  // 본인이 보낸 편지인데 /letter/[id] 로 deep-link 진입한 경우 (외부 공유 link
-  // 등) → /letter/sent 로 redirect (보낸 편지 상세 view 별도). 사용자 명시
-  // 2026-06-25 — 받은 / 보낸 편지 상세 view 다르게.
-  useEffect(() => {
-    if (letter?.isMine) {
-      router.replace(`/letter/sent?id=${encodeURIComponent(letterId)}`);
-    }
-  }, [letter, letterId, router]);
 
   if (isLoading) {
+    // 아직 편지를 모르면 받은/보낸 중 어느 쪽인지도 모른다 — 중립 제목을 쓴다.
+    // (목록에서 들어온 경우엔 캐시 seed 로 이 분기를 타지 않는다)
     return (
-      <div className={styles.wrap}>
-        <div className={styles.wb}>
-          <div className={styles.skeletonHero}>
-            <Skeleton width={72} height={72} radius="full" />
-            <Skeleton width="60%" height={31} radius="sm" />
-            <Skeleton width="80%" height={20} radius="sm" />
-          </div>
-          <Skeleton width="100%" height={292} radius="lg" />
+      <>
+        <SubHeader title={tLetter('title')} />
+        <div className={styles.wrap}>
+          <Skeleton width="100%" height={144} radius="lg" />
+          <Skeleton width="100%" height={274} radius="lg" />
+          <Skeleton width="100%" height={52} radius="md" />
         </div>
-      </div>
+      </>
     );
   }
 
   if (isError || !letter) {
     return (
-      <div className={styles.wrap}>
-        <EmptyState
-          variant="hero"
-          icon={<Icon name="letter-large" size={36} />}
-          title={t('loadError')}
-          action={
-            <div className={styles.errorActions}>
-              <Button variant="secondary" size="md" onClick={() => refetch()}>
-                {t('retry')}
-              </Button>
-              <Button
-                variant="primary"
-                size="md"
-                onClick={() => router.replace('/letter')}
-              >
-                {t('backToList')}
-              </Button>
-            </div>
-          }
-        />
-      </div>
+      <>
+        <SubHeader title={tLetter('title')} />
+        <div className={styles.empty}>
+          <p>{t('loadError')}</p>
+          <div className={styles.emptyActions}>
+            <Button variant="secondary" onClick={() => refetch()}>
+              {t('retry')}
+            </Button>
+            <Button variant="primary" onClick={() => router.replace('/letter')}>
+              {t('backToList')}
+            </Button>
+          </div>
+        </div>
+      </>
     );
   }
 
-  const senderName = letter.author.nickname || tAuthor('anonymous');
-  const senderLocation = letter.author.location;
-  const arrivedAt = formatKoreanDate(letter.arrivedAt ?? letter.createdAt);
-  // 받는 사람 (To) = 본인 닉네임. BE author.avatarUrl 미제공 → sender 프로필
-  // 이미지는 sq 안 User icon fallback (사용자 명시 2026-06-25).
-  const myNickname = me?.nickname ?? tAuthor('anonymous');
-  const senderAvatarSrc = secureImageUrl(
-    (letter.author as { avatarUrl?: string }).avatarUrl,
-  );
+  const isMine = letter.isMine;
+  const authorName = letter.author.nickname || tAuthor('anonymous');
+  const location = letter.author.location;
+  const iso = isMine
+    ? letter.createdAt
+    : (letter.arrivedAt ?? letter.createdAt);
 
   return (
-    <div className={styles.wrap}>
-      <div className={styles.wb}>
-        {/* Figma Frame 7 hero — circle 72 EAF6EF + Mail 36 primary + title +
-            sub. */}
-        <div className={styles.hero}>
-          <span className={styles.circle} aria-hidden>
-            <Icon name="letter-large" size={36} />
+    <>
+      <SubHeader title={isMine ? tSent('title') : t('title')} />
+      <div className={styles.wrap}>
+        <header className={styles.arrived} role="status">
+          <span className={styles.arrivedCircle} aria-hidden>
+            <Icon name={isMine ? 'check-36' : 'letter-36'} size={36} />
           </span>
-          <div className={styles.headings}>
-            <h1 className={styles.title}>{t('arrivedTitle')}</h1>
-            <p className={styles.sub}>{t('arrivedBody')}</p>
-          </div>
-        </div>
+          <span className={styles.arrivedText}>
+            <span className={styles.arrivedTitle}>
+              {isMine ? tSent('noticeTitle') : t('arrivedTitle')}
+            </span>
+            <span className={styles.arrivedBody}>
+              {isMine ? tSent('noticeBody') : t('arrivedBody')}
+            </span>
+          </span>
+        </header>
 
-        {/* Figma Frame 81 — card + sub note column gap 8. */}
-        <div className={styles.cardBlock}>
-          <article className={styles.card} aria-label={t('letterAria')}>
-            <div className={styles.top}>
-              <div className={styles.pw} aria-hidden>
-                {/* sq — sender 프로필 (BE author.avatarUrl 추가 시 자동
-                    image, 현재 User icon fallback). */}
-                <span className={styles.sq}>
-                  {senderAvatarSrc ? (
-                    <Image
-                      src={senderAvatarSrc}
-                      alt=""
-                      fill
-                      sizes="60px"
-                      className={styles.sqImage}
-                    />
-                  ) : (
-                    <Icon name="user" size={28} className={styles.sqIcon} />
-                  )}
-                </span>
-                {/* Figma pm — "도착\n여행한입" 멀티라인 도장. */}
-                <span className={styles.pm}>
-                  <span className={styles.pmMain}>{t('stampMain')}</span>
-                  <span className={styles.pmSub}>{t('stampSub')}</span>
-                </span>
-              </div>
-              <div className={styles.meta}>
-                <span className={styles.metaLabel}>{t('from')}</span>
-                <span className={styles.metaName}>{senderName}</span>
-                {senderLocation && (
-                  <span className={styles.metaLoc}>{senderLocation}</span>
-                )}
-              </div>
-            </div>
+        <div className={styles.cardGroup}>
+          {isMine ? (
+            <LetterPaper
+              ariaLabel={tSent('letterAria')}
+              postmarkLabel={tSent('sentBadge')}
+              postmarkName={authorName}
+              topLabel={t('to')}
+              topName={tSent('toRecipient')}
+              body={letter.body}
+              bottomLabel={t('from')}
+              bottomName={location ? `${authorName} · ${location}` : authorName}
+              dateText={
+                <>
+                  <time dateTime={iso}>{formatDate(iso)}</time>{' '}
+                  {tSent('sentSuffix')}
+                </>
+              }
+              photoUrl={myAvatarUrl}
+              align="right"
+            />
+          ) : (
+            <LetterPaper
+              ariaLabel={t('letterAria')}
+              postmarkLabel={t('postmarkArrived')}
+              postmarkName={location}
+              topLabel={t('from')}
+              topName={authorName}
+              body={letter.body}
+              bottomLabel={t('to')}
+              bottomName={t('toYou')}
+              dateText={
+                <>
+                  <time dateTime={iso}>{formatDate(iso)}</time>{' '}
+                  {t('postmarkArrived')}
+                </>
+              }
+            />
+          )}
 
-            {/* Figma ms > Frame 71 > Frame 70 — 이중 border + 12 gap 우표 천공
-                효과 (사용자 명시 2026-06-24). */}
-            <div className={styles.ms}>
-              <div className={styles.cellsOuter}>
-                <div className={styles.cells}>
-                  {Array.from({ length: 5 }).map((_, i) => {
-                    const ch = Array.from(letter.body)[i] ?? '';
-                    return (
-                      <div key={i} className={styles.cell}>
-                        {ch}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.div} aria-hidden />
-
-            {/* footer = To (수신자 = 본인). 사용자 명시 2026-06-25:
-                - 좌측 라벨 "To" (B_10 disabled)
-                - 우측 본인 닉네임 (B_14 fg)
-                - 아래: yyyy.MM.dd + "도착" (R_12 disabled right). */}
-            <div className={styles.footer}>
-              <div className={styles.footerRow}>
-                <span className={styles.footerStar}>{t('to')}</span>
-                <span className={styles.footerLabel}>{myNickname}</span>
-              </div>
-              <span className={styles.footerNote}>
-                {arrivedAt} {t('dateLabel')}
-              </span>
-            </div>
-          </article>
-
-          {/* Figma sub R_12 fg center — 자동 삭제 안내 (saved 시 미노출). */}
-          {!letter.saved && (
-            <p className={styles.note}>{t('autoDeleteNotice')}</p>
+          {/* 자동 삭제는 받은 편지 정책 — 내가 보낸 편지엔 해당 없음 */}
+          {!isMine && !letter.saved && (
+            <p className={styles.autoDelete} role="note">
+              {t('autoDeleteNotice')}
+            </p>
           )}
         </div>
-      </div>
 
-      {/* Figma buttons absolute bottom 20 — 저장/좋아요 + 답장 쓰기. */}
-      <div className={styles.actions}>
-        <LetterActions letter={letter} />
+        {isMine ? (
+          <Button
+            variant="secondary"
+            size="lg"
+            fullWidth
+            className={styles.lineButton}
+            onClick={() => router.push('/letter?tab=sent')}
+          >
+            {t('backToList')}
+          </Button>
+        ) : (
+          <LetterActions letter={letter} />
+        )}
       </div>
-    </div>
+    </>
   );
 }

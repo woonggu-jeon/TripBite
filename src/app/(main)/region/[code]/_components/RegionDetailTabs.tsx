@@ -1,32 +1,29 @@
 'use client';
 
+import { useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { useCallback, useState } from 'react';
+import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import type {
   DestinationCategory,
   RegionContentDto,
 } from '@/api/generated/schemas';
-import { Icon } from '@/components/icon/Icon';
-import {
-  Button,
-  DestinationCard,
-  DestinationCardSkeleton,
-  Tab,
-  TabList,
-  TabPanel,
-} from '@/components/ui';
-import { toneFor } from '@/constants/region-tone';
-import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
-import { InfiniteList } from '@/features/list/components/InfiniteList';
-import {
-  type RegionContentFilter,
-  regionApi,
-} from '@/features/region/api/region';
 import {
   regionKeys,
   useRegionContents,
 } from '@/features/region/hooks/use-region';
+import {
+  regionApi,
+  type RegionContentFilter,
+} from '@/features/region/api/region';
+import { InfiniteList } from '@/features/list/components/InfiniteList';
+import {
+  DestinationCard,
+  DestinationCardSkeleton,
+  TabList,
+  Tab,
+  TabPanel,
+} from '@/components/ui';
 import styles from './RegionDetailTabs.module.scss';
 
 /**
@@ -180,9 +177,13 @@ function RegionContentPanel({
     return (
       <div className={styles.fallback}>
         <p>{t('listError')}</p>
-        <Button variant="secondary" size="sm" onClick={() => refetch()}>
+        <button
+          type="button"
+          className={styles.retry}
+          onClick={() => refetch()}
+        >
           {t('listRetry')}
-        </Button>
+        </button>
       </div>
     );
   }
@@ -192,7 +193,6 @@ function RegionContentPanel({
     | 'empty.attraction'
     | 'empty.festival'
     | 'empty.experience';
-  const tone = toneFor(code);
   const label = regionLabel(code);
 
   return (
@@ -208,27 +208,13 @@ function RegionContentPanel({
           imageUrl={i.imageUrl}
           // 'all' 탭이라도 응답 item 의 type 은 항상 attraction|festival|experience.
           emoji={TYPE_EMOJI[i.type] ?? ALL_EMOJI}
-          tone={tone}
           regionLabel={label}
           name={i.title}
-          description={i.description}
         />
       )}
       renderSkeleton={() => <DestinationCardSkeleton />}
       skeletonCount={4}
-      emptyState={
-        <div className={styles.empty}>
-          <div className={styles.emptyInner}>
-            <div className={styles.emptyCircle} aria-hidden>
-              <Icon name="compass" size={40} />
-            </div>
-            <div className={styles.emptyText}>
-              <p className={styles.emptyTitle}>{t('empty.title')}</p>
-              <p className={styles.emptyHint}>{t(emptyKey)}</p>
-            </div>
-          </div>
-        </div>
-      }
+      emptyState={<p className={styles.empty}>{t(emptyKey)}</p>}
       columns={2}
     />
   );

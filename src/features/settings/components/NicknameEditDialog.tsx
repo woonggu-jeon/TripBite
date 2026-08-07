@@ -68,7 +68,7 @@ export function NicknameEditDialog({ onClose }: { onClose: () => void }) {
       actions={
         <>
           <Button
-            variant="outline"
+            variant="secondary"
             onClick={onClose}
             disabled={update.isPending}
           >

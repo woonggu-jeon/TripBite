@@ -1,41 +1,38 @@
-/* outer — sticky, contentInner 폭 (사용자 명시 2026-06-24) — AppHeader/
-   BottomNav 와 정합. Figma "Header type=sub/my/noti" white bg + border-bottom
-   1px gray. margin-bottom 0 — 직전 12px transparent gap 이 contentInner bg
-   (white) 로 비치며 SubHeader 와 콘텐츠 사이 흰색 여백으로 노출되는 회귀
-   (사용자 명시 2026-06-24). SubHeader 와 다음 콘텐츠 사이 spacing 은 자연스러운
-   contentInner padding-top 또는 페이지 자체 padding 으로 결정. */
+/* outer — 풀폭 sticky.
+   .contentInner(720px + padding) 안에서 100vw 트릭으로 viewport 전체로 확장.
+   .shell 에 overflow-x:hidden 이 있어 미세 스크롤 발생 X.
+   layout content 의 top padding 도 음수 마진으로 상쇄. */
 .bar {
   position: sticky;
   top: 0;
   z-index: var(--z-header);
-  // contentInner padding 으로 줄어든 폭 회피 — 음의 margin 으로 contentInner
-  // 좌우 padding 영역까지 헤더 bg 가 차지 (모바일 360 에서 풀폭, desktop 에서
-  // contentInner 720 폭).
-  margin-left: calc(-1 * var(--content-pad));
-  margin-right: calc(-1 * var(--content-pad));
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
   margin-top: calc(-1 * var(--content-pad));
-  margin-bottom: 0;
-  background: var(--color-bg);
-  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-3);
+  background: var(--color-glass);
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
+  /* Figma header type=sub 의 하단선 #E0E0E0 ≒ --color-border (구 --color-divider) */
+  border-bottom: var(--border-thin) solid var(--color-border);
 }
 
 .inner {
   display: grid;
-  // Figma icon 24 visual + click 영역 44 (Apple HIG) → grid track 44.
-  grid-template-columns: 44px 1fr 44px;
+  grid-template-columns: 40px 1fr 40px;
   align-items: center;
   gap: var(--space-2);
   max-width: var(--content-max);
   width: 100%;
   height: var(--header-h);
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 var(--space-5); /* Figma 0 20px (구 12px) */
 }
 
 .back {
-  // Figma icon 24x24 visual / click 영역 44x44 (HIG 준수, 회귀 회피).
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -61,11 +58,9 @@
 
 .title {
   text-align: center;
-  // Figma "Title/B_18_140%" (2026-06-23) — Pretendard Bold 18, line 140%,
-  // ls -0.02em. 이전 font-body (16) tracking-snug 회귀 정정.
-  font-size: var(--text-lg); /* 18 */
+  /* Figma header type=sub 타이틀 = Title/B_18_140% (구 16px) */
+  font-size: var(--font-h3);
   font-weight: var(--font-weight-bold);
-  line-height: var(--line-snug-relaxed);
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
   overflow: hidden;

@@ -1,33 +1,51 @@
-// Figma "TRN · 토너먼트 결과 (T-8)" content padding 20 gap 20. SubHeader 가
-// contentInner padding-top 을 음수 margin 으로 탈출하므로 .wrap 에 padding-top
-// 20 명시 — header 와 content 사이 간격 회귀 fix (사용자 명시 2026-06-25).
 .wrap {
   display: grid;
-  gap: 20px;
-  padding-top: 20px;
-  /* SeasonLoadingPanel (480h) → 실제 content 전환 시 CLS 회피 — viewport
-     높이 기준 최소 보장 (자율 검토 2026-06-25). */
-  min-height: 480px;
+  gap: 1.5rem;
 }
 
 .empty {
   display: grid;
-  gap: 12px;
+  gap: 0.75rem;
   place-items: center;
   padding: 3rem 1rem;
   color: var(--color-muted);
   text-align: center;
 }
 
-// Frame 48 — column gap 8.
-.actions {
+.ladderSection {
   display: grid;
-  gap: 8px;
+  gap: 0.875rem;
+  padding: 1.25rem 1rem 1.5rem;
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
 }
 
-// Frame 25 — row gap 8 — outline 156 pair.
-.actionPair {
+.ladderHeader {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 0.25rem;
+  place-items: center;
+  text-align: center;
 }
+
+.ladderTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-fg);
+  letter-spacing: var(--tracking-tight);
+}
+
+.ladderSubtitle {
+  font-size: var(--font-label);
+  color: var(--color-muted);
+}
+
+.actions {
+  display: grid;
+  gap: 0.5rem;
+}
+
+// .primary / .secondary / .cta 클래스는 Button primitive 로 마이그레이션됨 (제거)

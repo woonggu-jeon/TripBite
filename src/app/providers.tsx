@@ -185,6 +185,52 @@ export function Providers({ children }: { children: React.ReactNode }) {
     installGlobalErrorReporters();
   }, []);
 
+  // dev 에서 남아 있는 serwist(/sw.js) 서비스워커 제거.
+  //
+  // next.config 는 개발 모드에서 serwist 를 끄지만, 예전에 프로덕션 빌드를
+  // 한 번이라도 띄웠던 브라우저에는 /sw.js 등록이 남는다. 그 SW 는 자기
+  // 캐시에서 응답하므로 dev 서버가 새 파일을 줘도 **옛 CSS / 옛 /icons.svg**
+  // 가 화면에 남는다 — 실제로 로그인 디자인이 안 바뀌고, 하단 네비가 세로로
+  // 쌓이고, 네비 아이콘이 예전 글리프로 보이는 증상이 이것 때문이었다.
+  // (개발자가 직접 unregister 하지 않아도 풀리도록 앱이 정리한다.)
+  //
+  // MSW 워커(/mockServiceWorker.js) 는 건드리지 않는다.
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'development') return;
+    if (typeof navigator === 'undefined' || !('serviceWorker' in navigator))
+      return;
+    void (async () => {
+      try {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        let removed = false;
+        for (const reg of regs) {
+          const url =
+            reg.active?.scriptURL ??
+            reg.waiting?.scriptURL ??
+            reg.installing?.scriptURL ??
+            '';
+          if (!url.endsWith('/sw.js')) continue;
+          await reg.unregister();
+          removed = true;
+        }
+        if (removed && typeof caches !== 'undefined') {
+          // serwist/workbox 가 만든 캐시만 삭제 (MSW 는 Cache Storage 미사용)
+          const keys = await caches.keys();
+          await Promise.all(
+            keys
+              .filter((k) => /serwist|workbox|precache|next/i.test(k))
+              .map((k) => caches.delete(k)),
+          );
+          console.warn(
+            '[sw] 남아 있던 serwist 워커와 캐시를 정리했습니다. 새로고침하면 최신 CSS/아이콘이 적용됩니다.',
+          );
+        }
+      } catch {
+        /* 정리 실패는 앱 동작에 영향 없음 */
+      }
+    })();
+  }, []);
+
   useEffect(() => {
     if (!MSW_ENABLED || mswReady) return;
     let cancelled = false;

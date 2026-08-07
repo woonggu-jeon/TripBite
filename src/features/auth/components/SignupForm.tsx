@@ -1,20 +1,20 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Check, Loader2 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Button, PasswordField, TextField } from '@/components/ui';
-import { authApi } from '@/features/auth/api/auth';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
+import { Check, Loader2 } from 'lucide-react';
 import { useSignup } from '@/features/auth/hooks/use-auth';
+import { authApi } from '@/features/auth/api/auth';
 import {
-  type SignupFormValues,
   signupSchema,
+  type SignupFormValues,
 } from '@/features/auth/schemas/signup';
-import { toast } from '@/lib/toast';
 import { isAxiosError } from '@/services/interceptors/auth';
+import { toast } from '@/lib/toast';
+import { Button, TextField } from '@/components/ui';
 import styles from './AuthForm.module.scss';
 
 /**
@@ -73,8 +73,6 @@ export function SignupForm() {
     mode: 'onChange',
     defaultValues: {
       username: '',
-      name: '',
-      birthDate: '',
       nickname: '',
       password: '',
       passwordConfirm: '',
@@ -199,8 +197,6 @@ export function SignupForm() {
 
   const allFilled =
     !!usernameValue &&
-    !!watch('name') &&
-    !!watch('birthDate') &&
     !!watch('nickname') &&
     !!watch('password') &&
     !!watch('passwordConfirm') &&
@@ -215,13 +211,9 @@ export function SignupForm() {
     emailStatus !== 'available';
 
   return (
-    <form
-      onSubmit={onSubmit}
-      noValidate
-      className={`${styles.form} ${styles.formSignup}`}
-    >
-      <h1 className={styles.title}>{t('title')}</h1>
-
+    // Figma `AUTH · 회원가입` — 제목은 헤더가 갖고, body 는 필드 5개(gap 16)
+    // → 버튼(gap 24) → "이미 계정이 있으신가요? · 로그인".
+    <form onSubmit={onSubmit} noValidate className={styles.signupForm}>
       <TextField
         id="username"
         type="text"
@@ -266,34 +258,6 @@ export function SignupForm() {
         {...register('username', { onChange: onUsernameInputChange })}
       />
 
-      {/* Figma "AUTH · 회원가입" input 순서 정합 (2026-06-24 사용자 명시):
-          username → password → passwordConfirm → nickname → email. */}
-      <PasswordField
-        id="password"
-        autoComplete="new-password"
-        label={t('password')}
-        placeholder={t('passwordPlaceholder')}
-        errorMessage={
-          errors.password
-            ? tErr(errors.password.message as Parameters<typeof tErr>[0])
-            : undefined
-        }
-        {...register('password')}
-      />
-
-      <PasswordField
-        id="passwordConfirm"
-        autoComplete="new-password"
-        label={t('passwordConfirm')}
-        placeholder={t('passwordConfirmPlaceholder')}
-        errorMessage={
-          errors.passwordConfirm
-            ? tErr(errors.passwordConfirm.message as Parameters<typeof tErr>[0])
-            : undefined
-        }
-        {...register('passwordConfirm')}
-      />
-
       <TextField
         id="nickname"
         type="text"
@@ -308,33 +272,34 @@ export function SignupForm() {
         {...register('nickname')}
       />
 
-      {/* 신규 Spring BE SignupRequestDto: name(실명)·birthDate(생년월일) 필수. */}
       <TextField
-        id="name"
-        type="text"
-        autoComplete="name"
-        label={t('name')}
-        placeholder={t('namePlaceholder')}
+        id="password"
+        type="password"
+        autoComplete="new-password"
+        label={t('password')}
+        placeholder={t('passwordPlaceholder')}
         errorMessage={
-          errors.name
-            ? tErr(errors.name.message as Parameters<typeof tErr>[0])
+          errors.password
+            ? tErr(errors.password.message as Parameters<typeof tErr>[0])
             : undefined
         }
-        {...register('name')}
+        passwordToggle
+        {...register('password')}
       />
 
       <TextField
-        id="birthDate"
-        type="date"
-        autoComplete="bday"
-        label={t('birthDate')}
-        placeholder={t('birthDatePlaceholder')}
+        id="passwordConfirm"
+        type="password"
+        autoComplete="new-password"
+        label={t('passwordConfirm')}
+        placeholder={t('passwordConfirmPlaceholder')}
         errorMessage={
-          errors.birthDate
-            ? tErr(errors.birthDate.message as Parameters<typeof tErr>[0])
+          errors.passwordConfirm
+            ? tErr(errors.passwordConfirm.message as Parameters<typeof tErr>[0])
             : undefined
         }
-        {...register('birthDate')}
+        passwordToggle
+        {...register('passwordConfirm')}
       />
 
       <TextField
@@ -394,20 +359,18 @@ export function SignupForm() {
         fullWidth
         loading={isSubmitting}
         disabled={submitDisabled}
-        className={styles.submit}
       >
         {isSubmitting ? t('submitting') : t('submit')}
       </Button>
 
-      {/* Figma "AUTH · 회원가입 Frame 69" — "이미 계정이 있나요?" R_14 fg + dot 2×2 +
-          "로그인" B_14 primary (사용자 명시 2026-06-24). 단일 link 텍스트 → row + 강조. */}
-      <div className={styles.toLoginRow}>
-        <span className={styles.toLoginPrompt}>{t('toLoginPrompt')}</span>
-        <span className={styles.footDot} aria-hidden />
-        <Link href="/login" className={styles.toLoginAction}>
-          {t('toLoginAction')}
+      {/* Figma `Frame 69` — 안내 문구 + 2px 점 + 초록 "로그인" 링크 */}
+      <p className={styles.signupFoot}>
+        {t('haveAccount')}
+        <span className={styles.signupFootDot} aria-hidden />
+        <Link href="/login" className={styles.signupFootLink}>
+          {t('loginLink')}
         </Link>
-      </div>
+      </p>
     </form>
   );
 }

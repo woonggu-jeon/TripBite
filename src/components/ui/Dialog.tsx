@@ -100,7 +100,9 @@ export function Dialog({
             )}
           </div>
         ) : (
-          <>
+          // Figma modal 은 제목+설명이 gap 4 의 한 블록이고, 그 블록과
+          // 버튼 사이가 gap 20 이다. 둘을 따로 두면 사이가 20 으로 벌어진다.
+          <div className={styles.textBlock}>
             <div className={styles.header}>
               <h2 id={titleId} className={styles.title}>
                 {title}
@@ -121,7 +123,7 @@ export function Dialog({
                 {description}
               </p>
             )}
-          </>
+          </div>
         )}
 
         {children}

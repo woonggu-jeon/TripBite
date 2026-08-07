@@ -1,11 +1,14 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { EmptyState } from '@/components/feedback/EmptyState';
+import { Trophy } from 'lucide-react';
 import { SkeletonList } from '@/components/feedback/SkeletonList';
-import { Icon } from '@/components/icon/Icon';
+import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
 import { useTournamentHistory } from '@/features/tournament/hooks/use-tournament';
+import { seasonEmoji } from '@/constants/emoji-map';
+import { Illustration } from '@/components/brand/Illustration';
+import { seasonIllustration } from '@/constants/illustration-map';
 import styles from './TournamentHistorySection.module.scss';
 
 const CATEGORY_KO: Record<string, string> = {
@@ -38,7 +41,7 @@ export function TournamentHistorySection() {
   if (isLoading) {
     return (
       <div className={styles.skeletonList}>
-        <SkeletonList count={3} height={56} radius="md" />
+        <SkeletonList count={2} height={68} radius="md" />
       </div>
     );
   }
@@ -46,7 +49,7 @@ export function TournamentHistorySection() {
   if (isError) {
     return (
       <EmptyState
-        icon={<Icon name="trophy-large" size={28} />}
+        icon={<Trophy size={28} aria-hidden />}
         title={t('error')}
         action={
           <Button variant="secondary" size="sm" onClick={() => refetch()}>
@@ -59,25 +62,37 @@ export function TournamentHistorySection() {
 
   const items = (data?.items as HistoryItem[] | undefined) ?? [];
   if (items.length === 0) {
-    // Figma "MY_01" empty-recent — 320×60 white card border radius 12 + title B_14 center.
     return (
-      <div className={styles.empty}>
-        <p className={styles.emptyTitle}>{t('empty')}</p>
-      </div>
+      <EmptyState
+        icon={<Trophy size={28} aria-hidden />}
+        title={t('empty')}
+        variant="card"
+      />
     );
   }
 
   return (
     <ul className={styles.list}>
       {items.slice(0, 10).map((it) => {
+        // Figma `seasonIcon` 에셋. 계절을 못 알아보면 기존 이모지 fallback.
+        const themeArt = seasonIllustration(it.theme);
+        const themeEmoji = seasonEmoji(it.theme);
+        // category 가 비어 오는 기록이 있어 "undefined강" 으로 새던 것 방지 —
+        // 빈 조각은 빼고 " · " 로 잇는다.
         const categoryLabel = CATEGORY_KO[it.category] ?? it.category;
         const date = new Date(it.completedAt);
         const dateLabel = `${date.getMonth() + 1}월 ${date.getDate()}일`;
-        const meta = `${categoryLabel} · ${it.count}${t('countUnit')} · ${dateLabel}`;
+        const meta = [categoryLabel, `${it.count}${t('countUnit')}`, dateLabel]
+          .filter(Boolean)
+          .join(' · ');
         return (
           <li key={it.id} className={styles.row}>
-            <span className={styles.iconBox} aria-hidden>
-              <Icon name="award" size={20} />
+            <span className={styles.emoji} aria-hidden>
+              {themeArt ? (
+                <Illustration name={themeArt} size={24} />
+              ) : (
+                themeEmoji
+              )}
             </span>
             <div className={styles.body}>
               <p className={styles.title}>

@@ -1,92 +1,135 @@
-// Figma "설정" page (2026-06-23 정정) — flat list (row 사이 gap 0).
-// row 자체에 border / radius 없음. section sep 는 별도 (PageSection 또는
-// section border-bottom).
+// Figma `설정` 실측 — 행이 카드가 아니라 **화면 폭 전체(360)** 를 쓰는
+// 흰 리스트 행이다. padding 16/20, gap 12, 보더·radius·구분선 없음.
+//
+// 페이지 컨텐츠에는 이미 --content-pad(20) 좌우 여백이 있으므로, 행 묶음을
+// 음수 마진으로 끝까지 늘리고 행이 자기 padding 으로 20 을 다시 만든다.
 .list {
   display: grid;
   gap: 0;
+  margin-inline: calc(var(--content-pad) * -1);
 }
 
 .row {
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
-  gap: 12px;
-  padding: 16px 20px;
-  background: var(--color-bg);
+  gap: var(--space-3); // Figma gap 12
+  padding: var(--space-4) var(--content-pad); // Figma 16 / 20
+  background: var(--color-surface);
+  border: 0;
+  border-radius: 0;
 }
 
 .rowText {
   display: grid;
-  gap: 2px;
+  gap: 2px; // Figma `mid` gap 2
   min-width: 0;
 }
 
+// Basic Body/SB_16_140% (구 14px)
 .rowLabel {
-  // Figma Body/SB_16_140% (2026-06-23) — SemiBold 16, line 140%, ls -0.02em.
-  // 이전 font-body-sm (14) / tracking-snug (-0.01em) → Figma spec 정합.
   font-size: var(--font-body);
   font-weight: var(--font-weight-semibold);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: var(--tracking-tight);
+  line-height: var(--line-normal);
   color: var(--color-fg);
+  letter-spacing: var(--tracking-tight);
 }
 
+// Caption/R_12
 .rowHint {
-  // Figma Caption/R_12 — Regular 12 line 140% -0.01em muted.
   font-size: var(--font-caption);
-  font-weight: var(--font-weight-regular);
-  letter-spacing: -0.01em;
+  line-height: var(--line-normal);
   color: var(--color-muted);
 }
 
-// PolicySection 의 <Link> 가 사용 — Figma flat row 정합 (border / radius
-// 없음, padding 16/20, hover 가벼운 bg).
-.button {
-  display: block;
-  width: 100%;
-  padding: 16px 20px;
-  text-align: left;
-  background: var(--color-bg);
+// 우측 값 텍스트 — Basic Body/R_14_140% ("여행한입러", "허용")
+.rowValue {
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-normal);
   color: var(--color-fg);
-  // Figma Body/SB_16_140%.
+  white-space: nowrap;
+}
+
+// chevron — Figma detailIcon 20x20, stroke #B4B4B4
+.rowChevron {
+  color: var(--color-muted);
+  flex-shrink: 0;
+}
+
+// 값 + chevron 묶음 (Figma 는 둘을 우측에 나란히 둔다)
+.rowTrailing {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+// 탭 가능한 행 — 행 자체가 button
+.button {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-4) var(--content-pad);
+  text-align: left;
+  border: 0;
+  border-radius: 0;
+  background: var(--color-surface);
+  color: var(--color-fg);
   font-size: var(--font-body);
   font-weight: var(--font-weight-semibold);
-  line-height: var(--line-snug-relaxed);
   letter-spacing: var(--tracking-tight);
+  cursor: pointer;
   transition: background var(--motion-base) ease;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      background: var(--color-hover);
+      background: var(--color-hover-soft);
     }
   }
   &:focus-visible {
     outline: var(--focus-outline);
-    outline-offset: calc(-1 * var(--focus-outline-offset));
+    outline-offset: calc(var(--focus-outline-offset) * -1);
   }
 }
 
-// .danger 는 ListRow primitive (ui/ListRow.module.scss) 로 이전됨 (2026-06-23).
-// 본 module 의 .button 은 PolicySection 의 <Link> 에서 여전히 사용 — link as
-// button-row 패턴 유지. clickable button element 는 ListRow primitive 사용.
-
-// AccountActionsSection 의 logout / withdraw — Figma "설정" page bw frame.
-// padding 20 all + 320x52 column button (gap 12). 이전 padding-bottom 0
-// 회귀 정정 (2026-06-23).
-.actionStack {
-  display: flex;
-  flex-direction: column;
-  padding: var(--space-5);
-  gap: var(--space-3);
+.danger {
+  color: var(--color-danger);
 }
 
-// .actionButton / .actionButtonDanger 는 모두 Button primitive 로 이전됨
-// (2026-06-23). logout = Button.v-outline, withdraw = Button.v-outline +
-// inline style color:danger (CSS module cascade 보장 회피).
-
 @media (prefers-reduced-motion: reduce) {
-  .row,
   .button {
     transition: none;
+  }
+}
+
+// Figma `bw` — 로그아웃 버튼 + 회원탈퇴 텍스트, V gap 12, padding 20 0
+.actions {
+  display: grid;
+  gap: var(--space-3);
+  padding-block: var(--space-5);
+}
+
+// Basic Body/M_16_140% #E1493C 중앙 정렬. 시안색은 4.02:1 로 AA 미달이라
+// --color-danger(#dc2626) 유지 (결정 2).
+.withdraw {
+  padding: var(--space-1) 0;
+  background: none;
+  border: 0;
+  color: var(--color-danger);
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+    border-radius: var(--radius-sm);
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
   }
 }

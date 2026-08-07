@@ -1,69 +1,15 @@
 // 가로 Carousel 기반. 별도 list/grid 스타일 불필요 — Carousel 이 layout 담당.
 // (SavedTournamentCard 의 tile 스타일이 카드 표현).
 
-// Figma "MY_01" empty-saved (2026-06-23) — 320×148 white card border 1
-// #E0E0E0 radius 12 padding 20 gap 16. column center.
-.empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  padding: 20px;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-}
-
-// f column gap 3 (title B_14 + caption R_12 center muted).
-.emptyText {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-}
-
-.emptyTitle {
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-fg);
-  margin: 0;
-  text-align: center;
-}
-
-.emptyHint {
-  font-size: var(--font-caption);
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: -0.01em;
-  color: var(--color-muted);
-  margin: 0;
-  text-align: center;
-}
-
-// Figma "MY_01" sec-title 우측 muted text + chev (2026-06-23) — Caption R_12
-// muted + ChevronRight 14. stampMapViewAll 과 동일 시각 (sec-title 우측 통일).
+// PageSection action 슬롯 — 타이틀 우측 inline 링크 "전체보기 (N)"
 .viewAll {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  font-size: var(--font-caption);
-  font-weight: var(--font-weight-regular);
-  letter-spacing: -0.01em;
-  color: var(--color-muted);
+  font-size: var(--font-body-sm);
+  color: var(--color-primary-text-bold);
+  font-weight: var(--font-weight-bold);
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      color: var(--color-fg);
+      text-decoration: underline;
     }
   }
-}
-
-// Figma DestinationCard 152×168 carousel skeleton — gap 8 horizontal flex.
-// SkeletonList Fragment 가 column stack 회귀 → 자체 flex container.
-.skeletonRow {
-  display: flex;
-  gap: 8px;
-  overflow: hidden;
 }

@@ -1,23 +1,23 @@
-// Figma "POI · 장소상세 near-sec section" — column gap 12.
-//
-// 우측 bleed (사용자 명시 2026-06-25) — Carousel slidesPerView 1.8/2.2 의
-// 우측 cut 이 nearSec padding edge(20) 가 아닌 viewport edge 에서 일어나도록.
-// 부모 .nearSec padding-right 20 만큼 음수 margin → title 만 padding-right 보상.
+// Figma `POI · 장소상세 > near-sec` — 제목 Basic Body/B_16_140% + 카드 3개(gap 8).
+// 카드 자체는 ui/DestinationCard 가 담당.
 .wrap {
   display: grid;
-  gap: 12px;
-  margin: 0;
-  margin-right: -20px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3); // Figma near-sec V gap 12
+  min-width: 0;
+
+  // aspect-ratio 카드가 트랙을 밀어내지 못하게
+  > * {
+    min-width: 0;
+  }
 }
 
-// Figma sec-title B_16_140% fg. wrap 의 음수 margin-right 보상 — title 은
-// nearSec padding 안 폭 유지.
+// Basic Body/B_16_140% (구 18px extrabold)
 .title {
-  font-size: var(--font-body); /* 16 */
+  font-size: var(--font-body);
   font-weight: var(--font-weight-bold);
-  line-height: var(--line-snug-relaxed); /* 140% */
-  letter-spacing: var(--tracking-tight);
+  line-height: var(--line-normal);
   color: var(--color-fg);
+  letter-spacing: var(--tracking-tight);
   margin: 0;
-  padding-right: 20px;
 }

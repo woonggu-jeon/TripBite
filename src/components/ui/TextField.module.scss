@@ -1,20 +1,18 @@
 // 폼 입력 primitive — label / input / error 한 세트.
 // auth/onboarding/settings 의 동일 패턴을 흡수. 토큰은 기존 AuthForm.module.scss 값 유지.
 
+// Figma inputField 실측 — 라벨(Caption/R_12) → 입력(52px) → 헬퍼 캡션(Caption/M_10),
+// 3단 구성에 간격 4px. 입력 박스는 radius 12 / padding 12px 16px / 테두리 1px.
+
 .field {
   display: grid;
-  // Figma "InputField" component (3365:1347, 2026-06-23) — column gap 4.
-  gap: 4px;
+  gap: var(--space-1); // Figma 4px (구 8px)
 }
 
 .label {
-  // Figma input label "Caption/R_12" (2026-06-23) — Pretendard Regular 12 muted.
-  // 이전 Bold 12 → Regular 12 (토큰 페이지 spec 정합).
-  font-size: 0.75rem;
-  font-weight: var(--font-weight-regular);
-  color: var(--color-muted);
-  letter-spacing: -0.01em;
-  line-height: 1.4em;
+  font-size: var(--font-caption); // Figma Caption/R_12 = 12px (구 14px)
+  font-weight: var(--font-weight-normal); // Caption/R_12 는 Regular (구 medium)
+  color: var(--color-fg);
 }
 
 // 시각적으로 가리되 스크린리더에는 노출. placeholder/aria-label 로 의미 전달 시.
@@ -32,39 +30,29 @@
 
 .input {
   width: 100%;
-  // Figma "Input" component (3365:1284, 2026-06-23) — height 52 + padding
-  // 12 16, radius 10. 이전 height 46 / padding 0 14 → 토큰 페이지 spec.
-  height: 52px;
-  padding: 12px 16px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-input);
+  min-height: 52px; // Figma 입력 박스 높이
+  padding: var(--space-3) var(--space-4); // Figma 12px 16px (구 12px 전방향)
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-md);
   background: var(--color-bg);
   color: var(--color-fg);
-  // Figma text spec: M_16_140% (Pretendard Medium 16, line 1.4em, ls -0.02em).
-  // font-size 16px = iOS Safari auto-zoom 차단 정합 (R5 audit).
-  font-size: 1rem;
+  font-size: var(--font-body); // Figma Basic Body/M_16_140% (구 14px)
   font-weight: var(--font-weight-medium);
-  line-height: 1.4em;
-  letter-spacing: -0.02em;
   outline: none;
   transition: border-color var(--motion-base) ease;
 
   &::placeholder {
+    // Figma default 상태 값 색은 #B4B4B4 지만 흰 배경 2.07:1 로 AA 크게 미달.
+    // 레포 기준 유지(HANDOFF.md 결정 2) — --color-muted 는 6.00:1.
     color: var(--color-muted);
   }
-  // 키보드 focus (tab) 시 outline ring + border-color. Button / PasswordField
-  // 와 동일 --focus-outline 토큰 사용 (R3 audit, 2026-06-23). 마우스 click
-  // focus 는 border-color 만 변경해 ring 깜빡임 회피.
-  &:focus-visible {
-    border-color: var(--color-primary);
-    outline: var(--focus-outline);
-    outline-offset: var(--focus-outline-offset);
-  }
-  &:focus:not(:focus-visible) {
-    border-color: var(--color-primary);
+  // Figma 는 focus 시 테두리 색을 정의하지 않지만, 키보드 포커스 가시성은
+  // 접근성 요건이라 유지한다.
+  &:focus {
+    border-color: var(--color-primary-text-bold);
   }
   &[aria-invalid='true'] {
-    border-color: var(--color-danger);
+    border-color: var(--color-border-error); // Figma #F73737 (캡션 색과 별개)
   }
   &:disabled {
     opacity: 0.6;
@@ -72,14 +60,18 @@
   }
 }
 
+// Figma Caption/M_10 — 10px Medium. 정상 시 fg, 에러 시 error 색.
+// 입력 규칙을 미리 보여주는 슬롯이므로 에러가 없을 때도 계속 노출한다.
 .hint {
-  font-size: var(--font-label);
-  color: var(--color-muted);
+  font-size: var(--font-helper);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-fg);
   margin: 0;
 }
 
 .error {
-  font-size: var(--font-label);
+  font-size: var(--font-helper);
+  font-weight: var(--font-weight-medium);
   color: var(--color-danger);
   margin: 0;
 }
@@ -105,30 +97,51 @@
   height: 100%;
 }
 
-// trailingAdornment — input 내부 우측 overlay (password visibility toggle 등).
-// input padding-right 를 늘려 텍스트와 겹치지 않게.
-.inputAdornmentWrap {
+/* ── 비밀번호 눈 토글 (Figma `eyeIcon`) ─────────────────────────────────
+   시안은 입력 박스 **안쪽** 우측에 20px 아이콘을 둔다.
+   `Input` 프레임이 H gap 12 / padding 12,16 이므로 텍스트 오른쪽 여백은
+   16(패딩) + 20(아이콘) + 12(gap) = 48. */
+.inputWrap {
   position: relative;
+  display: grid;
 }
 
-.inputWithAdornment {
-  // 우측 44px 확보 — Apple HIG touch target. 아이콘 buton 자체 width 36 + 좌우
-  // 여백.
-  padding-right: 2.75rem;
+.hasToggle {
+  padding-right: 48px;
 }
 
-.trailingAdornment {
+.toggle {
   position: absolute;
-  // input 의 우측 padding 안 가운데 정렬.
-  right: 0;
-  top: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  // input 자체 click 영역 침범 안 함 (button 만 click 가능).
-  pointer-events: none;
+  top: 50%;
+  right: var(--space-4);
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  /* 시안 off 는 #B4B4B4 지만 UI 컴포넌트 비텍스트 기준 3:1 에 미달(2.07:1).
+     같은 계열의 Figma Neutral/500(#8A8A8A, 3.45:1) 으로 올린다. */
+  color: var(--color-fg-weak);
+  transition: color var(--motion-base) ease;
 
-  > * {
-    pointer-events: auto;
+  /* 표시 중 — 시안 on 색 #393939 (= --color-muted) */
+  &[data-revealed='true'] {
+    color: var(--color-muted);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+    border-radius: var(--radius-sm);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toggle {
+    transition: none;
   }
 }

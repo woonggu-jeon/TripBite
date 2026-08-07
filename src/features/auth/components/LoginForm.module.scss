@@ -35,7 +35,7 @@
   transition: border-color var(--motion-base) ease;
 
   &:focus {
-    border-color: var(--color-primary);
+    border-color: var(--color-primary-text-bold);
   }
 
   &[aria-invalid='true'] {
@@ -65,7 +65,7 @@
 }
 
 .footLinkPrimary {
-  color: var(--color-primary);
+  color: var(--color-primary-text-bold);
   font-weight: var(--font-weight-semibold);
 }
 

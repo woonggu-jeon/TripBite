@@ -42,7 +42,7 @@ export function ConfirmDialog() {
       actions={
         <>
           <Button
-            variant="outline"
+            variant="secondary"
             fullWidth
             onClick={() => resolve(id, false)}
           >

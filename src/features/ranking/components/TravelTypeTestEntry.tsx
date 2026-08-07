@@ -1,9 +1,9 @@
 'use client';
 
-import { ArrowRight } from 'lucide-react';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { TravelTypeIcon, cardClasses } from '@/components/ui';
+import { useTranslations } from 'next-intl';
+import { ArrowRight } from 'lucide-react';
+import { cardClasses } from '@/components/ui';
 import { useMyTravelType } from '@/features/ranking/hooks/use-ranking';
 import styles from './TravelTypeTestEntry.module.scss';
 
@@ -28,7 +28,7 @@ export function TravelTypeTestEntry() {
     return (
       <Link href="/quiz/result" className={cardCls}>
         <span className={styles.emoji} aria-hidden>
-          <TravelTypeIcon code={data.code} size={36} />
+          {data.emoji}
         </span>
         <div className={styles.text}>
           <p className={styles.eyebrow}>{t('myTypeEyebrow')}</p>

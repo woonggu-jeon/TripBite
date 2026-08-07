@@ -1,22 +1,19 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import type {
-  AppNotificationDto,
-  AppNotificationType,
-} from '@/api/generated/schemas';
-import { EmptyState } from '@/components/feedback/EmptyState';
-import { Skeleton } from '@/components/feedback/Skeleton';
-import { Icon, type IconName } from '@/components/icon/Icon';
+import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Mail, Heart, Trophy, Bell, ShieldAlert, Send } from 'lucide-react';
 import { SubHeader } from '@/components/layout/SubHeader';
+import { relativeTimeToken } from '@/lib/relative-time';
+import { Skeleton } from '@/components/feedback/Skeleton';
+import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button } from '@/components/ui';
 import { InfiniteList } from '@/features/list/components/InfiniteList';
 import {
+  useNotificationInboxInfinite,
   useMarkAllNotificationsRead,
   useMarkNotificationRead,
-  useNotificationInboxInfinite,
 } from '@/features/notification/hooks/use-notification-inbox';
 import { usePushNotification } from '@/features/notification/hooks/use-push-notification';
 import {
@@ -24,30 +21,11 @@ import {
   isIOS,
   isPushSupported,
 } from '@/features/notification/utils/subscription';
-import { relativeTimeToken } from '@/lib/relative-time';
+import type {
+  AppNotificationDto,
+  AppNotificationType,
+} from '@/api/generated/schemas';
 import styles from './NotificationsClient.module.scss';
-
-/**
- * 알림 createdAt → "방금 전 / N분 전 / N시간 전 / N일 전" 라벨. letter 와
- * 동일 i18n 키 (`letter.relativeTime`) 재사용 — 메시지 내용 동일 (한국어 의미상
- * 공통). 별도 `notification.relativeTime` 도입 가능하나 키 중복 회피.
- */
-function useRelativeTime(iso: string): string {
-  const t = useTranslations('letter.relativeTime');
-  const tok = relativeTimeToken(iso);
-  switch (tok.kind) {
-    case 'justNow':
-      return t('justNow');
-    case 'minutes':
-      return t('minutesAgo', { n: tok.value });
-    case 'hours':
-      return t('hoursAgo', { n: tok.value });
-    case 'days':
-      return t('daysAgo', { n: tok.value });
-    case 'date':
-      return new Date(iso).toLocaleDateString();
-  }
-}
 
 const PUSH_PROMPT_DISMISS_KEY = 'tripbite.push-prompt.dismissed';
 
@@ -55,15 +33,15 @@ const PUSH_PROMPT_DISMISS_KEY = 'tripbite.push-prompt.dismissed';
  * type 별 아이콘 매핑.
  * unknown type 은 `?? Bell` 로 fallback (스키마 확장 전 BE 응답 호환).
  */
-const TYPE_ICON: Record<AppNotificationType, IconName> = {
-  'letter.received': 'mail',
-  'letter.liked': 'heart-fill',
+const TYPE_ICON: Record<AppNotificationType, typeof Mail> = {
+  'letter.received': Mail,
+  'letter.liked': Heart,
   // 보낸 편지가 누군가에게 도착 완료 — 발신자에게 알림.
-  'letter.delivered': 'send',
-  'tournament.shared': 'award',
+  'letter.delivered': Send,
+  'tournament.shared': Trophy,
   // 충북 마스터 달성 / 우승지 저장 한도 등은 BE 가 event type + 차별화된 link 로 발행.
-  event: 'bell',
-  security: 'shield-alert',
+  event: Bell,
+  security: ShieldAlert,
 };
 
 export function NotificationsClient() {
@@ -88,7 +66,7 @@ export function NotificationsClient() {
         <SubHeader title={t('title')} />
         <div className={styles.wrap}>
           <EmptyState
-            icon={<Icon name="noti" size={28} />}
+            icon={<Bell size={28} aria-hidden />}
             title={t('error')}
             action={
               <Button variant="secondary" size="sm" onClick={() => refetch()}>
@@ -124,7 +102,7 @@ export function NotificationsClient() {
           <div className={styles.skeletonList} aria-label={tCommon('loading')}>
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className={styles.skeletonItem}>
-                <Skeleton width={32} height={32} radius="full" />
+                <Skeleton width={44} height={44} radius="full" />
                 <div className={styles.skeletonLines}>
                   <Skeleton width="80%" height={14} radius="sm" />
                   <Skeleton width="55%" height={12} radius="sm" />
@@ -148,11 +126,8 @@ export function NotificationsClient() {
               />
             )}
             emptyState={
-              // Figma "알림 빈 상태" (2026-06-23) — EmptyState variant=hero
-              // (84 circle + primary-soft bg + primary 38 Bell + Body B_16).
               <EmptyState
-                variant="hero"
-                icon={<Icon name="noti" size={36} />}
+                icon={<Mail size={28} aria-hidden />}
                 title={t('empty')}
               />
             }
@@ -237,6 +212,17 @@ function PushPrompt() {
   );
 }
 
+/**
+ * 알림 행 하나 — Figma `notiIcon` (360x76, H gap 12, padding 16/20).
+ *
+ *   원형 44 (읽지 않음: #EAF6EF 면 + 초록 아이콘 + 우하단 9px 초록 점 /
+ *            읽음: 회색 면 + 회색 아이콘)
+ *   + 제목 Basic Body/B_14_140% + 본문 Caption/R_12  (V gap 4)
+ *   + 우측 시각 Caption/R_12
+ *
+ * 시안은 읽은 알림 전체를 #B4B4B4 로 흐리게 하지만 2.07:1 로 AA 미달이라
+ * --color-muted 로 대체한다 (결정 2).
+ */
 function Item({
   n,
   onSelect,
@@ -244,34 +230,19 @@ function Item({
   n: AppNotificationDto;
   onSelect: () => void;
 }) {
-  const iconName = TYPE_ICON[n.type] ?? 'bell';
-  const time = useRelativeTime(n.createdAt);
+  const Icon = TYPE_ICON[n.type] ?? Bell;
+  const time = useRelativeTimeLabel(n.createdAt);
   const body = (
-    <div className={styles.alrow}>
-      {/* Figma "notiCircle" 44×44 — unread: bg primary-soft + primary icon +
-          top-left dot badge. read: bg gray + disabled icon. */}
-      <span
-        className={`${styles.notiCircle} ${n.read ? styles.notiCircleRead : styles.notiCircleUnread}`}
-        aria-hidden
-      >
-        <Icon name={iconName} size={22} />
-        {!n.read && <span className={styles.notiDot} />}
+    <div className={`${styles.item} ${n.read ? styles.read : ''}`}>
+      <span className={styles.iconCircle} aria-hidden>
+        <Icon size={22} />
+        {!n.read && <span className={styles.dot} />}
       </span>
-      <div className={styles.mid}>
-        <h3
-          className={`${styles.midTitle} ${n.read ? styles.midTitleRead : ''}`}
-        >
-          {n.title}
-        </h3>
-        {n.body && (
-          <p
-            className={`${styles.midBody} ${n.read ? styles.midBodyRead : ''}`}
-          >
-            {n.body}
-          </p>
-        )}
-      </div>
-      <time className={styles.time}>{time}</time>
+      <span className={styles.itemText}>
+        <span className={styles.itemTitle}>{n.title}</span>
+        {n.body && <span className={styles.itemBody}>{n.body}</span>}
+      </span>
+      <span className={styles.itemTime}>{time}</span>
     </div>
   );
 
@@ -296,4 +267,24 @@ function Item({
       {body}
     </button>
   );
+}
+
+/** letter.relativeTime 키 재사용 — 알림 전용 문구를 새로 만들지 않는다. */
+function useRelativeTimeLabel(iso: string): string {
+  const t = useTranslations('letter.relativeTime');
+  const tok = relativeTimeToken(iso);
+  switch (tok.kind) {
+    case 'justNow':
+      return t('justNow');
+    case 'minutes':
+      return t('minutesAgo', { n: tok.value });
+    case 'hours':
+      return t('hoursAgo', { n: tok.value });
+    case 'days':
+      return t('daysAgo', { n: tok.value });
+    case 'date': {
+      const d = new Date(iso);
+      return `${d.getMonth() + 1}/${d.getDate()}`;
+    }
+  }
 }

@@ -1,30 +1,21 @@
+// 마커를 시군 라벨 아래로 내리는 양 — 라벨과 겹치지 않게.
+$marker-offset-y: 10px;
+
 .wrap {
   position: relative;
   width: 100%;
   aspect-ratio: 800 / 903;
-  // max-width 제거 (2026-06-24) — 부모 (TournamentPlayClient .mapCard) 가
-  // 폭 결정. desktop 에서 contentInner 폭까지 SVG 자연 확대.
+  max-width: 420px;
   margin: 0 auto;
 
-  // Figma "TRN · 여행지 준비 완료 (T-5)" 정합 (사용자 명시 2026-06-25):
-  // 기본 region = white + #9AA0A6 gray border, label = #393939 muted.
-  // 선택된 region (.region-active) = #EBF9EF primary-tint + #00B334 primary
-  // border + #00B334 label. dark mode 시 그대로 색 유지 (Figma spec light only,
-  // 향후 dark 도 동일 패턴이면 그대로 사용 가능).
-  --map-region-fill: #ffffff;
-  --map-region-stroke: #9aa0a6;
-  --map-region-active-fill: #ebf9ef;
-  --map-region-active-stroke: #00b334;
-  --map-label-fill: #393939;
-  --map-label-active-fill: #00b334;
-  --map-label-stroke: #ffffff;
-
-  @media (prefers-color-scheme: dark) {
-    --map-region-fill: var(--color-surface, #1e1e1e);
-    --map-region-stroke: #4a4a4a;
-    --map-label-fill: #e5e7eb;
-    --map-label-stroke: var(--color-surface, #1e1e1e);
-  }
+  // Figma `TRN · 여행지 준비 완료 > cbmap` — 흰 면 + 1px #E0E0E0 실선,
+  // 라벨은 본문색. 구 구현은 파란 계열(#dbeafe/#1e3a5f) 이었다.
+  // 색은 토큰으로 두어 dark 자동 분기 (구 구현은 하드코딩 + media query).
+  --map-region-fill: var(--color-bg);
+  --map-region-stroke: var(--color-border);
+  --map-region-hover: var(--color-primary-soft);
+  --map-label-fill: var(--color-fg);
+  --map-label-stroke: var(--color-bg);
 }
 
 .svgWrap {
@@ -41,18 +32,29 @@
   :global(svg path.region) {
     fill: var(--map-region-fill);
     stroke: var(--map-region-stroke);
-    stroke-width: 2;
+    stroke-width: 1.25; // Figma 1.04 (구 2)
+    transition:
+      fill var(--motion-base) ease,
+      stroke var(--motion-base) ease;
   }
 
-  // 선택된 시군 (destinations 의 region) — primary-tint fill + primary border.
-  :global(svg path.region.region-active) {
-    fill: var(--map-region-active-fill);
-    stroke: var(--map-region-active-stroke);
+  // 시군 그룹 hover — 같은 시군의 모든 path 에 클래스 부여 (JS 에서 토글).
+  // stroke 도 hover fill 과 동일 색 → 행정구 사이 분리선 사라져 시군이 한 덩어리로 보임.
+  :global(svg path.region.is-region-hovered) {
+    fill: var(--map-region-hover);
+    stroke: var(--color-primary);
+  }
+
+  // Figma — 뽑힌 시군: 연초록 면 + 초록 테두리
+  :global(svg path.region[data-picked='true']) {
+    fill: var(--color-primary-soft);
+    stroke: var(--color-primary);
   }
 
   :global(svg text.label) {
     font-family: 'Pretendard', ui-sans-serif, system-ui, sans-serif;
-    font-size: 24px;
+    // viewBox 800 을 약 296px 로 그리므로(배율 0.37) 화면상 10px 이 되도록
+    font-size: 28px;
     font-weight: var(--font-weight-bold);
     fill: var(--map-label-fill);
     text-anchor: middle;
@@ -60,12 +62,11 @@
     stroke: var(--map-label-stroke);
     stroke-width: 6;
     stroke-linejoin: round;
-    pointer-events: none;
   }
 
-  // 선택된 시군 label — primary 색 (Figma 정합).
-  :global(svg text.label.region-active) {
-    fill: var(--map-label-active-fill);
+  :global(svg text.label[data-picked='true']) {
+    fill: var(--color-primary-text-bold);
+    pointer-events: none;
   }
 }
 
@@ -75,15 +76,20 @@
   pointer-events: none;
 }
 
+// 마커 등장 — 제자리에서 살짝 나타나기만 한다.
+// 구 구현은 화면 위(-250%)에서 아래로 떨어지며 튀는(scale 1.15) 연출이었는데
+// 시군이 여러 개면 어수선해서 이동·바운스를 없앴다. 시안의 준비 완료 화면도
+// 계절 아이콘이 지도 위에 그냥 놓여 있다.
 .drop {
   position: absolute;
-  transform: translate(-50%, -50%) scale(0);
+  // 시군 중심에 그대로 두면 지도 라벨(시군 이름)을 가린다 → 10px 아래로.
+  transform: translate(-50%, calc(-50% + #{$marker-offset-y}));
   font-size: var(--font-h1);
   line-height: 1;
-  animation-name: drop;
-  animation-duration: 0.8s;
-  animation-fill-mode: forwards;
-  animation-timing-function: var(--ease-spring);
+  animation-name: marker-in;
+  animation-duration: 0.24s;
+  animation-fill-mode: both;
+  animation-timing-function: var(--ease-out);
   filter: var(--drop-shadow-icon);
   user-select: none;
 }
@@ -124,17 +130,11 @@
   cursor: not-allowed;
 }
 
-@keyframes drop {
-  0% {
-    transform: translate(-50%, -250%) scale(0.2);
+@keyframes marker-in {
+  from {
     opacity: 0;
   }
-  70% {
-    transform: translate(-50%, -50%) scale(1.15);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1);
+  to {
     opacity: 1;
   }
 }
@@ -142,10 +142,13 @@
 @media (prefers-reduced-motion: reduce) {
   .drop {
     animation: none;
-    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, calc(-50% + #{$marker-offset-y}));
     opacity: 1;
   }
   .button {
+    transition: none;
+  }
+  .svgWrap :global(svg path.region) {
     transition: none;
   }
 }

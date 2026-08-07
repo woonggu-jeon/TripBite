@@ -159,11 +159,32 @@ function cspHeaderName(): string {
 }
 
 export const config = {
+  /**
+   * public/ 정적 자산은 인증 미들웨어를 타지 않아야 한다.
+   * 타면 비로그인 상태에서 307 로 리다이렉트되어 이미지가 깨지고,
+   * 요청마다 미들웨어가 헛돈다.
+   *
+   * 확장자 기반(`.*\..*`) 으로 뭉뚱그리지 않고 **경로를 명시**한다 —
+   * 점이 들어간 보호 페이지 경로가 생기면 인증이 조용히 우회되기 때문.
+   * public/ 에 폴더를 추가하면 여기에도 추가해야 한다.
+   *
+   * 제외 대상:
+   *   api                  health·csp-report 는 공개. Server Action(페이지 route
+   *                        POST) 은 /api 가 아니라 그대로 미들웨어를 탄다.
+   *   _next/static|image   빌드 산출물
+   *   favicon.ico
+   *   icons                public/icons/ (PWA) + public/icons.svg (스프라이트)
+   *   illustrations        public/illustrations/ (Figma 일러스트 PNG)
+   *   images               public/images/ (지도 등)
+   *   manifest.json
+   *   sw.js|workbox-*      serwist 산출물
+   *   mockServiceWorker.js MSW 워커 (dev)
+   */
   matcher: [
     // /api 제외: health·csp-report는 공개. Server Action(페이지 route POST)은 /api 가 아니라 유지.
-    // public 정적 자산 제외 (2026-06-22 fix) — `/images/onboarding/walk-*.svg`
-    // 등이 visited cookie 없는 사용자에서 onboarding redirect 에 잡혀 307.
-    // 추가: images / splash / mockServiceWorker.js. icons 는 기존 유지.
-    '/((?!api|_next/static|_next/image|images|splash|favicon.ico|icons|manifest.json|sw.js|workbox-.*|mockServiceWorker.js).*)',
+    // public 정적 자산 제외 — merge: current(splash) + preview(illustrations) 합집합.
+    // images/splash/illustrations/icons 등이 visited cookie 없는 사용자에서 onboarding
+    // redirect(307)에 잡히지 않도록. public/ 폴더 추가 시 여기에도 추가.
+    '/((?!api|_next/static|_next/image|favicon.ico|icons|illustrations|images|splash|manifest.json|sw.js|workbox-.*|mockServiceWorker.js).*)',
   ],
 };

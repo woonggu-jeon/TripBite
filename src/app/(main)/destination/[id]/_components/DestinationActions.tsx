@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { Icon } from '@/components/icon';
 import { shareUrl } from '@/lib/share';
 import { toast } from '@/lib/toast';
 import styles from './DestinationActions.module.scss';
@@ -59,7 +60,8 @@ export function DestinationActions({
           rel="noopener noreferrer"
           className={`${styles.btn} ${styles.directions}`}
         >
-          {t('directions')}
+          <Icon name="location-18" size={18} />
+          <span>{t('directions')}</span>
         </a>
       )}
       <button
@@ -67,7 +69,8 @@ export function DestinationActions({
         onClick={handleShare}
         className={`${styles.btn} ${styles.share}`}
       >
-        {t('share')}
+        <Icon name="share-18" size={18} />
+        <span>{t('share')}</span>
       </button>
     </nav>
   );

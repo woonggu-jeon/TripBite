@@ -1,41 +1,44 @@
-// Figma "RNK · 랭킹 rv-card 2 gun-row" (2026-06-23) — padding 12 0 row
-// space-between. rv-card wrapping 안에서 사용 — 자체 border 없음.
+// Figma `gun-row` 실측 — 288x44, HORIZONTAL gap 8, padding 12/0,
+// 행 하단 1px #E0E0E0 구분선 (마지막 행은 없음). 개별 카드가 아니라
+// rv-card 안의 행들이다.
 .list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  gap: 0;
   padding: 0;
   margin: 0;
   list-style: none;
+
+  // 마지막 행의 구분선 제거 — 카드 아래쪽 padding 과 겹쳐 보인다
+  li:last-child .row {
+    border-bottom: 0;
+  }
 }
 
-// Figma gun-row — 288×44 padding 12 0 row. 3 영역:
-//   Frame 36 (rank + region, flex-shrink 0) | bar (flex 1) | Frame 35
-//   (wins + chevron, flex-shrink 0).
-// space-between 대신 bar flex 1 — desktop wider viewport 에서 bar 가 남은
-// 폭 채움 (모바일 360 기준 160 ≈ Figma 명시, 720 desktop 에선 자연 grow).
+// 1행 = [등수 시군명] | 막대 | [우승수 chevron]
+// Figma 는 등수+시군명을 60px 한 그룹, 막대 160 고정, 우측 54 그룹으로 둔다.
 .row {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: 60px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-2);
   width: 100%;
-  padding: 12px 0;
+  padding: var(--space-3) 0;
   background: transparent;
   border: 0;
+  border-bottom: var(--border-thin) solid var(--color-border);
+  border-radius: 0;
   color: var(--color-fg);
   text-align: left;
   cursor: pointer;
-  transition:
-    background var(--motion-base) ease,
-    transform var(--motion-fast) ease;
+  transition: opacity var(--motion-fast) ease;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      background: var(--color-surface-soft);
+      opacity: 0.7;
     }
   }
   &:active {
-    transform: scale(0.99);
+    opacity: 0.55;
   }
   &:focus-visible {
     outline: var(--focus-outline);
@@ -43,55 +46,42 @@
   }
 }
 
-// Figma Frame 36 — row gap 8 (rank + region 같은 row).
-.label {
-  display: flex;
-  flex-direction: row;
+// Figma `Frame 36` — 등수 + 시군명 (H gap 4, 60px)
+.rowLabel {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+// Figma 등수는 초록 14px Bold. primary 는 텍스트로 2.80:1 미달이라
+// --color-primary-text-bold(5.10:1) 사용 (결정 2).
+.rank {
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-text-bold);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
   flex-shrink: 0;
 }
 
-// Figma rank — B_14_140%. 1위 primary, 2위 이하 disabled (#B4B4B4).
-// 1-9 (1자리) vs 10-11 (2자리) 텍스트 폭 차이로 row 간 progress bar 시작
-// 위치가 달라지는 문제 — min-width 1.5em + text-align center 로 동일 폭 고정
-// (사용자 피드백 2026-06-24).
-.rank {
-  display: inline-block;
-  min-width: 1.5em;
-  font-size: var(--text-sm); /* 14 */
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-snug-relaxed); /* 140% */
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-text-disabled);
-  font-variant-numeric: tabular-nums;
-  text-align: center;
-}
-
-// 1위 강조 — primary.
-.rankFirst {
-  color: var(--color-primary);
-}
-
-// Figma region B_14 fg.
 .regionName {
-  font-size: var(--text-sm); /* 14 */
+  font-size: var(--font-body-sm);
   font-weight: var(--font-weight-bold);
-  line-height: var(--line-snug-relaxed); /* 140% */
-  letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
+  letter-spacing: var(--tracking-tight);
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
 }
 
-// Figma bar — 8h radius 999, bg #F1F1F1, fill primary. row 안에서 bar 만
-// flex 1 (좌우 label/wins flex-shrink 0) — 남은 폭 차지.
-// 모바일 360: 약 160 (Figma 명시), desktop 720: 약 500+.
+// Figma `bar` 160x8, track #F1F1F1 (= --color-surface-elevated 계열)
 .barTrack {
   position: relative;
-  flex: 1 1 auto;
-  min-width: 80px;
   height: 8px;
-  background: #f1f1f1;
+  width: 100%;
+  background: var(--color-surface-elevated);
   border-radius: var(--radius-full);
   overflow: hidden;
 }
@@ -99,8 +89,11 @@
 .barFill {
   display: block;
   height: 100%;
+  // Figma 는 그라디언트가 아니라 solid #00B334
   background: var(--color-primary);
   border-radius: inherit;
+  // mount 시 width 가 inline style 로 즉시 들어가지만,
+  // 동일 width 재할당 시 안정적인 transition 을 위해 var(--ease-out).
   transition: width var(--motion-emphasis) var(--ease-out);
   animation: barIn var(--motion-emphasis) var(--ease-out) both;
   transform-origin: left center;
@@ -115,30 +108,34 @@
   }
 }
 
-// Figma Frame 35 — row gap 4 (wins + chevron).
+// Figma `Frame 35` — "32회" + chevron (H gap 4, 54px).
+// 숫자와 단위는 한 덩어리라 사이 간격이 없다 (gap 은 chevron 앞에만).
 .wins {
   display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
-  font-size: var(--text-sm); /* 14 */
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-snug-relaxed); /* 140% */
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-fg);
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0;
   font-variant-numeric: tabular-nums;
 }
 
+// Figma 는 "32회" 를 하나의 14px Bold 로 쓴다 (숫자/단위 크기 차이 없음)
+.winsNumber,
+.winsUnit {
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-fg);
+  letter-spacing: var(--tracking-tight);
+}
+
 .chevron {
-  color: var(--color-text-disabled);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  color: var(--color-muted);
+  justify-self: end;
+  margin-left: var(--space-1);
+  align-self: center;
 }
 
 .skeletonList {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: var(--space-2);
 }
 
@@ -150,6 +147,25 @@
   color: var(--color-muted);
   text-align: center;
   font-size: var(--text-sm);
+  background: var(--color-surface-soft);
+  border-radius: var(--radius-md);
+}
+
+.retry {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-fg);
+  font-size: var(--font-label);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--color-primary-border);
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

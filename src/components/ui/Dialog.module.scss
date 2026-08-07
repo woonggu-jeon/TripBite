@@ -13,41 +13,37 @@
   animation: fade-in var(--motion-base) var(--ease-out);
 }
 
+/* Figma modal 실측 — 320 폭 / radius 18 / padding 20px 16px / gap 20 /
+   테두리 없음. 그림자는 Figma 에 없지만 backdrop 위에 떠야 하므로 유지
+   (DESIGN.md §6 — 모달·바텀시트는 예외로 허용). */
 .dialog {
   width: 100%;
-  // Figma "card" (2026-06-23) — 330 width (mobile 360 viewport 정합으로
-  // 360 까지 허용 OK). border 0 + radius 12.
-  max-width: 330px;
-  // iOS Safari 가상 키보드 등장 시 가시성 — svh (smallest viewport) 우선,
-  // dvh 미지원 브라우저 fallback. 2026-06-19 audit 보강.
-  max-height: calc(100svh - var(--space-8));
+  max-width: 320px; /* Figma 320 (구 360) */
   max-height: calc(100dvh - var(--space-8));
   overflow-y: auto;
   // dialog 내부 스크롤이 backdrop / body 로 chain 되지 않도록 — iOS Safari 의
   // pull-to-refresh + body overscroll bounce 차단.
   overscroll-behavior: contain;
   background: var(--color-bg);
-  border: 0;
-  border-radius: 12px;
+  border-radius: var(--radius-2xl); /* Figma 18px (구 12px) */
   box-shadow: var(--shadow-emphasis);
-  padding: 20px;
+  padding: var(--space-5) var(--space-4); /* Figma 20px 16px (구 20px 전방향) */
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-5); /* Figma 20px (구 12px) */
   animation: pop-in 0.18s var(--ease-out);
 }
 
+// Figma `Frame 18` — 제목 + 설명, V gap 4
+.textBlock {
+  display: grid;
+  gap: var(--space-1);
+}
+
 .header {
-  // Confirm modal 의 title 이 close button 없이 center 정렬되도록 — title
-  // grow + close button 우측 fixed. flex space-between 회귀 (close button
-  // 없을 때 title left). justify-content: stretch 로 title 풀너비 → text-align
-  // center 가 작동.
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--space-2);
-
-  & > h2 {
-    flex-grow: 1;
-  }
 }
 
 .headerWithIcon {
@@ -58,48 +54,35 @@
 }
 
 .icon {
-  color: var(--color-primary);
+  color: var(--color-primary-text-bold);
 }
 
+// Basic Body/B_16_140% (구 18px extrabold)
 .title {
-  // Figma "mh" title (2026-06-23) — Body B_16_140% (Bold 16, line 140%,
-  // ls -0.02em) + center 정렬. 이전 font-h3 ExtraBold + left default 회귀.
-  // confirm modal Frame 18 / nickname / password mh — 모두 center 정합
-  // (Nickname/Password 는 full-width 라 left/center 시각 동일, confirm 만
-  // center 필수).
   font-size: var(--font-body);
   font-weight: var(--font-weight-bold);
-  line-height: var(--line-snug-relaxed);
+  line-height: var(--line-normal);
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
   margin: 0;
-  text-align: center;
 }
 
+// Caption/R_12 — Figma 는 모달 설명도 본문색(#151515) 이다 (구 14px muted)
 .description {
-  // Figma "MY · 저장 우승지 삭제" modal Frame 18 (2026-06-23) — Caption
-  // R_12 fg center letter-spacing -0.01em (이전 text-sm muted left 회귀).
-  // ConfirmDialog 만 description prop 사용 (다른 dialog 미사용).
   font-size: var(--font-caption);
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: -0.01em;
   color: var(--color-fg);
-  text-align: center;
+  line-height: var(--line-normal);
+  letter-spacing: var(--tracking-snug);
   margin: 0;
 }
 
+// Figma `Frame 15` — 138x52 버튼 2개, H gap 12, 등폭.
+// 버튼 1개면 그대로 풀폭이 된다.
 .actions {
-  // Figma "Frame 15" (2026-06-23) — 2 button 양쪽 stretch + gap 12. 단일
-  // button 이면 자동 full-width 가 자연스러움. margin-top 은 parent .dialog
-  // 의 grid gap (space-3 = 12) 으로 처리.
-  display: flex;
-  gap: 12px;
-  margin-top: 0;
-
-  & > button {
-    flex: 1;
-  }
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: var(--space-3);
 }
 
 @keyframes fade-in {

@@ -3,22 +3,29 @@
    디자이너가 여기 한 곳만 수정하면 일괄 반영.
 
    variant:
-     - center : form 류 (5개) — 화면 중앙 정렬
-     - column : 멀티 step 류 (onboarding) — 상단부터 세로 배치
-
-   layout: (main) layout 의 contentInner 와 같은 폭 정합 — max-width
-   var(--content-max) 720 + white bg + margin auto. desktop 720+ 에서 양 옆
-   body bg (#EAF6EF) 노출, 가운데 720 폭만 white. 모바일 360 은 풀폭 white
-   (사용자 명시 2026-06-24 — 배경색 적용 후 auth white 회귀 fix). */
-// Fluid 반응형 — 320~desktop viewport 따라 padding 부드럽게.
+     - center : form 류 — 화면 중앙 정렬
+     - column : 멀티 step 류 / 헤더 있는 화면 — 상단부터 세로 배치 */
 .main {
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
+}
+
+/* 헤더 없는 화면 — main 이 직접 여백을 갖는다 */
+.padded {
   padding: clamp(1rem, 4vw, 1.5rem) clamp(0.75rem, 3vw, 1rem);
-  max-width: var(--content-max); /* 720 */
-  margin: 0 auto;
-  background: var(--color-bg);
+}
+
+/* 헤더 있는 화면 — 헤더는 폭 전체, 본문만 여백.
+   헤더(56) + 본문이 합쳐 100dvh 가 되도록 본문이 남은 높이를 채운다. */
+.withHeader {
+  flex-direction: column;
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
 }
 
 .center {
@@ -28,9 +35,4 @@
 
 .column {
   flex-direction: column;
-  // onboarding 의 illustArea (Walk1/2/3 파스텔 bg 360h) 가 viewport edge 까지
-  // 풀폭 bleed 정합 — center variant 의 좌우 clamp padding 제거 (2026-06-24
-  // 사용자 명시). find-id/forgot-password 의 form 은 자체 max-width 360 +
-  // center 라 좌우 padding 영향 없음 (form 가운데 정렬 유지).
-  padding: 0;
 }

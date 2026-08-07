@@ -1,37 +1,62 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useShallow } from 'zustand/react/shallow';
-import { Button } from '@/components/ui';
-import { LuckyLadder } from '@/features/tournament/components/LuckyLadder';
-import { SeasonLoadingPanel } from '@/features/tournament/components/SeasonLoadingPanel';
-import { TournamentStats } from '@/features/tournament/components/TournamentStats';
-import { WinnerCard } from '@/features/tournament/components/WinnerCard';
-import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetailPanel';
+import { useTranslations } from 'next-intl';
+import { Icon } from '@/components/icon';
+import { useTournamentStore } from '@/features/tournament/store/tournament-store';
 import {
   useDestinationDetail,
   useSaveTournament,
   useTournamentRecord,
 } from '@/features/tournament/hooks/use-tournament';
-import { useTournamentStore } from '@/features/tournament/store/tournament-store';
-import {
-  TOURNAMENT_SIZE_OPTIONS,
-  type TournamentCount,
-} from '@/features/tournament/types';
-import { useRequireAuth } from '@/hooks/use-require-auth';
+import { Button, ButtonGrid } from '@/components/ui';
+import { WinnerCard } from '@/features/tournament/components/WinnerCard';
+import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetailPanel';
+import { TournamentStats } from '@/features/tournament/components/TournamentStats';
+import { LuckyColor } from '@/features/tournament/components/LuckyColor';
+import { LuckyLadder } from '@/features/tournament/components/LuckyLadder';
 import { useShareCard } from '@/hooks/use-share-card';
+import { useRequireAuth } from '@/hooks/use-require-auth';
 import styles from './TournamentResultClient.module.scss';
 
 /**
- * 토너먼트 결과 — Figma "TRN · 토너먼트 결과" 정합 (2026-06-24).
+ * 토너먼트 결과 클라이언트
  *
- * 구성 (column gap 20):
- *   1) WinnerCard         — hero 320×176 (image + 90deg dark gradient + bottom-left text)
- *   2) WinnerDetailPanel  — info-card 320×285 (3 field row + divider + overview)
- *   3) TournamentStats    — Frame 47 (title + 4 rchip + lucky color row 흡수)
- *   4) LuckyLadder        — ladder card 320×432 (title + caption + ladder svg 280×337)
- *   5) actions            — primary 320×52 "결과 공유하기" + outline pair (다시하기 / 마이페이지에 저장)
+ * 구성:
+ *   1) WinnerCard  — 우승 여행지(이름·시군·카테고리)
+ *   2) LuckyColor  — winner.id seed 기반 deterministic 행운의 색
+ *   3) LuckyLadder — 인연 만날 확률 사다리타기
+ *   4) 액션        — 마이페이지 저장 / 다시 하기
+ *
+ * 저장: useSaveTournament(useMutation) → POST /mypage/tournaments
+ *   - 성공 시 버튼 라벨 "저장됐어요" 로 전환 + disabled
+ *   - 실패 시 다시 시도 가능
+ *
+ * 설정/우승자 없이 진입 시: redirect 대신 안내(백엔드 미연결 정책).
+ *
+ * ─────────────────────────────────────────────────────────────
+ * [FUTURE: BE(NestJS) 연동 시 처리 포인트]
+ *
+ * 현재 winner/runnerUp/matchesPlayed/tournamentSize 는 전부 store-only.
+ * 즉 같은 SPA 세션 안에서 setup → play → result 흐름 안에서만 보존됨.
+ *
+ * 새로고침/공유 링크/마이페이지에서 다시 보기 등 deep-link 진입을 지원하려면:
+ *   - URL: /tournament/result?id={tournamentId}  또는  /mypage/tournaments/[id]
+ *   - useQuery(['tournament', id], () => api.getTournament(id))
+ *     로 winner/runnerUp/matchesPlayed/tournamentSize 까지 fetch.
+ *   - 이때 wrap 영역(`styles.wrap`)에 min-height 박아두고
+ *     WinnerCard / TournamentStats 도 isLoading → Skeleton 분기 추가.
+ *   - 현재 `if (!winner) → noWinner 안내` 는 _진행 중 store 가 비었을 때_ 와
+ *     _서버에서 못 찾았을 때_ 가 합쳐지므로, isError vs notFound 분기로 갈라야 함.
+ *
+ * 또한 저장 흐름:
+ *   - 지금은 mutation 결과만 사용. BE 후에는 onSuccess → router.replace 로
+ *     `/mypage/tournaments/{id}` 로 보내 store 가 사라져도 결과를 다시 볼 수 있게.
+ *   - queryClient.invalidateQueries(mypageKeys.tournaments) 도 추가.
+ *
+ * 정책 [[rendering-speed-first]] 유지: 결과 페이지 진입 시 본문/통계 전부
+ * skeleton-first. 미리 prefetch 하지 않음.
+ * ─────────────────────────────────────────────────────────────
  */
 export function TournamentResultClient() {
   const router = useRouter();
@@ -39,59 +64,37 @@ export function TournamentResultClient() {
   const recordId = searchParams.get('id');
   const t = useTranslations('tournament.result');
 
+  // ?id= 가 있으면 BE record 조회 (deep-link / 새로고침). 없으면 store 만 사용.
   const recordQuery = useTournamentRecord(recordId);
 
-  // 5개 분산 selector → 단일 selector + 객체 통합 (자율 검토 2026-06-25). 단
-  // 객체 selector 는 매번 new instance → React getSnapshot 무한 loop. zustand
-  // 5의 `useShallow` 로 shallow compare → 같은 키 동일 값이면 같은 reference
-  // 유지 (사용자 보고 2026-06-25 — getSnapshot cache 회귀 fix).
-  const {
-    storeWinner,
-    storeRunnerUp,
-    storeMatchesPlayed,
-    storeTournamentSize,
-    storeSeason,
-  } = useTournamentStore(
-    useShallow((s) => ({
-      storeWinner: s.winner,
-      storeRunnerUp: s.runnerUp,
-      storeMatchesPlayed: s.matchesPlayed,
-      storeTournamentSize: s.config?.tournamentSize,
-      storeSeason: s.config?.theme.value,
-    })),
+  const storeWinner = useTournamentStore((s) => s.winner);
+  const storeRunnerUp = useTournamentStore((s) => s.runnerUp);
+  const storeMatchesPlayed = useTournamentStore((s) => s.matchesPlayed);
+  const storeTournamentSize = useTournamentStore(
+    (s) => s.config?.tournamentSize,
   );
   const reset = useTournamentStore((s) => s.reset);
 
+  // record (BE) 우선, 없으면 store fallback — deep-link 가 일관 동작.
   const record = recordQuery.data;
   const winner = record?.winner ?? storeWinner;
   const runnerUp = record?.runnerUp ?? storeRunnerUp;
   const matchesPlayed = record?.matchesPlayed ?? storeMatchesPlayed;
-  // BE record.tournamentSize 는 number, store 는 TournamentCount union.
-  // TOURNAMENT_SIZE_OPTIONS 로 type guard — `as` cast 우회 회피 (자율 검토
-  // 2026-06-25).
-  const recSize = record?.tournamentSize;
-  const tournamentSize: TournamentCount | undefined =
-    recSize != null &&
-    (TOURNAMENT_SIZE_OPTIONS as readonly number[]).includes(recSize)
-      ? (recSize as TournamentCount)
-      : storeTournamentSize;
+  // BE record.tournamentSize 는 number, store 는 TournamentCount (4/8/16/32 union).
+  // BE 응답이 union 외 값을 줄 경우 UI 가 깨지지 않게 fallback.
+  const tournamentSize = (record?.tournamentSize ??
+    storeTournamentSize) as typeof storeTournamentSize;
 
   const save = useSaveTournament();
   const requireAuth = useRequireAuth();
   const shareCard = useShareCard();
+  // 우승자 풍부 정보 — winner.id 기준 별도 fetch.
   const detailQuery = useDestinationDetail(winner?.id);
 
-  // deep-link 진입 (?id=) + record fetch 중 + store winner 없을 때 fallback.
-  // 큰 5-stack skeleton (hero/info/stats/ladder/actions) → SeasonLoadingPanel
-  // 로 통일 (사용자 명시 2026-06-25 — 깜빡임 회귀). store season 없으면
-  // autumn fallback (deep-link 만 진입 시 config 정보 없음).
+  // record 로딩 중 + store 도 비어있음 → 빈 placeholder (?id= deep-link 새로고침 케이스).
+  // 별도 loading i18n 키 없음 — 짧은 시간이라 노이즈 회피.
   if (recordId && recordQuery.isLoading && !storeWinner) {
-    return (
-      <SeasonLoadingPanel
-        season={storeSeason ?? 'autumn'}
-        title={t('loading')}
-      />
-    );
+    return <div className={styles.empty} aria-busy="true" />;
   }
 
   if (!winner) {
@@ -117,21 +120,35 @@ export function TournamentResultClient() {
     router.replace('/tournament');
   };
 
+  /**
+   * 결과 카드 이미지 공유 — `/api/og/tournament` 가 query → 이미지 PNG 생성.
+   * deep-link 불필요 — 받는 쪽은 이미지 파일만 받음.
+   * 결과 데이터는 URL query 로 인코딩 (winner name / region / category / matches).
+   *
+   * payload 는 file 단독 — title/text 동반 시 일부 share target (예: 카카오톡) 이
+   * 텍스트만 클립보드로 분리 처리하고 file 첨부 흐름이 끊긴다. file 만 보내야
+   * OS 가 채팅 채널 선택 → 이미지 첨부의 정상 분기로 진행.
+   */
   const handleShare = () => {
     const params = new URLSearchParams({
       winner: winner.name,
       region: winner.region,
       category: winner.category,
       ...(matchesPlayed > 0 ? { matches: String(matchesPlayed) } : {}),
-      ...(detailQuery.data?.description
-        ? { desc: detailQuery.data.description }
-        : {}),
     });
     return shareCard({
       imageUrl: `/api/og/tournament?${params.toString()}`,
       filename: `tripbite-tournament-${winner.id}.png`,
     });
   };
+
+  const saveLabel = save.isPending
+    ? t('saving')
+    : save.isSuccess
+      ? t('saved')
+      : save.isError
+        ? t('saveFailed')
+        : t('saveToMypage');
 
   return (
     <div className={styles.wrap}>
@@ -146,28 +163,42 @@ export function TournamentResultClient() {
         matchesPlayed={matchesPlayed}
         tournamentSize={tournamentSize}
       />
-      <LuckyLadder />
+      <LuckyColor seed={winner.id} />
 
-      {/* Figma Frame 48 — column gap 8: primary 320×52 (공유) + outline pair
-          (다시하기, 마이페이지에 저장). 사용자 명시 순서 (2026-06-24). */}
+      <section className={styles.ladderSection} aria-label={t('meetChance')}>
+        <header className={styles.ladderHeader}>
+          <h3 className={styles.ladderTitle}>
+            <span aria-hidden>🎲</span>
+            {t('meetChance')}
+          </h3>
+          <p className={styles.ladderSubtitle}>{t('ladder.subtitle')}</p>
+        </header>
+        <LuckyLadder />
+      </section>
+
       <div className={styles.actions}>
-        <Button variant="primary" size="lg" fullWidth onClick={handleShare}>
-          {t('shareShort')}
-        </Button>
-        <div className={styles.actionPair}>
-          <Button variant="outline" fullWidth onClick={handleRetry}>
-            {t('retryTournament')}
-          </Button>
+        <ButtonGrid>
           <Button
-            variant="outlinePrimary"
+            variant="secondary"
             fullWidth
-            onClick={handleSave}
-            disabled={save.isSuccess}
-            loading={save.isPending}
+            onClick={handleShare}
+            leadingIcon={<Icon name="share-18" size={16} />}
           >
-            {save.isSuccess ? t('saved') : t('saveShort')}
+            {t('share')}
           </Button>
-        </div>
+          <Button variant="ghost" fullWidth onClick={handleRetry}>
+            {t('retry')}
+          </Button>
+        </ButtonGrid>
+        <Button
+          variant="primary"
+          fullWidth
+          onClick={handleSave}
+          disabled={save.isSuccess}
+          loading={save.isPending}
+        >
+          {saveLabel}
+        </Button>
       </div>
     </div>
   );

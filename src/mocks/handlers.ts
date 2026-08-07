@@ -600,13 +600,31 @@ export const handlers = [
       return HttpResponse.json(ranks);
     }
 
-    // 추천 destination — 시즌/카테고리 균형 분포 (mock 은 destinationSeeds shuffle).
+    // 추천 destination — 카테고리 균형 분포.
+    // 구현이 seeds 앞에서 slice 만 했어서 한 시군의 축제만 잔뜩 나왔고, 홈의
+    // 카테고리 칩 필터에 관광지/체험 항목이 비었다. 카테고리별로 라운드로빈.
     if (type === 'recommended') {
-      const items = destinationSeeds.slice(0, Math.min(limit, 10)).map((d) => ({
-        rank: 0,
-        destination: d,
-        score: 0,
-      }));
+      const byCategory = new Map<string, typeof destinationSeeds>();
+      for (const d of destinationSeeds) {
+        const list = byCategory.get(d.category) ?? [];
+        list.push(d);
+        byCategory.set(d.category, list);
+      }
+      const buckets = [...byCategory.values()];
+      const picked: typeof destinationSeeds = [];
+      const cap = Math.min(limit, 24);
+      for (let i = 0; picked.length < cap; i++) {
+        let added = false;
+        for (const b of buckets) {
+          const next = b[i];
+          if (next && picked.length < cap) {
+            picked.push(next);
+            added = true;
+          }
+        }
+        if (!added) break;
+      }
+      const items = picked.map((d) => ({ rank: 0, destination: d, score: 0 }));
       return HttpResponse.json(items);
     }
 

@@ -1,0 +1,9 @@
+// Figma `HOME · 홈` 의 hero-block — 320/360, 즉 본문 컨텐츠 폭 그대로
+// (좌우 padding 은 (main)/layout 의 --content-pad 담당).
+// 이전 min(92%, 580px) 은 시안보다 좁아 hero 가 안쪽으로 들여쓰여 보였다.
+//
+// 카드 자체(사진 풀블리드 + 좌→우 scrim + 흰 텍스트 3단)는
+// components/ui/HeroCard 가 소유. 여기 남은 것은 캐러셀 폭 정렬뿐.
+.wrap {
+  width: 100%;
+}

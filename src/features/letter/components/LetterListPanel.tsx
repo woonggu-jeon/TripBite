@@ -1,24 +1,21 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import type { LetterDto } from '@/api/generated/schemas';
-import { EmptyState } from '@/components/feedback/EmptyState';
-import { Icon } from '@/components/icon/Icon';
-import { Button } from '@/components/ui';
-import { useLettersInfinite } from '@/features/letter/hooks/use-letters';
-import type { LetterListKind } from '@/features/letter/types';
 import { InfiniteList } from '@/features/list/components/InfiniteList';
-import styles from './LetterListPanel.module.scss';
+import { EmptyState as EmptyStateBlock } from '@/components/feedback/EmptyState';
+import { Icon } from '@/components/icon';
+import { useLettersInfinite } from '@/features/letter/hooks/use-letters';
+import type { LetterDto } from '@/api/generated/schemas';
+import type { LetterListKind } from '@/features/letter/types';
 import { LetterRowCard } from './LetterRowCard';
+import styles from './LetterListPanel.module.scss';
 
 /**
- * 편지 목록 패널 — 받은/좋아요/보낸 공통. EmptyState hero 패턴으로 Figma
- * "편지 빈 상태 · ec" 정합 (circle 84 primary-soft + send icon 38 primary
- * stroke 2.69 + title B_16 fg).
+ * 편지 목록 패널 — 받은/보낸/저장한 공통.
+ * useLettersInfinite + InfiniteList + LetterRowCard.
  */
 export function LetterListPanel({ kind }: { kind: LetterListKind }) {
   const t = useTranslations('letter');
-  const tEmpty = useTranslations('letter.empty');
   const {
     data,
     isLoading,
@@ -34,37 +31,42 @@ export function LetterListPanel({ kind }: { kind: LetterListKind }) {
   if (isError) {
     return (
       <div className={styles.error}>
-        <EmptyState
-          variant="hero"
-          icon={<Icon name="alert-circle" size={36} />}
-          title={t('listError')}
-          action={
-            <Button variant="secondary" size="sm" onClick={() => refetch()}>
-              {t('listRetry')}
-            </Button>
-          }
-        />
+        <p>{t('listError')}</p>
+        <button
+          type="button"
+          className={styles.retry}
+          onClick={() => refetch()}
+        >
+          {t('listRetry')}
+        </button>
       </div>
     );
   }
 
   return (
-    <div className={styles.listWrap}>
-      <InfiniteList
-        items={items}
-        hasNext={hasNextPage}
-        isFetchingNext={isFetchingNextPage || isLoading}
-        onReachEnd={() => fetchNextPage()}
-        keyExtractor={(l) => l.id}
-        renderItem={(l) => <LetterRowCard letter={l} />}
-        emptyState={
-          <EmptyState
-            variant="hero"
-            icon={<Icon name="send" size={36} />}
-            title={tEmpty(kind)}
-          />
-        }
-      />
-    </div>
+    <InfiniteList
+      items={items}
+      hasNext={hasNextPage}
+      isFetchingNext={isFetchingNextPage || isLoading}
+      onReachEnd={() => fetchNextPage()}
+      keyExtractor={(l) => l.id}
+      renderItem={(l) => <LetterRowCard letter={l} />}
+      emptyState={<EmptyState kind={kind} />}
+    />
+  );
+}
+
+/**
+ * Figma `편지 메인 빈 상태` — 84px 연초록 원 + 36px circleIcon(letter) +
+ * Basic Body/B_16_140% 한 줄. 설명·CTA 는 없다.
+ * 구 구현은 회색 평문 한 줄이었다.
+ */
+function EmptyState({ kind }: { kind: LetterListKind }) {
+  const t = useTranslations('letter.empty');
+  return (
+    <EmptyStateBlock
+      icon={<Icon name="letter-36" size={36} />}
+      title={t(kind)}
+    />
   );
 }

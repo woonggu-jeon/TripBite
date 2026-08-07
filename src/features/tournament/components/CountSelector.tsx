@@ -1,7 +1,8 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { RadioGroup, RadioOption } from '@/components/ui';
+import { RadioGroup } from '@/components/ui';
+import { SelectCard } from './SelectCard';
 import {
   DESTINATION_COUNT_OPTIONS,
   TOURNAMENT_SIZE_OPTIONS,
@@ -12,14 +13,8 @@ import styles from './CountSelector.module.scss';
 /**
  * 2×2 그리드 갯수 선택. 단일 선택.
  *
- *   mode='destination' — 여행지 갯수 (2/4/6/8), 단위 "개"
- *   mode='tournament'  — 토너먼트 사이즈 (4/8/16/32), 단위 "강"
- *
- * Figma "TRN · 여행지 수" (2026-06-22):
- *   big-card 154×92, padding 20, column center.
- *   number B_24 + unit B_14 같은 row (baseline aligned).
- *   sub Caption R_12 muted.
- *   active: 숫자/단위 primary tint + bg secondary01 + 1px primary border.
+ *   mode='destination' — 여행지 갯수 (2/4/6/8), 라벨 "N개"
+ *   mode='tournament'  — 토너먼트 사이즈 (4/8/16/32), 라벨 "N강"
  */
 
 export interface CountSelectorProps {
@@ -35,29 +30,53 @@ export function CountSelector({
   mode,
   showLabel = true,
 }: CountSelectorProps) {
+  const tDestination = useTranslations('tournament.setup.count');
   const tDestinationSub = useTranslations('tournament.setup.count.sub');
+  const tTournament = useTranslations('tournament.play.tournamentSize.count');
   const tTournamentSub = useTranslations(
     'tournament.play.tournamentSize.count.sub',
   );
   const tAria = useTranslations('tournament');
-  const tUnit = useTranslations('tournament.countUnit');
 
   const options =
     mode === 'destination'
       ? DESTINATION_COUNT_OPTIONS
       : TOURNAMENT_SIZE_OPTIONS;
 
-  // RadioGroup aria-label — page heading 과 별도 (sr-only). page heading 이
-  // season 변수 카피이므로 aria 는 단순 그룹 명 사용 (변수 X) — formatting
-  // error 회피.
   const ariaLabel =
     mode === 'destination'
-      ? tAria('setup.steps.count.ariaLabel')
+      ? tAria('setup.steps.count.title')
       : tAria('play.tournamentSize.title');
 
-  // mode 별 단위 — destination 은 "개", tournament 은 "강".
-  const unit =
-    mode === 'destination' ? tUnit('destination') : tUnit('tournament');
+  // 메인 타이틀 — "2개" / "4강"
+  const titleOf = (c: TournamentCount): string => {
+    if (mode === 'destination') {
+      switch (c) {
+        case 2:
+          return tDestination('2');
+        case 4:
+          return tDestination('4');
+        case 6:
+          return tDestination('6');
+        case 8:
+          return tDestination('8');
+        default:
+          return '';
+      }
+    }
+    switch (c) {
+      case 4:
+        return tTournament('4');
+      case 8:
+        return tTournament('8');
+      case 16:
+        return tTournament('16');
+      case 32:
+        return tTournament('32');
+      default:
+        return '';
+    }
+  };
 
   // 하단 sub 텍스트 — "가볍게" / "기본 추천" 등
   const subOf = (c: TournamentCount): string => {
@@ -89,32 +108,29 @@ export function CountSelector({
     }
   };
 
-  // aria-label — screen reader 친화적 ("2개, 가볍게" 같은 형태)
-  const ariaOf = (c: TournamentCount): string => {
-    const sub = subOf(c);
-    return sub ? `${c}${unit}, ${sub}` : `${c}${unit}`;
-  };
-
   return (
     <RadioGroup label={ariaLabel} className={styles.grid}>
       {options.map((c) => {
-        const active = value === c;
+        // Figma `t5-text` 는 숫자(24 Bold)와 단위(14 Bold)를 따로 조판한다.
+        // 문구는 i18n 한 덩어리("4강" / "4 rounds") 라 앞의 숫자만 떼어낸다.
+        const label = titleOf(c);
+        const num = String(c);
+        const unit = label.startsWith(num) ? label.slice(num.length) : '';
         return (
-          <RadioOption
+          <SelectCard
             key={c}
-            checked={active}
+            layout="column"
+            selected={value === c}
             onSelect={() => onChange(c)}
-            aria-label={ariaOf(c)}
-            className={`${styles.card} ${active ? styles.active : ''}`}
-          >
-            <span className={styles.t5Text}>
-              <span className={styles.titleRow}>
-                <span className={styles.number}>{c}</span>
-                <span className={styles.unit}>{unit}</span>
+            ariaLabel={showLabel ? `${label} ${subOf(c)}` : label}
+            title={
+              <span className={styles.amount}>
+                <span className={styles.num}>{num}</span>
+                {unit && <span className={styles.unit}>{unit}</span>}
               </span>
-              {showLabel && <span className={styles.sub}>{subOf(c)}</span>}
-            </span>
-          </RadioOption>
+            }
+            desc={showLabel ? subOf(c) : undefined}
+          />
         );
       })}
     </RadioGroup>

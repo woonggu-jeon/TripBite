@@ -35,7 +35,7 @@ export function SegmentError({
   return (
     <div className={styles.wrap}>
       <EmptyState
-        variant="hero"
+        variant="default"
         icon={<Icon name="alert-circle" size={36} />}
         title={t('errors.generic')}
         description={t('errors.tryAgainLater')}

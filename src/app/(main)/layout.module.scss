@@ -6,7 +6,7 @@
   left: 0;
   z-index: 1000;
   padding: 8px 16px;
-  background: var(--color-primary);
+  background: var(--color-primary-strong);
   color: var(--color-primary-fg);
   font-size: var(--font-body-sm);
   font-weight: var(--font-weight-bold);
@@ -51,22 +51,12 @@
   width: 100%;
   margin: 0 auto;
   padding: var(--content-pad);
-  // body bg = #EAF6EF (viewport 바깥) 위에 본문 영역만 white 카드. desktop
-  // 720+ 에서 contentInner 양 옆은 primary-soft tint, contentInner 안은
-  // white (light) / surface (dark).
-  background: var(--color-bg);
-  // 짧은 page (quiz 등) 가 viewport 채우지 못해 하단에 body bg (#EAF6EF) 가
-  // 노출되는 문제 해결 (사용자 피드백 2026-06-24) — contentInner 가 viewport
-  // bottom 까지 차지 (nav 는 fixed overlay 라 nav 만큼 빼면 그 아래 빈 영역에
-  // 다시 #EAF6EF 노출). nav 가 contentInner 위에 fixed overlay 되도록 100vh -
-  // header 만 빼서 nav 영역까지 contentInner bg 가 채움.
-  min-height: calc(100vh - var(--header-h));
   // padding-bottom = 여유(space-8) + nav 자체(--bottom-nav-h)
   //   + safe-area-inset-bottom (iPhone home indicator)
   //
   // 이 합계 누락분이 ranking 등 길이 긴 페이지의 마지막 row 가 fixed nav 에
-  // 가려지던 회귀 원인. (이전 +24px emphasized circle overlap 보정은
-  // Figma 평탄 5탭 정합 시 함께 제거 — BottomNav.module.scss 참조).
+  // 가려지던 회귀 원인.
+  // 구 emphasized circle 의 -22px overlap 보정(+24px)은 돌출 버튼 제거로 불필요해져 삭제.
   padding-bottom: calc(
     var(--space-8) + var(--bottom-nav-h) + env(safe-area-inset-bottom, 0px)
   );

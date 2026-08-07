@@ -1,15 +1,16 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-// 약관 섹션 미노출 (사용자 요청, 2026-06-18). 정책 본문 확정 시 복원 — import + 아래 PageSection 만 살리면 됨.
-// import { PolicySection } from '@/features/settings/components/PolicySection';
-import { AccountActionsSection } from '@/features/settings/components/AccountActionsSection';
-import { AccountSettingsSection } from '@/features/settings/components/AccountSettingsSection';
 // 언어 섹션 일단 미노출 (사용자 요청) — LanguageSwitcher 자체는 추후 복원용으로 유지.
 // import { LanguageSwitcher } from '@/features/i18n/components/LanguageSwitcher';
 import { NotificationSettingsSection } from '@/features/settings/components/NotificationSettingsSection';
+import { AccountSettingsSection } from '@/features/settings/components/AccountSettingsSection';
+// 약관 섹션 미노출 (사용자 요청, 2026-06-18). 정책 본문 확정 시 복원 — import + 아래 PageSection 만 살리면 됨.
+// import { PolicySection } from '@/features/settings/components/PolicySection';
+import { AccountActionsSection } from '@/features/settings/components/AccountActionsSection';
 // 테마 섹션 미노출 (사용자 요청, 재노출 대비 import 유지)
 // import { ThemeSection } from '@/features/theme/components/ThemeSection';
+import { PageSection } from '@/components/ui';
 import styles from './SettingsClient.module.scss';
 
 /**
@@ -28,19 +29,35 @@ export function SettingsClient() {
 
   return (
     <div className={styles.wrap}>
-      {/* Figma "설정 bl" heading — padding 26 0 8 20 + SB_14 fg. PageSection
-          wrap 제거 (header padding 26 정합이 PageSection 공통 spec 과 충돌 →
-          settings 만 자체 bl heading 사용, 사용자 명시 2026-06-24). */}
-      <div className={styles.bl}>{t('notifications.section')}</div>
-      <NotificationSettingsSection />
+      {/* Figma 설정의 `bl` 라벨 — 14px SemiBold, 행 묶음은 풀블리드 */}
+      <PageSection title={t('notifications.section')} titleScale="group">
+        <NotificationSettingsSection />
+      </PageSection>
 
-      <div className={styles.bl}>{t('account.section')}</div>
-      <AccountSettingsSection />
+      {/* 테마 섹션 — 미노출 (사용자 요청). 추후 복원 시 주석 해제.
+      <PageSection title={t('theme.section')}>
+        <ThemeSection />
+      </PageSection>
+      */}
 
-      {/* 테마 / 언어 / 약관 섹션 — 미노출 (사용자 요청). 추후 복원 시
-          <div className={styles.bl}>{t('theme.section')}</div> 등으로 추가. */}
+      <PageSection title={t('account.section')} titleScale="group">
+        <AccountSettingsSection />
+      </PageSection>
 
-      {/* Figma "설정" page bw frame — 섹션 외 별도 영역. */}
+      {/* 언어 섹션 — 미노출 (사용자 요청). 추후 복원 시 주석 해제.
+      <PageSection title={t('language')}>
+        <LanguageSwitcher />
+      </PageSection>
+      */}
+
+      {/* 약관 섹션 — 미노출 (사용자 요청, 2026-06-18). 정책 본문 (docs/BE_REQUEST
+          또는 법무 검토) 확정 후 주석 해제.
+      <PageSection title={t('policy.section')}>
+        <PolicySection />
+      </PageSection>
+      */}
+
+      {/* Figma `bw` 는 섹션 라벨이 없다 — 버튼 + 텍스트만 */}
       <AccountActionsSection />
     </div>
   );

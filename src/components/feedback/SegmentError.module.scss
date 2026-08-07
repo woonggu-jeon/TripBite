@@ -1,12 +1,39 @@
-// EmptyState hero variant 가 시각의 본체 — wrap 은 digest 노출용 column.
 .wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
   gap: var(--space-3);
+  padding: var(--space-10) var(--space-4);
+}
+
+.icon {
+  color: var(--color-danger);
+}
+
+.title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-bold);
+}
+
+.description {
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+  max-width: 32ch;
+  line-height: var(--line-normal);
+}
+
+.retry {
+  margin-top: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  background: var(--color-primary-strong);
+  color: var(--color-primary-fg);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-semibold);
 }
 
 .digest {
+  margin-top: var(--space-4);
   padding: 4px 8px;
   background: var(--color-border);
   border-radius: var(--radius-sm);

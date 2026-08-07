@@ -1,29 +1,36 @@
-// Figma "POI · 장소상세 hero" (2026-06-23) — 360×234. aspect-ratio 360/234
-// (사용자 명시 2026-06-24) — desktop 폭까지 grow 시 비율 유지. bg image +
-// #A8B29C fallback. overflow hidden.
+// Figma `POI · 장소상세 > hero` — 360x234, **풀블리드**(좌우 여백 없음),
+// radius 없음. 사진 위에 상→하 어두운 그라디언트가 얹힌다.
 //
-// isolation: isolate (사용자 명시 2026-06-25) — 캐러셀 안 arrow/dots
-// (z 2) 와 SubHeader sticky (z 50) 의 stacking 격리. .wrap 자체가 새 stacking
-// context 가 되어 안의 z 가 외부 (SubHeader) 와 무관 — "캐러셀이 앞으로
-// 튀어나옴" 시각 회귀 회피.
+// 컨텐츠에는 --content-pad 여백이 있으므로 음수 마진으로 화면 끝까지 늘린다.
+// (설정 행 / 알림 행 / 편지 탭과 같은 idiom)
 .wrap {
-  position: relative;
-  isolation: isolate;
-  width: 100%;
+  position: relative; // next/image fill 필수
+  width: auto;
+  margin-inline: calc(var(--content-pad) * -1);
+  margin-top: calc(var(--content-pad) * -1); // 헤더 바로 아래에 붙는다
   aspect-ratio: 360 / 234;
-  background: #a8b29c;
+  border-radius: 0;
   overflow: hidden;
+  background: var(--color-media-placeholder);
+  isolation: isolate;
+}
 
-  // Carousel 의 outer wrap (style minHeight) / .root / .viewport 가 자체
-  // height 명시 없음 — image 의 intrinsic height 의존. wrap 의 234px 를
-  // 모든 후손 div 가 채우도록 강제 (dots absolute bottom 기준 .root 가
-  // 234 차지). slide 의 flex column 으로 image 도 height 100%.
-  & > div {
-    height: 100%;
-  }
-  & > div > div {
-    height: 100%;
-  }
+// Figma `hero-ov` — 검정 20% 면 위에 상→하 그라디언트
+// (gradientTransform 항등회전 = 세로축, stops 0 → .08@64% → .5@100%)
+.wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to bottom,
+      rgb(0 0 0 / 0%) 0%,
+      rgb(0 0 0 / 8%) 64%,
+      rgb(0 0 0 / 50%) 100%
+    ),
+    rgb(0 0 0 / 20%);
 }
 
 .image {
@@ -31,21 +38,25 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  background: var(--color-media-placeholder);
 }
 
-// Figma hero-ov — 180deg only (top 0% → 64% 0.08 → bottom 100% 0.5) 하단
-// dim — dots/카드 가독성. 0deg dim 0.2 합성 제거 (이미지 너무 어두워지는
-// 문제 — 2026-06-23 사용자 "이미지 사이즈 잘 조절" 정합).
-// pointer-events:none — Image/Carousel 클릭 막지 않음.
-.overlay {
+// Figma `hero-dots` — 사진 위 하단 중앙 오버레이 (구현은 사진 아래 별도 줄).
+// 활성 18x6 흰색 / 비활성 6x6 #8A8A8A. 크기는 Carousel 기본값이 이미 시안과 같아
+// 위치와 색만 덮는다. Carousel 의 dots 는 자체 CSS Module(해시 클래스) 이므로
+// 클래스 대신 구조 선택자(role/aria-selected)로 지정한다.
+.wrap [role='tablist'] {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.08) 64%,
-    rgba(0, 0, 0, 0.5) 100%
-  );
-  pointer-events: none;
-  z-index: 1;
+  inset-inline: 0;
+  bottom: var(--space-3);
+  z-index: 2;
+  margin-top: 0;
+}
+
+.wrap [role='tab'] {
+  background: var(--color-fg-weak);
+}
+
+.wrap [role='tab'][aria-selected='true'] {
+  background: var(--color-on-strong);
 }

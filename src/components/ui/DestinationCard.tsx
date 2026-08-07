@@ -1,35 +1,24 @@
 import Link from 'next/link';
-import { type ComponentProps, type ReactNode, memo } from 'react';
-import { Icon } from '@/components/icon/Icon';
-import styles from './DestinationCard.module.scss';
+import { Icon } from '@/components/icon';
+import type { ComponentProps, ReactNode } from 'react';
 import { MediaThumb } from './MediaThumb';
-
-export type DestinationCardTone = 'red' | 'amber' | 'green' | 'blue' | 'violet';
+import styles from './DestinationCard.module.scss';
 
 interface DestinationCardProps {
   /** 진입 경로. next/link 가 받는 형식 그대로 — typedRoutes 의 dynamic path 도 호환. */
   href: ComponentProps<typeof Link>['href'];
   /**
    * 실 이미지 URL (TourAPI). 있으면 next/image 로 표시.
-   * 없으면 emoji + tone gradient fallback.
+   * 없으면 emoji + 연초록 그라데이션 fallback.
    * http URL 은 자동 https 정규화 (lib/secure-image-url).
    */
   imageUrl?: string | null;
   /** 카테고리 emoji (또는 임의 단일 글리프) — imageUrl 없을 때 fallback */
   emoji: string;
-  /** 톤 키 — region 별 매핑. 색은 globals 의 --accent-{tone} 토큰 사용 */
-  tone: DestinationCardTone;
   /** 시군 라벨 (eyebrow) */
   regionLabel: string;
   /** 메인 제목 */
   name: string;
-  /**
-   * 여행지명 하단 한 줄 설명 (RegionContentDto.description 매핑).
-   * 한 줄 넘으면 ellipsis. 미지정 시 영역 자체 미노출 (카드 높이 그대로).
-   */
-  description?: string;
-  /** 하단 보조 텍스트 (예: "10/14 — 10/16" 축제 기간) */
-  caption?: string;
   /** 카드 좌상단 액센트 dot 색 (예: luckyColor). 미지정 시 미노출 */
   accentDot?: string;
   /** 접근성 라벨 — 미지정 시 "name · region" 자동 */
@@ -48,35 +37,29 @@ interface DestinationCardProps {
 }
 
 /**
- * Destination 형태 카드 — Figma "DestinationCard" (RGN/POI/TravelType/Mypage
- * 공통, 2026-06-23): 152×184, Frame 2 image 152×108 (aspect 152/108) + Frame
- * 3 body padding 12 10 gap 4 (title B_14 + region pin+M_10 muted + description
- * M_10 #121212).
+ * Destination 형태 카드 — Figma `DestinationCard` (152x168).
+ *
+ *   이미지 152x108 (풀블리드)
+ *   └ 본문 152x60 : 제목(14 Bold) → 핀 12 + 시군(10 Medium)
+ *
+ * 시안에 설명/캡션 줄이 없어 `description` / `caption` prop 을 제거했다.
+ * 그 정보가 필요한 화면은 카드 밖(섹션 hint, D-day 뱃지 등)에서 표현한다.
  *
  * 사용처:
- *   - RegionDetailTabs grid
- *   - RelatedDestinations carousel
- *   - HomeRecBlock chip filter list
- *   - TravelTypeResult recommend list
- *   - SavedTournamentCard mypage tile
+ *   - FestivalCarousel — topLeftBadge 로 D-day
+ *   - RelatedDestinations — emoji + region/name
+ *   - SavedTournamentsSection 의 tile — accentDot 으로 luckyColor 표시
  *
- * 톤은 시군 코드 → tone 매핑 (constants/region-tone.ts). 톤별 accent 색은
- * 전역 --accent-{tone} 토큰.
+ * hover 강조는 브랜드 초록 하나다 (2026-08-05 결정). 이전에는 시군 코드를 5색에
+ * 나눠 담아 카드마다 hover 색이 달랐는데, 색과 시군 사이에 의미 연결이 없었고
+ * 시안(Figma)에도 시군별 색 개념이 없다 — 카드는 흰 면 + #E0E0E0 보더 하나뿐.
  */
-/**
- * React.memo 적용 — InfiniteList 안 다수 인스턴스 (HomeRecBlock / RelatedDestinations
- * / TravelTypeResult / SavedTournamentCard 등). 부모 re-render 시 props 동일하면
- * 재렌더 skip → 자율 검토 2026-06-25.
- */
-function DestinationCardInner({
+export function DestinationCard({
   href,
   imageUrl,
   emoji,
-  tone,
   regionLabel,
   name,
-  description,
-  caption,
   accentDot,
   ariaLabel,
   topRightAction,
@@ -86,7 +69,7 @@ function DestinationCardInner({
     <Link
       href={href}
       prefetch={false}
-      className={`${styles.card} ${styles[tone]}`}
+      className={styles.card}
       aria-label={ariaLabel ?? `${name} · ${regionLabel}`}
     >
       <MediaThumb
@@ -103,21 +86,13 @@ function DestinationCardInner({
           />
         )}
       </MediaThumb>
-      {/* Figma Frame 3 — order: title (B_14) → region (pin + Caption M_10
-          muted) → 3rd line (Caption M_10 #121212). */}
+      {/* Figma `Frame 4` — 제목이 먼저, 그 아래 핀 + 시군 */}
       <div className={styles.body}>
         <h3 className={styles.name}>{name}</h3>
         <p className={styles.region}>
-          <span className={styles.regionIcon} aria-hidden>
-            <Icon name="location" size={12} />
-          </span>
-          <span>{regionLabel}</span>
+          <Icon name="location-12" size={12} className={styles.regionIcon} />
+          <span className={styles.regionLabel}>{regionLabel}</span>
         </p>
-        {description ? (
-          <p className={styles.description}>{description}</p>
-        ) : caption ? (
-          <p className={styles.caption}>{caption}</p>
-        ) : null}
       </div>
       {topRightAction && (
         <div className={styles.topRight}>{topRightAction}</div>
@@ -126,5 +101,3 @@ function DestinationCardInner({
     </Link>
   );
 }
-
-export const DestinationCard = memo(DestinationCardInner);

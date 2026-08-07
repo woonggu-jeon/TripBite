@@ -1,6 +1,32 @@
+// Figma 섹션 헤더 실측 (홈 `rec-block > mid`, 랭킹 `rv-card > Frame 29`):
+//   제목   Basic Body/B_16_140%  #151515
+//   보조   Caption/R_12          #393939   (제목과 gap 2)
+//   더보기 Caption/R_12          #393939 + 16px chevron
+//   헤더 ↔ 본문 간격 16 (rv-card 의 Frame 29 padding-bottom 16)
 .section {
   display: grid;
-  gap: var(--space-3);
+  // 트랙을 0..1fr 로 잠금 — 자식이 트랙을 늘리지 못하게 (layout.module.scss 동일)
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  min-width: 0;
+
+  // grid item 의 default min-width:auto(= min-content) 를 0 으로.
+  // `.body` 가 display: contents 라 실제 grid item 은 그 **자식**이다 —
+  // 그래서 손자까지 내려가야 한다. 이게 없으면 캐러셀처럼 내부가 max-content
+  // 로 커지는 자식이 트랙(320)을 무시하고 712px 까지 삐져나온다.
+  > *,
+  > * > * {
+    min-width: 0;
+  }
+}
+
+// Figma `rv-card` — 목록을 카드 하나로 묶는 변형. 320 폭, radius 12,
+// 1px #E0E0E0 보더, padding 20/16. 행마다 개별 카드를 쓰던 곳에 적용.
+.card {
+  padding: var(--space-5) var(--space-4);
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-md);
 }
 
 .header {
@@ -16,33 +42,67 @@
   min-width: 0;
 }
 
+// Basic Body/B_16_140% — 16px Bold (구 18px extrabold)
 .title {
-  // Figma "bl" sec-title (2026-06-23) — Btn/SB_14 (Pretendard SemiBold 14,
-  // line 100%, ls -0.01em). 이전 font-h3 (17) ExtraBold tracking-tight 회귀
-  // 정정. 모든 PageSection 사용처 (settings/mypage/ranking/letter/region
-  // 등) 일괄 정합.
-  font-size: var(--text-sm); /* 14 */
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: var(--tracking-snug); /* -0.01em */
-  line-height: var(--line-1); /* 100% */
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
+  line-height: var(--line-normal);
+}
+
+// Figma `bl` 은 라벨 아래 여백이 8 (섹션 헤더의 16 보다 좁다)
+.sectionGroup {
+  gap: var(--space-2);
+}
+
+// Basic Body/SB_14_140% — Figma 설정의 `bl` 라벨 ("알림" / "계정")
+.titleGroup {
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-semibold);
 }
 
 .hint {
   font-size: var(--font-caption);
   color: var(--color-muted);
   letter-spacing: var(--tracking-snug);
-  line-height: var(--line-snug);
+  line-height: var(--line-normal);
 }
 
+// Figma 의 "더보기" 는 primary 초록이 아니라 보조 텍스트색(#393939) 이다.
 .action {
   display: inline-flex;
   align-items: center;
+  gap: 2px;
   white-space: nowrap;
-  font-size: var(--font-label);
-  color: var(--color-primary-muted);
+  font-size: var(--font-caption);
+  color: var(--color-muted);
+
+  a,
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    color: inherit;
+    font-size: inherit;
+    text-decoration: none;
+
+    &:focus-visible {
+      outline: var(--focus-outline);
+      outline-offset: var(--focus-outline-offset);
+      border-radius: var(--radius-sm);
+    }
+  }
 }
 
 .body {
   display: contents;
+}
+
+// card 변형은 본문이 카드 안에 들어가야 해서 display: contents 를 쓸 수 없다
+// (grid 의 직접 자식이 되어 카드 padding 밖으로 나간다).
+.card .body {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
 }

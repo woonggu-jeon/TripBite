@@ -1,22 +1,30 @@
-// Figma BottomNav (2026-06-23) — 62h, 5 tab 72w each, border-top 1px,
-// icon 24 + label 10 (Caption M_10 default / B_10 active primary).
+/* Figma nav 실측 — 360x60, 탭 5개 각 72x60 (동일), 아이콘 24x24, gap 4,
+   흰 배경 + 상단선 #E0E0E0, 그림자 없음.
+   라벨 비활성 Caption/M_10 / 활성 Caption/B_10 + MainColor/primary.
+   가운데 돌출 버튼은 시안에 없어 제거됨 — 5탭이 모두 평면 탭이다. */
+/* 바는 풀폭(배경/상단선), 탭 5개는 컨텐츠(--content-max) 폭에 맞춰 중앙 정렬.
+   좌우 padding 을 (100% - 720) / 2 로 줘서 content box 가 정확히 720 이 된다.
+   좁은 화면에서는 max(0px, ...) 가 0 이라 화면 전체를 쓴다.
+
+   래퍼 div 를 쓰지 않는 이유 — .nav 자체가 grid 를 유지해야 한다.
+   래퍼 방식은 브라우저에 옛 CSS(.nav 가 grid) 가 캐시된 상태에서 새 마크업이
+   오면 래퍼가 스타일 없는 block 이 되어 탭 5개가 세로로 쌓인다.
+   이 방식은 그런 조합에서도 가로 배치가 유지된다. */
 .nav {
-  // contentInner 와 같은 max-width + center (사용자 명시 2026-06-24) —
-  // viewport 풀폭 left/right 0 → desktop 에서 콘텐츠 영역과 정렬 어색 →
-  // max-width content-max + transform translateX(-50%) 패턴.
   position: fixed;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: var(--content-max);
+  left: 0;
+  right: 0;
   z-index: var(--z-bottom-nav);
+  /* Figma navIcon stroke 는 1.7 (스프라이트 기본 2) */
+  --icon-stroke: 1.7;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  height: 62px;
-  background: var(--color-bg);
-  border-top: 1px solid var(--color-border);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  min-height: var(--bottom-nav-h); /* Figma 60px */
+  padding-inline: max(0px, calc((100% - var(--content-max)) / 2));
   padding-bottom: env(safe-area-inset-bottom);
+  background: var(--color-bg);
+  border-top: var(--border-thin) solid var(--color-border);
 }
 
 .item {
@@ -24,16 +32,11 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  padding: 0;
-  // Figma 비활성 — Basic/TextColor/disabled (#B4B4B4) — muted(#393939) 보다
-  // 옅음. text-disabled 토큰 활용 (정의처 _color.scss line 16).
-  color: var(--color-text-disabled);
-  // Figma Caption/M_10 — Pretendard Medium 10, line 120%, ls -0.02em.
-  font-size: 0.625rem; /* 10 */
+  gap: 4px;
+  padding: var(--space-2) 0;
+  color: var(--color-muted);
+  font-size: var(--font-eyebrow);
   font-weight: var(--font-weight-medium);
-  line-height: 1.2;
-  letter-spacing: var(--tracking-tight);
   transition: color var(--motion-base) ease;
 
   @media (hover: hover) and (pointer: fine) {
@@ -43,8 +46,9 @@
   }
 }
 
+/* Figma 활성 탭 — Caption/B_10 (10px Bold) + MainColor/primary 그대로.
+   비활성은 Figma #B4B4B4 가 2.07:1 미달이라 --color-muted(6.00:1) 유지. */
 .active {
-  // Figma active — primary color + label Bold (B_10).
   color: var(--color-primary);
   font-weight: var(--font-weight-bold);
 }
@@ -52,3 +56,6 @@
 .label {
   letter-spacing: var(--tracking-tight);
 }
+
+/* 가운데 돌출 버튼(.emphasized / .emphasizedCircle) 은 Figma nav 에 없어 제거됨.
+   5탭이 모두 동일한 평면 탭이다. */

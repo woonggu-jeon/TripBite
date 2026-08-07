@@ -1,39 +1,29 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Icon, type IconName } from '@/components/icon';
-import { BOTTOM_NAV_ROUTES, NAV_HIDE_ROUTES } from '@/constants/routes';
+import { BOTTOM_NAV_ROUTES } from '@/constants/routes';
 import { haptic } from '@/lib/haptic';
 import styles from './BottomNav.module.scss';
 
 /**
- * 하단 네비게이션 — Figma "nav" 정합 (2026-06-23).
+ * 하단 네비게이션 (5 탭)
  *
- * 5 평등 탭 (72×62 each). icon 24 + Caption M_10 label.
- *   - 비활성: text-disabled (#B4B4B4)
- *   - 활성: primary + Bold (B_10)
+ * 변경 사항:
+ *   - 아이콘을 lucide-react 에서 SVG sprite (<Icon />) 로 교체
+ *     · 다른 페이지에 lucide 아이콘 import 가 없는 페이지는 lucide 전체를 다운로드 안 함
+ *     · 첫 진입 시 /icons.svg 한 번 다운로드 (SW 캐시 후 영구)
+ *   - 탭 클릭 시 미세 햅틱 (모바일)
  *
- * 아이콘은 SVG sprite (<Icon />). 활성 기준:
- *   - 홈("/") 정확히 일치
+ * 활성 기준:
+ *   - 홈("/")은 정확히 일치
  *   - 나머지는 prefix 매칭 (예: /tournament/play 도 토너먼트 탭 활성)
- *
- * 숨김 분기: `NAV_HIDE_ROUTES` (constants/routes.ts) 매칭 시 미렌더.
- *   - 토너먼트 흐름 (`/tournament*`): 하단 fixed CTA + 흐름 집중도.
- *   - 편지 sub (`/letter/*`): compose/sent/[id] 모두 하단 fixed CTA.
- * 새 hide 페이지는 constants 의 NAV_HIDE_ROUTES 만 갱신 (2026-06-24 정합).
  */
 export function BottomNav() {
   const pathname = usePathname();
   const t = useTranslations('nav');
-
-  const shouldHide = NAV_HIDE_ROUTES.some((route) =>
-    route.prefix ? pathname.startsWith(route.path) : pathname === route.path,
-  );
-  if (shouldHide) {
-    return null;
-  }
 
   const isActive = (path: string) =>
     path === '/' ? pathname === '/' : pathname.startsWith(path);
@@ -42,6 +32,7 @@ export function BottomNav() {
     <nav className={styles.nav} aria-label={t('home')}>
       {BOTTOM_NAV_ROUTES.map((route) => {
         const active = isActive(route.path);
+
         return (
           <Link
             key={route.path}
@@ -52,6 +43,7 @@ export function BottomNav() {
               .join(' ')}
             aria-current={active ? 'page' : undefined}
           >
+            {/* Figma navIcon 24x24 — 5탭 동일 */}
             <Icon
               name={route.icon as IconName}
               size={24}

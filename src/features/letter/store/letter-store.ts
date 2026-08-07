@@ -14,6 +14,11 @@ export type LastSentLetter = {
     regionCode?: string;
   };
   sentAt: string; // ISO
+  /**
+   * 익명 발송 여부 — 발송완료 화면의 From 표시에 필요하다.
+   * 서버 letter 를 못 받은 경우(?id= 없음/실패) 이 값으로 내 닉네임 vs
+   * "익명의 여행자" 를 가른다. 없으면(구 세션) 익명으로 보수적 처리.
+   */
   isAnonymous?: boolean;
 };
 

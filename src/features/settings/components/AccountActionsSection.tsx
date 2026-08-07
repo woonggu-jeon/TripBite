@@ -51,14 +51,13 @@ export function AccountActionsSection() {
     });
   };
 
+  // Figma `bw` (V gap 12, padding 20):
+  //   로그아웃  320x52 흰 버튼 + 1px 보더, 16px Medium #393939 → Button secondary
+  //   회원탈퇴  버튼이 아니라 중앙 정렬 텍스트, 16px Medium #E1493C
   return (
-    // Figma "설정" page bw frame (2026-06-23) — column 320x52 button + danger.
-    // Button.s-lg variant=secondary 가 center align + radius 12 + Body M_16
-    // 정합. border-color (--color-stroke #C6C6C6) + color override 는
-    // .actionButton / .actionButtonDanger 가 처리.
-    <div className={styles.actionStack}>
+    <div className={styles.actions}>
       <Button
-        variant="outline"
+        variant="secondary"
         size="lg"
         fullWidth
         onClick={handleLogout}
@@ -66,20 +65,14 @@ export function AccountActionsSection() {
       >
         {isLoggingOut ? t('loggingOut') : t('logout')}
       </Button>
-      <Button
-        variant="ghost"
-        size="lg"
-        fullWidth
-        // Figma "설정" bw frame 의 두번째 button (회원탈퇴) — border 명시
-        // 없음, color #E1493C (System/error). text-only ghost variant +
-        // danger color inline override 정합. 첫번째 (로그아웃) 만 outline
-        // border 있음. 2026-06-23 정직 정정.
-        style={{ color: 'var(--color-danger)' }}
+      <button
+        type="button"
+        className={styles.withdraw}
         onClick={handleWithdraw}
         disabled={isWithdrawing}
       >
         {isWithdrawing ? t('withdrawing') : t('withdraw')}
-      </Button>
+      </button>
     </div>
   );
 }

@@ -1,0 +1,141 @@
+.wrap {
+  display: grid;
+  gap: 1rem;
+  padding-top: 0.5rem;
+}
+
+.head {
+  display: grid;
+  grid-template-columns: 32px 1fr 32px;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.headSpacer {
+  width: 32px;
+}
+
+.heading {
+  text-align: center;
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-fg);
+  letter-spacing: var(--tracking-tight);
+}
+
+// Card primitive variant="highlighted" 위에 정사각 + emphasis shadow 만 추가
+.card {
+  display: grid;
+  place-items: center;
+  gap: 0.75rem;
+  aspect-ratio: var(--aspect-square);
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+  box-shadow: var(--shadow-emphasis);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+.cardEmoji {
+  font-size: var(--emoji-2xl);
+  line-height: 1;
+  filter: var(--drop-shadow-icon-strong);
+}
+
+.cardCode {
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-uppercase);
+}
+
+.cardTitle {
+  font-size: var(--font-h1);
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
+  word-break: keep-all;
+}
+
+.cardKeywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.cardBrand {
+  margin-top: auto;
+  font-size: var(--font-eyebrow);
+  color: var(--color-muted);
+  letter-spacing: var(--tracking-uppercase);
+}
+
+.shareBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  background: var(--color-primary-strong);
+  color: var(--color-primary-fg);
+  border: 0;
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-body-sm);
+  cursor: pointer;
+  transition:
+    opacity var(--motion-base) ease,
+    transform var(--motion-fast) ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      opacity: var(--opacity-hover-dim);
+    }
+  }
+  &:active {
+    transform: scale(0.98);
+  }
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+  }
+}
+
+.shareHint {
+  text-align: center;
+  font-size: var(--font-caption);
+  color: var(--color-muted);
+}
+
+.fallback {
+  display: grid;
+  gap: 0.75rem;
+  place-items: center;
+  padding: 3rem 1rem;
+  color: var(--color-muted);
+  text-align: center;
+}
+
+.retry {
+  padding: 0.625rem 1rem;
+  background: var(--color-primary-strong);
+  color: var(--color-primary-fg);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
+  border: 0;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shareBtn {
+    transition: none;
+    &:active {
+      transform: none;
+    }
+  }
+}

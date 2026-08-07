@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { Button } from './Button';
+import { Button } from './button';
 import { ButtonGrid } from './ButtonGrid';
 
 const meta: Meta<typeof ButtonGrid> = {

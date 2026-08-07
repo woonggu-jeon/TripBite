@@ -1,35 +1,50 @@
 /* Layout tokens — spacing (4px grid) + content/header/nav 치수 + aspect-ratio + z-index + icon size */
 :root {
-  /* Spacing scale (4px grid). --space-12 폐기 (2026-06-24 dead). */
+  /* Spacing scale (4px grid) — 이름의 숫자 = px / 4.
+     Figma 시안은 4px 그리드가 아니지만(2·10·22·26·30 등) 이 레포는 그리드를 유지한다.
+     Figma 값 중 4의 배수인 28 / 36 / 60 만 추가했고, 그리드 밖 값은 도입하지 않는다.
+     시안의 26px·22px 카드 패딩 등은 가까운 그리드 값(24 / 20)으로 맞춘다. */
   --space-1: 0.25rem; /* 4px */
   --space-2: 0.5rem; /* 8 */
   --space-3: 0.75rem; /* 12 */
   --space-4: 1rem; /* 16 */
   --space-5: 1.25rem; /* 20 */
   --space-6: 1.5rem; /* 24 */
+  --space-7: 1.75rem; /* 28 — Figma 완료 화면 하단 여백 */
   --space-8: 2rem; /* 32 */
+  --space-9: 2.25rem; /* 36 — Figma 안내 블록 ↔ 폼 간격 */
   --space-10: 2.5rem; /* 40 */
+  --space-12: 3rem; /* 48 */
+  --space-15: 3.75rem; /* 60 — Figma 안내 화면 상단 여백 */
 
-  /* Container / layout dimensions — content 폭 600 (사용자 명시 2026-06-24).
-     desktop 600+ viewport 에서 양 옆 body bg (#EAF6EF) 노출, 가운데 600 폭만
-     contentInner (white). 모바일 360 viewport 는 풀폭 (max-width 영향 없음). */
-  --content-max: 600px;
-  --content-pad: 1rem;
+  /* Container / layout dimensions */
+  --content-max: 720px;
+  /* Figma 는 360 화면에 컨텐츠 320 — 좌우 20px. 구 16px(360에서는 12px 까지
+     축소) 이었어서 모든 화면이 시안보다 넓게 퍼져 있었다. */
+  --content-pad: 1.25rem;
   --header-h: 56px;
-  --bottom-nav-h: 64px;
+  --bottom-nav-h: 60px; /* Figma nav 높이 (구 64px) */
 
-  /* Aspect ratio — 사용 중인 토큰만 보존 (2026-06-24 — square/card-narrow/
-     card-wide/map dead, Figma 정합 컴포넌트들이 자체 ratio 152/168 등 직접 명시). */
+  /* Aspect ratio */
+  --aspect-square: 1 / 1;
   --aspect-pin-cell: 1 / 1.1;
+  --aspect-card-narrow: 1.4 / 1; /* festival ≤380 / season selector */
+  --aspect-card-wide: 1.5 / 1; /* festival ≤480 */
+  --aspect-map: 4 / 3;
 
-  /* Z-index 레이어 — 충돌 방지 명시. --z-base / -elevated / -dropdown 폐기
-     (2026-06-24 dead). */
+  /* Z-index 레이어 — 충돌 방지 명시 */
+  --z-base: 0;
+  --z-elevated: 10;
   --z-header: 50; /* AppHeader sticky */
   --z-bottom-nav: 50;
+  --z-dropdown: 60;
   --z-banner: 70;
   --z-modal: 80;
   --z-toast: 90; /* 모달 위에 떠야 함 */
 
-  /* Icon size — 컴포넌트들이 lucide-react size prop 으로 직접 명시
-     (--icon-sm/md/lg/xl 폐기 2026-06-24). */
+  /* Icon size — 의미별 */
+  --icon-sm: 16px; /* 인라인 텍스트 옆 */
+  --icon-md: 20px; /* 버튼 */
+  --icon-lg: 24px; /* 헤더 / 네비 */
+  --icon-xl: 32px; /* 일러스트성 */
 }

@@ -1,448 +1,90 @@
-// Figma "TRN · 토너먼트 setup phase 4" (2026-06-22).
-// page: bg #F8F8F8, padding 20, gap 20 (Frame 41 header + section).
-// header: B_20_130% title + R_12 muted hint, gap 8 (Frame 41).
-// section: selector + auxiliary hint.
-// 하단 absolute button — 320×52, padding 16 20, radius 12, primary M_16 white.
+// Figma `content` — V gap 20. 좌우 여백은 (main) layout 의 --content-pad(20).
+// 시안은 이 흐름에 하단 네비게이션이 없지만, /tournament 는 실제로 탭 라우트라
+// 네비게이션을 유지한다 (버튼은 그 위에 붙는다).
 .wrap {
-  // 단순 column stack — heading + section (+ scopeHint) 순. grid 는 implicit
-  // align-items: stretch + justify-items: stretch 가 자식 sizing 에 영향
-  // 미쳐 cards 가 의도와 다른 폭/높이로 잡힘 (사용자 피드백 2026-06-24).
-  // flex column 으로 자식 본연 크기 + 명시 gap 만 사용.
   display: flex;
   flex-direction: column;
-  // Figma 모바일 spec 은 gap 20 — 360 viewport 정합. webview/desktop 에서
-  // heading ↔ cards 사이가 시각적으로 너무 넓어 보여 사용자 피드백 (2026-06-24)
-  // 으로 12 로 축소. heading 내부 gap 8 (Frame 41) 은 spec 유지.
-  gap: var(--space-3); /* 12 */
-  // Figma page bg #F8F8F8 — (main) layout 의 content-pad 좌우/하단 무시 (음의
-  // margin) → viewport 가장자리까지 bg bleed, padding 으로 내부 20 여백 확보.
-  // top 은 그대로 (SubHeader 가 이미 -margin-top 으로 contentInner 상단까지
-  // 끌어올려진 상태). 카드 320×52 + 20 좌우 padding = 360 viewport 정확 정합.
-  // light = Figma #F8F8F8 정합 (--color-gray-10), dark = surface bg.
-  background: var(--color-gray-10);
-  :global(:root[data-theme='dark']) & {
-    background: var(--color-bg);
-  }
-  margin-left: calc(-1 * var(--content-pad));
-  margin-right: calc(-1 * var(--content-pad));
-  // contentInner padding-bottom = space-8 + bottom-nav-h + safe-area. BottomNav
-  // 가 /tournament* 경로에서 미렌더 (BottomNav.tsx 분기) 이므로 그 padding
-  // 영역까지 #f8f8f8 bg bleed + cta fixed 가 viewport bottom 에 부착.
-  margin-bottom: calc(
-    -1 * var(--content-pad) - var(--bottom-nav-h) - var(--space-8)
+  gap: var(--space-5);
+  min-width: 0;
+  // Figma 는 버튼이 화면 하단에 붙는다. 내용이 짧아도 아래로 내려가게
+  // 화면 높이를 확보하고 .action 에 margin-top:auto 를 준다.
+  // (헤더 56 + contentInner 상단 20 + 하단 여백 + 네비게이션)
+  min-height: calc(
+    100dvh -
+      56px - var(--content-pad) - var(--space-8) - var(--bottom-nav-h) - env(
+        safe-area-inset-bottom
+      )
   );
-  padding-top: var(--space-5);
-  padding-left: var(--space-5);
-  padding-right: var(--space-5);
-  padding-bottom: calc(
-    52px + var(--space-4) + var(--space-5) + env(safe-area-inset-bottom, 0px)
-  );
-  min-height: calc(100vh - var(--header-h));
-}
-
-.heading {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2); /* 8 — Figma Frame 41 */
-}
-
-.headingTitle {
-  // Figma "Title/B_20_130%" — Pretendard Bold 20, line 130%, ls -0.02em.
-  font-size: var(--text-xl); /* 20 */
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-tight);
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-fg);
-  margin: 0;
-}
-
-.hint {
-  // Figma Caption R_12 muted
-  font-size: var(--font-caption); /* 12 */
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: var(--tracking-snug);
-  color: var(--color-muted);
-  margin: 0;
-}
-
-.section {
-  // selector + scopeHint 같이 들어오는 경우 column stack. grid 사용 이유
-  // 없었음 (1 column only) — flex column 으로 단순화.
-  display: flex;
-  flex-direction: column;
-  gap: var(
-    --space-3
-  ); /* 12 — Figma 모바일 spec 20 이나 사용자 피드백으로 축소 */
-}
-
-// 하단 fixed button container — viewport 하단 고정 + contentInner 와 같은
-// max-width (= --content-max) + center. button 폭이 위 cards (wrap 안 1fr)
-// 와 일치하도록 padding-x = 20 (wrap 의 padding-x 와 동일).
-//   mobile 360 → cta 폭 360, button 폭 320 (padding-x 20) = cards 폭
-//   desktop 720 → cta 폭 720, button 폭 680 (padding-x 20) = cards 폭
-.cta {
-  position: fixed;
-  bottom: env(safe-area-inset-bottom, 0px);
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: var(--content-max);
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  padding: var(--space-4) var(--space-5); /* 16 20 */
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    var(--color-bg) 30%,
-    var(--color-bg) 100%
-  );
-  z-index: var(--z-sticky, 5);
-  pointer-events: none;
 
   > * {
-    pointer-events: auto;
-    width: 100%;
-    height: 52px;
-    border-radius: var(--radius-md); /* 12 */
+    min-width: 0;
   }
 }
 
-/* ─────────────────────────────────────────────────────────────
- * intro phase (step 5) — Figma "TRN · 로딩 지도 펼침"
- *   - column center, FallingPetals 위에 흩어진 leaf emoji 6 + circle-stack
- *   - title "잠시 후 충북 지도가 펼쳐져요" + 3 dots primary
- * ─────────────────────────────────────────────────────────────
- */
-.intro {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 30px;
-  min-height: calc(100dvh - 280px);
-  padding: 0 30px;
-  overflow: hidden;
-}
+// 제목 블록 ↔ 카드 = 20, 카드 ↔ 안내문 = 16 (Figma `Frame 86/87` gap 16)
+.section {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+  min-width: 0;
 
-// Figma "TRN · 로딩 (지도 펼침)" (2026-06-25) — 6 bgLeaf 36×36 PNG (안쪽
-// image 28×28). Figma 명시 위치 (360×786 기준):
-//   1: 49,81   2: 281,55   3: 75,212   4: 247,538   5: 63,627   6: 218,688
-// opacity 그대로 (~0.5 → 1, 사용자 시안은 풀 컬러). 떠다니는 sway 애니메이션
-// + 각자 지연. SeasonIcon wrapper 가 inline-flex (default) → absolute override.
-.bgLeaf1,
-.bgLeaf2,
-.bgLeaf3,
-.bgLeaf4,
-.bgLeaf5,
-.bgLeaf6 {
-  position: absolute;
-  pointer-events: none;
-  user-select: none;
-  animation: leafSway 4s ease-in-out infinite;
-}
-.bgLeaf1 {
-  top: 81px;
-  left: 49px;
-  animation-delay: 0s;
-}
-.bgLeaf2 {
-  top: 55px;
-  left: 281px;
-  animation-delay: 0.6s;
-}
-.bgLeaf3 {
-  top: 212px;
-  left: 75px;
-  animation-delay: 1.2s;
-}
-.bgLeaf4 {
-  top: 538px;
-  left: 247px;
-  animation-delay: 1.8s;
-}
-.bgLeaf5 {
-  top: 627px;
-  left: 63px;
-  animation-delay: 2.4s;
-}
-.bgLeaf6 {
-  top: 688px;
-  left: 218px;
-  animation-delay: 3s;
-}
-
-// 부드럽게 떠다니는 효과 — 위아래 +6 + 좌우 -3~+3 sway. 4s loop.
-@keyframes leafSway {
-  0%,
-  100% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  25% {
-    transform: translate(3px, -6px) rotate(2deg);
-  }
-  50% {
-    transform: translate(0, -3px) rotate(-1deg);
-  }
-  75% {
-    transform: translate(-3px, -6px) rotate(-2deg);
+  > * {
+    min-width: 0;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .bgLeaf1,
-  .bgLeaf2,
-  .bgLeaf3,
-  .bgLeaf4,
-  .bgLeaf5,
-  .bgLeaf6 {
-    animation: none;
-  }
-}
-
-.circleStack {
-  position: relative;
-  width: 134px;
-  height: 134px;
-}
-// Figma "TRN · 로딩 (지도 펼침)" 계절별 outer circle 색 (2026-06-25 사용자
-// 명시) — .intro[data-season] cascade 로 동적. fallback 가을(#ffcd99).
-.circleAmber {
-  position: absolute;
-  inset: 0;
-  width: 134px;
-  height: 134px;
-  border-radius: var(--radius-full);
-  background: #ffcd99;
-  animation: circlePulse 2s ease-in-out infinite;
-}
-
-// .intro scope 명시 — attribute selector 전역 cascade 회피 (자율 검토
-// 2026-06-25). 다른 컴포넌트의 data-season attribute 가 hijack 안 함.
-.intro[data-season='spring'] .circleAmber {
-  background: #ffebeb;
-}
-.intro[data-season='summer'] .circleAmber {
-  background: #e0ff89;
-}
-.intro[data-season='autumn'] .circleAmber {
-  background: #ffcd99;
-}
-.intro[data-season='winter'] .circleAmber {
-  background: #e8f1fd;
-}
-
-@keyframes circlePulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.04);
-  }
-}
-.circleWhite {
-  position: absolute;
-  top: 17px;
-  left: 17px;
-  width: 100px;
-  height: 100px;
-  border-radius: var(--radius-full);
-  background: var(--color-bg, #ffffff);
-}
-// SeasonIcon size=64 wrapper (64×64) 안 image 52×52. circleStack 134 의 정
-// 중앙: (134-64)/2 = 35. circleWhite 100×100 (17~117) 안 더 안쪽.
-// SeasonIcon 의 inline-flex default 가 absolute 와 함께 — position override.
-.circleLeaf {
-  position: absolute;
-  top: 35px;
-  left: 35px;
-  user-select: none;
-  animation: leafBob 2.4s ease-in-out infinite;
-}
-
-@keyframes leafBob {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-4px);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .circleAmber,
-  .circleLeaf {
-    animation: none;
-  }
-}
-
-.introTitle {
-  font-family: 'Inter', 'Pretendard', ui-sans-serif, system-ui, sans-serif;
-  font-size: 19px;
-  font-weight: 800;
-  line-height: 140%;
-  letter-spacing: -0.03em;
-  color: var(--color-fg);
-  text-align: center;
-  margin: 0;
-}
-
-.dots {
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-  align-items: center;
-  justify-content: center;
-}
-.dot {
-  width: 9px;
-  height: 9px;
-  border-radius: var(--radius-full);
-  background: var(--color-primary);
-  animation: introDot 1.2s ease-in-out infinite;
-}
-.dot:nth-child(2) {
-  animation-delay: 0.15s;
-}
-.dot:nth-child(3) {
-  animation-delay: 0.3s;
-}
-@keyframes introDot {
-  0%,
-  60%,
-  100% {
-    opacity: 0.35;
-    transform: scale(0.85);
-  }
-  30% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .dot {
-    animation: none;
-    opacity: 0.8;
-  }
-}
-
-/* ─────────────────────────────────────────────────────────────
- * map phase (step 6) — Figma "TRN · 여행지 준비완료"
- * ─────────────────────────────────────────────────────────────
- */
-.map {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-
-.mapCard {
-  // FallingPetals 가 카드 안에서도 비치도록 50% 반투명 + 살짝 blur.
-  width: 100%;
-  aspect-ratio: 320 / 348;
-  padding: 12px;
-  background: color-mix(
-    in srgb,
-    var(--color-surface, #ffffff) 50%,
-    transparent
-  );
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  backdrop-filter: blur(2px);
-
-  @media (prefers-color-scheme: dark) {
-    border-color: var(--color-border);
-  }
-  :global(:root[data-theme='dark']) & {
-    border-color: var(--color-border);
-  }
-}
-
-.mapFooter {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  text-align: center;
-  width: 100%;
-}
-
-.mapTitle {
-  font-size: 24px;
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-snug);
-  color: var(--color-fg);
-  margin: 0;
-}
-
-.mapDesc {
-  font-size: 14px;
-  font-weight: var(--font-weight-regular);
-  line-height: 1.5;
-  color: var(--color-muted);
-  margin: 0;
-  white-space: pre-line;
-}
-
-// step 6 의 .cta 안 2 button row (다시하기 + 다음으로). cta 자체가 fixed
-// bottom + max-width content-max + padding-x 20 이라 .ctaPair 는 width 100%
-// 만 명시 + button 간 gap 8 (Figma "Frame 25" gap 8 정합).
-.ctaPair {
-  width: 100%;
-  gap: 8px;
-}
-
-/* ─────────────────────────────────────────────────────────────
- * tournamentSize phase (step 7) — Figma "TRN · 토너먼트 규모"
- * ─────────────────────────────────────────────────────────────
- */
-.sizePhase {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.sizeHeading {
-  display: flex;
-  flex-direction: column;
+// Figma `Frame 41` — 단계 제목 + 보조, V gap 8
+.heading {
+  display: grid;
   gap: var(--space-2);
 }
 
-.sizeTitle {
-  font-size: var(--text-xl);
+// Title/B_20_130%
+.headingTitle {
+  font-size: var(--font-h2);
   font-weight: var(--font-weight-bold);
-  line-height: var(--line-tight);
-  letter-spacing: var(--tracking-tight);
+  line-height: var(--line-snug);
   color: var(--color-fg);
-  margin: 0;
+  letter-spacing: var(--tracking-tight);
+  word-break: keep-all;
 }
 
-.sizeHint {
+// Caption/R_12 (구 14px)
+.hint {
   font-size: var(--font-caption);
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: var(--tracking-snug);
+  line-height: var(--line-normal);
   color: var(--color-muted);
-  margin: 0;
+}
+
+// Figma 는 시작 버튼을 화면 하단에 고정한다 (absolute, bottom 20).
+// 여기서는 sticky — 네비게이션 높이만큼 띄운다.
+.action {
+  margin-top: auto;
+  position: sticky;
+  bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom));
+  z-index: 1;
+  padding-top: var(--space-3);
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--color-bg) var(--space-3)
+  );
+}
+
+// Figma 안내문 — Caption/M_10 (구 12px), 좌측 정렬.
+// `Frame 86/87` 은 카드 ↔ 안내문이 16 이라 section gap(20) 에서 4 당긴다.
+.autoHint {
+  margin-top: calc(var(--space-1) * -1);
+  font-size: var(--font-eyebrow);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-normal);
+  color: var(--color-muted);
 }
 
 // 계절 적용 범위 hint — step 3 에서 비-festival 카테고리 선택 시.
 // info chip 톤 (강한 경고 X). 사용자 학습용.
 .scopeHint {
+  margin-top: 0.25rem;
   padding: 0.625rem 0.75rem;
   font-size: var(--font-caption);
   line-height: var(--line-snug);
@@ -459,7 +101,7 @@
 
   &::before {
     content: 'ⓘ ';
-    color: var(--color-primary);
+    color: var(--color-primary-text-bold);
     font-weight: var(--font-weight-bold);
   }
 }

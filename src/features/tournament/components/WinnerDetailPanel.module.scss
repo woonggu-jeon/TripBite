@@ -1,89 +1,35 @@
-// Figma info-card — 320×285 padding 20 gap 12 white border 1px gray radius 16.
+// Figma `info-card` — 두 화면이 같은 내용을 다른 껍데기로 쓴다.
+//   TRN · 토너먼트 결과 : 흰 면 + 1px #E0E0E0, radius 16, padding 20/16  → .card
+//   POI · 장소상세      : 껍데기 없음 (본문에 그대로 붙음)                 → .plain
+// 공통은 V gap 12.
 .panel {
   display: grid;
-  gap: 12px;
-  padding: 20px;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  gap: var(--space-3);
 }
 
-// title B_16 fg 22h
-.title {
-  margin: 0;
-  font-size: var(--font-body);
-  font-weight: var(--font-weight-bold);
-  line-height: 22px;
-  color: var(--color-fg);
-  letter-spacing: var(--tracking-snug);
+.card {
+  padding: var(--space-5) var(--space-4);
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-xl); // Figma 16 (--radius-lg 은 12)
 }
 
-// Frame 44 column gap 12 — 3 field row 만 (Figma 정합)
-.rows {
-  display: grid;
-  gap: 12px;
+.plain {
   padding: 0;
-  margin: 0;
+  background: transparent;
+  border: 0;
 }
 
-// row: flabel 86 (icon 18 + label) + value
-.row {
-  display: grid;
-  grid-template-columns: 86px 1fr;
-  gap: 10px;
-  align-items: start;
-}
-
-.rowLabel {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px; // Figma flabel row gap 7 (icon ↔ label) — 2026-06-24 정합
-  font-size: var(--font-caption);
-  font-weight: var(--font-weight-regular);
-  color: var(--color-muted);
-  margin: 0;
-  line-height: 1.4;
-}
-
-.rowIcon {
-  display: inline-flex;
-  align-items: center;
-  color: var(--color-primary);
-  flex-shrink: 0;
-}
-
-.rowLabelText {
-  letter-spacing: var(--tracking-snug);
-}
-
-.rowValue {
-  font-size: var(--font-caption);
-  font-weight: var(--font-weight-regular);
-  color: var(--color-fg);
-  margin: 0;
-  word-break: break-word;
-  letter-spacing: var(--tracking-snug);
-  line-height: 1.45;
-}
-
-// divider 1px gray
-.divider {
-  height: 1px;
-  background: var(--color-border);
-}
-
-// overview column gap 8 — Body R_14 muted line 80% (high readability) + more SemiBold 14 primary
 .summaryWrap {
   display: grid;
-  gap: 8px;
+  gap: 0.25rem;
 }
 
 .summary {
   font-size: var(--font-body-sm);
-  font-weight: var(--font-weight-regular);
-  line-height: 1.5;
-  color: var(--color-muted);
-  letter-spacing: var(--tracking-snug);
+  line-height: var(--line-normal);
+  color: var(--color-fg);
+  letter-spacing: var(--tracking-tight);
   word-break: keep-all;
   margin: 0;
 }
@@ -95,17 +41,20 @@
   overflow: hidden;
 }
 
+.expanded {
+  // 풀 표시
+}
+
 .expandToggle {
   background: none;
   border: none;
+  color: var(--color-primary-text-bold);
   padding: 0;
   font-size: var(--font-body-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   text-align: left;
   align-self: start;
-  letter-spacing: var(--tracking-snug);
 
   &:hover {
     text-decoration: underline;
@@ -118,12 +67,136 @@
   }
 }
 
-// skeleton — panel 와 같은 box shape
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rating {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: var(--font-label);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-fg);
+  font-variant-numeric: tabular-nums;
+}
+
+.starIcon {
+  color: var(--color-warning);
+  align-self: center;
+}
+
+.ratingValue {
+  letter-spacing: var(--tracking-tight);
+}
+
+.ratingCount {
+  font-size: var(--font-eyebrow);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-muted);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.tag {
+  font-size: var(--font-eyebrow);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-muted);
+  padding: 0.125rem 0.5rem;
+  background: var(--color-primary-tint);
+  border-radius: var(--radius-full);
+}
+
+// Figma `Frame 44` — V gap 12. 행 사이 점선 대신 묶음 아래 실선 1개.
+.rows {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0;
+  margin: 0;
+}
+
+// Figma `divider` — 필드 목록과 overview 사이에만 들어간다.
+// 아래 블록이 없으면 카드 끝에 선만 남으므로 조건부.
+.rowsDivided {
+  padding-bottom: var(--space-3);
+  border-bottom: var(--border-thin) solid var(--color-border);
+}
+
+// Figma `field` — 라벨 블록 80px 고정 + 값. 행 사이 구분선 없음.
+.row {
+  display: grid;
+  grid-template-columns: 80px minmax(0, 1fr);
+  gap: 0;
+  align-items: start;
+  padding: 0;
+  border-top: 0;
+}
+
+// Figma `flabel` — 18px 아이콘 + Caption/R_12, H gap 8
+.rowLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-caption);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-normal);
+  color: var(--color-muted);
+  margin: 0;
+}
+
+.rowIcon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--color-muted);
+}
+
+.rowLabelText {
+  letter-spacing: var(--tracking-tight);
+}
+
+// Figma 값 — Caption/R_12 #393939
+.rowValue {
+  font-size: var(--font-caption);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-normal);
+  color: var(--color-muted);
+  margin: 0;
+  word-break: break-word;
+  letter-spacing: var(--tracking-snug);
+}
+
+// Figma 웹사이트 값만 초록 (밑줄 없음)
+.rowLink {
+  color: var(--color-primary-text-bold);
+  text-decoration: none;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--color-primary-text-bold);
+    }
+  }
+}
+
 .skeleton {
   display: grid;
-  gap: 8px;
-  padding: 20px;
-  background: var(--color-bg);
+  gap: 0.5rem;
+  padding: 1rem 1.125rem;
+  background: var(--color-surface-soft);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
 }

@@ -1,17 +1,15 @@
-// Figma "편지 메인 · mb · banner" (2026-06-24) — 320×147 padding 20 16 gap 12
-// bg #EAF6EF (primary-soft) + 1px primary border + radius 12 column center.
-.banner {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  padding: 20px 16px;
-  background: var(--color-primary-soft); /* #EAF6EF */
-  border: 1px solid var(--color-primary);
-  border-radius: 12px;
+// Figma `banner` — 320x147, 연초록 면 + 1px 초록 보더, radius 12,
+// VERTICAL gap 12, padding 20/16.
+.card {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-4);
+  background: var(--color-primary-soft);
+  border: var(--border-thin) solid var(--color-primary);
+  border-radius: var(--radius-md);
   text-decoration: none;
-  color: inherit;
+  color: var(--color-fg);
   transition: transform var(--motion-fast) ease;
 
   &:active {
@@ -23,48 +21,46 @@
   }
 }
 
-// Figma bic — 50×50 white radius 14 center, Send icon 24 primary stroke 1.7.
-.bic {
+// Figma `bic` 50x50 — 흰 면 radius 12 + 24px 아이콘
+.iconBox {
   display: grid;
   place-items: center;
   width: 50px;
   height: 50px;
-  background: var(--color-bg);
-  border-radius: 14px;
-  color: var(--color-primary);
-  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-primary-text-bold);
 }
 
-// Figma f — column gap 3 center align (lead + cta).
-.f {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
+// Figma `f` — V gap 3 (4px 그리드로 4)
+.body {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
 }
 
-// Figma title B_14_140% fg.
-.lead {
-  font-size: var(--text-sm); /* 14 */
+// Basic Body/B_14_140% #151515 — 시안은 보조 문구가 위에 온다
+.subtitle {
+  font-size: var(--font-body-sm);
   font-weight: var(--font-weight-bold);
-  line-height: var(--line-snug-relaxed); /* 140% */
-  letter-spacing: var(--tracking-tight);
+  line-height: var(--line-normal);
   color: var(--color-fg);
-  text-align: center;
+  letter-spacing: var(--tracking-tight);
+  word-break: keep-all;
 }
 
-// Figma title B_16_140% primary.
-.cta {
-  font-size: var(--font-body); /* 16 */
+// Basic Body/B_16_140% 초록 — CTA 문구.
+// 시안 #00B334 는 텍스트로 2.80:1 미달 → --color-primary-text-bold (결정 2).
+.title {
+  font-size: var(--font-body);
   font-weight: var(--font-weight-bold);
-  line-height: var(--line-snug-relaxed); /* 140% */
+  line-height: var(--line-normal);
+  color: var(--color-primary-text-bold);
   letter-spacing: var(--tracking-tight);
-  color: var(--color-primary);
-  text-align: center;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .banner {
+  .card {
     transition: none;
     &:active {
       transform: none;

@@ -1,18 +1,25 @@
-// Figma "편지 메인 · card" (2026-06-24) — 320×82 padding 16 gap 12 white +
-// 1px gray border + radius 12 row.
+// Figma `letterItem` — 320x82, 흰 카드 radius 12 + 1px #E0E0E0,
+// padding 16, HORIZONTAL gap 12, 3열 (stamp / 본문 / 북마크).
 .card {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 12px;
-  padding: 16px;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-md);
   text-decoration: none;
-  color: inherit;
-  transition: transform var(--motion-fast) ease;
+  color: var(--color-fg);
+  transition:
+    border-color var(--motion-base) ease,
+    transform var(--motion-fast) ease;
 
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--color-primary);
+    }
+  }
   &:active {
     transform: scale(0.99);
   }
@@ -22,149 +29,135 @@
   }
 }
 
-// .avatarWrap — relative positioning 부모 (unread red dot 의 absolute 기준).
-.avatarWrap {
-  position: relative;
-  display: inline-flex;
-  flex-shrink: 0;
-}
-
-// Figma row 좌측 — sender 프로필 avatar 48×48 #EAF6EF (primary-soft) radius 8.
-// BE author.avatarUrl 미제공 → User icon 24 primary fallback. 추후 BE avatar
-// 추가 시 <Image src={author.avatarUrl} /> 으로 교체.
-.avatar {
+// Figma `stamp` — 48x48, radius 8, 연초록 면
+.stamp {
   display: grid;
   place-items: center;
   width: 48px;
   height: 48px;
+  border-radius: var(--radius-sm);
   background: var(--color-primary-soft);
-  border-radius: 8px;
-  color: var(--color-primary);
-  overflow: hidden;
 }
 
-// Figma m — column gap 7 width 194. flex item 으로 남은 공간 차지.
-.m {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  flex: 1;
+// profileIcon 은 시안에서 stroke 1.7
+.stampIcon {
+  --icon-stroke: 1.7;
+  color: var(--color-primary-text-bold);
+}
+
+// Figma `m` — V gap 7 (4px 그리드로 8)
+.mid {
+  display: grid;
+  gap: var(--space-2);
   min-width: 0;
 }
 
-// Figma title B_18_140% fg — 5글자 본문 (overflow ellipsis 안전망).
-.title {
-  font-size: var(--text-lg); /* 18 */
+// 본문 + 안읽음 점, H gap 10
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+// Title/B_18_140% — 다섯 글자 본문
+.body {
+  font-size: var(--font-h3);
   font-weight: var(--font-weight-bold);
-  line-height: var(--line-snug-relaxed); /* 140% */
+  line-height: var(--line-normal);
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
-  margin: 0;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-// Figma r2 — row gap 8 align center.
-.r2 {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-  flex-wrap: wrap;
-}
-
-// Figma rp — pill 36×18 padding 3 9 #EAF6EF radius 999, Caption B_10 primary.
-.pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3px 9px;
-  background: var(--color-primary-soft);
+// Figma 안읽음 표시 — 4px 빨간 점 (구 구현은 NEW 칩)
+.unread {
+  flex-shrink: 0;
+  width: 4px;
+  height: 4px;
   border-radius: var(--radius-full);
-  font-size: 0.625rem; /* 10 */
-  font-weight: var(--font-weight-bold);
-  line-height: 1.2; /* 120% */
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-primary);
-  flex-shrink: 0;
+  background: var(--color-danger);
 }
 
-// Figma title Caption R_12 muted (위치명/닉네임).
-.sub {
-  font-size: var(--font-caption); /* 12 */
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed); /* 140% */
-  letter-spacing: -0.01em;
-  color: var(--color-muted);
+// Figma `r2` — H gap 8
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  font-size: var(--font-caption);
+  line-height: var(--line-normal);
+}
+
+// Figma `rp` — 지역 pill 36x18, padding 3/9, 연초록, radius 999
+.region {
+  flex-shrink: 0;
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-soft);
+  color: var(--color-primary-text-bold);
+  font-size: var(--font-caption);
+  line-height: var(--line-tight);
+  letter-spacing: var(--tracking-snug);
   white-space: nowrap;
+}
+
+// Caption/R_12 #393939
+.author {
+  color: var(--color-muted);
+  letter-spacing: var(--tracking-snug);
   overflow: hidden;
   text-overflow: ellipsis;
-  min-width: 0;
+  white-space: nowrap;
 }
 
-// Figma title Caption R_12 disabled (상대 시간).
+// Caption/R_12 #B4B4B4 — 상대시각은 한 단계 더 연하다
 .time {
-  font-size: var(--font-caption); /* 12 */
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed); /* 140% */
-  letter-spacing: -0.01em;
-  color: var(--color-text-disabled);
   flex-shrink: 0;
+  color: var(--color-fg-weak);
+  letter-spacing: var(--tracking-snug);
+  white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 
-// Figma unread red dot — 4×4 #E1493C. avatar 우상단 notification badge
-// (사용자 명시 2026-06-24 — pill NEW 회귀 → dot 으로 복원).
-.unread {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  background: var(--color-danger);
-  border-radius: var(--radius-full);
-  top: 2px;
-  right: 2px;
-}
-
-// Figma 우측 — bookmark toggle button (Bookmark icon 22). saved=true 시 primary
-// fill. 사용자 명시 2026-06-24 — chevron → bookmark 변경.
-.bookmark {
+// Figma 우측 bookmarkIcon 20 — off #B4B4B4 / on 초록 채움
+.save {
   display: grid;
   place-items: center;
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   padding: 0;
-  background: transparent;
+  background: none;
   border: 0;
-  border-radius: var(--radius-full);
-  color: var(--color-text-disabled);
+  color: var(--color-fg-weak);
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   transition:
-    background var(--motion-base) ease,
-    color var(--motion-base) ease;
+    color var(--motion-base) ease,
+    transform var(--motion-fast) ease;
 
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      background: var(--color-hover);
-    }
+  &[aria-pressed='true'] {
+    color: var(--color-primary);
+  }
+  &:active {
+    transform: scale(0.92);
   }
   &:focus-visible {
     outline: var(--focus-outline);
     outline-offset: var(--focus-outline-offset);
+    border-radius: var(--radius-full);
   }
 }
 
-.bookmarkActive {
-  color: var(--color-primary);
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .card {
+  .card,
+  .save {
     transition: none;
-    &:active {
-      transform: none;
-    }
+  }
+  .card:active,
+  .save:active {
+    transform: none;
   }
 }

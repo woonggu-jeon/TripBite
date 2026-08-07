@@ -1,309 +1,100 @@
-// Figma "받은 편지 상세" (2026-06-24) — wb padding 20 + bottom buttons absolute.
-// 버튼 영역 reserve: bottom 20 + buttons 114 (row 52 + gap 10 + outline 52) +
-// gap 20 = 154.
+// Figma `받은 편지 상세` — wb padding 20, `Frame 77` V gap 40.
+// (좌우 여백은 (main) layout 의 --content-pad 담당)
 .wrap {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  min-height: calc(100dvh - var(--header-h));
-}
-
-.wb {
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-  padding: 20px;
-  padding-bottom: calc(20px + 114px + 20px);
-}
-
-// Figma Frame 7 hero — column center gap 20 height 155.
-.hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-
-.circle {
   display: grid;
-  place-items: center;
-  width: 72px;
-  height: 72px;
-  background: var(--color-primary-soft);
-  border-radius: var(--radius-full);
-  color: var(--color-primary);
-}
-
-.headings {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-.title {
-  font-size: 1.5rem; /* 24 */
-  font-weight: var(--font-weight-bold);
-  line-height: 1.3;
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-fg);
-  margin: 0;
-  text-align: center;
-}
-
-.sub {
-  font-size: var(--text-sm); /* 14 */
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-muted);
-  margin: 0;
-  text-align: center;
-  white-space: pre-line;
-}
-
-// Figma Frame 81 — column align center gap 8.
-.cardBlock {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-}
-
-// Figma Frame 79 — stamp card.
-.card {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  padding: 20px 16px;
-  background: var(--color-gray-10);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-}
-
-.top {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 14px;
-}
-
-.pw {
-  position: relative;
-  width: 104px;
-  height: 60px;
-  flex-shrink: 0;
-}
-
-.sq {
-  position: absolute;
-  left: 0;
-  top: 0;
-  display: grid;
-  place-items: center;
-  width: 60px;
-  height: 60px;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.sqImage {
-  object-fit: cover;
-}
-
-// BE author.avatarUrl 미제공 시 User icon fallback.
-.sqIcon {
-  color: var(--color-muted);
-}
-
-// Figma pm — "도착 / 여행한입" 멀티라인 도장 (사용자 명시 2026-06-25 — letter/
-// sent 와 동일 패턴).
-.pm {
-  position: absolute;
-  left: 42px;
-  top: -24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 2px;
-  width: 58px;
-  height: 58px;
-  border: 2px solid var(--color-danger);
-  border-radius: var(--radius-full);
-  opacity: 0.7;
-  transform: rotate(-14deg);
-  text-align: center;
-}
-
-.pmMain {
-  font-size: 0.75rem; /* 12 — "도착" 2자 강조 */
-  font-weight: var(--font-weight-bold);
-  line-height: 1.1;
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-danger);
-}
-
-.pmSub {
-  font-size: 0.5625rem; /* 9 — sub line */
-  font-weight: var(--font-weight-regular);
-  line-height: 1.1;
-  letter-spacing: -0.01em;
-  color: var(--color-danger);
-}
-
-.meta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-  flex: 1;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-10); // Figma gap 40
   min-width: 0;
-}
 
-.metaLabel {
-  font-size: 0.625rem;
-  font-weight: var(--font-weight-bold);
-  line-height: 1.2;
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-text-disabled);
-}
-
-.metaName {
-  font-size: var(--font-body);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-fg);
-}
-
-.metaLoc {
-  font-size: var(--font-caption);
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: -0.01em;
-  color: var(--color-muted);
-}
-
-.ms {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
-
-// Figma Frame 71 — 외곽 가로 line + padding 12 0. 안쪽 Frame 70 이중 border.
-.cellsOuter {
-  width: 100%;
-  padding: 12px 0;
-  border-top: 1px solid var(--color-danger);
-  border-bottom: 1px solid var(--color-danger);
-}
-
-// Figma Frame 70 — 5 cells row + border-y 1 error. PinLikeInput 동일 패턴
-// (cell flex 1 균등 분포).
-.cells {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: 100%;
-  border-top: 1px solid var(--color-danger);
-  border-bottom: 1px solid var(--color-danger);
-}
-
-// PinLikeInput 동일 패턴 — flex 1 균등 분포 + font 직접 (cellChar wrapper 제거).
-.cell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  height: 56px;
-  background: var(--color-bg);
-  border-right: 1px solid var(--color-danger);
-  font-size: 1.5rem; /* Title/B_24_130% — 24 */
-  font-weight: var(--font-weight-bold);
-  line-height: 1.3;
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-fg);
-
-  &:first-child {
-    border-left: 1px solid var(--color-danger);
+  > * {
+    min-width: 0;
   }
 }
 
-.div {
-  width: 100%;
-  height: 1px;
-  background: var(--color-border);
+// ── 도착 알림 (Figma `emptyItme`) — 84 원 + 36 아이콘 + 제목/보조, 중앙 정렬
+.arrived {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-5); // Figma gap 20 (원 ↔ 텍스트)
+  text-align: center;
 }
 
-.footer {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding-top: 12px;
+.arrivedCircle {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-soft);
+  color: var(--color-primary-text-bold);
 }
 
-.footerRow {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
+// Figma `f` — V gap 3
+.arrivedText {
+  display: grid;
+  gap: 3px;
+  justify-items: center;
 }
 
-.footerStar {
-  font-size: 0.625rem;
-  color: var(--color-text-disabled);
-}
-
-.footerLabel {
-  font-size: var(--text-sm);
+// Basic Body/B_14_140%
+.arrivedTitle {
+  font-size: var(--font-body-sm);
   font-weight: var(--font-weight-bold);
-  line-height: var(--line-snug-relaxed);
+  line-height: var(--line-normal);
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
 }
 
-.footerNote {
+// Caption/R_12
+.arrivedBody {
   font-size: var(--font-caption);
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: -0.01em;
-  color: var(--color-text-disabled);
-  text-align: right;
-  font-variant-numeric: tabular-nums;
+  line-height: var(--line-normal);
+  letter-spacing: var(--tracking-snug);
+  color: var(--color-muted);
+  word-break: keep-all;
 }
 
-// Figma sub R_12 fg center — 자동 삭제 안내.
-.note {
+// Figma `Frame 85` — 카드 + 자동삭제 안내, V gap 12
+.cardGroup {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+// Caption/R_12 #393939 — 카드 밖 안내
+.autoDelete {
   font-size: var(--font-caption);
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: -0.01em;
-  color: var(--color-fg);
+  line-height: var(--line-normal);
+  letter-spacing: var(--tracking-snug);
+  color: var(--color-muted);
   text-align: center;
-  margin: 0;
 }
 
-// Figma buttons absolute bottom 20 (Frame 26 wrapper).
-.actions {
-  position: absolute;
-  left: 20px;
-  right: 20px;
-  bottom: 20px;
+// ── 에러 상태
+.empty {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-4);
+  padding: var(--space-10) var(--space-4);
+  color: var(--color-muted);
+  text-align: center;
 }
 
-.skeletonHero {
+.emptyActions {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
+  gap: var(--space-2);
 }
 
-.errorActions {
-  display: flex;
-  gap: 8px;
+// 보낸 편지 상세의 하단 버튼 — 흰 면 + 초록 보더 + 초록 라벨
+.lineButton {
+  border-color: var(--color-primary);
+  color: var(--color-primary-text-bold);
+  font-weight: var(--font-weight-medium);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      background: var(--color-primary-soft);
+      border-color: var(--color-primary);
+    }
+  }
 }

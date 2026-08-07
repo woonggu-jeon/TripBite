@@ -1,28 +1,38 @@
-// Figma "Header type=find" (2026-06-23) — 갱신 spec: 56h, padding 0 20,
-// no border-bottom (find/location variant). 이전 spec (54h, padding-left
-// 10, slot 36x36) → 최신 정합. iconButton click 영역은 44x44 (HIG 준수).
-.header {
-  display: flex;
-  align-items: center;
+// Figma auth `header` — 360x56, padding 0 20, 흰 배경.
+// 바는 풀폭(배경/하단선), inner 가 컨텐츠 폭에 맞춰 정렬.
+.bar {
   width: 100%;
-  height: 56px;
-  padding: 0 20px;
+  background: var(--color-bg);
 }
 
-// click 영역 44x44 (Apple HIG) — Figma 의 24x24 는 icon visual.
-.slot {
-  display: inline-flex;
+.inner {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
   align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  background: transparent;
+  gap: var(--space-2);
+  max-width: var(--content-max);
+  width: 100%;
+  height: var(--header-h); // 56
+  margin: 0 auto;
+  padding: 0 var(--space-5); // Figma 0 20
+}
+
+// 제목이 있는 화면(회원가입) 만 하단선 — 시안대로.
+.bordered {
+  border-bottom: var(--border-thin) solid var(--color-border);
+}
+
+.back {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-left: calc(var(--space-2) * -1);
   border: 0;
+  border-radius: var(--radius-full);
+  background: none;
   color: var(--color-fg);
   cursor: pointer;
-  border-radius: var(--radius-full);
-  transition: background var(--motion-base) ease;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
@@ -33,16 +43,18 @@
     outline: var(--focus-outline);
     outline-offset: var(--focus-outline-offset);
   }
-  &:active {
-    transform: scale(0.95);
-  }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .slot {
-    transition: none;
-    &:active {
-      transform: none;
-    }
-  }
+// Title/B_18_140% — 중앙 정렬. 페이지 h1 은 본문(AuthHero) 이 갖는다.
+.title {
+  font-size: var(--font-h3);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-normal);
+  color: var(--color-fg);
+  letter-spacing: var(--tracking-tight);
+  text-align: center;
+}
+
+.spacer {
+  width: 40px;
 }

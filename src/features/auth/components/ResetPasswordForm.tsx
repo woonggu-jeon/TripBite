@@ -1,17 +1,17 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
-import { Button, PasswordField } from '@/components/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useResetPassword } from '@/features/auth/hooks/use-auth';
 import {
-  type ResetPasswordValues,
   resetPasswordSchema,
+  type ResetPasswordValues,
 } from '@/features/auth/schemas/password-reset';
 import { isAxiosError } from '@/services/interceptors/auth';
+import { Button, TextField } from '@/components/ui';
 import styles from './AuthForm.module.scss';
 
 /**
@@ -70,11 +70,13 @@ export function ResetPasswordForm() {
       <input type="hidden" {...register('token')} />
 
       {FIELDS.map((f) => (
-        <PasswordField
+        <TextField
           key={f.name}
           id={f.name}
+          type="password"
           autoComplete={f.auto}
           label={t(f.name)}
+          passwordToggle
           errorMessage={
             errors[f.name]
               ? tErr(errors[f.name]?.message as Parameters<typeof tErr>[0])

@@ -1,63 +1,48 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import type {
-  DestinationCategory,
-  RegionCode,
-  Season,
-} from '@/api/generated/schemas';
-import { SubHeader } from '@/components/layout/SubHeader';
-import { Button, ButtonGrid } from '@/components/ui';
-import { SeasonIcon } from '@/components/ui/SeasonIcon';
-import { CHUNGBUK_REGIONS } from '@/constants/regions';
-import { CategoryFilter } from '@/features/tournament/components/CategoryFilter';
-import { ChungbukMap } from '@/features/tournament/components/ChungbukMap';
-import { CountSelector } from '@/features/tournament/components/CountSelector';
-import { FallingPetals } from '@/features/tournament/components/FallingPetals';
-import { SeasonSelector } from '@/features/tournament/components/SeasonSelector';
+import { useTranslations } from 'next-intl';
 import {
-  type ThemeKind,
   ThemeKindSelector,
+  type ThemeKind,
 } from '@/features/tournament/components/ThemeKindSelector';
+import { SeasonSelector } from '@/features/tournament/components/SeasonSelector';
+import { CategoryFilter } from '@/features/tournament/components/CategoryFilter';
+import { CountSelector } from '@/features/tournament/components/CountSelector';
+import { SubHeader } from '@/components/layout/SubHeader';
 import { useTournamentStore } from '@/features/tournament/store/tournament-store';
+import type { DestinationCategory, Season } from '@/api/generated/schemas';
 import type {
   TournamentCount,
   TournamentTheme,
 } from '@/features/tournament/types';
 import { haptic } from '@/lib/haptic';
+import { Button } from '@/components/ui';
 import styles from './TournamentSetup.module.scss';
 
 /**
- * 토너먼트 설정 — Figma TRN 전체 setup flow (2026-06-24 refactor).
+ * 토너먼트 설정 — 스텝별 진행 (4 steps)
  *
- * 흐름 (7 step):
- *   1) themeKind        : 계절/랜덤 (Figma T-1)
- *   2) season           : 봄/여름/가을/겨울 (Figma T-2, themeKind=season 일 때만)
- *   3) category         : 축제/관광지/체험관광 (Figma T-3)
- *   4) count            : 여행지 갯수 2/4/6/8 (Figma T-4) — store.setConfig 시점
- *   5) intro            : 로딩 (Figma T-5, 2.5s 자동 → step 6)
- *   6) map              : 시군 N random pick + ChungbukMap (Figma T-5 여행지 준비완료)
- *   7) tournamentSize   : 4/8/16/32 (Figma T-6) — store.setTournamentSize + push /play
+ *   1) 테마 종류    : 계절 직접선택 / 랜덤테마
+ *   2) 계절         : 봄·여름·가을·겨울 (1 step 에서 'season' 선택 시만)
+ *   3) 여행 유형    : 지역·축제·관광지·체험관광 (단일)
+ *   4) 여행지 갯수  : 2 / 4 / 6 / 8
  *
- * 흐름 분기:
- *   - season  : 1 → 2 → 3 → 4 → 5 → 6 → 7 → /play
- *   - random  : 1 → ("다음" click 시 season/category 즉시 랜덤) → 4 → 5 → 6 → 7 → /play
+ * 흐름:
+ *   - season  : step 1 → 2 (계절) → 3 (유형) → 4 (갯수)
+ *   - random  : step 1 → (계절/유형 즉시 랜덤 선택) → 4 (갯수) 로 점프
  *
- * fetch 시점은 변경 X — useTournamentCandidates 는 /tournament/play 진입 후 호출.
- * (사용자가 setup 도중 이탈 시 헛 fetch 회피 + cancellation 단순.)
+ * 모든 step (1/2/3)은 선택 즉시 next. step 4 만 "시작하기" 버튼.
+ * 토너먼트 매치업 사이즈(M ≤ N)는 Play 페이지의 별도 phase 에서 결정.
  *
- * 홈 → /tournament?theme=season&season=spring 진입 시 1·2 prefill, step 3 부터 시작.
+ * 홈 → /tournament?theme=season&season=spring 으로 진입 시 1·2 단계 자동
+ * prefill, step 3 (유형) 부터 시작.
  *
- * 뒤로:
- *   - step 6/7: 6 → 4 (intro skip), 7 → 6
- *   - step 4 (random): → 1 (계절/유형 자동 선택이라 step 2/3 의미 X)
- *   - step > 1: → step - 1
- *   - step === 1: router.back()
+ * 뒤로: step > 1 → step--, step === 1 → router.back()
  */
 
-type Step = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+type Step = 1 | 2 | 3 | 4;
 
 const VALID_SEASONS: readonly Season[] = [
   'spring',
@@ -72,62 +57,21 @@ const CATEGORIES: readonly DestinationCategory[] = [
   'experience',
 ];
 
-// intro phase 자동 advance 시간 — 사용자 피드백 (2026-06-24) "굳이 시간이
-// 오래 걸릴 이유가 있나" → 2.5s → 1.0s. fetch 시점이 아닌 단순 시각 transition
-// 이므로 안내 카피 한 번 읽을 시간만 두고 빠르게 map 으로.
-const INTRO_MS = 1000;
-
-// zustand selector 의 fallback array — module-level stable reference 로 두지
-// 않으면 `?? []` 가 매 render 마다 새 배열 → selector 가 변경 감지 → 무한
-// re-render (React DevTools "Maximum update depth" warning).
-const EMPTY_REGIONS: readonly string[] = Object.freeze([]);
-
 function pickRandom<T>(arr: readonly T[]): T {
+  // 빈 배열은 호출자가 보장 — 본 함수는 비-undefined 단언.
   return arr[Math.floor(Math.random() * arr.length)] as T;
-}
-
-function pickRandomRegions(count: number): string[] {
-  const codes = CHUNGBUK_REGIONS.map((r) => r.code).slice();
-  for (let i = codes.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const ci = codes[i];
-    const cj = codes[j];
-    if (ci !== undefined && cj !== undefined) {
-      codes[i] = cj;
-      codes[j] = ci;
-    }
-  }
-  return codes.slice(0, Math.min(count, codes.length));
 }
 
 export function TournamentSetup() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const t = useTranslations('tournament.setup');
-  const tPlay = useTranslations('tournament.play');
+  const tTournament = useTranslations('tournament');
   const tSeason = useTranslations('tournament.season');
-  const tNav = useTranslations('tournament');
   const setConfig = useTournamentStore((s) => s.setConfig);
-  const setSelectedRegions = useTournamentStore((s) => s.setSelectedRegions);
-  const setTournamentSize = useTournamentStore((s) => s.setTournamentSize);
-  const reset = useTournamentStore((s) => s.reset);
-  const selectedRegions = useTournamentStore(
-    (s) => s.config?.selectedRegions ?? EMPTY_REGIONS,
-  );
 
-  // mount 1회 — 직전 토너먼트 store 잔재 (config/selectedRegions/tournamentSize/
-  // winner 등) 정리. 사용자가 result → "다시하기" → /tournament 재진입 시 잔재
-  // 가 false-positive 진입 가드로 /play 직진 가능 — 명시 reset 으로 차단.
-  //
-  // 동시에 /tournament/play chunk prefetch — 사용자가 step 7 "토너먼트 시작"
-  // click 시점에 이미 background download 완료 → push 즉시 mount, 페이지 점프
-  // 시각적 어색함 회피 (사용자 피드백 2026-06-24).
-  useEffect(() => {
-    reset();
-    router.prefetch('/tournament/play');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+  // 홈 "이번 {계절} 토너먼트 시작하기" 진입 시 query 로 theme + season 사전 선택.
+  // theme=season&season=spring → themeKind/season 채우고 step 3 (여행 유형) 부터.
   const initialTheme = searchParams.get('theme');
   const initialSeasonParam = searchParams.get('season');
   const initialSeason: Season | null =
@@ -146,8 +90,10 @@ export function TournamentSetup() {
   const [season, setSeason] = useState<Season | null>(initialSeason);
   const [category, setCategory] = useState<DestinationCategory | null>(null);
   const [count, setCount] = useState<TournamentCount | null>(null);
-  const [pendingSize, setPendingSize] = useState<TournamentCount | null>(null);
 
+  // step 전환 시 이전 step 의 클릭된 button focus 가 unmount 되며 브라우저가
+  // fallback 으로 새 step 의 동일 위치 button 에 focus 자동 이동시키는 케이스.
+  // 명시 blur 로 차단 — 새 step 첫 진입 시 어느 카드에도 focus 안 남음.
   const advanceTo = (next: Step) => {
     if (typeof document !== 'undefined') {
       (document.activeElement as HTMLElement | null)?.blur?.();
@@ -155,87 +101,60 @@ export function TournamentSetup() {
     setStep(next);
   };
 
-  // step 5 (intro) 자동 advance — 2.5s 후 step 6 (map).
-  useEffect(() => {
-    if (step !== 5) return;
-    const id = window.setTimeout(() => advanceTo(6), INTRO_MS);
-    return () => window.clearTimeout(id);
-  }, [step]);
-
-  // step 6 (map) 진입 시 N 시군 random pick — store.setSelectedRegions.
-  // 이미 있으면 그대로 (reshuffle 만 별도 트리거).
-  useEffect(() => {
-    if (step !== 6 || count === null) return;
-    if (selectedRegions.length > 0) return;
-    setSelectedRegions(pickRandomRegions(count));
-  }, [step, count, selectedRegions.length, setSelectedRegions]);
-
-  const handleKind = (k: ThemeKind) => setThemeKind(k);
-  const handleSeason = (s: Season) => setSeason(s);
-  const handleCategory = (c: DestinationCategory) => setCategory(c);
-  const handleCount = (c: TournamentCount) => setCount(c);
-
-  // step 4 → 5 전환 시 store.setConfig 실행 — selectedRegions 는 step 6 에서 set.
-  const persistSetupConfig = (
-    c: TournamentCount,
-    s: Season,
-    cat: DestinationCategory,
-  ) => {
-    const theme: TournamentTheme = { kind: 'season', value: s };
-    setConfig({ theme, categories: [cat], count: c });
-  };
-
-  const handleNext = () => {
-    if (step === 1) {
-      if (themeKind === 'season') {
-        advanceTo(2);
-        return;
-      }
-      // random — season/category 즉시 랜덤 채우고 count step 으로.
-      setSeason(pickRandom(VALID_SEASONS));
-      setCategory(pickRandom(CATEGORIES));
-      advanceTo(4);
+  const handleKind = (k: ThemeKind) => {
+    setThemeKind(k);
+    if (k === 'season') {
+      advanceTo(2);
       return;
     }
-    if (step === 2) return advanceTo(3);
-    if (step === 3) return advanceTo(4);
-    if (step === 4) {
-      if (count === null || season === null || category === null) return;
-      haptic.success();
-      persistSetupConfig(count, season, category);
-      advanceTo(5);
-      return;
-    }
-    // step 5 는 auto-advance, button X. step 6 → 7.
-    if (step === 6) return advanceTo(7);
-    // step 7 → push /play.
-    if (pendingSize === null) return;
-    haptic.success();
-    setTournamentSize(pendingSize);
-    router.push('/tournament/play');
+    // random 테마 — 계절 + 카테고리 즉시 랜덤 채우고 바로 갯수 step 으로.
+    const randomSeason = pickRandom(VALID_SEASONS);
+    const randomCategory = pickRandom(CATEGORIES);
+    setSeason(randomSeason);
+    setCategory(randomCategory);
+    advanceTo(4);
   };
 
-  const handleReshuffle = () => {
-    if (count === null) return;
-    setSelectedRegions(pickRandomRegions(count));
+  const handleSeason = (s: Season) => {
+    setSeason(s);
+    advanceTo(3);
+  };
+
+  // 카테고리는 시안에 "선택하면 다음으로 진행해요" 안내가 없고 `다음` 버튼이
+  // 있다 — 즉 선택 후 명시적으로 눌러 넘어가는 화면이다. (테마·계절만 자동 진행)
+  const handleCategory = (c: DestinationCategory) => {
+    setCategory(c);
+  };
+
+  const handleCount = (c: TournamentCount) => {
+    setCount(c);
   };
 
   const goBack = () => {
-    if (step === 1) return router.back();
-    if (themeKind === 'random' && step === 4) return setStep(1);
-    if (step === 6) return setStep(4); // intro (2.5s auto) skip
+    if (step === 1) {
+      router.back();
+      return;
+    }
+    // random 흐름 (themeKind === 'random') 에서 step 4 인 경우 → 1 로 복귀.
+    // (계절/유형이 자동 선택이라 step 2/3 으로 돌아갈 의미 X)
+    if (themeKind === 'random' && step === 4) {
+      setStep(1);
+      return;
+    }
     setStep((step - 1) as Step);
   };
 
-  const canAdvance = (() => {
-    if (step === 1) return themeKind !== null;
-    if (step === 2) return season !== null;
-    if (step === 3) return category !== null;
-    if (step === 4) return count !== null;
-    if (step === 5) return false; // auto
-    if (step === 6) return selectedRegions.length > 0;
-    return pendingSize !== null;
-  })();
+  const canStart =
+    step === 4 && count !== null && season !== null && category !== null;
+
+  const handleStart = () => {
+    if (count === null || season === null || category === null) return;
+    haptic.success();
+    // random 흐름이라도 store 에는 동일 형태 — kind='season' + 랜덤 선택된 value.
+    const theme: TournamentTheme = { kind: 'season', value: season };
+    setConfig({ theme, categories: [category], count });
+    router.push('/tournament/play');
+  };
 
   const heading = (() => {
     if (step === 1)
@@ -247,59 +166,45 @@ export function TournamentSetup() {
       return { title: t('steps.season.title'), hint: t('steps.season.hint') };
     if (step === 3)
       return {
-        title: t('steps.category.title', {
-          season: season ? tSeason(season) : '',
-        }),
+        title: t('steps.category.title'),
         hint: t('steps.category.hint'),
       };
-    if (step === 4)
-      return { title: t('steps.count.title'), hint: t('steps.count.hint') };
-    // step 6/7 의 heading 은 phase 별 본문이 자체 title 가짐 → 비움.
-    return { title: '', hint: '' };
+    return { title: t('steps.count.title'), hint: t('steps.count.hint') };
   })();
-
-  const showHeading = step <= 4;
-
-  // step 6 (map) 의 placeholder destinations — ChungbukMap 표식용.
-  const mapPlaceholders =
-    step === 6 && selectedRegions.length > 0 && category
-      ? selectedRegions.map((code) => {
-          const region = CHUNGBUK_REGIONS.find((r) => r.code === code);
-          const safeCode = (region?.code ?? 'cheongju') as RegionCode;
-          return {
-            id: `placeholder-${safeCode}`,
-            name: region?.ko ?? safeCode,
-            category,
-            region: safeCode,
-          };
-        })
-      : [];
 
   return (
     <>
-      <SubHeader title={tNav('title')} onBack={goBack} />
-      {/* FallingPetals — intro (5) + map (6) 에서만 노출. theme.season prefill 필수 */}
-      {season && (step === 5 || step === 6) && (
-        <FallingPetals season={season} active />
-      )}
+      {/* 헤더 제목은 4단계 모두 "토너먼트" — 시안 확인 결과 프레임 이름(계절 선택
+          등)이 화면 제목은 아니었다. 단계 제목(20 Bold) + 보조(12) 는 본문 상단
+          `Frame 41` 에 놓인다. */}
+      <SubHeader title={tTournament('title')} onBack={goBack} />
       <div className={styles.wrap}>
-        {showHeading && (
-          <header className={styles.heading}>
+        <div className={styles.section}>
+          <div className={styles.heading}>
             <h2 className={styles.headingTitle}>{heading.title}</h2>
             <p className={styles.hint}>{heading.hint}</p>
-          </header>
-        )}
+          </div>
 
-        <div className={styles.section}>
           {step === 1 && (
-            <ThemeKindSelector value={themeKind} onChange={handleKind} />
+            <>
+              <ThemeKindSelector value={themeKind} onChange={handleKind} />
+              <p className={styles.autoHint}>{t('selectToContinue')}</p>
+            </>
           )}
           {step === 2 && (
-            <SeasonSelector value={season} onChange={handleSeason} />
+            <>
+              <SeasonSelector value={season} onChange={handleSeason} />
+              <p className={styles.autoHint}>{t('selectToContinue')}</p>
+            </>
           )}
           {step === 3 && (
             <>
               <CategoryFilter value={category} onChange={handleCategory} />
+              {/*
+                BE 동작 고지 — 계절 필터는 'festival' 에만 적용 (eventStart 월 기반).
+                attraction/experience/local 선택 시 BE 가 계절 무관 응답 → 사용자가
+                "왜 겨울 아닌 게?" 혼란 막기 위해 결정적 시점 (카테고리 선택 후) 에 안내.
+              */}
               {category && category !== 'festival' && season && (
                 <p className={styles.scopeHint} role="status">
                   {t('steps.category.seasonScopeNonFestival', {
@@ -316,6 +221,11 @@ export function TournamentSetup() {
                 onChange={handleCount}
                 mode="destination"
               />
+              {/*
+                계절 적용 범위 hint — 비-festival + 계절 선택된 상태일 때.
+                step 3 에서 카테고리 선택 즉시 step 4 로 advance 되므로, 사용자가
+                실제로 hint 를 인지하는 시점은 여기 (시작 전 마지막 화면).
+              */}
               {category && category !== 'festival' && season && (
                 <p className={styles.scopeHint} role="status">
                   {t('steps.category.seasonScopeNonFestival', {
@@ -325,148 +235,33 @@ export function TournamentSetup() {
               )}
             </>
           )}
-
-          {/* step 5 — intro: 로딩 (FallingPetals + circle-stack + dots + 안내) */}
-          {step === 5 && (
-            <div
-              className={styles.intro}
-              data-season={season ?? 'autumn'}
-              aria-hidden
-            >
-              {/* Figma "TRN · 로딩 (지도 펼침)" (2026-06-25) — 6개 bgLeaf
-                  PNG (28×28) + center circle-stack (134 outer 색 + 100 white
-                  + 64 wrapper + 52 image). emoji → SeasonIcon PNG 교체. */}
-              {season && (
-                <>
-                  <SeasonIcon
-                    season={season}
-                    size={36}
-                    className={styles.bgLeaf1}
-                  />
-                  <SeasonIcon
-                    season={season}
-                    size={36}
-                    className={styles.bgLeaf2}
-                  />
-                  <SeasonIcon
-                    season={season}
-                    size={36}
-                    className={styles.bgLeaf3}
-                  />
-                  <SeasonIcon
-                    season={season}
-                    size={36}
-                    className={styles.bgLeaf4}
-                  />
-                  <SeasonIcon
-                    season={season}
-                    size={36}
-                    className={styles.bgLeaf5}
-                  />
-                  <SeasonIcon
-                    season={season}
-                    size={36}
-                    className={styles.bgLeaf6}
-                  />
-                </>
-              )}
-              <div className={styles.circleStack}>
-                <span className={styles.circleAmber} />
-                <span className={styles.circleWhite} />
-                {season && (
-                  <SeasonIcon
-                    season={season}
-                    size={64}
-                    className={styles.circleLeaf}
-                  />
-                )}
-              </div>
-              <h2 className={styles.introTitle}>{tPlay('introHint')}</h2>
-              <div className={styles.dots}>
-                <span className={styles.dot} />
-                <span className={styles.dot} />
-                <span className={styles.dot} />
-              </div>
-            </div>
-          )}
-
-          {/* step 6 — map: ChungbukMap + "여행지 N곳 선정". 버튼은 .cta 안에서
-              2 button (다시하기/다음으로) 분기 — 다른 phase 들과 위치 정합. */}
-          {step === 6 && mapPlaceholders.length > 0 && (
-            <div className={styles.map}>
-              <div className={styles.mapCard}>
-                <ChungbukMap
-                  destinations={mapPlaceholders}
-                  theme={{ kind: 'season', value: season as Season }}
-                />
-              </div>
-              <div className={styles.mapFooter}>
-                <h2 className={styles.mapTitle}>
-                  {tPlay('mapReady.title', { count: count ?? 0 })}
-                </h2>
-                <p className={styles.mapDesc}>
-                  {tPlay('mapReady.desc', {
-                    season: season ? tSeason(season) : '',
-                  })}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* step 7 — tournamentSize: "몇 강의 토너먼트?" + 2×2 size grid */}
-          {step === 7 && (
-            <div className={styles.sizePhase}>
-              <header className={styles.sizeHeading}>
-                <h2 className={styles.sizeTitle}>
-                  {tPlay('tournamentSize.title')}
-                </h2>
-                <p className={styles.sizeHint}>
-                  {tPlay('tournamentSize.hint')}
-                </p>
-              </header>
-              <CountSelector
-                value={pendingSize}
-                onChange={setPendingSize}
-                mode="tournament"
-              />
-            </div>
-          )}
         </div>
 
-        {/* fixed bottom CTA — step 5 (intro auto) 만 제외.
-            step 6 (map) 은 다시하기 + 다음으로 2 button row, 그 외는 1 button. */}
-        {step !== 5 && (
-          <div className={styles.cta}>
-            {step === 6 ? (
-              <ButtonGrid className={styles.ctaPair}>
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  fullWidth
-                  onClick={handleReshuffle}
-                >
-                  {tPlay('reshuffle')}
-                </Button>
-                <Button
-                  variant="primary"
-                  size="lg"
-                  fullWidth
-                  onClick={handleNext}
-                >
-                  {tPlay('start')}
-                </Button>
-              </ButtonGrid>
-            ) : (
-              <Button
-                variant="primary"
-                size="lg"
-                fullWidth
-                onClick={handleNext}
-                disabled={!canAdvance}
-              >
-                {step === 7 ? tPlay('startBracket') : t('next')}
-              </Button>
-            )}
+        {step === 3 && (
+          <div className={styles.action}>
+            <Button
+              variant="primary"
+              size="lg"
+              fullWidth
+              onClick={() => advanceTo(4)}
+              disabled={category === null}
+            >
+              {t('next')}
+            </Button>
+          </div>
+        )}
+
+        {step === 4 && (
+          <div className={styles.action}>
+            <Button
+              variant="primary"
+              size="lg"
+              fullWidth
+              onClick={handleStart}
+              disabled={!canStart}
+            >
+              {t('start')}
+            </Button>
           </div>
         )}
       </div>

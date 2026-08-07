@@ -39,7 +39,7 @@ export default function GlobalError({
   return (
     <main className={styles.main}>
       <EmptyState
-        variant="hero"
+        variant="default"
         icon={<Icon name="alert-circle" size={36} />}
         title="문제가 발생했어요"
         description={

@@ -1,220 +1,60 @@
-// Figma "POI · 장소상세" — body padding 0 column bg #F8F8F8. (main) layout 의
-// contentInner padding-left/right 무시 — viewport edge 까지 bleed (hero /
-// action-bar 풀폭). padding-top 은 SubHeader 자체가 -content-pad 로 탈출 →
-// 여기서 또 음수 margin 주면 SubHeader 와 overlap (사용자 명시 2026-06-24).
+// Figma `POI · 장소상세` — hero(풀블리드) → info-sec → near-sec → action-bar.
+// 좌우 여백은 (main) layout 의 contentInner 가 담당한다.
 .wrap {
-  display: flex;
-  flex-direction: column;
-  margin-left: calc(-1 * var(--content-pad));
-  margin-right: calc(-1 * var(--content-pad));
-  background: var(--color-gray-10); /* #F8F8F8 */
-  :global(:root[data-theme='dark']) & {
-    background: var(--color-bg);
-  }
+  display: grid;
+  gap: 0;
 }
 
-// Figma info-sec — padding 20 20 24 gap 20 white bg.
+// 로딩 자리잡이 — 실 hero 와 같은 비율/풀블리드
+.heroSkeleton {
+  margin-inline: calc(var(--content-pad) * -1);
+  margin-top: calc(var(--content-pad) * -1);
+  aspect-ratio: 360 / 234;
+  background: var(--color-surface-soft);
+}
+
+// Figma `info-sec` — V gap 20, 하단 padding 24
 .infoSec {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 20px 20px 24px;
-  background: var(--color-bg);
+  display: grid;
+  gap: var(--space-5);
+  padding-top: var(--space-5);
+  padding-bottom: var(--space-6);
 }
 
-// Figma title-area — row space-between gap 10.
+// Figma `title-area` — 이름 + 카테고리 배지, H gap 10
 .titleArea {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
-}
-
-// Figma Frame 28 — column gap 2 (name + region).
-.titleStack {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex: 1;
   min-width: 0;
 }
 
-// Figma title B_20_130% fg.
+// Title/B_20_130%
 .name {
-  font-size: var(--font-h2); /* 20 */
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-tight); /* 130% */
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-fg);
-  margin: 0;
-  word-break: keep-all;
-}
-
-// Figma subtitle SemiBold 14 muted capitalize (시군명).
-.region {
-  font-size: var(--text-sm); /* 14 */
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-snug-relaxed); /* 140% */
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-muted);
-  margin: 0;
-  text-transform: capitalize;
-}
-
-// Figma type-chip — pill secondary01 padding 4 12 gap 4 + compass 13 +
-// Caption R_12 primary.
-.typeChip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
-  padding: 4px 12px;
-  background: var(--color-primary-soft);
-  border-radius: var(--radius-full);
-  font-size: var(--font-caption); /* 12 */
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed); /* 140% */
-  letter-spacing: -0.01em;
-  color: var(--color-primary);
-}
-
-// Figma info-card — column gap 12 (5 field).
-.infoCard {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin: 0;
-  padding: 0;
-}
-
-// Figma field row — gap 10, height 18. flabel 86 (icon + label) + value Caption R_12.
-.field {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 10px;
-  margin: 0;
-}
-
-// Figma flabel — row gap 7 width 86. icon 18 primary + label R_12 muted.
-.flabel {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 7px;
-  flex: 0 0 86px;
-  margin: 0;
-}
-
-.fieldIcon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  color: var(--color-primary);
-}
-
-.flabelText {
-  font-size: var(--font-caption); /* 12 */
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed); /* 140% */
-  letter-spacing: -0.01em;
-  color: var(--color-muted);
-}
-
-// Figma value — Caption R_12 fg (또는 primary for website).
-.fvalue {
   flex: 1;
-  font-size: var(--font-caption); /* 12 */
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed); /* 140% */
-  letter-spacing: -0.01em;
-  color: var(--color-fg);
-  margin: 0;
   min-width: 0;
-  word-break: break-all;
-}
-
-.fvalueLink {
-  color: var(--color-primary);
-}
-
-.linkText {
-  color: inherit;
-  text-decoration: none;
-  &:hover {
-    text-decoration: underline;
-  }
-}
-
-// Figma divider 1px gray.
-.divider {
-  width: 100%;
-  height: 1px;
-  background: var(--color-border);
-}
-
-// Figma overview — column gap 8. text R_14 muted + "more" SemiBold 14 primary.
-.overview {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-// Figma R_14_140% muted. 기본 4줄 clamp + expanded 시 전체.
-.overviewText {
-  font-size: var(--text-sm); /* 14 */
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed); /* 140% */
+  font-size: var(--font-h2);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug);
+  color: var(--color-fg);
   letter-spacing: var(--tracking-tight);
-  color: var(--color-muted);
-  margin: 0;
   word-break: keep-all;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  white-space: pre-line;
 }
 
-.overviewTextExpanded {
-  -webkit-line-clamp: unset;
-  overflow: visible;
-}
-
-// Figma "more" SemiBold 14 primary capitalize.
-.overviewMore {
-  align-self: flex-start;
-  background: transparent;
-  border: 0;
-  padding: 0;
-  font-size: var(--text-sm); /* 14 */
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-snug-relaxed);
+// Figma `badge` — 연초록 pill (radius 999), padding 4/12, H gap 4,
+// 12px 아이콘 + Caption/B_10. 초록은 텍스트라 primary-text-bold 사용.
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-shrink: 0;
+  padding: 4px var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-primary-soft);
+  color: var(--color-primary-text-bold);
+  font-size: var(--font-eyebrow);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-tight);
   letter-spacing: var(--tracking-tight);
-  color: var(--color-primary);
-  cursor: pointer;
-  text-transform: capitalize;
-
-  &:focus-visible {
-    outline: var(--focus-outline);
-    outline-offset: var(--focus-outline-offset);
-  }
-}
-
-// Figma near-sec — padding 20, bg 없음 (page bg #F8F8F8 비침 — info-sec 와
-// 분리된 island 시각).
-.nearSec {
-  padding: 20px;
-}
-
-// Loading skeleton — near-sec 안의 3 카드 placeholder row (Figma saved-grid
-// 408w x-scroll 정합).
-.skeletonRelatedRow {
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
-  overflow: hidden;
+  white-space: nowrap;
 }

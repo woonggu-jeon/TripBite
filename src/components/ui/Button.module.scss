@@ -4,9 +4,12 @@
   justify-content: center;
   gap: 0.375rem;
   font-family: inherit;
-  font-weight: var(--font-weight-bold);
-  letter-spacing: var(--tracking-snug);
-  border: 1.5px solid transparent;
+  /* Figma: solid/icon = Basic Body/SB_16_140% (SemiBold 600),
+            line     = Basic Body/M_16_140%  (Medium 500, .v-secondary 에서 override) */
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-tight);
+  /* Figma: line 스타일 테두리 1px (구 1.5px) */
+  border: var(--border-thin) solid transparent;
   border-radius: var(--radius-md);
   cursor: pointer;
   user-select: none;
@@ -40,15 +43,22 @@
 }
 
 // 사이즈 — 모바일 hit target 44px 보장 (md, default)
+/* Sizes — Figma button 은 52px / 36px 두 단계뿐이고, 두 단계 모두
+   라벨 16px · 좌우 패딩 20px 이다(변형 11개 실측).
+   레포 API 는 sm/md/lg 3단계라 다음과 같이 매핑한다:
+     sm → 36px (Figma compact)
+     md → 52px (Figma primary. 기본값이며 호출부는 전부 페이지 레벨 액션)
+     lg → 52px (md 와 동일. 기존 호출부 호환용 별칭)
+   결과적으로 실제 높이는 Figma 와 같은 두 종류만 존재한다. */
 .s-sm {
-  min-height: 32px;
-  padding: 0 var(--space-3);
-  font-size: var(--font-label);
+  min-height: 36px;
+  padding: 0 var(--space-5);
+  font-size: var(--font-body);
 }
 .s-md {
-  min-height: 44px;
-  padding: 0 var(--space-4);
-  font-size: var(--font-body-sm);
+  min-height: 52px;
+  padding: 0 var(--space-5);
+  font-size: var(--font-body);
 }
 .s-lg {
   min-height: 52px;
@@ -66,9 +76,9 @@
 
 // variants
 .v-primary {
-  background: var(--color-primary);
+  background: var(--color-primary-strong);
   color: var(--color-primary-fg);
-  border-color: var(--color-primary);
+  border-color: var(--color-primary-strong);
 
   @media (hover: hover) and (pointer: fine) {
     &:hover:not(:disabled) {
@@ -81,6 +91,8 @@
   background: transparent;
   color: var(--color-fg);
   border-color: var(--color-border);
+  /* Figma line 스타일은 Medium(500) */
+  font-weight: var(--font-weight-medium);
 
   @media (hover: hover) and (pointer: fine) {
     &:hover:not(:disabled) {

@@ -1,14 +1,16 @@
-// Figma "MY_01" recent-box (2026-06-23) — white card 320×136 border 1
-// #E0E0E0 radius 12 padding 0 16. row 별 border-bottom (마지막 제외).
+// Figma `recent-box` — 흰 카드(radius 12, 1px #E0E0E0, padding 20/16) 안에
+// `recent-row` 288x68 이 쌓인다. 행 하단 1px 구분선(마지막 행 제외).
+// 섹션 제목은 카드 **밖**에 있다 — 그래서 PageSection variant="card" 가 아니라
+// 이 목록이 직접 카드 껍데기를 갖는다.
 .list {
   display: grid;
   gap: 0;
-  padding: 0 16px;
+  padding: var(--space-5) var(--space-4);
   margin: 0;
   list-style: none;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-md);
 }
 
 .skeletonList {
@@ -16,80 +18,62 @@
   gap: var(--space-2);
 }
 
-// recent-row 288×68 padding 12 0 gap 12 + border-bottom (마지막 제외).
 .row {
   display: grid;
-  grid-template-columns: 40px 1fr;
-  gap: 12px;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: var(--space-3); // Figma gap 12
   align-items: center;
-  padding: 12px 0;
+  padding: var(--space-3) 0; // Figma 12 / 0
   background: transparent;
-  border-bottom: 1px solid var(--color-border);
+  border: 0;
+  border-bottom: var(--border-thin) solid var(--color-border);
+  border-radius: 0;
 
   &:last-child {
     border-bottom: 0;
   }
 }
 
-// circle 40 primary-soft + trophy 20 primary — Figma row 의 left badge.
-.iconBox {
+// Figma `circle` 40x40 — 연초록 원 안에 20px 아이콘.
+// 레포는 계절 emoji 를 쓰므로 emoji 를 그 원 안에 담는다.
+.emoji {
   display: grid;
   place-items: center;
   width: 40px;
   height: 40px;
   border-radius: var(--radius-full);
   background: var(--color-primary-soft);
-  color: var(--color-primary);
-  flex-shrink: 0;
+  font-size: var(--font-body-sm);
+  line-height: 1;
 }
 
+// Figma `f` — V gap 3 (4px 그리드로 4)
 .body {
   display: grid;
-  gap: 3px;
+  gap: var(--space-1);
   min-width: 0;
 }
 
-// Figma title B_14 (Pretendard Bold 14 line 140% -0.02em fg).
+// Basic Body/B_14_140% (구 16 extrabold)
 .title {
-  font-size: var(--text-sm);
+  font-size: var(--font-body-sm);
   font-weight: var(--font-weight-bold);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: var(--tracking-tight);
+  line-height: var(--line-normal);
   color: var(--color-fg);
+  letter-spacing: var(--tracking-tight);
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-// Figma meta Caption/M_10 (Pretendard Medium 10 line 120% -0.02em muted).
+// Figma 보조 줄은 10px (Caption 계열)
 .meta {
-  font-size: 0.625rem; /* 10 */
-  font-weight: var(--font-weight-medium);
-  line-height: 1.2;
-  letter-spacing: var(--tracking-tight);
+  font-size: var(--font-eyebrow);
+  line-height: var(--line-tight);
   color: var(--color-muted);
   margin: 0;
-}
-
-// Figma empty-recent (320×60 white card border radius 12 padding 20 +
-// title B_14 center only).
-.empty {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-}
-
-.emptyTitle {
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-fg);
-  margin: 0;
-  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

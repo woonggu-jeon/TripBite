@@ -1,59 +1,88 @@
+// Figma emptyItme 실측 — 84px 원형 배지 + 제목 + 설명, 세로 중앙 정렬.
+// 설명이 있으면 gap 20 / 제목 14px, 없으면 gap 16 / 제목 16px (.hasDescription).
+// authItme(24px 제목)과는 다른 패턴이다 — 그쪽은 auth·완료 화면 전용.
+
 .wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: var(--space-3);
+  gap: var(--space-4); // Figma type=title gap 16 (구 12px)
   padding: var(--space-8) var(--space-4);
   min-height: 200px;
   justify-content: center;
 }
 
-// variant=hero — Figma "ec frame" (2026-06-23). 알림 빈 상태 등 페이지 전체
-// 차지하는 큰 시각. padding 0 40 60 + gap 20 + min-height 480.
-.heroWrap {
-  gap: 20px;
-  padding: 0 40px 60px;
-  min-height: 480px;
+// Figma `f` — 제목 ↔ 설명 3 (wrap 의 gap 16 과 별개)
+.text {
+  display: grid;
+  gap: 3px;
+  justify-items: center;
 }
 
+// Figma circle — 84px, 면 MainColor/secondary01, 글리프 MainColor/primary.
+// 글리프 대비는 2.53:1 로 비텍스트 3:1 미달이나, 제목·설명이 같은 의미를 전달하는
+// 장식 요소라 허용한다 (docs/design/DESIGN.md §7-1).
 .icon {
-  width: 56px;
-  height: 56px;
+  width: 84px;
+  height: 84px;
   display: grid;
   place-items: center;
   border-radius: var(--radius-full);
-  background: color-mix(in srgb, var(--color-border) 50%, transparent);
-  color: var(--color-muted);
-}
-
-// hero variant icon — 84 circle + primary-soft bg + primary icon color.
-.heroIcon {
-  width: 84px;
-  height: 84px;
   background: var(--color-primary-soft);
   color: var(--color-primary);
 }
 
 .title {
-  font-size: var(--text-base);
+  // 설명이 있으면 14px (.hasDescription 에서 override)
+  font-size: var(--text-base); // 16px — Basic Body/B_16_140%
   font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
 }
 
-// hero variant title — Figma Body/B_16_140% (-0.02em + line 140%).
-.heroTitle {
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: var(--tracking-tight);
+.hasDescription .title {
+  font-size: var(--font-body-sm); // 14px — Basic Body/B_14_140%
 }
 
 .description {
-  font-size: var(--text-sm);
+  font-size: var(--font-caption); // 12px — Caption/R_12 (구 14px)
+  letter-spacing: var(--tracking-snug); // Caption/R_12 은 -1%
   color: var(--color-muted);
   max-width: 28ch;
   line-height: var(--line-normal);
+  // 한글은 어절 단위로 끊어야 "골라보세 / 요." 처럼 잘리지 않는다
+  word-break: keep-all;
 }
 
+// Figma 는 텍스트 블록 ↔ 버튼이 20 — wrap gap 16 + 4
 .action {
-  margin-top: var(--space-2);
+  width: 100%;
+  margin-top: var(--space-1);
+}
+
+// Figma `empty-saved`(320x148) / `empty-recent`(320x60) — 섹션 안 흰 카드.
+// 원형 아이콘 없이 텍스트(+CTA)만, 최소 높이도 없다.
+.card {
+  gap: var(--space-4); // Figma gap 16
+  padding: var(--space-5) var(--space-4); // Figma 20 / 16
+  min-height: 0;
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+// 카드형 제목은 설명 유무와 무관하게 Basic Body/B_14_140%
+.card .title {
+  font-size: var(--font-body-sm);
+}
+
+// 카드형은 카드 폭(288)을 그대로 쓴다 — 28ch 제한이 걸리면 시안(1줄)과 달리
+// 설명이 2줄로 접혀 카드가 18px 높아진다.
+.card .description {
+  max-width: none;
+}
+
+.card .action {
+  margin-top: 0;
 }

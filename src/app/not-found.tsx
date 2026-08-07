@@ -10,7 +10,7 @@ export default function NotFound() {
   return (
     <main className={styles.main}>
       <EmptyState
-        variant="hero"
+        variant="default"
         icon={<Icon name="compass" size={36} />}
         title="페이지를 찾을 수 없어요"
         description={'요청하신 페이지가 사라졌거나\n잘못된 주소예요.'}

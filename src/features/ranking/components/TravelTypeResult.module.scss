@@ -1,249 +1,174 @@
-// Figma "TST · 유형테스트 결과" (2026-06-23) — body padding 20 gap 20.
-// 페이지 배경 #F8F8F8 (Figma 정정) — surface-soft 토큰 활용 (dark mode 자동).
-// padding-top 0 — SubHeader 바로 아래에 banner 시작 (이전 20 top 의 흰
-// 공백 회귀 2026-06-23 정정).
 .wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 0 20px 20px;
-  background: var(--color-surface-soft);
+  display: grid;
+  gap: 1.25rem;
 }
 
-// Figma banner — 320×247 padding 28 22 24 gap 8 secondary01 + primary 1px radius 12.
-.banner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 28px 22px 24px;
-  background: var(--color-primary-soft);
-  border: 1px solid var(--color-primary);
-  border-radius: 12px;
+// Card primitive variant="highlighted" 가 bg/border/radius 담당.
+.hero {
+  display: grid;
+  gap: 0.5rem;
+  place-items: center;
   text-align: center;
 }
 
-// Figma emoji 52 — Inter 52 line 100%.
-.bannerEmoji {
-  font-size: 52px;
+.heroEmoji {
+  font-size: var(--emoji-xl);
   line-height: 1;
+  filter: var(--drop-shadow-icon-strong);
 }
 
-// Figma pill primary — 73×20 padding 4 12 radius 999 Caption B_10 white.
-.codePill {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 12px;
-  background: var(--color-primary);
-  border-radius: var(--radius-full);
-  font-size: 0.625rem; /* 10 */
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-tight); /* 120% */
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-primary-fg);
+.codeBadge {
   text-transform: uppercase;
+  letter-spacing: var(--tracking-uppercase);
 }
 
-// Figma title B_24_130% — 24 Bold 130% tracking-tight fg.
 .title {
-  font-size: var(--font-h1); /* 24 */
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-tight); /* 130% */
+  font-size: var(--font-h1);
+  font-weight: var(--font-weight-extrabold);
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
-  margin: 0;
   word-break: keep-all;
 }
 
-// Figma tags row gap 8 — 3 pill white bg primary color Caption B_10.
 .keywords {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 0.25rem;
+  justify-content: center;
   padding: 0;
   margin: 0;
   list-style: none;
-  justify-content: center;
 }
 
-.keywordPill {
+.description {
+  margin-top: 0.5rem;
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+  line-height: var(--line-normal);
+  word-break: keep-all;
+  max-width: 320px;
+}
+
+.recommend {
+  display: grid;
+  gap: 0.625rem;
+}
+
+.recommendTitle {
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-fg);
+  letter-spacing: var(--tracking-tight);
+}
+
+.recommendList {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.recommendItem {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.875rem;
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.recEmoji {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  font-size: var(--emoji-sm);
+  background: var(--color-surface-soft);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.recPhoto {
+  object-fit: cover;
+}
+
+.recText {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.recName {
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-fg);
+  letter-spacing: var(--tracking-tight);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recMeta {
+  font-size: var(--font-caption);
+  color: var(--color-muted);
+}
+
+.actions {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.primary,
+.secondary {
   display: inline-flex;
   align-items: center;
-  padding: 4px 12px;
-  background: var(--color-bg);
-  border-radius: var(--radius-full);
-  font-size: 0.625rem; /* 10 */
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.875rem 1rem;
+  font-size: var(--font-body-sm);
   font-weight: var(--font-weight-bold);
-  line-height: var(--line-tight); /* 120% */
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-primary);
-}
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition:
+    opacity var(--motion-base) ease,
+    transform var(--motion-fast) ease,
+    border-color var(--motion-base) ease;
 
-// Figma description R_14_140% muted center.
-.description {
-  margin: 0;
-  font-size: var(--text-sm); /* 14 */
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed); /* 140% */
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-muted);
-  text-align: center;
-  word-break: keep-all;
-}
-
-// Figma section — gap 12 (sec-title + 컨텐츠).
-.section {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-// Figma sec-title — SB_16_140% fg.
-.sectionTitle {
-  font-size: var(--font-body); /* 16 */
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-snug-relaxed); /* 140% */
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-fg);
-  margin: 0;
-}
-
-// Figma saved-grid — row gap 8 width 408 (320 viewport overflow x scroll).
-// 3 cards × 152 + 2 gap × 8 = 472 — viewport 320 + padding 20×2 = 360 wrap.
-.recommendList {
-  display: flex;
-  gap: 8px;
-  padding: 0;
-  margin: 0 -20px;
-  padding-inline: 20px;
-  list-style: none;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
+  &:active {
+    transform: scale(0.98);
+  }
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
   }
 }
 
-// Figma DestinationCard 152×168 — 외부 wrap 폭 고정.
-.recommendItem {
-  flex: 0 0 152px;
-  scroll-snap-align: start;
+.primary {
+  background: var(--color-primary-strong);
+  color: var(--color-primary-fg);
+  border: 1.5px solid var(--color-primary);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      opacity: 0.9;
+    }
+  }
 }
 
-// Figma buttons — Frame 26 column gap 10 (Frame 25 row gap 8 + 1 별도 button).
-.actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.actionsRow {
-  display: flex;
-  gap: 8px;
-}
-
-// Figma "다시 테스트" — Button.v-outline default 가 gray stroke + muted color
-// (apply 정합 — 별도 처리 불필요). retake 는 Figma 가 primary border + primary
-// color (white bg) 요구 — override.
-//
-// .actions descendant selector — Button.v-outline 와 same specificity 충돌
-// (둘 다 single class) 회피. CSS module hash 가 stylesheet 순서 다를 때
-// retake override 가 v-outline 에 묻히는 회귀 차단.
-.actions .btnRetake {
-  color: var(--color-primary);
-  border: 1px solid var(--color-primary);
-}
-
-// Figma match-section (BE compatibility) — recent-box 320×172 padding 0 16
-// white border 1px radius 12.
-.matchBox {
-  display: flex;
-  flex-direction: column;
-  padding: 0 16px;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-}
-
-// Figma row — 288×86 padding 12 0 gap 12. border-bottom — last row 미적용.
-.matchRow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 0;
-}
-
-.matchRowBordered {
-  border-bottom: 1px solid var(--color-border);
-}
-
-// Figma emoji-c 40 circle — best #EBF9EF (primary-soft) / worst #F1F1F1 (surface-soft).
-.matchEmoji {
-  display: grid;
-  place-items: center;
-  flex: 0 0 40px;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-full);
-  font-size: 24px;
-  line-height: 1;
-}
-
-.matchEmojiBest {
-  background: var(--color-primary-soft);
-}
-
-.matchEmojiWorst {
-  background: var(--color-surface-soft);
-}
-
-// Figma f column — gap 3 (eyebrow + title + description).
-.matchText {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-  flex: 1;
-}
-
-// Figma eyebrow — best Caption B_10 primary / worst Caption M_10 muted.
-.matchEyebrow {
-  font-size: 0.625rem; /* 10 */
-  line-height: var(--line-tight); /* 120% */
-  letter-spacing: var(--tracking-tight);
-}
-
-.matchEyebrowBest {
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
-}
-
-.matchEyebrowWorst {
-  font-weight: var(--font-weight-medium);
-  color: var(--color-muted);
-}
-
-// Figma title B_14_140% — 14 Bold 140% tracking-tight fg.
-.matchTitle {
-  font-size: var(--text-sm); /* 14 */
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-snug-relaxed); /* 140% */
-  letter-spacing: var(--tracking-tight);
+.secondary {
+  background: transparent;
   color: var(--color-fg);
-  margin: 0;
-}
+  border: 1.5px solid var(--color-border);
 
-// Figma description Caption M_10 muted (2 줄 표시 가능).
-.matchReason {
-  font-size: 0.625rem; /* 10 */
-  font-weight: var(--font-weight-medium);
-  line-height: var(--line-tight); /* 120% */
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-muted);
-  margin: 0;
-  word-break: keep-all;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--color-primary-border);
+    }
+  }
 }
 
 .fallback {
@@ -253,4 +178,25 @@
   padding: 3rem 1rem;
   color: var(--color-muted);
   text-align: center;
+}
+
+.retry {
+  padding: 0.625rem 1rem;
+  background: var(--color-primary-strong);
+  color: var(--color-primary-fg);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
+  border: 0;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primary,
+  .secondary {
+    transition: none;
+    &:active {
+      transform: none;
+    }
+  }
 }

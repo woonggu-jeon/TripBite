@@ -1,0 +1,43 @@
+// Figma `SPLASH` — 360x720 흰 배경, 블록이 정중앙 (x 112 y 280, 137x160 →
+// 가로/세로 모두 정확히 center).
+.screen {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: var(--content-pad);
+  background: var(--color-bg);
+}
+
+// Figma `Frame 2` — V gap 20, 가운데 정렬
+.block {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-5);
+}
+
+// Figma `Frame 4` — V gap 4
+.text {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+  text-align: center;
+}
+
+// Title/B_24_130%
+.name {
+  font-size: var(--font-h1);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug);
+  color: var(--color-fg);
+  letter-spacing: var(--tracking-tight);
+}
+
+// Basic Body/R_14_140%
+.tagline {
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-normal);
+  color: var(--color-muted);
+  letter-spacing: var(--tracking-tight);
+}
