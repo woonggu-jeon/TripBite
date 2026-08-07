@@ -81,7 +81,10 @@ async function sweepRoute(
 ) {
   const pageErrors: string[] = [];
   const consoleErrors: string[] = [];
-  page.on('pageerror', (err) => pageErrors.push(err.message));
+  page.on('pageerror', (err) => {
+    if (!BENIGN_CONSOLE.some((re) => re.test(err.message)))
+      pageErrors.push(err.message);
+  });
   page.on('console', (msg) => {
     if (msg.type() === 'error') consoleErrors.push(msg.text());
   });
@@ -406,7 +409,12 @@ test.describe('전수 스위프 — 기능 인터랙션', () => {
 /** 공통: 페이지 에러/콘솔 수집 + 결과 기록 헬퍼 */
 function trackErrors(page: Page) {
   const pageErrors: string[] = [];
-  page.on('pageerror', (e) => pageErrors.push(e.message));
+  page.on('pageerror', (e) => {
+    // benign(예: SW update 'sw.js Not found' unhandled-rejection)은 제외 — console 과 동일 기준.
+    if (!BENIGN_CONSOLE.some((re) => re.test(e.message))) {
+      pageErrors.push(e.message);
+    }
+  });
   return pageErrors;
 }
 

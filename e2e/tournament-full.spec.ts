@@ -22,10 +22,16 @@ test.describe('토너먼트 풀 흐름 (4명)', () => {
     page,
   }) => {
     // 1) Setup — query prefill 로 step 3 (CategoryFilter) 진입
-    await page.goto('/tournament?theme=season&season=spring');
+    await page.goto('/tournament?theme=season&season=spring', {
+      waitUntil: 'networkidle',
+    });
+    // 클라 컴포넌트 hydration 대기 — 미완료 시 radio onClick 미부착으로 step 미진행(flaky).
+    await page.waitForTimeout(1000);
 
     // 카테고리 — 축제 선택
-    await page.getByRole('radio', { name: /축제/ }).click();
+    const festival = page.getByRole('radio', { name: /축제/ });
+    await festival.waitFor({ state: 'visible' });
+    await festival.click();
 
     // 갯수 step — 4명 선택 (button 또는 radio 둘 다 가능)
     const count4Btn = page.getByRole('button', { name: /^4$/ }).first();
