@@ -11,9 +11,13 @@ import { defineConfig, devices } from '@playwright/test';
  *   npx playwright install --with-deps chromium
  *
  * 동작:
- *   - webServer가 빌드+start를 자동 기동 (CI에서도)
- *   - NEXT_PUBLIC_USE_MSW=true 로 MSW mock 응답 사용 → 백엔드 불필요
+ *   - webServer가 빌드+start를 포트 3000 에 자동 기동 (dev/preview 와 동일 포트)
+ *   - NEXT_PUBLIC_USE_MSW=true 로 MSW mock 응답 사용 → 백엔드 불필요·결정적
  *   - 모바일 뷰포트 프리셋 (이 앱은 모바일 우선 PWA)
+ *
+ * ⚠️ dev 서버(`npm run dev`, USE_MSW=false)와 포트 3000 을 공유한다. e2e 는 항상
+ *    자체 MSW 서버를 띄우므로(reuseExistingServer:false), 실행 전에 dev 를 종료할 것
+ *    (`npm run kill:3000`). 안 그러면 포트 충돌로 webServer 기동 실패.
  *
  * MSW 공유:
  *   vitest와 동일한 src/mocks/handlers.ts 를 dev 서버의 service worker가 사용.
@@ -26,7 +30,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? 'github' : 'html',
   use: {
-    baseURL: 'http://localhost:3901',
+    baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
@@ -74,9 +78,11 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run build && npx next start --port 3901',
-    url: 'http://localhost:3901',
-    reuseExistingServer: !process.env.CI,
+    command: 'npm run build && npx next start --port 3000',
+    url: 'http://localhost:3000',
+    // dev(3000, USE_MSW=false)와 포트가 같다 — 재사용하면 e2e 가 MSW 대신 실 Spring
+    // 에 붙어 깨진다. 항상 자체 MSW 서버를 띄운다 (실행 전 `npm run dev` 는 종료할 것).
+    reuseExistingServer: false,
     timeout: 120_000,
     env: {
       NEXT_PUBLIC_API_URL: 'http://localhost:8080',

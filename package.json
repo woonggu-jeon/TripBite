@@ -37,7 +37,6 @@
     "be:contract": "BE_CONTRACT=1 vitest run src/api/be-contract.test.ts",
     "dev:clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\" && next dev --port 3000",
     "kill:3000": "node scripts/kill-port.mjs 3000",
-    "kill:3901": "node scripts/kill-port.mjs 3901",
     "dev:restart": "npm run kill:3000 && npm run dev",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",

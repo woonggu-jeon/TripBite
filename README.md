@@ -23,8 +23,8 @@ npm run build && npm start        # 프로덕션 빌드 (PWA 활성)
 | 서비스          | URL                             | 비고                 |
 | --------------- | ------------------------------- | -------------------- |
 | FE dev          | http://localhost:3000           | `npm run dev`        |
-| FE e2e          | http://localhost:3901           | Playwright webServer |
-| BE NestJS       | http://localhost:3000           | 별도 실행            |
+| FE e2e          | http://localhost:3000 (MSW)     | Playwright webServer (dev 종료 후) |
+| BE Spring       | https://trip-bite.o-r.kr        | 원격 (CORS: localhost:3000 허용) |
 | BE Swagger      | http://localhost:3000/docs      | endpoint try-it      |
 | BE OpenAPI JSON | http://localhost:3000/docs-json | orval source         |
 
