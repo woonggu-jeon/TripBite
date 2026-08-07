@@ -101,12 +101,18 @@
   white-space: nowrap;
 }
 
-// Figma `letterBox` — 5칸 균등, 칸마다 흰 면 + 빨간 보더. 칸 58x56.
+// Figma `Frame 71` — 셀 묶음 위/아래로 빨간 rule, 상하 padding 12.
 .letterBox {
+  padding: var(--space-3) 0;
+  border-top: var(--border-thin) solid var(--color-danger);
+  border-bottom: var(--border-thin) solid var(--color-danger);
+}
+
+// Figma `Frame 70` — 5칸 균등, 칸마다 흰 면 + 빨간 보더. 칸 58x56.
+.cells {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   border: var(--border-thin) solid var(--color-danger);
-  border-radius: var(--radius-sm);
   overflow: hidden;
 }
 
@@ -124,6 +130,21 @@
   &:last-child {
     border-right: 0;
   }
+}
+
+// 보낸 편지 — 시안은 텍스트가 오른쪽 정렬이다 (사진 반대편)
+.alignRight .meta,
+.alignRight .footerText {
+  justify-items: end;
+  text-align: right;
+}
+
+.alignRight .top {
+  justify-content: space-between;
+}
+
+.alignRight .toRow {
+  justify-content: flex-end;
 }
 
 // Figma `Frame 84` — 구분선 + To 블록, V gap 12

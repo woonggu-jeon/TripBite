@@ -5,7 +5,7 @@ import styles from './LetterPaper.module.scss';
  * 편지 카드 — Figma `Frame 79` (받은 편지 상세 / 편지 발송완료 공통).
  *
  *   ┌───────────────────────────────────┐  #F6F6F6 + 1px #E0E0E0, r12
- *   │ [사진60 + 도장62]  FROM / 보낸이   │  top   H gap 12
+ *   │ [사진60 + 도장58]  FROM / 보낸이   │  top   H gap 12
  *   │ ┌──┬──┬──┬──┬──┐                  │  5칸, 칸마다 흰 면 + 빨간 보더
  *   │ └──┴──┴──┴──┴──┘                  │
  *   │ ────────────────                  │  divider
@@ -19,31 +19,42 @@ export function LetterPaper({
   ariaLabel,
   postmarkLabel,
   postmarkName,
-  fromLabel,
-  fromName,
+  topLabel,
+  topName,
   body,
-  toLabel,
-  toName,
+  bottomLabel,
+  bottomName,
   dateText,
+  align = 'left',
 }: {
   ariaLabel: string;
-  /** 도장 위쪽 작은 라벨 (도착 / 전송 등) */
+  /** 도장 위쪽 작은 라벨 (도착 / 발송완료) */
   postmarkLabel: string;
-  /** 도장 아래 지역명 */
+  /** 도장 아래 이름 (지역 / 보낸이) */
   postmarkName?: string;
-  fromLabel: string;
-  fromName: string;
+  /** 사진 옆 라벨·이름 — 받은 편지는 From/보낸이, 보낸 편지는 To/받는이 */
+  topLabel: string;
+  topName: string;
   /** 다섯 글자 본문 — 5칸 고정, 부족하면 빈 칸 */
   body: string;
-  toLabel: string;
-  toName: string;
+  /** 카드 하단 라벨·이름 — 위와 반대쪽 */
+  bottomLabel: string;
+  bottomName: string;
   /** 카드 하단 날짜 줄 (이미 조합된 문자열) */
   dateText: ReactNode;
+  /**
+   * 텍스트 정렬. 시안이 화면마다 다르다 —
+   * 받은 편지는 왼쪽(사진 옆 From), 보낸 편지는 오른쪽(사진 반대편 To).
+   */
+  align?: 'left' | 'right';
 }) {
   const cells = Array.from({ length: 5 }, (_, i) => [...body][i] ?? '');
 
   return (
-    <article className={styles.card} aria-label={ariaLabel}>
+    <article
+      className={`${styles.card} ${align === 'right' ? styles.alignRight : ''}`}
+      aria-label={ariaLabel}
+    >
       <div className={styles.top}>
         {/* Figma `pw` — 60 사진 위에 원형 도장이 겹친다 */}
         <div className={styles.postmarkWrap} aria-hidden>
@@ -56,26 +67,29 @@ export function LetterPaper({
           </span>
         </div>
         <div className={styles.meta}>
-          <p className={styles.metaLabel}>{fromLabel}</p>
-          <p className={styles.metaValue}>{fromName}</p>
+          <p className={styles.metaLabel}>{topLabel}</p>
+          <p className={styles.metaValue}>{topName}</p>
         </div>
       </div>
 
-      {/* Figma `letterBox` — 5칸 */}
+      {/* Figma `letterBox` — 바깥 `Frame 71` 이 빨간 상·하 rule(padding 12),
+          안쪽 `Frame 70` 이 5칸 그리드 */}
       <div className={styles.letterBox} aria-label={body}>
-        {cells.map((ch, i) => (
-          <span key={i} className={styles.cell} aria-hidden>
-            {ch}
-          </span>
-        ))}
+        <div className={styles.cells}>
+          {cells.map((ch, i) => (
+            <span key={i} className={styles.cell} aria-hidden>
+              {ch}
+            </span>
+          ))}
+        </div>
       </div>
 
       <div className={styles.footer}>
         <span className={styles.divider} aria-hidden />
         <div className={styles.footerText}>
           <p className={styles.toRow}>
-            <span className={styles.metaLabel}>{toLabel}</span>
-            <span className={styles.toName}>{toName}</span>
+            <span className={styles.metaLabel}>{bottomLabel}</span>
+            <span className={styles.toName}>{bottomName}</span>
           </p>
           <p className={styles.dateText}>{dateText}</p>
         </div>

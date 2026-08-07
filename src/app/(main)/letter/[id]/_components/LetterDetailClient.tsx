@@ -98,11 +98,11 @@ export function LetterDetailClient({ letterId }: { letterId: string }) {
           ariaLabel={t('letterAria')}
           postmarkLabel={t('postmarkArrived')}
           postmarkName={senderLocation}
-          fromLabel={t('from')}
-          fromName={senderName}
+          topLabel={t('from')}
+          topName={senderName}
           body={letter.body}
-          toLabel={t('to')}
-          toName={t('toYou')}
+          bottomLabel={t('to')}
+          bottomName={t('toYou')}
           dateText={
             <>
               <time dateTime={arrivedIso}>{formatArrival(arrivedIso)}</time>{' '}

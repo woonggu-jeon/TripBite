@@ -6,6 +6,7 @@ import { Icon } from '@/components/icon';
 import { LetterPaper } from '@/features/letter/components/LetterPaper';
 import { useLetter } from '@/features/letter/hooks/use-letters';
 import { useLetterStore } from '@/features/letter/store/letter-store';
+import { useAuthStore } from '@/stores/auth-store';
 import { Button, ButtonGrid } from '@/components/ui';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import styles from './LetterSentClient.module.scss';
@@ -67,6 +68,8 @@ export function LetterSentClient() {
   const t = useTranslations('letter.sent');
   const tAuthor = useTranslations('letter.author');
   const lastSent = useLetterStore((s) => s.lastSent);
+  // 시안 도장에는 보낸 사람(=나) 의 닉네임이 찍힌다.
+  const myNickname = useAuthStore((s) => s.user?.nickname);
 
   // ?id= deep-link 우선 — 새로고침 / 공유 진입 대응. 없으면 store fallback.
   const letterQuery = useLetter(letterId ?? '');
@@ -136,7 +139,7 @@ export function LetterSentClient() {
   // 사용자에게 수신자 정보 노출 X (익명 보장), 도착 시간도 추상 표현.
   const senderLocation = view.location;
 
-  const handleAgain = () => router.replace('/letter/compose');
+  // 시안 발송완료에는 "또 쓰기" 버튼이 없다 — 하단은 홈으로 가기 하나뿐.
   const handleHome = () => router.replace('/');
 
   return (
@@ -144,7 +147,7 @@ export function LetterSentClient() {
       {/* Figma `편지 발송완료` — 84 원 + 36 letter 아이콘 + 제목/보조 (중앙) */}
       <header className={styles.sentHead} role="status">
         <span className={styles.sentCircle} aria-hidden>
-          <Icon name="letter-36" size={36} />
+          <Icon name="check-36" size={36} />
         </span>
         <span className={styles.sentText}>
           <span className={styles.sentTitle}>{t('noticeTitle')}</span>
@@ -152,33 +155,30 @@ export function LetterSentClient() {
         </span>
       </header>
 
+      {/* 시안 `편지 발송완료` — 사진 옆이 To(우측 정렬), 하단이 From */}
       <LetterPaper
         ariaLabel={t('letterAria')}
         postmarkLabel={t('sentBadge')}
-        postmarkName={senderLocation}
-        fromLabel={t('from')}
-        fromName={tAuthor('anonymous')}
+        postmarkName={myNickname}
+        topLabel={t('to')}
+        topName={t('toRecipient')}
         body={view.body}
-        toLabel={t('to')}
-        toName={t('toRecipient')}
-        dateText={`${formatKoreanDate(view.sentAt)} · ${t('toArrival')}`}
+        bottomLabel={t('from')}
+        bottomName={`${tAuthor('anonymous')} · ${senderLocation}`}
+        dateText={`${formatKoreanDate(view.sentAt)} ${t('sentSuffix')}`}
+        align="right"
       />
 
-      {/* 시안은 하단에 라인 버튼 하나 (홈으로). "또 쓰기" 는 유지 */}
-      <div className={styles.actions}>
-        <Button variant="secondary" size="lg" fullWidth onClick={handleAgain}>
-          {t('again')}
-        </Button>
-        <Button
-          variant="secondary"
-          size="lg"
-          fullWidth
-          className={styles.lineButton}
-          onClick={handleHome}
-        >
-          {t('home')}
-        </Button>
-      </div>
+      {/* 시안은 하단에 라인 버튼 하나 (홈으로 가기) */}
+      <Button
+        variant="secondary"
+        size="lg"
+        fullWidth
+        className={styles.lineButton}
+        onClick={handleHome}
+      >
+        {t('home')}
+      </Button>
     </div>
   );
 }

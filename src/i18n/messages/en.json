@@ -555,7 +555,8 @@
       "empty": "No letter just sent",
       "goCompose": "Write a letter",
       "loadError": "Couldn't load the letter",
-      "retry": "Try again"
+      "retry": "Try again",
+      "sentSuffix": "sent"
     },
     "liked": "Liked",
     "saved": "Saved",

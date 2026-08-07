@@ -555,7 +555,8 @@
       "empty": "방금 보낸 편지가 없어요",
       "goCompose": "편지 쓰러 가기",
       "loadError": "편지를 불러오지 못했어요",
-      "retry": "다시 시도"
+      "retry": "다시 시도",
+      "sentSuffix": "발송"
     },
     "liked": "좋아요한 편지",
     "saved": "저장한 편지",

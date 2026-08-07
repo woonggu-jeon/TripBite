@@ -55,6 +55,8 @@ export type IconName =
   | 'bookmark-on'
   | 'letter-24'
   | 'letter-36'
+  // Figma `circleIcon check` — 편지 발송완료
+  | 'check-36'
   // Navigation
   | 'chevron-left'
   | 'chevron-right'
@@ -109,6 +111,7 @@ const STROKE_WIDTHS: Partial<Record<IconName, number>> = {
   bookmark: 1.558,
   'letter-24': 1.7,
   'letter-36': 2.7,
+  'check-36': 4.6,
 };
 
 /**
