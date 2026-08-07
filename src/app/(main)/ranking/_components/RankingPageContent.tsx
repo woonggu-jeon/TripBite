@@ -60,8 +60,9 @@ export function RankingPageContent() {
         {data && data.length > 0 && (
           <div className={styles.list}>
             {data.map((item) => (
+              // rank 포함 — 같은 여행지가 복수 순위에 나올 수 있어(집계 데이터) key 유일성 보장.
               <Top5Card
-                key={item.destination.id ?? `rank-${item.rank}`}
+                key={`${item.destination.id ?? 'd'}-${item.rank}`}
                 item={item}
               />
             ))}
