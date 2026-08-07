@@ -70,8 +70,7 @@ FE 는 아래를 `api.*` 직접 호출로 유지 → **현재 MSW mock 으로만
 | 중 | `POST /me/complete-onboarding` | 온보딩 완료 | `{nickname?,homeRegion?}` → User |
 | 중 | `GET /auth/check-username?username=` · `check-email?email=` | 가입 중복확인 | query → `{available:boolean}` |
 | 중 | `POST /auth/find-id` · `forgot-password` · `reset-password` | 아이디찾기·비번재설정 | `{email}` / `{username,email}` / `{token,password}` → ack |
-| 낮음 | `GET /destinations/recommendations` | 홈 추천 | → `{festival[],attraction[],experience[]}` (DestinationDto[]) |
-| 낮음 | `GET /destinations/{id}/related` | 관련 여행지 | → `DestinationDto[]` |
+| 낮음 | `GET /destinations/{id}/related` | 관련 여행지 (장소상세) | → `DestinationDto[]` |
 | 낮음 | `GET /rankings?type=&limit=` | 추천/카테고리/계절/유형 랭킹 | → `RankedDestination[]` |
 | 낮음 | `GET /regions/{code}/summary` · `contents` | 시군 요약·콘텐츠 | → `{code,heroImage?,description,popularity}` / `{items[],nextCursor}` |
 | 낮음 | `GET /travel-types/me` · `PATCH /travel-types/me` | 내 여행유형 조회·적용 | → `TravelTypeDto` |
