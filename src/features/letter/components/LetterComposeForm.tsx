@@ -5,7 +5,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { MapPin } from 'lucide-react';
+import { Icon } from '@/components/icon';
 import {
   letterSchema,
   type LetterFormValues,
@@ -183,9 +183,6 @@ export function LetterComposeForm() {
         name="isAnonymous"
         control={control}
         render={({ field }) => (
-          // input id + htmlFor 로 연결되어 있고 label 자식 span 이 accessible text 를
-          // 제공. rule 이 nested span 안 텍스트를 detect 못 해 disable.
-          // eslint-disable-next-line jsx-a11y/label-has-associated-control
           <label htmlFor="isAnonymous" className={styles.anonymous}>
             <input
               id="isAnonymous"
@@ -196,25 +193,21 @@ export function LetterComposeForm() {
               name={field.name}
               className={styles.anonymousCheckbox}
             />
-            <span className={styles.anonymousText}>
-              <span className={styles.anonymousLabel}>{t('anonymous')}</span>
-              <span className={styles.anonymousHint}>{t('anonymousHint')}</span>
-            </span>
+            {/* 시안 `an` 은 체크박스 + 라벨 한 줄뿐 — 보조 문구가 없다 */}
+            <span className={styles.anonymousLabel}>{t('anonymous')}</span>
           </label>
         )}
       />
 
       {/* 3) 하단 위치 — 2줄 안내 (자동 첨부 + 지역) */}
       <div className={styles.locationSection}>
-        <MapPin size={16} aria-hidden className={styles.locationIcon} />
+        <Icon name="location-18" size={20} className={styles.locationIcon} />
         <div className={styles.locationBody}>
           {resolved ? (
             <>
+              {/* Figma `lm` — 안내 12 위, 지역 14 Bold 아래 (pill 은 카드 우측) */}
               <p className={styles.locationLine1}>{tLoc('autoAttached')}</p>
-              <p className={styles.locationLine2}>
-                {resolved.label}{' '}
-                <span className={styles.locationTag}>{tLoc('autoSet')}</span>
-              </p>
+              <p className={styles.locationLine2}>{resolved.label}</p>
             </>
           ) : isResolving ? (
             <p className={styles.locationLine1}>{tLoc('resolving')}</p>
@@ -235,6 +228,10 @@ export function LetterComposeForm() {
             </>
           )}
         </div>
+        {/* Figma `lbg` — 카드 우측 "자동 설정됨" pill */}
+        {resolved && (
+          <span className={styles.locationTag}>{tLoc('autoSet')}</span>
+        )}
       </div>
 
       {/* 4) 액션 — 보내기 버튼은 빈 입력 시 disabled.

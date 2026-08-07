@@ -1,9 +1,17 @@
-// Figma `wb` — padding 20, `Frame 76` V gap 32 (입력 묶음 ↔ 옵션 묶음),
-// `Frame 74` V gap 40 (안내 ↔ 입력 카드), `Frame 75` V gap 20.
-// 단일 세로 흐름이라 gap 24 로 통일하고 안내↔카드만 넓힌다.
+// Figma `wb` — padding 20. 세로 간격이 구간마다 다르다:
+//   안내 ↔ 입력 카드      40  (`Frame 74`)
+//   입력 카드 ↔ 익명       32  (`Frame 76`)
+//   익명 ↔ 위치           20  (`Frame 75`)
+//   위치 ↔ 전송 버튼       32
+// 구 구현은 전 구간 24 로 통일돼 있었다.
 .form {
   display: grid;
-  gap: var(--space-6);
+  gap: var(--space-8); // 기본 32
+}
+
+// 안내 ↔ 입력 카드만 40
+.intro + .inputSection {
+  margin-top: var(--space-2);
 }
 
 .intro {
@@ -61,12 +69,17 @@
   justify-content: flex-start;
 }
 
+// 익명 ↔ 위치는 20 (form 기본 32 에서 당긴다)
+.locationSection {
+  margin-top: calc(var(--space-3) * -1);
+}
+
 // Figma `an` — 체크박스 20 + 라벨, H gap 9(→8). 카드가 아니다.
 .anonymous {
   display: grid;
   grid-template-columns: 20px 1fr;
   gap: var(--space-2);
-  align-items: start;
+  align-items: center;
   padding: 0;
   background: none;
   border: 0;
@@ -88,21 +101,11 @@
   cursor: pointer;
 }
 
-.anonymousText {
-  display: grid;
-  gap: 2px;
-}
-
 .anonymousLabel {
   font-size: var(--font-body-sm);
   font-weight: var(--font-weight-bold);
   color: var(--color-fg);
   letter-spacing: var(--tracking-tight);
-}
-
-.anonymousHint {
-  font-size: var(--font-caption);
-  color: var(--color-muted);
 }
 
 // Caption/B_10
@@ -118,7 +121,7 @@
 // (구: 연초록 면)
 .locationSection {
   display: grid;
-  grid-template-columns: 20px minmax(0, 1fr);
+  grid-template-columns: 20px minmax(0, 1fr) auto;
   gap: var(--space-3);
   align-items: center;
   padding: var(--space-5) var(--space-4);
@@ -129,39 +132,44 @@
 
 .locationIcon {
   color: var(--color-primary-text-bold);
-  margin-top: 1px;
 }
 
+// Figma `lm` — V gap 4
 .locationBody {
   display: grid;
-  gap: 0.125rem;
+  gap: var(--space-1);
   min-width: 0;
 }
 
+// Caption/R_12 #393939 — 안내가 위
 .locationLine1 {
-  font-size: var(--font-label);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-fg);
+  font-size: var(--font-caption);
+  line-height: var(--line-normal);
+  color: var(--color-muted);
   letter-spacing: var(--tracking-snug);
 }
 
+// Basic Body/B_14_140% #151515 — 지역명이 아래
 .locationLine2 {
-  font-size: var(--font-label);
-  color: var(--color-muted);
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.375rem;
-  flex-wrap: wrap;
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-normal);
+  color: var(--color-fg);
+  letter-spacing: var(--tracking-tight);
 }
 
+// Figma `lbg` — 연초록 pill, padding 4/12, radius 999, Caption/B_10
 .locationTag {
-  font-size: var(--font-eyebrow);
-  font-weight: var(--font-weight-semibold);
-  padding: 1px 6px;
-  background: var(--color-primary-tint);
+  flex-shrink: 0;
+  padding: 4px var(--space-3);
+  background: var(--color-primary-soft);
   color: var(--color-primary-text-bold);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-full);
+  font-size: var(--font-eyebrow);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-tight);
   letter-spacing: var(--tracking-tight);
+  white-space: nowrap;
 }
 
 .allowBtn {

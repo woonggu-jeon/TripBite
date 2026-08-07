@@ -4,16 +4,16 @@
   user-select: none;
 }
 
-// Figma `letterBox > Frame 70` — 셀 56x56 이 gap 0 으로 붙어 한 덩어리처럼
-// 보인다. 바깥 radius 만 살리고 사이 보더는 겹쳐 하나의 선이 되게 한다.
+// Figma `letterBox > Frame 70` — 셀 56 이 gap 0 으로 붙어 한 덩어리처럼 보인다.
+// 보더는 편지지와 같은 빨강(#E1493C) — 상세·발송완료의 letterBox 와 같은 규격.
 .cells {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 0;
   pointer-events: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   overflow: hidden;
-  border: var(--border-thin) solid var(--color-border);
+  border: var(--border-thin) solid var(--color-danger);
 }
 
 // Figma `cell` 56x56 정사각, 흰 면. 오른쪽 구분선만 (마지막 칸 제외).
@@ -21,12 +21,12 @@
 .cell {
   display: grid;
   place-items: center;
-  aspect-ratio: 1;
+  aspect-ratio: 56 / 56;
   border: 0;
-  border-right: var(--border-thin) solid var(--color-border);
+  border-right: var(--border-thin) solid var(--color-danger);
   border-radius: 0;
   background: var(--color-surface);
-  font-size: var(--font-h1);
+  font-size: var(--font-h2); // Title/B_24
   font-weight: var(--font-weight-bold);
   color: var(--color-fg);
 
