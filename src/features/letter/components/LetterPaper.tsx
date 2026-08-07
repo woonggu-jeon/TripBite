@@ -1,4 +1,7 @@
 import type { ReactNode } from 'react';
+import Image from 'next/image';
+import { Icon } from '@/components/icon';
+import { secureImageUrl } from '@/lib/secure-image-url';
 import styles from './LetterPaper.module.scss';
 
 /**
@@ -25,6 +28,7 @@ export function LetterPaper({
   bottomLabel,
   bottomName,
   dateText,
+  photoUrl,
   align = 'left',
 }: {
   ariaLabel: string;
@@ -43,12 +47,18 @@ export function LetterPaper({
   /** 카드 하단 날짜 줄 (이미 조합된 문자열) */
   dateText: ReactNode;
   /**
+   * 사진(60x60 radius 10). 없으면 마이페이지와 같은 기본 프로필
+   * (연초록 면 + profileIcon) 을 쓴다.
+   */
+  photoUrl?: string | null;
+  /**
    * 텍스트 정렬. 시안이 화면마다 다르다 —
    * 받은 편지는 왼쪽(사진 옆 From), 보낸 편지는 오른쪽(사진 반대편 To).
    */
   align?: 'left' | 'right';
 }) {
   const cells = Array.from({ length: 5 }, (_, i) => [...body][i] ?? '');
+  const safePhoto = secureImageUrl(photoUrl);
 
   return (
     <article
@@ -58,7 +68,20 @@ export function LetterPaper({
       <div className={styles.top}>
         {/* Figma `pw` — 60 사진 위에 원형 도장이 겹친다 */}
         <div className={styles.postmarkWrap} aria-hidden>
-          <span className={styles.photo} />
+          <span className={styles.photo}>
+            {safePhoto ? (
+              <Image
+                src={safePhoto}
+                alt=""
+                fill
+                sizes="60px"
+                className={styles.photoImg}
+              />
+            ) : (
+              // 프로필 사진이 없으면 마이페이지 기본 프로필과 같은 표시
+              <Icon name="user" size={24} className={styles.photoFallback} />
+            )}
+          </span>
           <span className={styles.postmark}>
             <span className={styles.postmarkLabel}>{postmarkLabel}</span>
             {postmarkName && (

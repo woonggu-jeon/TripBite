@@ -110,6 +110,7 @@ export function LetterComposeForm() {
         body: values.body,
         location: { label: resolved.label },
         sentAt: created?.createdAt ?? new Date().toISOString(),
+        isAnonymous: values.isAnonymous,
       });
       // 서버가 letter id 반환 시 deep-link 로 push — 새로고침/공유 가능.
       router.push(

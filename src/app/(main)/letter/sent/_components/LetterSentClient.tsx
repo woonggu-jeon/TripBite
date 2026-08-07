@@ -70,27 +70,43 @@ export function LetterSentClient() {
   const lastSent = useLetterStore((s) => s.lastSent);
   // 시안 도장에는 보낸 사람(=나) 의 닉네임이 찍힌다.
   const myNickname = useAuthStore((s) => s.user?.nickname);
+  const myAvatarUrl = useAuthStore((s) => s.user?.avatarUrl);
 
   // ?id= deep-link 우선 — 새로고침 / 공유 진입 대응. 없으면 store fallback.
   const letterQuery = useLetter(letterId ?? '');
   const enabled = !!letterId;
   const serverLetter = enabled ? letterQuery.data : undefined;
 
-  // 통합 source — server 우선, store fallback.
-  const view: { body: string; sentAt: string; location: string } | null =
-    serverLetter
+  /**
+   * 통합 source — server 우선, store fallback.
+   *
+   * `senderName` 은 익명 발송 여부에 따라 갈린다:
+   *   server 응답이 있으면 → author.nickname (서버가 익명 처리까지 끝낸 값)
+   *   없으면              → lastSent.isAnonymous ? "익명의 여행자" : 내 닉네임
+   * 익명을 선택하지 않았는데 "익명의 여행자" 로 찍히던 버그를 고친 부분이다.
+   */
+  const view: {
+    body: string;
+    sentAt: string;
+    location: string;
+    senderName: string;
+  } | null = serverLetter
+    ? {
+        body: serverLetter.body,
+        sentAt: serverLetter.createdAt,
+        location: serverLetter.author.location ?? '익명 위치',
+        senderName: serverLetter.author.nickname || tAuthor('anonymous'),
+      }
+    : lastSent
       ? {
-          body: serverLetter.body,
-          sentAt: serverLetter.createdAt,
-          location: serverLetter.author.location ?? '익명 위치',
+          body: lastSent.body,
+          sentAt: lastSent.sentAt,
+          location: lastSent.location?.label ?? '익명 위치',
+          senderName: lastSent.isAnonymous
+            ? tAuthor('anonymous')
+            : (myNickname ?? tAuthor('anonymous')),
         }
-      : lastSent
-        ? {
-            body: lastSent.body,
-            sentAt: lastSent.sentAt,
-            location: lastSent.location?.label ?? '익명 위치',
-          }
-        : null;
+      : null;
 
   if (enabled && letterQuery.isLoading && !lastSent) {
     return (
@@ -159,13 +175,14 @@ export function LetterSentClient() {
       <LetterPaper
         ariaLabel={t('letterAria')}
         postmarkLabel={t('sentBadge')}
-        postmarkName={myNickname}
+        postmarkName={view.senderName}
         topLabel={t('to')}
         topName={t('toRecipient')}
         body={view.body}
         bottomLabel={t('from')}
-        bottomName={`${tAuthor('anonymous')} · ${senderLocation}`}
+        bottomName={`${view.senderName} · ${senderLocation}`}
         dateText={`${formatKoreanDate(view.sentAt)} ${t('sentSuffix')}`}
+        photoUrl={myAvatarUrl}
         align="right"
       />
 

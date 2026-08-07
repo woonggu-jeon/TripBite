@@ -19,23 +19,38 @@
   min-width: 0;
 }
 
-// Figma `pw` 104x60 — 60 사진 위에 70 원형 도장이 겹친다
+// Figma `pw` 104x60 — 60 사진 위에 원형 도장이 겹친다
 .postmarkWrap {
   position: relative;
+  display: flex;
+  align-items: center;
   flex-shrink: 0;
   width: 104px;
   height: 60px;
 }
 
+// Figma `sq` 60x60 radius 10 — 프로필 사진.
+// 사진이 없으면 마이페이지 기본 프로필과 같은 연초록 면 + 초록 사람 아이콘.
 .photo {
-  position: absolute;
-  left: 0;
-  top: 0;
+  position: relative;
+  display: grid;
+  place-items: center;
   width: 60px;
   height: 60px;
   border-radius: 10px;
   background: var(--color-primary-soft);
   border: var(--border-thin) solid var(--color-border);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.photoImg {
+  object-fit: cover;
+}
+
+.photoFallback {
+  --icon-stroke: 1.7;
+  color: var(--color-primary-text-bold);
 }
 
 // Figma `pm` 70x70 — 2px #E1493C 원형 도장. 시안색이 레포 danger 와 미세하게
