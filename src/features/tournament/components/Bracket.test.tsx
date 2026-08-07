@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from '@/test-utils';
-import type { DestinationDto } from '@/api/generated/schemas';
+import type { DestinationDto } from '@/types/api-domain';
 import type { BracketResult } from '@/features/tournament/types';
 import { Bracket, type BracketHandle } from './Bracket';
 

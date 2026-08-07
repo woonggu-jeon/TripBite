@@ -8,7 +8,7 @@ import {
   type Ref,
 } from 'react';
 import { useTranslations } from 'next-intl';
-import type { DestinationDto } from '@/api/generated/schemas';
+import type { DestinationDto } from '@/types/api-domain';
 import type { BracketResult } from '@/features/tournament/types';
 import {
   pairRound,

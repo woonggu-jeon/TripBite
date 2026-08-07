@@ -12,7 +12,7 @@ import { CategoryFilter } from '@/features/tournament/components/CategoryFilter'
 import { CountSelector } from '@/features/tournament/components/CountSelector';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { useTournamentStore } from '@/features/tournament/store/tournament-store';
-import type { DestinationCategory, Season } from '@/api/generated/schemas';
+import type { DestinationCategory, Season } from '@/types/api-domain';
 import type {
   TournamentCount,
   TournamentTheme,

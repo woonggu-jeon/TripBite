@@ -13,14 +13,6 @@ import type {
   GetRandomRegion,
   GetRandomSeason,
 } from '@/api/be/schemas';
-import {
-  destinationControllerDetailV1,
-  destinationControllerRelatedV1,
-} from '@/api/generated/destinations/destinations';
-import {
-  mypageControllerRemoveSavedV1,
-  mypageControllerSaveV1,
-} from '@/api/generated/mypage/mypage';
 import type {
   DestinationDetailDto,
   DestinationDto,
@@ -28,8 +20,7 @@ import type {
   TournamentHistoryItemDto,
   TournamentHistoryPageDto,
   TournamentRecordDto,
-} from '@/api/generated/schemas';
-import { tournamentControllerGetV1 } from '@/api/generated/tournaments/tournaments';
+} from '@/types/api-domain';
 import type { TournamentConfig } from '@/features/tournament/types';
 import {
   normalizeImageField,
@@ -72,13 +63,17 @@ export const tournamentApi = {
       } as unknown as DestinationDetailDto;
       return normalizePhotosField(normalizeImageField(mapped));
     }
-    const res = await destinationControllerDetailV1(id);
+    // mock(문자열 복합 id) → 직접 api (MSW).
+    const res = (await api.get<DestinationDetailDto>(`/destinations/${id}`))
+      .data;
     return normalizePhotosField(normalizeImageField(res));
   },
 
-  // related 는 새 BE 미지원 → 구 generated mock 유지.
+  // ⚠️ related 는 Spring 미지원 — MSW mock. BE 추가 필요.
   getRelatedDestinations: async (id: string): Promise<DestinationDto[]> => {
-    const res = await destinationControllerRelatedV1(id);
+    const res = (
+      await api.get<DestinationDto[]>(`/destinations/${id}/related`)
+    ).data;
     return res.map(normalizeImageField);
   },
 
@@ -158,9 +153,10 @@ export const tournamentApi = {
     return { id: String(d?.id ?? '') } as unknown as TournamentRecordDto;
   },
 
-  // getRecord(GET /tournaments/{id}) 딥링크 — 새 BE 무대응 → 구 generated mock 유지.
+  // ⚠️ getRecord(GET /tournaments/{id}) 딥링크 — Spring 미지원, MSW mock. BE 추가 필요.
   // 실 BE 모드에선 cold 딥링크 복원 미지원(결과 화면이 store fallback, store 없으면 안내).
-  getRecord: (id: string) => tournamentControllerGetV1(id),
+  getRecord: async (id: string): Promise<TournamentRecordDto> =>
+    (await api.get<TournamentRecordDto>(`/tournaments/${id}`)).data,
 
   // 저장 목록 — 신규 Spring BE(엔벨로프) → 도메인 SavedTournamentDto[] 매핑.
   // 새 BE 는 luckyColor 미제공 → '' (SavedTournamentCard accentDot 비활성).
@@ -183,12 +179,12 @@ export const tournamentApi = {
     );
   },
 
-  // 저장/삭제 — 실 BE 모드(정수 id)면 be/, mock(문자열 복합 id)이면 구 generated.
+  // 저장/삭제 — 실 BE 모드(정수 id)면 be/, mock(문자열 복합 id)이면 직접 api(MSW).
   saveToMypage: async (winnerId: string): Promise<void> => {
     if (/^\d+$/.test(winnerId)) {
       await beSave({ destinationId: Number(winnerId) });
     } else {
-      await mypageControllerSaveV1({ destinationId: winnerId });
+      await api.post('/mypage/tournaments', { destinationId: winnerId });
     }
   },
 
@@ -196,7 +192,7 @@ export const tournamentApi = {
     if (/^\d+$/.test(savedId)) {
       await beDeleteSaved(Number(savedId));
     } else {
-      await mypageControllerRemoveSavedV1(savedId);
+      await api.delete(`/mypage/tournaments/${savedId}`);
     }
   },
 

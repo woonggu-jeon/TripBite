@@ -7,7 +7,7 @@ import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import type {
   DestinationCategory,
   RegionContentDto,
-} from '@/api/generated/schemas';
+} from '@/types/api-domain';
 import {
   regionKeys,
   useRegionContents,

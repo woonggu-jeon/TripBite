@@ -2,7 +2,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { act, waitFor } from '@testing-library/react';
 import { HttpResponse, http } from 'msw';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { SavedTournamentDto } from '@/api/generated/schemas';
+import type { SavedTournamentDto } from '@/types/api-domain';
 import { mockSeeds } from '@/mocks/handlers';
 import { server } from '@/mocks/server';
 import { useAuthStore } from '@/stores/auth-store';

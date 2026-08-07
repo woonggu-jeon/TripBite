@@ -1,4 +1,4 @@
-import type { QuizQuestionDto } from '@/api/generated/schemas';
+import type { QuizQuestionDto } from '@/types/api-domain';
 import { shuffle, shuffleQuizOptions } from './shuffle-options';
 
 describe('shuffle', () => {

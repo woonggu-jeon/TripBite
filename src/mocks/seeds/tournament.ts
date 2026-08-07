@@ -1,7 +1,7 @@
 import type {
   DestinationCategory,
   SavedTournamentDto,
-} from '@/api/generated/schemas';
+} from '@/types/api-domain';
 import type { RegionCode } from '@/constants/regions';
 import { destinationSeeds, tourSeedId } from './destinations';
 

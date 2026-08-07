@@ -1,4 +1,4 @@
-import type { Season } from '@/api/generated/schemas';
+import type { Season } from '@/types/api-domain';
 
 /**
  * 월 → 계절 매핑 (북반구 기상학적 분류).

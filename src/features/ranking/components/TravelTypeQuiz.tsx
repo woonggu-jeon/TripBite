@@ -13,7 +13,7 @@ import {
 } from '@/features/ranking/hooks/use-ranking';
 import type { TravelTypeAnswer } from '@/features/ranking/types';
 import { shuffleQuizOptions } from '@/features/ranking/utils/shuffle-options';
-import type { QuizOptionDto } from '@/api/generated/schemas';
+import type { QuizOptionDto } from '@/types/api-domain';
 import styles from './TravelTypeQuiz.module.scss';
 
 /**

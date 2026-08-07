@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
   MypageSummaryDto,
   UpdateProfileDto,
-} from '@/api/generated/schemas';
+} from '@/types/api-domain';
 import { authKeys } from '@/features/auth/hooks/use-auth';
 import { mypageApi } from '@/features/mypage/api/mypage';
 import { CACHE } from '@/lib/cache';

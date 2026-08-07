@@ -12,7 +12,7 @@ import type {
   ComposeLetterDto,
   LetterDto,
   LetterPageDto,
-} from '@/api/generated/schemas';
+} from '@/types/api-domain';
 import { letterApi } from '@/features/letter/api/letter';
 import type { LetterListKind } from '@/features/letter/types';
 import { CACHE } from '@/lib/cache';

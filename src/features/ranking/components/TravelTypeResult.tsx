@@ -11,7 +11,7 @@ import {
   useMyTravelType,
   useSetMyTravelType,
 } from '@/features/ranking/hooks/use-ranking';
-import type { TravelTypeDto } from '@/api/generated/schemas';
+import type { TravelTypeDto } from '@/types/api-domain';
 import { toast } from '@/lib/toast';
 import { useShareCard } from '@/hooks/use-share-card';
 import { useRequireAuth } from '@/hooks/use-require-auth';

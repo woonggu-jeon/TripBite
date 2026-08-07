@@ -1,15 +1,16 @@
-import { locationControllerReverseV1 } from '@/api/generated/location/location';
+import { api } from '@/services/api/client';
 import type { Coordinates, ResolvedLocation } from '@/features/location/types';
 
 /**
- * Reverse geocoding API — orval generated client wrap.
+ * Reverse geocoding — 좌표 → 한글 행정구역 라벨 변환.
+ *   POST /location/reverse { latitude, longitude } → ResolvedLocation
  *
- * BE 가 Kakao/Naver reverse 로 좌표 → 한글 행정구역 라벨 변환.
- *   POST /v1/location/reverse { latitude, longitude } → ResolvedLocation
- *
- * 응답 label 예: "서울시 용산구", "충북 청주시 상당구". regionCode 는 충북 한정.
+ * ⚠️ Spring BE 미지원 (2026-08 기준 swagger 에 없음) — MSW mock 으로만 동작.
+ *    실 BE 연동은 BE 가 `/location/reverse` 추가해야 함 (BE_REQUEST 문서 참조).
  */
 export const locationApi = {
-  reverseGeocode: (coords: Coordinates) =>
-    locationControllerReverseV1(coords) as Promise<ResolvedLocation>,
+  reverseGeocode: async (coords: Coordinates): Promise<ResolvedLocation> => {
+    const res = await api.post<ResolvedLocation>('/location/reverse', coords);
+    return res.data;
+  },
 };

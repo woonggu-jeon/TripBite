@@ -4,7 +4,7 @@ import { Icon } from '@/components/icon';
 import { HeroCard } from '@/components/ui';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { categoryEmoji } from '@/constants/emoji-map';
-import type { DestinationDto } from '@/api/generated/schemas';
+import type { DestinationDto } from '@/types/api-domain';
 
 export interface MatchupCardProps {
   destination: DestinationDto;

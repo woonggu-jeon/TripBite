@@ -4,7 +4,7 @@ import { Icon } from '@/components/icon';
 import { DestinationCard } from '@/components/ui';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { categoryEmoji, FALLBACK_TROPHY_EMOJI } from '@/constants/emoji-map';
-import type { SavedTournamentDto } from '@/api/generated/schemas';
+import type { SavedTournamentDto } from '@/types/api-domain';
 import styles from './SavedTournamentCard.module.scss';
 
 /**

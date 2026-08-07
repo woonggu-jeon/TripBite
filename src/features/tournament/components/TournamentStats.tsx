@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
-import type { DestinationDto } from '@/api/generated/schemas';
+import type { DestinationDto } from '@/types/api-domain';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import type { TournamentCount } from '@/features/tournament/types';
 import styles from './TournamentStats.module.scss';

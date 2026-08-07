@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Phone } from 'lucide-react';
 import { Icon } from '@/components/icon';
-import type { DestinationDetailDto } from '@/api/generated/schemas';
+import type { DestinationDetailDto } from '@/types/api-domain';
 import styles from './WinnerDetailPanel.module.scss';
 
 /**

@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { memo } from 'react';
-import type { DestinationDto } from '@/api/generated/schemas';
+import type { DestinationDto } from '@/types/api-domain';
 import { MediaThumb } from '@/components/ui';
 import { categoryEmoji } from '@/constants/emoji-map';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';

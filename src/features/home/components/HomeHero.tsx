@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
-import type { DestinationDto } from '@/api/generated/schemas';
+import type { DestinationDto } from '@/types/api-domain';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { Icon } from '@/components/icon/Icon';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';

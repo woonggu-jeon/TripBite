@@ -5,7 +5,7 @@ import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import { haptic } from '@/lib/haptic';
 import { Illustration } from '@/components/brand/Illustration';
 import { seasonIllustration } from '@/constants/illustration-map';
-import type { DestinationDto } from '@/api/generated/schemas';
+import type { DestinationDto } from '@/types/api-domain';
 import type { TournamentTheme } from '@/features/tournament/types';
 import styles from './ChungbukMap.module.scss';
 

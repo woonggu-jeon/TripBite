@@ -12,7 +12,7 @@ import {
   useDeleteLetter,
   useToggleSaveLetter,
 } from '@/features/letter/hooks/use-letters';
-import type { LetterDto } from '@/api/generated/schemas';
+import type { LetterDto } from '@/types/api-domain';
 import styles from './LetterActions.module.scss';
 
 /**

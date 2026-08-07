@@ -5,7 +5,7 @@ import { InfiniteList } from '@/features/list/components/InfiniteList';
 import { EmptyState as EmptyStateBlock } from '@/components/feedback/EmptyState';
 import { Icon } from '@/components/icon';
 import { useLettersInfinite } from '@/features/letter/hooks/use-letters';
-import type { LetterDto } from '@/api/generated/schemas';
+import type { LetterDto } from '@/types/api-domain';
 import type { LetterListKind } from '@/features/letter/types';
 import { LetterRowCard } from './LetterRowCard';
 import styles from './LetterListPanel.module.scss';

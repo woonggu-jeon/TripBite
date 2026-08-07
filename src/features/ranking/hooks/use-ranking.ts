@@ -1,8 +1,8 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { DestinationCategory } from '@/api/generated/schemas';
-import type { TravelTypeCode } from '@/api/generated/schemas';
+import type { DestinationCategory } from '@/types/api-domain';
+import type { TravelTypeCode } from '@/types/api-domain';
 import { mypageKeys } from '@/features/mypage/hooks/use-mypage';
 import { rankingApi } from '@/features/ranking/api/ranking';
 import type { RankingType, TravelTypeAnswer } from '@/features/ranking/types';

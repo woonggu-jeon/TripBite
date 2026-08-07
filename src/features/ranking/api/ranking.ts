@@ -5,17 +5,13 @@ import {
 } from '@/api/be/tournament/tournament';
 // 신규 Spring BE 지원: quiz(GET) + submit(POST). (me GET/PATCH 는 미지원 → 구 generated mock 유지)
 import { getQuiz, submit } from '@/api/be/travel-type/travel-type';
-import { rankingControllerListV1 } from '@/api/generated/rankings/rankings';
-import type { DestinationDto } from '@/api/generated/schemas';
+import { api } from '@/services/api/client';
+import type { DestinationDto } from '@/types/api-domain';
 import type {
   DestinationCategory,
   TravelTypeCode,
   TravelTypeDto,
-} from '@/api/generated/schemas';
-import {
-  quizControllerApplyV1,
-  quizControllerGetMeV1,
-} from '@/api/generated/travel-types/travel-types';
+} from '@/types/api-domain';
 import type {
   RankedDestination,
   RankingType,
@@ -70,12 +66,16 @@ export const rankingApi = {
     // real-BE 모드(USE_MSW=false)에선 dead(500) → 빈 배열로 degrade (호출부가 빈 상태 처리).
     // mock 모드에서만 구 generated 호출(MSW handler 가 데이터 제공).
     if (process.env.NEXT_PUBLIC_USE_MSW !== 'true') return [];
-    // generated Params 가 type/limit 만 (category/season/region 미정의). type 만 매핑.
-    const res = await rankingControllerListV1({
-      type: params.type,
-      limit: params.limit != null ? String(params.limit) : undefined,
-    });
-    return (res as RankedDestination[]).map((r) => ({
+    // ⚠️ Spring 미지원(generic /rankings) — MSW mock. BE 추가 필요.
+    const res = (
+      await api.get<RankedDestination[]>('/rankings', {
+        params: {
+          type: params.type,
+          limit: params.limit != null ? String(params.limit) : undefined,
+        },
+      })
+    ).data;
+    return res.map((r) => ({
       ...r,
       destination: normalizeImageField(r.destination),
     }));
@@ -120,14 +120,17 @@ export const rankingApi = {
     } as unknown as TravelTypeDto);
   },
 
+  // ⚠️ Spring 미지원 (travel-types/me GET·PATCH) — MSW mock. BE 추가 필요.
   getMyTravelType: async (): Promise<TravelTypeDto | null> => {
-    const res = (await quizControllerGetMeV1()) as TravelTypeDto | null;
+    const res = (await api.get<TravelTypeDto | null>('/travel-types/me')).data;
     return res ? normalizeTravelTypeImages(res) : null;
   },
 
   setMyTravelType: async (code: TravelTypeCode): Promise<TravelTypeDto> => {
-    const res = await quizControllerApplyV1({ code });
-    return normalizeTravelTypeImages(res as TravelTypeDto);
+    const res = (
+      await api.patch<TravelTypeDto>('/travel-types/me', { code })
+    ).data;
+    return normalizeTravelTypeImages(res);
   },
 };
 

@@ -1,13 +1,11 @@
-// 신규 Spring BE 지원: ongoing-festivals. (summary/contents 는 미지원 → 구 generated mock 유지)
+// 신규 Spring BE 지원: ongoing-festivals. (summary/contents 는 미지원 → MSW mock)
 import { getOngoingFestivals } from '@/api/be/region/region';
-import {
-  regionControllerContentsV1,
-  regionControllerSummaryV1,
-} from '@/api/generated/regions/regions';
+import { api } from '@/services/api/client';
 import type {
   DestinationCategory,
   RegionContentDto,
-} from '@/api/generated/schemas';
+  RegionSummaryDto,
+} from '@/types/api-domain';
 import type { RegionCode } from '@/constants/regions';
 import { normalizeImageField, secureImageUrl } from '@/lib/secure-image-url';
 
@@ -43,10 +41,12 @@ export const regionApi = {
   // heroImage 는 TourAPI 원본 http URL 일 수 있음 → next.config remotePatterns
   // (https 만 허용) 통과 위해 https 정규화 (BE 안전망). secure-image-url 의
   // HTTPS_FORCE_HOSTS 에 tong.visitkorea.or.kr 등록돼 자동 처리.
-  getSummary: async (code: RegionCode) => {
-    const res = await regionControllerSummaryV1(code);
+  // ⚠️ Spring 미지원 (regions/:code/summary) — MSW mock. BE 추가 필요.
+  getSummary: async (code: RegionCode): Promise<RegionSummaryDto> => {
+    const res = (await api.get<RegionSummaryDto>(`/regions/${code}/summary`))
+      .data;
     return res.heroImage
-      ? { ...res, heroImage: secureImageUrl(res.heroImage) }
+      ? { ...res, heroImage: secureImageUrl(res.heroImage) ?? res.heroImage }
       : res;
   },
 
@@ -58,13 +58,19 @@ export const regionApi = {
       limit?: number;
     },
   ) => {
-    const res = await regionControllerContentsV1(code, {
-      // 'all' 은 BE 에 type 미전달 (전체 반환 분기). BE 가 OpenAPI query enum 에
-      // 'all' 추가하면 그때 params.type 으로 명시 전달 가능.
-      type: params.type === 'all' ? undefined : params.type,
-      cursor: params.cursor != null ? String(params.cursor) : undefined,
-      limit: params.limit != null ? String(params.limit) : undefined,
-    });
+    // ⚠️ Spring 미지원 (regions/:code/contents) — MSW mock. BE 추가 필요.
+    const res = (
+      await api.get<{ items: RegionContentDto[] } & Record<string, unknown>>(
+        `/regions/${code}/contents`,
+        {
+          params: {
+            type: params.type === 'all' ? undefined : params.type,
+            cursor: params.cursor != null ? String(params.cursor) : undefined,
+            limit: params.limit != null ? String(params.limit) : undefined,
+          },
+        },
+      )
+    ).data;
     // TourAPI 원본 http URL → https 정규화 (BE 안전망)
     return {
       ...res,

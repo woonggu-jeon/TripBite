@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { RadioGroup } from '@/components/ui';
 import { Illustration } from '@/components/brand/Illustration';
 import { seasonIllustration } from '@/constants/illustration-map';
-import type { Season } from '@/api/generated/schemas';
+import type { Season } from '@/types/api-domain';
 import { SelectCard } from './SelectCard';
 import styles from './SeasonSelector.module.scss';
 

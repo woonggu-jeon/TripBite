@@ -21,7 +21,7 @@ import type {
   AppNotificationDto,
   DestinationDto,
   TravelTypeDto,
-} from '@/api/generated/schemas';
+} from '@/types/api-domain';
 import { isRegionCode } from '@/constants/regions';
 import type { TravelTypeAnswer } from '@/features/ranking/types';
 import { destinationSeeds } from './seeds/destinations';

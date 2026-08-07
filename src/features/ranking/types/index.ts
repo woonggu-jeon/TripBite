@@ -1,4 +1,4 @@
-import type { DestinationDto } from '@/api/generated/schemas';
+import type { DestinationDto } from '@/types/api-domain';
 
 export type RankedDestination = {
   rank: number;

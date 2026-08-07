@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { RadioGroup } from '@/components/ui';
 import { Illustration } from '@/components/brand/Illustration';
 import { categoryIllustration } from '@/constants/illustration-map';
-import type { DestinationCategory } from '@/api/generated/schemas';
+import type { DestinationCategory } from '@/types/api-domain';
 import { SelectCard } from './SelectCard';
 import styles from './CategoryFilter.module.scss';
 

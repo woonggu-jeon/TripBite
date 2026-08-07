@@ -8,7 +8,7 @@ import { HeroCard } from '@/components/ui';
 import { useRecommendedDestinations } from '@/features/ranking/hooks/use-ranking';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { categoryEmoji } from '@/constants/emoji-map';
-import type { DestinationDto } from '@/api/generated/schemas';
+import type { DestinationDto } from '@/types/api-domain';
 import styles from './RecommendationBanner.module.scss';
 
 /**

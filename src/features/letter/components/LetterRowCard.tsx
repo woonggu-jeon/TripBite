@@ -8,7 +8,7 @@ import { useDebouncedCallback } from '@/hooks/use-debounced-callback';
 import { Icon } from '@/components/icon';
 import { relativeTimeToken } from '@/lib/relative-time';
 import { useToggleSaveLetter } from '@/features/letter/hooks/use-letters';
-import type { LetterDto } from '@/api/generated/schemas';
+import type { LetterDto } from '@/types/api-domain';
 import styles from './LetterRowCard.module.scss';
 
 const TOGGLE_DEBOUNCE_MS = 400;

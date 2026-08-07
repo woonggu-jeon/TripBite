@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { Season } from '@/api/generated/schemas';
+import type { Season } from '@/types/api-domain';
 import { seasonIllustration } from '@/constants/illustration-map';
 import styles from './FallingPetals.module.scss';
 

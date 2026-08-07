@@ -24,7 +24,7 @@ import {
 import type {
   AppNotificationDto,
   AppNotificationType,
-} from '@/api/generated/schemas';
+} from '@/types/api-domain';
 import styles from './NotificationsClient.module.scss';
 
 const PUSH_PROMPT_DISMISS_KEY = 'tripbite.push-prompt.dismissed';

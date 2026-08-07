@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
   DestinationCategory,
   SavedTournamentDto,
-} from '@/api/generated/schemas';
+} from '@/types/api-domain';
 import { tournamentApi } from '@/features/tournament/api/tournament';
 import type {
   TournamentConfig,

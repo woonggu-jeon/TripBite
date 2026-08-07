@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import type { UserDto } from '@/api/generated/schemas';
+import type { UserDto } from '@/types/api-domain';
 
 /**
  * 아키텍처 문서 13, 15번

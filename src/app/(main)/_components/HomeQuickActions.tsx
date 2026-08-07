@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { Icon } from '@/components/icon';
 import { ROUTES } from '@/constants/routes';
 import { getCurrentSeason } from '@/features/tournament/utils/season';
-import type { Season } from '@/api/generated/schemas';
+import type { Season } from '@/types/api-domain';
 import styles from './HomeDashboard.module.scss';
 
 /**

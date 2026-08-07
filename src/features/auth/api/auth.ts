@@ -6,18 +6,14 @@ import {
 } from '@/api/be/auth/auth';
 import { getMe as beGetMe } from '@/api/be/me/me';
 import type { UserResponseDto } from '@/api/be/schemas';
-import {
-  authControllerCheckEmailV1,
-  authControllerCheckUsernameV1,
-  authControllerFindIdV1,
-  authControllerForgotPasswordV1,
-  authControllerResetPasswordV1,
-} from '@/api/generated/auth/auth';
-import {
-  meControllerChangePasswordV1,
-  meControllerWithdrawV1,
-} from '@/api/generated/me/me';
-import type { UserDto } from '@/api/generated/schemas';
+import { api } from '@/services/api/client';
+import type {
+  FindIdDto,
+  ForgotPasswordDto,
+  ResetPasswordDto,
+  ChangePasswordDto,
+  UserDto,
+} from '@/types/api-domain';
 
 /**
  * 신규 UserResponseDto → 기존 도메인 UserDto 매핑.
@@ -56,16 +52,24 @@ export const authApi = {
   // 신규 Spring BE: SignupRequestDto(username/password/name/birthDate/email/phone/nickname).
   // 응답은 ApiResponseUnit(user 없음) → useSignup 이 폼 입력값으로 pendingUser 구성.
   signup: beSignup,
-  // 가입 폼 중복확인 — 버튼 클릭 시 호출. nickname 은 unique 정책 없어 endpoint 없음.
+  // ⚠️ 아래 6개는 Spring BE 미지원 — MSW mock 으로만 동작. 실 BE 는 404.
+  //    BE 가 엔드포인트 추가해야 함 (BE_REQUEST 문서 참조).
   checkUsername: (username: string) =>
-    authControllerCheckUsernameV1({ username }),
-  checkEmail: (email: string) => authControllerCheckEmailV1({ email }),
-  forgotPassword: authControllerForgotPasswordV1,
-  resetPassword: authControllerResetPasswordV1,
-  changePassword: meControllerChangePasswordV1,
-  findId: authControllerFindIdV1,
+    api
+      .get('/auth/check-username', { params: { username } })
+      .then((r) => r.data),
+  checkEmail: (email: string) =>
+    api.get('/auth/check-email', { params: { email } }).then((r) => r.data),
+  forgotPassword: (data: ForgotPasswordDto) =>
+    api.post('/auth/forgot-password', data).then((r) => r.data),
+  resetPassword: (data: ResetPasswordDto) =>
+    api.post('/auth/reset-password', data).then((r) => r.data),
+  changePassword: (data: ChangePasswordDto) =>
+    api.post('/me/change-password', data).then((r) => r.data),
+  findId: (data: FindIdDto) =>
+    api.post('/auth/find-id', data).then((r) => r.data),
   logout: beLogout,
-  deleteAccount: meControllerWithdrawV1,
+  deleteAccount: () => api.delete('/me').then((r) => r.data),
   // 신규 BE: GET /me → ApiResponse<UserResponseDto> → 도메인 UserDto 매핑.
   me: async (signal?: AbortSignal): Promise<UserDto> => {
     const res = await beGetMe(signal);

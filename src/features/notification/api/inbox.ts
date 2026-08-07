@@ -4,7 +4,7 @@ import {
   read,
   readAll,
 } from '@/api/be/notification/notification';
-import type { NotificationListDto } from '@/api/generated/schemas';
+import type { NotificationListDto } from '@/types/api-domain';
 
 /**
  * 인앱 알림함 API — 신규 Spring BE (`@/api/be/notification`) client wrap.

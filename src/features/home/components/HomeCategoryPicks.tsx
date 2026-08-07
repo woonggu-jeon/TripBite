@@ -17,7 +17,7 @@ import {
 import { categoryEmoji } from '@/constants/emoji-map';
 import { useResponsiveSlidesPerView } from '@/hooks/use-responsive-slides-per-view';
 import { ROUTES } from '@/constants/routes';
-import type { DestinationCategory } from '@/api/generated/schemas';
+import type { DestinationCategory } from '@/types/api-domain';
 // 축제 아이템은 현재(Spring) 어댑터가 반환하는 be/ shape 사용 (useOngoingFestivals 정합).
 import type { OngoingFestivalItemDto } from '@/api/be/schemas';
 import { DdayBadge } from './DdayBadge';

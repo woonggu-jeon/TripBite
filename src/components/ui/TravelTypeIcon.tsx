@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import type { TravelTypeCode } from '@/api/generated/schemas';
+import type { TravelTypeCode } from '@/types/api-domain';
 
 /**
  * 여행 유형 아이콘 — Figma "tripTypeIcon" 정합 (2026-06-25).

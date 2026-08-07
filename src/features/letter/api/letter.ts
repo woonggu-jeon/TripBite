@@ -15,18 +15,11 @@ import type {
   LetterDto as BeLetterDto,
   LetterPageDto as BeLetterPageDto,
 } from '@/api/be/schemas';
-// mock(문자열 복합 id) 경로용 — 실 BE 모드(정수 id)는 be/, mock 은 구 generated.
-import {
-  letterControllerGetV1,
-  letterControllerLikeV1,
-  letterControllerRemoveV1,
-  letterControllerSaveV1,
-} from '@/api/generated/letters/letters';
 import type {
   ComposeLetterDto,
   LetterDto,
   LetterPageDto,
-} from '@/api/generated/schemas';
+} from '@/types/api-domain';
 import { api } from '@/services/api/client';
 
 const PAGE_SIZE = 10;
@@ -105,23 +98,17 @@ export const letterApi = {
   listSaved: async (cursor = 0): Promise<LetterPageDto> =>
     mapPage((await beGetSaved({ cursor, size: PAGE_SIZE })).data),
 
+  // Spring be/ 단일화 (구 NestJS 분기 제거). id 는 정수 — mock seed 도 정수 id 사용.
   get: async (id: string): Promise<LetterDto> =>
-    /^\d+$/.test(id)
-      ? mapLetter((await beGetById(Number(id))).data ?? {})
-      : letterControllerGetV1(id),
+    mapLetter((await beGetById(Number(id))).data ?? {}),
 
   toggleLike: async (id: string): Promise<LetterDto> =>
-    /^\d+$/.test(id)
-      ? mapLetter((await beLike(Number(id))).data ?? {})
-      : letterControllerLikeV1(id),
+    mapLetter((await beLike(Number(id))).data ?? {}),
 
   toggleSave: async (id: string): Promise<LetterDto> =>
-    /^\d+$/.test(id)
-      ? mapLetter((await beSave(Number(id))).data ?? {})
-      : letterControllerSaveV1(id),
+    mapLetter((await beSave(Number(id))).data ?? {}),
 
   remove: async (id: string): Promise<void> => {
-    if (/^\d+$/.test(id)) await beDelete(Number(id));
-    else await letterControllerRemoveV1(id);
+    await beDelete(Number(id));
   },
 };

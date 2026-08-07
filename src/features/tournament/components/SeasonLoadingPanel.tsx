@@ -1,6 +1,6 @@
 'use client';
 
-import type { Season } from '@/api/generated/schemas';
+import type { Season } from '@/types/api-domain';
 import { SeasonIcon } from '@/components/ui/SeasonIcon';
 import styles from './SeasonLoadingPanel.module.scss';
 

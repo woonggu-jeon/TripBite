@@ -3,7 +3,7 @@ import type { QuizDto } from '@/api/be/schemas';
 import type {
   TravelTypeCompatibilityDto,
   TravelTypeDto,
-} from '@/api/generated/schemas';
+} from '@/types/api-domain';
 
 /**
  * 여행 유형 테스트 mock seed.

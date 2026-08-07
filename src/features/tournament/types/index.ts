@@ -9,7 +9,7 @@ import type {
   DestinationCategory,
   DestinationDto,
   Season,
-} from '@/api/generated/schemas';
+} from '@/types/api-domain';
 
 /**
  * 토너먼트 테마 — 항상 계절 기반.

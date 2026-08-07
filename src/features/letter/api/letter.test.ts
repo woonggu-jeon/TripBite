@@ -1,6 +1,6 @@
 import { HttpResponse, http } from 'msw';
 import { describe, expect, it } from 'vitest';
-import type { ComposeLetterDto } from '@/api/generated/schemas';
+import type { ComposeLetterDto } from '@/types/api-domain';
 import { mockSeeds } from '@/mocks/handlers';
 import { server } from '@/mocks/server';
 import { letterApi } from './letter';

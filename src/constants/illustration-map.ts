@@ -1,5 +1,5 @@
 import type { IllustrationName } from '@/components/brand/Illustration';
-import type { Season } from '@/api/generated/schemas';
+import type { Season } from '@/types/api-domain';
 
 /**
  * 도메인 값 → Figma 일러스트 이름 매핑.

@@ -1,4 +1,4 @@
-import type { DestinationDto } from '@/api/generated/schemas';
+import type { DestinationDto } from '@/types/api-domain';
 
 /**
  * 토너먼트 트리 유틸 (단일 라운드 페어링 + 라운드 사이즈 결정)

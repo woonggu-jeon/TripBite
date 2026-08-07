@@ -8,7 +8,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import type { NotificationListDto } from '@/api/generated/schemas';
+import type { NotificationListDto } from '@/types/api-domain';
 import { notificationInboxApi } from '@/features/notification/api/inbox';
 import { CACHE } from '@/lib/cache';
 import { useAuthStore } from '@/stores/auth-store';

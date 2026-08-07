@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import type { Season } from '@/api/generated/schemas';
+import type { Season } from '@/types/api-domain';
 
 /**
  * 시즌 아이콘 — Figma "seasonIcon" 정합 (2026-06-25).

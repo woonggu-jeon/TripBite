@@ -1,4 +1,4 @@
-import type { QuizOptionDto, QuizQuestionDto } from '@/api/generated/schemas';
+import type { QuizOptionDto, QuizQuestionDto } from '@/types/api-domain';
 
 /**
  * Fisher-Yates 셔플 (in-place 가 아닌 새 배열 반환).

@@ -16,7 +16,7 @@ import type {
   LoginDto,
   ResetPasswordDto,
   UserDto,
-} from '@/api/generated/schemas';
+} from '@/types/api-domain';
 import { authApi } from '@/features/auth/api/auth';
 import { createLogger } from '@/lib/logger';
 import { clearAllCaches } from '@/lib/sw-cache';

@@ -11,7 +11,7 @@ import {
   Bracket,
   type BracketHandle,
 } from '@/features/tournament/components/Bracket';
-import type { DestinationDto } from '@/api/generated/schemas';
+import type { DestinationDto } from '@/types/api-domain';
 import type {
   BracketResult,
   TournamentCount,
