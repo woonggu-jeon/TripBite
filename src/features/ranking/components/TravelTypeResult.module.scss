@@ -69,6 +69,16 @@
   list-style: none;
 }
 
+.recommendComingSoon {
+  padding: 0.875rem;
+  background: var(--color-bg-subtle, var(--color-bg));
+  border: 1.5px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-body-sm);
+  color: var(--color-fg-muted, var(--color-fg));
+  text-align: center;
+}
+
 .recommendItem {
   display: grid;
   grid-template-columns: 40px 1fr;

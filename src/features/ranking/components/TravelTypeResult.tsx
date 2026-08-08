@@ -36,6 +36,7 @@ import styles from './TravelTypeResult.module.scss';
  */
 export function TravelTypeResult() {
   const t = useTranslations('travelType.result');
+  const tComingSoon = useTranslations('common.comingSoon');
   const router = useRouter();
   const { data, isLoading } = useMyTravelType();
   const applyMutation = useSetMyTravelType();
@@ -132,6 +133,14 @@ export function TravelTypeResult() {
           <p className={styles.description}>{result.description}</p>
         )}
       </Card>
+
+      {/* 추천 여행지 — Spring 미제공(유형별 추천 엔드포인트 없음) → 준비중 안내. */}
+      <section className={styles.recommend}>
+        <h3 className={styles.recommendTitle}>{t('recommendTitle')}</h3>
+        <p className={styles.recommendComingSoon}>
+          {tComingSoon('description')}
+        </p>
+      </section>
 
       <div className={styles.actions}>
         <ButtonGrid>

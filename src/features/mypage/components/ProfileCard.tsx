@@ -3,29 +3,49 @@
 import { useTranslations } from 'next-intl';
 import { Icon } from '@/components/icon';
 import { useMypage } from '@/features/mypage/hooks/use-mypage';
+import { haptic } from '@/lib/haptic';
+import { toast } from '@/lib/toast';
 import styles from './ProfileCard.module.scss';
 
 /**
  * 프로필 카드 — 원형 아바타(닉네임 이니셜 fallback) + 닉네임 + 유형 배지.
  *
  * 아바타 업로드는 Spring 미지원(POST/DELETE /me/avatar 없음, avatarUrl 미제공) →
- * 기능 제거. 아바타는 user 심볼 fallback 고정.
+ * 진입점(카메라 버튼)은 유지하되 "준비중" 안내. 아바타는 user 심볼 fallback 고정.
  */
 export function ProfileCard() {
   const t = useTranslations('mypage.profile');
+  const tComingSoon = useTranslations('common.comingSoon');
   const { data, isLoading } = useMypage();
 
   const nickname = data?.profile.nickname ?? (isLoading ? '' : t('anonymous'));
 
+  // 아바타 변경은 Spring 미지원 → 준비중 안내(toast).
+  const onChangeAvatar = () => {
+    haptic.tap();
+    toast.info(tComingSoon('description'));
+  };
+
   return (
     <article className={styles.card}>
       <div className={styles.avatarWrap}>
-        <span className={styles.avatar}>
-          <span className={styles.avatarFallback} aria-hidden>
-            {/* Figma `profileIcon` 24px — sprite 의 user 심볼 */}
-            <Icon name="user" size={24} />
+        <button
+          type="button"
+          className={styles.avatarBtn}
+          onClick={onChangeAvatar}
+          aria-label={t('changeAvatar')}
+        >
+          <span className={styles.avatar}>
+            <span className={styles.avatarFallback} aria-hidden>
+              {/* Figma `profileIcon` 24px — sprite 의 user 심볼 */}
+              <Icon name="user" size={24} />
+            </span>
           </span>
-        </span>
+          {/* Figma `cam-badge` — 아바타 우하단 카메라 (준비중 진입점) */}
+          <span className={styles.camBadge} aria-hidden>
+            <Icon name="camera" size={12} />
+          </span>
+        </button>
       </div>
 
       {/* Figma `pmid` — 닉네임(18 Bold) + 유형 배지(pill), V gap 4 */}
