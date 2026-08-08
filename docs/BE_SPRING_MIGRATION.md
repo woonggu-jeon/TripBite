@@ -36,7 +36,7 @@
 | ------------------------------------- | --------------------------------------------- |
 | 타입체크 (앱코드)                     | ✅ 0                                          |
 | lint                                  | ✅ 에러 0                                     |
-| vitest (유닛, MSW)                    | ✅ 248 passed / 13 skip                       |
+| vitest (유닛, MSW)                    | ✅ 224 passed / 13 skip                       |
 | jest (순수 로직)                      | ✅ 38 passed                                  |
 | **be:contract (실 Spring, 세션주입)** | ✅ 10 passed                                  |
 | **프로덕션 빌드**                     | ✅ 성공                                       |
@@ -79,27 +79,28 @@ FE 는 아래를 `api.*` 직접 호출(현재 MSW mock). 그런데 **상당수�
 > 전환 근거(enabler)는 모두 실 BE 검증됨: `GET /destinations` 는 **category 필수**·region 선택. `PATCH /me` 는 travelType/nickname 수정. `GET /me` 는 travelType(code) 반환.
 > 잔여 MSW mock 핸들러(travel-types/me·complete-onboarding·regions/contents)는 실 BE 모드에서 미도출(inert) — e2e mock 및 문자열 id fallback 위해 존치.
 
-### 4-B. ⚠️ 부분 대체 — 가능하나 UX/정확도/보안 저하
+### 4-B. ✅ 전환/정적 처리 완료 (2026-08-08, FE 전면 정합)
 
-> `POST /location/reverse` (**편지 필수**)는 **전환 완료(2026-08-08)** — 아래 표에서 제외. FE 클라측 **충북 11시군 centroid 최근접**(`constants/regions.ts` centroid + `features/location/lib/nearest-region.ts`)으로 regionCode/label 산출, `locationApi.reverseGeocode` 가 순수 클라 계산으로 대체(BE·외부 지오코딩 의존 0). 편지 compose 폼이 regionCode 를 필수 전송하도록 함께 보정(실 BE 계약 충족). 트레이드오프: label 이 "충북 {시군}" 근사(정확 도로명 주소 아님), 충북 밖 좌표는 최근접 시군 귀속.
+| 현 호출                                  | 처리                                                                                                                                                                  |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST /location/reverse` (편지 필수)     | 클라측 충북 11시군 centroid 최근접(`features/location/lib/nearest-region.ts`) → regionCode/label 산출. 편지 compose 가 regionCode 필수 전송. BE·외부 지오코딩 의존 0. |
+| `GET /auth/check-username`·`check-email` | 사전확인 게이팅 제거 → 가입 제출 시 `POST /auth/signup` 409 처리. 중복확인 버튼은 준비중 안내.                                                                        |
+| `GET /regions/{code}/summary`            | `RegionHero` 정적 렌더(시군명 i18n + 설명 문구). popularity/heroImage 제거(Spring 미제공).                                                                            |
+| `GET /rankings` (추천/카테고리/계절)     | real-BE 모드 빈배열 degrade(호출부 빈 상태 처리). weekly/by-region 은 Spring 지원.                                                                                    |
 
-| 현 호출                                  | 대체 방법                                                                              | 트레이드오프                             |
-| ---------------------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------- |
-| `POST /me/change-password`               | `PATCH /me { password }`                                                               | **currentPassword 검증 없음(보안 약화)** |
-| `GET /auth/check-username`·`check-email` | 사전확인 제거 → `POST /auth/signup` 의 409 로 처리                                     | 인라인 사전확인 UX 상실                  |
-| `GET /rankings` (추천/카테고리/계절)     | `GET /destinations/random` 또는 weekly 랭킹으로 근사                                   | 진짜 추천 로직 아님                      |
-| `GET /regions/{code}/summary`            | description/popularity 는 FE 정적 문구(11 시군 고정), heroImage 는 destinations 이미지 | BE 큐레이션 데이터 상실                  |
+### 4-C. 🕗 준비중 처리 (Spring 엔드포인트 추가 시 되살림)
 
-### 4-C. ⛔ 대체 불가 — 진짜 BE 필요
+Spring 이 진짜로 없는 기능은 UI 진입점(라우트·버튼)은 남기고 **준비중 안내**(`ComingSoon` / toast)로 표현. 죽은 어댑터/훅/폼/mock 은 제거.
 
-| 메서드·경로                                             | 용도                       | 사유                                               |
-| ------------------------------------------------------- | -------------------------- | -------------------------------------------------- |
-| `POST /auth/find-id`·`forgot-password`·`reset-password` | 아이디찾기·비번재설정      | 이메일 발송/토큰 검증 — 서버 필수                  |
-| `DELETE /me`                                            | 회원 탈퇴                  | 서버 삭제 필수                                     |
-| `POST /me/avatar`·`DELETE /me/avatar`                   | 프로필 이미지              | 파일 스토리지 필수                                 |
-| `GET /tournaments/{id}`                                 | 결과 공유 딥링크 cold 복원 | 서버 저장 없이 복원 불가(정상 흐름은 client store) |
+| 메서드·경로                                             | 용도                  | UI 처리                                      |
+| ------------------------------------------------------- | --------------------- | -------------------------------------------- |
+| `POST /auth/find-id`·`forgot-password`·`reset-password` | 아이디찾기·비번재설정 | 각 페이지 `ComingSoon`(라우트 유지)          |
+| `POST /me/change-password`                              | 비밀번호 변경         | 설정 다이얼로그 `ComingSoon`                 |
+| `DELETE /me`                                            | 회원 탈퇴             | 설정 탈퇴 → 준비중 toast (로그아웃은 지원)   |
+| `POST /me/avatar`·`DELETE /me/avatar`                   | 프로필 이미지         | 카메라 버튼 → 준비중 toast (이니셜 fallback) |
+| `GET /tournaments/{id}`                                 | 결과 딥링크 cold 복원 | 결과는 store 전용, cold 진입 noWinner 안내   |
 
-**요약:** 18개 중 **6개 FE 전환 완료**(4-A 5건 ✅ + location/reverse ✅), **4개 부분 대체 가능**(4-B), **진짜 BE 필요 ~8개**(4-C). 전환들로 BE 신규 요청은 **4-C(+선택적 4-B)** 로 축소됨. 특히 **편지 기능은 이제 BE reverse 의존 0**(compose·regionCode 자립).
+**요약 — FE 전면 Spring 정합 완료:** `api-domain.ts` 를 **Spring 스키마 파생 뷰**로 재작성(지어낸 필드/타입 제거: DestinationDetailDto coords·phone 등, UserDto homeRegion·isOnboarded·avatarUrl, TravelTypeDto recommended·compatibility, SavedTournamentDto luckyColor, TournamentHistoryItemDto winnerRegion·theme 등). Spring 미지원은 **전환**(4-A/4-B) 또는 **준비중**(4-C). 프로덕션 `api.*` mock 호출 0(잔여는 Idempotency-Key·mock 문자열 id fallback·USE_MSW 게이팅만). 죽은 mock 핸들러/어댑터/훅/폼/DTO 일괄 제거.
 
 > 도메인 타입 상세 shape: `src/types/api-domain.ts`. 남은 4-B 도 필요 시 FE 리팩터로 처리 가능.
 

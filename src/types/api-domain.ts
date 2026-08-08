@@ -194,24 +194,10 @@ export interface NotificationListDto {
   nextCursor: number | null;
 }
 
-// ── auth 폼 DTO ──
+// ── auth 폼 DTO ── (LoginDto ≡ Spring LoginRequestDto. 계정복구/비번변경 DTO 는
+// Spring 미지원 기능 제거로 삭제 — UI 는 준비중 안내.)
 export interface LoginDto {
   username: string;
-  password: string;
-}
-export interface ChangePasswordDto {
-  currentPassword: string;
-  newPassword: string;
-}
-export interface FindIdDto {
-  email: string;
-}
-export interface ForgotPasswordDto {
-  username: string;
-  email: string;
-}
-export interface ResetPasswordDto {
-  token: string;
   password: string;
 }
 

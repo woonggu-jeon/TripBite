@@ -10,20 +10,10 @@ import { useRouter } from 'next/navigation';
 // 신규 Spring BE SignupRequestDto (username/password/name/birthDate/email/phone/nickname).
 import type { SignupRequestDto as SignupInput } from '@/api/be/schemas';
 import { authApi } from '@/features/auth/api/auth';
-import { createLogger } from '@/lib/logger';
 import { clearAllCaches } from '@/lib/sw-cache';
 import { isAxiosError } from '@/services/interceptors/auth';
 import { useAuthStore } from '@/stores/auth-store';
-import type {
-  ChangePasswordDto,
-  FindIdDto,
-  ForgotPasswordDto,
-  LoginDto,
-  ResetPasswordDto,
-  UserDto,
-} from '@/types/api-domain';
-
-const log = createLogger('auth');
+import type { LoginDto, UserDto } from '@/types/api-domain';
 
 export const authKeys = {
   all: ['auth'] as const,
@@ -118,49 +108,6 @@ export function useSignup() {
   });
 }
 
-export function useForgotPassword() {
-  return useMutation({
-    mutationFn: (data: ForgotPasswordDto) => authApi.forgotPassword(data),
-  });
-}
-
-export function useResetPassword() {
-  const router = useRouter();
-  const queryClient = useQueryClient();
-  const clearAuth = useAuthStore((s) => s.clearAuth);
-  return useMutation({
-    mutationFn: (data: ResetPasswordDto) => authApi.resetPassword(data),
-    onSuccess: async () => {
-      // 비번 변경 후 기존 세션 즉시 무효화.
-      // BE 가 reset 시 세션을 자동 invalidate 안 할 가능성 대비 — 명시 logout 호출로
-      // SID cookie 정리. HttpOnly 라 JS 로 직접 제거 불가 — BE 의 logout endpoint 가
-      // Set-Cookie 만료(Max-Age=0)로 정리. 정리 후 새 비번으로 /login 진입 가능.
-      try {
-        await authApi.logout();
-      } catch (err) {
-        // logout 실패 (이미 세션 없거나 401) — 흐름은 계속(무시)하되 관측 로깅.
-        log.warn({ err }, 'reset-password 후 logout 실패 — 진행');
-      }
-      clearAuth();
-      queryClient.clear();
-      router.replace('/login?reset=success');
-      router.refresh();
-    },
-  });
-}
-
-export function useChangePassword() {
-  return useMutation({
-    mutationFn: (data: ChangePasswordDto) => authApi.changePassword(data),
-  });
-}
-
-export function useFindId() {
-  return useMutation({
-    mutationFn: (data: FindIdDto) => authApi.findId(data),
-  });
-}
-
 export function useLogout() {
   const queryClient = useQueryClient();
   const clearAuth = useAuthStore((s) => s.clearAuth);
@@ -178,31 +125,6 @@ export function useLogout() {
       // hard nav — useLogin 과 일관. soft router.replace 는 RSC payload / client
       // router cache 잔재 위험 (이전 로그인 상태의 query 결과 / layout). 홈은 public
       // 이라 middleware 통과. 보호 경로 직접 진입 시도 시 middleware 가 /login 처리.
-      window.location.assign('/');
-    },
-  });
-}
-
-/**
- * 회원 탈퇴 — DELETE /me. BE 가 소프트 삭제 + 세션 무효 후 204 응답.
- * onSuccess 흐름은 useLogout 와 동일 — clearAuth + queryClient.clear + sw cache clear + 홈.
- * 차이점: 실패 시에도 onSettled 로 cleanup (탈퇴 의도 표시 — 사용자가 다시 들어가면 안 됨).
- */
-export function useDeleteAccount() {
-  const queryClient = useQueryClient();
-  const clearAuth = useAuthStore((s) => s.clearAuth);
-
-  return useMutation({
-    mutationFn: () => authApi.deleteAccount(),
-    onSettled: async (_data, error) => {
-      // 실패해도 client cleanup — 사용자가 탈퇴 confirm 까지 했으므로 의도 명확.
-      // (BE 가 이미 처리했지만 네트워크 timeout 같은 경우 client 상태는 cleanup.)
-      if (!error) {
-        clearAuth();
-        queryClient.clear();
-        await clearAllCaches();
-      }
-      // hard nav — useLogin / useLogout 과 일관 (RSC cache 잔재 회피).
       window.location.assign('/');
     },
   });

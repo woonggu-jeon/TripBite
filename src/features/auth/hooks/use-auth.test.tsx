@@ -19,31 +19,16 @@ vi.mock('@/lib/sw-cache', () => ({
   clearAllCaches: vi.fn(async () => {}),
 }));
 
-const {
-  useLogin,
-  useSignup,
-  useLogout,
-  useDeleteAccount,
-  useResetPassword,
-  useForgotPassword,
-  useFindId,
-  useMe,
-  useChangePassword,
-} = await import('./use-auth');
+const { useLogin, useSignup, useLogout, useMe } = await import('./use-auth');
 
 const apiUrl = mockSeeds.apiUrl;
 
-// UserDto: id/username/nickname/email/isOnboarded/homeRegion/avatarUrl(nullable)/travelType(nullable).
-// SignupDto 의 name/phone/birthDate 와 다름 (가입 입력 vs 사용자 응답).
+// UserDto (Spring UserResponseDto 파생 뷰) — id/username/nickname/email.
 const mockUser = {
   id: 'u-1',
   username: 'tester',
   nickname: '여행자',
   email: 't@e.st',
-  isOnboarded: true,
-  homeRegion: 'cheongju',
-  avatarUrl: null,
-  travelType: null,
 } as const;
 
 /** location.assign 만 spy — happy-dom URL parser 보존. */
@@ -235,88 +220,6 @@ describe('useLogout', () => {
   });
 });
 
-describe('useDeleteAccount', () => {
-  let assignCtl: ReturnType<typeof spyLocationAssign>;
-
-  beforeEach(() => {
-    assignCtl = spyLocationAssign();
-    useAuthStore.getState().setAuth(mockUser);
-  });
-
-  afterEach(() => {
-    assignCtl.restore();
-    vi.restoreAllMocks();
-  });
-
-  it('성공 시 clearAuth + window.location.assign("/")', async () => {
-    server.use(
-      http.delete(
-        `${apiUrl}/me`,
-        () => new HttpResponse(null, { status: 204 }),
-      ),
-    );
-
-    const { result } = renderHookWithProviders(() => useDeleteAccount());
-    await result.current.mutateAsync();
-
-    await waitFor(() => {
-      expect(useAuthStore.getState().isAuthenticated).toBe(false);
-    });
-    expect(assignCtl.spy).toHaveBeenCalledWith('/');
-  });
-
-  it('실패 시 store cleanup 안 함 (탈퇴 의도 실패 — 사용자 retry 가능) + assign 그대로 호출', async () => {
-    server.use(
-      http.delete(
-        `${apiUrl}/me`,
-        () => new HttpResponse(null, { status: 500 }),
-      ),
-    );
-
-    const { result } = renderHookWithProviders(() => useDeleteAccount());
-    await result.current.mutateAsync().catch(() => {});
-
-    // 실패 시 store 는 그대로 (setAuth 한 상태 유지) — useDeleteAccount 의 onSettled
-    // 가 if(!error) 분기로 cleanup 분리. assign 은 항상 호출.
-    expect(useAuthStore.getState().isAuthenticated).toBe(true);
-    expect(assignCtl.spy).toHaveBeenCalledWith('/');
-  });
-});
-
-describe('useResetPassword', () => {
-  beforeEach(() => {
-    router.replace.mockReset();
-    router.refresh.mockReset();
-    useAuthStore.getState().setAuth(mockUser);
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  it('성공 시 logout 호출 + clearAuth + router.replace("/login?reset=success")', async () => {
-    server.use(
-      http.post(`${apiUrl}/auth/reset-password`, () =>
-        HttpResponse.json({ success: true }),
-      ),
-      http.post(`${apiUrl}/auth/logout`, () =>
-        HttpResponse.json({ success: true }),
-      ),
-    );
-
-    const { result } = renderHookWithProviders(() => useResetPassword());
-    await result.current.mutateAsync({
-      token: 't-1',
-      password: 'newpass1234',
-    });
-
-    await waitFor(() => {
-      expect(useAuthStore.getState().isAuthenticated).toBe(false);
-    });
-    expect(router.replace).toHaveBeenCalledWith('/login?reset=success');
-  });
-});
-
 describe('useMe', () => {
   beforeEach(() => {
     useAuthStore.getState().clearAuth();
@@ -377,65 +280,5 @@ describe('useMe', () => {
       timeout: 3000,
     });
     expect(fetchCount).toBe(2); // 초기 + retry 1
-  });
-});
-
-describe('useChangePassword', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  it('POST /me/change-password 호출', async () => {
-    const calls: unknown[] = [];
-    server.use(
-      http.post(`${apiUrl}/me/change-password`, async ({ request }) => {
-        calls.push(await request.json());
-        return new HttpResponse(null, { status: 204 });
-      }),
-    );
-
-    const { result } = renderHookWithProviders(() => useChangePassword());
-    await result.current.mutateAsync({
-      currentPassword: 'old-pass-1234',
-      newPassword: 'new-pass-1234',
-    });
-
-    expect(calls).toHaveLength(1);
-  });
-});
-
-describe('useForgotPassword / useFindId — mutation only (분기 없음)', () => {
-  beforeEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  it('useForgotPassword 가 POST /auth/forgot-password 호출', async () => {
-    const calls: unknown[] = [];
-    server.use(
-      http.post(`${apiUrl}/auth/forgot-password`, async ({ request }) => {
-        calls.push(await request.json());
-        return HttpResponse.json({ success: true });
-      }),
-    );
-
-    const { result } = renderHookWithProviders(() => useForgotPassword());
-    await result.current.mutateAsync({ username: 'tester01', email: 't@e.st' });
-
-    expect(calls).toHaveLength(1);
-  });
-
-  it('useFindId 가 POST /auth/find-id 호출 후 username 반환', async () => {
-    server.use(
-      http.post(`${apiUrl}/auth/find-id`, () =>
-        HttpResponse.json({ username: 'foundUser' }),
-      ),
-    );
-
-    const { result } = renderHookWithProviders(() => useFindId());
-    const res = await result.current.mutateAsync({
-      email: 't@e.st',
-    });
-
-    expect(res.username).toBe('foundUser');
   });
 });

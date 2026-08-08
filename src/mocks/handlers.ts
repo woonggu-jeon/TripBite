@@ -231,34 +231,6 @@ export const handlers = [
       { status: 201 },
     );
   }),
-  // 회원가입 중복확인 — username/email 길이 등 검증 후 available 응답.
-  // 'tester01' / 't@e.com' 만 taken 으로 시뮬 (mockUser 정합), 나머지 available.
-  http.get(`${apiUrl}/auth/check-username`, ({ request }) => {
-    const username = new URL(request.url).searchParams.get('username') ?? '';
-    return HttpResponse.json({ available: username !== 'tester01' });
-  }),
-  http.get(`${apiUrl}/auth/check-email`, ({ request }) => {
-    const email = new URL(request.url).searchParams.get('email') ?? '';
-    return HttpResponse.json({ available: email !== 't@e.com' });
-  }),
-  http.post(
-    `${apiUrl}/auth/forgot-password`,
-    () => new HttpResponse(null, { status: 204 }),
-  ),
-  http.post(
-    `${apiUrl}/auth/reset-password`,
-    () => new HttpResponse(null, { status: 204 }),
-  ),
-  // 아이디 찾기 — 마스킹된 아이디 반환 (메일 발송 X)
-  http.post(`${apiUrl}/auth/find-id`, () =>
-    HttpResponse.json({ username: 'tes***01' }),
-  ),
-  // 비밀번호 변경 (로그인 상태)
-  http.post(`${apiUrl}/me/change-password`, () =>
-    getMockSignedIn()
-      ? new HttpResponse(null, { status: 204 })
-      : unauthorized(),
-  ),
   http.post(`${apiUrl}/auth/logout`, () => {
     setMockSignedIn(false);
     return new HttpResponse(null, { status: 204 });
@@ -275,40 +247,6 @@ export const handlers = [
         })
       : unauthorized(),
   ),
-  // 회원탈퇴 — 204. 세션 무효 + 소프트 삭제 가정.
-  http.delete(`${apiUrl}/me`, () => {
-    if (!getMockSignedIn()) return unauthorized();
-    setMockSignedIn(false);
-    return new HttpResponse(null, { status: 204 });
-  }),
-
-  // ===== Location =====
-  // POST /location/reverse — 좌표 → 한글 행정구역 라벨. BE 가 Kakao reverse wrap.
-  // mock 은 좌표 hash 기반으로 11 시군 중 하나 분산 매핑 (전국 좌표도 동일 한도).
-  http.post(`${apiUrl}/location/reverse`, async ({ request }) => {
-    const coords = (await request.json()) as {
-      latitude: number;
-      longitude: number;
-    };
-    const seed =
-      Math.abs(
-        Math.round(coords.latitude * 10000) +
-          Math.round(coords.longitude * 10000),
-      ) >>> 0;
-    const region = MOCK_REGIONS[seed % MOCK_REGIONS.length] ?? MOCK_REGIONS[0]!;
-    // BE spec: { latitude, longitude, label, sido, sigungu, regionCode } —
-    // 전국 시군구 경계 데이터 기반 역지오코딩 응답.
-    const parts = region.label.split(' ');
-    return HttpResponse.json({
-      latitude: coords.latitude,
-      longitude: coords.longitude,
-      label: region.label,
-      sido: '충청북도',
-      sigungu: parts[1] ?? '',
-      regionCode: region.regionCode,
-    });
-  }),
-
   // ===== Letters ===== (모두 로그인 필요)
   // POST 응답으로 LetterDto 객체 반환 — /letter/sent?id= deep-link 가능하게.
   http.post(`${apiUrl}/letters`, async ({ request }) => {
