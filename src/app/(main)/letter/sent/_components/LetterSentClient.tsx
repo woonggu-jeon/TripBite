@@ -1,14 +1,14 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Skeleton } from '@/components/feedback/Skeleton';
 import { Icon } from '@/components/icon';
+import { Button, ButtonGrid } from '@/components/ui';
 import { LetterPaper } from '@/features/letter/components/LetterPaper';
 import { useLetter } from '@/features/letter/hooks/use-letters';
 import { useLetterStore } from '@/features/letter/store/letter-store';
 import { useAuthStore } from '@/stores/auth-store';
-import { Button, ButtonGrid } from '@/components/ui';
-import { Skeleton } from '@/components/feedback/Skeleton';
 import styles from './LetterSentClient.module.scss';
 
 /**
@@ -70,7 +70,6 @@ export function LetterSentClient() {
   const lastSent = useLetterStore((s) => s.lastSent);
   // 시안 도장에는 보낸 사람(=나) 의 닉네임이 찍힌다.
   const myNickname = useAuthStore((s) => s.user?.nickname);
-  const myAvatarUrl = useAuthStore((s) => s.user?.avatarUrl);
 
   // ?id= deep-link 우선 — 새로고침 / 공유 진입 대응. 없으면 store fallback.
   const letterQuery = useLetter(letterId ?? '');
@@ -182,7 +181,6 @@ export function LetterSentClient() {
         bottomLabel={t('from')}
         bottomName={`${view.senderName} · ${senderLocation}`}
         dateText={`${formatKoreanDate(view.sentAt)} ${t('sentSuffix')}`}
-        photoUrl={myAvatarUrl}
         align="right"
       />
 

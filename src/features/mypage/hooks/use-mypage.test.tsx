@@ -10,9 +10,7 @@ import { renderHookWithProviders } from '@/test-utils';
 import {
   mypageKeys,
   useMypage,
-  useRemoveAvatar,
   useStamps,
-  useUpdateAvatar,
   useUpdateNickname,
 } from './use-mypage';
 
@@ -83,63 +81,5 @@ describe('useUpdateNickname', () => {
       queryKey: mypageKeys.summary(),
     });
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: authKeys.me() });
-  });
-});
-
-describe('useUpdateAvatar', () => {
-  it('성공 시 auth.me + mypage summary 양쪽 invalidate (multipart FormData)', async () => {
-    let receivedContentType = '';
-    server.use(
-      http.post(`${apiUrl}/me/avatar`, ({ request }) => {
-        receivedContentType = request.headers.get('content-type') ?? '';
-        return HttpResponse.json({ avatarUrl: 'https://cdn.test/avatar.png' });
-      }),
-    );
-    const qc = new QueryClient({
-      defaultOptions: { queries: { retry: false, gcTime: 0 } },
-    });
-    const invalidateSpy = vi.spyOn(qc, 'invalidateQueries');
-
-    const { result } = renderHookWithProviders(() => useUpdateAvatar(), {
-      queryClient: qc,
-    });
-    const file = new File(['x'], 'avatar.png', { type: 'image/png' });
-    await act(async () => {
-      await result.current.mutateAsync(file);
-    });
-
-    // axios FormData interceptor 가 Content-Type 직접 unset → 브라우저가 multipart boundary 자동 부여.
-    expect(receivedContentType).toMatch(/multipart\/form-data/);
-    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: authKeys.me() });
-    expect(invalidateSpy).toHaveBeenCalledWith({
-      queryKey: mypageKeys.summary(),
-    });
-  });
-});
-
-describe('useRemoveAvatar', () => {
-  it('성공 시 auth.me + mypage summary 양쪽 invalidate', async () => {
-    server.use(
-      http.delete(
-        `${apiUrl}/me/avatar`,
-        () => new HttpResponse(null, { status: 204 }),
-      ),
-    );
-    const qc = new QueryClient({
-      defaultOptions: { queries: { retry: false, gcTime: 0 } },
-    });
-    const invalidateSpy = vi.spyOn(qc, 'invalidateQueries');
-
-    const { result } = renderHookWithProviders(() => useRemoveAvatar(), {
-      queryClient: qc,
-    });
-    await act(async () => {
-      await result.current.mutateAsync();
-    });
-
-    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: authKeys.me() });
-    expect(invalidateSpy).toHaveBeenCalledWith({
-      queryKey: mypageKeys.summary(),
-    });
   });
 });

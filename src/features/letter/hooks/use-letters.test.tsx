@@ -2,11 +2,11 @@ import { QueryClient } from '@tanstack/react-query';
 import { act, waitFor } from '@testing-library/react';
 import { HttpResponse, http } from 'msw';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { LetterDto } from '@/types/api-domain';
 import { mockSeeds } from '@/mocks/handlers';
 import { server } from '@/mocks/server';
 import { useAuthStore } from '@/stores/auth-store';
 import { renderHookWithProviders } from '@/test-utils';
+import type { LetterDto } from '@/types/api-domain';
 import {
   letterKeys,
   useDeleteLetter,
@@ -306,10 +306,6 @@ describe('enabled: isAuthenticated 가드', () => {
       username: 'tester',
       nickname: '여행자',
       email: 't@e.st',
-      isOnboarded: true,
-      homeRegion: 'cheongju',
-      avatarUrl: null,
-      travelType: null,
     });
     let called = 0;
     server.use(
@@ -331,10 +327,6 @@ describe('useLettersInfinite — kind 별 분기', () => {
       username: 'tester',
       nickname: '여행자',
       email: 't@e.st',
-      isOnboarded: true,
-      homeRegion: 'cheongju',
-      avatarUrl: null,
-      travelType: null,
     });
   });
 

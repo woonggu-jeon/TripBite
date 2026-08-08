@@ -18,16 +18,13 @@ import type { UserDto } from '@/types/api-domain';
  * **보안 — persist 의 PII 최소화 (2026-06-12)**:
  * HttpOnly cookie (SID) 가 인증 단일 source. localStorage 는 UX 가속용 cache 라
  * email / id 같은 PII 평문 저장 시 XSS 1회 노출 위험. UI 표시에 실제 필요한
- * `nickname / avatarUrl / isOnboarded / homeRegion / travelType` 만 persist.
+ * `nickname` 만 persist (Spring UserResponseDto 파생 뷰에서 표시 필드는 닉네임뿐).
  * 메모리 내 state (in-memory user) 는 그대로 전체 — `useMe` refetch 시 server
  * 응답으로 곧 보강. 새로고침 직후 UI 가 잠깐 minimal 정보로 보이는 게 trade-off.
  */
 
 /** localStorage 에 저장되는 user subset — PII (email/id/username) 제외. */
-type PersistedUser = Pick<
-  UserDto,
-  'nickname' | 'avatarUrl' | 'isOnboarded' | 'homeRegion' | 'travelType'
->;
+type PersistedUser = Pick<UserDto, 'nickname'>;
 
 type AuthState = {
   isAuthenticated: boolean;
@@ -75,13 +72,7 @@ function writeAuthMarker(authed: boolean): void {
 
 function toPersistedUser(user: UserDto | undefined): PersistedUser | undefined {
   if (!user) return undefined;
-  return {
-    nickname: user.nickname,
-    avatarUrl: user.avatarUrl,
-    isOnboarded: user.isOnboarded,
-    homeRegion: user.homeRegion,
-    travelType: user.travelType,
-  };
+  return { nickname: user.nickname };
 }
 
 export const useAuthStore = create<AuthState & AuthActions>()(

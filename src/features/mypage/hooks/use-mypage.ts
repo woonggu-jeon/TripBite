@@ -1,14 +1,11 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type {
-  MypageSummaryDto,
-  UpdateProfileDto,
-} from '@/types/api-domain';
 import { authKeys } from '@/features/auth/hooks/use-auth';
 import { mypageApi } from '@/features/mypage/api/mypage';
 import { CACHE } from '@/lib/cache';
 import { useAuthStore } from '@/stores/auth-store';
+import type { MypageSummaryDto, UpdateProfileDto } from '@/types/api-domain';
 
 export const mypageKeys = {
   all: ['mypage'] as const,
@@ -67,34 +64,5 @@ export function useStamps() {
     queryFn: ({ signal }) => mypageApi.getStamps(signal),
     enabled: isAuthenticated,
     ...CACHE.user,
-  });
-}
-
-/**
- * 프로필 아바타 업로드 — multipart, onSuccess 시 /me + /mypage 캐시 갱신.
- * BE 응답의 avatarUrl 이 즉시 ProfileCard 에 반영되도록 invalidate.
- */
-export function useUpdateAvatar() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (file: File) => mypageApi.updateAvatar(file),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: authKeys.me() });
-      qc.invalidateQueries({ queryKey: mypageKeys.summary() });
-    },
-  });
-}
-
-/**
- * 프로필 아바타 제거 — DELETE /me/avatar. onSuccess 시 /me + /mypage 캐시 갱신.
- */
-export function useRemoveAvatar() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: () => mypageApi.removeAvatar(),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: authKeys.me() });
-      qc.invalidateQueries({ queryKey: mypageKeys.summary() });
-    },
   });
 }

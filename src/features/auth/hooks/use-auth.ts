@@ -9,6 +9,11 @@ import {
 import { useRouter } from 'next/navigation';
 // 신규 Spring BE SignupRequestDto (username/password/name/birthDate/email/phone/nickname).
 import type { SignupRequestDto as SignupInput } from '@/api/be/schemas';
+import { authApi } from '@/features/auth/api/auth';
+import { createLogger } from '@/lib/logger';
+import { clearAllCaches } from '@/lib/sw-cache';
+import { isAxiosError } from '@/services/interceptors/auth';
+import { useAuthStore } from '@/stores/auth-store';
 import type {
   ChangePasswordDto,
   FindIdDto,
@@ -17,11 +22,6 @@ import type {
   ResetPasswordDto,
   UserDto,
 } from '@/types/api-domain';
-import { authApi } from '@/features/auth/api/auth';
-import { createLogger } from '@/lib/logger';
-import { clearAllCaches } from '@/lib/sw-cache';
-import { isAxiosError } from '@/services/interceptors/auth';
-import { useAuthStore } from '@/stores/auth-store';
 
 const log = createLogger('auth');
 
@@ -111,10 +111,7 @@ export function useSignup() {
         username: variables.username ?? '',
         nickname: variables.nickname ?? '',
         email: variables.email ?? '',
-        isOnboarded: false,
-        avatarUrl: null,
-        travelType: null,
-      } as UserDto);
+      });
       router.replace('/signup/complete');
       router.refresh();
     },

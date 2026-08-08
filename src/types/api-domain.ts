@@ -114,12 +114,6 @@ export const TravelTypeCode = {
 export type TravelTypeCode =
   (typeof TravelTypeCode)[keyof typeof TravelTypeCode];
 
-export interface TravelTypeBriefDto {
-  code: TravelTypeCode;
-  title: string;
-  emoji: string;
-}
-
 export interface RegionSummaryDto {
   code: RegionCode;
   heroImage?: string;
@@ -154,15 +148,14 @@ export interface ComposeLetterDto {
   isAnonymous?: boolean;
 }
 
+// Spring UserResponseDto 파생 뷰 — FE 소비 필드만.
+// (homeRegion·isOnboarded·avatarUrl·travelType(brief) 는 Spring 미제공/미표시 — 삭제.
+//  아바타는 Spring 미지원이라 닉네임 이니셜 fallback 사용.)
 export interface UserDto {
-  homeRegion?: RegionCode;
   id: string;
   username: string;
   nickname: string;
   email: string;
-  isOnboarded: boolean;
-  avatarUrl: string | null;
-  travelType: TravelTypeBriefDto | null;
 }
 
 export interface ProfileDto {

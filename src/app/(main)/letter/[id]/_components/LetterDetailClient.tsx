@@ -1,15 +1,14 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/feedback/Skeleton';
-import { Button } from '@/components/ui';
 import { Icon } from '@/components/icon';
 import { SubHeader } from '@/components/layout/SubHeader';
-import { useLetter } from '@/features/letter/hooks/use-letters';
+import { Button } from '@/components/ui';
 import { LetterActions } from '@/features/letter/components/LetterActions';
 import { LetterPaper } from '@/features/letter/components/LetterPaper';
-import { useAuthStore } from '@/stores/auth-store';
+import { useLetter } from '@/features/letter/hooks/use-letters';
 import styles from './LetterDetailClient.module.scss';
 
 /**
@@ -42,7 +41,6 @@ export function LetterDetailClient({ letterId }: { letterId: string }) {
   const tLetter = useTranslations('letter');
   const tSent = useTranslations('letter.sent');
   const tAuthor = useTranslations('letter.author');
-  const myAvatarUrl = useAuthStore((s) => s.user?.avatarUrl);
   const { data: letter, isLoading, isError, refetch } = useLetter(letterId);
 
   if (isLoading) {
@@ -121,7 +119,6 @@ export function LetterDetailClient({ letterId }: { letterId: string }) {
                   {tSent('sentSuffix')}
                 </>
               }
-              photoUrl={myAvatarUrl}
               align="right"
             />
           ) : (

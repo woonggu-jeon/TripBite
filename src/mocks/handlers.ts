@@ -66,29 +66,17 @@ function mockFestivalDate(idHash: number, offsetDays: number): string {
   return base.toISOString().slice(0, 10);
 }
 
+// Spring UserResponseDto shape (avatarUrl/homeRegion/isOnboarded 미제공 — Vertical 4).
 const mockUser = {
   id: '1',
   username: 'tester01',
+  name: '홍길동',
   nickname: '테스터',
   email: 't@e.com',
-  homeRegion: 'cheongju',
-  avatarUrl: null as string | null,
-  travelType: null as {
-    code: string;
-    title: string;
-    emoji: string;
-  } | null,
+  phone: '010-1234-5678',
+  birthDate: '1995-03-01',
+  createdAt: '2026-01-01T00:00:00Z',
 } as const;
-
-/**
- * 온보딩 완료 상태 — 신규 가입 흐름 재현용 mutable 상태.
- *   - 초기 false → /me 가 isOnboarded:false 반환 (UI 표시용)
- *   - complete-onboarding 호출 시 true → 이후 /me 가 true 반환
- *
- * 디바이스 onboarding (middleware) 은 `tripbite.visited` cookie 기반 — 본 상태와 별개.
- * dev 서버(서비스워커) 재시작 시 false 로 리셋.
- */
-let onboardedState = false;
 
 /**
  * 로그인 상태 — mock 환경에서 양 상태 토글.
@@ -284,11 +272,7 @@ export const handlers = [
           success: true,
           message: null,
           // Spring UserResponseDto: travelType 은 코드 문자열(null 가능).
-          data: {
-            ...mockUser,
-            isOnboarded: onboardedState,
-            travelType: myTravelTypeCode,
-          },
+          data: { ...mockUser, travelType: myTravelTypeCode },
         })
       : unauthorized(),
   ),
@@ -296,19 +280,7 @@ export const handlers = [
   http.delete(`${apiUrl}/me`, () => {
     if (!getMockSignedIn()) return unauthorized();
     setMockSignedIn(false);
-    onboardedState = false;
     return new HttpResponse(null, { status: 204 });
-  }),
-
-  // ===== Onboarding =====
-  http.post(`${apiUrl}/me/complete-onboarding`, async ({ request }) => {
-    const body = (await request.json()) as { nickname?: string };
-    onboardedState = true;
-    return HttpResponse.json({
-      ...mockUser,
-      nickname: body.nickname ?? mockUser.nickname,
-      isOnboarded: true,
-    });
   }),
 
   // ===== Location =====
@@ -635,64 +607,6 @@ export const handlers = [
         travelType: myTravelTypeCode,
       },
     });
-  }),
-  // 프로필 아바타 업로드 (POST /me/avatar) — multipart form-data 'file'.
-  //
-  // BE spec (Swagger §Me, POST /me/avatar):
-  //   - 응답 201 { avatarUrl }
-  //   - 422 AVATAR_TYPE_UNSUPPORTED (image/* 외)
-  //   - 422 AVATAR_TOO_LARGE (>10MB)
-  //   - 400 VALIDATION (file 누락 / 파싱 실패)
-  //   - 503 STORAGE_NOT_CONFIGURED (R2 미설정 — mock 은 미시뮬)
-  //
-  // mock 은 placeholder URL 반환 — FE 의 localPreview (object URL) 가 화면 표시
-  // 담당이므로 실 파일 데이터는 echo 안 함. BE 합류 후엔 응답 URL 이 정식 source.
-  http.post(`${apiUrl}/me/avatar`, async ({ request }) => {
-    if (!getMockSignedIn()) return unauthorized();
-    try {
-      const form = await request.formData();
-      const file = form.get('file');
-      if (!(file instanceof File)) {
-        return HttpResponse.json(
-          { code: 'VALIDATION', message: 'file 필수' },
-          { status: 400 },
-        );
-      }
-      const ALLOWED = ['image/jpeg', 'image/png', 'image/webp'];
-      if (!ALLOWED.includes(file.type)) {
-        return HttpResponse.json(
-          {
-            code: 'AVATAR_TYPE_UNSUPPORTED',
-            message: 'JPG/PNG/WebP 만 업로드할 수 있어요.',
-          },
-          { status: 422 },
-        );
-      }
-      if (file.size > 10 * 1024 * 1024) {
-        return HttpResponse.json(
-          {
-            code: 'AVATAR_TOO_LARGE',
-            message: '파일이 너무 큽니다 (최대 10MB).',
-          },
-          { status: 422 },
-        );
-      }
-      return HttpResponse.json(
-        { avatarUrl: `https://mock.tripbite/avatar/${Date.now()}.png` },
-        { status: 201 },
-      );
-    } catch {
-      return HttpResponse.json(
-        { code: 'VALIDATION', message: 'multipart 파싱 실패' },
-        { status: 400 },
-      );
-    }
-  }),
-  // 프로필 아바타 제거 (DELETE /me/avatar) — 200 { avatarUrl: null }.
-  // BE: R2 객체 삭제 + User.avatarUrl = null.
-  http.delete(`${apiUrl}/me/avatar`, () => {
-    if (!getMockSignedIn()) return unauthorized();
-    return HttpResponse.json({ avatarUrl: null });
   }),
   // 저장된 토너먼트 우승지 — 목록. summary 의 savedTournaments 와 같은 시드.
   // 신규 Spring BE: ApiResponse<SavedTournamentDto[]> 엔벨로프.

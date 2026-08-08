@@ -8,20 +8,16 @@ import { getMe as beGetMe } from '@/api/be/me/me';
 import type { UserResponseDto } from '@/api/be/schemas';
 import { api } from '@/services/api/client';
 import type {
+  ChangePasswordDto,
   FindIdDto,
   ForgotPasswordDto,
   ResetPasswordDto,
-  ChangePasswordDto,
   UserDto,
 } from '@/types/api-domain';
 
 /**
- * 신규 UserResponseDto → 기존 도메인 UserDto 매핑.
- * 새 BE 는 avatarUrl / homeRegion / isOnboarded 미제공:
- *   - avatarUrl: null (ProfileCard 는 fallback)
- *   - homeRegion: 미제공 (UI 게이팅 비의존)
- *   - isOnboarded: true (온보딩 게이팅은 middleware 의 `tripbite.visited` 쿠키 — user 객체 무관)
- *   - travelType: 신규는 code 문자열 → { code } brief 로 (title/emoji 는 mypage summary 가 제공)
+ * Spring UserResponseDto → 도메인 UserDto 파생 뷰 (FE 소비 필드만).
+ * avatarUrl/homeRegion/isOnboarded/travelType(brief) 는 Spring 미제공/미표시 — 매핑 안 함.
  */
 function mapUser(u: UserResponseDto): UserDto {
   return {
@@ -29,12 +25,7 @@ function mapUser(u: UserResponseDto): UserDto {
     username: u.username ?? '',
     nickname: u.nickname ?? '',
     email: u.email ?? '',
-    isOnboarded: true,
-    avatarUrl: null,
-    travelType: u.travelType
-      ? ({ code: u.travelType } as UserDto['travelType'])
-      : null,
-  } as UserDto;
+  };
 }
 
 /**

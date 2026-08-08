@@ -1,168 +1,32 @@
 'use client';
 
-import { useEffect, useRef, useState, type ChangeEvent } from 'react';
-import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { X } from 'lucide-react';
 import { Icon } from '@/components/icon';
-import { useMe } from '@/features/auth/hooks/use-auth';
-import {
-  useMypage,
-  useRemoveAvatar,
-  useUpdateAvatar,
-} from '@/features/mypage/hooks/use-mypage';
-import { secureImageUrl } from '@/lib/secure-image-url';
-import { haptic } from '@/lib/haptic';
-import { toast } from '@/lib/toast';
+import { useMypage } from '@/features/mypage/hooks/use-mypage';
 import styles from './ProfileCard.module.scss';
 
-// 업로드 정책: 이미지 파일만 · ≤10MB. BE spec 도 동일 정책 (image/*, ≤10MB) 가정 — 다르면 BE 422.
-// MIME 검증은 file.type.startsWith('image/') — accept="image/*" 와 동일 의미. PWA(iOS/Android) 친화.
-const MAX_AVATAR_BYTES = 10 * 1024 * 1024;
-
 /**
- * 프로필 카드 — 원형 아바타 + 닉네임 + 카메라 floating btn (이미지 변경).
+ * 프로필 카드 — 원형 아바타(닉네임 이니셜 fallback) + 닉네임 + 유형 배지.
  *
- * 이미지 업로드:
- *   1) 파일 선택 → client object URL 즉시 preview (optimistic)
- *   2) POST /me/avatar (multipart) → BE 가 스토리지 업로드 + {avatarUrl} 응답
- *   3) onSuccess 시 /me + /mypage cache invalidate → 응답의 avatarUrl 이 정식 source
- *   업로드 실패 시 preview revoke + toast.
+ * 아바타 업로드는 Spring 미지원(POST/DELETE /me/avatar 없음, avatarUrl 미제공) →
+ * 기능 제거. 아바타는 user 심볼 fallback 고정.
  */
 export function ProfileCard() {
   const t = useTranslations('mypage.profile');
   const { data, isLoading } = useMypage();
-  const { data: me } = useMe();
-  const updateAvatar = useUpdateAvatar();
-  const removeAvatar = useRemoveAvatar();
-  const fileRef = useRef<HTMLInputElement>(null);
-  const [localPreview, setLocalPreview] = useState<string | null>(null);
-
-  // object URL revoke (메모리 누수 방지)
-  useEffect(() => {
-    return () => {
-      if (localPreview) URL.revokeObjectURL(localPreview);
-    };
-  }, [localPreview]);
-
-  const onPick = () => {
-    haptic.tap();
-    fileRef.current?.click();
-  };
-
-  const onFile = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    // 같은 파일 재선택 가능하도록 value clear (accept 통과 후에도 다시 같은 path 가능).
-    e.target.value = '';
-    if (!file) return;
-    // 이미지 외 차단 — file.type 이 'image/png' / 'image/jpeg' 등 image/* 일 때만.
-    // 일부 OS 가 type 을 못 정할 때 빈 string — 보수적으로 차단.
-    if (!file.type.startsWith('image/')) {
-      toast.error(t('avatarInvalidType'));
-      return;
-    }
-    if (file.size > MAX_AVATAR_BYTES) {
-      toast.error(t('avatarTooLarge'));
-      return;
-    }
-    if (localPreview) URL.revokeObjectURL(localPreview);
-    const url = URL.createObjectURL(file);
-    setLocalPreview(url);
-    updateAvatar.mutate(file, {
-      onError: () => {
-        // 실패 시 preview 롤백 + toast.
-        URL.revokeObjectURL(url);
-        setLocalPreview(null);
-        toast.error(t('avatarUploadFailed'));
-      },
-      onSuccess: () => {
-        toast.success(t('avatarUploaded'));
-      },
-    });
-  };
-
-  const onRemove = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    haptic.tap();
-    if (localPreview) URL.revokeObjectURL(localPreview);
-    setLocalPreview(null);
-    removeAvatar.mutate(undefined, {
-      onSuccess: () => toast.success(t('avatarRemoved')),
-      onError: () => toast.error(t('avatarRemoveFailed')),
-    });
-  };
 
   const nickname = data?.profile.nickname ?? (isLoading ? '' : t('anonymous'));
-  // 표시 우선순위: 업로드 직후 preview > /me 응답의 avatarUrl > 미설정 fallback.
-  // preview 는 mutation 완료 후 invalidate 로 /me 갱신되면 자연스럽게 사라짐.
-  const avatarSrc = localPreview ?? secureImageUrl(me?.avatarUrl);
-  const hasAvatar = !!avatarSrc;
 
   return (
     <article className={styles.card}>
       <div className={styles.avatarWrap}>
-        <button
-          type="button"
-          className={styles.avatarBtn}
-          onClick={onPick}
-          aria-label={t('changeAvatar')}
-        >
-          <span className={styles.avatar}>
-            {localPreview ? (
-              // 업로드 직후 client-side object URL (URL.createObjectURL) —
-              // next/image 부적합 (외부 host 가 아니라 blob:). 일반 img 정당.
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={localPreview}
-                alt={t('avatarAlt', { nickname })}
-                className={styles.avatarImg}
-              />
-            ) : avatarSrc ? (
-              // server avatar URL (R2/CDN) — next/image 로 AVIF/WebP 변환 활용.
-              // fill + sizes 로 컨테이너(80px) 정합.
-              <Image
-                src={avatarSrc}
-                alt={t('avatarAlt', { nickname })}
-                fill
-                sizes="100px"
-                className={styles.avatarImg}
-              />
-            ) : (
-              <span className={styles.avatarFallback} aria-hidden>
-                {/* Figma `profileIcon` 24px — sprite 의 user 심볼이 같은 벡터다 */}
-                <Icon name="user" size={24} />
-              </span>
-            )}
+        <span className={styles.avatar}>
+          <span className={styles.avatarFallback} aria-hidden>
+            {/* Figma `profileIcon` 24px — sprite 의 user 심볼 */}
+            <Icon name="user" size={24} />
           </span>
-          {/* Figma `cam-badge` 22px — 아바타 우하단 초록 원 + 2px 흰 링 */}
-          <span className={styles.camBadge} aria-hidden>
-            {/* Figma `detailIcon` 12px camera */}
-            <Icon name="camera" size={12} />
-          </span>
-        </button>
-        {hasAvatar && (
-          <button
-            type="button"
-            className={styles.avatarRemoveBtn}
-            onClick={onRemove}
-            aria-label={t('removeAvatar')}
-            disabled={removeAvatar.isPending}
-          >
-            <X size={14} aria-hidden />
-          </button>
-        )}
+        </span>
       </div>
-      <input
-        ref={fileRef}
-        type="file"
-        // PWA 친화: image/* 는 iOS/Android 의 파일 선택 dialog 가 카메라/갤러리/파일 모두 노출.
-        // multiple=false (default) — 단일 파일만. capture 미지정 — 사용자가 카메라/앨범 선택권 보유.
-        accept="image/*"
-        className={styles.fileInput}
-        onChange={onFile}
-        aria-hidden
-        tabIndex={-1}
-      />
 
       {/* Figma `pmid` — 닉네임(18 Bold) + 유형 배지(pill), V gap 4 */}
       <div className={styles.body}>
