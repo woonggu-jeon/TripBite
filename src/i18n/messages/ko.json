@@ -34,7 +34,11 @@
     "previous": "이전",
     "skip": "건너뛰기",
     "start": "시작하기",
-    "complete": "완료"
+    "complete": "완료",
+    "comingSoon": {
+      "title": "준비 중인 기능이에요",
+      "description": "곧 사용할 수 있도록 준비하고 있어요."
+    }
   },
   "pwa": {
     "update": {

@@ -1,18 +1,20 @@
-import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
-import { ForgotPasswordForm } from '@/features/auth/components/ForgotPasswordForm';
-import { AuthLayout } from '@/components/layout/AuthLayout';
+import { getTranslations } from 'next-intl/server';
+import { ComingSoon } from '@/components/feedback/ComingSoon';
 import { AuthHeader } from '@/components/layout/AuthHeader';
+import { AuthLayout } from '@/components/layout/AuthLayout';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('auth.forgotPassword');
   return { title: t('title') };
 }
 
-export default function ForgotPasswordPage() {
+// 비밀번호 찾기: Spring 미지원(/auth/forgot-password 없음) → 준비중.
+export default async function ForgotPasswordPage() {
+  const t = await getTranslations('auth.forgotPassword');
   return (
     <AuthLayout variant="column" header={<AuthHeader />}>
-      <ForgotPasswordForm />
+      <ComingSoon title={t('title')} />
     </AuthLayout>
   );
 }

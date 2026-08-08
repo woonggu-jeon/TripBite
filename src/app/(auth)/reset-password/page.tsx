@@ -1,21 +1,19 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { Suspense } from 'react';
+import { ComingSoon } from '@/components/feedback/ComingSoon';
 import { AuthLayout } from '@/components/layout/AuthLayout';
-import { ResetPasswordForm } from '@/features/auth/components/ResetPasswordForm';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('auth.resetPassword');
   return { title: t('title') };
 }
 
-export default function ResetPasswordPage() {
+// 비밀번호 재설정: Spring 미지원(/auth/reset-password 없음) → 준비중.
+export default async function ResetPasswordPage() {
+  const t = await getTranslations('auth.resetPassword');
   return (
     <AuthLayout>
-      {/* useSearchParams 사용 → Suspense 경계 필요 */}
-      <Suspense>
-        <ResetPasswordForm />
-      </Suspense>
+      <ComingSoon title={t('title')} />
     </AuthLayout>
   );
 }

@@ -34,7 +34,11 @@
     "previous": "Previous",
     "skip": "Skip",
     "start": "Start",
-    "complete": "Done"
+    "complete": "Done",
+    "comingSoon": {
+      "title": "Coming soon",
+      "description": "We're getting this feature ready."
+    }
   },
   "pwa": {
     "update": {
