@@ -57,26 +57,41 @@
 
 ---
 
-## 4. BE 추가 요청 — Spring 미지원 엔드포인트
+## 4. Spring 미지원 엔드포인트 — 대체가능성 분석
 
-FE 는 아래를 `api.*` 직접 호출로 유지 → **현재 MSW mock 으로만 동작**(dev/mock), 실 BE 는 404. BE 추가 시 **FE 무변경 자동 연동**(경로/shape 일치). 응답은 `ApiResponse<T>` 엔벨로프 권장.
+FE 는 아래를 `api.*` 직접 호출(현재 MSW mock). 그런데 **상당수는 기존 Spring 엔드포인트로 재구성 가능**(BE 신규 개발 불필요). 아래처럼 3단계로 분류.
 
-| 우선순위 | 메서드 · 경로 | 용도 | 요청 → 응답 |
-| --- | --- | --- | --- |
-| **높음** | `POST /location/reverse` | 좌표→행정구역 (**편지 작성 필수**) | `{latitude,longitude}` → `{label,regionCode?,latitude,longitude}` |
-| 중 | `POST /me/change-password` | 비밀번호 변경 | `{currentPassword,newPassword}` → ack |
-| 중 | `DELETE /me` | 회원 탈퇴 | — → 204 |
-| 중 | `POST /me/avatar` · `DELETE /me/avatar` | 프로필 이미지 | multipart `file` / — → `{avatarUrl}` |
-| 중 | `POST /me/complete-onboarding` | 온보딩 완료 | `{nickname?,homeRegion?}` → User |
-| 중 | `GET /auth/check-username?username=` · `check-email?email=` | 가입 중복확인 | query → `{available:boolean}` |
-| 중 | `POST /auth/find-id` · `forgot-password` · `reset-password` | 아이디찾기·비번재설정 | `{email}` / `{username,email}` / `{token,password}` → ack |
-| 낮음 | `GET /destinations/{id}/related` | 관련 여행지 (장소상세) | → `DestinationDto[]` |
-| 낮음 | `GET /rankings?type=&limit=` | 추천/카테고리/계절/유형 랭킹 | → `RankedDestination[]` |
-| 낮음 | `GET /regions/{code}/summary` · `contents` | 시군 요약·콘텐츠 | → `{code,heroImage?,description,popularity}` / `{items[],nextCursor}` |
-| 낮음 | `GET /travel-types/me` · `PATCH /travel-types/me` | 내 여행유형 조회·적용 | → `TravelTypeDto` |
-| 낮음 | `GET /tournaments/{id}` | 결과 딥링크 복원 | → `TournamentRecordDto` |
+> 검증된 enabler: `PATCH /me`(UpdateMeRequestDto)가 **password·travelType·nickname** 등 수정 가능 / `GET /me`가 **travelType(code)** 반환 / `GET /destinations?region=&category=` **region 필터 지원** / `GET /destinations/{id}` 응답에 **region 포함**.
 
-> 도메인 타입 상세 shape: `src/types/api-domain.ts` 참조.
+### 4-A. ✅ 대체 가능 — BE 개발 불필요 (FE 리팩터로 해결)
+| 현 호출 | 대체 방법 |
+| --- | --- |
+| `GET /travel-types/me` | `GET /me`.travelType(code) + FE 정적 유형맵(4종 title/emoji/desc 고정). recommended 는 빈배열/destinations 로. |
+| `PATCH /travel-types/me` | `PATCH /me { travelType: code }` |
+| `POST /me/complete-onboarding` | `PATCH /me { nickname }` + FE `tripbite.visited` 쿠키(온보딩은 원래 device 신호). homeRegion/isOnboarded 미사용. |
+| `GET /destinations/{id}/related` | `GET /destinations?region={detail.region}&category={detail.category}` (같은 시군) |
+| `GET /regions/{code}/contents` | `GET /destinations?region={code}&category=` (시군 여행지 목록) |
+
+### 4-B. ⚠️ 부분 대체 — 가능하나 UX/정확도/보안 저하
+| 현 호출 | 대체 방법 | 트레이드오프 |
+| --- | --- | --- |
+| `POST /location/reverse` (**편지 필수**) | FE 클라측 **충북 11시군 centroid 최근접** 매핑으로 regionCode 산출(외부 지오코딩 불필요) | label(정확 주소) 근사, 충북 밖 좌표 처리 필요 |
+| `POST /me/change-password` | `PATCH /me { password }` | **currentPassword 검증 없음(보안 약화)** |
+| `GET /auth/check-username`·`check-email` | 사전확인 제거 → `POST /auth/signup` 의 409 로 처리 | 인라인 사전확인 UX 상실 |
+| `GET /rankings` (추천/카테고리/계절) | `GET /destinations/random` 또는 weekly 랭킹으로 근사 | 진짜 추천 로직 아님 |
+| `GET /regions/{code}/summary` | description/popularity 는 FE 정적 문구(11 시군 고정), heroImage 는 destinations 이미지 | BE 큐레이션 데이터 상실 |
+
+### 4-C. ⛔ 대체 불가 — 진짜 BE 필요
+| 메서드·경로 | 용도 | 사유 |
+| --- | --- | --- |
+| `POST /auth/find-id`·`forgot-password`·`reset-password` | 아이디찾기·비번재설정 | 이메일 발송/토큰 검증 — 서버 필수 |
+| `DELETE /me` | 회원 탈퇴 | 서버 삭제 필수 |
+| `POST /me/avatar`·`DELETE /me/avatar` | 프로필 이미지 | 파일 스토리지 필수 |
+| `GET /tournaments/{id}` | 결과 공유 딥링크 cold 복원 | 서버 저장 없이 복원 불가(정상 흐름은 client store) |
+
+**요약:** 18개 중 **5개는 FE만으로 대체 가능**(4-A), **5개는 부분 대체**(4-B), **진짜 BE 필요는 ~8개**(4-C)로 축소 가능. 특히 **travel-types/me·onboarding·related·regions contents 는 BE 없이 지금 처리 가능**하고, **location/reverse(편지 필수)도 클라 매핑으로 BE 의존 제거 가능**.
+
+> 도메인 타입 상세 shape: `src/types/api-domain.ts`. 4-A/4-B 를 FE 리팩터로 처리하면 BE 요청은 4-C 로 축소.
 
 ---
 
