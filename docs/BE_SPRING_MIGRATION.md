@@ -19,8 +19,8 @@
 **FE 구조:**
 
 - `src/api/be/` — orval 이 Spring swagger 로 자동 생성(client+react-query+zod+msw). Spring 지원 엔드포인트 단일 소스. `npm run generate:api`.
-- `src/types/api-domain.ts` — FE 도메인 타입 단일 소스. Spring 에 없는 타입(UserDto·DestinationCategory·TravelTypeDto·ComposeLetterDto 등)을 **required shape** 로 정의. 컴포넌트/어댑터는 이 모듈만 import.
-- **구 `src/api/generated`(NestJS) 완전 삭제** (2026-08). 어댑터 규칙: Spring 有→`be/` 호출 후 `.data` 언랩+coerce, Spring 無→`api.*` 직접 호출(MSW mock, 실 BE 404).
+- `src/types/api-domain.ts` — FE 도메인 타입 단일 소스, **Spring 스키마 파생 뷰**(필드명·enum·존재여부를 Spring 과 일치, 소비 지점에서 required 로 좁힘). 지어낸 필드/타입 없음. 컴포넌트/어댑터는 이 모듈만 import.
+- **구 `src/api/generated`(NestJS) 완전 삭제** (2026-08). 어댑터 규칙: Spring 有→`be/` 호출 후 `.data` 언랩+얕은 coerce. Spring 無→**전환**(기존 Spring 재구성) 또는 **준비중**(`ComingSoon`/toast). 프로덕션 `api.*` mock 호출 0(잔여는 Idempotency-Key·mock 문자열 id fallback·USE_MSW 게이팅 한정).
 
 **인증/미들웨어:** Spring 이 익명에도 JSESSIONID 를 발급 → "쿠키=로그인" 불성립. FE 가 **마커 쿠키 `tripbite.authed`**(auth-store setAuth/clearAuth 관리)를 두고 middleware 가 그것으로 보호경로 게이팅(`NEXT_PUBLIC_AUTH_COOKIE`). 실제 게이트는 API 403. interceptor 가 403(빈 body)을 미인증으로 처리.
 
