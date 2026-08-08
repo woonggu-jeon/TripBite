@@ -81,13 +81,14 @@ FE 는 아래를 `api.*` 직접 호출(현재 MSW mock). 그런데 **상당수�
 
 ### 4-B. ⚠️ 부분 대체 — 가능하나 UX/정확도/보안 저하
 
-| 현 호출                                  | 대체 방법                                                                                | 트레이드오프                                  |
-| ---------------------------------------- | ---------------------------------------------------------------------------------------- | --------------------------------------------- |
-| `POST /location/reverse` (**편지 필수**) | FE 클라측 **충북 11시군 centroid 최근접** 매핑으로 regionCode 산출(외부 지오코딩 불필요) | label(정확 주소) 근사, 충북 밖 좌표 처리 필요 |
-| `POST /me/change-password`               | `PATCH /me { password }`                                                                 | **currentPassword 검증 없음(보안 약화)**      |
-| `GET /auth/check-username`·`check-email` | 사전확인 제거 → `POST /auth/signup` 의 409 로 처리                                       | 인라인 사전확인 UX 상실                       |
-| `GET /rankings` (추천/카테고리/계절)     | `GET /destinations/random` 또는 weekly 랭킹으로 근사                                     | 진짜 추천 로직 아님                           |
-| `GET /regions/{code}/summary`            | description/popularity 는 FE 정적 문구(11 시군 고정), heroImage 는 destinations 이미지   | BE 큐레이션 데이터 상실                       |
+> `POST /location/reverse` (**편지 필수**)는 **전환 완료(2026-08-08)** — 아래 표에서 제외. FE 클라측 **충북 11시군 centroid 최근접**(`constants/regions.ts` centroid + `features/location/lib/nearest-region.ts`)으로 regionCode/label 산출, `locationApi.reverseGeocode` 가 순수 클라 계산으로 대체(BE·외부 지오코딩 의존 0). 편지 compose 폼이 regionCode 를 필수 전송하도록 함께 보정(실 BE 계약 충족). 트레이드오프: label 이 "충북 {시군}" 근사(정확 도로명 주소 아님), 충북 밖 좌표는 최근접 시군 귀속.
+
+| 현 호출                                  | 대체 방법                                                                              | 트레이드오프                             |
+| ---------------------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------- |
+| `POST /me/change-password`               | `PATCH /me { password }`                                                               | **currentPassword 검증 없음(보안 약화)** |
+| `GET /auth/check-username`·`check-email` | 사전확인 제거 → `POST /auth/signup` 의 409 로 처리                                     | 인라인 사전확인 UX 상실                  |
+| `GET /rankings` (추천/카테고리/계절)     | `GET /destinations/random` 또는 weekly 랭킹으로 근사                                   | 진짜 추천 로직 아님                      |
+| `GET /regions/{code}/summary`            | description/popularity 는 FE 정적 문구(11 시군 고정), heroImage 는 destinations 이미지 | BE 큐레이션 데이터 상실                  |
 
 ### 4-C. ⛔ 대체 불가 — 진짜 BE 필요
 
@@ -98,7 +99,7 @@ FE 는 아래를 `api.*` 직접 호출(현재 MSW mock). 그런데 **상당수�
 | `POST /me/avatar`·`DELETE /me/avatar`                   | 프로필 이미지              | 파일 스토리지 필수                                 |
 | `GET /tournaments/{id}`                                 | 결과 공유 딥링크 cold 복원 | 서버 저장 없이 복원 불가(정상 흐름은 client store) |
 
-**요약:** 18개 중 **5개 FE 전환 완료**(4-A ✅), **5개 부분 대체 가능**(4-B), **진짜 BE 필요 ~8개**(4-C). 4-A 전환으로 BE 신규 요청은 **4-C(+선택적 4-B)** 로 축소됨. **location/reverse(편지 필수)** 도 클라 매핑으로 BE 의존 제거 가능(4-B, 미전환).
+**요약:** 18개 중 **6개 FE 전환 완료**(4-A 5건 ✅ + location/reverse ✅), **4개 부분 대체 가능**(4-B), **진짜 BE 필요 ~8개**(4-C). 전환들로 BE 신규 요청은 **4-C(+선택적 4-B)** 로 축소됨. 특히 **편지 기능은 이제 BE reverse 의존 0**(compose·regionCode 자립).
 
 > 도메인 타입 상세 shape: `src/types/api-domain.ts`. 남은 4-B 도 필요 시 FE 리팩터로 처리 가능.
 

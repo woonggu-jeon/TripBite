@@ -1,25 +1,25 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { Icon } from '@/components/icon';
-import {
-  letterSchema,
-  type LetterFormValues,
-} from '@/features/letter/schemas/letter';
-import { graphemeLength } from '@/lib/validation';
+import { Button } from '@/components/ui';
 import { useSendLetter } from '@/features/letter/hooks/use-letters';
+import {
+  type LetterFormValues,
+  letterSchema,
+} from '@/features/letter/schemas/letter';
 import { useLetterStore } from '@/features/letter/store/letter-store';
-import { useResolveLocation, usePermissionState } from '@/features/location';
+import { usePermissionState, useResolveLocation } from '@/features/location';
+import { haptic } from '@/lib/haptic';
+import { graphemeLength } from '@/lib/validation';
 import { useLocationStore } from '@/stores/location-store';
 import { useUIStore } from '@/stores/ui-store';
-import { Button } from '@/components/ui';
-import { haptic } from '@/lib/haptic';
-import { PinLikeInput } from './PinLikeInput';
 import styles from './LetterComposeForm.module.scss';
+import { PinLikeInput } from './PinLikeInput';
 
 /**
  * 편지 작성 폼
@@ -95,13 +95,14 @@ export function LetterComposeForm() {
         return;
       }
       haptic.success();
-      // BE reverse 응답의 label 그대로 사용 (예: "서울시 용산구"). reverse 실패 fallback 은
-      // useResolveLocation 가 좌표 표시 label 로 채움.
+      // 클라 시군 최근접 매핑(useResolveLocation → locationApi)이 채운 label/regionCode 사용.
+      // regionCode 는 BE 계약상 필수(충북 시군 enum) — 반드시 전송.
       const created = await send({
         body: values.body,
         isAnonymous: values.isAnonymous,
         location: {
           label: resolved.label,
+          regionCode: resolved.regionCode,
           latitude: resolved.latitude,
           longitude: resolved.longitude,
         },
