@@ -4,36 +4,9 @@ import { describe, expect, it } from 'vitest';
 import { mockSeeds } from '@/mocks/handlers';
 import { server } from '@/mocks/server';
 import { renderHookWithProviders } from '@/test-utils';
-import {
-  useOngoingFestivals,
-  useRegionContents,
-  useRegionSummary,
-} from './use-region';
+import { useOngoingFestivals, useRegionContents } from './use-region';
 
 const apiUrl = mockSeeds.apiUrl;
-
-describe('useRegionSummary', () => {
-  it('성공 시 summary 응답 반환', async () => {
-    const summary = {
-      code: 'cheongju',
-      ko: '청주시',
-      en: 'Cheongju',
-      description: '충북의 중심',
-      heroImage: 'https://cdn.example.com/cheongju.jpg',
-    };
-    server.use(
-      http.get(`${apiUrl}/regions/cheongju/summary`, () =>
-        HttpResponse.json(summary),
-      ),
-    );
-
-    const { result } = renderHookWithProviders(() =>
-      useRegionSummary('cheongju'),
-    );
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(result.current.data).toEqual(summary);
-  });
-});
 
 describe('useRegionContents — useInfiniteList wrapping', () => {
   // 4-A 전환: regions/:code/contents 미지원 → GET /destinations(시군 필터) 재구성.

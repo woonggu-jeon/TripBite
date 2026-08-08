@@ -1,16 +1,11 @@
-// 신규 Spring BE 지원: ongoing-festivals. (summary 는 미지원 → MSW mock)
+// 신규 Spring BE 지원: ongoing-festivals. (summary 는 미지원 → RegionHero 가 정적 렌더)
 // contents 는 4-A 전환: destinations list(시군 필터)로 재구성.
 import { getList2 } from '@/api/be/destination/destination';
 import { getOngoingFestivals } from '@/api/be/region/region';
 import type { GetList2Category, GetList2Region } from '@/api/be/schemas';
 import type { RegionCode } from '@/constants/regions';
-import { normalizeImageField, secureImageUrl } from '@/lib/secure-image-url';
-import { api } from '@/services/api/client';
-import type {
-  DestinationCategory,
-  RegionContentDto,
-  RegionSummaryDto,
-} from '@/types/api-domain';
+import { normalizeImageField } from '@/lib/secure-image-url';
+import type { DestinationCategory, RegionContentDto } from '@/types/api-domain';
 
 /**
  * 시군 contents 필터 — 응답 enum (`DestinationCategory`) 과 분리.
@@ -35,24 +30,12 @@ export type RegionContentFilter = DestinationCategory | 'all';
  * BE 는 TourAPI 프록시 (서버에서 API 키 보관, 응답 정규화, 캐시).
  *
  * 엔드포인트:
- *   GET /regions/:code/summary
- *   GET /regions/:code/contents?type=&cursor=&limit=10
+ *   GET /regions/:code/contents?type=&cursor=&limit=10  (4-A: destinations 로 재구성)
  *   GET /regions/ongoing-festivals?region=
  *     → { type: ongoing|upcoming|popular, items[] } — BE 가 3단계 폴백 후 결정.
+ * (summary 는 Spring 미지원 → RegionHero 가 정적 콘텐츠로 렌더, 어댑터 없음.)
  */
 export const regionApi = {
-  // heroImage 는 TourAPI 원본 http URL 일 수 있음 → next.config remotePatterns
-  // (https 만 허용) 통과 위해 https 정규화 (BE 안전망). secure-image-url 의
-  // HTTPS_FORCE_HOSTS 에 tong.visitkorea.or.kr 등록돼 자동 처리.
-  // ⚠️ Spring 미지원 (regions/:code/summary) — MSW mock. BE 추가 필요.
-  getSummary: async (code: RegionCode): Promise<RegionSummaryDto> => {
-    const res = (await api.get<RegionSummaryDto>(`/regions/${code}/summary`))
-      .data;
-    return res.heroImage
-      ? { ...res, heroImage: secureImageUrl(res.heroImage) ?? res.heroImage }
-      : res;
-  },
-
   // 4-A 전환: regions/:code/contents 미지원 → GET /destinations?region=&category= 재구성.
   // 'all' 은 3 카테고리를 같은 pageNo 로 병렬 조회 후 병합 (BE 통합 응답 근사).
   listContents: async (

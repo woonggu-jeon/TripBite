@@ -114,13 +114,6 @@ export const TravelTypeCode = {
 export type TravelTypeCode =
   (typeof TravelTypeCode)[keyof typeof TravelTypeCode];
 
-export interface RegionSummaryDto {
-  code: RegionCode;
-  heroImage?: string;
-  description: string;
-  popularity: number;
-}
-
 // Spring TravelTypeResultDto 파생 뷰: code·title·emoji·description·tags.
 // (recommended·compatibility 는 Spring 미제공 — 삭제. keywords→tags.)
 export interface TravelTypeDto {

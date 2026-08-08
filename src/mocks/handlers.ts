@@ -17,7 +17,6 @@
  *   테스트 (vitest/node) 에선 origin 제약 없이 모두 가로챔.
  */
 import { HttpResponse, http } from 'msw';
-import { isRegionCode } from '@/constants/regions';
 import { travelTypeFromCode } from '@/constants/travel-types';
 import type { TravelTypeAnswer } from '@/features/ranking/types';
 import type {
@@ -414,19 +413,6 @@ export const handlers = [
     const next = cursor + slice.length;
     const nextCursor = next < all.length ? next : null;
     return HttpResponse.json({ items: slice, nextCursor });
-  }),
-
-  // 시군 summary — 헤더 이미지 / 설명 / 인기도. RegionHero 등에서 사용.
-  // mock 은 description 만 deterministic — 실 BE 는 TourAPI 또는 CMS.
-  http.get(`${apiUrl}/regions/:code/summary`, ({ params }) => {
-    const code = params.code as string;
-    if (!isRegionCode(code)) return new HttpResponse(null, { status: 404 });
-    return HttpResponse.json({
-      code,
-      heroImage: undefined,
-      description: `${code} 시군의 명소와 축제, 체험 정보를 한눈에.`,
-      popularity: 50,
-    });
   }),
 
   // 진행 중 축제 / 다가오는 축제 / 인기 여행지 — 홈 FestivalCarousel.

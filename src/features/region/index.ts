@@ -11,7 +11,6 @@
 export { regionApi } from './api/region';
 export { RegionHero } from './components/RegionHero';
 export {
-  useRegionSummary,
   useRegionContents,
   useOngoingFestivals,
   regionKeys,
