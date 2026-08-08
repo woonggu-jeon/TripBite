@@ -65,10 +65,10 @@ export interface LetterPageDto {
   nextCursor: number | null;
 }
 
+// Spring SavedTournamentDto: id·destination·savedAt (luckyColor 미제공 — 삭제).
 export interface SavedTournamentDto {
   id: string;
   destination: DestinationDto;
-  luckyColor: string;
   savedAt: string;
 }
 
@@ -257,25 +257,16 @@ export interface RegionContentDto {
   imageUrl?: string;
 }
 
+// Spring TournamentSummaryDto: id·winnerName·tournamentSize·category·completedAt.
+// (winnerRegion·theme·winnerId 는 Spring 미제공 — 삭제. count→tournamentSize.)
 export interface TournamentHistoryItemDto {
   category: DestinationCategory;
-  winnerRegion: RegionCode;
   id: string;
-  theme: string | null;
-  count: number;
-  winnerId: string;
+  tournamentSize: number;
   winnerName: string;
   completedAt: string;
 }
 export interface TournamentHistoryPageDto {
   items: TournamentHistoryItemDto[];
   nextCursor: number | null;
-}
-export interface TournamentRecordDto {
-  id: string;
-  winner: DestinationDto;
-  runnerUp: DestinationDto | null;
-  matchesPlayed: number;
-  tournamentSize: number;
-  completedAt: string;
 }

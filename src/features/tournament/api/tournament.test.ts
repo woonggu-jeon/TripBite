@@ -91,7 +91,7 @@ describe('tournamentApi.fetchCandidates — 신규 BE random 매핑', () => {
 });
 
 describe('tournamentApi.listSaved — 신규 BE 저장목록 매핑', () => {
-  it('엔벨로프 → SavedTournamentDto[] (id string, luckyColor "")', async () => {
+  it('엔벨로프 → SavedTournamentDto[] (id string, Spring 필드만)', async () => {
     server.use(
       http.get(`${apiUrl}/mypage/tournaments`, () =>
         HttpResponse.json(
@@ -118,13 +118,12 @@ describe('tournamentApi.listSaved — 신규 BE 저장목록 매핑', () => {
     expect(s[0]?.id).toBe('1');
     expect(s[0]?.destination.id).toBe('2987654');
     expect(s[0]?.savedAt).toBe('2026-07-23T00:00:00Z');
-    // 신규 BE 는 luckyColor 미제공 → '' 로 매핑.
-    expect(s[0]?.luckyColor).toBe('');
+    expect(s[0]?.destination.name).toBe('건지마을');
   });
 });
 
 describe('tournamentApi.listHistory — 신규 BE 기록 매핑', () => {
-  it('flat TournamentSummaryDto[] → {items,nextCursor} (count ← tournamentSize)', async () => {
+  it('flat TournamentSummaryDto[] → {items,nextCursor} (Spring 필드명 tournamentSize)', async () => {
     server.use(
       http.get(`${apiUrl}/mypage/tournament-history`, () =>
         HttpResponse.json(
@@ -146,8 +145,8 @@ describe('tournamentApi.listHistory — 신규 BE 기록 매핑', () => {
     expect(h.items).toHaveLength(1);
     expect(h.items[0]?.id).toBe('5');
     expect(h.items[0]?.winnerName).toBe('우승지');
-    // 신규 BE tournamentSize → 도메인 count.
-    expect(h.items[0]?.count).toBe(16);
+    // Spring 필드명(tournamentSize) 그대로.
+    expect(h.items[0]?.tournamentSize).toBe(16);
     expect(h.items[0]?.category).toBe('attraction');
   });
 });

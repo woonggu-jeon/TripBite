@@ -1,22 +1,21 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { Icon } from '@/components/icon';
-import { useTournamentStore } from '@/features/tournament/store/tournament-store';
+import { Button, ButtonGrid } from '@/components/ui';
+import { LuckyColor } from '@/features/tournament/components/LuckyColor';
+import { LuckyLadder } from '@/features/tournament/components/LuckyLadder';
+import { TournamentStats } from '@/features/tournament/components/TournamentStats';
+import { WinnerCard } from '@/features/tournament/components/WinnerCard';
+import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetailPanel';
 import {
   useDestinationDetail,
   useSaveTournament,
-  useTournamentRecord,
 } from '@/features/tournament/hooks/use-tournament';
-import { Button, ButtonGrid } from '@/components/ui';
-import { WinnerCard } from '@/features/tournament/components/WinnerCard';
-import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetailPanel';
-import { TournamentStats } from '@/features/tournament/components/TournamentStats';
-import { LuckyColor } from '@/features/tournament/components/LuckyColor';
-import { LuckyLadder } from '@/features/tournament/components/LuckyLadder';
-import { useShareCard } from '@/hooks/use-share-card';
+import { useTournamentStore } from '@/features/tournament/store/tournament-store';
 import { useRequireAuth } from '@/hooks/use-require-auth';
+import { useShareCard } from '@/hooks/use-share-card';
 import styles from './TournamentResultClient.module.scss';
 
 /**
@@ -60,42 +59,21 @@ import styles from './TournamentResultClient.module.scss';
  */
 export function TournamentResultClient() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const recordId = searchParams.get('id');
   const t = useTranslations('tournament.result');
 
-  // ?id= 가 있으면 BE record 조회 (deep-link / 새로고침). 없으면 store 만 사용.
-  const recordQuery = useTournamentRecord(recordId);
-
-  const storeWinner = useTournamentStore((s) => s.winner);
-  const storeRunnerUp = useTournamentStore((s) => s.runnerUp);
-  const storeMatchesPlayed = useTournamentStore((s) => s.matchesPlayed);
-  const storeTournamentSize = useTournamentStore(
-    (s) => s.config?.tournamentSize,
-  );
+  // Spring 은 결과 딥링크 복원(GET /tournaments/{id}) 미지원 → 결과는 store 전용.
+  // cold 진입(새로고침/공유 링크, store 비었음)은 아래 noWinner 안내로 degrade.
+  const winner = useTournamentStore((s) => s.winner);
+  const runnerUp = useTournamentStore((s) => s.runnerUp);
+  const matchesPlayed = useTournamentStore((s) => s.matchesPlayed);
+  const tournamentSize = useTournamentStore((s) => s.config?.tournamentSize);
   const reset = useTournamentStore((s) => s.reset);
-
-  // record (BE) 우선, 없으면 store fallback — deep-link 가 일관 동작.
-  const record = recordQuery.data;
-  const winner = record?.winner ?? storeWinner;
-  const runnerUp = record?.runnerUp ?? storeRunnerUp;
-  const matchesPlayed = record?.matchesPlayed ?? storeMatchesPlayed;
-  // BE record.tournamentSize 는 number, store 는 TournamentCount (4/8/16/32 union).
-  // BE 응답이 union 외 값을 줄 경우 UI 가 깨지지 않게 fallback.
-  const tournamentSize = (record?.tournamentSize ??
-    storeTournamentSize) as typeof storeTournamentSize;
 
   const save = useSaveTournament();
   const requireAuth = useRequireAuth();
   const shareCard = useShareCard();
   // 우승자 풍부 정보 — winner.id 기준 별도 fetch.
   const detailQuery = useDestinationDetail(winner?.id);
-
-  // record 로딩 중 + store 도 비어있음 → 빈 placeholder (?id= deep-link 새로고침 케이스).
-  // 별도 loading i18n 키 없음 — 짧은 시간이라 노이즈 회피.
-  if (recordId && recordQuery.isLoading && !storeWinner) {
-    return <div className={styles.empty} aria-busy="true" />;
-  }
 
   if (!winner) {
     return (

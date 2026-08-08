@@ -2,11 +2,11 @@ import { QueryClient } from '@tanstack/react-query';
 import { act, waitFor } from '@testing-library/react';
 import { HttpResponse, http } from 'msw';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { SavedTournamentDto } from '@/types/api-domain';
 import { mockSeeds } from '@/mocks/handlers';
 import { server } from '@/mocks/server';
 import { useAuthStore } from '@/stores/auth-store';
 import { renderHookWithProviders } from '@/test-utils';
+import type { SavedTournamentDto } from '@/types/api-domain';
 import {
   tournamentKeys,
   useRecordTournament,
@@ -28,7 +28,6 @@ function makeSaved(id: string): SavedTournamentDto {
       category: 'attraction',
     },
     savedAt: '2026-06-14T00:00:00Z',
-    luckyColor: '#FBBF24',
   };
 }
 
@@ -161,7 +160,7 @@ describe('useUnsaveTournament — optimistic remove + rollback', () => {
 });
 
 describe('useRecordTournament', () => {
-  it('성공 시 record cache set + history invalidate', async () => {
+  it('성공 시 history invalidate (결과 딥링크 Spring 미지원 — record cache 없음)', async () => {
     const recordId = 4242;
     // 신규 Spring BE: POST /mypage/tournament-history → ApiResponse<TournamentSummaryDto>.
     server.use(
@@ -197,9 +196,7 @@ describe('useRecordTournament', () => {
       });
     });
 
-    // record cache 에 직접 set (refetch 없이 deep-link 진입 즉시 사용)
-    const cached = qc.getQueryData(tournamentKeys.record(String(recordId)));
-    expect(cached).toBeDefined();
+    // 결과 딥링크 복원은 Spring 미지원 → record cache 미설정, 히스토리만 무효화.
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: tournamentKeys.history(),
     });

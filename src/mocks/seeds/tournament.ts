@@ -1,8 +1,8 @@
+import type { RegionCode } from '@/constants/regions';
 import type {
   DestinationCategory,
   SavedTournamentDto,
 } from '@/types/api-domain';
-import type { RegionCode } from '@/constants/regions';
 import { destinationSeeds, tourSeedId } from './destinations';
 
 /**
@@ -137,7 +137,6 @@ export const savedTournamentSeeds: SavedTournamentDto[] = SAVED_PICKS.flatMap(
       {
         id: `saved-${dest.id}`,
         destination: dest,
-        luckyColor: pick.color,
         savedAt: new Date(Date.now() - i * 86400 * 1000 * 2).toISOString(),
       },
     ];

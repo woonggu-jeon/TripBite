@@ -1,14 +1,11 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import { Trophy } from 'lucide-react';
-import { SkeletonList } from '@/components/feedback/SkeletonList';
+import { useTranslations } from 'next-intl';
 import { EmptyState } from '@/components/feedback/EmptyState';
+import { SkeletonList } from '@/components/feedback/SkeletonList';
 import { Button } from '@/components/ui';
 import { useTournamentHistory } from '@/features/tournament/hooks/use-tournament';
-import { seasonEmoji } from '@/constants/emoji-map';
-import { Illustration } from '@/components/brand/Illustration';
-import { seasonIllustration } from '@/constants/illustration-map';
 import styles from './TournamentHistorySection.module.scss';
 
 const CATEGORY_KO: Record<string, string> = {
@@ -18,12 +15,11 @@ const CATEGORY_KO: Record<string, string> = {
   experience: '체험',
 };
 
+// Spring TournamentSummaryDto 파생 — theme/winnerId/winnerRegion 미제공.
 type HistoryItem = {
   id: string;
-  theme: string;
   category: string;
-  count: number;
-  winnerId: string;
+  tournamentSize: number;
   winnerName?: string;
   completedAt: string;
 };
@@ -74,25 +70,23 @@ export function TournamentHistorySection() {
   return (
     <ul className={styles.list}>
       {items.slice(0, 10).map((it) => {
-        // Figma `seasonIcon` 에셋. 계절을 못 알아보면 기존 이모지 fallback.
-        const themeArt = seasonIllustration(it.theme);
-        const themeEmoji = seasonEmoji(it.theme);
         // category 가 비어 오는 기록이 있어 "undefined강" 으로 새던 것 방지 —
         // 빈 조각은 빼고 " · " 로 잇는다.
         const categoryLabel = CATEGORY_KO[it.category] ?? it.category;
         const date = new Date(it.completedAt);
         const dateLabel = `${date.getMonth() + 1}월 ${date.getDate()}일`;
-        const meta = [categoryLabel, `${it.count}${t('countUnit')}`, dateLabel]
+        const meta = [
+          categoryLabel,
+          `${it.tournamentSize}${t('countUnit')}`,
+          dateLabel,
+        ]
           .filter(Boolean)
           .join(' · ');
         return (
           <li key={it.id} className={styles.row}>
             <span className={styles.emoji} aria-hidden>
-              {themeArt ? (
-                <Illustration name={themeArt} size={24} />
-              ) : (
-                themeEmoji
-              )}
+              {/* Spring 은 시즌(theme) 미제공 → 트로피 아이콘 고정. */}
+              <Trophy size={24} aria-hidden />
             </span>
             <div className={styles.body}>
               <p className={styles.title}>

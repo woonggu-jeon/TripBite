@@ -129,13 +129,13 @@ d('실 BE contract — 어댑터 ↔ 실제 응답 (mock 아님)', () => {
     expect(Array.isArray(saved)).toBe(true);
     if (saved.length) {
       expect(typeof saved[0]!.id).toBe('string');
-      expect(saved[0]!.luckyColor).toBe(''); // 신규 BE 미제공 → ''
+      expect(typeof saved[0]!.savedAt).toBe('string');
     }
     const history = await tournamentApi.listHistory();
     expect(Array.isArray(history.items)).toBe(true);
     if (history.items.length) {
       expect(typeof history.items[0]!.id).toBe('string');
-      expect(typeof history.items[0]!.count).toBe('number'); // ← tournamentSize
+      expect(typeof history.items[0]!.tournamentSize).toBe('number');
     }
   });
 

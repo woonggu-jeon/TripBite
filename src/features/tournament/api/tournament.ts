@@ -31,7 +31,6 @@ import type {
   SavedTournamentDto,
   TournamentHistoryItemDto,
   TournamentHistoryPageDto,
-  TournamentRecordDto,
 } from '@/types/api-domain';
 
 /**
@@ -141,7 +140,7 @@ export const tournamentApi = {
    * 새 RecordTournamentRequestDto 는 winnerName 필수 + region/category → 호출부가
    * winner destination 정보를 전달. runnerUp/matchesPlayed 는 새 BE 미지원(랭킹/기록엔
    * winner 중심) → 미전송(결과 화면은 store 로 표시). 응답은 thin TournamentSummaryDto →
-   * 정상 플로우는 store 사용, 여기선 id 만 사용(딥링크 cache key / ?id=).
+   * 정상 플로우는 store 사용, 여기선 id 만 반환(기록 확인용).
    *
    * Idempotency-Key: api.post 로 직접 호출해 헤더 유지 (더블탭/재시도 이중 카운트 방지).
    */
@@ -157,7 +156,7 @@ export const tournamentApi = {
     },
     idempotencyKey?: string,
     signal?: AbortSignal,
-  ): Promise<TournamentRecordDto> => {
+  ): Promise<{ id: string }> => {
     const headers: Record<string, string> = {};
     if (idempotencyKey) headers['Idempotency-Key'] = idempotencyKey;
     const res = await api.post<ApiResponseTournamentSummaryDto>(
@@ -178,17 +177,11 @@ export const tournamentApi = {
       },
     );
     const d = res.data?.data;
-    // 정상 플로우는 store 사용 — 여기선 id 만 필요(딥링크 cache key).
-    return { id: String(d?.id ?? '') } as unknown as TournamentRecordDto;
+    // 정상 플로우는 store 사용 — 여기선 id 만 반환.
+    return { id: String(d?.id ?? '') };
   },
 
-  // ⚠️ getRecord(GET /tournaments/{id}) 딥링크 — Spring 미지원, MSW mock. BE 추가 필요.
-  // 실 BE 모드에선 cold 딥링크 복원 미지원(결과 화면이 store fallback, store 없으면 안내).
-  getRecord: async (id: string): Promise<TournamentRecordDto> =>
-    (await api.get<TournamentRecordDto>(`/tournaments/${id}`)).data,
-
   // 저장 목록 — 신규 Spring BE(엔벨로프) → 도메인 SavedTournamentDto[] 매핑.
-  // 새 BE 는 luckyColor 미제공 → '' (SavedTournamentCard accentDot 비활성).
   listSaved: async (): Promise<SavedTournamentDto[]> => {
     const res = await beListSaved();
     return (res.data ?? []).map(
@@ -202,7 +195,6 @@ export const tournamentApi = {
             region: s.destination?.region,
             imageUrl: s.destination?.imageUrl ?? undefined,
           } as unknown as DestinationDto),
-          luckyColor: '',
           savedAt: s.savedAt ?? '',
         }) as SavedTournamentDto,
     );
@@ -225,9 +217,8 @@ export const tournamentApi = {
     }
   },
 
-  // history — 신규 Spring BE(TournamentSummaryDto flat) → 구 페이지 shape({items,nextCursor}) 매핑.
-  // 소비처(TournamentHistorySection)는 id/category/completedAt/count/winnerName 만 사용.
-  // 새 BE 는 winnerRegion/winnerId/theme 미제공(소비처 미사용) + cursor 없음(nextCursor null).
+  // history — 신규 Spring BE(TournamentSummaryDto flat) → 페이지 shape({items,nextCursor}).
+  // Spring 필드명 그대로: id·winnerName·category·tournamentSize·completedAt. cursor 없음.
   listHistory: async (): Promise<TournamentHistoryPageDto> => {
     const res = await beHistory();
     const items = (res.data ?? []).map(
@@ -236,12 +227,10 @@ export const tournamentApi = {
           id: String(t.id),
           winnerName: t.winnerName ?? '',
           category: t.category,
-          count: t.tournamentSize ?? 0,
+          tournamentSize: t.tournamentSize ?? 0,
           completedAt: t.completedAt ?? '',
-          theme: null,
-          winnerId: '',
         }) as unknown as TournamentHistoryItemDto,
     );
-    return { items, nextCursor: null } as unknown as TournamentHistoryPageDto;
+    return { items, nextCursor: null };
   },
 };

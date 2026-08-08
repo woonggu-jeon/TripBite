@@ -121,22 +121,6 @@ function setMockSignedIn(v: boolean): void {
 }
 
 /**
- * 토너먼트 기록 인메모리 store — `POST /tournaments` 가 채우고
- * `GET /tournaments/:id` 가 읽음. SW 재기동 시 휘발 (mock 한정).
- */
-const tournamentRecords = new Map<
-  string,
-  {
-    id: string;
-    winner: (typeof destinationSeeds)[number];
-    runnerUp: (typeof destinationSeeds)[number] | null;
-    matchesPlayed: number;
-    tournamentSize: number;
-    completedAt: string;
-  }
->();
-
-/**
  * 여행 유형 테스트 — 사용자의 저장된 결과(mutable). submit 시 갱신.
  * dev 서버 재시작 시 null 로 리셋.
  */
@@ -813,8 +797,8 @@ export const handlers = [
 
   // 신규 Spring BE: 토너먼트 결과 기록 — POST /mypage/tournament-history.
   // body: { winnerId?, winnerName, region?, category?, tournamentSize? }.
-  // 응답 thin ApiResponse<TournamentSummaryDto>. deep-link(getRecord) mock 유지 위해
-  // tournamentRecords 에도 저장(winnerName 으로 seed 매칭해 winner destination 복원).
+  // 응답 thin ApiResponse<TournamentSummaryDto>. (결과 딥링크 복원은 Spring 미지원 —
+  // 결과 화면은 store 전용이라 record 저장 불필요.)
   http.post(`${apiUrl}/mypage/tournament-history`, async ({ request }) => {
     const body = (await request.json()) as {
       winnerId?: number;
@@ -823,71 +807,17 @@ export const handlers = [
       category?: string;
       tournamentSize?: number;
     };
-    const winner =
-      destinationSeeds.find((d) => d.name === body.winnerName) ??
-      ({
-        id: `w-${Date.now()}`,
-        name: body.winnerName ?? '',
-        region: body.region,
-        category: body.category,
-        imageUrl: null,
-      } as unknown as (typeof destinationSeeds)[number]);
-    const numId = Date.now();
-    tournamentRecords.set(String(numId), {
-      id: String(numId),
-      winner,
-      runnerUp: null,
-      matchesPlayed: 0,
-      tournamentSize: body.tournamentSize ?? 0,
-      completedAt: new Date().toISOString(),
-    });
     return HttpResponse.json({
       success: true,
       message: null,
       data: {
-        id: numId,
+        id: Date.now(),
         winnerName: body.winnerName,
         tournamentSize: body.tournamentSize,
         category: body.category,
         completedAt: new Date().toISOString(),
       },
     });
-  }),
-
-  // 토너먼트 기록 — Play 종료 시 fire-and-forget. record id 반환.
-  // 선택 인증 (BE Swagger §Tournament): 쿠키 있으면 계정 귀속, 없으면 게스트
-  // 익명 기록 (랭킹 집계엔 반영). 401 없음 — getMockSignedIn() 가드 없음 (의도).
-  // 인메모리 (`tournamentRecords`) 에 저장 → GET /tournaments/:id 로 deep-link 복원.
-  http.post(`${apiUrl}/tournaments`, async ({ request }) => {
-    const body = (await request.json()) as {
-      winnerId: string;
-      runnerUpId: string | null;
-      matchesPlayed: number;
-      tournamentSize: number;
-    };
-    const winner = destinationSeeds.find((d) => d.id === body.winnerId);
-    if (!winner) return new HttpResponse(null, { status: 404 });
-    const runnerUp = body.runnerUpId
-      ? (destinationSeeds.find((d) => d.id === body.runnerUpId) ?? null)
-      : null;
-    const record = {
-      id: `tr-${Date.now()}`,
-      winner,
-      runnerUp,
-      matchesPlayed: body.matchesPlayed,
-      tournamentSize: body.tournamentSize,
-      completedAt: new Date().toISOString(),
-    };
-    tournamentRecords.set(record.id, record);
-    return HttpResponse.json(record);
-  }),
-
-  // Deep-link 진입 시 record 조회.
-  http.get(`${apiUrl}/tournaments/:id`, ({ params }) => {
-    const id = String(params.id);
-    const record = tournamentRecords.get(id);
-    if (!record) return new HttpResponse(null, { status: 404 });
-    return HttpResponse.json(record);
   }),
 
   // 우승 여행지를 마이페이지에 저장 (인증 필요)
@@ -899,7 +829,6 @@ export const handlers = [
     return HttpResponse.json({
       id: `saved-${body.destinationId}`,
       destination: dest,
-      luckyColor: '#7AC7E8',
       savedAt: new Date().toISOString(),
     });
   }),

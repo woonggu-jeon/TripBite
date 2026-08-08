@@ -1,10 +1,6 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type {
-  DestinationCategory,
-  SavedTournamentDto,
-} from '@/types/api-domain';
 import { tournamentApi } from '@/features/tournament/api/tournament';
 import type {
   TournamentConfig,
@@ -13,6 +9,10 @@ import type {
 } from '@/features/tournament/types';
 import { CACHE } from '@/lib/cache';
 import { useAuthStore } from '@/stores/auth-store';
+import type {
+  DestinationCategory,
+  SavedTournamentDto,
+} from '@/types/api-domain';
 
 /**
  * Candidates query key — BE 호출에 실제 영향 주는 param 만 포함.
@@ -31,7 +31,6 @@ export const tournamentKeys = {
     [...tournamentKeys.all, 'candidates', config] as const,
   saved: () => [...tournamentKeys.all, 'saved'] as const,
   history: () => [...tournamentKeys.all, 'history'] as const,
-  record: (id: string) => [...tournamentKeys.all, 'record', id] as const,
   destinationDetail: (id: string) =>
     [...tournamentKeys.all, 'destination', id] as const,
   destinationRelated: (id: string) =>
@@ -120,26 +119,11 @@ export function useRecordTournament() {
           : undefined;
       return tournamentApi.recordResult(input, idempotencyKey);
     },
-    onSuccess: (record) => {
-      qc.setQueryData(tournamentKeys.record(record.id), record);
+    onSuccess: () => {
+      // Spring 은 결과 딥링크 복원(GET /tournaments/{id}) 미지원 → record cache 없음.
+      // 히스토리만 무효화(다음 진입 시 최신 기록 반영). 결과 화면은 store 사용.
       qc.invalidateQueries({ queryKey: tournamentKeys.history() });
     },
-  });
-}
-
-/**
- * Deep-link 진입 시 record 조회 — `/tournament/result?id=...`.
- * id 없으면 disabled.
- */
-export function useTournamentRecord(id: string | null | undefined) {
-  return useQuery({
-    queryKey: id ? tournamentKeys.record(id) : ['tournament', 'record', 'idle'],
-    queryFn: () => {
-      if (!id) throw new Error('record id missing');
-      return tournamentApi.getRecord(id);
-    },
-    enabled: !!id,
-    ...CACHE.slow,
   });
 }
 
