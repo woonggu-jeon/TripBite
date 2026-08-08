@@ -24,9 +24,8 @@ const mockTravelType = {
   code: 'explorer',
   title: '탐험형 여행자',
   description: '탐험형',
-  keywords: ['#탐험'],
   emoji: '🏛️',
-  recommended: [],
+  tags: ['#탐험'],
 } as const;
 
 describe('useMyTravelType — enabled: isAuthenticated 가드', () => {
@@ -66,7 +65,7 @@ describe('useSubmitTravelType', () => {
             title: mockTravelType.title,
             emoji: mockTravelType.emoji,
             description: mockTravelType.description,
-            tags: mockTravelType.keywords,
+            tags: mockTravelType.tags,
           },
         }),
       ),

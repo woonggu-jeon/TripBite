@@ -1,7 +1,6 @@
 // 신규 Spring BE 의 quiz 응답 shape (id: number). handler 가 ApiResponse 로 감싸 반환.
 import type { QuizDto } from '@/api/be/schemas';
 import { TRAVEL_TYPE_META } from '@/constants/travel-types';
-import type { TravelTypeCompatibilityDto } from '@/types/api-domain';
 
 /**
  * 여행 유형 테스트 mock seed.
@@ -110,86 +109,5 @@ export const travelTypeMockScoreMap: Record<string, TravelTypeMockCode> = {
   '20': 'foodie',
 };
 
-/** 유형별 메타 — production 상수 재사용(단일 소스). handler 가 +compatibility 합성. */
+/** 유형별 메타 — production 상수 재사용(단일 소스). Spring TravelTypeResultDto shape. */
 export const travelTypeMetaSeed = TRAVEL_TYPE_META;
-
-/**
- * mock 전용: 유형별 추천 destination 카테고리 매핑.
- * handler 가 destinationSeeds 를 이 카테고리로 필터 + 셔플 → top 3 반환.
- */
-export const travelTypeRecommendCategoriesSeed: Record<
-  TravelTypeMockCode,
-  Array<'festival' | 'attraction' | 'experience'>
-> = {
-  adventurer: ['experience', 'attraction'],
-  explorer: ['attraction', 'festival'],
-  relaxer: ['attraction', 'experience'],
-  foodie: ['festival', 'experience'],
-};
-
-/**
- * mock 전용: 유형별 여행 궁합 (best / worst) — BE 가 응답에 함께 던지는 신규
- * 필드 (각 code·title·emoji·reason). UI 가 분기 로직을 가지지 않도록 서버 응답
- * 그대로 노출. 비로그인 submit 결과에도 포함.
- */
-export const travelTypeCompatibilitySeed: Record<
-  TravelTypeMockCode,
-  TravelTypeCompatibilityDto
-> = {
-  adventurer: {
-    best: {
-      code: 'foodie',
-      title: '맛집형 여행자',
-      emoji: '🍜',
-      reason: '즉흥과 발견의 호흡이 잘 맞아요. 길에서 만난 맛집에서 의기투합.',
-    },
-    worst: {
-      code: 'relaxer',
-      title: '휴식형 여행자',
-      emoji: '🌿',
-      reason: '액티브 코스와 느긋한 페이스가 부딪힐 수 있어요.',
-    },
-  },
-  explorer: {
-    best: {
-      code: 'foodie',
-      title: '맛집형 여행자',
-      emoji: '🍜',
-      reason: '문화 탐방과 미식 투어가 자연스럽게 이어져요.',
-    },
-    worst: {
-      code: 'adventurer',
-      title: '도전형 여행자',
-      emoji: '🧗',
-      reason: '꼼꼼한 계획과 즉흥의 호흡이 어긋날 수 있어요.',
-    },
-  },
-  relaxer: {
-    best: {
-      code: 'explorer',
-      title: '탐험형 여행자',
-      emoji: '🏛️',
-      reason: '한 곳을 깊게 보는 두 유형의 페이스가 잘 맞아요.',
-    },
-    worst: {
-      code: 'adventurer',
-      title: '도전형 여행자',
-      emoji: '🧗',
-      reason: '쉼과 도전의 균형 잡기가 어려울 수 있어요.',
-    },
-  },
-  foodie: {
-    best: {
-      code: 'adventurer',
-      title: '도전형 여행자',
-      emoji: '🧗',
-      reason: '새 장소·새 맛으로 함께 떠나기 좋아요.',
-    },
-    worst: {
-      code: 'relaxer',
-      title: '휴식형 여행자',
-      emoji: '🌿',
-      reason: '쉼 중심 여행과 미식 투어의 페이스가 다를 수 있어요.',
-    },
-  },
-};

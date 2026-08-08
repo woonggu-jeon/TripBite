@@ -1,25 +1,21 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { BadgeCheck, RotateCcw, Share2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Share2, RotateCcw, BadgeCheck } from 'lucide-react';
-import { haptic } from '@/lib/haptic';
-import { CHUNGBUK_REGIONS } from '@/constants/regions';
+import { useRouter } from 'next/navigation';
+import { Illustration } from '@/components/brand/Illustration';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Button, ButtonGrid, Card, Chip } from '@/components/ui';
+import { travelTypeIllustration } from '@/constants/illustration-map';
 import {
   useMyTravelType,
   useSetMyTravelType,
 } from '@/features/ranking/hooks/use-ranking';
-import type { TravelTypeDto } from '@/types/api-domain';
-import { toast } from '@/lib/toast';
-import { useShareCard } from '@/hooks/use-share-card';
 import { useRequireAuth } from '@/hooks/use-require-auth';
-import Image from 'next/image';
-import { categoryEmoji } from '@/constants/emoji-map';
-import { secureImageUrl } from '@/lib/secure-image-url';
-import { Illustration } from '@/components/brand/Illustration';
-import { travelTypeIllustration } from '@/constants/illustration-map';
+import { useShareCard } from '@/hooks/use-share-card';
+import { haptic } from '@/lib/haptic';
+import { toast } from '@/lib/toast';
+import type { TravelTypeDto } from '@/types/api-domain';
 import styles from './TravelTypeResult.module.scss';
 
 /**
@@ -31,13 +27,12 @@ import styles from './TravelTypeResult.module.scss';
  *   - 결과 없음(처음 진입 또는 만료) → /travel-type 으로 redirect.
  *
  * 구성:
- *   1) 결과 hero — emoji + 유형 코드 + title + 키워드 chip
+ *   1) 결과 hero — emoji + 유형 코드 + title + 태그 chip
  *   2) description
- *   3) 추천 여행지 3 (서버 응답의 recommended 그대로)
- *   4) 액션 — 공유 카드 / 다시 테스트
+ *   3) 액션 — 공유 카드 / 다시 테스트
  *
- * UI 가 유형 코드를 분기하지 않음 — title/description/emoji/keywords/recommended 모두
- * 서버 응답 그대로 사용. 추후 유형 추가/변경 시 코드 수정 없이 자동 반영.
+ * UI 가 유형 코드를 분기하지 않음 — title/description/emoji/tags 모두 서버 응답
+ * (Spring TravelTypeResultDto) 그대로 사용. (추천 여행지는 Spring 미제공 — 미노출.)
  */
 export function TravelTypeResult() {
   const t = useTranslations('travelType.result');
@@ -105,8 +100,7 @@ export function TravelTypeResult() {
 
   const result: TravelTypeDto = data;
   const resultArt = travelTypeIllustration(result.code);
-  const keywords = result.keywords ?? [];
-  const recommended = result.recommended ?? [];
+  const tags = result.tags ?? [];
 
   return (
     <div className={styles.wrap}>
@@ -123,9 +117,9 @@ export function TravelTypeResult() {
           {result.code}
         </Chip>
         <h2 className={styles.title}>{result.title}</h2>
-        {keywords.length > 0 && (
+        {tags.length > 0 && (
           <ul className={styles.keywords} aria-label={t('keywordsAria')}>
-            {keywords.map((k) => (
+            {tags.map((k) => (
               <li key={k}>
                 <Chip variant="outline" size="sm">
                   {k}
@@ -138,40 +132,6 @@ export function TravelTypeResult() {
           <p className={styles.description}>{result.description}</p>
         )}
       </Card>
-
-      {recommended.length > 0 && (
-        <section className={styles.recommend}>
-          <h3 className={styles.recommendTitle}>{t('recommendTitle')}</h3>
-          <ul className={styles.recommendList}>
-            {recommended.map((d) => {
-              const region = CHUNGBUK_REGIONS.find((r) => r.code === d.region);
-              const regionLabel = region?.ko ?? d.region;
-              const safeImg = secureImageUrl(d.imageUrl);
-              return (
-                <li key={d.id} className={styles.recommendItem}>
-                  <span className={styles.recEmoji} aria-hidden>
-                    {safeImg ? (
-                      <Image
-                        src={safeImg}
-                        alt=""
-                        fill
-                        sizes="40px"
-                        className={styles.recPhoto}
-                      />
-                    ) : (
-                      categoryEmoji(d.category)
-                    )}
-                  </span>
-                  <div className={styles.recText}>
-                    <p className={styles.recName}>{d.name}</p>
-                    <p className={styles.recMeta}>{regionLabel}</p>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      )}
 
       <div className={styles.actions}>
         <ButtonGrid>

@@ -18,6 +18,7 @@
  */
 import { HttpResponse, http } from 'msw';
 import { isRegionCode } from '@/constants/regions';
+import { travelTypeFromCode } from '@/constants/travel-types';
 import type { TravelTypeAnswer } from '@/features/ranking/types';
 import type {
   AppNotificationDto,
@@ -34,11 +35,9 @@ import {
 } from './seeds/tournament';
 import {
   type TravelTypeMockCode,
-  travelTypeCompatibilitySeed,
   travelTypeMetaSeed,
   travelTypeMockScoreMap,
   travelTypeQuizSeed,
-  travelTypeRecommendCategoriesSeed,
 } from './seeds/travel-types';
 
 /**
@@ -121,10 +120,10 @@ function setMockSignedIn(v: boolean): void {
 }
 
 /**
- * 여행 유형 테스트 — 사용자의 저장된 결과(mutable). submit 시 갱신.
- * dev 서버 재시작 시 null 로 리셋.
+ * 여행 유형 테스트 — 사용자의 저장된 유형 코드(mutable). submit/PATCH me 시 갱신.
+ * Spring: GET /me.travelType 는 코드 문자열. dev 서버 재시작 시 null 로 리셋.
  */
-let myTravelType: TravelTypeDto | null = null;
+let myTravelTypeCode: TravelTypeMockCode | null = null;
 
 /**
  * 알림 인박스 (mutable) — seed 복사. push 시뮬레이션 / markRead 가 mutate.
@@ -151,24 +150,9 @@ const notificationItems: AppNotificationDto[] = notificationSeeds.map((n) => ({
   createdAt: n.createdAt,
 }));
 
-/** 셔플 후 N 개 — Fisher–Yates 부분 */
-function pickRandom<T>(arr: readonly T[], n: number): T[] {
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const ai = a[i];
-    const aj = a[j];
-    if (ai !== undefined && aj !== undefined) {
-      a[i] = aj;
-      a[j] = ai;
-    }
-  }
-  return a.slice(0, Math.min(n, a.length));
-}
-
 /**
  * mock 측 점수 계산 — answers 의 optionId 마다 매핑된 유형에 +1, 최고점 유형 반환.
- * 동점 시 첫 등장 유형 우선 (Map 순서).
+ * 동점 시 첫 등장 유형 우선 (Map 순서). 반환은 Spring TravelTypeResultDto 파생 shape.
  */
 function resolveTravelType(answers: TravelTypeAnswer[]): TravelTypeDto {
   const score: Record<TravelTypeMockCode, number> = {
@@ -189,16 +173,7 @@ function resolveTravelType(answers: TravelTypeAnswer[]): TravelTypeDto {
       best = k;
     }
   });
-  const meta = travelTypeMetaSeed[best];
-  const cats = travelTypeRecommendCategoriesSeed[best];
-  const pool = destinationSeeds.filter((d) =>
-    cats.includes(d.category as (typeof cats)[number]),
-  );
-  return {
-    ...meta,
-    recommended: pickRandom(pool, 3),
-    compatibility: travelTypeCompatibilitySeed[best],
-  };
+  return travelTypeMetaSeed[best];
 }
 
 // 11 시군 라벨 — rankings/by-region 응답에서 사용.
@@ -308,7 +283,12 @@ export const handlers = [
       ? HttpResponse.json({
           success: true,
           message: null,
-          data: { ...mockUser, isOnboarded: onboardedState },
+          // Spring UserResponseDto: travelType 은 코드 문자열(null 가능).
+          data: {
+            ...mockUser,
+            isOnboarded: onboardedState,
+            travelType: myTravelTypeCode,
+          },
         })
       : unauthorized(),
   ),
@@ -631,20 +611,29 @@ export const handlers = [
     getMockSignedIn()
       ? HttpResponse.json({
           profile: { nickname: mockUser.nickname, isDefault: false },
-          travelType: myTravelType,
+          travelType: myTravelTypeCode
+            ? travelTypeFromCode(myTravelTypeCode)
+            : null,
         })
       : unauthorized(),
   ),
   // 신규 Spring BE: 프로필 수정 PATCH /me — ApiResponse<UserResponseDto>.
+  // travelType(코드) 갱신도 여기서 (4-A: travel-types/me PATCH 대체).
   http.patch(`${apiUrl}/me`, async ({ request }) => {
     if (!getMockSignedIn()) return unauthorized();
     const body = (await request.json().catch(() => ({}))) as {
       nickname?: string;
+      travelType?: TravelTypeMockCode;
     };
+    if (body.travelType) myTravelTypeCode = body.travelType;
     return HttpResponse.json({
       success: true,
       message: null,
-      data: { ...mockUser, nickname: body.nickname ?? mockUser.nickname },
+      data: {
+        ...mockUser,
+        nickname: body.nickname ?? mockUser.nickname,
+        travelType: myTravelTypeCode,
+      },
     });
   }),
   // 프로필 아바타 업로드 (POST /me/avatar) — multipart form-data 'file'.
@@ -837,22 +826,6 @@ export const handlers = [
   //   - tournamentSize: 매치업 사이즈 (M ≤ N) — 현재 mock 은 무시, 백엔드 연동 후 활용
   //   - pool : 클라이언트에 노출할 풀 사이즈 (없으면 count와 같음)
   //
-  // 메인 "이런 여행 어때요" 추천 그룹 — Figma rec-block 전용.
-  // BE: GET /destinations/recommendations (2026-06-24 신설).
-  // 응답: { festival: [], attraction: [], experience: [] } 3 그룹.
-  // 각 그룹당 최대 8개 (mock 운영 — destinationSeeds 카테고리별 deterministic
-  // slice).
-  // ⚠ /destinations/:id 보다 먼저 등록 (segment 매칭 회피).
-  http.get(`${apiUrl}/destinations/recommendations`, () => {
-    const byCategory = (cat: 'festival' | 'attraction' | 'experience') =>
-      destinationSeeds.filter((d) => d.category === cat).slice(0, 8);
-    return HttpResponse.json({
-      festival: byCategory('festival'),
-      attraction: byCategory('attraction'),
-      experience: byCategory('experience'),
-    });
-  }),
-
   // 관련 여행지 — 같은 region 의 다른 destination 6개. seed 기반 deterministic.
   // ⚠ /destinations/:id 보다 먼저 등록 — :id 가 'related' segment 도 매칭하므로
   //   path 명시 (`/destinations/:id/related`) 가 더 길어 우선되지만 안전을 위해 앞에.
@@ -1133,12 +1106,12 @@ export const handlers = [
       data: travelTypeQuizSeed,
     }),
   ),
-  // 신규 Spring BE: 응답은 thin TravelTypeResultDto(code/title/emoji/description/tags) 엔벨로프.
-  // 단 /me mock 을 위해 내부적으로 full 결과(recommended/compatibility 포함)를 저장.
+  // 신규 Spring BE: 응답은 TravelTypeResultDto(code/title/emoji/description/tags) 엔벨로프.
+  // 내 유형 코드 저장 → GET /me.travelType 이 반환(4-A: travel-types/me 대체).
   http.post(`${apiUrl}/travel-types/submit`, async ({ request }) => {
     const body = (await request.json()) as { answers: TravelTypeAnswer[] };
     const result = resolveTravelType(body.answers ?? []);
-    myTravelType = result;
+    myTravelTypeCode = result.code as TravelTypeMockCode;
     return HttpResponse.json({
       success: true,
       message: null,
@@ -1147,40 +1120,8 @@ export const handlers = [
         title: result.title,
         emoji: result.emoji,
         description: result.description,
-        tags: result.keywords,
+        tags: result.tags,
       },
     });
-  }),
-  // 적용된 본인 유형 — 비로그인 시 null (getMockSignedIn() 무관, 비로그인은 적용 불가).
-  http.get(`${apiUrl}/travel-types/me`, () =>
-    getMockSignedIn() ? HttpResponse.json(myTravelType) : unauthorized(),
-  ),
-
-  // 명시 적용 — quiz 결과 페이지의 "내 유형으로 적용" 버튼. 로그인 필요.
-  // BE spec: 응답은 TravelTypeDto (recommended: []) — apply 는 저장만, recommended 는 GET /me 가 별도 빌드.
-  // FE hook 이 setQueryData 대신 invalidate 호출 → GET 재요청으로 recommended 복원.
-  http.patch(`${apiUrl}/travel-types/me`, async ({ request }) => {
-    if (!getMockSignedIn()) return unauthorized();
-    const { code } = (await request.json()) as { code: string };
-    const meta = (travelTypeMetaSeed as Record<string, TravelTypeDto>)[code];
-    if (!meta) return new HttpResponse(null, { status: 404 });
-    // 저장된 상태는 recommended 까지 — GET /me 가 같은 데이터 반환.
-    const cats =
-      (travelTypeRecommendCategoriesSeed as Record<string, readonly string[]>)[
-        code
-      ] ?? [];
-    const pool = destinationSeeds.filter((d) =>
-      cats.includes(d.category as (typeof cats)[number]),
-    );
-    // meta 가 위에서 검증됐으므로 code 는 TravelTypeMockCode 4개 중 하나.
-    const compatibility =
-      travelTypeCompatibilitySeed[code as TravelTypeMockCode];
-    myTravelType = {
-      ...meta,
-      recommended: pickRandom(pool, 3),
-      compatibility,
-    };
-    // 다만 PATCH 응답 자체는 BE spec 대로 recommended:[] (저장 ack).
-    return HttpResponse.json({ ...meta, recommended: [], compatibility });
   }),
 ];

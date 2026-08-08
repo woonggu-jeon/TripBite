@@ -1,15 +1,15 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { ChevronLeft, Share2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Share2, ChevronLeft } from 'lucide-react';
-import { haptic } from '@/lib/haptic';
+import { useRouter } from 'next/navigation';
+import { Illustration } from '@/components/brand/Illustration';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { Button, Card, Chip, IconButton } from '@/components/ui';
-import { useMyTravelType } from '@/features/ranking/hooks/use-ranking';
-import { Illustration } from '@/components/brand/Illustration';
 import { travelTypeIllustration } from '@/constants/illustration-map';
+import { useMyTravelType } from '@/features/ranking/hooks/use-ranking';
+import { haptic } from '@/lib/haptic';
 import styles from './TravelTypeShareCard.module.scss';
 
 /**
@@ -60,10 +60,10 @@ export function TravelTypeShareCard() {
   }
 
   const cardArt = travelTypeIllustration(data.code);
-  const keywords = data.keywords ?? [];
+  const tags = data.tags ?? [];
   const shareText =
-    keywords.length > 0
-      ? `${data.emoji} ${data.title} — ${keywords.join(' ')}`
+    tags.length > 0
+      ? `${data.emoji} ${data.title} — ${tags.join(' ')}`
       : `${data.emoji} ${data.title}`;
 
   const handleShare = async () => {
@@ -128,9 +128,9 @@ export function TravelTypeShareCard() {
           {data.code}
         </Chip>
         <h3 className={styles.cardTitle}>{data.title}</h3>
-        {keywords.length > 0 && (
+        {tags.length > 0 && (
           <ul className={styles.cardKeywords}>
-            {keywords.map((k) => (
+            {tags.map((k) => (
               <li key={k}>
                 <Chip variant="default" size="sm">
                   {k}

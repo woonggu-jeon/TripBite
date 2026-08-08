@@ -100,8 +100,7 @@ export const rankingApi = {
   },
 
   // 신규 Spring BE: POST /travel-types/submit — 도메인 answer(string id) → SubmitQuizDto(number id).
-  // 응답 TravelTypeResultDto 는 thin(code/title/emoji/description/tags) → 도메인 TravelTypeDto 로 매핑.
-  // keywords ← tags, recommended ← [] (BE 미제공, GET /me 가 별도 빌드), compatibility 는 GET /me 에서 채워짐.
+  // 응답 TravelTypeResultDto(code/title/emoji/description/tags) → 도메인 TravelTypeDto(동일 shape).
   submitTravelType: async (
     answers: TravelTypeAnswer[],
   ): Promise<TravelTypeDto> => {
@@ -112,37 +111,25 @@ export const rankingApi = {
       })),
     });
     const r = res.data;
-    // compatibility 는 BE 미제공 → 생략(UI 가 optional 처리). thin → 도메인 캐스팅.
-    return normalizeTravelTypeImages({
+    return {
       code: r?.code,
       title: r?.title ?? '',
       description: r?.description ?? '',
       emoji: r?.emoji ?? '',
-      keywords: r?.tags ?? [],
-      recommended: [],
-    } as unknown as TravelTypeDto);
+      tags: r?.tags ?? [],
+    } as unknown as TravelTypeDto;
   },
 
   // 4-A 전환: travel-types/me 미지원 → GET /me.travelType(code) + 정적 유형맵 재구성.
   getMyTravelType: async (): Promise<TravelTypeDto | null> => {
     const res = await beGetMe();
-    const t = travelTypeFromCode(res.data?.travelType);
-    return t ? normalizeTravelTypeImages(t) : null;
+    return travelTypeFromCode(res.data?.travelType);
   },
 
   // 4-A 전환: PATCH /me { travelType: code } 로 저장 후 정적 유형맵으로 재구성.
   setMyTravelType: async (code: TravelTypeCode): Promise<TravelTypeDto> => {
     await beUpdateMe({ travelType: code });
-    const t = travelTypeFromCode(code);
     // travelTypeFromCode 는 유효 code 에 대해 항상 non-null (code 는 TravelTypeCode).
-    return normalizeTravelTypeImages(t as TravelTypeDto);
+    return travelTypeFromCode(code) as TravelTypeDto;
   },
 };
-
-function normalizeTravelTypeImages(input: TravelTypeDto): TravelTypeDto {
-  if (!input.recommended?.length) return input;
-  return {
-    ...input,
-    recommended: input.recommended.map(normalizeImageField),
-  };
-}

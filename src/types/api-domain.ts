@@ -120,13 +120,6 @@ export interface TravelTypeBriefDto {
   emoji: string;
 }
 
-export interface TravelTypeMatchDto {
-  code: TravelTypeCode;
-  title: string;
-  emoji: string;
-  reason: string;
-}
-
 export interface RegionSummaryDto {
   code: RegionCode;
   heroImage?: string;
@@ -134,20 +127,14 @@ export interface RegionSummaryDto {
   popularity: number;
 }
 
-export interface TravelTypeCompatibilityDto {
-  best: TravelTypeMatchDto;
-  worst: TravelTypeMatchDto;
-}
-
+// Spring TravelTypeResultDto 파생 뷰: code·title·emoji·description·tags.
+// (recommended·compatibility 는 Spring 미제공 — 삭제. keywords→tags.)
 export interface TravelTypeDto {
   code: TravelTypeCode;
   title: string;
   description: string;
-  keywords: string[];
   emoji: string;
-  /** Spring 미제공 — quiz 결과 화면에서 optional 처리 */
-  compatibility?: TravelTypeCompatibilityDto;
-  recommended: DestinationDto[];
+  tags: string[];
 }
 
 export interface LetterLocationDto {
@@ -240,12 +227,6 @@ export interface ForgotPasswordDto {
 export interface ResetPasswordDto {
   token: string;
   password: string;
-}
-
-export interface RecommendationsDto {
-  festival: DestinationDto[];
-  attraction: DestinationDto[];
-  experience: DestinationDto[];
 }
 
 export interface RegionContentDto {

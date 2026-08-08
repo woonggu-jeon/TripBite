@@ -99,9 +99,8 @@ describe('rankingApi.getTravelTypeQuiz / submitTravelType — 신규 BE 매핑',
     ]);
     // 도메인 answer(string) → BE(number) 전송.
     expect(sentBody).toEqual({ answers: [{ questionId: 1, optionId: 3 }] });
-    // thin 결과 → 도메인: tags → keywords, recommended → [].
+    // Spring TravelTypeResultDto shape 그대로(code/title/emoji/description/tags).
     expect(res.code).toBe('explorer');
-    expect(res.keywords).toEqual(['#탐험', '#문화']);
-    expect(res.recommended).toEqual([]);
+    expect(res.tags).toEqual(['#탐험', '#문화']);
   });
 });
