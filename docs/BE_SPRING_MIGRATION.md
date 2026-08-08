@@ -37,7 +37,7 @@
 | 타입체크 (앱코드)                     | ✅ 0                                          |
 | lint                                  | ✅ 에러 0                                     |
 | vitest (유닛, MSW)                    | ✅ 248 passed / 13 skip                       |
-| jest (순수 로직)                      | ✅ 33 passed                                  |
+| jest (순수 로직)                      | ✅ 38 passed                                  |
 | **be:contract (실 Spring, 세션주입)** | ✅ 10 passed                                  |
 | **프로덕션 빌드**                     | ✅ 성공                                       |
 | 다크모드 런타임                       | ✅ light↔dark 전환                            |
