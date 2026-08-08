@@ -17,13 +17,13 @@
  *   테스트 (vitest/node) 에선 origin 제약 없이 모두 가로챔.
  */
 import { HttpResponse, http } from 'msw';
+import { isRegionCode } from '@/constants/regions';
+import type { TravelTypeAnswer } from '@/features/ranking/types';
 import type {
   AppNotificationDto,
   DestinationDto,
   TravelTypeDto,
 } from '@/types/api-domain';
-import { isRegionCode } from '@/constants/regions';
-import type { TravelTypeAnswer } from '@/features/ranking/types';
 import { destinationSeeds } from './seeds/destinations';
 import { letterSeeds } from './seeds/letters';
 import { notificationSeeds } from './seeds/notifications';
@@ -1058,11 +1058,11 @@ export const handlers = [
     for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0;
     const u = (n: number) => (Math.abs(h + n) % 1000) / 1000; // 0~1
 
-    // mock photos — deterministic SVG data URL 3장 (id 기반 hue 변동).
+    // mock images — deterministic SVG data URL 3장 (id 기반 hue 변동).
     // CSP `img-src: 'self' data: blob:` 에 data: 허용되어 있음.
     // 실 BE 는 CDN URL.
     const baseHue = Math.floor(u(70) * 360);
-    const photos = [0, 1, 2].map((i) => {
+    const images = [0, 1, 2].map((i) => {
       const hue = (baseHue + i * 60) % 360;
       const svg =
         `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice">` +
@@ -1077,42 +1077,28 @@ export const handlers = [
       return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
     });
 
-    const restDatePool = [
-      '매주 월요일',
-      '매주 화요일',
-      '설/추석 당일',
-      '첫째·셋째 월요일',
+    const admissionPool = [
+      '무료',
+      '성인 5,000원',
+      '성인 3,000원 / 청소년 2,000원',
     ];
-    const parkingPool = ['가능', '불가', '유료', '소형 가능'];
-    // BE 실제 응답 spec (Swagger §Destinations, GET /destinations/:id):
-    //   summary (필수, ≤120자) / photos[] / address? / coords? / phone? / website? /
-    //   openingHours? / restDate? / parking? — TourAPI 원본 명칭 그대로.
-    //   admissionFee / tags / rating / bestSeasons 는 BE 미제공 — 응답에서 제거.
+    // Spring DestinationDetailDto shape (GET /destinations/{id}):
+    //   id·name·category·region·imageUrl·images[]·address?·type?·admissionFee?·
+    //   description?·tags[]·eventStart?·eventEnd? (coords/phone/website/openingHours/
+    //   restDate/parking 는 Spring 미제공 — mock 에서도 제외).
     const detail = {
       ...seed,
       description: `${seed.name} — ${seed.region} 대표 ${seed.category}`,
-      photos,
+      images,
       address: `충북 ${seed.region.replace(/[a-z]+/i, '')} ${seed.name} 일대`,
-      phone:
+      type: seed.category,
+      admissionFee:
         u(10) > 0.3
-          ? `043-${200 + Math.floor(u(11) * 800)}-${1000 + Math.floor(u(12) * 8999)}`
+          ? (admissionPool[Math.floor(u(11) * admissionPool.length)] ??
+            undefined)
           : undefined,
-      website: u(20) > 0.5 ? `https://example.com/${id}` : undefined,
-      openingHours: u(30) > 0.3 ? '매일 09:00 - 18:00' : undefined,
-      restDate:
-        u(31) > 0.4
-          ? (restDatePool[Math.floor(u(32) * restDatePool.length)] ?? undefined)
-          : undefined,
-      parking:
-        u(45) > 0.3
-          ? (parkingPool[Math.floor(u(46) * parkingPool.length)] ?? undefined)
-          : undefined,
-      coords: {
-        lat: 36.5 + u(60) * 1.2,
-        lng: 127.4 + u(61) * 0.9,
-      },
-      // festival 일정 — BE spec (BE_REQUEST_FESTIVAL_DATES.md) 동일.
-      // category === 'festival' 일 때만 deterministic mock 일자.
+      tags: [`#${seed.region}`, `#${seed.category}`],
+      // festival 일정 — category === 'festival' 일 때만 deterministic mock 일자.
       ...(seed.category === 'festival' && {
         eventStart: mockFestivalDate(h, 0),
         eventEnd: mockFestivalDate(h, 30 + Math.floor(u(70) * 60)),

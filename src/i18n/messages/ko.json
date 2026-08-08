@@ -617,11 +617,8 @@
       "detail": {
         "panelLabel": "여행지 상세",
         "address": "주소",
-        "openingHours": "운영시간",
-        "restDate": "휴무일",
-        "parking": "주차",
-        "phone": "전화",
-        "website": "웹사이트"
+        "admissionFee": "입장료",
+        "eventPeriod": "행사기간"
       },
       "ladder": {
         "title": "여행에서 인연을 만날 확률",

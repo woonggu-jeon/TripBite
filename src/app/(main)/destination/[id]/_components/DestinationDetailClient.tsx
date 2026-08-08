@@ -1,18 +1,18 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import { AlertCircle } from 'lucide-react';
-import { SubHeader } from '@/components/layout/SubHeader';
-import { Icon } from '@/components/icon';
-import { Skeleton } from '@/components/feedback/Skeleton';
+import { useTranslations } from 'next-intl';
 import { EmptyState } from '@/components/feedback/EmptyState';
+import { Skeleton } from '@/components/feedback/Skeleton';
+import { Icon } from '@/components/icon';
+import { SubHeader } from '@/components/layout/SubHeader';
 import { Button } from '@/components/ui';
-import { useDestinationDetail } from '@/features/tournament/hooks/use-tournament';
 import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetailPanel';
-import { DestinationPhotos } from './DestinationPhotos';
+import { useDestinationDetail } from '@/features/tournament/hooks/use-tournament';
 import { DestinationActions } from './DestinationActions';
-import { RelatedDestinations } from './RelatedDestinations';
 import styles from './DestinationDetailClient.module.scss';
+import { DestinationPhotos } from './DestinationPhotos';
+import { RelatedDestinations } from './RelatedDestinations';
 
 /**
  * 여행지 상세 client — `useDestinationDetail` 로 fetch 후 풍부한 메타 표시.
@@ -81,7 +81,7 @@ export function DestinationDetailClient({ id }: { id: string }) {
       <article className={styles.wrap} aria-labelledby="destination-name">
         {/* 1) hero — Figma 360x234 풀블리드 사진 + 그라디언트. photos 있으면 캐러셀 */}
         <DestinationPhotos
-          photos={detail.photos}
+          photos={detail.images}
           imageUrl={detail.imageUrl}
           alt={detail.name}
         />
@@ -111,11 +111,10 @@ export function DestinationDetailClient({ id }: { id: string }) {
         {/* 3) 이 시군의 다른 여행지 */}
         <RelatedDestinations id={id} />
 
-        {/* 4) action-bar — 길찾기(채움) + 링크 공유(라인) */}
+        {/* 4) action-bar — 길찾기(이름 검색) + 링크 공유(라인) */}
         <DestinationActions
           id={id}
           name={detail.name}
-          coords={detail.coords}
           shareText={detail.description}
         />
       </article>

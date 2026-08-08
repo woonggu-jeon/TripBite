@@ -617,11 +617,8 @@
       "detail": {
         "panelLabel": "Destination detail",
         "address": "Address",
-        "openingHours": "Hours",
-        "restDate": "Closed",
-        "parking": "Parking",
-        "phone": "Phone",
-        "website": "Website"
+        "admissionFee": "Admission",
+        "eventPeriod": "Event period"
       },
       "ladder": {
         "title": "Chance of a fated encounter on this trip",

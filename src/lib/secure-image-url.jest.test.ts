@@ -1,6 +1,6 @@
 import {
   normalizeImageField,
-  normalizePhotosField,
+  normalizeImagesField,
   secureImageUrl,
 } from './secure-image-url';
 
@@ -58,29 +58,29 @@ describe('normalizeImageField', () => {
   });
 });
 
-describe('normalizePhotosField', () => {
-  it('photos[] 각 http 항목을 https 로 변환', () => {
+describe('normalizeImagesField', () => {
+  it('images[] 각 http 항목을 https 로 변환', () => {
     const input = {
-      photos: [
+      images: [
         'http://tong.visitkorea.or.kr/a.jpg',
         'https://tong.visitkorea.or.kr/b.jpg',
       ],
     };
-    expect(normalizePhotosField(input).photos).toEqual([
+    expect(normalizeImagesField(input).images).toEqual([
       'https://tong.visitkorea.or.kr/a.jpg',
       'https://tong.visitkorea.or.kr/b.jpg',
     ]);
   });
 
-  it('photos 없거나 빈 배열 → 동일 reference', () => {
-    const a = { photos: undefined };
-    const b = { photos: [] };
-    expect(normalizePhotosField(a)).toBe(a);
-    expect(normalizePhotosField(b)).toBe(b);
+  it('images 없거나 빈 배열 → 동일 reference', () => {
+    const a = { images: undefined };
+    const b = { images: [] };
+    expect(normalizeImagesField(a)).toBe(a);
+    expect(normalizeImagesField(b)).toBe(b);
   });
 
   it('전부 이미 https 면 동일 reference (불필요 spread 회피)', () => {
-    const input = { photos: ['https://tong.visitkorea.or.kr/a.jpg'] };
-    expect(normalizePhotosField(input)).toBe(input);
+    const input = { images: ['https://tong.visitkorea.or.kr/a.jpg'] };
+    expect(normalizeImagesField(input)).toBe(input);
   });
 });

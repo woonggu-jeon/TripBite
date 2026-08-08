@@ -22,7 +22,7 @@ import type {
 import type { TournamentConfig } from '@/features/tournament/types';
 import {
   normalizeImageField,
-  normalizePhotosField,
+  normalizeImagesField,
 } from '@/lib/secure-image-url';
 import { api } from '@/services/api/client';
 import type {
@@ -62,17 +62,20 @@ export const tournamentApi = {
         region: d.region,
         description: d.description ?? undefined,
         imageUrl: d.imageUrl ?? undefined,
-        address: d.address,
-        photos: d.images ?? [],
+        address: d.address ?? undefined,
+        type: d.type ?? undefined,
+        admissionFee: d.admissionFee ?? undefined,
+        tags: d.tags ?? [],
+        images: d.images ?? [],
         eventStart: d.eventStart ?? undefined,
         eventEnd: d.eventEnd ?? undefined,
       } as unknown as DestinationDetailDto;
-      return normalizePhotosField(normalizeImageField(mapped));
+      return normalizeImagesField(normalizeImageField(mapped));
     }
     // mock(문자열 복합 id) → 직접 api (MSW).
     const res = (await api.get<DestinationDetailDto>(`/destinations/${id}`))
       .data;
-    return normalizePhotosField(normalizeImageField(res));
+    return normalizeImagesField(normalizeImageField(res));
   },
 
   // 4-A 전환: related 미지원 → 상세의 region+category 로 같은 시군 목록 재구성.

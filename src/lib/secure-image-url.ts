@@ -50,19 +50,19 @@ export function normalizeImageField<T extends { imageUrl?: string | null }>(
 }
 
 /**
- * DestinationDetail 등 `photos: string[]` 배열을 가진 객체 일괄 정규화.
+ * DestinationDetail 등 `images: string[]` 배열을 가진 객체 일괄 정규화.
  * 배열 항목 중 하나라도 변환 대상이면 새 객체 반환, 아니면 원본 reference.
  */
-export function normalizePhotosField<T extends { photos?: string[] | null }>(
+export function normalizeImagesField<T extends { images?: string[] | null }>(
   obj: T,
 ): T {
-  if (!obj.photos || obj.photos.length === 0) return obj;
+  if (!obj.images || obj.images.length === 0) return obj;
   let changed = false;
-  const next = obj.photos.map((p) => {
+  const next = obj.images.map((p) => {
     const fixed = secureImageUrl(p);
     if (fixed !== p) changed = true;
     return fixed ?? p;
   });
   if (!changed) return obj;
-  return { ...obj, photos: next };
+  return { ...obj, images: next };
 }

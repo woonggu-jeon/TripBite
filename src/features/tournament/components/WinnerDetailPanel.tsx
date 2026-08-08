@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Phone } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { Icon } from '@/components/icon';
 import type { DestinationDetailDto } from '@/types/api-domain';
 import styles from './WinnerDetailPanel.module.scss';
@@ -92,6 +91,8 @@ export function WinnerDetailPanel({
     label: string;
     value: string;
   }> = [];
+  // Spring DestinationDetailDto 가 실제 제공하는 필드만 렌더 (지어낸 필드 삭제):
+  //   address · admissionFee · 행사기간(eventStart~eventEnd).
   if (detail.address)
     rows.push({
       key: 'address',
@@ -99,42 +100,21 @@ export function WinnerDetailPanel({
       label: t('address'),
       value: detail.address,
     });
-  if (detail.openingHours)
+  if (detail.admissionFee)
     rows.push({
-      key: 'hours',
-      icon: <Icon name="clock-18" size={18} />,
-      label: t('openingHours'),
-      value: detail.openingHours,
+      key: 'admissionFee',
+      icon: <Icon name="ticket" size={18} />,
+      label: t('admissionFee'),
+      value: detail.admissionFee,
     });
-  if (detail.restDate)
+  if (detail.eventStart)
     rows.push({
-      key: 'restDate',
+      key: 'eventPeriod',
       icon: <Icon name="calendar-18" size={18} />,
-      label: t('restDate'),
-      value: detail.restDate,
-    });
-  if (detail.parking)
-    rows.push({
-      key: 'parking',
-      icon: <Icon name="parking-18" size={18} />,
-      label: t('parking'),
-      value: detail.parking,
-    });
-  // 전화 행은 시안 `info-card` 에 없다 (주소/운영시간/휴무/주차/웹사이트 5개).
-  // 데이터가 오면 표시는 하되 대응 detailIcon 이 없어 lucide 를 남겨둔다.
-  if (detail.phone)
-    rows.push({
-      key: 'phone',
-      icon: <Phone size={18} aria-hidden />,
-      label: t('phone'),
-      value: detail.phone,
-    });
-  if (detail.website)
-    rows.push({
-      key: 'website',
-      icon: <Icon name="internet-18" size={18} />,
-      label: t('website'),
-      value: detail.website,
+      label: t('eventPeriod'),
+      value: detail.eventEnd
+        ? `${detail.eventStart} ~ ${detail.eventEnd}`
+        : detail.eventStart,
     });
 
   // BE 가 summary 폐기 + description 통합 (API_CONTRACT 2026-06-11) — overview 전체 또는 한글 폴백.
@@ -155,33 +135,15 @@ export function WinnerDetailPanel({
         <dl
           className={`${styles.rows} ${hasLead ? styles.rowsDivided : ''}`.trim()}
         >
-          {rows.map((r) => {
-            // website 인 경우 BE 응답이 http(s) prefix 인지 강제 검증 (javascript:
-            // 같은 URL scheme XSS 차단). BE 가 신뢰 source 라도 다층 방어.
-            const isLink = r.key === 'website' && /^https?:\/\//i.test(r.value);
-            return (
-              <div key={r.key} className={styles.row}>
-                <dt className={styles.rowLabel}>
-                  <span className={styles.rowIcon}>{r.icon}</span>
-                  <span className={styles.rowLabelText}>{r.label}</span>
-                </dt>
-                <dd className={styles.rowValue}>
-                  {isLink ? (
-                    <a
-                      href={r.value}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.rowLink}
-                    >
-                      {r.value}
-                    </a>
-                  ) : (
-                    r.value
-                  )}
-                </dd>
-              </div>
-            );
-          })}
+          {rows.map((r) => (
+            <div key={r.key} className={styles.row}>
+              <dt className={styles.rowLabel}>
+                <span className={styles.rowIcon}>{r.icon}</span>
+                <span className={styles.rowLabelText}>{r.label}</span>
+              </dt>
+              <dd className={styles.rowValue}>{r.value}</dd>
+            </div>
+          ))}
         </dl>
       )}
 

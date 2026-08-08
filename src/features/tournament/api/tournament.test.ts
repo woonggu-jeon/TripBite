@@ -13,7 +13,7 @@ const apiUrl = mockSeeds.apiUrl;
 const ok = (data: unknown) => ({ success: true, message: null, data });
 
 describe('tournamentApi.getDestinationDetail — 신규 BE(정수 id) 매핑', () => {
-  it('images → photos, id number → string 매핑', async () => {
+  it('Spring 필드명 그대로(images/type/admissionFee/tags) + id number → string 매핑', async () => {
     server.use(
       http.get(`${apiUrl}/destinations/2987654`, () =>
         HttpResponse.json(
@@ -26,7 +26,7 @@ describe('tournamentApi.getDestinationDetail — 신규 BE(정수 id) 매핑', (
             images: ['https://cdn.test/p1.jpg', 'https://cdn.test/p2.jpg'],
             address: '충북 충주',
             type: '체험',
-            admissionFee: null,
+            admissionFee: '무료',
             description: '설명',
             tags: ['#a'],
             eventStart: null,
@@ -39,11 +39,14 @@ describe('tournamentApi.getDestinationDetail — 신규 BE(정수 id) 매핑', (
     const d = await tournamentApi.getDestinationDetail('2987654');
     expect(d.id).toBe('2987654');
     expect(d.name).toBe('건지마을');
-    // 신규 BE 의 images 를 도메인 photos 로 매핑.
-    expect(d.photos).toEqual([
+    // Spring 필드명(images) 그대로 — 개명(photos) 없음.
+    expect(d.images).toEqual([
       'https://cdn.test/p1.jpg',
       'https://cdn.test/p2.jpg',
     ]);
+    expect(d.type).toBe('체험');
+    expect(d.admissionFee).toBe('무료');
+    expect(d.tags).toEqual(['#a']);
     expect(d.description).toBe('설명');
   });
 });

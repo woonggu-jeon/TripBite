@@ -104,7 +104,7 @@ d('실 BE contract — 어댑터 ↔ 실제 응답 (mock 아님)', () => {
     expect(typeof s.total).toBe('number');
   });
 
-  it('tournamentApi.getDestinationDetail(정수 id) → images→photos 매핑', async () => {
+  it('tournamentApi.getDestinationDetail(정수 id) → Spring 필드명(images) 그대로', async () => {
     // 실 BE 목록에서 실제 id 를 가져와 상세 조회 (하드코딩 id 불안정 회피).
     const candidates = await tournamentApi.fetchCandidates({
       theme: { kind: 'season', value: 'spring' },
@@ -120,8 +120,8 @@ d('실 BE contract — 어댑터 ↔ 실제 응답 (mock 아님)', () => {
     const detail = await tournamentApi.getDestinationDetail(id);
     expect(typeof detail.id).toBe('string');
     expect(detail.name).toBeTruthy();
-    // 신규 BE 의 images → 도메인 photos 로 매핑됐는지 (배열).
-    expect(Array.isArray(detail.photos)).toBe(true);
+    // Spring 필드명(images) 그대로 노출 — 배열.
+    expect(Array.isArray(detail.images)).toBe(true);
   });
 
   it('tournamentApi.listSaved / listHistory → 도메인 shape', async () => {

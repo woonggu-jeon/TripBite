@@ -14,11 +14,6 @@ export type { RegionCode } from '@/constants/regions';
 // ── FE 도메인 DTO (required shape) ──
 // wire(be/) 타입은 optional/nullable 이라 컴포넌트가 직접 쓰기 불편 → 어댑터가
 // be/ → 아래 도메인 shape 로 coerce(?? 기본값)해서 반환. 컴포넌트는 이 타입만 사용.
-export interface CoordsDto {
-  lat: number;
-  lng: number;
-}
-
 export interface DestinationDto {
   category: DestinationCategory;
   region: RegionCode;
@@ -27,6 +22,10 @@ export interface DestinationDto {
   imageUrl?: string;
 }
 
+// Spring DestinationDetailDto 파생 뷰 (필드명 Spring 그대로).
+// Spring 제공: id·name·category·region·imageUrl·images·address·type·admissionFee·
+//   description·tags·eventStart·eventEnd. (coords/phone/website/openingHours/
+//   restDate/parking 은 Spring 미제공 — 삭제.)
 export interface DestinationDetailDto {
   category: DestinationCategory;
   region: RegionCode;
@@ -35,13 +34,10 @@ export interface DestinationDetailDto {
   description?: string;
   imageUrl?: string;
   address?: string;
-  coords?: CoordsDto;
-  phone?: string;
-  website?: string;
-  openingHours?: string;
-  restDate?: string;
-  parking?: string;
-  photos: string[];
+  type?: string;
+  admissionFee?: string;
+  tags?: string[];
+  images: string[];
   eventStart?: string;
   eventEnd?: string;
 }
