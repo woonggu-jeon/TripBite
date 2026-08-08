@@ -1,5 +1,9 @@
-// 신규 Spring BE 지원: 상세(getDetail) + random. (related 는 미지원 → 구 generated mock 유지)
-import { getDetail, getRandom } from '@/api/be/destination/destination';
+// 신규 Spring BE 지원: 상세(getDetail) + list + random. related 는 4-A 전환(list 재구성).
+import {
+  getDetail,
+  getList2,
+  getRandom,
+} from '@/api/be/destination/destination';
 // 신규 Spring BE 지원: 저장 목록/저장/삭제 + history. (record 는 shape 비호환 → 구 generated mock 유지)
 import {
   delete1 as beDeleteSaved,
@@ -9,10 +13,18 @@ import {
 } from '@/api/be/mypage/mypage';
 import type {
   ApiResponseTournamentSummaryDto,
+  GetList2Category,
+  GetList2Region,
   GetRandomCategory,
   GetRandomRegion,
   GetRandomSeason,
 } from '@/api/be/schemas';
+import type { TournamentConfig } from '@/features/tournament/types';
+import {
+  normalizeImageField,
+  normalizePhotosField,
+} from '@/lib/secure-image-url';
+import { api } from '@/services/api/client';
 import type {
   DestinationDetailDto,
   DestinationDto,
@@ -21,12 +33,6 @@ import type {
   TournamentHistoryPageDto,
   TournamentRecordDto,
 } from '@/types/api-domain';
-import type { TournamentConfig } from '@/features/tournament/types';
-import {
-  normalizeImageField,
-  normalizePhotosField,
-} from '@/lib/secure-image-url';
-import { api } from '@/services/api/client';
 
 /**
  * 토너먼트 API — orval generated client wrap.
@@ -69,11 +75,31 @@ export const tournamentApi = {
     return normalizePhotosField(normalizeImageField(res));
   },
 
-  // ⚠️ related 는 Spring 미지원 — MSW mock. BE 추가 필요.
+  // 4-A 전환: related 미지원 → 상세의 region+category 로 같은 시군 목록 재구성.
   getRelatedDestinations: async (id: string): Promise<DestinationDto[]> => {
-    const res = (
-      await api.get<DestinationDto[]>(`/destinations/${id}/related`)
-    ).data;
+    if (/^\d+$/.test(id)) {
+      const detail = await getDetail(Number(id));
+      const category = detail.data?.category as GetList2Category | undefined;
+      // category 는 GetList2 필수 파라미터 — 없으면 관련 목록 산출 불가.
+      if (!category) return [];
+      const region = detail.data?.region as GetList2Region | undefined;
+      const list = await getList2({ category, region, numOfRows: 12 });
+      return (list.data?.items ?? [])
+        .filter((d) => String(d.id) !== id)
+        .slice(0, 6)
+        .map((d) =>
+          normalizeImageField({
+            id: String(d.id),
+            name: d.name ?? '',
+            category: d.category,
+            region: d.region,
+            imageUrl: d.imageUrl ?? undefined,
+          } as unknown as DestinationDto),
+        );
+    }
+    // mock(문자열 복합 id) → 직접 api (MSW).
+    const res = (await api.get<DestinationDto[]>(`/destinations/${id}/related`))
+      .data;
     return res.map(normalizeImageField);
   },
 

@@ -35,11 +35,16 @@ describe('useMyTravelType — enabled: isAuthenticated 가드', () => {
   });
 
   it('비인증 시 fetch 0', () => {
+    // 4-A 전환: 내 유형은 GET /me.travelType(code) 로 재구성.
     let called = 0;
     server.use(
-      http.get(`${apiUrl}/travel-types/me`, () => {
+      http.get(`${apiUrl}/me`, () => {
         called++;
-        return HttpResponse.json(mockTravelType);
+        return HttpResponse.json({
+          success: true,
+          message: null,
+          data: { travelType: mockTravelType.code },
+        });
       }),
     );
     const { result } = renderHookWithProviders(() => useMyTravelType());
@@ -87,11 +92,14 @@ describe('useSubmitTravelType', () => {
 
 describe('useSetMyTravelType', () => {
   it('성공 시 travelType + mypage summary 양쪽 invalidate (setQueryData 안 함)', async () => {
-    // BE spec: PATCH 응답은 ack only (recommended: []) — setQueryData 대신
-    // invalidate → 다음 GET 이 recommended 포함 응답 반환.
+    // 4-A 전환: PATCH /me { travelType } 로 저장 → invalidate 로 다음 GET 재조회.
     server.use(
-      http.patch(`${apiUrl}/travel-types/me`, () =>
-        HttpResponse.json({ ...mockTravelType, recommended: [] }),
+      http.patch(`${apiUrl}/me`, () =>
+        HttpResponse.json({
+          success: true,
+          message: null,
+          data: { travelType: 'explorer' },
+        }),
       ),
     );
     const qc = new QueryClient({

@@ -1,17 +1,13 @@
 // 신규 Spring BE 지원: 주간 top / 시군별 우승수 (그 외 랭킹 타입은 미지원 → 구 generated mock 유지)
+// 내 유형 조회/저장은 GET/PATCH /me 로 재구성 (travel-types/me 미지원 — 4-A 전환).
+import { getMe as beGetMe, updateMe as beUpdateMe } from '@/api/be/me/me';
 import {
   getRegionRankings,
   getWeeklyTopDestinations,
 } from '@/api/be/tournament/tournament';
-// 신규 Spring BE 지원: quiz(GET) + submit(POST). (me GET/PATCH 는 미지원 → 구 generated mock 유지)
+// 신규 Spring BE 지원: quiz(GET) + submit(POST).
 import { getQuiz, submit } from '@/api/be/travel-type/travel-type';
-import { api } from '@/services/api/client';
-import type { DestinationDto } from '@/types/api-domain';
-import type {
-  DestinationCategory,
-  TravelTypeCode,
-  TravelTypeDto,
-} from '@/types/api-domain';
+import { travelTypeFromCode } from '@/constants/travel-types';
 import type {
   RankedDestination,
   RankingType,
@@ -19,6 +15,13 @@ import type {
   TravelTypeQuiz,
 } from '@/features/ranking/types';
 import { normalizeImageField } from '@/lib/secure-image-url';
+import { api } from '@/services/api/client';
+import type { DestinationDto } from '@/types/api-domain';
+import type {
+  DestinationCategory,
+  TravelTypeCode,
+  TravelTypeDto,
+} from '@/types/api-domain';
 
 /**
  * 랭킹 / 여행 유형 테스트 API — orval generated client wrap.
@@ -120,17 +123,19 @@ export const rankingApi = {
     } as unknown as TravelTypeDto);
   },
 
-  // ⚠️ Spring 미지원 (travel-types/me GET·PATCH) — MSW mock. BE 추가 필요.
+  // 4-A 전환: travel-types/me 미지원 → GET /me.travelType(code) + 정적 유형맵 재구성.
   getMyTravelType: async (): Promise<TravelTypeDto | null> => {
-    const res = (await api.get<TravelTypeDto | null>('/travel-types/me')).data;
-    return res ? normalizeTravelTypeImages(res) : null;
+    const res = await beGetMe();
+    const t = travelTypeFromCode(res.data?.travelType);
+    return t ? normalizeTravelTypeImages(t) : null;
   },
 
+  // 4-A 전환: PATCH /me { travelType: code } 로 저장 후 정적 유형맵으로 재구성.
   setMyTravelType: async (code: TravelTypeCode): Promise<TravelTypeDto> => {
-    const res = (
-      await api.patch<TravelTypeDto>('/travel-types/me', { code })
-    ).data;
-    return normalizeTravelTypeImages(res);
+    await beUpdateMe({ travelType: code });
+    const t = travelTypeFromCode(code);
+    // travelTypeFromCode 는 유효 code 에 대해 항상 non-null (code 는 TravelTypeCode).
+    return normalizeTravelTypeImages(t as TravelTypeDto);
   },
 };
 

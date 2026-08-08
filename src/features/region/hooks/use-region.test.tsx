@@ -36,22 +36,31 @@ describe('useRegionSummary', () => {
 });
 
 describe('useRegionContents — useInfiniteList wrapping', () => {
-  it('첫 페이지 fetch — items 플랫튼 + http→https 정규화', async () => {
+  // 4-A 전환: regions/:code/contents 미지원 → GET /destinations(시군 필터) 재구성.
+  it('첫 페이지 fetch — destinations 매핑 + http→https 정규화', async () => {
     server.use(
-      http.get(`${apiUrl}/regions/cheongju/contents`, ({ request }) => {
+      http.get(`${apiUrl}/destinations`, ({ request }) => {
         const url = new URL(request.url);
-        expect(url.searchParams.get('type')).toBe('attraction');
-        expect(url.searchParams.get('limit')).toBe('10');
+        expect(url.searchParams.get('category')).toBe('attraction');
+        expect(url.searchParams.get('region')).toBe('cheongju');
+        expect(url.searchParams.get('numOfRows')).toBe('10');
         return HttpResponse.json({
-          items: [
-            {
-              id: 'c-1',
-              title: '명승지',
-              imageUrl: 'http://tong.visitkorea.or.kr/p.jpg',
-              category: 'attraction',
-            },
-          ],
-          nextCursor: null,
+          success: true,
+          message: null,
+          data: {
+            items: [
+              {
+                id: 1,
+                name: '명승지',
+                imageUrl: 'http://tong.visitkorea.or.kr/p.jpg',
+                category: 'attraction',
+                region: 'cheongju',
+              },
+            ],
+            totalCount: 1,
+            pageNo: 1,
+            numOfRows: 10,
+          },
         });
       }),
     );
@@ -61,9 +70,10 @@ describe('useRegionContents — useInfiniteList wrapping', () => {
     );
     await waitFor(() => expect(result.current.items.length).toBe(1));
     expect(result.current.hasNext).toBe(false);
-    // BE 안전망: http → https 정규화 검증
+    // name→title 매핑 + http → https 정규화 검증
     expect(result.current.items[0]).toMatchObject({
-      id: 'c-1',
+      id: '1',
+      title: '명승지',
       imageUrl: 'https://tong.visitkorea.or.kr/p.jpg',
     });
   });

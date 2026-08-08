@@ -1,9 +1,7 @@
 // 신규 Spring BE 의 quiz 응답 shape (id: number). handler 가 ApiResponse 로 감싸 반환.
 import type { QuizDto } from '@/api/be/schemas';
-import type {
-  TravelTypeCompatibilityDto,
-  TravelTypeDto,
-} from '@/types/api-domain';
+import { TRAVEL_TYPE_META } from '@/constants/travel-types';
+import type { TravelTypeCompatibilityDto } from '@/types/api-domain';
 
 /**
  * 여행 유형 테스트 mock seed.
@@ -112,46 +110,8 @@ export const travelTypeMockScoreMap: Record<string, TravelTypeMockCode> = {
   '20': 'foodie',
 };
 
-/** 유형별 메타 (서버가 결과 응답에 포함시켜 던지는 내용).
- *  compatibility 는 별도 seed (travelTypeCompatibilitySeed) — handler 가
- *  ...meta + compatibility 로 합성. */
-export const travelTypeMetaSeed: Record<
-  TravelTypeMockCode,
-  Omit<TravelTypeDto, 'recommended' | 'compatibility'>
-> = {
-  adventurer: {
-    code: 'adventurer',
-    title: '도전형 여행자',
-    description:
-      '낯선 길과 처음 가보는 곳에 끌리는 사람이에요. 정해진 계획보다 즉흥과 모험에서 에너지를 얻어요.',
-    keywords: ['#즉흥', '#모험', '#액티비티'],
-    emoji: '🧗',
-  },
-  explorer: {
-    code: 'explorer',
-    title: '탐험형 여행자',
-    description:
-      '한 도시를 깊게 파고드는 걸 좋아해요. 역사·문화·건축물에 시간을 쓰는 사람.',
-    keywords: ['#역사', '#문화', '#큐레이션'],
-    emoji: '🏛️',
-  },
-  relaxer: {
-    code: 'relaxer',
-    title: '휴식형 여행자',
-    description:
-      '여행은 곧 충전 시간. 조용한 카페·노을·풍경 속에서 잠시 멈춰가는 걸 좋아해요.',
-    keywords: ['#힐링', '#풍경', '#카페'],
-    emoji: '🌿',
-  },
-  foodie: {
-    code: 'foodie',
-    title: '맛집형 여행자',
-    description:
-      '먹는 것에서 여행이 시작돼요. 시장·축제·현지 음식이 일정의 중심이에요.',
-    keywords: ['#로컬푸드', '#시장', '#축제'],
-    emoji: '🍜',
-  },
-};
+/** 유형별 메타 — production 상수 재사용(단일 소스). handler 가 +compatibility 합성. */
+export const travelTypeMetaSeed = TRAVEL_TYPE_META;
 
 /**
  * mock 전용: 유형별 추천 destination 카테고리 매핑.

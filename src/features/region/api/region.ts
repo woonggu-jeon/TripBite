@@ -1,13 +1,16 @@
-// 신규 Spring BE 지원: ongoing-festivals. (summary/contents 는 미지원 → MSW mock)
+// 신규 Spring BE 지원: ongoing-festivals. (summary 는 미지원 → MSW mock)
+// contents 는 4-A 전환: destinations list(시군 필터)로 재구성.
+import { getList2 } from '@/api/be/destination/destination';
 import { getOngoingFestivals } from '@/api/be/region/region';
+import type { GetList2Category, GetList2Region } from '@/api/be/schemas';
+import type { RegionCode } from '@/constants/regions';
+import { normalizeImageField, secureImageUrl } from '@/lib/secure-image-url';
 import { api } from '@/services/api/client';
 import type {
   DestinationCategory,
   RegionContentDto,
   RegionSummaryDto,
 } from '@/types/api-domain';
-import type { RegionCode } from '@/constants/regions';
-import { normalizeImageField, secureImageUrl } from '@/lib/secure-image-url';
 
 /**
  * 시군 contents 필터 — 응답 enum (`DestinationCategory`) 과 분리.
@@ -50,6 +53,8 @@ export const regionApi = {
       : res;
   },
 
+  // 4-A 전환: regions/:code/contents 미지원 → GET /destinations?region=&category= 재구성.
+  // 'all' 은 3 카테고리를 같은 pageNo 로 병렬 조회 후 병합 (BE 통합 응답 근사).
   listContents: async (
     code: RegionCode,
     params: {
@@ -57,24 +62,48 @@ export const regionApi = {
       cursor?: string | number | null;
       limit?: number;
     },
-  ) => {
-    // ⚠️ Spring 미지원 (regions/:code/contents) — MSW mock. BE 추가 필요.
-    const res = (
-      await api.get<{ items: RegionContentDto[] } & Record<string, unknown>>(
-        `/regions/${code}/contents`,
-        {
-          params: {
-            type: params.type === 'all' ? undefined : params.type,
-            cursor: params.cursor != null ? String(params.cursor) : undefined,
-            limit: params.limit != null ? String(params.limit) : undefined,
-          },
-        },
-      )
-    ).data;
+  ): Promise<{ items: RegionContentDto[]; nextCursor: number | null }> => {
+    const region = code as GetList2Region;
+    const numOfRows = params.limit ?? 10;
+    const pageNo = params.cursor != null ? Number(params.cursor) : 1;
+    const categories: DestinationCategory[] =
+      params.type === 'all'
+        ? ['attraction', 'festival', 'experience']
+        : [params.type];
+
+    const pages = await Promise.all(
+      categories.map((category) =>
+        getList2({
+          category: category as GetList2Category,
+          region,
+          pageNo,
+          numOfRows,
+        }),
+      ),
+    );
+
+    const items: RegionContentDto[] = pages.flatMap((res, i) =>
+      (res.data?.items ?? []).map(
+        (d) =>
+          ({
+            type: (d.category ?? categories[i]) as DestinationCategory,
+            region: (d.region ?? code) as RegionCode,
+            id: String(d.id),
+            title: d.name ?? '',
+            imageUrl: d.imageUrl ?? undefined,
+          }) as RegionContentDto,
+      ),
+    );
+
+    // 다음 페이지 존재 — 어느 한 카테고리라도 페이지가 꽉 찼으면 더 있음.
+    const hasMore = pages.some(
+      (res) => (res.data?.items?.length ?? 0) >= numOfRows,
+    );
+
     // TourAPI 원본 http URL → https 정규화 (BE 안전망)
     return {
-      ...res,
-      items: res.items.map(normalizeImageField) as RegionContentDto[],
+      items: items.map(normalizeImageField) as RegionContentDto[],
+      nextCursor: hasMore ? pageNo + 1 : null,
     };
   },
 
