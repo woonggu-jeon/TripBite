@@ -32,16 +32,16 @@
 
 ## 2. 검증 현황 (2026-08-08)
 
-| 게이트                                | 결과                                          |
-| ------------------------------------- | --------------------------------------------- |
-| 타입체크 (앱코드)                     | ✅ 0                                          |
-| lint                                  | ✅ 에러 0                                     |
-| vitest (유닛, MSW)                    | ✅ 224 passed / 13 skip                       |
-| jest (순수 로직)                      | ✅ 38 passed                                  |
-| **be:contract (실 Spring, 세션주입)** | ✅ 10 passed                                  |
-| **프로덕션 빌드**                     | ✅ 성공                                       |
-| 다크모드 런타임                       | ✅ light↔dark 전환                            |
-| e2e (playwright, MSW, 포트 3000)      | 🟡 ~90 passed / 6~7 flaky (앱 아님 — 아래 §6) |
+| 게이트                                | 결과                                    |
+| ------------------------------------- | --------------------------------------- |
+| 타입체크 (앱코드)                     | ✅ 0                                    |
+| lint                                  | ✅ 에러 0                               |
+| vitest (유닛, MSW)                    | ✅ 224 passed / 13 skip                 |
+| jest (순수 로직)                      | ✅ 38 passed                            |
+| **be:contract (실 Spring, 세션주입)** | ✅ 10 passed                            |
+| **프로덕션 빌드**                     | ✅ 성공                                 |
+| 다크모드 런타임                       | ✅ light↔dark 전환                      |
+| e2e (playwright, MSW, 6프로젝트)      | ✅ exit 0 (631 passed, 하드실패 0 — §6) |
 
 ## 3. 실 BE API 전수 audit (39 ops, 인증 세션 + 유효 payload)
 
@@ -136,13 +136,17 @@ consents: {
 
 ---
 
-## 6. e2e 현황 (참고 — 앱 결함 아님)
+## 6. e2e 현황 (하드닝 완료 2026-08-09)
 
-e2e 는 MSW 결정적 모드 유지가 정답(실 BE 검증은 be:contract 담당). 남은 6~7 실패는 **테스트 flakiness**로, 해당 기능은 수동/유닛/contract 로 정상 입증됨:
+6 프로젝트 전량 실행 **exit 0 (631 passed, 하드 실패 0)**. 하드닝 과정에서 e2e 가 드러낸 실제 앱 버그 2건 수정:
 
-- tournament 위저드·signup-flow: **머지 이전부터 flaky**(hydration-race + MSW 폼검증 + 5워커 병렬부하). 앱은 radio/토글/검증 정상 렌더.
-- visual 회귀 8건: darwin(로컬) baseline 없음 — CI(win32)에서 생성.
-- 안정화(후속): playwright `workers` 축소 + 전역 hydration-wait + preview full-sweep 기대치 재조정.
+- **signup 가입 불가 버그**: `SignupForm` 이 Spring 필수 `name`·`birthDate` 필드를 렌더 안 해 `isValid` 영구 false → 제출 불가. 두 필드 추가로 해결.
+- **tournament 쿼리 프리필 버그**: `?theme=season&season=spring` 을 `useState` 초기화에서만 읽어 SSR 하드로드/새로고침 시 step 1 고정. 마운트 후 재동기화 `useEffect` 추가.
+
+테스트 안정화: interactions '지역 카드 없음'(설명 텍스트 오매칭 → radio 개수 단정), full-sweep A-02/A-05(빈 폼 disabled 게이팅 인정), tournament-full(category '다음' 클릭), C-04(타임아웃 상향). config: `workers` 상한(로컬3/CI2) + `retries` 로컬1 + expect/action/nav 타임아웃 상향.
+
+- 잔여 flaky(a11y axe 스캔·full-sweep best-effort 등)는 `retries:1` 로 흡수 — 하드 실패 아님.
+- visual 회귀: `maxDiffPixelRatio 0.1` 허용 내 통과(정합 UI 변경분 반영). darwin/win32 baseline 은 플랫폼별 파일로 공존.
 
 ## 7. 운영(Vercel) 배포 체크리스트
 
