@@ -180,7 +180,13 @@ Spring 이 진짜로 없는 기능은 UI 진입점(라우트·버튼)은 남기�
 - res: `ApiResponse<{ description, heroImage?, popularity? }>`.
 - 현재: `RegionHero` 정적 문구. 추가 시 큐레이션 설명/대표 이미지.
 
-**P2-5. (optional) 중복확인 `GET /auth/check-username`·`check-email`** — 현재 가입 시 409 로 처리(인라인 사전확인만 부재). / 목록 `DestinationDto.address` 노출.
+**P2-5. 여행지 상세 정보 보강 — `DestinationDetailDto` 필드 확장 (TourAPI 有)**
+
+- 현재 Spring `DestinationDetailDto` = id·name·category·region·imageUrl·images·address·type·admissionFee·description·tags·eventStart·eventEnd.
+- 이전 mock 에는 있었으나 Spring 미제공이라 **화면에서 빠진 항목**: `phone`·`website`·`openingHours`·`restDate`·`parking`·`coords(lat/lng)`. TourAPI 원본엔 존재 → BE 가 노출하면 상세 패널 행 복원 + 좌표 제공 시 **길찾기를 좌표 기반(`map.kakao/link/to`) 정밀 경로로 승격** 가능(현재는 이름 검색).
+- FE 활성화: `DestinationDetailDto` 에 필드 추가 → `WinnerDetailPanel` 행 + `DestinationActions` 좌표 분기 복원(주석에 되돌리는 법 명시됨).
+
+**P2-6. (optional) 중복확인 `GET /auth/check-username`·`check-email`** — 현재 가입 시 409 로 처리(인라인 사전확인만 부재). / 목록 `DestinationDto.address` 노출.
 
 ---
 
@@ -216,7 +222,9 @@ consents: {
 
 - `UserResponseDto.avatarUrl` (P1-5 연동).
 - `TournamentSummaryDto` 에 `winnerId`(정수) 추가 시 히스토리에서 우승지 상세 딥링크 가능(현재 winnerName 만).
-- `DestinationDetailDto` 는 이미 FE 소비 필드와 1:1(변경 불필요).
+- `DestinationDetailDto` 확장(P2-5) — phone·website·openingHours·restDate·parking·coords.
+
+> **"기존 mock 에만 있던 컬럼" 정리 결과:** luckyColor·compatibility·homeRegion·isOnboarded·winnerRegion 등은 화면에서 소비된 적 없어 안전 제거. 상세 phone/website/좌표·region 인기도·유형별 추천·아바타는 mock 전용이라 실 BE 기준 손실 없음 — 필요 시 위 P1/P2 로 복원. 깨진 참조 0(tsc + 전수 grep 확인).
 
 ---
 
