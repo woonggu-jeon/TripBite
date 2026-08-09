@@ -1,7 +1,7 @@
 # TripBite — Spring BE 연동 현황 · API 검증 · BE 요청 (통합 문서)
 
 > **단일 소스**. NestJS→Spring 마이그레이션 최종 상태 + 실 BE API 전수 검증 결과 + BE 추가 요청을 하나로 통합.
-> 최종 검증: **2026-08-08** (실 BE `https://trip-bite.o-r.kr`, 테스트 계정 `test / 1234`).
+> 최종 검증: **2026-08-10** (실 BE `https://trip-bite.o-r.kr`, 테스트 계정 `test / 1234`). Spring 39 ops 전수 호출 커버리지 확보 + BE 추가 요청(§5) 갱신.
 
 ---
 
@@ -36,9 +36,9 @@
 | ------------------------------------- | --------------------------------------- |
 | 타입체크 (앱코드)                     | ✅ 0                                    |
 | lint                                  | ✅ 에러 0                               |
-| vitest (유닛, MSW)                    | ✅ 224 passed / 13 skip                 |
+| vitest (유닛, MSW)                    | ✅ 225 passed / 13 skip                 |
 | jest (순수 로직)                      | ✅ 38 passed                            |
-| **be:contract (실 Spring, 세션주입)** | ✅ 10 passed                            |
+| **be:contract (실 Spring, 세션주입)** | ✅ 12 passed                            |
 | **프로덕션 빌드**                     | ✅ 성공                                 |
 | 다크모드 런타임                       | ✅ light↔dark 전환                      |
 | e2e (playwright, MSW, 6프로젝트)      | ✅ exit 0 (631 passed, 하드실패 0 — §6) |
@@ -108,11 +108,85 @@ Spring 이 진짜로 없는 기능은 UI 진입점(라우트·버튼)은 남기�
 
 ---
 
-## 5. 회원가입 동의 / 정책 (운영 배포 차단 — 별도 트랙)
+## 5. BE 추가 요청 — 구현 명세 (2026-08-10 최신)
 
-FE 는 `ConsentBlock` 이미 구현. BE 가 아래 확장 필요:
+> **모든 항목 FE 준비 완료.** 엔드포인트가 추가되면 아래 "FE 활성화" 지점의 준비중/degrade 를 실동작으로 바꾸기만 하면 됨(대부분 어댑터 1곳 + UI 1곳). 응답은 기존 `ApiResponse<T> = { success, message, data }` 엔벨로프, 미인증 403 규약 준수.
 
-**5-1. `SignupRequestDto` 에 `consents` 필드 추가**
+### 우선순위 요약
+
+| P      | 항목                                                       | FE 현재 상태                  |
+| ------ | ---------------------------------------------------------- | ----------------------------- |
+| **P1** | 아이디찾기·비번찾기/재설정·비번변경·회원탈퇴·프로필 이미지 | 준비중(ComingSoon/toast) 노출 |
+| **P2** | 추천 랭킹·결과 딥링크·유형별 추천 여행지·시군 큐레이션     | degrade(빈배열/store/정적)    |
+| **P3** | 회원가입 동의(consents) + 정책 본문                        | ConsentBlock 구현·배포 차단   |
+| (opt)  | 중복확인·목록 address 등                                   | 409/미노출로 이미 정상 동작   |
+
+---
+
+### P1 — 계정 필수 기능 (FE 준비중 노출 중, 사용자 눈에 보임)
+
+**P1-1. 아이디 찾기 — `POST /auth/find-id`**
+
+- req: `{ email: string }`
+- res: `ApiResponse<{ username: string }>` — 마스킹(`tes***01`). 이메일 미가입도 보안상 200+빈 문자열 허용.
+- FE 활성화: `app/(auth)/find-id/page.tsx` — `ComingSoon` → 폼 복원 + `useFindId` 재도입.
+
+**P1-2. 비밀번호 재설정 — `POST /auth/forgot-password` + `POST /auth/reset-password`**
+
+- forgot req: `{ username, email }` → 재설정 메일 발송, res `ApiResponse<Unit>`(204 성격).
+- reset req: `{ token, password }` → 토큰 검증 + 비번 변경, res `ApiResponse<Unit>`. 실패 `400 RESET_TOKEN_INVALID|EXPIRED`.
+- FE 활성화: `forgot-password`/`reset-password` 페이지 ComingSoon → 폼 복원. reset 성공 시 세션 무효화 + `/login?reset=success`.
+
+**P1-3. 비밀번호 변경 — `POST /me/change-password`**
+
+- req: `{ currentPassword, newPassword }` (⚠ `PATCH /me{password}` 는 currentPassword 검증 불가라 별도 필요).
+- res: `ApiResponse<Unit>`. 실패 `400 CURRENT_PASSWORD_MISMATCH` / `AUTH_PASSWORD_WEAK`.
+- FE 활성화: `settings/ChangePasswordDialog` ComingSoon → 폼 복원.
+
+**P1-4. 회원 탈퇴 — `DELETE /me`**
+
+- res: 204 (소프트 삭제 + 세션 무효). FE 는 성공 시 clearAuth + 캐시/SW 캐시 정리 + 홈 이동.
+- FE 활성화: `settings/AccountActionsSection` 준비중 toast → `useDeleteAccount` 재도입.
+
+**P1-5. 프로필 이미지 — `POST /me/avatar` + `DELETE /me/avatar`**
+
+- POST: multipart `file`(image/\*, ≤10MB) → `ApiResponse<{ avatarUrl }>`(201). 실패 `422 AVATAR_TYPE_UNSUPPORTED|AVATAR_TOO_LARGE`.
+- DELETE: `ApiResponse<{ avatarUrl: null }>`.
+- 또한 `UserResponseDto` 에 **`avatarUrl` 필드 추가**(현재 미제공 → FE 이니셜 fallback).
+- FE 활성화: `mypage/ProfileCard` 카메라 버튼 준비중 toast → 업로드 흐름 복원, `UserDto.avatarUrl` 재도입.
+
+---
+
+### P2 — 부가/큐레이션 (없어도 FE degrade 동작, 있으면 품질↑)
+
+**P2-1. 추천/카테고리/계절 랭킹 — `GET /rankings?type=&limit=`**
+
+- `type ∈ {recommended, by-category, seasonal, hidden-gems}` → `ApiResponse<RankedDestination[]>`(rank·destination·score).
+- 현재: real-BE 에서 빈배열 degrade(weekly·by-region 만 지원). 추가 시 랭킹 탭 실데이터.
+
+**P2-2. 토너먼트 결과 딥링크 복원 — `GET /tournaments/{id}`**
+
+- res: `ApiResponse<{ id, winner:DestinationDto, runnerUp, matchesPlayed, tournamentSize, completedAt }>`.
+- 현재: 결과는 store 전용, cold 진입(공유 링크/새로고침)은 안내 화면. 추가 시 딥링크 복원.
+- (참고: 기록은 이미 `POST /mypage/tournament-history` 로 저장됨 — 그 id 로 복원 가능하게.)
+
+**P2-3. 유형별 추천 여행지**
+
+- `POST /travel-types/submit` / `GET /me` 유형 결과에 추천 destination N개 포함, 또는 `GET /travel-types/{code}/recommendations`.
+- 현재: travel-type 결과 화면 "추천 여행지" 섹션 준비중.
+
+**P2-4. 시군 큐레이션 — `GET /regions/{code}/summary`**
+
+- res: `ApiResponse<{ description, heroImage?, popularity? }>`.
+- 현재: `RegionHero` 정적 문구. 추가 시 큐레이션 설명/대표 이미지.
+
+**P2-5. (optional) 중복확인 `GET /auth/check-username`·`check-email`** — 현재 가입 시 409 로 처리(인라인 사전확인만 부재). / 목록 `DestinationDto.address` 노출.
+
+---
+
+### P3 — 회원가입 동의 / 정책 (운영 배포 차단 — 법무 트랙)
+
+**P3-1. `SignupRequestDto` 에 `consents` 필드 추가**
 
 ```ts
 consents: {
@@ -129,12 +203,20 @@ consents: {
 | location / marketing    | 선택 | 가입 진행 (기능/발송 제한)                           |
 
 - 저장: `user_consents`(userId+type+agreed+version+agreedAt), 철회/재동의는 새 row(이력). `location`/`marketing` 은 `/me/consents` 로 추후 변경.
-- version 불일치 → `400 CONSENT_VERSION_MISMATCH` (재동의 화면).
+- version 불일치 → `400 CONSENT_VERSION_MISMATCH` (재동의 화면). FE `ConsentBlock` 이미 구현 — 필드만 수신하면 됨.
 
-**5-2. 정책 본문 / 책임자 (법무+BE)**
+**P3-2. 정책 본문 / 책임자 (법무+BE)**
 
-- `/policy/terms`·`/policy/privacy` 본문이 placeholder → 법무 검토 본문 필요.
+- `/policy/terms`·`/policy/privacy` 본문 placeholder → 법무 검토 본문 필요.
 - 개인정보처리방침 `privacy@example.com` → 실 책임자 이메일 필요.
+
+---
+
+### (참고) 스키마 정합 요청 — 기존 응답 필드 보강
+
+- `UserResponseDto.avatarUrl` (P1-5 연동).
+- `TournamentSummaryDto` 에 `winnerId`(정수) 추가 시 히스토리에서 우승지 상세 딥링크 가능(현재 winnerName 만).
+- `DestinationDetailDto` 는 이미 FE 소비 필드와 1:1(변경 불필요).
 
 ---
 
