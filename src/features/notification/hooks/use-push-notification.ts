@@ -63,17 +63,14 @@ export function usePushNotification() {
       return;
     }
 
-    const subscription = await getOrCreatePushSubscription(vapidKey);
-    if (!subscription) {
-      setStatus('enabled');
-      return;
-    }
-
-    // 4) 백엔드에 subscription 등록 — 실패해도 권한은 잡혀있으니 enabled 유지.
+    // 4) 구독 생성 + 백엔드 등록 — 실패해도 권한은 잡혀있으니 enabled 유지.
+    //    (invalid VAPID 키/푸시 서비스 부재 등으로 subscribe 가 throw 해도 enable 은
+    //     resolve 되어야 함 — 호출부(토글)의 후속 상태 갱신을 막지 않도록.)
     try {
-      await notificationApi.subscribe(subscription);
+      const subscription = await getOrCreatePushSubscription(vapidKey);
+      if (subscription) await notificationApi.subscribe(subscription);
     } catch {
-      // mock 환경 외 실패는 silent — 사용자가 알림 자체는 받을 수 있음.
+      // silent — 사용자가 알림 자체(권한)는 받은 상태.
     }
     setStatus('enabled');
   }, []);
