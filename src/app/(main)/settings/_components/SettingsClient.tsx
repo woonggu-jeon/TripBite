@@ -1,16 +1,17 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-// 언어 섹션 일단 미노출 (사용자 요청) — LanguageSwitcher 자체는 추후 복원용으로 유지.
-// import { LanguageSwitcher } from '@/features/i18n/components/LanguageSwitcher';
-import { NotificationSettingsSection } from '@/features/settings/components/NotificationSettingsSection';
-import { AccountSettingsSection } from '@/features/settings/components/AccountSettingsSection';
-// 약관 섹션 미노출 (사용자 요청, 2026-06-18). 정책 본문 확정 시 복원 — import + 아래 PageSection 만 살리면 됨.
-// import { PolicySection } from '@/features/settings/components/PolicySection';
-import { AccountActionsSection } from '@/features/settings/components/AccountActionsSection';
 // 테마 섹션 미노출 (사용자 요청, 재노출 대비 import 유지)
 // import { ThemeSection } from '@/features/theme/components/ThemeSection';
 import { PageSection } from '@/components/ui';
+// 약관 섹션 미노출 (사용자 요청, 2026-06-18). 정책 본문 확정 시 복원 — import + 아래 PageSection 만 살리면 됨.
+// import { PolicySection } from '@/features/settings/components/PolicySection';
+import { AccountActionsSection } from '@/features/settings/components/AccountActionsSection';
+import { AccountSettingsSection } from '@/features/settings/components/AccountSettingsSection';
+// 언어 섹션 일단 미노출 (사용자 요청) — LanguageSwitcher 자체는 추후 복원용으로 유지.
+// import { LanguageSwitcher } from '@/features/i18n/components/LanguageSwitcher';
+import { NotificationSettingsSection } from '@/features/settings/components/NotificationSettingsSection';
+import { PushDevicesSection } from '@/features/settings/components/PushDevicesSection';
 import styles from './SettingsClient.module.scss';
 
 /**
@@ -32,6 +33,11 @@ export function SettingsClient() {
       {/* Figma 설정의 `bl` 라벨 — 14px SemiBold, 행 묶음은 풀블리드 */}
       <PageSection title={t('notifications.section')} titleScale="group">
         <NotificationSettingsSection />
+      </PageSection>
+
+      {/* 알림 구독 기기 관리 — GET/DELETE /notifications/subscriptions */}
+      <PageSection title={t('devices.section')} titleScale="group">
+        <PushDevicesSection />
       </PageSection>
 
       {/* 테마 섹션 — 미노출 (사용자 요청). 추후 복원 시 주석 해제.

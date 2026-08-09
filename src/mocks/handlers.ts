@@ -905,6 +905,41 @@ export const handlers = [
     await request.json().catch(() => null);
     return new HttpResponse(null, { status: 204 });
   }),
+  // VAPID 공개키 — 구독 생성용. 실 서버는 서버 보유 keypair 의 공개키 반환.
+  http.get(`${apiUrl}/notifications/vapid-public-key`, () =>
+    HttpResponse.json({
+      success: true,
+      message: null,
+      data: { publicKey: 'BMockVapidPublicKey_e2e_only_000000000000' },
+    }),
+  ),
+  // 등록된 구독 기기 목록.
+  http.get(`${apiUrl}/notifications/subscriptions`, () =>
+    getMockSignedIn()
+      ? HttpResponse.json({
+          success: true,
+          message: null,
+          data: [
+            {
+              id: 1,
+              userAgent: 'Chrome · macOS',
+              createdAt: '2026-07-20T09:00:00Z',
+            },
+            {
+              id: 2,
+              userAgent: 'Safari · iPhone',
+              createdAt: '2026-07-28T12:30:00Z',
+            },
+          ],
+        })
+      : unauthorized(),
+  ),
+  // 특정 기기 구독 해제.
+  http.delete(`${apiUrl}/notifications/subscriptions/:id`, () =>
+    getMockSignedIn()
+      ? new HttpResponse(null, { status: 204 })
+      : unauthorized(),
+  ),
   // mock 전용 — 새 편지 도착 시뮬레이션.
   // 클라이언트 dev tool 이 호출 → 알림함에 항목 prepend.
   // (Service Worker 의 push 이벤트는 별도 postMessage(MOCK_PUSH) 로 trigger.)

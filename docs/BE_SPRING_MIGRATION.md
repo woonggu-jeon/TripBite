@@ -53,6 +53,8 @@
 | ⚪ 404 (정상) | `GET /destinations/{id}`, `DELETE /mypage/tournaments/{id}`, `DELETE /notifications/subscriptions/{id}`                                                                                                                                                                                                                                                                                                | 없는 id 조회                                |
 | ⚪ 403 (정상) | `POST /letters/{id}/like·save`, `DELETE /letters/{id}`                                                                                                                                                                                                                                                                                                                                                 | 본인 편지 권한 규칙(`LETTER_ACCESS_DENIED`) |
 
+**엔드포인트 호출 커버리지: 39/39** (2026-08-09 전수 점검). 모든 Spring op 에 FE 호출 경로 존재 — 이전 미연동 3건(`GET /notifications/vapid-public-key`, `GET /notifications/subscriptions`, `DELETE /notifications/subscriptions/{id}`)을 push 구독 흐름(VAPID 서버 조회) + 설정 "알림 기기" 관리 UI 로 연동. `POST /mypage/tournament-history` 는 Idempotency-Key 위해 `api.post` 로 호출(be/ fn 대신).
+
 **실 BE 버그: 0건** (이전 signup/compose 500 → BE 수정 확인됨).
 **미검증 1건(코드결함 아님):** 타인→나 수신편지 like/save happy-path — BE 매칭이 랜덤/지연이라 통제 계정에 배달 안 됨. getById 200·본인편지 403 까지는 확인.
 

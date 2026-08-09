@@ -4,6 +4,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { authApi } from '@/features/auth/api/auth';
 import { letterApi } from '@/features/letter/api/letter';
 import { mypageApi } from '@/features/mypage/api/mypage';
+import { notificationApi } from '@/features/notification/api/notification';
 import { rankingApi } from '@/features/ranking/api/ranking';
 import { regionApi } from '@/features/region/api/region';
 import { tournamentApi } from '@/features/tournament/api/tournament';
@@ -171,5 +172,16 @@ d('실 BE contract — 어댑터 ↔ 실제 응답 (mock 아님)', () => {
       nickname: uniq, // 유니크 — 중복 닉네임(409) 회피
     });
     expect(res.status).toBe(201);
+  });
+
+  // ── Web Push 엔드포인트 (FE 신규 연동: VAPID 조회 + 구독 기기 목록) ──
+  it('notificationApi.getVapidKey → 문자열 또는 null', async () => {
+    const key = await notificationApi.getVapidKey();
+    expect(key === null || typeof key === 'string').toBe(true);
+  });
+
+  it('notificationApi.listSubscriptions → PushSubscriptionDto[]', async () => {
+    const subs = await notificationApi.listSubscriptions();
+    expect(Array.isArray(subs)).toBe(true);
   });
 });

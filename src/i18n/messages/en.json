@@ -977,6 +977,13 @@
       "withdrawConfirmLabel": "Delete account",
       "withdrawFailed": "Couldn't delete account. Please try again.",
       "section": "Account management"
+    },
+    "devices": {
+      "section": "Notification devices",
+      "empty": "No subscribed devices.",
+      "remove": "Remove",
+      "unknownDevice": "Unknown device",
+      "registeredAt": "Registered {date}"
     }
   },
   "destination": {

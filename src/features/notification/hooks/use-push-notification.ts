@@ -52,8 +52,11 @@ export function usePushNotification() {
       return;
     }
 
-    // 3) VAPID public key 있을 때만 실제 push subscribe.
-    const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+    // 3) VAPID public key — BE(GET /notifications/vapid-public-key)에서 조회.
+    //    실패/미설정 시 env(NEXT_PUBLIC_VAPID_PUBLIC_KEY) fallback(dev/mock).
+    const vapidKey =
+      (await notificationApi.getVapidKey().catch(() => null)) ??
+      process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
     if (!vapidKey) {
       // 키 미설정 — 권한만 받고 종료 (mock/dev 흐름). 운영에선 키 필수.
       setStatus('enabled');
