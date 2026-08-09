@@ -124,13 +124,12 @@ export interface TravelTypeDto {
   tags: string[];
 }
 
+// 편지 위치 입력(FE) — Spring ComposeLetterRequestDto.location 은 regionCode·label 만.
+// latitude/longitude/accuracy 는 GPS 원본(FE 보관, 전송 안 함). (lat/lng/region 사장 필드 제거.)
 export interface LetterLocationDto {
   label: string;
-  region?: string;
   regionCode?: string;
-  lat?: number;
   latitude?: number;
-  lng?: number;
   longitude?: number;
   accuracy?: number;
 }
