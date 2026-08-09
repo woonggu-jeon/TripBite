@@ -1,24 +1,24 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import {
-  ThemeKindSelector,
-  type ThemeKind,
-} from '@/features/tournament/components/ThemeKindSelector';
-import { SeasonSelector } from '@/features/tournament/components/SeasonSelector';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { SubHeader } from '@/components/layout/SubHeader';
+import { Button } from '@/components/ui';
 import { CategoryFilter } from '@/features/tournament/components/CategoryFilter';
 import { CountSelector } from '@/features/tournament/components/CountSelector';
-import { SubHeader } from '@/components/layout/SubHeader';
+import { SeasonSelector } from '@/features/tournament/components/SeasonSelector';
+import {
+  type ThemeKind,
+  ThemeKindSelector,
+} from '@/features/tournament/components/ThemeKindSelector';
 import { useTournamentStore } from '@/features/tournament/store/tournament-store';
-import type { DestinationCategory, Season } from '@/types/api-domain';
 import type {
   TournamentCount,
   TournamentTheme,
 } from '@/features/tournament/types';
 import { haptic } from '@/lib/haptic';
-import { Button } from '@/components/ui';
+import type { DestinationCategory, Season } from '@/types/api-domain';
 import styles from './TournamentSetup.module.scss';
 
 /**
@@ -90,6 +90,19 @@ export function TournamentSetup() {
   const [season, setSeason] = useState<Season | null>(initialSeason);
   const [category, setCategory] = useState<DestinationCategory | null>(null);
   const [count, setCount] = useState<TournamentCount | null>(null);
+
+  // 하드 로드/새로고침/딥링크: 정적 프리렌더 시 useSearchParams 가 비어 초기 step 이
+  // 1 로 굳는다(클라 네비게이션은 initialStep 으로 이미 맞음). 마운트 후 쿼리를 한 번
+  // 재적용해 season 딥링크가 step 3(유형)부터 시작하도록 보정.
+  useEffect(() => {
+    if (initialThemeKind === 'season' && initialSeason) {
+      setThemeKind('season');
+      setSeason(initialSeason);
+      setStep(3);
+    }
+    // 마운트 1회만 (쿼리 기반 초기 동기화). 이후 사용자 조작은 건드리지 않음.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // step 전환 시 이전 step 의 클릭된 button focus 가 unmount 되며 브라우저가
   // fallback 으로 새 step 의 동일 위치 button 에 focus 자동 이동시키는 케이스.

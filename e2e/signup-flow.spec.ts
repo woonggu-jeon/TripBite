@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { type Page, expect, test } from '@playwright/test';
 
 /**
  * 회원가입 → onboarding → 홈 e2e flow.
@@ -39,22 +39,16 @@ test.describe('회원가입 → onboarding 흐름', () => {
     await page.waitForTimeout(800); // 클라 폼 hydration 대기
 
     // 안정적 #id 셀렉터 사용 (i18n 라벨 텍스트 의존 회피).
+    // Spring SignupRequestDto 필수: username·name·birthDate·nickname·password·email.
     await page.locator('#username').fill('newuser01');
+    await page.locator('#name').fill('홍길동');
+    await page.locator('#birthDate').fill('1998-05-20');
     await page.locator('#nickname').fill('새내기');
     await page.locator('#password').fill('NewUser1234!');
     await page.locator('#passwordConfirm').fill('NewUser1234!');
     await page.locator('#email').fill('new@user.com');
 
-    // 중복확인 — 활성(enabled) 버튼만 클릭 (email 확인은 BE 대기로 disabled).
-    const checkButtons = page.getByRole('button', { name: /중복확인/ });
-    const count = await checkButtons.count();
-    for (let i = 0; i < count; i++) {
-      const btn = checkButtons.nth(i);
-      if (await btn.isEnabled().catch(() => false)) {
-        await btn.click();
-        await page.waitForLoadState('networkidle').catch(() => {});
-      }
-    }
+    // 중복확인 버튼은 준비중(toast) — 가입 게이팅 아님. 클릭 안 해도 제출 가능.
 
     // 가입 제출 — 신규 흐름: signup(ApiResponseUnit) → pendingUser → /signup/complete.
     const submit = page.getByRole('button', { name: /^가입하기$|^회원가입$/ });

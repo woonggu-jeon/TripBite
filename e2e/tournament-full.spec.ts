@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { authedSession } from './_helpers/auth';
 
 /**
@@ -28,10 +28,16 @@ test.describe('토너먼트 풀 흐름 (4명)', () => {
     // 클라 컴포넌트 hydration 대기 — 미완료 시 radio onClick 미부착으로 step 미진행(flaky).
     await page.waitForTimeout(1000);
 
-    // 카테고리 — 축제 선택
+    // 카테고리 — 축제 선택 (다중선택 step → "다음" 으로 갯수 step 진입)
     const festival = page.getByRole('radio', { name: /축제/ });
     await festival.waitFor({ state: 'visible' });
     await festival.click();
+
+    // category 는 다중선택이라 자동 진행 X — "다음" 버튼으로 갯수 step 진입.
+    const nextBtn = page.getByRole('button', { name: /^다음$/ });
+    if (await nextBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await nextBtn.click();
+    }
 
     // 갯수 step — 4명 선택 (button 또는 radio 둘 다 가능)
     const count4Btn = page.getByRole('button', { name: /^4$/ }).first();

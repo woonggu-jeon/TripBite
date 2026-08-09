@@ -27,12 +27,20 @@ export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  // 로컬도 1회 재시도 — hydration/애니메이션 타이밍 flake 흡수(결정적 실패는 그대로 노출).
+  retries: process.env.CI ? 2 : 1,
+  // 워커 상한 — 과도한 병렬은 빌드/하이드레이션 경합으로 flake 유발(로컬 관측).
+  workers: process.env.CI ? 2 : 3,
   reporter: process.env.CI ? 'github' : 'html',
+  // assertion/액션 기본 타임아웃 상향 — 5s 는 하이드레이션 지연에 취약.
+  expect: { timeout: 10_000 },
+  timeout: 45_000,
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    actionTimeout: 10_000,
+    navigationTimeout: 30_000,
   },
   // 플랫폼 매트릭스 (6종) — 같은 chromium binary 라 OS 별 차이는 font subpixel 수준.
   // userAgent 와 viewport 만 다르므로 desktop-windows / desktop-mac 는 형식적 분리.

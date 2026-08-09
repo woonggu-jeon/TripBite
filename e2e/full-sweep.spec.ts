@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { type Page, expect, test } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
 import { authedSession } from './_helpers/auth';
@@ -269,15 +269,19 @@ test.describe('전수 스위프 — 기능 인터랙션', () => {
       .first();
     const issues: string[] = [];
     if (await submit.isVisible().catch(() => false)) {
-      await submit.click().catch(() => {});
-      await page.waitForTimeout(400);
-      // aria-invalid 또는 에러 텍스트 존재 확인
-      const invalid = await page.locator('[aria-invalid="true"]').count();
-      const errText = await page
-        .locator('[role="alert"], .error, [data-error]')
-        .count();
-      if (invalid === 0 && errText === 0)
-        issues.push('빈 값 제출 후 유효성 에러 미검출');
+      // 폼이 빈 값이면 submit 을 disabled 로 게이팅하는 UX — 그 자체가 유효성 방어.
+      const disabled = await submit.isDisabled().catch(() => false);
+      if (!disabled) {
+        await submit.click().catch(() => {});
+        await page.waitForTimeout(400);
+        // aria-invalid 또는 에러 텍스트 존재 확인
+        const invalid = await page.locator('[aria-invalid="true"]').count();
+        const errText = await page
+          .locator('[role="alert"], .error, [data-error]')
+          .count();
+        if (invalid === 0 && errText === 0)
+          issues.push('빈 값 제출 후 유효성 에러 미검출');
+      }
     } else {
       issues.push('로그인 버튼 미검출');
     }
@@ -461,14 +465,18 @@ test.describe('전수 스위프 — 미실행 TC 보강', () => {
       .getByRole('button', { name: /^가입하기$|회원가입|Sign up/i })
       .last();
     if (await submit.isVisible().catch(() => false)) {
-      await submit.click().catch(() => {});
-      await page.waitForTimeout(500);
-      const invalid = await page.locator('[aria-invalid="true"]').count();
-      const errText = await page
-        .locator('[role="alert"], [data-error], .error')
-        .count();
-      if (invalid === 0 && errText === 0)
-        issues.push('빈 값 제출 후 유효성 에러 미검출');
+      // 빈 값이면 submit disabled 게이팅(allFilled/isValid) — 유효성 방어로 인정.
+      const disabled = await submit.isDisabled().catch(() => false);
+      if (!disabled) {
+        await submit.click().catch(() => {});
+        await page.waitForTimeout(500);
+        const invalid = await page.locator('[aria-invalid="true"]').count();
+        const errText = await page
+          .locator('[role="alert"], [data-error], .error')
+          .count();
+        if (invalid === 0 && errText === 0)
+          issues.push('빈 값 제출 후 유효성 에러 미검출');
+      }
     } else issues.push('제출 버튼 미검출');
     if (pageErrors.length) issues.push(`예외 ${pageErrors.length}`);
     await screenshot(page, testInfo, 'A-05');
@@ -479,6 +487,8 @@ test.describe('전수 스위프 — 미실행 TC 보강', () => {
   });
 
   test('C-04 토너먼트 전체 진행 → 결과 도달', async ({ page }, testInfo) => {
+    // 전체 플레이(최대 60매치 루프 + 각 400ms 대기)라 기본 45s 로는 빠듯 → 넉넉히.
+    test.setTimeout(120_000);
     const pageErrors = trackErrors(page);
     const issues: string[] = [];
     // 위저드 (랜덤 테마 → 최소 개수) → play
