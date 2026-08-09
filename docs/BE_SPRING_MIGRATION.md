@@ -226,6 +226,31 @@ consents: {
 
 > **"기존 mock 에만 있던 컬럼" 정리 결과:** luckyColor·compatibility·homeRegion·isOnboarded·winnerRegion 등은 화면에서 소비된 적 없어 안전 제거. 상세 phone/website/좌표·region 인기도·유형별 추천·아바타는 mock 전용이라 실 BE 기준 손실 없음 — 필요 시 위 P1/P2 로 복원. 깨진 참조 0(tsc + 전수 grep 확인).
 
+### 화면 × API 매핑 전수 감사 (2026-08-10)
+
+> 코드 내 `BE-TODO(§5 …)` 주석과 1:1 대응 (전수: `grep -rn "BE-TODO" src`). ✅ 정상 · 🕗 준비중(UI 유지, BE 추가 시 켜짐) · ⚙️ 전환/degrade(실 Spring 로 재구성).
+
+| 화면 (route)                       | 사용 Spring API                                                                           | 상태                                                           |
+| ---------------------------------- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| 로그인 `/login`                    | POST /auth/login · GET /me                                                                | ✅                                                             |
+| 회원가입 `/signup`                 | POST /auth/signup                                                                         | ✅ · 중복확인 🕗(P2-6, 409 로 대체 동작)                       |
+| 아이디찾기 `/find-id`              | —                                                                                         | 🕗 P1-1                                                        |
+| 비번찾기/재설정 `/forgot`·`/reset` | —                                                                                         | 🕗 P1-2                                                        |
+| 홈 `/`                             | GET /destinations/random · /regions/ongoing-festivals                                     | ✅                                                             |
+| 랭킹 `/ranking`                    | GET /tournaments/rankings/weekly·regions · /travel-types/quiz·submit                      | ✅ · 추천/카테고리/계절 랭킹 ⚙️(P2-1, 빈배열)                  |
+| 토너먼트 `/tournament`·`/play`     | GET /destinations/random                                                                  | ✅                                                             |
+| 토너먼트 결과 `/tournament/result` | POST /mypage/tournament-history · GET /destinations/{id}                                  | ✅ · 딥링크복원 🕗(P2-2, store 전용)                           |
+| 여행지 상세 `/destination/{id}`    | GET /destinations/{id}                                                                    | ✅ · phone/website/좌표 🕗(P2-5) · 길찾기 ⚙️(이름검색)         |
+| 시군 `/region`·`/region/{code}`    | GET /destinations(필터) · /regions/ongoing-festivals                                      | ✅ · summary ⚙️(P2-4, 정적) · contents ⚙️(destinations 재구성) |
+| 편지 `/letter`·compose·sent·{id}   | GET/POST /letters\* · like/save · GET /letters/{id}                                       | ✅ · 위치 ⚙️(클라 centroid 매핑)                               |
+| 마이 `/mypage`                     | GET /me · /mypage/stamps · /mypage/tournaments · /mypage/tournament-history               | ✅ · 아바타 🕗(P1-5)                                           |
+| 도장책 `/mypage/stamps`            | GET /mypage/stamps                                                                        | ✅                                                             |
+| 여행유형 결과 `/quiz/result`       | POST /travel-types/submit · GET /me                                                       | ✅ · 추천 여행지 🕗(P2-3)                                      |
+| 알림 `/notifications`              | GET /notifications · unread-count · POST {id}/read · read-all                             | ✅                                                             |
+| 설정 `/settings`                   | GET /settings · PATCH /settings/notifications · vapid·subscribe·subscriptions·unsubscribe | ✅ · 비번변경 🕗(P1-3) · 탈퇴 🕗(P1-4)                         |
+
+**🕗 준비중 6종**(P1-1~5, P2-2/2-3) = 사용자에게 "준비중" 노출, BE 엔드포인트 추가 시 즉시 활성. **⚙️ 전환/degrade** = 실 Spring 로 재구성돼 동작(품질만 BE 있으면 향상). 나머지 ✅ = 완전 정상.
+
 ---
 
 ## 6. e2e 현황 (하드닝 완료 2026-08-09)

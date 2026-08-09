@@ -31,7 +31,8 @@ export function AccountActionsSection() {
     logout();
   };
 
-  // 회원 탈퇴는 Spring 미지원(DELETE /me 없음) → 준비중 toast.
+  // BE-TODO(§5 P1-4): 회원 탈퇴 — Spring 미지원(DELETE /me 없음) → 준비중 toast.
+  //   엔드포인트 추가 시 useDeleteAccount 복원(clearAuth+캐시 정리+홈 이동). 로그아웃은 지원됨.
   const handleWithdraw = () => {
     toast.info(tComingSoon('description'));
   };

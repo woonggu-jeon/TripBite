@@ -69,7 +69,8 @@ export const rankingApi = {
     // real-BE 모드(USE_MSW=false)에선 dead(500) → 빈 배열로 degrade (호출부가 빈 상태 처리).
     // mock 모드에서만 구 generated 호출(MSW handler 가 데이터 제공).
     if (process.env.NEXT_PUBLIC_USE_MSW !== 'true') return [];
-    // ⚠️ Spring 미지원(generic /rankings) — MSW mock. BE 추가 필요.
+    // BE-TODO(§5 P2-1): 추천/카테고리/계절 랭킹 — Spring 미지원(GET /rankings 없음).
+    //   real-BE 모드에선 위에서 빈배열 degrade. 엔드포인트 추가 시 이 분기가 실데이터.
     const res = (
       await api.get<RankedDestination[]>('/rankings', {
         params: {

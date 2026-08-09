@@ -13,7 +13,8 @@ import styles from './DestinationActions.module.scss';
  * **이름 기반 카카오맵 검색**으로 전환:
  *   https://map.kakao.com/link/search/{name}
  * name 은 항상 있어 길찾기 상시 노출. iOS/Android 카카오맵 앱 설치 시 자동 전환.
- * (좌표 기반 /link/to/ 로 되돌리려면 coords 제공 시 directionsHref 만 교체.)
+ * BE-TODO(§5 P2-5): DestinationDetailDto 에 coords(lat/lng) 추가 시, 아래 directionsHref
+ * 를 좌표 기반 정밀 경로(`map.kakao.com/link/to/{name},{lat},{lng}`)로 승격 가능.
  */
 export function DestinationActions({
   id,

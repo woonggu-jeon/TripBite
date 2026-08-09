@@ -61,8 +61,9 @@ export function TournamentResultClient() {
   const router = useRouter();
   const t = useTranslations('tournament.result');
 
-  // Spring 은 결과 딥링크 복원(GET /tournaments/{id}) 미지원 → 결과는 store 전용.
-  // cold 진입(새로고침/공유 링크, store 비었음)은 아래 noWinner 안내로 degrade.
+  // BE-TODO(§5 P2-2): 결과 딥링크 복원 — Spring 미지원(GET /tournaments/{id} 없음) →
+  //   결과는 store 전용. cold 진입(새로고침/공유 링크)은 아래 noWinner 로 degrade.
+  //   엔드포인트 추가 시 ?id= 로 record fetch(useTournamentRecord) 복원.
   const winner = useTournamentStore((s) => s.winner);
   const runnerUp = useTournamentStore((s) => s.runnerUp);
   const matchesPlayed = useTournamentStore((s) => s.matchesPlayed);

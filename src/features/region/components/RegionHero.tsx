@@ -9,9 +9,10 @@ import styles from './RegionHero.module.scss';
  *
  * 시군 상세 페이지 (/region/[code]) 의 상단 hero — 시군명 + 영문명 + 설명.
  *
- * Spring 은 `/regions/{code}/summary`(description/popularity/heroImage) 미지원 →
- * FE 정적 콘텐츠로 렌더(전환): 시군명·영문명은 i18n/상수, 설명은 i18n 문구.
- * (인기도 chip 은 Spring 미제공이라 제거. 시군 사진은 하단 DestinationCard 담당.)
+ * BE-TODO(§5 P2-4): 시군 큐레이션 — Spring 은 `/regions/{code}/summary`
+ * (description/popularity/heroImage) 미지원 → FE 정적 콘텐츠로 렌더(전환): 시군명·
+ * 영문명은 i18n/상수, 설명은 i18n 문구. 인기도 chip 은 제거. 엔드포인트 추가 시
+ * useRegionSummary 복원 → 큐레이션 설명/대표 이미지 표시.
  */
 export function RegionHero({ code }: { code: RegionCode }) {
   const t = useTranslations('region.hero');

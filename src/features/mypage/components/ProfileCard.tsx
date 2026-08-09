@@ -20,7 +20,9 @@ export function ProfileCard() {
 
   const nickname = data?.profile.nickname ?? (isLoading ? '' : t('anonymous'));
 
-  // 아바타 변경은 Spring 미지원 → 준비중 안내(toast).
+  // BE-TODO(§5 P1-5): 아바타 변경 — Spring 미지원(POST/DELETE /me/avatar 없음,
+  //   UserResponseDto.avatarUrl 미제공) → 준비중 toast. 엔드포인트+avatarUrl 추가 시
+  //   업로드 흐름(useUpdateAvatar/useRemoveAvatar) + UserDto.avatarUrl 복원.
   const onChangeAvatar = () => {
     haptic.tap();
     toast.info(tComingSoon('description'));

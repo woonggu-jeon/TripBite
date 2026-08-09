@@ -9,7 +9,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('title') };
 }
 
-// 아이디 찾기: Spring 미지원(/auth/find-id 없음) → 준비중.
+// BE-TODO(§5 P1-1): 아이디 찾기 — Spring 미지원(POST /auth/find-id 없음) → 준비중(ComingSoon).
+//   엔드포인트 추가 시 ComingSoon → FindIdForm + useFindId 복원.
 export default async function FindIdPage() {
   const t = await getTranslations('auth.findId');
   return (

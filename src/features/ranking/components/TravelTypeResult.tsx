@@ -134,7 +134,8 @@ export function TravelTypeResult() {
         )}
       </Card>
 
-      {/* 추천 여행지 — Spring 미제공(유형별 추천 엔드포인트 없음) → 준비중 안내. */}
+      {/* BE-TODO(§5 P2-3): 유형별 추천 여행지 — Spring 미제공 → 준비중 안내.
+          submit/GET me 결과에 추천 destination 포함 시 이 자리에 리스트 복원. */}
       <section className={styles.recommend}>
         <h3 className={styles.recommendTitle}>{t('recommendTitle')}</h3>
         <p className={styles.recommendComingSoon}>

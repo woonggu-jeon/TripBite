@@ -9,7 +9,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('title') };
 }
 
-// 비밀번호 찾기: Spring 미지원(/auth/forgot-password 없음) → 준비중.
+// BE-TODO(§5 P1-2): 비밀번호 찾기 — Spring 미지원(POST /auth/forgot-password 없음) → 준비중.
+//   엔드포인트 추가 시 ComingSoon → ForgotPasswordForm + useForgotPassword 복원.
 export default async function ForgotPasswordPage() {
   const t = await getTranslations('auth.forgotPassword');
   return (

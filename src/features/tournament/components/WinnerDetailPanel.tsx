@@ -91,7 +91,9 @@ export function WinnerDetailPanel({
     label: string;
     value: string;
   }> = [];
-  // Spring DestinationDetailDto 가 실제 제공하는 필드만 렌더 (지어낸 필드 삭제):
+  // BE-TODO(§5 P2-5): Spring DestinationDetailDto 가 실제 제공하는 필드만 렌더.
+  //   mock 에만 있던 phone/website/openingHours/restDate/parking 은 제거 — BE 가
+  //   DestinationDetailDto 에 추가하면 해당 행 복원 가능.
   //   address · admissionFee · 행사기간(eventStart~eventEnd).
   if (detail.address)
     rows.push({

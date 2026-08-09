@@ -8,7 +8,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('title') };
 }
 
-// 비밀번호 재설정: Spring 미지원(/auth/reset-password 없음) → 준비중.
+// BE-TODO(§5 P1-2): 비밀번호 재설정 — Spring 미지원(POST /auth/reset-password 없음) → 준비중.
+//   엔드포인트 추가 시 ComingSoon → ResetPasswordForm + useResetPassword 복원(토큰 검증).
 export default async function ResetPasswordPage() {
   const t = await getTranslations('auth.resetPassword');
   return (

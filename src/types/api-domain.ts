@@ -24,8 +24,9 @@ export interface DestinationDto {
 
 // Spring DestinationDetailDto 파생 뷰 (필드명 Spring 그대로).
 // Spring 제공: id·name·category·region·imageUrl·images·address·type·admissionFee·
-//   description·tags·eventStart·eventEnd. (coords/phone/website/openingHours/
-//   restDate/parking 은 Spring 미제공 — 삭제.)
+//   description·tags·eventStart·eventEnd.
+// BE-TODO(§5 P2-5): coords/phone/website/openingHours/restDate/parking 은 Spring 미제공이라
+//   삭제(mock 전용이었음). BE 가 DestinationDetailDto 에 추가하면 상세 행/정밀 길찾기 복원.
 export interface DestinationDetailDto {
   category: DestinationCategory;
   region: RegionCode;
@@ -115,7 +116,9 @@ export type TravelTypeCode =
   (typeof TravelTypeCode)[keyof typeof TravelTypeCode];
 
 // Spring TravelTypeResultDto 파생 뷰: code·title·emoji·description·tags.
-// (recommended·compatibility 는 Spring 미제공 — 삭제. keywords→tags.)
+// keywords→tags(개명). compatibility 는 화면 미소비라 삭제(FE 콘텐츠성, BE 무관).
+// BE-TODO(§5 P2-3): recommended(유형별 추천 여행지)는 Spring 미제공이라 삭제 —
+//   BE 가 submit/GET me 결과에 추천 destination 포함 시 결과 화면 추천 섹션 복원.
 export interface TravelTypeDto {
   code: TravelTypeCode;
   title: string;
@@ -141,8 +144,9 @@ export interface ComposeLetterDto {
 }
 
 // Spring UserResponseDto 파생 뷰 — FE 소비 필드만.
-// (homeRegion·isOnboarded·avatarUrl·travelType(brief) 는 Spring 미제공/미표시 — 삭제.
-//  아바타는 Spring 미지원이라 닉네임 이니셜 fallback 사용.)
+// homeRegion·isOnboarded·travelType(brief) 는 화면 미소비라 삭제(BE 무관).
+// BE-TODO(§5 P1-5): avatarUrl 은 Spring UserResponseDto 미제공이라 삭제 — BE 가
+//   avatarUrl 추가 + /me/avatar 엔드포인트 제공 시 아바타 기능 복원.
 export interface UserDto {
   id: string;
   username: string;

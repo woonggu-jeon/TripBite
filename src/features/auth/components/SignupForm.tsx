@@ -71,7 +71,9 @@ export function SignupForm() {
   const usernameValue = watch('username');
   const emailValue = watch('email');
 
-  // 중복확인은 Spring 미지원 → 준비중 안내(toast). 실제 중복은 가입 시 409로 차단.
+  // BE-TODO(§5 P2-6): 중복확인 — Spring 미지원(GET /auth/check-username·check-email 없음)
+  //   → 준비중 toast. 실제 중복은 가입 시 409 로 차단(기능 정상). 엔드포인트 추가 시
+  //   인라인 사전확인 복원 가능(선택).
   const onCheckComingSoon = () => toast.info(tComingSoon('description'));
 
   const onSubmit = handleSubmit(async (values) => {
