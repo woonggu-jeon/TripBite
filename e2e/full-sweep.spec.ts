@@ -269,18 +269,18 @@ test.describe('전수 스위프 — 기능 인터랙션', () => {
       .first();
     const issues: string[] = [];
     if (await submit.isVisible().catch(() => false)) {
-      // 폼이 빈 값이면 submit 을 disabled 로 게이팅하는 UX — 그 자체가 유효성 방어.
-      const disabled = await submit.isDisabled().catch(() => false);
-      if (!disabled) {
-        await submit.click().catch(() => {});
-        await page.waitForTimeout(400);
-        // aria-invalid 또는 에러 텍스트 존재 확인
-        const invalid = await page.locator('[aria-invalid="true"]').count();
-        const errText = await page
-          .locator('[role="alert"], .error, [data-error]')
-          .count();
-        if (invalid === 0 && errText === 0)
-          issues.push('빈 값 제출 후 유효성 에러 미검출');
+      // 로그인은 빈 값 제출 시 zod 검증으로 에러 노출(disabled 게이팅 아님).
+      // 하이드레이션 전 클릭은 무반응 → toPass 로 에러가 뜰 때까지 클릭 재시도(결정적).
+      const errorLoc = page
+        .locator('[aria-invalid="true"], [role="alert"], .error, [data-error]')
+        .first();
+      try {
+        await expect(async () => {
+          await submit.click();
+          await expect(errorLoc).toBeVisible({ timeout: 1000 });
+        }).toPass({ timeout: 10_000 });
+      } catch {
+        issues.push('빈 값 제출 후 유효성 에러 미검출');
       }
     } else {
       issues.push('로그인 버튼 미검출');
@@ -312,29 +312,38 @@ test.describe('전수 스위프 — 기능 인터랙션', () => {
 
     // 위저드: step1 "랜덤 테마" 선택 → step4(개수) 직행 → 개수 radio 선택 → "시작하기"
     const randomOpt = page.getByRole('radio', { name: /랜덤 테마/ }).first();
+    const startBtn = page.getByRole('button', { name: '시작하기' }).first();
     if (await randomOpt.isVisible().catch(() => false)) {
-      await randomOpt.click().catch(() => {});
-      await page.waitForTimeout(400);
+      // 하이드레이션 전 클릭은 step 전환 안 됨 → 시작하기(step4 마커) 노출까지 클릭 재시도.
+      try {
+        await expect(async () => {
+          await randomOpt.click();
+          await expect(startBtn).toBeVisible({ timeout: 1000 });
+        }).toPass({ timeout: 10_000 });
+      } catch {
+        issues.push('step1→step4 전환 실패(랜덤 테마)');
+      }
     } else {
       issues.push('step1 테마 옵션(랜덤 테마) 미검출');
     }
 
-    // step4 개수 radio 선택
+    // step4 개수 radio 선택 (랜덤 흐름은 count 미선택 상태로 진입)
     const countOpt = page.getByRole('radio').first();
     if (await countOpt.isVisible().catch(() => false)) {
       await countOpt.click().catch(() => {});
-      await page.waitForTimeout(300);
     } else {
       issues.push('step4 개수 옵션 미검출');
     }
 
-    // 시작하기
-    const startBtn = page.getByRole('button', { name: '시작하기' }).first();
+    // 시작하기 — 개수 선택 후 활성화 대기 → /play 이동을 waitForURL 로 명시 대기.
     if (await startBtn.isVisible().catch(() => false)) {
-      const enabled = await startBtn.isEnabled().catch(() => false);
-      if (!enabled) issues.push('"시작하기" 버튼 비활성(개수 선택 후에도)');
+      await expect(startBtn)
+        .toBeEnabled({ timeout: 8000 })
+        .catch(() => issues.push('"시작하기" 버튼 비활성(개수 선택 후에도)'));
       await startBtn.click().catch(() => {});
-      await page.waitForTimeout(1000);
+      await page
+        .waitForURL(/\/tournament\/play/, { timeout: 8000 })
+        .catch(() => {});
     } else {
       issues.push('"시작하기" 버튼 미검출');
     }
@@ -447,8 +456,9 @@ test.describe('전수 스위프 — 미실행 TC 보강', () => {
         issues.push(`링크 미검출: ${name}`);
         continue;
       }
+      // waitForURL 로 이동 완료를 명시 대기(고정 timeout 대신) — 하이드레이션/네비 race 제거.
       await link.click().catch(() => {});
-      await page.waitForTimeout(500);
+      await page.waitForURL(urlRe, { timeout: 8000 }).catch(() => {});
       if (!urlRe.test(page.url()))
         issues.push(`${name} 이동 실패: ${page.url()}`);
     }
@@ -465,18 +475,11 @@ test.describe('전수 스위프 — 미실행 TC 보강', () => {
       .getByRole('button', { name: /^가입하기$|회원가입|Sign up/i })
       .last();
     if (await submit.isVisible().catch(() => false)) {
-      // 빈 값이면 submit disabled 게이팅(allFilled/isValid) — 유효성 방어로 인정.
-      const disabled = await submit.isDisabled().catch(() => false);
-      if (!disabled) {
-        await submit.click().catch(() => {});
-        await page.waitForTimeout(500);
-        const invalid = await page.locator('[aria-invalid="true"]').count();
-        const errText = await page
-          .locator('[role="alert"], [data-error], .error')
-          .count();
-        if (invalid === 0 && errText === 0)
-          issues.push('빈 값 제출 후 유효성 에러 미검출');
-      }
+      // 회원가입은 빈 값이면 submit 이 disabled(allFilled/isValid 게이팅) — 그 자체가
+      // 유효성 방어. 하이드레이션 후 disabled 로 확정될 때까지 대기(결정적).
+      await expect(submit)
+        .toBeDisabled({ timeout: 10_000 })
+        .catch(() => issues.push('빈 폼인데 제출 버튼이 비활성화되지 않음'));
     } else issues.push('제출 버튼 미검출');
     if (pageErrors.length) issues.push(`예외 ${pageErrors.length}`);
     await screenshot(page, testInfo, 'A-05');
@@ -649,14 +652,23 @@ test.describe('전수 스위프 — 미실행 TC 보강', () => {
     const pageErrors = trackErrors(page);
     const issues: string[] = [];
     await page.goto('/settings', { waitUntil: 'networkidle' });
-    await page.waitForTimeout(500);
     const sw = page.getByRole('switch').first();
     if (await sw.isVisible().catch(() => false)) {
       const before = await sw.getAttribute('aria-checked');
-      await sw.click().catch(() => {});
-      await page.waitForTimeout(500);
-      const after = await sw.getAttribute('aria-checked');
-      if (before === after) issues.push(`토글 상태 불변 (${before})`);
+      // 하이드레이션 전 클릭은 상태 불변 → aria-checked 가 바뀔 때까지 클릭 재시도(결정적).
+      // 무반응 클릭은 no-op 이라 실제 토글은 1회만 반영.
+      try {
+        await expect(async () => {
+          await sw.click();
+          await expect(sw).not.toHaveAttribute(
+            'aria-checked',
+            before ?? 'false',
+            { timeout: 1000 },
+          );
+        }).toPass({ timeout: 8000 });
+      } catch {
+        issues.push(`토글 상태 불변 (${before})`);
+      }
     } else issues.push('스위치 미검출');
     if (pageErrors.length) issues.push(`예외 ${pageErrors.length}`);
     await screenshot(page, testInfo, 'I-03');
