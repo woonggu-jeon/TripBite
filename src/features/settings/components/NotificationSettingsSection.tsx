@@ -47,13 +47,16 @@ export function NotificationSettingsSection() {
         onChange={(next) => update({ inAppEnabled: next })}
       />
       */}
+      {/* 시안 `row` 는 제목 아래 보조 설명 한 줄이 있다 (행 73px) */}
       <Row
         label={t('letterReceived')}
+        hint={t('letterReceivedHint')}
         checked={!!n?.letterReceived}
         onChange={(next) => update({ letterReceived: next })}
       />
       <Row
         label={t('letterLiked')}
+        hint={t('letterLikedHint')}
         checked={!!n?.letterLiked}
         onChange={(next) => update({ letterLiked: next })}
       />

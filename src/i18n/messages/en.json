@@ -769,7 +769,9 @@
       "inApp": "In-app notifications",
       "inAppHint": "Use the in-app inbox",
       "letterReceived": "Letter arrived",
-      "letterLiked": "Like on my letter"
+      "letterLiked": "Like on my letter",
+      "letterReceivedHint": "Get notified when a new letter arrives",
+      "letterLikedHint": "Get notified when someone likes your letter"
     },
     "theme": {
       "section": "Theme",

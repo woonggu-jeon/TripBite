@@ -51,7 +51,9 @@
   line-height: var(--line-normal);
 }
 
-// Figma `bl` 은 라벨 아래 여백이 8 (섹션 헤더의 16 보다 좁다)
+// Figma `bl` 은 라벨 아래 여백이 8 (섹션 헤더의 16 보다 좁다).
+// 라벨 위 여백(26)은 섹션 사이 gap 이 담당한다 — 여기서 padding 을 더하면
+// 이중으로 벌어진다 (설정 화면 wrap gap 24 + 행의 아래 padding 16).
 .sectionGroup {
   gap: var(--space-2);
 }

@@ -1,11 +1,13 @@
+// Figma `toggle` 실측 — 46x28, knob 22, off 면 #E0E0E0 / on 면 #00B334.
+// (구 44x24 + knob 18 + fg 18% 회색)
 .track {
   position: relative;
   display: inline-block;
-  width: 44px;
-  height: 24px;
+  width: 46px;
+  height: 28px;
   border-radius: var(--radius-full);
-  background: color-mix(in srgb, var(--color-fg) 18%, transparent);
-  border: 1.5px solid transparent;
+  background: var(--color-border);
+  border: 0;
   cursor: pointer;
   flex-shrink: 0;
   transition:
@@ -25,10 +27,10 @@
 
 .knob {
   position: absolute;
-  top: 1px;
-  left: 1px;
-  width: 18px;
-  height: 18px;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
   background: var(--color-on-strong);
   border-radius: var(--radius-full);
   box-shadow: var(--shadow-sm);
@@ -39,7 +41,7 @@
   background: var(--color-primary);
 
   .knob {
-    transform: translateX(20px);
+    transform: translateX(18px);
   }
 }
 
