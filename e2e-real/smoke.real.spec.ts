@@ -68,6 +68,46 @@ test.describe('실 BE 스모크 — 공개 라우트', () => {
   });
 });
 
+// ── 다크모드 (기본 theme=system → prefers-color-scheme 따름) ──
+test.describe('실 BE 스모크 — 다크모드', () => {
+  test.use({ colorScheme: 'dark' });
+
+  for (const path of ['/', '/region', '/tournament']) {
+    test(`${path} — 다크 토큰 적용 + 렌더(실 BE)`, async ({ page }) => {
+      const errs = trackPageErrors(page);
+      await page.goto(path, { waitUntil: 'networkidle' });
+      await assertRenderInvariants(page, path, errs);
+      // --color-bg 가 다크 토큰(#1a1a1a 등)으로 해석되는지 — light 면 luma 높아 실패.
+      const luma = await page.evaluate(() => {
+        const v = getComputedStyle(document.documentElement)
+          .getPropertyValue('--color-bg')
+          .trim();
+        let r = 255,
+          g = 255,
+          b = 255;
+        if (v.startsWith('#')) {
+          const h = v.slice(1);
+          const n =
+            h.length === 3
+              ? h
+                  .split('')
+                  .map((c) => c + c)
+                  .join('')
+              : h;
+          r = parseInt(n.slice(0, 2), 16);
+          g = parseInt(n.slice(2, 4), 16);
+          b = parseInt(n.slice(4, 6), 16);
+        } else {
+          const m = v.match(/\d+/g);
+          if (m) [r, g, b] = m.map(Number);
+        }
+        return 0.299 * r + 0.587 * g + 0.114 * b;
+      });
+      expect(luma, `${path} --color-bg 다크 아님`).toBeLessThan(90);
+    });
+  }
+});
+
 // ── 인증 라우트 (실 로그인) ──
 test.describe('실 BE 스모크 — 인증 라우트', () => {
   test('로그인(test 계정) → 보호 라우트 렌더', async ({ page }) => {
