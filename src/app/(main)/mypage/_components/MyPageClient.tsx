@@ -3,16 +3,14 @@
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Icon } from '@/components/icon';
-import { ROUTES } from '@/constants/routes';
-import { SubHeader } from '@/components/layout/SubHeader';
+import { PageSection } from '@/components/ui';
 import { ProfileCard } from '@/features/mypage/components/ProfileCard';
 import {
   SavedTournamentsSection,
   SavedTournamentsViewAll,
 } from '@/features/mypage/components/SavedTournamentsSection';
-import { TournamentHistorySection } from '@/features/mypage/components/TournamentHistorySection';
 import { StampBookBanner } from '@/features/mypage/components/StampBookBanner';
-import { PageSection } from '@/components/ui';
+import { TournamentHistorySection } from '@/features/mypage/components/TournamentHistorySection';
 import styles from './MyPageClient.module.scss';
 
 /**
@@ -30,23 +28,12 @@ import styles from './MyPageClient.module.scss';
  */
 export function MyPageClient() {
   const t = useTranslations('mypage.sections');
-  const tPage = useTranslations('mypage');
   const tCommon = useTranslations('common');
 
+  // SubHeader(제목 + 설정 톱니)는 page.tsx(server)에서 렌더 — 형제 페이지
+  // (stamps/saved-tournaments) 컨벤션 정합. 여기서 중복 렌더하지 않는다(헤더 2개 버그).
   return (
     <>
-      <SubHeader
-        title={tPage('title')}
-        rightSlot={
-          <Link
-            href={ROUTES.SETTINGS}
-            className={styles.settingsLink}
-            aria-label={t('goToSettings')}
-          >
-            <Icon name="settings" size={24} />
-          </Link>
-        }
-      />
       <div className={styles.grid}>
         {/* 1) 프로필 — Figma `pf`. 섹션 제목 없이 헤더 바로 아래 붙는다. */}
         <ProfileCard />

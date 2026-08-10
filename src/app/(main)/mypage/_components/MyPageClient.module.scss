@@ -10,23 +10,5 @@
 }
 
 // 헤더 우측 톱니 — Figma headerIcon 24x24. 구 하단 "설정으로 이동" 링크 대체.
-.settingsLink {
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  margin-right: calc(var(--space-2) * -1);
-  border-radius: var(--radius-full);
-  color: var(--color-fg);
-  transition: background var(--motion-base) ease;
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      background: var(--color-hover-soft);
-    }
-  }
-  &:focus-visible {
-    outline: var(--focus-outline);
-    outline-offset: var(--focus-outline-offset);
-  }
-}
+/* .settingsLink 제거 — 설정 링크는 page.tsx(server)의 SubHeader rightSlot 이 담당
+   (헤더 중복 제거로 MyPageClient 의 SubHeader 삭제됨). */
