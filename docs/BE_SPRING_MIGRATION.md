@@ -280,5 +280,6 @@ npm run dev            # 포트 3000, 실 Spring (USE_MSW=false)
 npm run test:run       # vitest (MSW)
 npm run test:jest      # jest (node)
 npm run be:contract    # 실 Spring 어댑터 계약 (BE_CONTRACT=1)
-npm run kill:3000 && npm run test:e2e   # e2e (MSW, dev 종료 후 — 포트 공유)
+npm run kill:3000 && npm run test:e2e        # e2e (MSW, dev 종료 후 — 포트 공유)
+npm run kill:3000 && npm run test:e2e:real   # 실 BE 스모크(18): 공개12+상세+배너+다크3+인증8라우트
 ```
