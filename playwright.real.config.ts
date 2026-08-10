@@ -15,7 +15,8 @@ import { defineConfig, devices } from '@playwright/test';
  * 데이터가 실시간이라 exact 값 대신 "렌더 성공 · 예외 0 · 핵심 위젯 비어있지 않음 ·
  * 헤더 h1 ≤ 1" 같은 견고한 불변식만 단정.
  */
-const BE = process.env.BE_ORIGIN ?? 'https://trip-bite.o-r.kr';
+// || (not ??) — 빈 문자열 env 도 기본값으로 폴백(CI secret/var 미설정 대비).
+const BE = process.env.BE_ORIGIN || 'https://trip-bite.o-r.kr';
 
 export default defineConfig({
   testDir: './e2e-real',

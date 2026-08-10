@@ -11,8 +11,9 @@ import { type Page, expect, test } from '@playwright/test';
  * 실 데이터라 exact 대신 불변식만: 렌더 성공 · uncaught 예외 0 · h1 ≤ 1(헤더 중복 금지).
  */
 
-const TEST_USER = process.env.BE_TEST_USER ?? 'test';
-const TEST_PASS = process.env.BE_TEST_PASS ?? '1234';
+// || (not ??) — CI 에서 미설정 secret 이 빈 문자열로 주입돼도 기본값으로 폴백.
+const TEST_USER = process.env.BE_TEST_USER || 'test';
+const TEST_PASS = process.env.BE_TEST_PASS || '1234';
 
 function trackPageErrors(page: Page): string[] {
   const errs: string[] = [];
@@ -115,7 +116,11 @@ test.describe('실 BE 스모크 — 다크모드', () => {
           b = parseInt(n.slice(4, 6), 16);
         } else {
           const m = v.match(/\d+/g);
-          if (m) [r, g, b] = m.map(Number);
+          if (m && m.length >= 3) {
+            r = Number(m[0]);
+            g = Number(m[1]);
+            b = Number(m[2]);
+          }
         }
         return 0.299 * r + 0.587 * g + 0.114 * b;
       });
