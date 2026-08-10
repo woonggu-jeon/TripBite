@@ -1,9 +1,9 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw';
-import { server } from '@/mocks/server';
+import { HttpResponse, http } from 'msw';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mockSeeds } from '@/mocks/handlers';
+import { server } from '@/mocks/server';
 import { renderWithProviders } from '@/test-utils';
 import { HomeCategoryPicks } from './HomeCategoryPicks';
 
@@ -22,8 +22,15 @@ function stubSources(opts: {
         data: opts.festivals ?? { type: 'ongoing', items: [] },
       }),
     ),
-    http.get(`${apiUrl}/rankings`, () =>
-      HttpResponse.json(opts.recommended ?? []),
+    // 추천은 destinations/random 으로 전환 — RankedDestination[] 의 destination 만 반환.
+    http.get(`${apiUrl}/destinations/random`, () =>
+      HttpResponse.json({
+        success: true,
+        message: null,
+        data: (opts.recommended ?? []).map(
+          (r) => (r as { destination: unknown }).destination,
+        ),
+      }),
     ),
   );
 }
@@ -51,8 +58,8 @@ const ranked = (overrides?: Record<string, unknown>) => ({
 });
 
 describe('HomeCategoryPicks — Figma rec-block (칩 필터 + 추천/축제 병합)', () => {
-  // 추천(useRecommendedDestinations)은 real-BE 모드에서 dead endpoint 를 skip(빈배열).
-  // 이 테스트는 MSW mock 으로 /rankings 를 주입하므로 mock 모드로 고정.
+  // 추천(useRecommendedDestinations)은 destinations/random 으로 전환 — stubSources 가
+  // /destinations/random 을 주입. USE_MSW 고정(축제 병합 소스 등 mock 경로 검증).
   beforeEach(() => vi.stubEnv('NEXT_PUBLIC_USE_MSW', 'true'));
   afterEach(() => vi.unstubAllEnvs());
 

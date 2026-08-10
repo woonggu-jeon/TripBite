@@ -1,5 +1,6 @@
 // 신규 Spring BE 지원: 주간 top / 시군별 우승수 (그 외 랭킹 타입은 미지원 → 구 generated mock 유지)
 // 내 유형 조회/저장은 GET/PATCH /me 로 재구성 (travel-types/me 미지원 — 4-A 전환).
+import { getRandom } from '@/api/be/destination/destination';
 import { getMe as beGetMe, updateMe as beUpdateMe } from '@/api/be/me/me';
 import {
   getRegionRankings,
@@ -65,12 +66,30 @@ export const rankingApi = {
       }));
     }
 
-    // 그 외 타입(recommended/by-category/seasonal/by-travel-type)은 새 Spring BE 미지원.
-    // real-BE 모드(USE_MSW=false)에선 dead(500) → 빈 배열로 degrade (호출부가 빈 상태 처리).
+    // '오늘의 추천'(메인 상단 배너 등) — Spring 전용 추천 랭킹은 없지만 실 데이터가
+    // 필요하므로 `GET /destinations/random` 으로 전환(빈 배너 방지). 실 BE·mock 공통.
+    if (params.type === 'recommended') {
+      const res = await getRandom({ size: params.limit });
+      return (res.data ?? []).map((dest, i) => ({
+        rank: i + 1,
+        destination: normalizeImageField({
+          id: String(dest.id),
+          name: dest.name ?? '',
+          category: dest.category,
+          region: dest.region,
+          imageUrl: dest.imageUrl ?? undefined,
+        } as unknown as DestinationDto),
+        score: 0,
+      }));
+    }
+
+    // 그 외 타입(by-category/seasonal/hidden-gems)은 Spring 미지원.
+    // real-BE 모드(USE_MSW=false)에선 dead → 빈 배열로 degrade (호출부가 빈 상태 처리).
     // mock 모드에서만 구 generated 호출(MSW handler 가 데이터 제공).
     if (process.env.NEXT_PUBLIC_USE_MSW !== 'true') return [];
-    // BE-TODO(§5 P2-1): 추천/카테고리/계절 랭킹 — Spring 미지원(GET /rankings 없음).
-    //   real-BE 모드에선 위에서 빈배열 degrade. 엔드포인트 추가 시 이 분기가 실데이터.
+    // BE-TODO(§5 P2-1): 카테고리/계절/hidden-gems 랭킹 — Spring 미지원(GET /rankings 없음).
+    //   real-BE 모드에선 빈배열 degrade. (recommended 는 위에서 destinations/random 전환.)
+    //   전용 랭킹 엔드포인트 추가 시 이 분기가 실데이터.
     const res = (
       await api.get<RankedDestination[]>('/rankings', {
         params: {

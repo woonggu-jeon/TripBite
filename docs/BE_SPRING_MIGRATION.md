@@ -83,12 +83,12 @@ FE 는 아래를 `api.*` 직접 호출(현재 MSW mock). 그런데 **상당수�
 
 ### 4-B. ✅ 전환/정적 처리 완료 (2026-08-08, FE 전면 정합)
 
-| 현 호출                                  | 처리                                                                                                                                                                  |
-| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `POST /location/reverse` (편지 필수)     | 클라측 충북 11시군 centroid 최근접(`features/location/lib/nearest-region.ts`) → regionCode/label 산출. 편지 compose 가 regionCode 필수 전송. BE·외부 지오코딩 의존 0. |
-| `GET /auth/check-username`·`check-email` | 사전확인 게이팅 제거 → 가입 제출 시 `POST /auth/signup` 409 처리. 중복확인 버튼은 준비중 안내.                                                                        |
-| `GET /regions/{code}/summary`            | `RegionHero` 정적 렌더(시군명 i18n + 설명 문구). popularity/heroImage 제거(Spring 미제공).                                                                            |
-| `GET /rankings` (추천/카테고리/계절)     | real-BE 모드 빈배열 degrade(호출부 빈 상태 처리). weekly/by-region 은 Spring 지원.                                                                                    |
+| 현 호출                                  | 처리                                                                                                                                                                                  |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST /location/reverse` (편지 필수)     | 클라측 충북 11시군 centroid 최근접(`features/location/lib/nearest-region.ts`) → regionCode/label 산출. 편지 compose 가 regionCode 필수 전송. BE·외부 지오코딩 의존 0.                 |
+| `GET /auth/check-username`·`check-email` | 사전확인 게이팅 제거 → 가입 제출 시 `POST /auth/signup` 409 처리. 중복확인 버튼은 준비중 안내.                                                                                        |
+| `GET /regions/{code}/summary`            | `RegionHero` 정적 렌더(시군명 i18n + 설명 문구). popularity/heroImage 제거(Spring 미제공).                                                                                            |
+| `GET /rankings` (추천/카테고리/계절)     | **추천(recommended)은 `GET /destinations/random` 으로 전환** — 메인 상단 배너/카테고리픽 실데이터 표시. 카테고리/계절/hidden-gems 만 빈배열 degrade. weekly/by-region 은 Spring 지원. |
 
 ### 4-C. 🕗 준비중 처리 (Spring 엔드포인트 추가 시 되살림)
 
@@ -162,7 +162,7 @@ Spring 이 진짜로 없는 기능은 UI 진입점(라우트·버튼)은 남기�
 **P2-1. 추천/카테고리/계절 랭킹 — `GET /rankings?type=&limit=`**
 
 - `type ∈ {recommended, by-category, seasonal, hidden-gems}` → `ApiResponse<RankedDestination[]>`(rank·destination·score).
-- 현재: real-BE 에서 빈배열 degrade(weekly·by-region 만 지원). 추가 시 랭킹 탭 실데이터.
+- 현재: **recommended 는 `GET /destinations/random` 으로 전환**(메인 배너·카테고리픽 실데이터). 나머지(by-category/seasonal/hidden-gems)는 real-BE 빈배열 degrade. 전용 추천 랭킹(가중치 알고리즘) 엔드포인트가 생기면 recommended 도 그쪽으로 교체 가능.
 
 **P2-2. 토너먼트 결과 딥링크 복원 — `GET /tournaments/{id}`**
 
@@ -237,7 +237,8 @@ consents: {
 | 아이디찾기 `/find-id`              | —                                                                                         | 🕗 P1-1                                                        |
 | 비번찾기/재설정 `/forgot`·`/reset` | —                                                                                         | 🕗 P1-2                                                        |
 | 홈 `/`                             | GET /destinations/random · /regions/ongoing-festivals                                     | ✅                                                             |
-| 랭킹 `/ranking`                    | GET /tournaments/rankings/weekly·regions · /travel-types/quiz·submit                      | ✅ · 추천/카테고리/계절 랭킹 ⚙️(P2-1, 빈배열)                  |
+| 홈 상단 배너/카테고리픽            | GET /destinations/random (recommended 전환)                                               | ✅ ⚙️(P2-1, 실데이터 표시)                                     |
+| 랭킹 `/ranking`                    | GET /tournaments/rankings/weekly·regions · /travel-types/quiz·submit                      | ✅ · 카테고리/계절 랭킹 ⚙️(P2-1, 빈배열)                       |
 | 토너먼트 `/tournament`·`/play`     | GET /destinations/random                                                                  | ✅                                                             |
 | 토너먼트 결과 `/tournament/result` | POST /mypage/tournament-history · GET /destinations/{id}                                  | ✅ · 딥링크복원 🕗(P2-2, store 전용)                           |
 | 여행지 상세 `/destination/{id}`    | GET /destinations/{id}                                                                    | ✅ · phone/website/좌표 🕗(P2-5) · 길찾기 ⚙️(이름검색)         |

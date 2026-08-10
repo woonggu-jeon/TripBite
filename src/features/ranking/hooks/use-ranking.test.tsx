@@ -148,17 +148,19 @@ describe('useRanking + alias hooks', () => {
     },
   ];
 
-  it('useRanking — params 전달 + 응답 반환', async () => {
+  it('useRanking — params 전달 + 응답 반환 (mock /rankings 경로)', async () => {
+    // recommended 는 destinations/random 으로 전환되므로, /rankings 경로 검증은
+    // 다른 타입(by-category)으로 확인.
     server.use(
       http.get(`${apiUrl}/rankings`, ({ request }) => {
         const url = new URL(request.url);
-        expect(url.searchParams.get('type')).toBe('recommended');
+        expect(url.searchParams.get('type')).toBe('by-category');
         expect(url.searchParams.get('limit')).toBe('5');
         return HttpResponse.json(mockRankItems);
       }),
     );
     const { result } = renderHookWithProviders(() =>
-      useRanking({ type: 'recommended', limit: 5 }),
+      useRanking({ type: 'by-category', limit: 5 }),
     );
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data).toEqual(mockRankItems);
@@ -191,19 +193,42 @@ describe('useRanking + alias hooks', () => {
     });
   });
 
-  it('useRecommendedDestinations — type=recommended 로 호출', async () => {
-    let receivedType: string | null = null;
+  it('useRecommendedDestinations — destinations/random 전환 + RankedDestination 매핑', async () => {
+    let receivedSize: string | null = null;
     server.use(
-      http.get(`${apiUrl}/rankings`, ({ request }) => {
-        receivedType = new URL(request.url).searchParams.get('type');
-        return HttpResponse.json([]);
+      http.get(`${apiUrl}/destinations/random`, ({ request }) => {
+        receivedSize = new URL(request.url).searchParams.get('size');
+        return HttpResponse.json({
+          success: true,
+          message: null,
+          data: [
+            {
+              id: 42,
+              name: '랜덤여행지',
+              category: 'attraction',
+              region: 'cheongju',
+              imageUrl: null,
+            },
+          ],
+        });
       }),
     );
     const { result } = renderHookWithProviders(() =>
-      useRecommendedDestinations(),
+      useRecommendedDestinations(5),
     );
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(receivedType).toBe('recommended');
+    expect(receivedSize).toBe('5');
+    expect(result.current.data?.[0]).toEqual({
+      rank: 1,
+      destination: {
+        id: '42',
+        name: '랜덤여행지',
+        category: 'attraction',
+        region: 'cheongju',
+        imageUrl: undefined,
+      },
+      score: 0,
+    });
   });
 });
 

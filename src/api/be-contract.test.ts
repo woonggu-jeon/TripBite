@@ -184,4 +184,13 @@ d('실 BE contract — 어댑터 ↔ 실제 응답 (mock 아님)', () => {
     const subs = await notificationApi.listSubscriptions();
     expect(Array.isArray(subs)).toBe(true);
   });
+
+  // ── 메인 상단 배너(오늘의 추천) — destinations/random 전환이 실 BE 에서 데이터 반환 ──
+  it('rankingApi.list(recommended) → destinations/random 실데이터(비어있지 않음)', async () => {
+    const rows = await rankingApi.list({ type: 'recommended', limit: 5 });
+    expect(Array.isArray(rows)).toBe(true);
+    expect(rows.length).toBeGreaterThan(0); // 배너가 뜨려면 최소 1개
+    expect(typeof rows[0]!.destination.id).toBe('string');
+    expect(rows[0]!.destination.name).toBeTruthy();
+  });
 });
