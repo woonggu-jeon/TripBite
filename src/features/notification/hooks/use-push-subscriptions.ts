@@ -1,9 +1,9 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAuthedQueryEnabled } from '@/features/auth/hooks/use-authed-query';
 import { notificationApi } from '@/features/notification/api/notification';
 import { CACHE } from '@/lib/cache';
-import { useAuthStore } from '@/stores/auth-store';
 
 export const pushSubscriptionKeys = {
   all: ['push-subscriptions'] as const,
@@ -14,11 +14,11 @@ export const pushSubscriptionKeys = {
  * 로그인 상태에서만 조회.
  */
 export function usePushSubscriptions() {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const enabled = useAuthedQueryEnabled();
   return useQuery({
     queryKey: pushSubscriptionKeys.all,
     queryFn: () => notificationApi.listSubscriptions(),
-    enabled: isAuthenticated,
+    enabled,
     ...CACHE.user,
   });
 }

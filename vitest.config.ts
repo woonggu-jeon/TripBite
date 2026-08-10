@@ -103,6 +103,8 @@ export default defineConfig({
     setupFiles: ['./vitest.setup.ts'],
     exclude: [
       'e2e/**',
+      // 실 BE Playwright 스모크 — vitest 가 아니라 playwright.real.config 담당.
+      'e2e-real/**',
       'node_modules/**',
       '.next/**',
       '**/*.stories.@(js|jsx|ts|tsx)',

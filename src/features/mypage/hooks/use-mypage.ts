@@ -2,9 +2,9 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { authKeys } from '@/features/auth/hooks/use-auth';
+import { useAuthedQueryEnabled } from '@/features/auth/hooks/use-authed-query';
 import { mypageApi } from '@/features/mypage/api/mypage';
 import { CACHE } from '@/lib/cache';
-import { useAuthStore } from '@/stores/auth-store';
 import type { MypageSummaryDto, UpdateProfileDto } from '@/types/api-domain';
 
 export const mypageKeys = {
@@ -14,11 +14,11 @@ export const mypageKeys = {
 };
 
 export function useMypage() {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const enabled = useAuthedQueryEnabled();
   return useQuery({
     queryKey: mypageKeys.summary(),
     queryFn: ({ signal }) => mypageApi.getSummary(signal),
-    enabled: isAuthenticated,
+    enabled,
     ...CACHE.user,
   });
 }
@@ -58,11 +58,11 @@ export function useUpdateNickname() {
 }
 
 export function useStamps() {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const enabled = useAuthedQueryEnabled();
   return useQuery({
     queryKey: mypageKeys.stamps(),
     queryFn: ({ signal }) => mypageApi.getStamps(signal),
-    enabled: isAuthenticated,
+    enabled,
     ...CACHE.user,
   });
 }

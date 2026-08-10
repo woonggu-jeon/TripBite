@@ -28,6 +28,23 @@ type PersistedUser = Pick<UserDto, 'nickname'>;
 
 type AuthState = {
   isAuthenticated: boolean;
+  /**
+   * 세션 프로브(/me) 확정 여부 — **in-memory only (persist 미포함)**, 매 reload false 로 시작.
+   *
+   * 배경 (2026-08-10): AuthBootstrap/AuthGuard 비활성 상태에서 재방문 시 localStorage 의
+   * stale `isAuthenticated=true` 로 유저 스코프 폴링(예: /notifications/unread-count)이
+   * 세션 확인 전에 발사 → 403 + 공개 홈에서 스퓨리어스 '세션 만료' 토스트가 발생했다.
+   *
+   * 해법: 낙관 인증(persist)은 헤더/가드 UX 용으로 유지하되, **유저 스코프 쿼리는
+   * 세션이 실제로 확정된 뒤에만** 발사한다. AuthBootstrap 의 /me 프로브가 setAuth
+   * (200) 또는 clearAuth(403) 를 호출하는 순간 true 로 바뀐다 → 두 액션 모두 여기서
+   * `sessionResolved: true` 로 세팅. 폴링 훅은 `isAuthenticated && sessionResolved`
+   * (useAuthedQueryEnabled) 로 게이팅 → 프로브 이전엔 /me 하나만 나간다.
+   *
+   * interceptor 의 세션만료 토스트도 이 값을 본다 — 프로브 시점(false)의 403 은 로드타임
+   * 재조정이라 무음, 확정(true) 이후의 403 만 진짜 세션만료로 토스트.
+   */
+  sessionResolved: boolean;
   user?: UserDto;
   /**
    * 회원가입 직후 /signup/complete 의 시작하기 클릭 전까지 보존되는 user.
@@ -79,17 +96,21 @@ export const useAuthStore = create<AuthState & AuthActions>()(
   persist(
     (set) => ({
       isAuthenticated: false,
+      sessionResolved: false,
       user: undefined,
       pendingSignupUser: undefined,
 
+      // setAuth/clearAuth 는 곧 "세션 상태를 확정지었다" 는 의미 → sessionResolved=true.
+      // (프로브 /me 200 → setAuth, 403 → clearAuth, 로그인/로그아웃도 동일.)
       setAuth: (user) => {
         writeAuthMarker(true);
-        set({ isAuthenticated: true, user });
+        set({ isAuthenticated: true, sessionResolved: true, user });
       },
       clearAuth: () => {
         writeAuthMarker(false);
         set({
           isAuthenticated: false,
+          sessionResolved: true,
           user: undefined,
           pendingSignupUser: undefined,
         });

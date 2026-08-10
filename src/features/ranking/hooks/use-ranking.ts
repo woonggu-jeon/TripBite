@@ -1,13 +1,13 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { DestinationCategory } from '@/types/api-domain';
-import type { TravelTypeCode } from '@/types/api-domain';
+import { useAuthedQueryEnabled } from '@/features/auth/hooks/use-authed-query';
 import { mypageKeys } from '@/features/mypage/hooks/use-mypage';
 import { rankingApi } from '@/features/ranking/api/ranking';
 import type { RankingType, TravelTypeAnswer } from '@/features/ranking/types';
 import { CACHE } from '@/lib/cache';
-import { useAuthStore } from '@/stores/auth-store';
+import type { DestinationCategory } from '@/types/api-domain';
+import type { TravelTypeCode } from '@/types/api-domain';
 
 export const rankingKeys = {
   all: ['ranking'] as const,
@@ -50,11 +50,11 @@ export function useTravelTypeQuiz() {
 }
 
 export function useMyTravelType() {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const enabled = useAuthedQueryEnabled();
   return useQuery({
     queryKey: rankingKeys.travelType(),
     queryFn: rankingApi.getMyTravelType,
-    enabled: isAuthenticated,
+    enabled,
     ...CACHE.user, // 본인 결과
   });
 }

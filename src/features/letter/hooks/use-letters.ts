@@ -1,22 +1,22 @@
 'use client';
 
 import {
+  type InfiniteData,
+  type QueryClient,
   useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
-  type InfiniteData,
-  type QueryClient,
 } from '@tanstack/react-query';
+import { useAuthedQueryEnabled } from '@/features/auth/hooks/use-authed-query';
+import { letterApi } from '@/features/letter/api/letter';
+import type { LetterListKind } from '@/features/letter/types';
+import { CACHE } from '@/lib/cache';
 import type {
   ComposeLetterDto,
   LetterDto,
   LetterPageDto,
 } from '@/types/api-domain';
-import { letterApi } from '@/features/letter/api/letter';
-import type { LetterListKind } from '@/features/letter/types';
-import { CACHE } from '@/lib/cache';
-import { useAuthStore } from '@/stores/auth-store';
 
 export const letterKeys = {
   all: ['letter'] as const,
@@ -39,13 +39,13 @@ const FETCHERS: Record<
  * cursor 0 부터 시작 → nextCursor null 일 때까지.
  */
 export function useLettersInfinite(kind: LetterListKind) {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const enabled = useAuthedQueryEnabled();
   return useInfiniteQuery({
     queryKey: letterKeys.list(kind),
     queryFn: ({ pageParam = 0 }) => FETCHERS[kind](pageParam as number),
     initialPageParam: 0,
     getNextPageParam: (last) => last.nextCursor,
-    enabled: isAuthenticated,
+    enabled,
     ...(kind === 'received' ? CACHE.realtime : CACHE.user),
   });
 }
@@ -72,12 +72,12 @@ function findCachedLetter(qc: QueryClient, id: string): LetterDto | undefined {
 }
 
 export function useLetter(id: string) {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const enabled = useAuthedQueryEnabled();
   const qc = useQueryClient();
   return useQuery({
     queryKey: letterKeys.detail(id),
     queryFn: () => letterApi.get(id),
-    enabled: isAuthenticated && !!id,
+    enabled: enabled && !!id,
     // 목록에서 진입한 경우 즉시 렌더 (깜빡임 0). 서버 응답이 오면 교체된다.
     placeholderData: () => findCachedLetter(qc, id),
     ...CACHE.slow, // 단일 편지는 거의 변화 없음

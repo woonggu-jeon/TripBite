@@ -122,13 +122,20 @@ export function attachAuthInterceptor(instance: AxiosInstance) {
       const onAuthPage = isAlreadyOnAuthPage();
 
       // stale store 동기화 (탈퇴/세션만료) — clearAuth 는 네비게이션 없음이라 항상 안전.
-      // wasAuthenticated 일 때만 세션만료 이벤트 → 비로그인 공개 페이지(403)엔 토스트 안 뜸.
+      // 토스트 조건 (2026-08-10):
+      //   · wasAuthenticated — 비로그인 공개 페이지(403)엔 안 뜸.
+      //   · sessionResolved — **이 로드에서 세션을 실제 확정한 뒤** 만료된 경우만.
+      //     AuthBootstrap /me 프로브가 stale 낙관 인증(persist)을 확정하기 전(=false)의
+      //     403 은 "로드타임 재조정"이라 무음 처리 → 재방문 시 홈에서 뜨던 스퓨리어스
+      //     '세션 만료' 토스트 제거. (clearAuth 가 sessionResolved 를 true 로 올리므로
+      //     반드시 clearAuth **이전에** 스냅샷을 읽는다.)
       if (!isMock && !onAuthPage && typeof window !== 'undefined') {
         const { useAuthStore } = await import('@/stores/auth-store');
-        const wasAuthenticated = useAuthStore.getState().isAuthenticated;
+        const { isAuthenticated: wasAuthenticated, sessionResolved } =
+          useAuthStore.getState();
         useAuthStore.getState().clearAuth();
 
-        if (wasAuthenticated && !sessionExpiredToastShown) {
+        if (wasAuthenticated && sessionResolved && !sessionExpiredToastShown) {
           sessionExpiredToastShown = true;
           window.dispatchEvent(new CustomEvent('auth:session-expired'));
         }

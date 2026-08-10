@@ -8,10 +8,10 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import type { NotificationListDto } from '@/types/api-domain';
+import { useAuthedQueryEnabled } from '@/features/auth/hooks/use-authed-query';
 import { notificationInboxApi } from '@/features/notification/api/inbox';
 import { CACHE } from '@/lib/cache';
-import { useAuthStore } from '@/stores/auth-store';
+import type { NotificationListDto } from '@/types/api-domain';
 
 export const notificationKeys = {
   all: ['notification'] as const,
@@ -27,7 +27,7 @@ export const notificationKeys = {
  * - 인증 사용자만. 비로그인 시 disabled.
  */
 export function useNotificationInboxInfinite() {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const enabled = useAuthedQueryEnabled();
   const profile = CACHE.realtime;
   const query = useInfiniteQuery<
     NotificationListDto,
@@ -46,7 +46,7 @@ export function useNotificationInboxInfinite() {
     staleTime: profile.staleTime,
     gcTime: profile.gcTime,
     refetchOnWindowFocus: true,
-    enabled: isAuthenticated,
+    enabled,
   });
 
   // BE swagger 의 AppNotificationType enum 명시로 generated 가 자동 narrowing.
@@ -73,13 +73,13 @@ export function useNotificationInboxInfinite() {
  * 페이지 hook (`useNotificationInboxInfinite`) 과 별도 queryKey — 두 hook 의 invalidate 동시 갱신.
  */
 export function useNotificationBadge() {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const enabled = useAuthedQueryEnabled();
   return useQuery({
     queryKey: notificationKeys.badge(),
     queryFn: () => notificationInboxApi.unreadCount(),
     ...CACHE.realtime,
     refetchOnWindowFocus: true,
-    enabled: isAuthenticated,
+    enabled,
     select: (data) => data.unreadCount,
   });
 }

@@ -16,6 +16,11 @@ import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
 import { Toaster } from '@/components/feedback/Toaster';
 import { WebVitalsTracker } from '@/features/analytics/components/web-vitals';
 import { usePageView } from '@/features/analytics/hooks/use-page-view';
+// 2026-08-10 — AuthBootstrap 재활성: 로드당 1회 /me 세션 프로브(redirect 없음, 동기화만).
+// stale 낙관 인증으로 유저 스코프 폴링이 세션 확인 전에 발사돼 403 나던 문제 해소
+// (useAuthedQueryEnabled 게이트와 한 쌍). 2026-06-12 에 껐던 건 redirect 로직 때문이며
+// 현재 컴포넌트엔 네비게이션이 전혀 없다 — 인증 redirect 는 여전히 middleware(SSR) 담당.
+import { AuthBootstrap } from '@/features/auth/components/AuthBootstrap';
 import { SessionExpiredWatcher } from '@/features/auth/components/SessionExpiredWatcher';
 import { ServiceWorkerNavigateBridge } from '@/features/notification/components/ServiceWorkerNavigateBridge';
 import {
@@ -23,11 +28,6 @@ import {
   OfflineBanner,
   PwaUpdateBanner,
 } from '@/features/pwa';
-// 2026-06-12 — AuthBootstrap mount 비활성. 인증 redirect 는 middleware (SSR) +
-// interceptor (401) 가 담당, 로그인 직후 store sync 는 useLogin.onSuccess 의
-// fetchQuery 가 처리. 다른 기기 user 변경 stale 만 trade-off (다음 navigation 까지).
-// 회귀 시 본 import 와 아래 <AuthBootstrap /> mount 주석 복원.
-// import { AuthBootstrap } from '@/features/auth/components/AuthBootstrap';
 import { ThemeApplier } from '@/features/theme/components/ThemeApplier';
 import {
   installGlobalErrorReporters,
@@ -266,7 +266,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeApplier />
-      {/* <AuthBootstrap /> — 2026-06-12 비활성 (위 import 코멘트 참조) */}
+      <AuthBootstrap />
       <SessionExpiredWatcher />
       <ServiceWorkerNavigateBridge />
       <PageViewTracker />
