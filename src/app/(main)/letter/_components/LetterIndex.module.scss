@@ -25,7 +25,9 @@
 }
 
 .tab {
-  min-height: 44px;
+  // Figma `t` 는 stroke 포함 44 (Figma stroke 는 레이아웃 높이에 안 더해진다).
+  // min-height 로 두면 활성 탭의 2px 밑줄이 더해져 46 이 됐다.
+  height: 44px;
   padding: var(--space-3) 0;
   border: 0;
   border-bottom: var(--border-thin) solid var(--color-border);

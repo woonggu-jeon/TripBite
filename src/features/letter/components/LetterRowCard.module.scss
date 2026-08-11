@@ -35,7 +35,8 @@
   place-items: center;
   width: 48px;
   height: 48px;
-  border-radius: var(--radius-sm);
+  // 토큰 스케일에 8 이 없다 (sm 4 / md 12) — 시안값 그대로 8px.
+  border-radius: 8px;
   background: var(--color-primary-soft);
 }
 
@@ -98,9 +99,12 @@
   border-radius: var(--radius-full);
   background: var(--color-primary-soft);
   color: var(--color-primary-text-bold);
-  font-size: var(--font-caption);
+  // Figma `rp` 은 Caption/B_10 — 12 Regular 로 되어 있어 pill 이 18 → 20 으로
+  // 커지고 카드 높이도 82 → 88 로 밀렸다.
+  font-size: var(--font-eyebrow);
+  font-weight: var(--font-weight-bold);
   line-height: var(--line-tight);
-  letter-spacing: var(--tracking-snug);
+  letter-spacing: var(--tracking-tight);
   white-space: nowrap;
 }
 

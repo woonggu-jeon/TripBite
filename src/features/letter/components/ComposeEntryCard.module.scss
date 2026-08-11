@@ -2,7 +2,8 @@
 // VERTICAL gap 12, padding 20/16.
 .card {
   display: grid;
-  justify-items: start;
+  // Figma banner 는 아이콘·문구 모두 가운데 정렬이다 (구 구현은 좌측).
+  justify-items: center;
   gap: var(--space-3);
   padding: var(--space-5) var(--space-4);
   background: var(--color-primary-soft);
@@ -32,11 +33,13 @@
   color: var(--color-primary-text-bold);
 }
 
-// Figma `f` — V gap 3 (4px 그리드로 4)
+// Figma `f` — V gap 3 (4px 그리드로 4), 텍스트 두 줄 모두 가운데
 .body {
   display: grid;
+  justify-items: center;
   gap: var(--space-1);
   min-width: 0;
+  text-align: center;
 }
 
 // Basic Body/B_14_140% #151515 — 시안은 보조 문구가 위에 온다
