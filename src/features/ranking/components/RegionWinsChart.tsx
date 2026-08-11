@@ -1,16 +1,15 @@
 'use client';
 
-import { useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { ChevronRight, Trophy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui';
-import { useRanking } from '@/features/ranking/hooks/use-ranking';
-import { isRegionCode, type RegionCode } from '@/constants/regions';
-import { haptic } from '@/lib/haptic';
-import { SkeletonList } from '@/components/feedback/SkeletonList';
+import { useRouter } from 'next/navigation';
+import { useMemo } from 'react';
 import { EmptyState } from '@/components/feedback/EmptyState';
-import { BarChart3 } from 'lucide-react';
+import { SkeletonList } from '@/components/feedback/SkeletonList';
+import { Button } from '@/components/ui';
+import { type RegionCode, isRegionCode } from '@/constants/regions';
+import { useRanking } from '@/features/ranking/hooks/use-ranking';
+import { haptic } from '@/lib/haptic';
 import styles from './RegionWinsChart.module.scss';
 
 /**
@@ -82,8 +81,9 @@ export function RegionWinsChart() {
   }
   if (rows.length === 0) {
     return (
+      // Figma 빈 상태는 두 카드 모두 트로피 아이콘을 쓴다 (차트 아이콘 아님)
       <EmptyState
-        icon={<BarChart3 size={28} aria-hidden />}
+        icon={<Trophy size={28} aria-hidden />}
         title={t('chart.empty')}
       />
     );
@@ -107,7 +107,12 @@ export function RegionWinsChart() {
           >
             {/* Figma `Frame 36` — 등수 + 시군명을 한 그룹으로 묶는다 */}
             <span className={styles.rowLabel}>
-              <span className={styles.rank}>{r.rank}</span>
+              {/* Figma 는 1위 등수만 초록(#00B334), 2위부터는 회색이다 */}
+              <span
+                className={`${styles.rank} ${r.rank === 1 ? styles.rankTop : ''}`}
+              >
+                {r.rank}
+              </span>
               <span className={styles.regionName}>{r.region}</span>
             </span>
             <span className={styles.barTrack} aria-hidden>

@@ -4,11 +4,17 @@
 //   원형 썸네일 48x48  #E0E0E0
 //   이름      Basic Body/B_14_140%   #151515
 //   보조      Caption/R_12           #393939   (이름과 gap 4)
+// Figma `visualCard` — rv-card(320, padding 16) 안이라 288x176 = 18/11.
+// HeroCard 기본 20/11(홈의 320x176)로 두면 같은 자리에서 18px 낮게 나온다.
+.hero {
+  aspect-ratio: 18 / 11;
+}
+
 .row {
   display: grid;
   // 등수 / 썸네일 / 텍스트 — Figma 는 우측에 별도 점수 칼럼이 없다
-  // (점수는 보조 줄에 "시군 · N회" 로 합쳐진다).
-  grid-template-columns: 20px 48px 1fr;
+  // (점수는 보조 줄에 "시군 · N회" 로 합쳐진다). num 칸은 시안대로 16.
+  grid-template-columns: 16px 48px 1fr;
   gap: var(--space-3);
   align-items: center;
   padding: var(--space-2) 0;

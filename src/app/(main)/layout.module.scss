@@ -67,3 +67,20 @@
   );
   min-width: 0; // 자식 max-content 가 폭을 늘리지 못하게
 }
+
+// 화면 배경 — Figma 는 두 계열을 쓴다.
+//   #FFFFFF (기본)    : 폼·플로우 화면 (로그인/설정/알림/편지쓰기/홈 …)
+//   #F6F6F6 (= soft)  : 카드 목록 화면 (랭킹/편지함/시군상세/장소상세/도장책 …)
+// 후자는 흰 카드가 배경과 구분되어야 하므로 한 톤 낮춘 면을 깐다.
+//
+// custom property 는 아래로만 상속되므로 페이지가 스스로 조상(.contentInner)의
+// 배경을 바꿀 수 없다 → 페이지 루트에 data-page-bg="soft" 를 달고 :has() 로
+// 끌어올린다. (Chrome 105+/Safari 15.4+ — 대상 환경 충족)
+.contentInner:has([data-page-bg='soft']) {
+  background: var(--color-surface-soft);
+  // 내용이 짧아도 면이 화면 끝까지 이어지게. 헤더(SubHeader)는 이 안에서
+  // sticky 라 .contentInner 가 viewport 최상단에서 시작한다 → 100svh 가
+  // 정확히 한 화면이고 여분 스크롤이 생기지 않는다.
+  // (min-height: 100% 는 부모 height 가 auto 라 해석되지 않았다)
+  min-height: 100svh;
+}

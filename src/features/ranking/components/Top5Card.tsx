@@ -1,7 +1,7 @@
 'use client';
 
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { HeroCard, MediaThumb } from '@/components/ui';
 import { categoryEmoji } from '@/constants/emoji-map';
 import { isRegionCode } from '@/constants/regions';
@@ -30,6 +30,10 @@ export function Top5Card({ item }: { item: RankedDestination }) {
   const regionName = isRegionCode(code)
     ? tRegion(code as Parameters<typeof tRegion>[0])
     : code;
+  // Spring BE 의 weekly 집계는 destinationId/name/winCount 만 준다 (region 없음).
+  // 그대로 template 에 넣으면 "undefined · 3회" 가 찍히므로 횟수만 남긴다.
+  const wins = `${item.score}${t('winsUnit')}`;
+  const metaText = regionName ? `${regionName} · ${wins}` : wins;
 
   // 1위 — Figma `visualCard`. 보조 줄은 시안의 "괴산군 · 28회" 구조를 그대로
   // 쓰되 문구는 기존 i18n(winsUnit) 조합으로만 만든다 (새 문구 도입 없음).
@@ -40,9 +44,12 @@ export function Top5Card({ item }: { item: RankedDestination }) {
         imageUrl={item.destination.imageUrl}
         emoji={categoryEmoji(item.destination.category, '🏆')}
         title={item.destination.name}
-        meta={`${regionName} · ${item.score}${t('winsUnit')}`}
+        meta={metaText}
         titleAs="h3"
         align="bottom"
+        // Figma 랭킹 인스턴스는 rv-card(320, padding 16) 안이라 288x176 =
+        // 18/11 이다. HeroCard 기본값은 홈 인스턴스의 320x176(20/11).
+        className={styles.hero}
         sizes="(max-width: 720px) 100vw, 720px"
         ariaLabel={`${item.rank}위 ${item.destination.name}`}
       />
@@ -68,10 +75,7 @@ export function Top5Card({ item }: { item: RankedDestination }) {
       />
       <span className={styles.body}>
         <span className={styles.name}>{item.destination.name}</span>
-        <span className={styles.meta}>
-          {regionName} · {item.score}
-          {t('winsUnit')}
-        </span>
+        <span className={styles.meta}>{metaText}</span>
       </span>
     </Link>
   );

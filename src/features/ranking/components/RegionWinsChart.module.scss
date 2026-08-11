@@ -54,15 +54,25 @@
   min-width: 0;
 }
 
-// Figma 등수는 초록 14px Bold. primary 는 텍스트로 2.80:1 미달이라
-// --color-primary-text-bold(5.10:1) 사용 (결정 2).
+// Figma `Frame 56` — 등수는 20x20 칸에 14px Bold.
+// 폭을 고정해야 "11" 같은 두 자리에서 시군명 시작점이 밀리지 않는다.
+//
+// 기본색은 회색 — 시안 #B4B4B4 는 흰 배경 2.07:1 로 AA 미달이라
+// BottomNav 비활성 라벨과 같은 규칙으로 --color-muted(11.55:1) 를 쓴다.
 .rank {
+  width: 20px;
   font-size: var(--font-body-sm);
   font-weight: var(--font-weight-bold);
-  color: var(--color-primary-text-bold);
+  color: var(--color-muted);
   text-align: center;
   font-variant-numeric: tabular-nums;
   flex-shrink: 0;
+}
+
+// 1위만 초록. primary(#00B334) 는 텍스트로 2.80:1 미달이라
+// --color-primary-text-bold(5.49:1) 사용 (기존 결정 유지).
+.rankTop {
+  color: var(--color-primary-text-bold);
 }
 
 .regionName {

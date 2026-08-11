@@ -1,6 +1,7 @@
+// Figma `body` — padding 20 (contentInner 담당), V gap 14 → 4px 그리드 16
 .wrap {
   display: grid;
-  gap: var(--space-6);
+  gap: var(--space-4);
   // grid item min-width:auto → 0. aspect-ratio 를 쓰는 1위 hero 가 폭을
   // min-content 높이에서 역산해 트랙을 넘기는 것 방지 (HomeDashboard 동일).
   > * {
@@ -8,32 +9,15 @@
   }
 }
 
-// 상단 주차/업데이트 안내 — 좌우 양끝
-.weekRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-  font-size: var(--font-body-sm);
-}
-
-.week {
-  color: var(--color-fg);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: var(--tracking-snug);
-}
-
-.updateNote {
-  color: var(--color-muted);
+// Figma `Title` — 주차 + 뒷말을 한 줄로. Caption/R_12 #393939, ls -1%.
+// 구 구현은 주차(bold)를 좌측, 업데이트 안내를 우측으로 밀어 양끝 정렬이었다.
+.meta {
+  margin: 0;
   font-size: var(--font-caption);
-}
-
-.sectionTitle {
-  font-size: var(--font-body);
-  font-weight: var(--font-weight-extrabold);
-  color: var(--color-fg);
-  letter-spacing: var(--tracking-tight);
-  margin-bottom: var(--space-3);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-normal);
+  color: var(--color-muted);
+  letter-spacing: var(--tracking-snug);
 }
 
 // Figma `rv-card` 안의 top5-row 는 각자 padding 8/0 을 갖는다 →
@@ -66,11 +50,4 @@
   color: var(--color-fg);
   font-size: var(--font-label);
   font-weight: var(--font-weight-semibold);
-}
-
-.chartHint {
-  font-size: var(--font-caption);
-  color: var(--color-muted);
-  margin-top: -0.5rem;
-  margin-bottom: 0.5rem;
 }
