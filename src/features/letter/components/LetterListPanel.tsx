@@ -1,14 +1,15 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { InfiniteList } from '@/features/list/components/InfiniteList';
 import { EmptyState as EmptyStateBlock } from '@/components/feedback/EmptyState';
 import { Icon } from '@/components/icon';
 import { useLettersInfinite } from '@/features/letter/hooks/use-letters';
-import type { LetterDto } from '@/types/api-domain';
 import type { LetterListKind } from '@/features/letter/types';
-import { LetterRowCard } from './LetterRowCard';
+import { InfiniteList } from '@/features/list/components/InfiniteList';
+import { useAuthStore } from '@/stores/auth-store';
+import type { LetterDto } from '@/types/api-domain';
 import styles from './LetterListPanel.module.scss';
+import { LetterRowCard } from './LetterRowCard';
 
 /**
  * 편지 목록 패널 — 받은/보낸/저장한 공통.
@@ -16,6 +17,12 @@ import styles from './LetterListPanel.module.scss';
  */
 export function LetterListPanel({ kind }: { kind: LetterListKind }) {
   const t = useTranslations('letter');
+  // 세션 프로브(/me) 가 끝나기 전에는 목록 쿼리가 disabled 다. 그때 TanStack v5
+  // 는 isLoading=false / data=undefined 라 items 가 [] 이 되어 "아직 …편지가
+  // 없어요" 가 잠깐 떴다 — 편지가 있는데도 없다고 말하는 화면.
+  // 프로브 확정까지는 로딩(스켈레톤)으로 둔다. 확정 후 미인증이면 종전대로
+  // (빈 상태) — 무한 스켈레톤이 되지 않게 isAuthenticated 는 보지 않는다.
+  const sessionResolved = useAuthStore((s) => s.sessionResolved);
   const {
     data,
     isLoading,
@@ -47,7 +54,7 @@ export function LetterListPanel({ kind }: { kind: LetterListKind }) {
     <InfiniteList
       items={items}
       hasNext={hasNextPage}
-      isFetchingNext={isFetchingNextPage || isLoading}
+      isFetchingNext={isFetchingNextPage || isLoading || !sessionResolved}
       onReachEnd={() => fetchNextPage()}
       keyExtractor={(l) => l.id}
       renderItem={(l) => <LetterRowCard letter={l} />}
