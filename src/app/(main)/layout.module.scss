@@ -47,6 +47,11 @@
 }
 
 .contentInner {
+  // 본문 열은 항상 화면 배경색 — 데스크톱에서 body 가 연초록(#EAF6EF) 여백을
+  // 그리므로, 본문이 그 색에 물들지 않게 여기서 명시한다.
+  // (기존 주석엔 "contentInner 에서 override" 라고 적혀 있었지만 실제 선언이
+  //  없어서 데스크톱 본문까지 연초록이었다)
+  background: var(--color-bg);
   max-width: var(--content-max);
   width: 100%;
   margin: 0 auto;
