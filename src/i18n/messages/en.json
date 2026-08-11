@@ -763,7 +763,8 @@
       "postmarkArrived": "Arrived"
     },
     "author": {
-      "anonymous": "Anonymous traveler"
+      "anonymous": "Anonymous traveler",
+      "mine": "Letter I wrote"
     }
   },
   "quiz": {

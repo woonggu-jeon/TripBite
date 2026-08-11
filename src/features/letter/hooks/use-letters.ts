@@ -26,7 +26,7 @@ export const letterKeys = {
 
 const FETCHERS: Record<
   LetterListKind,
-  (cursor: number) => Promise<LetterPageDto>
+  (cursor?: number) => Promise<LetterPageDto>
 > = {
   received: letterApi.listReceived,
   sent: letterApi.listSent,
@@ -36,15 +36,19 @@ const FETCHERS: Record<
 
 /**
  * 편지 목록 무한 스크롤 — 받은/보낸/좋아요(하트) 통합.
- * cursor 0 부터 시작 → nextCursor null 일 때까지.
+ *
+ * BE cursor 는 id 내림차순(`id < cursor`) 이라 첫 페이지는 cursor 를 보내지
+ * 않는다. cursor=0 을 보내면 "id < 0" 이 되어 목록이 항상 비었다 —
+ * 보낸 편지를 실제로 보냈는데도 빈 상태가 뜨던 원인.
+ * 2페이지부터 응답의 nextCursor 를 그대로 넘긴다.
  */
 export function useLettersInfinite(kind: LetterListKind) {
   const enabled = useAuthedQueryEnabled();
   return useInfiniteQuery({
     queryKey: letterKeys.list(kind),
-    queryFn: ({ pageParam = 0 }) => FETCHERS[kind](pageParam as number),
-    initialPageParam: 0,
-    getNextPageParam: (last) => last.nextCursor,
+    queryFn: ({ pageParam }) => FETCHERS[kind](pageParam ?? undefined),
+    initialPageParam: undefined as number | undefined,
+    getNextPageParam: (last) => last.nextCursor ?? undefined,
     enabled,
     ...(kind === 'received' ? CACHE.realtime : CACHE.user),
   });

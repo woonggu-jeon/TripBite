@@ -15,12 +15,12 @@ import type {
   LetterDto as BeLetterDto,
   LetterPageDto as BeLetterPageDto,
 } from '@/api/be/schemas';
+import { api } from '@/services/api/client';
 import type {
   ComposeLetterDto,
   LetterDto,
   LetterPageDto,
 } from '@/types/api-domain';
-import { api } from '@/services/api/client';
 
 const PAGE_SIZE = 10;
 
@@ -89,13 +89,17 @@ export const letterApi = {
     return mapLetter(res.data?.data ?? {});
   },
 
-  listReceived: async (cursor = 0): Promise<LetterPageDto> =>
+  // BE cursor 는 **id 내림차순 커서**다 — `id < cursor` 인 것만 돌려준다.
+  // 그래서 첫 페이지에 cursor=0 을 보내면 항상 빈 목록이 온다(실측 2026-08-11:
+  // /letters/sent?cursor=0 → items[], 파라미터 없이 → 10건). 첫 페이지는
+  // cursor 를 **아예 보내지 않고**, 2페이지부터 응답의 nextCursor 를 쓴다.
+  listReceived: async (cursor?: number): Promise<LetterPageDto> =>
     mapPage((await beGetReceived({ cursor, size: PAGE_SIZE })).data),
-  listSent: async (cursor = 0): Promise<LetterPageDto> =>
+  listSent: async (cursor?: number): Promise<LetterPageDto> =>
     mapPage((await beGetSent({ cursor, size: PAGE_SIZE })).data),
-  listLiked: async (cursor = 0): Promise<LetterPageDto> =>
+  listLiked: async (cursor?: number): Promise<LetterPageDto> =>
     mapPage((await beGetLiked({ cursor, size: PAGE_SIZE })).data),
-  listSaved: async (cursor = 0): Promise<LetterPageDto> =>
+  listSaved: async (cursor?: number): Promise<LetterPageDto> =>
     mapPage((await beGetSaved({ cursor, size: PAGE_SIZE })).data),
 
   // Spring be/ 단일화 (구 NestJS 분기 제거). id 는 정수 — mock seed 도 정수 id 사용.

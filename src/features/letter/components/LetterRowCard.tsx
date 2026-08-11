@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { haptic } from '@/lib/haptic';
-import { useDebouncedCallback } from '@/hooks/use-debounced-callback';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { Icon } from '@/components/icon';
-import { relativeTimeToken } from '@/lib/relative-time';
 import { useToggleSaveLetter } from '@/features/letter/hooks/use-letters';
+import { useDebouncedCallback } from '@/hooks/use-debounced-callback';
+import { haptic } from '@/lib/haptic';
+import { relativeTimeToken } from '@/lib/relative-time';
 import type { LetterDto } from '@/types/api-domain';
 import styles from './LetterRowCard.module.scss';
 
@@ -78,12 +78,24 @@ export function LetterRowCard({ letter }: { letter: LetterDto }) {
 
   const unread = !letter.isMine && letter.read === false;
 
+  // Figma `보낸 편지` 의 letterItem 은 작성자 자리에 닉네임이 아니라
+  // "내가 작성한 편지" 를 쓴다 (내 편지 목록에서 내 닉네임이 반복되는 건 무의미).
+  const authorLabel = letter.isMine
+    ? t('author.mine')
+    : letter.author.nickname || t('author.anonymous');
+
+  // pill 은 시군만 — BE label 이 "충북 진천군"/"청주시" 로 섞여 와서 접두어를
+  // 떼어 "진천군"/"청주시" 로 통일한다 (시안 `rp` 은 시군 한 덩어리).
+  const regionLabel = letter.author.location
+    ?.replace(/^충청북도\s*/, '')
+    .replace(/^충북\s*/, '');
+
   return (
     <Link
       href={{ pathname: `/letter/${letter.id}` }}
       prefetch={false}
       className={styles.card}
-      aria-label={`${letter.body} ${letter.author.nickname || t('author.anonymous')}`}
+      aria-label={`${letter.body} ${authorLabel}`}
     >
       {/* Figma `stamp` — 48x48 radius 8 연초록 + profileIcon 24 */}
       <span className={styles.stamp} aria-hidden>
@@ -98,12 +110,8 @@ export function LetterRowCard({ letter }: { letter: LetterDto }) {
           )}
         </span>
         <span className={styles.metaRow}>
-          {letter.author.location && (
-            <span className={styles.region}>{letter.author.location}</span>
-          )}
-          <span className={styles.author}>
-            {letter.author.nickname || t('author.anonymous')}
-          </span>
+          {regionLabel && <span className={styles.region}>{regionLabel}</span>}
+          <span className={styles.author}>{authorLabel}</span>
           <time className={styles.time} dateTime={iso}>
             · {time}
           </time>

@@ -763,7 +763,8 @@
       "postmarkArrived": "도착"
     },
     "author": {
-      "anonymous": "익명의 여행자"
+      "anonymous": "익명의 여행자",
+      "mine": "내가 작성한 편지"
     }
   },
   "quiz": {
