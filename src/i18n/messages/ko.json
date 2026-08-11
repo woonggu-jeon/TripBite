@@ -882,7 +882,7 @@
       "removeConfirmNo": "취소",
       "removeSuccess": "저장 목록에서 삭제됐어요",
       "removeFailed": "삭제에 실패했어요",
-      "viewAll": "전체보기 ({count})"
+      "viewAll": "전체보기"
     },
     "tournamentHistory": {
       "empty": "아직 진행한 토너먼트가 없어요",

@@ -71,7 +71,8 @@ export function SavedTournamentsSection() {
 }
 
 /**
- * PageSection action 슬롯용 — 헤더 우측 "전체보기 (N)" Link.
+ * PageSection action 슬롯용 — 헤더 우측 "전체보기 ›" Link.
+ * 시안(sec-title 우측)에는 갯수가 없다 — count 는 노출 여부 판단에만 쓴다.
  * /mypage/saved-tournaments 상세 페이지 진입점. data 없을 때는 미노출.
  */
 export function SavedTournamentsViewAll() {
@@ -85,7 +86,7 @@ export function SavedTournamentsViewAll() {
       prefetch={false}
       className={styles.viewAll}
     >
-      {t('viewAll', { count })}
+      {t('viewAll')}
       {/* Figma sec-title 우측은 "전체 보기 ›" — chevron 까지 포함이다
           (도장책 섹션 action 과 같은 아이콘/크기). */}
       <Icon name="right-20" size={16} />

@@ -882,7 +882,7 @@
       "removeConfirmNo": "Cancel",
       "removeSuccess": "Removed from saved list",
       "removeFailed": "Failed to remove",
-      "viewAll": "View all ({count})"
+      "viewAll": "View all"
     },
     "tournamentHistory": {
       "empty": "No tournaments yet",
