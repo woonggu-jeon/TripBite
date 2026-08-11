@@ -19,6 +19,15 @@
   --color-fg-weak: #8a8a8a;
   /* Figma Color/Neutral/200 = Basic/BorderColor/gray (구 #e5e7eb — 파란기) */
   --color-border: #e0e0e0;
+  /* 비활성 면 — Figma `toggle` off 트랙 등. Neutral/200 과 같은 값이지만
+     "보더" 와 의미가 달라 별도 토큰으로 둔다 (Toggle 이 이 이름을 참조하는데
+     정의가 없어 off 트랙이 투명해지는 버그가 있었다). */
+  --color-disabled: #e0e0e0;
+  /* Figma Basic/TextColor/disabled — disabled 면 위 텍스트.
+     c253639(2026-06-22)에서 추가됐다가 이후 토큰 파일 개편 중 유실됐다. */
+  --color-text-disabled: #b4b4b4;
+  /* Figma Stroke/01 — border 와 별개인 선 그래픽 색 (지도/차트 등). 같이 유실. */
+  --color-stroke: #c6c6c6;
   /* Brand green (Figma Basic/MainColor/primary). 두 모드 동일.
      ⚠ 대비 규칙 — primary 는 "면·테두리·ring" 용이고 텍스트로 쓰지 않는다.
         · primary 텍스트 on 흰 배경 = 2.80:1 (AA 미달) → --color-primary-text-bold (5.49:1)

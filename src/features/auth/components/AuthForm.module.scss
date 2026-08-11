@@ -114,8 +114,8 @@
 
 .toLoginPrompt {
   font-size: var(--text-sm); /* 14 */
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed); /* 140% */
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-normal); /* 140% */
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
 }
@@ -123,7 +123,7 @@
 .toLoginAction {
   font-size: var(--text-sm); /* 14 */
   font-weight: var(--font-weight-bold);
-  line-height: var(--line-snug-relaxed); /* 140% */
+  line-height: var(--line-normal); /* 140% */
   letter-spacing: var(--tracking-tight);
   color: var(--color-primary);
 }
@@ -282,7 +282,7 @@
 
 .loginTagline {
   font-size: 0.875rem; // 14px — Figma Pretendard Regular
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-normal);
   color: var(--color-muted);
   line-height: 1.3em;
   margin: 0;

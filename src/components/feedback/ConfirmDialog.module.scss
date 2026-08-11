@@ -16,8 +16,8 @@
 // Dialog .description 의 default (text-sm muted left) 회귀 정정.
 .confirmDescription {
   font-size: var(--font-caption);
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-normal);
   letter-spacing: -0.01em;
   color: var(--color-fg);
   text-align: center;

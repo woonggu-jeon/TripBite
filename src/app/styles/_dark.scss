@@ -12,6 +12,12 @@
   --color-fg: #ececec; /* Figma Neutral/150 — bg 대비 14.73:1 */
   --color-muted: #b4b4b4; /* Figma Neutral/400 — bg 대비 8.39:1 */
   --color-border: #393939; /* Figma Neutral/700 (구 #1f2937 — 너무 어둡고 파란기) */
+  --color-disabled: #393939; /* light 의 border 와 같은 규칙 — dark 는 Neutral/700 */
+  /* dark 대응값은 Figma 에 없어 중성 스케일 규칙에서 유도했다 —
+     비활성 텍스트는 border(#393939) 보다 밝고 muted(#b4b4b4) 보다 어둡게,
+     stroke 는 border 보다 한 단계 밝게. */
+  --color-text-disabled: #6b6b6b;
+  --color-stroke: #4a4a4a;
   /* Brand green — Figma 는 Light/Dark 동일 값. dark 에서 primary 텍스트는 7.07:1 로
      통과하지만 텍스트는 light 와 동일하게 text-bold(8.21:1) 를 쓴다.
      --color-primary-strong 은 :root 값을 상속 — 2026-08-04 부터 #00B334 다. */
