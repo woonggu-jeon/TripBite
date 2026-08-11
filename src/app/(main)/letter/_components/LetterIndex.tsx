@@ -1,15 +1,14 @@
 'use client';
 
-import { useCallback, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
+import { useCallback, useState } from 'react';
+import { Tab, TabList, TabPanel } from '@/components/ui';
 import { ComposeEntryCard } from '@/features/letter/components/ComposeEntryCard';
 import { LetterListPanel } from '@/features/letter/components/LetterListPanel';
-import { letterKeys } from '@/features/letter/hooks/use-letters';
-import { letterApi } from '@/features/letter/api/letter';
+import { letterListQueryOptions } from '@/features/letter/hooks/use-letters';
 import type { LetterListKind } from '@/features/letter/types';
-import { TabList, Tab, TabPanel } from '@/components/ui';
 import styles from './LetterIndex.module.scss';
 
 /**
@@ -40,13 +39,6 @@ const TABS: { key: LetterListKind; labelKey: 'received' | 'sent' | 'saved' }[] =
     { key: 'saved', labelKey: 'saved' },
   ];
 
-const FETCHERS = {
-  received: letterApi.listReceived,
-  sent: letterApi.listSent,
-  liked: letterApi.listLiked,
-  saved: letterApi.listSaved,
-} as const;
-
 const VALID_TABS = new Set<LetterListKind>(['received', 'sent', 'saved']);
 
 function readInitialTab(value: string | null): LetterListKind {
@@ -70,11 +62,10 @@ export function LetterIndex() {
   const prefetchTab = useCallback(
     (kind: LetterListKind) => {
       if (activated.has(kind)) return; // 이미 mount 중이면 중복 호출 X
-      queryClient.prefetchInfiniteQuery({
-        queryKey: letterKeys.list(kind),
-        queryFn: ({ pageParam = 0 }) => FETCHERS[kind](pageParam as number),
-        initialPageParam: 0 as number,
-      });
+      // 반드시 목록 쿼리와 **같은 옵션**으로 — 구 구현은 여기서만
+      // initialPageParam: 0 을 써서(BE cursor 는 id<cursor) 빈 페이지를 같은
+      // queryKey 에 캐시했고, 탭을 열면 "편지 없음" 이 떴다.
+      queryClient.prefetchInfiniteQuery(letterListQueryOptions(kind));
     },
     [activated, queryClient],
   );

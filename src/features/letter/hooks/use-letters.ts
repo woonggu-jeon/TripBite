@@ -35,20 +35,32 @@ const FETCHERS: Record<
 };
 
 /**
- * 편지 목록 무한 스크롤 — 받은/보낸/좋아요(하트) 통합.
+ * 편지 목록 infinite query 옵션 — **단일 소스**.
  *
  * BE cursor 는 id 내림차순(`id < cursor`) 이라 첫 페이지는 cursor 를 보내지
  * 않는다. cursor=0 을 보내면 "id < 0" 이 되어 목록이 항상 비었다 —
  * 보낸 편지를 실제로 보냈는데도 빈 상태가 뜨던 원인.
  * 2페이지부터 응답의 nextCursor 를 그대로 넘긴다.
+ *
+ * prefetch(LetterIndex 의 탭 hover) 도 반드시 이 옵션을 써야 한다. 같은
+ * queryKey 에 다른 pageParam 으로 fetch 하면 빈 페이지가 캐시에 박혀
+ * 목록이 비어 보인다 (2026-08-11 회귀 원인).
  */
+export function letterListQueryOptions(kind: LetterListKind) {
+  return {
+    queryKey: letterKeys.list(kind),
+    queryFn: ({ pageParam }: { pageParam?: number }) =>
+      FETCHERS[kind](pageParam ?? undefined),
+    initialPageParam: undefined as number | undefined,
+    getNextPageParam: (last: LetterPageDto) => last.nextCursor ?? undefined,
+  };
+}
+
+/** 편지 목록 무한 스크롤 — 받은/보낸/저장 공통. */
 export function useLettersInfinite(kind: LetterListKind) {
   const enabled = useAuthedQueryEnabled();
   return useInfiniteQuery({
-    queryKey: letterKeys.list(kind),
-    queryFn: ({ pageParam }) => FETCHERS[kind](pageParam ?? undefined),
-    initialPageParam: undefined as number | undefined,
-    getNextPageParam: (last) => last.nextCursor ?? undefined,
+    ...letterListQueryOptions(kind),
     enabled,
     ...(kind === 'received' ? CACHE.realtime : CACHE.user),
   });
