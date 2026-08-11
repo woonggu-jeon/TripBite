@@ -16,6 +16,10 @@
   --color-fg: #ececec; /* Figma Neutral/150 — bg 대비 14.73:1 */
   --color-muted: #b4b4b4; /* Figma Neutral/400 — bg 대비 8.39:1 */
   --color-border: #393939; /* Figma Neutral/700 (구 #1f2937 — 너무 어둡고 파란기) */
+  /* 카드 목록 화면 배경 — light 는 #F6F6F6 이지만 dark 는 base 유지.
+     dark 의 surface(=bg)보다 배경을 올리면 카드가 배경보다 어두워져 반대로
+     파묶혀 보인다 (편지 탭바/마이 프로필/장소상세 info 블록에서 확인). */
+  --color-page-soft: var(--color-bg);
   --color-disabled: #393939; /* light 의 border 와 같은 규칙 — dark 는 Neutral/700 */
   /* dark 대응값은 Figma 에 없어 중성 스케일 규칙에서 유도했다 —
      비활성 텍스트는 border(#393939) 보다 밝고 muted(#b4b4b4) 보다 어둡게,

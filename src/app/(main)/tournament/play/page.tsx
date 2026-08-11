@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
+import { PageBackground } from '@/components/layout/PageBackground';
 import { TournamentPlayClient } from './_components/TournamentPlayClient';
 
 /**
@@ -28,5 +29,10 @@ export async function generateMetadata(): Promise<Metadata> {
  * 아니라 "직전 선택 취소 / 이전 단계"로 동작해야 해서 phase 상태가 필요하다.
  */
 export default function TournamentPlayPage() {
-  return <TournamentPlayClient />;
+  return (
+    <>
+      <PageBackground />
+      <TournamentPlayClient />
+    </>
+  );
 }

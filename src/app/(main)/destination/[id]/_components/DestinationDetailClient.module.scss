@@ -13,12 +13,17 @@
   background: var(--color-surface-soft);
 }
 
-// Figma `info-sec` — V gap 20, 하단 padding 24
+// Figma `info-sec` — V gap 20, 하단 padding 24.
+// 화면 배경이 #F6F6F6(soft) 인데 이 블록만 풀블리드 흰 면이다 (near-sec 은 soft).
+// 좌우는 contentInner 여백을 음수 마진으로 상쇄하고 같은 값을 padding 으로 되돌린다.
 .infoSec {
   display: grid;
   gap: var(--space-5);
   padding-top: var(--space-5);
   padding-bottom: var(--space-6);
+  padding-inline: var(--content-pad);
+  margin-inline: calc(var(--content-pad) * -1);
+  background: var(--color-surface);
 }
 
 // Figma `title-area` — 이름 + 카테고리 배지, H gap 10

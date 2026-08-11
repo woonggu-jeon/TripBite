@@ -20,7 +20,7 @@ import styles from './RankingPageContent.module.scss';
  *   2) 시군별 우승 횟수 — 가로 bar 차트 (클릭 시 /region/[code])
  *
  * Figma `RNK · 랭킹` / `RNK · 랭킹 (빈 상태)` 실측:
- *   - 화면 배경 #F6F6F6 + 흰 rv-card 2장 (data-page-bg="soft")
+ *   - 화면 배경 #F6F6F6 + 흰 rv-card 2장 (page.tsx 의 PageBackground)
  *   - 상단은 좌우 양끝이 아니라 **한 줄** — Caption/R_12 #393939
  *     "5월 4주차 · 매주 월요일 업데이트"
  *   - 집계가 없을 때는 뒷말이 바뀐다 → "· 이번 주 집계가 시작됐어요"
@@ -35,7 +35,7 @@ export function RankingPageContent() {
   const isEmpty = !!data && data.length === 0;
 
   return (
-    <div className={styles.wrap} data-page-bg="soft">
+    <div className={styles.wrap}>
       {/* Figma `Title` — 주차와 뒷말을 " · " 로 이은 한 줄 */}
       <p className={styles.meta}>
         {t('weekLabel', { month: weekLabel.month, week: weekLabel.week })} ·{' '}

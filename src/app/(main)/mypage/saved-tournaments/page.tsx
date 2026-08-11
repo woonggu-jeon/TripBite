@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
+import { PageBackground } from '@/components/layout/PageBackground';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { SavedTournamentsAll } from './_components/SavedTournamentsAll';
 
@@ -18,6 +19,7 @@ export default async function SavedTournamentsPage() {
   const t = await getTranslations('mypage.savedTournaments');
   return (
     <>
+      <PageBackground />
       <SubHeader title={t('allTitle')} />
       <SavedTournamentsAll />
     </>

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
+import { PageBackground } from '@/components/layout/PageBackground';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { TravelTypeResult } from '@/features/ranking/components/TravelTypeResult';
 
@@ -24,6 +25,7 @@ export default async function QuizResultPage() {
   const t = await getTranslations('travelType.result');
   return (
     <>
+      <PageBackground />
       <SubHeader title={t('metaTitle')} />
       <TravelTypeResult />
     </>

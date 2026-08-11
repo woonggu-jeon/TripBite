@@ -156,6 +156,13 @@
     var(--color-bg)
   );
 
+  /* 카드 목록 화면의 화면 배경 (Figma #F6F6F6) — 랭킹/편지함/마이/장소상세/
+     토너먼트 등. 흰 카드·풀블리드 흰 블록이 배경 위로 떠 보이게 한다.
+     dark 에서는 --color-bg 로 되돌린다(_dark.scss): dark 의 surface 는 bg 와
+     같은 값이어서 배경만 올리면 카드가 배경보다 어두워져 반대로 파묶여 보인다.
+     dark 는 종전처럼 1px 보더가 카드 경계를 담당한다. */
+  --color-page-soft: var(--color-surface-soft);
+
   /* 사진 hero 의 이미지 로드 전/실패 시 바닥면. Figma hero-img 의 solid
      플레이스홀더(#A8B29C, sage) 실측값. 위에 좌→우 검정 scrim 이 얹히므로
      흰 텍스트 기준 좌측단 8.9:1 확보 (--color-scrim-* 주석 참고). */

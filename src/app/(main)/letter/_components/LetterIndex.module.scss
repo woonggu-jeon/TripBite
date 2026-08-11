@@ -12,12 +12,13 @@
 // 활성   : 하단 2px 초록 + 초록 14 Bold
 // 비활성 : 하단 1px #E0E0E0 + #393939 14 Regular
 // 컨텐츠 여백(--content-pad)을 음수 마진으로 상쇄해 화면 끝까지 늘린다.
+// 면색은 흰색 — 화면 배경이 #F6F6F6(soft) 이라 탭 바만 흰 띠로 남는다.
 .tabs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0;
   padding: 0;
-  background: none;
+  background: var(--color-surface);
   border-radius: 0;
   margin-inline: calc(var(--content-pad) * -1);
   margin-bottom: var(--space-5);

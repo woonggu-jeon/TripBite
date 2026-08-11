@@ -77,7 +77,7 @@
 // 배경을 바꿀 수 없다 → 페이지 루트에 data-page-bg="soft" 를 달고 :has() 로
 // 끌어올린다. (Chrome 105+/Safari 15.4+ — 대상 환경 충족)
 .contentInner:has([data-page-bg='soft']) {
-  background: var(--color-surface-soft);
+  background: var(--color-page-soft);
   // 내용이 짧아도 면이 화면 끝까지 이어지게. 헤더(SubHeader)는 이 안에서
   // sticky 라 .contentInner 가 viewport 최상단에서 시작한다 → 100svh 가
   // 정확히 한 화면이고 여분 스크롤이 생기지 않는다.

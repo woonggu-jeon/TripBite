@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
+import { PageBackground } from '@/components/layout/PageBackground';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { JsonLd, breadcrumbList, touristAttraction } from '@/lib/json-ld';
 import { destinationSeeds } from '@/mocks/seeds/destinations';
@@ -91,6 +92,7 @@ export default async function DestinationDetailPage({ params }: Props) {
 
   return (
     <>
+      <PageBackground />
       <JsonLd
         data={touristAttraction({
           name,

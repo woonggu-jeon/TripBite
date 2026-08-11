@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
+import { PageBackground } from '@/components/layout/PageBackground';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { StampsClient } from './_components/StampsClient';
 
@@ -18,6 +19,7 @@ export default async function StampsPage() {
   const t = await getTranslations('mypage.stampBook');
   return (
     <>
+      <PageBackground />
       <SubHeader title={t('pageTitle')} />
       <StampsClient />
     </>

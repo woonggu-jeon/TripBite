@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
+import { PageBackground } from '@/components/layout/PageBackground';
 import { TournamentSetup } from './_components/TournamentSetup';
 
 /**
@@ -16,5 +17,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function TournamentPage() {
-  return <TournamentSetup />;
+  return (
+    <>
+      <PageBackground />
+      <TournamentSetup />
+    </>
+  );
 }

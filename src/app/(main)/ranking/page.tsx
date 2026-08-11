@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
+import { PageBackground } from '@/components/layout/PageBackground';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { RankingPageContent } from './_components/RankingPageContent';
 
@@ -23,6 +24,7 @@ export default async function RankingPage() {
   const t = await getTranslations('ranking');
   return (
     <>
+      <PageBackground />
       <SubHeader title={t('title')} />
       <RankingPageContent />
     </>
