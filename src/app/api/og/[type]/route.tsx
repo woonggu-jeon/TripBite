@@ -84,6 +84,18 @@ const TYPE_EMOJI: Record<string, string> = {
   foodie: '🍴',
 };
 
+/** 시안 `tripTypeIcon` 파일명 — constants/illustration-map 과 같은 매핑.
+    (OG 라우트는 edge 런타임이라 client 상수 import 대신 값만 복제한다) */
+const TRAVEL_TYPE_ILLUSTRATION_FILE: Record<string, string> = {
+  adventurer: 'triptype-challenge',
+  explorer: 'triptype-explore',
+  relaxer: 'triptype-rest',
+  foodie: 'triptype-taste',
+};
+
+/** Figma match-line 문구 — "환상의 짝꿍 · 맛집형" */
+const MATCH_PREFIX = '환상의 짝꿍 · ';
+
 const SIZE = 1080;
 const CACHE_HEADERS = {
   'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=43200',
@@ -118,7 +130,7 @@ export async function GET(
       case 'tournament':
         return renderTournament(searchParams, fontData);
       case 'quiz':
-        return renderQuiz(searchParams, fontData);
+        return renderQuiz(searchParams, fontData, new URL(request.url).origin);
       case 'destination':
         return renderDestination(searchParams, fontData);
       case 'region':
@@ -358,7 +370,7 @@ function renderTournament(
             lineHeight: 1.4,
           }}
         >
-          여행 한입
+          여행한입
         </div>
       </div>
     </div>,
@@ -383,8 +395,11 @@ function renderTournament(
 function renderQuiz(
   q: URLSearchParams,
   fontData: ArrayBuffer | null,
+  origin: string,
 ): ImageResponse {
-  const typeCode = q.get('type') ?? '';
+  // ⚠ 쿼리 이름은 `code` — 동적 세그먼트가 `[type]` 이라 `?type=` 은 라우트
+  // 파라미터에 덮여 항상 'quiz' 가 들어왔다(그래서 pill 이 늘 "QUIZ").
+  const typeCode = q.get('code') ?? '';
   const typeName = q.get('name') ?? '여행 유형';
   const tagline = q.get('tagline') ?? '';
   const emoji = q.get('emoji') ?? TYPE_EMOJI[typeCode] ?? '✨';
@@ -393,6 +408,7 @@ function renderQuiz(
     .map((k) => k.trim())
     .filter(Boolean);
   const bestTitle = q.get('bestTitle') ?? '';
+  const typeArt = TRAVEL_TYPE_ILLUSTRATION_FILE[typeCode] ?? null;
   const bestEmoji = q.get('bestEmoji') ?? '';
   const fontFamily = fontData ? 'Pretendard' : 'sans-serif';
 
@@ -407,7 +423,8 @@ function renderQuiz(
         alignItems: 'center',
         justifyContent: 'center',
         gap: 24,
-        padding: 60,
+        // Figma padding 40/20/20/20 → ×3
+        padding: '120px 60px 60px',
         // Figma "TST · 공유 이미지 카드" — bg #EAF6EF (secondary01) + 1px #C6C6C6
         // + radius 36 (12×3). 직전 peach gradient + 3px (검정 두꺼움) 정정
         // (사용자 명시 2026-06-25). 1px 도 ×3 = 3 가능하나 사용자가 검정처럼
@@ -417,10 +434,24 @@ function renderQuiz(
         fontFamily,
       }}
     >
-      {/* emoji 52 → 156 */}
-      <div style={{ display: 'flex', fontSize: 156, lineHeight: 1 }}>
-        {emoji}
-      </div>
+      {/* Figma `tripTypeIcon` 52 → ×3 = 156. 구 구현은 emoji 를 그렸는데
+          시안은 유형 일러스트다. Satori 가 원격 PNG 를 지원하므로 public 의
+          같은 에셋(Illustration 컴포넌트와 동일 파일)을 절대 URL 로 넣는다.
+          매핑에 없는 code 는 서버 emoji fallback. */}
+      {typeArt ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={`${origin}/illustrations/${typeArt}.png`}
+          alt=""
+          width={156}
+          height={156}
+          style={{ display: 'block' }}
+        />
+      ) : (
+        <div style={{ display: 'flex', fontSize: 156, lineHeight: 1 }}>
+          {emoji}
+        </div>
+      )}
 
       {/* code pill primary fill — Caption B_10 white */}
       <div
@@ -528,6 +559,8 @@ function renderQuiz(
             paddingRight: 36,
             background: '#FFFFFF',
             borderRadius: 999,
+            // Figma match-line — 흰 면 + 1px #00B334 (구 구현은 테두리 없음)
+            border: '3px solid #00B334',
           }}
         >
           <div style={{ display: 'flex', fontSize: 40.5, lineHeight: 1.185 }}>
@@ -542,7 +575,7 @@ function renderQuiz(
               lineHeight: 1.4,
             }}
           >
-            {bestTitle}
+            {`${MATCH_PREFIX}${bestTitle}`}
           </div>
         </div>
       )}
@@ -575,7 +608,7 @@ function renderQuiz(
             lineHeight: 1.4,
           }}
         >
-          여행 한입
+          여행한입
         </div>
       </div>
     </div>,
@@ -948,7 +981,7 @@ function renderMaster(
             lineHeight: 1.4,
           }}
         >
-          여행 한입
+          여행한입
         </div>
       </div>
     </div>,

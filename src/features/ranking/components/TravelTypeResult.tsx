@@ -1,47 +1,68 @@
 'use client';
 
-import { BadgeCheck, RotateCcw, Share2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { Illustration } from '@/components/brand/Illustration';
 import { EmptyState } from '@/components/feedback/EmptyState';
-import { Button, ButtonGrid, Card, Chip } from '@/components/ui';
+import { Icon } from '@/components/icon';
+import { Button, DestinationCard, PageSection } from '@/components/ui';
+import { categoryEmoji } from '@/constants/emoji-map';
 import { travelTypeIllustration } from '@/constants/illustration-map';
+import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
+import {
+  TRAVEL_TYPE_CATEGORY,
+  TRAVEL_TYPE_MATCH,
+  TRAVEL_TYPE_META,
+} from '@/constants/travel-types';
+import { Carousel } from '@/features/carousel';
 import {
   useMyTravelType,
+  useRecommendedDestinations,
   useSetMyTravelType,
 } from '@/features/ranking/hooks/use-ranking';
 import { useRequireAuth } from '@/hooks/use-require-auth';
 import { useShareCard } from '@/hooks/use-share-card';
 import { haptic } from '@/lib/haptic';
 import { toast } from '@/lib/toast';
-import type { TravelTypeDto } from '@/types/api-domain';
+import type { TravelTypeCode, TravelTypeDto } from '@/types/api-domain';
 import styles from './TravelTypeResult.module.scss';
 
 /**
- * 여행 유형 결과 화면.
+ * 여행 유형 결과 화면 — Figma `TST · 유형테스트 결과` (3413:4659) 실측 정합.
  *
- * 데이터 소스: useMyTravelType (GET /travel-types/me)
- *   - Quiz 직후 진입 시 submit 의 onSuccess 가 같은 queryKey 에 결과를 setQueryData.
- *   - 새로고침/딥링크 진입 시에도 me API 가 저장된 결과 반환.
- *   - 결과 없음(처음 진입 또는 만료) → /travel-type 으로 redirect.
+ *   body padding 20 / V gap 20
+ *   ├ banner 320x247 : #EAF6EF + 1px #00B334, r12, padding 28/22/24/22
+ *   │   typeTextResultItem (V gap 16) — 52 일러스트 → code pill → 24 Bold 제목
+ *   │   → 태그 pill 행 → 14 Regular 설명(가운데)
+ *   ├ section "이런 여행지가 어울려요" : 152x168 카드 가로 스크롤 (gap 8)
+ *   ├ match-section "여행 궁합" : 흰 카드(padding 0/16) 안 2행(각 86)
+ *   │   40 원 + [라벨 10 / 유형명 14 Bold / 이유 10 Medium]
+ *   └ buttons : [다시 테스트 | 이미지 카드 공유] + [내 유형으로 저장]
  *
- * 구성:
- *   1) 결과 hero — emoji + 유형 코드 + title + 태그 chip
- *   2) description
- *   3) 액션 — 공유 카드 / 다시 테스트
- *
- * UI 가 유형 코드를 분기하지 않음 — title/description/emoji/tags 모두 서버 응답
- * (Spring TravelTypeResultDto) 그대로 사용. (추천 여행지는 Spring 미제공 — 미노출.)
+ * 데이터: useMyTravelType(GET /me.travelType). 추천 여행지는 BE 미제공이라
+ * 유형→카테고리 매핑으로 /destinations/random 을 쓴다(TRAVEL_TYPE_CATEGORY).
+ * 궁합은 TRAVEL_TYPE_MATCH (FE 고정 콘텐츠).
  */
+function regionLabelFor(code: RegionCode): string {
+  return CHUNGBUK_REGIONS.find((r) => r.code === code)?.ko ?? code;
+}
+
 export function TravelTypeResult() {
   const t = useTranslations('travelType.result');
-  const tComingSoon = useTranslations('common.comingSoon');
   const router = useRouter();
   const { data, isLoading } = useMyTravelType();
   const applyMutation = useSetMyTravelType();
   const requireAuth = useRequireAuth();
   const shareCard = useShareCard();
+
+  const code = data?.code;
+  const match = code ? TRAVEL_TYPE_MATCH[code] : null;
+  // 시안은 카드 3장인데 `GET /destinations/random` 은 토너먼트 풀 겸용이라
+  // size<4 면 409 TOURNAMENT_POOL_TOO_SMALL 이다(실측). 4장 받아 3장만 쓴다.
+  const recommended = useRecommendedDestinations(
+    4,
+    code ? TRAVEL_TYPE_CATEGORY[code] : undefined,
+  );
 
   const handleApply = (result: TravelTypeDto) => {
     haptic.tap();
@@ -59,10 +80,15 @@ export function TravelTypeResult() {
   // 클립보드로 분리 처리하고 file 첨부 흐름이 끊긴다.
   const handleShare = (result: TravelTypeDto) => {
     haptic.tap();
+    const best = TRAVEL_TYPE_MATCH[result.code].best;
     const params = new URLSearchParams({
-      type: result.code,
+      // `code` — OG 라우트의 동적 세그먼트가 `[type]` 이라 `type` 은 충돌한다
+      code: result.code,
       name: result.title,
       ...(result.description ? { tagline: result.description } : {}),
+      // 시안 공유 카드는 태그 pill 3개와 "환상의 짝꿍 · N" 줄까지 포함한다
+      keywords: (result.tags ?? []).join(','),
+      bestTitle: TRAVEL_TYPE_META[best.code].title,
     });
     return shareCard({
       imageUrl: `/api/og/quiz?${params.toString()}`,
@@ -76,24 +102,20 @@ export function TravelTypeResult() {
   if (!data) {
     return (
       <EmptyState
-        icon={
-          <span aria-hidden style={{ fontSize: 28 }}>
-            🧭
-          </span>
-        }
+        icon={<Icon name="compass" size={28} />}
         title={t('empty')}
         description={t('emptyHint')}
         action={
-          <button
-            type="button"
-            className={styles.retry}
+          <Button
+            variant="primary"
+            fullWidth
             onClick={() => {
               haptic.tap();
               router.replace('/quiz');
             }}
           >
             {t('startTest')}
-          </button>
+          </Button>
         }
       />
     );
@@ -102,57 +124,93 @@ export function TravelTypeResult() {
   const result: TravelTypeDto = data;
   const resultArt = travelTypeIllustration(result.code);
   const tags = result.tags ?? [];
+  const recItems = (recommended.data ?? []).slice(0, 3);
 
   return (
     <div className={styles.wrap}>
-      <Card variant="highlighted" padding="lg" className={styles.hero}>
-        {/* Figma `tripTypeIcon` 에셋. 서버 코드가 매핑에 없으면 API emoji fallback */}
-        <div className={styles.heroEmoji} aria-hidden>
-          {resultArt ? (
-            <Illustration name={resultArt} size={52} />
-          ) : (
-            result.emoji
+      {/* Figma `banner` — 연초록 면 + 초록 1px, 안쪽이 typeTextResultItem */}
+      <section className={styles.banner} aria-label={result.title}>
+        <div className={styles.typeBlock}>
+          <div className={styles.typeHead}>
+            <div className={styles.iconWrap} aria-hidden>
+              {resultArt ? (
+                <Illustration name={resultArt} size={52} />
+              ) : (
+                <span className={styles.emojiFallback}>{result.emoji}</span>
+              )}
+            </div>
+            <span className={styles.codePill}>{result.code}</span>
+          </div>
+          <h2 className={styles.title}>{result.title}</h2>
+          {tags.length > 0 && (
+            <ul className={styles.tags} aria-label={t('keywordsAria')}>
+              {tags.map((k) => (
+                <li key={k} className={styles.tag}>
+                  {k}
+                </li>
+              ))}
+            </ul>
+          )}
+          {result.description && (
+            <p className={styles.description}>{result.description}</p>
           )}
         </div>
-        <Chip variant="primary" size="sm" className={styles.codeBadge}>
-          {result.code}
-        </Chip>
-        <h2 className={styles.title}>{result.title}</h2>
-        {tags.length > 0 && (
-          <ul className={styles.keywords} aria-label={t('keywordsAria')}>
-            {tags.map((k) => (
-              <li key={k}>
-                <Chip variant="outline" size="sm">
-                  {k}
-                </Chip>
-              </li>
-            ))}
-          </ul>
-        )}
-        {result.description && (
-          <p className={styles.description}>{result.description}</p>
-        )}
-      </Card>
-
-      {/* BE-TODO(§5 P2-3): 유형별 추천 여행지 — Spring 미제공 → 준비중 안내.
-          submit/GET me 결과에 추천 destination 포함 시 이 자리에 리스트 복원. */}
-      <section className={styles.recommend}>
-        <h3 className={styles.recommendTitle}>{t('recommendTitle')}</h3>
-        <p className={styles.recommendComingSoon}>
-          {tComingSoon('description')}
-        </p>
       </section>
 
+      {/* Figma `section` — 152 카드 가로 스크롤. 유형별 추천이 BE 에 없어
+          카테고리 필터(random)로 채운다. 비면 섹션 자체를 접는다. */}
+      {recItems.length > 0 && (
+        <PageSection title={t('recommendTitle')}>
+          <div className={styles.bleedRight}>
+            <Carousel
+              slides={recItems}
+              renderSlide={(item) => {
+                const d = item.destination;
+                const region = regionLabelFor(d.region as RegionCode);
+                return (
+                  <DestinationCard
+                    href={{ pathname: `/destination/${d.id}` }}
+                    imageUrl={d.imageUrl}
+                    emoji={categoryEmoji(d.category)}
+                    regionLabel={region}
+                    name={d.name}
+                    ariaLabel={`${d.name} · ${region}`}
+                  />
+                );
+              }}
+              keyExtractor={(item) => item.destination.id ?? String(item.rank)}
+              options={{ slidesPerView: 2, slideWidth: 152, gap: 8 }}
+              showDots={false}
+              fallbackHeight={168}
+              ariaLabel={t('recommendTitle')}
+            />
+          </div>
+        </PageSection>
+      )}
+
+      {/* Figma `match-section` — 잘 맞는 / 잘 안 맞는 유형 두 행 */}
+      {match && (
+        <PageSection title={t('compatibility.title')}>
+          <ul className={styles.matchBox}>
+            <MatchRow
+              tone="best"
+              label={t('compatibility.bestLabel')}
+              code={match.best.code}
+              reason={match.best.reason}
+            />
+            <MatchRow
+              tone="worst"
+              label={t('compatibility.worstLabel')}
+              code={match.worst.code}
+              reason={match.worst.reason}
+            />
+          </ul>
+        </PageSection>
+      )}
+
+      {/* Figma `buttons` — 2단 행(다시 테스트 / 이미지 카드 공유) + 저장 */}
       <div className={styles.actions}>
-        <ButtonGrid>
-          <Button
-            variant="secondary"
-            fullWidth
-            onClick={() => handleShare(result)}
-            leadingIcon={<Share2 size={16} aria-hidden />}
-          >
-            {t('share')}
-          </Button>
+        <div className={styles.actionRow}>
           <Button
             variant="ghost"
             fullWidth
@@ -160,21 +218,62 @@ export function TravelTypeResult() {
               haptic.tap();
               router.replace('/quiz');
             }}
-            leadingIcon={<RotateCcw size={16} aria-hidden />}
           >
             {t('retake')}
           </Button>
-        </ButtonGrid>
+          <Button
+            variant="secondary"
+            fullWidth
+            onClick={() => handleShare(result)}
+            leadingIcon={<Icon name="share-18" size={18} />}
+          >
+            {t('share')}
+          </Button>
+        </div>
         <Button
           variant="primary"
           fullWidth
           onClick={() => handleApply(result)}
           loading={applyMutation.isPending}
-          leadingIcon={<BadgeCheck size={16} aria-hidden />}
         >
           {t('apply')}
         </Button>
       </div>
     </div>
+  );
+}
+
+/** Figma `recent-row` — 40 원형 일러스트 + 라벨/유형명/이유 */
+function MatchRow({
+  tone,
+  label,
+  code,
+  reason,
+}: {
+  tone: 'best' | 'worst';
+  label: string;
+  code: TravelTypeCode;
+  reason: string;
+}) {
+  const meta = TRAVEL_TYPE_META[code];
+  const art = travelTypeIllustration(code);
+  return (
+    <li className={styles.matchRow}>
+      <span
+        className={`${styles.matchIcon} ${tone === 'worst' ? styles.matchIconWorst : ''}`}
+        aria-hidden
+      >
+        {art ? <Illustration name={art} size={24} /> : meta.emoji}
+      </span>
+      <span className={styles.matchBody}>
+        <span
+          className={`${styles.matchLabel} ${tone === 'best' ? styles.matchLabelBest : ''}`}
+        >
+          {label}
+        </span>
+        <span className={styles.matchTitle}>{meta.title}</span>
+        <span className={styles.matchReason}>{reason}</span>
+      </span>
+    </li>
   );
 }

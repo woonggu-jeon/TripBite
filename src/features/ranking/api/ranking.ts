@@ -69,7 +69,12 @@ export const rankingApi = {
     // '오늘의 추천'(메인 상단 배너 등) — Spring 전용 추천 랭킹은 없지만 실 데이터가
     // 필요하므로 `GET /destinations/random` 으로 전환(빈 배너 방지). 실 BE·mock 공통.
     if (params.type === 'recommended') {
-      const res = await getRandom({ size: params.limit });
+      // category 를 주면 유형별 추천("이런 여행지가 어울려요")로 쓰인다 —
+      // BE 에 유형별 추천이 없어 카테고리 필터로 대체 (§5 P2-3).
+      const res = await getRandom({
+        size: params.limit,
+        ...(params.category ? { category: params.category } : {}),
+      });
       return (res.data ?? []).map((dest, i) => ({
         rank: i + 1,
         destination: normalizeImageField({

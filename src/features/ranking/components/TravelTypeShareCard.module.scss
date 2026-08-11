@@ -23,35 +23,61 @@
   letter-spacing: var(--tracking-tight);
 }
 
-// Card primitive variant="highlighted" 위에 정사각 + emphasis shadow 만 추가
+// Figma `TST · 공유 이미지 카드` 360x360 — #EAF6EF 면 + 1px #E0E0E0, r12,
+// padding 40/20/20, V gap 8, 가운데 정렬. /api/og/quiz PNG 와 같은 구성.
 .card {
   display: grid;
-  place-items: center;
-  gap: 0.75rem;
+  grid-template-rows: 1fr auto auto;
+  justify-items: center;
+  gap: var(--space-2);
   aspect-ratio: var(--aspect-square);
   width: 100%;
   max-width: 360px;
   margin: 0 auto;
-  box-shadow: var(--shadow-emphasis);
-  position: relative;
-  overflow: hidden;
+  padding: 40px var(--space-5) var(--space-5);
+  background: var(--color-primary-soft);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-md);
   text-align: center;
+  overflow: hidden;
 }
 
-.cardEmoji {
-  font-size: var(--emoji-2xl);
+// 시안 `typeTextResultItem` — V gap 16 (일러스트+pill / 제목 / 태그 / 설명)
+.typeBlock {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: var(--space-2);
+}
+
+.cardIcon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  font-size: var(--emoji-lg);
   line-height: 1;
-  filter: var(--drop-shadow-icon-strong);
 }
 
+// 시안 pill — #00B334 면 + 흰 Caption/B_10
 .cardCode {
+  padding: 4px var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-primary-strong);
+  color: var(--color-primary-fg);
+  font-size: var(--font-eyebrow);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-tight);
+  letter-spacing: var(--tracking-tight);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-uppercase);
 }
 
+// Title/B_24_130%
 .cardTitle {
+  margin: 0;
   font-size: var(--font-h1);
-  font-weight: var(--font-weight-extrabold);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug);
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
   word-break: keep-all;
@@ -60,18 +86,65 @@
 .cardKeywords {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem;
+  gap: var(--space-2);
   justify-content: center;
   padding: 0;
   margin: 0;
   list-style: none;
 }
 
-.cardBrand {
-  margin-top: auto;
+// 흰 pill + 초록 Caption/B_10
+.cardKeyword {
+  padding: 4px var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  color: var(--color-primary-text-bold);
   font-size: var(--font-eyebrow);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-tight);
+  letter-spacing: var(--tracking-tight);
+  white-space: nowrap;
+}
+
+// Basic Body/R_14 #393939
+.cardDesc {
+  margin: 0;
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-normal);
+  letter-spacing: var(--tracking-tight);
   color: var(--color-muted);
-  letter-spacing: var(--tracking-uppercase);
+  word-break: keep-all;
+}
+
+// 시안 `match-line` — 흰 pill + 1px 초록, padding 4/12, H gap 4
+.matchLine {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 4px var(--space-3);
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-primary);
+  border-radius: var(--radius-full);
+  color: var(--color-primary-text-bold);
+  font-size: var(--font-caption);
+  line-height: var(--line-normal);
+  letter-spacing: var(--tracking-snug);
+  white-space: nowrap;
+}
+
+// 시안 `Frame 6` — 로고 28 + "여행한입" 18 Bold, H gap 4
+.cardBrand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+  font-size: var(--font-h3);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
 }
 
 .shareBtn {

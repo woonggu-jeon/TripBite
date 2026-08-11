@@ -1,184 +1,208 @@
+// Figma `TST · 유형테스트 결과` (3413:4659) 실측.
+//   body       padding 20 (contentInner), V gap 20
+//   banner     320x247 #EAF6EF + 1px #00B334, r12, padding 28/22/24/22
+//   typeBlock  V gap 16 (일러스트+pill / 제목 / 태그 / 설명)
+//   match-box  흰 카드 r12 1px, padding 0/16 — 행 86 (padding 12/0)
 .wrap {
   display: grid;
-  gap: 1.25rem;
+  gap: var(--space-5); // Figma body V gap 20
+
+  > * {
+    min-width: 0;
+  }
 }
 
-// Card primitive variant="highlighted" 가 bg/border/radius 담당.
-.hero {
+// Figma `banner`
+.banner {
+  padding: 28px 22px 24px;
+  background: var(--color-primary-soft);
+  border: var(--border-thin) solid var(--color-primary);
+  border-radius: var(--radius-md);
+}
+
+// Figma `typeTextResultItem > Frame 2614123` — V gap 16, 가운데 정렬
+.typeBlock {
   display: grid;
-  gap: 0.5rem;
-  place-items: center;
+  justify-items: center;
+  gap: var(--space-4);
   text-align: center;
 }
 
-.heroEmoji {
-  font-size: var(--emoji-xl);
+// 일러스트 52 + code pill (V gap 4)
+.typeHead {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+}
+
+.iconWrap {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+}
+
+.emojiFallback {
+  font-size: var(--emoji-lg);
   line-height: 1;
-  filter: var(--drop-shadow-icon-strong);
 }
 
-.codeBadge {
+// Figma `pill` — #00B334 면 + 흰 Caption/B_10, padding 4/12, r999.
+// 면색 위 흰 글씨는 앱 전역 규칙과 같이 --color-primary-strong 사용.
+.codePill {
+  padding: 4px var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-primary-strong);
+  color: var(--color-primary-fg);
+  font-size: var(--font-eyebrow);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-tight);
+  letter-spacing: var(--tracking-tight);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-uppercase);
 }
 
+// Title/B_24_130%
 .title {
+  margin: 0;
   font-size: var(--font-h1);
-  font-weight: var(--font-weight-extrabold);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug);
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
   word-break: keep-all;
 }
 
-.keywords {
+// Figma `tags` — 흰 pill 3개, H gap 8
+.tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem;
   justify-content: center;
+  gap: var(--space-2);
   padding: 0;
   margin: 0;
   list-style: none;
 }
 
-.description {
-  margin-top: 0.5rem;
-  font-size: var(--text-sm);
-  color: var(--color-muted);
-  line-height: var(--line-normal);
-  word-break: keep-all;
-  max-width: 320px;
-}
-
-.recommend {
-  display: grid;
-  gap: 0.625rem;
-}
-
-.recommendTitle {
-  font-size: var(--font-body-sm);
-  font-weight: var(--font-weight-extrabold);
-  color: var(--color-fg);
+.tag {
+  padding: 4px var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  color: var(--color-primary-text-bold);
+  font-size: var(--font-eyebrow);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-tight);
   letter-spacing: var(--tracking-tight);
+  white-space: nowrap;
 }
 
-.recommendList {
+// Basic Body/R_14 #393939, 가운데
+.description {
+  margin: 0;
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-normal);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-muted);
+  word-break: keep-all;
+}
+
+// 추천 카드 목록 — 시안은 화면 오른쪽 끝을 넘어가 다음 카드가 살짝 보인다
+.bleedRight {
+  margin-right: calc(var(--content-pad) * -1);
+}
+
+// Figma `recent-box` — 흰 카드, padding 0/16, 행마다 하단 1px (마지막 제외)
+.matchBox {
   display: grid;
-  gap: 0.5rem;
-  padding: 0;
+  gap: 0;
+  padding: 0 var(--space-4);
   margin: 0;
   list-style: none;
-}
-
-.recommendComingSoon {
-  padding: 0.875rem;
-  background: var(--color-bg-subtle, var(--color-bg));
-  border: 1.5px dashed var(--color-border);
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border);
   border-radius: var(--radius-md);
-  font-size: var(--font-body-sm);
-  color: var(--color-fg-muted, var(--color-fg));
-  text-align: center;
 }
 
-.recommendItem {
+// Figma `recent-row` 288x86 — padding 12/0, H gap 12
+.matchRow {
   display: grid;
-  grid-template-columns: 40px 1fr;
+  grid-template-columns: 40px minmax(0, 1fr);
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 0.875rem;
-  background: var(--color-bg);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: var(--border-thin) solid var(--color-border);
+
+  &:last-child {
+    border-bottom: 0;
+  }
 }
 
-.recEmoji {
-  position: relative;
+// Figma `emoji-c` 40 원 — 잘 맞는 유형은 연초록, 안 맞는 유형은 회색 면
+.matchIcon {
   display: grid;
   place-items: center;
   width: 40px;
   height: 40px;
-  font-size: var(--emoji-sm);
+  border-radius: var(--radius-full);
+  background: var(--color-primary-soft);
+  font-size: var(--font-body);
+  line-height: 1;
+}
+
+.matchIconWorst {
   background: var(--color-surface-soft);
-  border-radius: var(--radius-md);
-  overflow: hidden;
 }
 
-.recPhoto {
-  object-fit: cover;
-}
-
-.recText {
+// Figma `f` — V gap 3 (4px 그리드로 4)
+.matchBody {
   display: grid;
-  gap: 2px;
+  gap: var(--space-1);
   min-width: 0;
 }
 
-.recName {
+// Caption/B_10 — 잘 맞는 유형은 초록, 안 맞는 유형은 보조 텍스트색
+.matchLabel {
+  font-size: var(--font-eyebrow);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-tight);
+  color: var(--color-muted);
+  letter-spacing: var(--tracking-tight);
+}
+
+.matchLabelBest {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-text-bold);
+}
+
+// Basic Body/B_14_140%
+.matchTitle {
   font-size: var(--font-body-sm);
   font-weight: var(--font-weight-bold);
+  line-height: var(--line-normal);
   color: var(--color-fg);
   letter-spacing: var(--tracking-tight);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.recMeta {
-  font-size: var(--font-caption);
+// Caption/M_10 #393939
+.matchReason {
+  font-size: var(--font-eyebrow);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-normal);
   color: var(--color-muted);
+  letter-spacing: var(--tracking-tight);
+  word-break: keep-all;
 }
 
+// Figma `buttons` — 2단 행 + 전체폭 버튼, V gap 12 / H gap 8
 .actions {
   display: grid;
-  gap: 0.5rem;
+  gap: var(--space-3);
 }
 
-.primary,
-.secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.375rem;
-  padding: 0.875rem 1rem;
-  font-size: var(--font-body-sm);
-  font-weight: var(--font-weight-bold);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition:
-    opacity var(--motion-base) ease,
-    transform var(--motion-fast) ease,
-    border-color var(--motion-base) ease;
-
-  &:active {
-    transform: scale(0.98);
-  }
-  &:focus-visible {
-    outline: var(--focus-outline);
-    outline-offset: var(--focus-outline-offset);
-  }
-}
-
-.primary {
-  background: var(--color-primary-strong);
-  color: var(--color-primary-fg);
-  border: 1.5px solid var(--color-primary);
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      opacity: 0.9;
-    }
-  }
-}
-
-.secondary {
-  background: transparent;
-  color: var(--color-fg);
-  border: 1.5px solid var(--color-border);
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      border-color: var(--color-primary-border);
-    }
-  }
+.actionRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
 }
 
 .fallback {
@@ -188,25 +212,4 @@
   padding: 3rem 1rem;
   color: var(--color-muted);
   text-align: center;
-}
-
-.retry {
-  padding: 0.625rem 1rem;
-  background: var(--color-primary-strong);
-  color: var(--color-primary-fg);
-  border-radius: var(--radius-md);
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-bold);
-  border: 0;
-  cursor: pointer;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .primary,
-  .secondary {
-    transition: none;
-    &:active {
-      transform: none;
-    }
-  }
 }

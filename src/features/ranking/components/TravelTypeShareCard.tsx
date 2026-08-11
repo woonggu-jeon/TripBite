@@ -6,8 +6,10 @@ import { useRouter } from 'next/navigation';
 import { Illustration } from '@/components/brand/Illustration';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Skeleton } from '@/components/feedback/Skeleton';
-import { Button, Card, Chip, IconButton } from '@/components/ui';
+import { Button, IconButton } from '@/components/ui';
+import { BrandLogo } from '@/components/ui/BrandLogo';
 import { travelTypeIllustration } from '@/constants/illustration-map';
+import { TRAVEL_TYPE_MATCH, TRAVEL_TYPE_META } from '@/constants/travel-types';
 import { useMyTravelType } from '@/features/ranking/hooks/use-ranking';
 import { haptic } from '@/lib/haptic';
 import styles from './TravelTypeShareCard.module.scss';
@@ -24,6 +26,7 @@ import styles from './TravelTypeShareCard.module.scss';
  */
 export function TravelTypeShareCard() {
   const t = useTranslations('travelType.share');
+  const tCommon = useTranslations('brand');
   const router = useRouter();
   const { data, isLoading } = useMyTravelType();
 
@@ -60,6 +63,7 @@ export function TravelTypeShareCard() {
   }
 
   const cardArt = travelTypeIllustration(data.code);
+  const bestCode = TRAVEL_TYPE_MATCH[data.code].best.code;
   const tags = data.tags ?? [];
   const shareText =
     tags.length > 0
@@ -111,36 +115,43 @@ export function TravelTypeShareCard() {
         <span aria-hidden className={styles.headSpacer} />
       </header>
 
-      {/* 정사각 공유 카드 — 추후 html2canvas/dom-to-image 로 PNG 추출 */}
-      <Card
-        as="article"
-        variant="highlighted"
-        padding="lg"
-        className={styles.card}
-        aria-label={data.title}
-      >
-        {/* Figma `tripTypeIcon` 에셋 — 공유 문구(shareText) 는 이모지를 그대로
-            쓴다 (텍스트 공유라 이미지를 넣을 수 없다). */}
-        <span className={styles.cardEmoji} aria-hidden>
-          {cardArt ? <Illustration name={cardArt} size={52} /> : data.emoji}
-        </span>
-        <Chip variant="outline" size="sm" className={styles.cardCode}>
-          {data.code}
-        </Chip>
-        <h3 className={styles.cardTitle}>{data.title}</h3>
-        {tags.length > 0 && (
-          <ul className={styles.cardKeywords}>
-            {tags.map((k) => (
-              <li key={k}>
-                <Chip variant="default" size="sm">
+      {/* Figma `TST · 공유 이미지 카드` (3413:4733) — 360x360, #EAF6EF,
+          padding 40/20/20. /api/og/quiz 가 만드는 PNG 와 같은 구성이라
+          이 화면이 그 미리보기 역할을 한다. */}
+      <article className={styles.card} aria-label={data.title}>
+        <div className={styles.typeBlock}>
+          <span className={styles.cardIcon} aria-hidden>
+            {cardArt ? <Illustration name={cardArt} size={52} /> : data.emoji}
+          </span>
+          {/* 시안 pill 은 초록 면 + 흰 글씨 (구 구현은 outline) */}
+          <span className={styles.cardCode}>{data.code}</span>
+          <h3 className={styles.cardTitle}>{data.title}</h3>
+          {tags.length > 0 && (
+            <ul className={styles.cardKeywords}>
+              {tags.map((k) => (
+                <li key={k} className={styles.cardKeyword}>
                   {k}
-                </Chip>
-              </li>
-            ))}
-          </ul>
-        )}
-        <p className={styles.cardBrand}>TripBite · 여행 유형 테스트</p>
-      </Card>
+                </li>
+              ))}
+            </ul>
+          )}
+          {data.description && (
+            <p className={styles.cardDesc}>{data.description}</p>
+          )}
+        </div>
+
+        {/* 시안 `match-line` — 흰 pill + 1px 초록, 💚 + "환상의 짝꿍 · N" */}
+        <p className={styles.matchLine}>
+          <span aria-hidden>💚</span>
+          {t('matchPrefix', { type: TRAVEL_TYPE_META[bestCode].title })}
+        </p>
+
+        {/* 시안 `Frame 6` — 로고 + "여행한입" (구 구현은 "TripBite · …" 텍스트) */}
+        <p className={styles.cardBrand}>
+          <BrandLogo width={28} ariaHidden />
+          {tCommon('name')}
+        </p>
+      </article>
 
       <Button
         variant="primary"

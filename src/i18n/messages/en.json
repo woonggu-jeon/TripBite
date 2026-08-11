@@ -830,7 +830,8 @@
       "emptyHint": "Take the test first",
       "startTest": "Start the test",
       "shareCta": "Share",
-      "shareHint": "If sharing isn't supported, the text is copied to your clipboard"
+      "shareHint": "If sharing isn't supported, the text is copied to your clipboard",
+      "matchPrefix": "Perfect match · {type}"
     }
   },
   "mypage": {

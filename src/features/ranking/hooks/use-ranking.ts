@@ -36,8 +36,11 @@ export function useWeeklyTopDestinations(limit = 5) {
   return useRanking({ type: 'weekly-winners', limit });
 }
 
-export function useRecommendedDestinations(limit = 5) {
-  return useRanking({ type: 'recommended', limit });
+export function useRecommendedDestinations(
+  limit = 5,
+  category?: DestinationCategory,
+) {
+  return useRanking({ type: 'recommended', limit, category });
 }
 
 /** 여행 유형 테스트 — 질문은 거의 불변 */
