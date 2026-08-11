@@ -10,6 +10,10 @@
 // PageSection action 슬롯 — 타이틀 우측 inline 링크 "전체보기 (N)"
 // Figma `sec-title` 우측 — Caption/R_12 #393939 (초록 볼드가 아니다).
 .viewAll {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
   font-size: var(--font-caption);
   color: var(--color-muted);
   font-weight: var(--font-weight-normal);

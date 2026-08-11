@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AsyncSection } from '@/components/feedback/AsyncSection';
+import { Icon } from '@/components/icon';
 import { Button } from '@/components/ui';
 import { Carousel } from '@/features/carousel';
 import { useSavedTournaments } from '@/features/tournament/hooks/use-tournament';
@@ -85,6 +86,9 @@ export function SavedTournamentsViewAll() {
       className={styles.viewAll}
     >
       {t('viewAll', { count })}
+      {/* Figma sec-title 우측은 "전체 보기 ›" — chevron 까지 포함이다
+          (도장책 섹션 action 과 같은 아이콘/크기). */}
+      <Icon name="right-20" size={16} />
     </Link>
   );
 }
