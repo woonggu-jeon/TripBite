@@ -51,8 +51,9 @@
 }
 
 // chevron — Figma detailIcon 20x20, stroke #B4B4B4
+// Figma chevron stroke 는 #B4B4B4 — 비텍스트 UI 라 연한 회색 토큰을 쓴다.
 .rowChevron {
-  color: var(--color-muted);
+  color: var(--color-fg-weak);
   flex-shrink: 0;
 }
 
