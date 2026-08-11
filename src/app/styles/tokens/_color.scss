@@ -2,6 +2,12 @@
    디자이너가 brand 색 변경 시 --color-primary 한 줄만 수정해도 derived 토큰
    (soft/tint/border/ring/muted 등) 이 자동 반영. */
 :root {
+  /* 브라우저 기본 UI(체크박스/라디오/스크롤바/caret/autofill) 의 명암.
+     선언이 없으면 `normal` 이라 다크에서도 UA 가 light 로 그린다 —
+     편지쓰기 익명 체크박스가 다크에서 흰 사각형으로 보이던 원인.
+     dark 값은 _dark.scss 의 dark-tokens 에서 재할당한다. */
+  color-scheme: light;
+
   /* Base */
   --color-bg: #ffffff;
   /* Figma Color/Neutral/950. 흰 배경 18.26:1.

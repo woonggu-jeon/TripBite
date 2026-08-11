@@ -150,7 +150,9 @@
   width: 2px;
   height: 2px;
   border-radius: var(--radius-full);
-  background: #c2c2c2;
+  // Figma 는 #C2C2C2 — 토큰 --color-stroke(#C6C6C6) 와 같은 톤이고
+  // 다크에서도 따라가야 해서 토큰으로 바꿨다 (하드코딩 시 다크에서 밝은 점).
+  background: var(--color-stroke);
 }
 
 // Figma FindId/ForgotPw hero — 84px icon + 제목 + 설명 (가운데 정렬).

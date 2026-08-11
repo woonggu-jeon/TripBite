@@ -7,6 +7,10 @@
      - [data-theme="light"] 가 명시되면 system 다크여도 light 강제 (override 가능하도록 specificity 동일).
 */
 @mixin dark-tokens {
+  /* 브라우저 기본 UI(체크박스/라디오/스크롤바/caret) 도 다크로 —
+     tokens/_color.scss 의 `color-scheme: light` 재할당. */
+  color-scheme: dark;
+
   /* Base color */
   --color-bg: #1a1a1a; /* Figma Neutral/900 */
   --color-fg: #ececec; /* Figma Neutral/150 — bg 대비 14.73:1 */

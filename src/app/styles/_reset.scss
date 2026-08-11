@@ -49,6 +49,15 @@ body {
     :root[data-theme='dark'] & {
       background: var(--color-bg);
     }
+
+    /* system 다크 (theme = 'system' 기본값) 도 같은 규칙 —
+       _dark.scss 의 매체 쿼리 조건과 동일하게 맞춘다. 이 분기가 없어서
+       desktop 폭 + system 다크에서 어두운 본문 주변만 연초록으로 남았다. */
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme='light']) & {
+        background: var(--color-bg);
+      }
+    }
   }
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
