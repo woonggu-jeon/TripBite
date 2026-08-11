@@ -102,12 +102,15 @@ export function LetterDetailClient({ letterId }: { letterId: string }) {
           </span>
         </header>
 
+        {/* 도장(postmarkName) 아래 줄은 보낸 편지·받은 편지 모두 서비스명
+            고정이다 (letter.*.stampSub). 닉네임/지역은 카드의 From·To 줄이
+            담당한다 — 도장에 닉네임을 찍으면 우표 은유가 깨진다. */}
         <div className={styles.cardGroup}>
           {isMine ? (
             <LetterPaper
               ariaLabel={tSent('letterAria')}
               postmarkLabel={tSent('sentBadge')}
-              postmarkName={authorName}
+              postmarkName={tSent('stampSub')}
               topLabel={t('to')}
               topName={tSent('toRecipient')}
               body={letter.body}
@@ -125,7 +128,7 @@ export function LetterDetailClient({ letterId }: { letterId: string }) {
             <LetterPaper
               ariaLabel={t('letterAria')}
               postmarkLabel={t('postmarkArrived')}
-              postmarkName={location}
+              postmarkName={t('stampSub')}
               topLabel={t('from')}
               topName={authorName}
               body={letter.body}

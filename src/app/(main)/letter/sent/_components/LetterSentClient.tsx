@@ -170,11 +170,12 @@ export function LetterSentClient() {
         </span>
       </header>
 
-      {/* 시안 `편지 발송완료` — 사진 옆이 To(우측 정렬), 하단이 From */}
+      {/* 시안 `편지 발송완료` — 사진 옆이 To(우측 정렬), 하단이 From.
+          도장 아래는 보낸이 닉네임이 아니라 서비스명 고정 (stampSub). */}
       <LetterPaper
         ariaLabel={t('letterAria')}
         postmarkLabel={t('sentBadge')}
-        postmarkName={view.senderName}
+        postmarkName={t('stampSub')}
         topLabel={t('to')}
         topName={t('toRecipient')}
         body={view.body}
