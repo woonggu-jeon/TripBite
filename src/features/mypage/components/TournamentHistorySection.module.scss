@@ -5,7 +5,9 @@
 .list {
   display: grid;
   gap: 0;
-  padding: var(--space-5) var(--space-4);
+  // Figma `recent-box` padding 은 0/16 이다 — 행이 각자 12/0 을 갖고 있어
+  // 카드 세로 padding 이 없다 (구 20/16 은 첫/마지막 행이 시안보다 내려갔다).
+  padding: 0 var(--space-4);
   margin: 0;
   list-style: none;
   background: var(--color-surface);
@@ -67,9 +69,10 @@
   white-space: nowrap;
 }
 
-// Figma 보조 줄은 10px (Caption 계열)
+// Figma 보조 줄은 Caption/M_10 (10px Medium)
 .meta {
   font-size: var(--font-eyebrow);
+  font-weight: var(--font-weight-medium);
   line-height: var(--line-tight);
   color: var(--color-muted);
   margin: 0;

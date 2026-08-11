@@ -15,6 +15,12 @@ export type CarouselOptions = {
   autoplayMs?: number;
   /** 한 번에 보이는 슬라이드 수 (CSS 기반) */
   slidesPerView?: number;
+  /**
+   * 슬라이드 고정 폭(px). 지정하면 slidesPerView 계산 대신 이 폭을 쓴다.
+   * Figma 처럼 "카드 크기는 고정, 보이는 장수는 화면 폭에 따라"인 목록용
+   * (마이페이지 `saved-grid` 의 152px 카드).
+   */
+  slideWidth?: number;
   /** 슬라이드 간 간격 (px) */
   gap?: number;
 };

@@ -48,10 +48,14 @@
 // inline style 로 매 render 새 string 만들지 않고 CSS variable 로 계산.
 // calc 안에서 var() 두 번 참조 → ios safari 에서도 안정적.
 .slide {
+  // --carousel-slide-width 가 있으면 고정 폭, 없으면 per-view 계산.
   flex: 0 0
-    calc(
-      (100% - (var(--carousel-gap) * (var(--carousel-per-view) - 1))) /
-        var(--carousel-per-view)
+    var(
+      --carousel-slide-width,
+      calc(
+        (100% - (var(--carousel-gap) * (var(--carousel-per-view) - 1))) /
+          var(--carousel-per-view)
+      )
     );
   min-width: 0;
   // 슬라이드 내부 콘텐츠가 height: 100% 로 채울 때, 부모 height 가 결정 안

@@ -1,11 +1,18 @@
+// Figma `saved-grid` — 카드 목록이 화면 오른쪽 끝을 넘어가 다음 카드가 살짝
+// 보인다. 오른쪽 여백만 음수 마진으로 상쇄 (왼쪽은 본문 여백 유지).
+.bleedRight {
+  margin-right: calc(var(--content-pad) * -1);
+}
+
 // 가로 Carousel 기반. 별도 list/grid 스타일 불필요 — Carousel 이 layout 담당.
 // (SavedTournamentCard 의 tile 스타일이 카드 표현).
 
 // PageSection action 슬롯 — 타이틀 우측 inline 링크 "전체보기 (N)"
+// Figma `sec-title` 우측 — Caption/R_12 #393939 (초록 볼드가 아니다).
 .viewAll {
-  font-size: var(--font-body-sm);
-  color: var(--color-primary-text-bold);
-  font-weight: var(--font-weight-bold);
+  font-size: var(--font-caption);
+  color: var(--color-muted);
+  font-weight: var(--font-weight-normal);
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {

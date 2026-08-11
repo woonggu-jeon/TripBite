@@ -104,6 +104,10 @@ export default function CarouselImpl<T>({
   const rootStyle = {
     '--carousel-gap': `${gap}px`,
     '--carousel-per-view': String(slidesPerView),
+    // 고정 폭 모드 — 지정 시 .slide 가 per-view 계산 대신 이 값을 쓴다.
+    ...(options?.slideWidth
+      ? { '--carousel-slide-width': `${options.slideWidth}px` }
+      : null),
   } as React.CSSProperties;
 
   return (

@@ -112,7 +112,9 @@
   font-size: var(--font-body-sm);
   font-weight: var(--font-weight-bold);
   line-height: var(--line-normal);
-  min-height: calc(var(--line-normal) * 2 * 1em);
+  // 2줄 자리를 미리 잡던 min-height 제거 — 시안 카드는 152x168(제목 1줄 20)
+  // 인데 이 예약 때문에 항상 188 이었다. 긴 이름은 clamp 2줄까지 늘어난다.
+  // (그리드/캐러셀은 행 높이가 가장 큰 카드에 맞춰지므로 높이는 여전히 고르다)
   color: var(--color-fg);
   letter-spacing: var(--tracking-tight);
   margin: 0;

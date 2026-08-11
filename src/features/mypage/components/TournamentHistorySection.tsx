@@ -8,6 +8,9 @@ import { Button } from '@/components/ui';
 import { useTournamentHistory } from '@/features/tournament/hooks/use-tournament';
 import styles from './TournamentHistorySection.module.scss';
 
+/** Figma `recent-box` 에 들어가는 행 수 — 마이페이지는 최근 2건만 보여준다. */
+const RECENT_LIMIT = 2;
+
 const CATEGORY_KO: Record<string, string> = {
   local: '지역',
   festival: '축제',
@@ -69,7 +72,10 @@ export function TournamentHistorySection() {
 
   return (
     <ul className={styles.list}>
-      {items.slice(0, 10).map((it) => {
+      {/* Figma `recent-box` 는 2행 고정이다 (섹션 제목이 "최근 …" 이고
+          "전체 보기" 링크도 없다). 구 구현은 10행까지 쌓아 마이페이지가
+          시안(809)보다 훨씬 길어졌다. */}
+      {items.slice(0, RECENT_LIMIT).map((it) => {
         // category 가 비어 오는 기록이 있어 "undefined강" 으로 새던 것 방지 —
         // 빈 조각은 빼고 " · " 로 잇는다.
         const categoryLabel = CATEGORY_KO[it.category] ?? it.category;

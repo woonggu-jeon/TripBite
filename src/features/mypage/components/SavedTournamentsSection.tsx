@@ -1,12 +1,12 @@
 'use client';
 
-import Link from 'next/link';
-import { useTranslations } from 'next-intl';
 import { Trophy } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Carousel } from '@/features/carousel';
 import { AsyncSection } from '@/components/feedback/AsyncSection';
 import { Button } from '@/components/ui';
+import { Carousel } from '@/features/carousel';
 import { useSavedTournaments } from '@/features/tournament/hooks/use-tournament';
 import { useResponsiveSlidesPerView } from '@/hooks/use-responsive-slides-per-view';
 import { SavedTournamentCard } from './SavedTournamentCard';
@@ -48,15 +48,22 @@ export function SavedTournamentsSection() {
       isEmpty={(d) => d.length === 0}
     >
       {(data) => (
-        <Carousel
-          slides={data.slice(0, 10)}
-          renderSlide={(saved) => <SavedTournamentCard saved={saved} />}
-          keyExtractor={(saved) => saved.id}
-          options={{ slidesPerView, gap: 8 }}
-          showDots={false}
-          fallbackHeight={200}
-          ariaLabel={t('allTitle')}
-        />
+        // Figma `saved-grid` 는 폭 408 로 화면 오른쪽 끝을 넘어간다 —
+        // 다음 카드가 20px 살짝 보이는 게 "옆으로 넘길 수 있다"는 신호다.
+        // 본문 여백(--content-pad)을 오른쪽만 음수 마진으로 상쇄한다.
+        <div className={styles.bleedRight}>
+          <Carousel
+            slides={data.slice(0, 10)}
+            renderSlide={(saved) => <SavedTournamentCard saved={saved} />}
+            keyExtractor={(saved) => saved.id}
+            // Figma `saved-grid` — 카드는 152 고정, gap 8, 옆 카드가 살짝 보인다.
+            // (slidesPerView 계산이면 360 폭에서 174 로 커졌다)
+            options={{ slidesPerView, slideWidth: 152, gap: 8 }}
+            showDots={false}
+            fallbackHeight={200}
+            ariaLabel={t('allTitle')}
+          />
+        </div>
       )}
     </AsyncSection>
   );
