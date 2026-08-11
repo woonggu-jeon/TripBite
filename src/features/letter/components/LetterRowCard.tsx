@@ -94,7 +94,7 @@ export function LetterRowCard({ letter }: { letter: LetterDto }) {
     <Link
       href={{ pathname: `/letter/${letter.id}` }}
       prefetch={false}
-      className={styles.card}
+      className={`${styles.card} ${letter.isMine ? styles.cardMine : ''}`}
       aria-label={`${letter.body} ${authorLabel}`}
     >
       {/* Figma `stamp` — 48x48 radius 8 연초록 + profileIcon 24 */}
@@ -118,15 +118,21 @@ export function LetterRowCard({ letter }: { letter: LetterDto }) {
         </span>
       </span>
 
-      <button
-        type="button"
-        className={styles.save}
-        onClick={onSave}
-        aria-label={t('detail.save')}
-        aria-pressed={savedLocal}
-      >
-        <Icon name={savedLocal ? 'bookmark-on' : 'bookmark'} size={20} />
-      </button>
+      {/* 저장(북마크) 은 받은 편지 전용 — 내가 보낸 편지는 BE 가 막는다
+          (POST /letters/{id}/save → 403 LETTER_ACCESS_DENIED). 실패만 하는
+          버튼을 두지 않는다. 시안에는 세 탭 모두 아이콘이 있지만 사용자
+          결정(2026-08-11)으로 보낸 편지에서는 제거. */}
+      {!letter.isMine && (
+        <button
+          type="button"
+          className={styles.save}
+          onClick={onSave}
+          aria-label={t('detail.save')}
+          aria-pressed={savedLocal}
+        >
+          <Icon name={savedLocal ? 'bookmark-on' : 'bookmark'} size={20} />
+        </button>
+      )}
     </Link>
   );
 }

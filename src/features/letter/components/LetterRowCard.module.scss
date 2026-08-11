@@ -29,6 +29,12 @@
   }
 }
 
+// 내가 보낸 편지 — 북마크 열이 없다. 3열로 두면 빈 트랙의 gap 만큼
+// 우측 여백이 12 더 생긴다.
+.cardMine {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
 // Figma `stamp` — 48x48, radius 8, 연초록 면
 .stamp {
   display: grid;
