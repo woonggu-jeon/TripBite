@@ -1,5 +1,7 @@
 // 마커를 시군 라벨 아래로 내리는 양 — 라벨과 겹치지 않게.
-$marker-offset-y: 10px;
+// 10px 였을 때는 라벨(높이 12px)이 마커 박스(36px) 안에 10px 물려서 그대로
+// 가려졌다. 실측으로 겹침이 0 이 되는 값이 20px 이라 4px 그리드에 맞춰 20px.
+$marker-offset-y: 20px;
 
 .wrap {
   position: relative;
