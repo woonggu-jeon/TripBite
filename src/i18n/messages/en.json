@@ -1015,7 +1015,7 @@
   },
   "notification": {
     "title": "Notifications",
-    "empty": "No notifications yet",
+    "empty": "No notifications have arrived yet",
     "error": "Couldn't load notifications",
     "retry": "Retry",
     "markAllRead": "Mark all read",

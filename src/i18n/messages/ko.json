@@ -1015,7 +1015,7 @@
   },
   "notification": {
     "title": "알림",
-    "empty": "새로운 알림이 없어요",
+    "empty": "도착한 알림이 없어요",
     "error": "알림을 불러오지 못했어요",
     "retry": "다시 시도",
     "markAllRead": "모두 읽음",
