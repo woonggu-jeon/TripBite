@@ -89,11 +89,13 @@
   color: var(--color-primary-text-bold);
 }
 
-// 우하단 9px 초록 점 + 2px 흰 링 (읽지 않음 표시)
+// Figma 는 9px 초록 점을 원의 좌상단 바깥(거터)에 띄운다.
+// (원 좌상단 기준 x≈-15 / y≈-15 실측 — 행 왼쪽 여백의 unread 마커)
+// 구 구현은 우하단 배지 스타일이었다.
 .dot {
   position: absolute;
-  right: 0;
-  bottom: 0;
+  top: -14px;
+  left: -15px;
   width: 9px;
   height: 9px;
   border-radius: var(--radius-full);

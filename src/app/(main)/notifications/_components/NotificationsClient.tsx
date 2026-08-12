@@ -1,19 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Mail, Heart, Trophy, Bell, ShieldAlert, Send } from 'lucide-react';
-import { SubHeader } from '@/components/layout/SubHeader';
-import { relativeTimeToken } from '@/lib/relative-time';
-import { Skeleton } from '@/components/feedback/Skeleton';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { EmptyState } from '@/components/feedback/EmptyState';
+import { Skeleton } from '@/components/feedback/Skeleton';
+import { Icon, type IconName } from '@/components/icon';
+import { SubHeader } from '@/components/layout/SubHeader';
 import { Button } from '@/components/ui';
 import { InfiniteList } from '@/features/list/components/InfiniteList';
 import {
-  useNotificationInboxInfinite,
   useMarkAllNotificationsRead,
   useMarkNotificationRead,
+  useNotificationInboxInfinite,
 } from '@/features/notification/hooks/use-notification-inbox';
 import { usePushNotification } from '@/features/notification/hooks/use-push-notification';
 import {
@@ -21,6 +20,7 @@ import {
   isIOS,
   isPushSupported,
 } from '@/features/notification/utils/subscription';
+import { relativeTimeToken } from '@/lib/relative-time';
 import type {
   AppNotificationDto,
   AppNotificationType,
@@ -30,18 +30,19 @@ import styles from './NotificationsClient.module.scss';
 const PUSH_PROMPT_DISMISS_KEY = 'tripbite.push-prompt.dismissed';
 
 /**
- * type 별 아이콘 매핑.
- * unknown type 은 `?? Bell` 로 fallback (스키마 확장 전 BE 응답 호환).
+ * type 별 아이콘 매핑 — Figma 스프라이트 아이콘(구 lucide 대체).
+ * Figma `notiCircle` 안 아이콘은 편지=메일, 이벤트/공유=트로피.
+ * unknown type 은 `?? 'noti'`(벨) 로 fallback.
  */
-const TYPE_ICON: Record<AppNotificationType, typeof Mail> = {
-  'letter.received': Mail,
-  'letter.liked': Heart,
+const TYPE_ICON: Record<AppNotificationType, IconName> = {
+  'letter.received': 'mail',
+  'letter.liked': 'heart-20',
   // 보낸 편지가 누군가에게 도착 완료 — 발신자에게 알림.
-  'letter.delivered': Send,
-  'tournament.shared': Trophy,
+  'letter.delivered': 'mail',
+  'tournament.shared': 'trophy',
   // 충북 마스터 달성 / 우승지 저장 한도 등은 BE 가 event type + 차별화된 link 로 발행.
-  event: Bell,
-  security: ShieldAlert,
+  event: 'trophy',
+  security: 'noti',
 };
 
 export function NotificationsClient() {
@@ -66,7 +67,7 @@ export function NotificationsClient() {
         <SubHeader title={t('title')} />
         <div className={styles.wrap}>
           <EmptyState
-            icon={<Bell size={28} aria-hidden />}
+            icon={<Icon name="noti" size={36} />}
             title={t('error')}
             action={
               <Button variant="secondary" size="sm" onClick={() => refetch()}>
@@ -126,8 +127,9 @@ export function NotificationsClient() {
               />
             )}
             emptyState={
+              // Figma `알림 빈 상태` — circleIcon(size=36, name=noti)
               <EmptyState
-                icon={<Mail size={28} aria-hidden />}
+                icon={<Icon name="noti" size={36} />}
                 title={t('empty')}
               />
             }
@@ -230,12 +232,12 @@ function Item({
   n: AppNotificationDto;
   onSelect: () => void;
 }) {
-  const Icon = TYPE_ICON[n.type] ?? Bell;
+  const iconName = TYPE_ICON[n.type] ?? 'noti';
   const time = useRelativeTimeLabel(n.createdAt);
   const body = (
     <div className={`${styles.item} ${n.read ? styles.read : ''}`}>
       <span className={styles.iconCircle} aria-hidden>
-        <Icon size={22} />
+        <Icon name={iconName} size={22} />
         {!n.read && <span className={styles.dot} />}
       </span>
       <span className={styles.itemText}>
