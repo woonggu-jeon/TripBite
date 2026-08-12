@@ -948,7 +948,6 @@
       "locationDenied": "Denied — change in device settings",
       "locationPrompt": "Not requested yet",
       "locationUnsupported": "Not supported",
-      "blockedUsers": "Manage blocked users",
       "nicknameDialog": {
         "title": "Change nickname",
         "label": "Nickname",

@@ -17,7 +17,6 @@ import { SettingsClient } from './_components/SettingsClient';
  *   2) 계정 / 권한
  *      - 닉네임 변경 (인라인 또는 모달)
  *      - 위치 권한 상태 + 변경 안내
- *      - 차단한 사용자 관리 (편지 수신 거부 목록)
  *
  *   3) 정책
  *      - 이용약관 (외부 또는 내부 정적 페이지)

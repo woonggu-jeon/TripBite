@@ -16,7 +16,9 @@ import styles from './SettingsRows.module.scss';
  *   - 닉네임 변경 → NicknameEditDialog 모달
  *   - 비밀번호 변경 → ChangePasswordDialog 모달
  *   - 위치 권한 상태 표시 (브라우저에서만 변경 가능)
- *   - 차단한 사용자 관리 → 별도 경로
+ *
+ * (구 "차단한 사용자 관리" 행 제거 — 편지가 익명 랜덤 배달이라 차단 대상
+ *  식별이 불가능하고, BE 차단 API·목록 화면도 없어 동작하지 않는 껍데기였다.)
  *
  * 두 dialog 는 동시에 열리지 않음 — `openDialog` 단일 state 로 union 관리.
  */
@@ -53,7 +55,6 @@ export function AccountSettingsSection() {
         onClick={() => setOpenDialog('password')}
       />
       <Row label={t('locationPermission')} value={locationValue} />
-      <Row label={t('blockedUsers')} />
 
       {openDialog === 'nickname' && (
         <NicknameEditDialog onClose={() => setOpenDialog(null)} />

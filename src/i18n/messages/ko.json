@@ -948,7 +948,6 @@
       "locationDenied": "거부됨 — 기기 설정에서 변경",
       "locationPrompt": "아직 요청하지 않음",
       "locationUnsupported": "지원되지 않음",
-      "blockedUsers": "차단한 사용자 관리",
       "nicknameDialog": {
         "title": "닉네임 변경",
         "label": "닉네임",
