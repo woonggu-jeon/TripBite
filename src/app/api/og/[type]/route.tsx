@@ -97,6 +97,27 @@ const TRAVEL_TYPE_ILLUSTRATION_FILE: Record<string, string> = {
 const MATCH_PREFIX = '환상의 짝꿍 · ';
 
 const SIZE = 1080;
+
+/**
+ * OG 쿼리 입력 방어 — 파라미터가 이미지에 그대로 렌더되므로 길이 상한이 없으면
+ * 초대형 문자열로 Satori 렌더 부하(DoS)를 유발할 수 있다(XSS 는 이미지라 무관).
+ *   clampText: 텍스트 최대 길이 truncate
+ *   clampInt : 숫자만 허용 + [min,max] 범위 (NaN/Infinity/음수/과대 방어)
+ */
+function clampText(raw: string | null, max: number): string {
+  return (raw ?? '').slice(0, max);
+}
+function clampInt(
+  raw: string | null,
+  fallback: number,
+  min: number,
+  max: number,
+): number {
+  const n = Number(raw);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.min(max, Math.max(min, Math.trunc(n)));
+}
+
 const CACHE_HEADERS = {
   'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=43200',
 };
@@ -208,13 +229,15 @@ function renderTournament(
   q: URLSearchParams,
   fontData: ArrayBuffer | null,
 ): ImageResponse {
-  const winner = q.get('winner') ?? '여행지';
-  const regionCode = q.get('region') ?? '';
+  const winner = clampText(q.get('winner'), 40) || '여행지';
+  const regionCode = clampText(q.get('region'), 24);
   const region = REGION_KO[regionCode] ?? regionCode;
-  const category = q.get('category') ?? '';
+  const category = clampText(q.get('category'), 24);
   const categoryLabel = CATEGORY_KO[category] ?? '';
-  const matches = q.get('matches');
-  const desc = q.get('desc') ?? '';
+  // matches 는 "총 N매치" 로 렌더 → 숫자만 (1~1024). 유효값>0 일 때만 표시.
+  const matchesNum = clampInt(q.get('matches'), 0, 0, 1024);
+  const matches = matchesNum > 0 ? String(matchesNum) : null;
+  const desc = clampText(q.get('desc'), 120);
   const metaText =
     region && categoryLabel
       ? `${region} · ${categoryLabel}`
@@ -399,17 +422,18 @@ function renderQuiz(
 ): ImageResponse {
   // ⚠ 쿼리 이름은 `code` — 동적 세그먼트가 `[type]` 이라 `?type=` 은 라우트
   // 파라미터에 덮여 항상 'quiz' 가 들어왔다(그래서 pill 이 늘 "QUIZ").
-  const typeCode = q.get('code') ?? '';
-  const typeName = q.get('name') ?? '여행 유형';
-  const tagline = q.get('tagline') ?? '';
-  const emoji = q.get('emoji') ?? TYPE_EMOJI[typeCode] ?? '✨';
-  const keywords = (q.get('keywords') ?? '')
+  const typeCode = clampText(q.get('code'), 24);
+  const typeName = clampText(q.get('name'), 40) || '여행 유형';
+  const tagline = clampText(q.get('tagline'), 120);
+  const emoji = clampText(q.get('emoji'), 8) || TYPE_EMOJI[typeCode] || '✨';
+  const keywords = clampText(q.get('keywords'), 200)
     .split(',')
-    .map((k) => k.trim())
-    .filter(Boolean);
-  const bestTitle = q.get('bestTitle') ?? '';
+    .map((k) => k.trim().slice(0, 20))
+    .filter(Boolean)
+    .slice(0, 3);
+  const bestTitle = clampText(q.get('bestTitle'), 40);
   const typeArt = TRAVEL_TYPE_ILLUSTRATION_FILE[typeCode] ?? null;
-  const bestEmoji = q.get('bestEmoji') ?? '';
+  const bestEmoji = clampText(q.get('bestEmoji'), 8);
   const fontFamily = fontData ? 'Pretendard' : 'sans-serif';
 
   return new ImageResponse(
@@ -852,7 +876,7 @@ function renderMaster(
   q: URLSearchParams,
   fontData: ArrayBuffer | null,
 ): ImageResponse {
-  const count = Number(q.get('count') ?? 11);
+  const count = clampInt(q.get('count'), 11, 0, 99);
   const fontFamily = fontData ? 'Pretendard' : 'sans-serif';
   return new ImageResponse(
     <div
