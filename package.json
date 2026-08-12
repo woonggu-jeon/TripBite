@@ -125,6 +125,7 @@
     ]
   },
   "overrides": {
-    "postcss": "$postcss"
+    "postcss": "$postcss",
+    "sharp": "$sharp"
   }
 }
