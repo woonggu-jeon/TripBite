@@ -18,7 +18,11 @@
   :global(path.region) {
     fill: var(--color-bg);
     stroke: var(--color-border);
-    stroke-width: 1.25;
+    // viewBox 800 을 ~278px 로 그리므로(배율 0.35) 1.25 user unit 은 화면상
+    // 0.43px — 시안(288 폭에 1.05 ≈ 1px)보다 훨씬 흐려 지도가 유령처럼 보였다.
+    // non-scaling-stroke 로 배율과 무관하게 1px 을 유지한다.
+    vector-effect: non-scaling-stroke;
+    stroke-width: 1;
     stroke-dasharray: none;
     transition:
       fill var(--motion-base) ease,
@@ -37,22 +41,18 @@
   :global(path.region[data-visited='true']) {
     fill: var(--color-primary-soft);
     stroke: var(--color-primary);
-    stroke-width: 1.25;
+    vector-effect: non-scaling-stroke;
+    // 도장 완료는 한 단계 굵게 — 시안에서 초록 외곽선이 또렷하게 읽힌다
+    stroke-width: 1.5;
     stroke-dasharray: none;
   }
 
-  /* 청주시 (4 path: 상당/서원/청원/흥덕) — visited 일 때만 내부 구 경계선 제거.
-     stroke 를 없애면 4 path 가 한 덩어리로 sage fill 만 보임.
-     미획득 (visited X) 상태에선 다른 시군과 동일 dashed 외곽선 유지 — 0개 도장책에서
-     청주시 영역이 안 보이던 회귀 fix. */
+  /* 청주시는 4 path(상당/서원/청원/흥덕) 로 쪼개져 있다. 도장 완료 시 stroke 를
+     0 으로 없앴더니 다른 완료 시군과 달리 초록 외곽선이 없는 흐린 덩어리로 보여
+     "안 찍힌 것처럼" 읽혔다 → 외곽선은 다른 시군과 동일하게 두고, 내부 구 경계만
+     연하게 낮춘다(초록 50%). 시안(단일 path)과 가장 가까운 표현. */
   :global(path.region[data-region='cheongju'][data-visited='true']) {
-    stroke-width: 0;
-    stroke: transparent;
-  }
-  @media (hover: hover) and (pointer: fine) {
-    :global(path.region[data-region='cheongju'][data-visited='true']:hover) {
-      stroke-width: 0;
-    }
+    stroke: color-mix(in srgb, var(--color-primary) 55%, transparent);
   }
 
   /* 라벨 텍스트 (SVG 내장) — 원본 SVG 의 text-anchor:middle / 24px / 외곽선 복원.
