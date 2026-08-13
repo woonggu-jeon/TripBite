@@ -9,6 +9,7 @@ import type {
   TournamentTheme,
 } from '@/features/tournament/types';
 import { CACHE } from '@/lib/cache';
+import { newIdempotencyKey } from '@/lib/idempotency';
 import type {
   DestinationCategory,
   SavedTournamentDto,
@@ -112,13 +113,8 @@ export function useSavedTournaments() {
 export function useRecordTournament() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: Parameters<typeof tournamentApi.recordResult>[0]) => {
-      const idempotencyKey =
-        typeof crypto !== 'undefined' && 'randomUUID' in crypto
-          ? crypto.randomUUID()
-          : undefined;
-      return tournamentApi.recordResult(input, idempotencyKey);
-    },
+    mutationFn: (input: Parameters<typeof tournamentApi.recordResult>[0]) =>
+      tournamentApi.recordResult(input, newIdempotencyKey()),
     onSuccess: () => {
       // Spring 은 결과 딥링크 복원(GET /tournaments/{id}) 미지원 → record cache 없음.
       // 히스토리만 무효화(다음 진입 시 최신 기록 반영). 결과 화면은 store 사용.

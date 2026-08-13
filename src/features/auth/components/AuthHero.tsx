@@ -13,6 +13,10 @@ import styles from './AuthHero.module.scss';
  * (authItme = 24/14 + gap 10·12, emptyItme = 16·14/12 + gap 16·20).
  *
  * 사용처: 아이디 찾기 · 비밀번호 찾기.
+ *
+ * [보존/preserved] 현재 아이디/비번찾기 페이지가 ComingSoon(BE_SPRING_MIGRATION §5
+ * P1-1/P1-2, Spring 미지원)이라 렌더 경로가 없어 미사용. BE 엔드포인트 추가로 폼
+ * 복원 시 재사용하는 설계 완료 UI — dead-code sweep 에서 제외(의도적 보존).
  */
 export function AuthHero({
   icon,

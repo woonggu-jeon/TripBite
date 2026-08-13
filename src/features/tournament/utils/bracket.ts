@@ -1,3 +1,4 @@
+import { shuffle } from '@/lib/shuffle';
 import type { DestinationDto } from '@/types/api-domain';
 
 /**
@@ -24,18 +25,6 @@ export type RoundState = {
   /** 부전승 (다음 라운드 자동 진출). 짝수 참가자면 null */
   bye: DestinationDto | null;
 };
-
-function shuffle<T>(arr: readonly T[]): T[] {
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const ai = a[i] as T;
-    const aj = a[j] as T;
-    a[i] = aj;
-    a[j] = ai;
-  }
-  return a;
-}
 
 export function pairRound(participants: DestinationDto[]): RoundState {
   const shuffled = shuffle(participants);

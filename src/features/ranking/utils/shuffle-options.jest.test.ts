@@ -1,5 +1,6 @@
+import { shuffle } from '@/lib/shuffle';
 import type { QuizQuestionDto } from '@/types/api-domain';
-import { shuffle, shuffleQuizOptions } from './shuffle-options';
+import { shuffleQuizOptions } from './shuffle-options';
 
 describe('shuffle', () => {
   it('원본 배열 변경하지 않음 (immutability)', () => {

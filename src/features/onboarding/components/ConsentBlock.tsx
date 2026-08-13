@@ -8,6 +8,9 @@ import styles from './ConsentBlock.module.scss';
 /**
  * <ConsentBlock />
  *
+ * [보존/preserved] 현재 온보딩/가입 플로우에서 미마운트(약관 동의 step 노출 보류)라
+ * 미사용. 동의 step 재노출 시 재사용하는 설계 완료 UI — dead-code sweep 제외(의도적 보존).
+ *
  * 회원가입 / 온보딩 시 노출하는 동의 체크박스 그룹.
  *
  * 한국 법 준수 사항:

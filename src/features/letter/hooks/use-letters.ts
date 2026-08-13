@@ -12,6 +12,7 @@ import { useAuthedQueryEnabled } from '@/features/auth/hooks/use-authed-query';
 import { letterApi } from '@/features/letter/api/letter';
 import type { LetterListKind } from '@/features/letter/types';
 import { CACHE } from '@/lib/cache';
+import { newIdempotencyKey } from '@/lib/idempotency';
 import type {
   ComposeLetterDto,
   LetterDto,
@@ -113,13 +114,8 @@ export function useLetter(id: string) {
 export function useSendLetter() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: ComposeLetterDto) => {
-      const idempotencyKey =
-        typeof crypto !== 'undefined' && 'randomUUID' in crypto
-          ? crypto.randomUUID()
-          : undefined;
-      return letterApi.send(data, idempotencyKey);
-    },
+    mutationFn: (data: ComposeLetterDto) =>
+      letterApi.send(data, newIdempotencyKey()),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: letterKeys.list('sent') });
     },

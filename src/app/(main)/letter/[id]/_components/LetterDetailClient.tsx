@@ -9,6 +9,7 @@ import { Button } from '@/components/ui';
 import { LetterActions } from '@/features/letter/components/LetterActions';
 import { LetterPaper } from '@/features/letter/components/LetterPaper';
 import { useLetter } from '@/features/letter/hooks/use-letters';
+import { formatDotDate } from '@/lib/format-date';
 import styles from './LetterDetailClient.module.scss';
 
 /**
@@ -27,14 +28,6 @@ import styles from './LetterDetailClient.module.scss';
  * 보낸 편지 목록에서 눌렀는데 "도착한 편지" 화면이 뜨던 버그를 고친 부분이다.
  * 헤더 제목도 isMine 에 따라 달라지므로 page.tsx 대신 여기서 렌더한다.
  */
-function formatDate(iso: string): string {
-  const d = new Date(iso);
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}.${m}.${day}`;
-}
-
 export function LetterDetailClient({ letterId }: { letterId: string }) {
   const router = useRouter();
   const t = useTranslations('letter.detail');
@@ -118,7 +111,7 @@ export function LetterDetailClient({ letterId }: { letterId: string }) {
               bottomName={location ? `${authorName} · ${location}` : authorName}
               dateText={
                 <>
-                  <time dateTime={iso}>{formatDate(iso)}</time>{' '}
+                  <time dateTime={iso}>{formatDotDate(iso)}</time>{' '}
                   {tSent('sentSuffix')}
                 </>
               }
@@ -136,7 +129,7 @@ export function LetterDetailClient({ letterId }: { letterId: string }) {
               bottomName={t('toYou')}
               dateText={
                 <>
-                  <time dateTime={iso}>{formatDate(iso)}</time>{' '}
+                  <time dateTime={iso}>{formatDotDate(iso)}</time>{' '}
                   {t('postmarkArrived')}
                 </>
               }
