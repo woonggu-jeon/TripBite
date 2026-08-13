@@ -170,10 +170,10 @@ Spring 이 진짜로 없는 기능은 UI 진입점(라우트·버튼)은 남기�
 - 현재: 결과는 store 전용, cold 진입(공유 링크/새로고침)은 안내 화면. 추가 시 딥링크 복원.
 - (참고: 기록은 이미 `POST /mypage/tournament-history` 로 저장됨 — 그 id 로 복원 가능하게.)
 
-**P2-3. 유형별 추천 여행지**
+**P2-3. 유형별 추천 여행지** — ⚙️ 전환(degrade, 준비중 아님)
 
-- `POST /travel-types/submit` / `GET /me` 유형 결과에 추천 destination N개 포함, 또는 `GET /travel-types/{code}/recommendations`.
-- 현재: travel-type 결과 화면 "추천 여행지" 섹션 준비중.
+- (이상적) `POST /travel-types/submit` / `GET /me` 유형 결과에 추천 destination N개 포함, 또는 `GET /travel-types/{code}/recommendations`.
+- 현재: ⚙️ 유형→카테고리 매핑(`TRAVEL_TYPE_CATEGORY`)으로 `GET /destinations/random` 을 써서 결과 화면의 "이런 여행지가 어울려요" 섹션을 **실데이터로** 채운다(`TravelTypeResult` + `useRecommendedDestinations`). 응답이 비면 섹션 자체를 접음 → 사용자에겐 준비중이 아니라 정상 동작. 정식 유형별 추천 API 도입 시 데이터 소스만 교체.
 
 **P2-4. 시군 큐레이션 — `GET /regions/{code}/summary`**
 
@@ -246,7 +246,7 @@ consents: {
 | 편지 `/letter`·compose·sent·{id}   | GET/POST /letters\* · like/save · GET /letters/{id}                                       | ✅ · 위치 ⚙️(클라 centroid 매핑)                               |
 | 마이 `/mypage`                     | GET /me · /mypage/stamps · /mypage/tournaments · /mypage/tournament-history               | ✅ · 아바타 🕗(P1-5)                                           |
 | 도장책 `/mypage/stamps`            | GET /mypage/stamps                                                                        | ✅                                                             |
-| 여행유형 결과 `/quiz/result`       | POST /travel-types/submit · GET /me                                                       | ✅ · 추천 여행지 🕗(P2-3)                                      |
+| 여행유형 결과 `/quiz/result`       | POST /travel-types/submit · GET /me                                                       | ✅ · 추천 여행지 ⚙️(P2-3, category-random degrade)             |
 | 알림 `/notifications`              | GET /notifications · unread-count · POST {id}/read · read-all                             | ✅                                                             |
 | 설정 `/settings`                   | GET /settings · PATCH /settings/notifications · vapid·subscribe·subscriptions·unsubscribe | ✅ · 비번변경 🕗(P1-3) · 탈퇴 🕗(P1-4)                         |
 

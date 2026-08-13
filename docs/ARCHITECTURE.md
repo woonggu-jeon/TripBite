@@ -93,12 +93,12 @@ src/
 ## 3. 데이터 흐름 (BE ↔ FE)
 
 ```
-BE NestJS Swagger (/docs-json)
+BE Spring Swagger (springdoc, /v3/api-docs)
        │
        ▼ predev / prebuild  ──  npm run generate:api (orval)
-src/api/generated/
+src/api/be/                        (구 src/api/generated/ 는 NestJS 시절 산물 — 동결)
        ├── auth/auth.ts            generated 함수 (axios 호출)
-       ├── notifications/...       react-query hooks (useQuery / useMutation)
+       ├── notification/...        react-query hooks (useQuery / useMutation)
        ├── schemas/*.ts            DTO type
        └── *.msw.ts                MSW handler stub
        │

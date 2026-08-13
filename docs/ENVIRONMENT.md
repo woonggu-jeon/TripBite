@@ -19,40 +19,40 @@ FE 가 사용하는 모든 env 변수의 단일 reference. 신규 개발자 셋�
 
 ## 2. Client env (`NEXT_PUBLIC_*`) 일람
 
-| 변수                           | 필수         | 기본                                | 용도                                           | 사용처                                        |
-| ------------------------------ | ------------ | ----------------------------------- | ---------------------------------------------- | --------------------------------------------- |
-| `NEXT_PUBLIC_API_URL`          | ✅ 필수      | `http://localhost:3000/v1`          | rewrite target (말미 `/v1` 필수)               | `next.config.js` rewrites                     |
-| `NEXT_PUBLIC_USE_MSW`          | (dev)        | `false`                             | MSW worker 활성. `true` 시 robots noindex 자동 | `mocks/browser.ts` / next.config / middleware |
-| `NEXT_PUBLIC_SW_DEV`           | (dev)        | `false`                             | dev 모드에서 Service Worker 강제 활성          | `next.config.js`                              |
-| `NEXT_PUBLIC_BLOCK_INDEXING`   | 선택         | `false`                             | staging/preview 에서 X-Robots-Tag 강제         | `next.config.js`                              |
-| `NEXT_PUBLIC_CSP_ENFORCE`      | 선택         | `false`                             | CSP enforce (default Report-Only)              | middleware                                    |
-| `NEXT_PUBLIC_SESSION_COOKIE`   | 선택         | `SID`                               | BE 발급 sessionID 쿠키 이름 override           | `middleware.ts`                               |
-| `NEXT_PUBLIC_SITE_URL`         | 운영 필수    | `https://trip-bite-mxue.vercel.app` | sitemap / OG url / canonical                   | `app/sitemap.ts` / OG meta                    |
-| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | push 사용 시 | (없음)                              | Web Push 구독 시 `applicationServerKey`        | `features/notification/utils/subscription.ts` |
-| `NEXT_PUBLIC_APP_VERSION`      | 선택         | (없음)                              | 앱 버전 표시 (디버그)                          | footer / about                                |
-| `NEXT_PUBLIC_PRETENDARD_SRI`   | 운영 권장    | `sha384-GIdEBaq...`                 | Pretendard CDN SRI integrity (jsdelivr v1.3.9) | font preload                                  |
+| 변수                           | 필수         | 기본                                | 용도                                                                          | 사용처                                        |
+| ------------------------------ | ------------ | ----------------------------------- | ----------------------------------------------------------------------------- | --------------------------------------------- |
+| `NEXT_PUBLIC_API_URL`          | ✅ 필수      | `https://trip-bite.o-r.kr`          | rewrite target (Spring — **`/v1` prefix 없음**)                               | `next.config.js` rewrites                     |
+| `NEXT_PUBLIC_USE_MSW`          | (dev)        | `false`                             | MSW worker 활성. `true` 시 robots noindex 자동                                | `mocks/browser.ts` / next.config / middleware |
+| `NEXT_PUBLIC_SW_DEV`           | (dev)        | `false`                             | dev 모드에서 Service Worker 강제 활성                                         | `next.config.js`                              |
+| `NEXT_PUBLIC_BLOCK_INDEXING`   | 선택         | `false`                             | staging/preview 에서 X-Robots-Tag 강제                                        | `next.config.js`                              |
+| `NEXT_PUBLIC_CSP_ENFORCE`      | 선택         | `false`                             | CSP enforce (default Report-Only)                                             | middleware                                    |
+| `NEXT_PUBLIC_AUTH_COOKIE`      | 선택         | `tripbite.authed`                   | 보호경로 게이팅 마커(FE 관리). BE JSESSIONID 를 직접 안 봄(익명도 발급되어서) | `middleware.ts` / `auth-store.ts`             |
+| `NEXT_PUBLIC_SITE_URL`         | 운영 필수    | `https://trip-bite-mxue.vercel.app` | sitemap / OG url / canonical                                                  | `app/sitemap.ts` / OG meta                    |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | push 사용 시 | (없음)                              | Web Push 구독 시 `applicationServerKey`                                       | `features/notification/utils/subscription.ts` |
+| `NEXT_PUBLIC_APP_VERSION`      | 선택         | (없음)                              | 앱 버전 표시 (디버그)                                                         | footer / about                                |
+| `NEXT_PUBLIC_PRETENDARD_SRI`   | 운영 권장    | `sha384-GIdEBaq...`                 | Pretendard CDN SRI integrity (jsdelivr v1.3.9)                                | font preload                                  |
 
 ### 환경별 필수 매트릭스
 
-| 변수                           | Local Dev                  | Preview (Vercel)     | Production                                          |
-| ------------------------------ | -------------------------- | -------------------- | --------------------------------------------------- |
-| `NEXT_PUBLIC_API_URL`          | `http://localhost:3000/v1` | `<preview BE>/v1`    | `https://tripbite.duckdns.org/v1` (말미 `/v1` 필수) |
-| `NEXT_PUBLIC_USE_MSW`          | `true` (BE 없을 때)        | `false`              | `false`                                             |
-| `NEXT_PUBLIC_BLOCK_INDEXING`   | 무관                       | `true`               | `false`                                             |
-| `NEXT_PUBLIC_SITE_URL`         | 무관                       | `https://preview...` | 운영 도메인                                         |
-| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | dev key                    | preview key          | 운영 key                                            |
-| `NEXT_PUBLIC_SW_DEV`           | `true` (PWA 테스트 시)     | 무관                 | `false`                                             |
+| 변수                           | Local Dev                  | Preview (Vercel)     | Production                                       |
+| ------------------------------ | -------------------------- | -------------------- | ------------------------------------------------ |
+| `NEXT_PUBLIC_API_URL`          | `https://trip-bite.o-r.kr` | `<preview BE>`       | `https://trip-bite.o-r.kr` (Spring — `/v1` 없음) |
+| `NEXT_PUBLIC_USE_MSW`          | `true` (BE 없을 때)        | `false`              | `false`                                          |
+| `NEXT_PUBLIC_BLOCK_INDEXING`   | 무관                       | `true`               | `false`                                          |
+| `NEXT_PUBLIC_SITE_URL`         | 무관                       | `https://preview...` | 운영 도메인                                      |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | dev key                    | preview key          | 운영 key                                         |
+| `NEXT_PUBLIC_SW_DEV`           | `true` (PWA 테스트 시)     | 무관                 | `false`                                          |
 
 ---
 
 ## 3. Server-only env 일람
 
-| 변수          | 필수      | 기본                              | 용도                                                     | 사용처                                          |
-| ------------- | --------- | --------------------------------- | -------------------------------------------------------- | ----------------------------------------------- |
-| `OPENAPI_URL` | 빌드 필수 | `http://localhost:3000/docs-json` | orval 의 BE Swagger fetch 대상                           | `orval.config.ts` (predev / prebuild 자동 호출) |
-| `NODE_ENV`    | (자동)    | `development` / `production`      | Next.js / vitest 등 분기                                 | 모든 곳                                         |
-| `ANALYZE`     | 선택      | (없음)                            | `ANALYZE=true npm run build` — bundle analyzer html 생성 | `next.config.js`                                |
-| `CI`          | (자동)    | (없음)                            | GitHub Actions 에서 자동 `true`                          | playwright config / dead-css 스크립트           |
+| 변수          | 필수      | 기본                                   | 용도                                                     | 사용처                                          |
+| ------------- | --------- | -------------------------------------- | -------------------------------------------------------- | ----------------------------------------------- |
+| `OPENAPI_URL` | 빌드 필수 | `https://trip-bite.o-r.kr/v3/api-docs` | orval 의 Spring Swagger(springdoc) fetch 대상            | `orval.config.ts` (predev / prebuild 자동 호출) |
+| `NODE_ENV`    | (자동)    | `development` / `production`           | Next.js / vitest 등 분기                                 | 모든 곳                                         |
+| `ANALYZE`     | 선택      | (없음)                                 | `ANALYZE=true npm run build` — bundle analyzer html 생성 | `next.config.js`                                |
+| `CI`          | (자동)    | (없음)                                 | GitHub Actions 에서 자동 `true`                          | playwright config / dead-css 스크립트           |
 
 > ⚠ `VAPID_PRIVATE_KEY` 는 **BE 책임** (web-push 발송용) — FE 에는 절대 안 들어옴.
 
@@ -65,18 +65,18 @@ FE 가 사용하는 모든 env 변수의 단일 reference. 신규 개발자 셋�
 # .env.example 를 그대로 복사한 뒤 값만 채우면 됨
 
 # ---- Client (NEXT_PUBLIC_*) ----
-# 말미 `/v1` 필수 — next.config rewrites 가 path 만 부여
-NEXT_PUBLIC_API_URL=http://localhost:3000/v1
-NEXT_PUBLIC_USE_MSW=true              # BE 없으면 true, 실 BE 띄웠으면 false
+# Spring server url 에 버전 prefix 없음 → **`/v1` 미포함** (next.config rewrites 가 path 만 부여)
+NEXT_PUBLIC_API_URL=https://trip-bite.o-r.kr
+NEXT_PUBLIC_USE_MSW=false             # 실 BE 연동이 기본. BE 없이 mock 개발할 때만 true
 NEXT_PUBLIC_SW_DEV=false              # PWA 테스트할 때만 true
 NEXT_PUBLIC_BLOCK_INDEXING=false
 NEXT_PUBLIC_CSP_ENFORCE=false
-NEXT_PUBLIC_SESSION_COOKIE=SID
-NEXT_PUBLIC_SITE_URL=http://localhost:3900
+NEXT_PUBLIC_AUTH_COOKIE=tripbite.authed  # middleware 보호경로 게이팅 마커(FE auth-store 관리)
+NEXT_PUBLIC_SITE_URL=https://trip-bite-mxue.vercel.app  # canonical/OG (custom domain 시 갱신)
 NEXT_PUBLIC_VAPID_PUBLIC_KEY=         # 푸시 테스트할 때만 채움
 
 # ---- Server-only ----
-OPENAPI_URL=http://localhost:3000/docs-json   # BE 안 띄웠으면 prebuild 가 fail — MSW 모드면 BE 없이도 dev 동작
+OPENAPI_URL=https://trip-bite.o-r.kr/v3/api-docs   # orval codegen 대상(Spring springdoc). BE 다운 시 캐시 api/openapi.yaml fallback
 ```
 
 > 첫 셋업 절차:
@@ -109,22 +109,24 @@ OPENAPI_URL=http://localhost:3000/docs-json   # BE 안 띄웠으면 prebuild 가
 ### 5.2 운영 (Production) 최소 등록 세트
 
 ```
-OPENAPI_URL                     = https://tripbite.duckdns.org/docs-json
-NEXT_PUBLIC_API_URL             = https://tripbite.duckdns.org/v1     # 말미 /v1 필수
+OPENAPI_URL                     = https://trip-bite.o-r.kr/v3/api-docs
+NEXT_PUBLIC_API_URL             = https://trip-bite.o-r.kr       # /v1 미포함(Spring server url)
 NEXT_PUBLIC_USE_MSW             = false
 NEXT_PUBLIC_BLOCK_INDEXING      = false
 NEXT_PUBLIC_SITE_URL            = <FE 운영 도메인>
 NEXT_PUBLIC_VAPID_PUBLIC_KEY    = <운영 VAPID public>
-NEXT_PUBLIC_SESSION_COOKIE      = SID
+NEXT_PUBLIC_AUTH_COOKIE         = tripbite.authed
 ```
+
+> ⚠️ FE·BE 도메인이 다르면 BE CORS 에 FE 도메인 등록 + 운영 쿠키 `SameSite=None; Secure` 필요 (BE_SPRING_MIGRATION.md 배포 체크리스트 참조).
 
 ### 5.3 Preview 추가 권장
 
 ```
 NEXT_PUBLIC_BLOCK_INDEXING      = true              # preview 색인 차단
-NEXT_PUBLIC_API_URL             = https://preview-api.../v1
+NEXT_PUBLIC_API_URL             = https://<preview-api>          # /v1 미포함
 NEXT_PUBLIC_SITE_URL            = https://<preview>.vercel.app
-OPENAPI_URL                     = https://preview-api.../docs-json
+OPENAPI_URL                     = https://<preview-api>/v3/api-docs
 ```
 
 ### 5.4 등록 후 검증
@@ -159,16 +161,16 @@ OPENAPI_URL                     = https://preview-api.../docs-json
 
 ## 7. env 누락 시 어떤 에러가 어디서 나는가
 
-| 누락 변수                                         | 어디서 fail                                     | 메시지 / 증상                                                                                                 |
-| ------------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `OPENAPI_URL` (orval target down)                 | `npm run dev` / `npm run build` 의 prebuild     | `Error: connect ECONNREFUSED` — BE 안 띄웠을 때. MSW 모드면 cached generated 가 있으면 진행, 첫 셋업이면 fail |
-| `NEXT_PUBLIC_API_URL` 미설정                      | next.config rewrites                            | rewrite 비활성 → `/api/backend/*` 가 FE 자체 라우터로 가서 404                                                |
-| `NEXT_PUBLIC_API_URL` 말미 `/v1` 누락             | 런타임 API 호출                                 | rewrite 결과가 `${target}/regions/...` 가 되어 BE `/v1/...` 와 어긋남 → 404 (`Cannot GET /regions/...`)       |
-| `NEXT_PUBLIC_USE_MSW` 미설정                      | dev                                             | default `false` 처리 — MSW worker 안 띄움 → API 404                                                           |
-| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` 미설정 + push 시도 | `Notification.requestPermission()` 후 subscribe | `applicationServerKey is invalid` (브라우저 측)                                                               |
-| `NEXT_PUBLIC_SITE_URL` 미설정                     | sitemap.xml / OG meta                           | URL 이 hardcoded 기본값 (`localhost`) 으로 들어가 SEO 망가짐                                                  |
-| `NEXT_PUBLIC_SESSION_COOKIE` 미설정               | middleware                                      | default `SID` 사용. BE 가 다른 이름이면 보호 경로 우회됨                                                      |
-| `VAPID_PRIVATE_KEY` 미설정 (BE)                   | push 발송 시도                                  | `web-push: invalid VAPID keys` (BE 측)                                                                        |
+| 누락 변수                                         | 어디서 fail                                     | 메시지 / 증상                                                                                                  |
+| ------------------------------------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `OPENAPI_URL` (orval target down)                 | `npm run dev` / `npm run build` 의 prebuild     | `Error: connect ECONNREFUSED` — BE 안 띄웠을 때. MSW 모드면 cached generated 가 있으면 진행, 첫 셋업이면 fail  |
+| `NEXT_PUBLIC_API_URL` 미설정                      | next.config rewrites                            | rewrite 비활성 → `/api/backend/*` 가 FE 자체 라우터로 가서 404                                                 |
+| `NEXT_PUBLIC_API_URL` 에 `/v1` 등 prefix 붙임     | 런타임 API 호출                                 | Spring server url 은 prefix 없음 → `${target}/v1/regions/...` 로 어긋나 404. **prefix 없이** origin 만 넣을 것 |
+| `NEXT_PUBLIC_USE_MSW` 미설정                      | dev                                             | default `false` 처리 — MSW worker 안 띄움 → API 404                                                            |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` 미설정 + push 시도 | `Notification.requestPermission()` 후 subscribe | `applicationServerKey is invalid` (브라우저 측)                                                                |
+| `NEXT_PUBLIC_SITE_URL` 미설정                     | sitemap.xml / OG meta                           | URL 이 hardcoded 기본값 (`localhost`) 으로 들어가 SEO 망가짐                                                   |
+| `NEXT_PUBLIC_AUTH_COOKIE` 불일치                  | middleware                                      | default `tripbite.authed` 사용. auth-store 가 set/clear 하는 마커명과 다르면 보호경로 게이팅이 어긋남          |
+| `VAPID_PRIVATE_KEY` 미설정 (BE)                   | push 발송 시도                                  | `web-push: invalid VAPID keys` (BE 측)                                                                         |
 
 ---
 

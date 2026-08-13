@@ -34,27 +34,17 @@ import styles from './TournamentResultClient.module.scss';
  * 설정/우승자 없이 진입 시: redirect 대신 안내(백엔드 미연결 정책).
  *
  * ─────────────────────────────────────────────────────────────
- * [FUTURE: BE(NestJS) 연동 시 처리 포인트]
+ * [결과 딥링크 미지원 — 상세는 아래 BE-TODO(§5 P2-2)]
  *
- * 현재 winner/runnerUp/matchesPlayed/tournamentSize 는 전부 store-only.
- * 즉 같은 SPA 세션 안에서 setup → play → result 흐름 안에서만 보존됨.
+ * winner/runnerUp/matchesPlayed/tournamentSize 는 전부 store-only(같은 SPA
+ * 세션의 setup → play → result 흐름 안에서만 보존). Spring 은 `GET /tournaments/{id}`
+ * 가 없어 cold 진입(새로고침/공유 링크)은 아래 `if (!winner) → noWinner` 로 degrade.
  *
- * 새로고침/공유 링크/마이페이지에서 다시 보기 등 deep-link 진입을 지원하려면:
- *   - URL: /tournament/result?id={tournamentId}  또는  /mypage/tournaments/[id]
- *   - useQuery(['tournament', id], () => api.getTournament(id))
- *     로 winner/runnerUp/matchesPlayed/tournamentSize 까지 fetch.
- *   - 이때 wrap 영역(`styles.wrap`)에 min-height 박아두고
- *     WinnerCard / TournamentStats 도 isLoading → Skeleton 분기 추가.
- *   - 현재 `if (!winner) → noWinner 안내` 는 _진행 중 store 가 비었을 때_ 와
- *     _서버에서 못 찾았을 때_ 가 합쳐지므로, isError vs notFound 분기로 갈라야 함.
- *
- * 또한 저장 흐름:
- *   - 지금은 mutation 결과만 사용. BE 후에는 onSuccess → router.replace 로
- *     `/mypage/tournaments/{id}` 로 보내 store 가 사라져도 결과를 다시 볼 수 있게.
- *   - queryClient.invalidateQueries(mypageKeys.tournaments) 도 추가.
- *
- * 정책 [[rendering-speed-first]] 유지: 결과 페이지 진입 시 본문/통계 전부
- * skeleton-first. 미리 prefetch 하지 않음.
+ * 정식 딥링크 API 도입 시 처리 포인트:
+ *   - `?id=` 로 record fetch(기록은 이미 `POST /mypage/tournament-history` 로 저장됨).
+ *   - `if (!winner)` 를 isError vs notFound 로 분기(현재는 두 경우가 합쳐져 있음).
+ *   - 저장 onSuccess → `/mypage/tournaments/{id}` replace + mypage tournaments invalidate.
+ * 정책 [[rendering-speed-first]]: 진입 시 skeleton-first, prefetch 안 함.
  * ─────────────────────────────────────────────────────────────
  */
 export function TournamentResultClient() {

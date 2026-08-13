@@ -1,5 +1,11 @@
 # TripBite 후속 작업 백로그
 
+> ⚠️ **이 문서는 NestJS 시절 이력/백로그다. 현재 SoT 는 [`BE_SPRING_MIGRATION.md`](./BE_SPRING_MIGRATION.md).**
+> 2026-08 Spring 전환으로 아래 일부 "✅ 완료" 항목은 **Spring 미지원 → 현재 준비중**으로 롤백됐다.
+> 대표: `DELETE /me`(회원탈퇴, §5 P1-4) · `POST/DELETE /me/avatar`(프로필 이미지, §5 P1-5) —
+> NestJS 에선 구현됐으나 Spring BE 엔드포인트 부재로 FE 는 ComingSoon/준비중 toast 로 degrade.
+> 즉 이 파일의 완료 표기는 "그 시점(NestJS)의 사실"이며, 현재 기능 상태는 마이그레이션 문서 §5 를 따른다.
+>
 > 코드베이스 전수조사 후 정리한 잔존 / 개선 항목. 분기점마다 갱신.
 > 마지막 갱신: 2026-06-24 (TRN 9 화면 Figma 정합 + skeleton 19 sweep + dead cleanup)
 >
