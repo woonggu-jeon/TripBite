@@ -820,19 +820,7 @@
       "ctaTitle": "Find your travel style in 5 questions",
       "myTypeEyebrow": "My travel type"
     },
-    "progress": "{current}/{total}",
-    "share": {
-      "metaTitle": "Share card",
-      "heading": "My travel type card",
-      "back": "Back",
-      "loading": "Loading card…",
-      "empty": "No result to share yet",
-      "emptyHint": "Take the test first",
-      "startTest": "Start the test",
-      "shareCta": "Share",
-      "shareHint": "If sharing isn't supported, the text is copied to your clipboard",
-      "matchPrefix": "Perfect match · {type}"
-    }
+    "progress": "{current}/{total}"
   },
   "mypage": {
     "title": "My Page",
