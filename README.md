@@ -1,6 +1,6 @@
 # TripBite — 충북 여행지 토너먼트 + 다섯글자 편지 PWA
 
-Next.js 15 App Router · React 19 · TypeScript · sessionID 단일 쿠키 인증 · TourAPI 연동 · 다국어 (ko/en) · PWA + Web Push
+Next.js 15 App Router · React 19 · TypeScript · Spring Boot BE 연동 · 세션 쿠키(JSESSIONID) + FE 마커 인증 · 다국어 (ko/en) · PWA + Web Push
 
 ---
 
@@ -20,13 +20,13 @@ npm run build && npm start        # 프로덕션 빌드 (PWA 활성)
 
 ### 로컬 포트
 
-| 서비스          | URL                             | 비고                 |
-| --------------- | ------------------------------- | -------------------- |
-| FE dev          | http://localhost:3000           | `npm run dev`        |
-| FE e2e          | http://localhost:3000 (MSW)     | Playwright webServer (dev 종료 후) |
-| BE Spring       | https://trip-bite.o-r.kr        | 원격 (CORS: localhost:3000 허용) |
-| BE Swagger      | http://localhost:3000/docs      | endpoint try-it      |
-| BE OpenAPI JSON | http://localhost:3000/docs-json | orval source         |
+| 서비스          | URL                                            | 비고                               |
+| --------------- | ---------------------------------------------- | ---------------------------------- |
+| FE dev          | http://localhost:3000                          | `npm run dev`                      |
+| FE e2e          | http://localhost:3000 (MSW)                    | Playwright webServer (dev 종료 후) |
+| BE Spring       | https://trip-bite.o-r.kr                       | 원격 (CORS: localhost:3000 허용)   |
+| BE Swagger UI   | https://trip-bite.o-r.kr/swagger-ui/index.html | endpoint try-it                    |
+| BE OpenAPI JSON | https://trip-bite.o-r.kr/v3/api-docs           | orval source (`OPENAPI_URL`)       |
 
 BE 미준비 시 `NEXT_PUBLIC_USE_MSW=true` 로 mock 모드 (실 BE 띄우면 `false`).
 
@@ -46,7 +46,7 @@ BE 미준비 시 `NEXT_PUBLIC_USE_MSW=true` 로 mock 모드 (실 BE 띄우면 `f
 | `npm run test:e2e`              | Playwright 6 플랫폼                                   |
 | `npm run size`                  | size-limit 번들 가드                                  |
 | `npm run analyze`               | bundle analyzer 리포트                                |
-| `npm run generate:api`          | BE Swagger → `src/api/generated/` (orval)             |
+| `npm run generate:api`          | Spring Swagger → `src/api/be/` (orval)                |
 | `npm run build:icons`           | lucide → `public/icons.svg` sprite                    |
 | `npm run be:check`              | BE 회귀 4종 일괄 (smoke + anon + onboarded + login)   |
 | `npm run storybook`             | Storybook dev (`http://localhost:6006`)               |
@@ -61,7 +61,7 @@ BE 미준비 시 `NEXT_PUBLIC_USE_MSW=true` 로 mock 모드 (실 BE 띄우면 `f
 - **데이터**: orval generated client + axios + MSW (mock)
 - **스타일**: SCSS modules + CSS variables 토큰
 - **i18n**: next-intl v4 (ko / en)
-- **PWA**: next-pwa (Serwist) + Service Worker + Web Push
+- **PWA**: Serwist (`@serwist/next`) + Service Worker + Web Push
 - **테스트**: Vitest 4 / Playwright (6 플랫폼) / axe-core / size-limit
 
 전체 구조 / 데이터 흐름 / 진입점 → [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
@@ -73,7 +73,7 @@ BE 미준비 시 `NEXT_PUBLIC_USE_MSW=true` 로 mock 모드 (실 BE 띄우면 `f
 ```
 src/
 ├── app/                  App Router (page / layout / sw.ts)
-├── api/generated/        orval 자동 생성 (gitignore, prebuild)
+├── api/be/               orval 자동 생성 (Spring swagger, commit 됨)
 ├── components/
 │   ├── ui/               primitive (Card/Chip/Button/TextField/MediaThumb/RadioGroup/...)
 │   ├── layout/           SubHeader / BottomNav / SiteHeader
@@ -137,7 +137,7 @@ src/
 | [STORYBOOK.md](docs/STORYBOOK.md)                   | Storybook 카탈로그 운영 가이드 (실행 / 추가 / CI)                           |
 | [FIGMA_INTEGRATION.md](docs/FIGMA_INTEGRATION.md)   | Figma MCP → 코드 워크플로우 (토큰 매니페스트 / MCP 셋업 / 운영 룰)          |
 
-API 명세 SoT: **BE Swagger** (`{API}/docs`) — orval 이 빌드 전 자동 fetch.
+API 명세 SoT: **Spring Swagger** (`https://trip-bite.o-r.kr/v3/api-docs`) — orval 이 빌드 전 자동 fetch. 연동 현황/미지원은 [BE_SPRING_MIGRATION.md](docs/BE_SPRING_MIGRATION.md).
 
 ---
 

@@ -1,6 +1,6 @@
 # 테스트 가이드
 
-vitest 단위 (250 cases / 40 files, +3 skipped) + Playwright E2E (6 플랫폼, 420 cases) + axe-core a11y + toHaveScreenshot 시각 회귀.
+vitest 단위 (~225 cases / 40 files, +2 skipped) + jest (순수 로직 유틸 — `*.jest.test.ts`, `npm run test:jest`) + Playwright E2E (18 스펙, 6 플랫폼 매트릭스) + axe-core a11y + toHaveScreenshot 시각 회귀. 실 BE 스모크는 `npm run test:e2e:real`(§E2E).
 
 > 실행 결과 / 갱신 이력은 `git log` 참조 (commit message 가 source of truth).
 
@@ -13,7 +13,8 @@ vitest + @testing-library/react + MSW 2.x 기반. 실행 / 작성 패턴 / MSW h
 ```bash
 npm test                # watch 모드
 npm run test:run        # 1회 실행 (CI)
-npm run test:coverage   # 커버리지 리포트 (threshold 82/69/79/83 — stmts/branches/funcs/lines)
+npm run test:coverage   # 커버리지 리포트 (threshold 77/57/79/78 — stmts/branches/funcs/lines)
+npm run test:jest       # 순수 로직 유틸 (jest, node env — csp/validation/shuffle 등)
 ```
 
 설정:
@@ -27,7 +28,7 @@ npm run test:coverage   # 커버리지 리포트 (threshold 82/69/79/83 — stmt
 ### 1. 순수 함수 / schema / store
 
 ```ts
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { letterSchema } from './letter';
 
 describe('letterSchema', () => {
@@ -43,9 +44,9 @@ describe('letterSchema', () => {
 ### 2. 컴포넌트 — `renderWithProviders`
 
 ```tsx
-import { describe, it, expect, vi } from 'vitest';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
 import { renderWithProviders } from '@/test-utils';
 import { LocationPermissionPrompt } from './LocationPermissionPrompt';
 
@@ -81,8 +82,8 @@ expect(router.push).toHaveBeenCalledWith('/letter/sent');
 ### 4. Hook 단위 — `renderHookWithProviders`
 
 ```tsx
-import { renderHookWithProviders } from '@/test-utils';
 import { act } from '@testing-library/react';
+import { renderHookWithProviders } from '@/test-utils';
 
 it('useLogin mutate 성공', async () => {
   const { result } = renderHookWithProviders(() => useLogin());
@@ -131,8 +132,8 @@ export const handlers = [
 ### 테스트별 handler override
 
 ```ts
+import { HttpResponse, http } from 'msw';
 import { server } from '@/mocks/server';
-import { http, HttpResponse } from 'msw';
 
 it('401 → refresh → 재시도', async () => {
   server.use(
@@ -162,10 +163,10 @@ http.get('/letters', ({ response }) => response(200).json({ items: letterSeeds }
 generated `useFooQuery` 가 우리 axios 통과 → MSW handler 자동 가로챔. 별도 mock 필요 없음:
 
 ```tsx
-import { getAuthMeOptions } from '@/generated/api/@tanstack/react-query.gen';
 import { useQuery } from '@tanstack/react-query';
-import { renderHookWithProviders } from '@/test-utils';
 import { waitFor } from '@testing-library/react';
+import { getAuthMeOptions } from '@/generated/api/@tanstack/react-query.gen';
+import { renderHookWithProviders } from '@/test-utils';
 
 it('useQuery 응답', async () => {
   const { result } = renderHookWithProviders(() =>
@@ -215,12 +216,15 @@ include: [
 
 **임계치** (현실 baseline 의 5% 아래 — 회귀 가드 + 일시적 측정 오차 흡수):
 
-| 지표       | Threshold | Baseline (2026-06-14) |
-| ---------- | --------- | --------------------- |
-| Statements | 82        | 85.63                 |
-| Branches   | 69        | 69.89                 |
-| Functions  | 79        | 80.78                 |
-| Lines      | 83        | 86.51                 |
+| 지표       | Threshold | Baseline (2026-07, jest 이관 후) |
+| ---------- | --------- | -------------------------------- |
+| Statements | 77        | 82.0                             |
+| Branches   | 57        | 62.0                             |
+| Functions  | 79        | 85.2                             |
+| Lines      | 78        | 83.6                             |
+
+> branches 가 낮은 건 순수 로직 유틸(csp/secure-image-url/validation/shuffle)을 jest 로 이관해
+> vitest include 에서 빠졌기 때문 — 그 branch 커버리지는 이제 jest 가 담당.
 
 미달 시 CI 실패.
 
@@ -232,7 +236,7 @@ Playwright (`e2e/**`) 는 vitest `exclude` — vitest 가 안 잡음. `.github/w
 
 ## E2E — Playwright
 
-6 플랫폼 매트릭스 + 70 cases × 6 = 420 cases.
+6 플랫폼 매트릭스 · 18 스펙 파일 (플랫폼별 조건부 `test.skip` 으로 실제 실행 수는 project 마다 다름 — 예: 시각회귀/모바일 전용). 실 BE 스모크는 별도 `playwright.real.config.ts`.
 
 ```bash
 npm run test:e2e                       # 헤드리스 전체

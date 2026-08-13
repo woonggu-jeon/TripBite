@@ -15,7 +15,7 @@
 | 폼          | react-hook-form + zod                                    |
 | 스타일      | SCSS modules + CSS variables (token)                     |
 | i18n        | next-intl v4 (`ko` / `en`)                               |
-| PWA         | next-pwa (Serwist) + Service Worker                      |
+| PWA         | Serwist (`@serwist/next`) + Service Worker               |
 | Mock        | MSW 2.x (dev + 선택적 운영 mock)                         |
 | 테스트      | Vitest 4 / Playwright 6-platform / axe-core / size-limit |
 | 빌드/배포   | Vercel + GitHub Actions (승인 게이트)                    |
@@ -156,7 +156,7 @@ src/features/<domain>/components/*.tsx   (RSC / Client)
 
 ## 6. PWA / Service Worker
 
-- next-pwa (Serwist) — disabled in dev (`NEXT_PUBLIC_SW_DEV=true` 강제 시 활성)
+- Serwist (`@serwist/next`) — disabled in dev (`NEXT_PUBLIC_SW_DEV=true` 강제 시 활성)
 - SW 소스: `src/app/sw.ts`
 - runtimeCaching = GET 패턴만 (Pretendard 폰트 1년 / TourAPI 이미지 30일 / 일반 이미지 7일 / SVG sprite 1년)
 - **POST 가로채기 X** — multipart `/me/avatar` / 푸시 구독 등 그대로 통과
