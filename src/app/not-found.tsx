@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Icon } from '@/components/icon/Icon';
@@ -5,18 +6,20 @@ import styles from './error.module.scss';
 
 /**
  * 404 — EmptyState hero 패턴으로 디자인 통일 (2026-06-24).
+ * 서버 컴포넌트 — getTranslations 로 로케일 반영(루트 layout 의 intl 컨텍스트).
  */
-export default function NotFound() {
+export default async function NotFound() {
+  const t = await getTranslations('errors.notFound');
   return (
     <main className={styles.main}>
       <EmptyState
         variant="default"
         icon={<Icon name="compass" size={36} />}
-        title="페이지를 찾을 수 없어요"
-        description={'요청하신 페이지가 사라졌거나\n잘못된 주소예요.'}
+        title={t('title')}
+        description={t('description')}
         action={
           <Link href="/" className={styles.homeLink}>
-            홈으로
+            {t('goHome')}
           </Link>
         }
       />

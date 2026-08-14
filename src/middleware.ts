@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { buildCsp } from '@/lib/csp';
+import { safeInternalPath } from '@/lib/safe-redirect';
 
 /**
  * Middleware
@@ -52,9 +53,9 @@ function isAuthEntryPath(pathname: string): boolean {
 }
 
 function safeRedirectParam(raw: string | null): string {
-  // open-redirect 차단 — 같은 origin 의 path 만 허용. LoginForm 의 가드와 동기.
-  if (raw && raw.startsWith('/') && !raw.startsWith('//')) return raw;
-  return '/';
+  // open-redirect 차단 — 같은 origin 의 path 만 허용. 백슬래시/탭 우회까지 막는
+  // WHATWG origin 비교(safeInternalPath). LoginForm·OnboardingFlow 와 동일 규칙.
+  return safeInternalPath(raw);
 }
 
 // 인증 마커 쿠키 (FE 관리, non-HttpOnly). env override 가능.

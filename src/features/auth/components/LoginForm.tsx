@@ -1,19 +1,20 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useSearchParams } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { LogoMark } from '@/components/brand/LogoMark';
+import { Button, TextField } from '@/components/ui';
 import { useLogin } from '@/features/auth/hooks/use-auth';
 import {
-  loginSchema,
   type LoginFormValues,
+  loginSchema,
 } from '@/features/auth/schemas/login';
+import { safeInternalPath } from '@/lib/safe-redirect';
 import { isAxiosError } from '@/services/interceptors/auth';
-import { Button, TextField } from '@/components/ui';
-import { LogoMark } from '@/components/brand/LogoMark';
 import styles from './AuthForm.module.scss';
 
 /**
@@ -37,12 +38,9 @@ export function LoginForm() {
   const t = useTranslations('auth.login');
   const tBrand = useTranslations('brand');
   const searchParams = useSearchParams();
-  // safe redirect — 외부 URL 주입 (open redirect) 차단. 같은 origin 경로만 허용.
-  const rawRedirect = searchParams.get('redirect');
-  const redirect =
-    rawRedirect && rawRedirect.startsWith('/') && !rawRedirect.startsWith('//')
-      ? rawRedirect
-      : '/';
+  // safe redirect — 외부 URL 주입 (open redirect) 차단. 같은 origin 경로만 허용
+  // (백슬래시/탭 우회까지 막는 WHATWG origin 비교).
+  const redirect = safeInternalPath(searchParams.get('redirect'));
 
   const {
     register,

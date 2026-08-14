@@ -10,6 +10,7 @@ import { LocationStep } from '@/features/onboarding/components/LocationStep';
 // import { AgeConfirmStep } from '@/features/onboarding/components/AgeConfirmStep';
 import { WalkStep } from '@/features/onboarding/components/WalkStep';
 import { useCompleteOnboarding } from '@/features/onboarding/hooks/use-onboarding';
+import { safeInternalPath } from '@/lib/safe-redirect';
 import { useAuthStore } from '@/stores/auth-store';
 import { useLocationStore } from '@/stores/location-store';
 import styles from './OnboardingFlow.module.scss';
@@ -37,13 +38,9 @@ export function OnboardingFlow() {
   const t = useTranslations('onboarding');
   const router = useRouter();
   // ?next= 가 있으면 onboarding 끝난 후 그 경로로 (deep-link / 공유 링크 보존).
-  // open-redirect 차단: `/` 시작 + `//` 아닌 경로만 (auth 의 redirect 와 동일 정책).
+  // open-redirect 차단: 같은 origin 경로만 (백슬래시/탭 우회까지 막는 WHATWG 비교).
   const searchParams = useSearchParams();
-  const rawNext = searchParams.get('next');
-  const safeNext =
-    rawNext && rawNext.startsWith('/') && !rawNext.startsWith('//')
-      ? rawNext
-      : '/';
+  const safeNext = safeInternalPath(searchParams.get('next'));
   const [step, setStep] = useState<Step>(1);
   const { mutateAsync: complete, isPending } = useCompleteOnboarding();
   const resolvedLocation = useLocationStore((s) => s.resolved);

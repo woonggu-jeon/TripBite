@@ -84,14 +84,16 @@ export function LetterSentClient() {
     ? {
         body: serverLetter.body,
         sentAt: serverLetter.createdAt,
-        location: serverLetter.author.location ?? '익명 위치',
+        // `||` — mapLetter 가 위치 없음을 '' 로 coerce 하므로 ?? 면 fallback 이
+        // 죽어 "닉네임 · " 댕글링 구분자가 남는다. 빈 문자열도 '익명 위치' 로.
+        location: serverLetter.author.location || '익명 위치',
         senderName: serverLetter.author.nickname || tAuthor('anonymous'),
       }
     : lastSent
       ? {
           body: lastSent.body,
           sentAt: lastSent.sentAt,
-          location: lastSent.location?.label ?? '익명 위치',
+          location: lastSent.location?.label || '익명 위치',
           senderName: lastSent.isAnonymous
             ? tAuthor('anonymous')
             : (myNickname ?? tAuthor('anonymous')),

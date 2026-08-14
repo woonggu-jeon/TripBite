@@ -21,7 +21,11 @@ import { Providers } from './providers';
 const pretendard = localFont({
   src: '../fonts/PretendardVariable.woff2',
   display: 'swap',
-  preload: true,
+  // preload:false — 가변 woff2 가 ~2MB 라 최우선 preload 시 LCP 이미지·하이드레이션
+  // JS 와 대역폭을 다툰다(첫 방문 체감 저하). swap + next/font 의 size-adjust fallback
+  // 이 FOUT/CLS 를 흡수하므로, 폰트는 CSS 참조 시점에 비-preload 우선순위로 받는다.
+  // (근본 최적화는 한글 상용 서브셋으로 파일 축소 — 별도 과제, BACKLOG.)
+  preload: false,
   variable: '--font-sans-loaded',
   weight: '45 920',
 });

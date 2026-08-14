@@ -1023,10 +1023,16 @@
     "network": "A network error occurred.",
     "requestFailed": "Couldn't process your request.",
     "tryAgainLater": "Please try again later.",
+    "boundary": {
+      "title": "Something went wrong",
+      "description": "Please try again in a moment.\nIf the problem persists, we're here to help.",
+      "retry": "Try again",
+      "home": "Home"
+    },
     "notFound": {
-      "title": "404",
-      "message": "The page you requested could not be found.",
-      "goHome": "Go home"
+      "title": "Page not found",
+      "description": "The page you're looking for is gone\nor the address is incorrect.",
+      "goHome": "Home"
     }
   },
   "consent": {

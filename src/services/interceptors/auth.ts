@@ -1,5 +1,6 @@
 import type { AxiosError, AxiosInstance } from 'axios';
 import axios from 'axios';
+import { safeInternalPath } from '@/lib/safe-redirect';
 
 /**
  * 세션 만료 toast 중복 표시 방지 — module-level flag.
@@ -152,8 +153,7 @@ export function attachAuthInterceptor(instance: AxiosInstance) {
         typeof window !== 'undefined'
       ) {
         const path = window.location.pathname + window.location.search;
-        const safe =
-          path && path.startsWith('/') && !path.startsWith('//') ? path : '/';
+        const safe = safeInternalPath(path);
         window.location.href = `/login?redirect=${encodeURIComponent(safe)}`;
       }
       return Promise.reject(error);

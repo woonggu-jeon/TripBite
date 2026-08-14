@@ -201,7 +201,7 @@ const ROUTES: { tc: string; path: string; mustContain?: RegExp }[] = [
   // D. Quiz
   { tc: 'D-01', path: '/quiz', mustContain: /퀴즈|시작|문제/i },
   { tc: 'D-03', path: '/quiz/result' },
-  { tc: 'D-04', path: '/quiz/share' },
+  // D-04 /quiz/share 제거 — 라우트 삭제됨(orphan TravelTypeShareCard, commit 4702329).
   // E. Ranking
   { tc: 'E-01', path: '/ranking', mustContain: /랭킹|순위/i },
   // F. Region / Destination
