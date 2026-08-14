@@ -8,10 +8,7 @@ import { Icon } from '@/components/icon';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { Button } from '@/components/ui';
 import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetailPanel';
-import {
-  useDestinationDetail,
-  useRelatedDestinations,
-} from '@/features/tournament/hooks/use-tournament';
+import { useDestinationDetail } from '@/features/tournament/hooks/use-tournament';
 import { DestinationActions } from './DestinationActions';
 import styles from './DestinationDetailClient.module.scss';
 import { DestinationPhotos } from './DestinationPhotos';
@@ -37,10 +34,9 @@ export function DestinationDetailClient({ id }: { id: string }) {
     isError,
     refetch,
   } = useDestinationDetail(id);
-  // related 도 id 만 필요 — detail 로딩 게이트 뒤 마운트를 기다리지 않고 여기서 미리
-  // 발사(RelatedDestinations 가 같은 queryKey 로 이 캐시 공유) → detail·related 병렬.
-  // (이전엔 게이트 통과 후에야 related 가 시작돼 직렬 RTT 였다.)
-  useRelatedDestinations(id);
+  // (related 는 RelatedDestinations 가 detail 성공 후 자체 fetch — detail 실패 시엔
+  //  불필요 요청/토스트를 안 내도록 여기서 미리 발사하지 않는다. 병렬화가 필요하면
+  //  RSC prefetch 로 진행 — BE_SPRING_MIGRATION 후속 과제.)
 
   // detail 없을 때도 안정적인 header 유지 (CLS 0).
   // 공유 버튼은 본문 DestinationActions 로 이동 — SubHeader rightSlot 제거.

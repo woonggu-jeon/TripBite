@@ -179,6 +179,9 @@ export function useDestinationDetail(id: string | undefined) {
       return tournamentApi.getDestinationDetail(id);
     },
     enabled: !!id,
+    // 상세는 자체 인라인 에러 UI(EmptyState + 재시도)를 렌더 → 전역 에러 토스트는
+    // 중복이라 skip. (id 가 실 BE 에 없어 404 나도 화면 안내로 충분.)
+    meta: { skipGlobalErrorToast: true },
     ...CACHE.slow,
   });
 }
@@ -197,6 +200,9 @@ export function useRelatedDestinations(id: string | undefined) {
       return tournamentApi.getRelatedDestinations(id);
     },
     enabled: !!id,
+    // 관련 목록은 실패 시 섹션을 조용히 접음(isError→null) → 전역 토스트 skip.
+    // (이게 없으면 상세는 멀쩡한데 "정보를 찾을 수 없어요" 토스트만 뜨는 오인 UX.)
+    meta: { skipGlobalErrorToast: true },
     ...CACHE.slow,
   });
 }

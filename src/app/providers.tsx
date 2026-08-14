@@ -134,13 +134,16 @@ export function Providers({ children }: { children: React.ReactNode }) {
         // 401은 axios interceptor 가 /login redirect 처리 중이라 skip.
         // mutation 에러는 각 폼에서 setError로 root 표시 → 자동 toast 중복 방지(여기 제외).
         queryCache: new QueryCache({
-          onError: (error) => {
+          onError: (error, query) => {
             // 미인증(구 401 / 새 Spring 403)은 interceptor 가 세션정리/redirect 처리 → 중복 토스트·오보고 skip.
             if (
               isAxiosError(error) &&
               (error.response?.status === 401 || error.response?.status === 403)
             )
               return;
+            // 자체 인라인 에러 UI 를 가진 쿼리(meta.skipGlobalErrorToast)는 전역 토스트 skip
+            // — 화면 안내 + 토스트 이중 노출 방지(예: 여행지 상세 404 시 "정보를 찾을 수 없어요" 중복).
+            if (query.meta?.skipGlobalErrorToast) return;
             const t = tErrorsRef.current;
             // attachErrorNormalizeInterceptor 가 error.normalized 부착 — cast 우회.
             const message = isAxiosError(error)
