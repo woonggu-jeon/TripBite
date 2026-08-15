@@ -1,15 +1,11 @@
-import {
-  HydrationBoundary,
-  QueryClient,
-  dehydrate,
-} from '@tanstack/react-query';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { SubHeader } from '@/components/layout/SubHeader';
-import { rankingApi } from '@/features/ranking/api/ranking';
-import { rankingKeys } from '@/features/ranking/hooks/use-ranking';
-import { CACHE } from '@/lib/cache';
 import { QuizFlow } from './_components/QuizFlow';
+
+// RSC 프리페치 미적용 — 퀴즈는 실 Spring 대상 서버 프리페치가 간헐적으로 하이드레이션
+// 되지 않아(클라 재요청) 이득이 불안정 → 클라 useTravelTypeQuiz(CACHE.static, 1d)로
+// 단순 유지. ranking/region 처럼 안정적으로 하이드레이션되는 페이지만 프리페치 적용.
 
 /**
  * 여행 유형 테스트 페이지 (/quiz)
@@ -41,27 +37,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function QuizPage() {
   const t = await getTranslations('quiz');
-
-  // RSC 프리페치 — 퀴즈 문항(CACHE.static, 거의 불변)을 서버에서 미리 받아 dehydrate
-  // → 클라 하이드레이션 시 즉시 사용(fetch 왕복 제거). 실패해도 shell 렌더 + 클라 재시도.
-  // mock 모드 skip — MSW 는 브라우저 전용(서버 프리페치 우회) → 클라 MSW 가 처리.
-  const qc = new QueryClient();
-  if (process.env.NEXT_PUBLIC_USE_MSW !== 'true') {
-    await qc
-      .prefetchQuery({
-        queryKey: rankingKeys.travelTypeQuiz(),
-        queryFn: rankingApi.getTravelTypeQuiz,
-        staleTime: CACHE.static.staleTime,
-      })
-      .catch(() => {});
-  }
-
   return (
     <>
       <SubHeader title={t('title')} />
-      <HydrationBoundary state={dehydrate(qc)}>
-        <QuizFlow />
-      </HydrationBoundary>
+      <QuizFlow />
     </>
   );
 }

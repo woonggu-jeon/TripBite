@@ -8,9 +8,15 @@ import { getTranslations } from 'next-intl/server';
 import { PageBackground } from '@/components/layout/PageBackground';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { rankingApi } from '@/features/ranking/api/ranking';
-import { rankingKeys } from '@/features/ranking/hooks/use-ranking';
 import { CACHE } from '@/lib/cache';
 import { RankingPageContent } from './_components/RankingPageContent';
+
+// queryKey 는 use-ranking 의 rankingKeys.list(params) 와 정합해야 함(하이드레이션
+// 매칭). rankingKeys 는 'use client' 훅 모듈 export 라 서버 컴포넌트에서 직접 호출 시
+// 클라 참조 프록시가 되어 깨진다 → 여기선 동일 shape 로 인라인. (불일치 시 클라가
+// 재요청할 뿐 무해 — graceful.)
+const rankingListKey = (params: Record<string, unknown>) =>
+  ['ranking', 'list', params] as const;
 
 /**
  * 여행지 랭킹 페이지 (/ranking)
@@ -43,12 +49,12 @@ export default async function RankingPage() {
   if (process.env.NEXT_PUBLIC_USE_MSW !== 'true') {
     await Promise.all([
       qc.prefetchQuery({
-        queryKey: rankingKeys.list({ type: 'weekly-winners', limit: 5 }),
+        queryKey: rankingListKey({ type: 'weekly-winners', limit: 5 }),
         queryFn: () => rankingApi.list({ type: 'weekly-winners', limit: 5 }),
         staleTime: CACHE.normal.staleTime,
       }),
       qc.prefetchQuery({
-        queryKey: rankingKeys.list({ type: 'by-region' }),
+        queryKey: rankingListKey({ type: 'by-region' }),
         queryFn: () => rankingApi.list({ type: 'by-region' }),
         staleTime: CACHE.normal.staleTime,
       }),
