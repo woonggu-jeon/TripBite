@@ -1033,6 +1033,21 @@
       "title": "Page not found",
       "description": "The page you're looking for is gone\nor the address is incorrect.",
       "goHome": "Home"
+    },
+    "byCode": {
+      "AUTH": "Please sign in.",
+      "FORBIDDEN": "You don't have access.",
+      "CSRF": "The request wasn't sent securely. Please refresh and try again.",
+      "NOT_FOUND": "We couldn't find what you requested.",
+      "CONFLICT": "This request was already processed.",
+      "VALIDATION": "Please check your input.",
+      "RATE_LIMIT": "Please try again in a moment.",
+      "SERVER": "A temporary server problem occurred.",
+      "BAD_GATEWAY": "A temporary server problem occurred.",
+      "UNAVAILABLE": "The service is temporarily unavailable.",
+      "BAD_REQUEST": "We couldn't process your request.",
+      "NETWORK": "Please check your network connection.",
+      "UNKNOWN": "An unknown error occurred."
     }
   },
   "consent": {

@@ -145,10 +145,21 @@ export function Providers({ children }: { children: React.ReactNode }) {
             // — 화면 안내 + 토스트 이중 노출 방지(예: 여행지 상세 404 시 "정보를 찾을 수 없어요" 중복).
             if (query.meta?.skipGlobalErrorToast) return;
             const t = tErrorsRef.current;
-            // attachErrorNormalizeInterceptor 가 error.normalized 부착 — cast 우회.
-            const message = isAxiosError(error)
-              ? (error.normalized?.message ?? t('requestFailed'))
-              : t('network');
+            // i18n 우선순위: 코드별 로케일 메시지(errors.byCode.<CODE>) → BE 가 보낸
+            // 구체 메시지(error.normalized.message) → 제네릭. error-normalize 는 훅
+            // 컨텍스트 밖(axios)이라 code 만 표준화하고, 로케일 변환은 여기(표시 계층)서.
+            // (구 BE 특정 code 는 byCode 키가 없어 BE 메시지로 폴백 — 구체성 보존.)
+            const code = isAxiosError(error)
+              ? error.normalized?.code
+              : undefined;
+            // 타입드 next-intl 은 리터럴 키만 받으므로 동적 키는 캐스팅(코드 컨벤션 동일).
+            const byCodeKey = code
+              ? (`byCode.${code}` as Parameters<typeof t>[0])
+              : undefined;
+            const message =
+              (byCodeKey && t.has(byCodeKey) ? t(byCodeKey) : undefined) ??
+              (isAxiosError(error) ? error.normalized?.message : undefined) ??
+              t(isAxiosError(error) ? 'requestFailed' : 'network');
             toast.error(message);
             // 운영 client-error endpoint 로 보고. dev 는 console 만.
             // 4xx (보통 검증 실패) 는 skip — server 측 정합 issue 가 아니라 사용자 입력.
