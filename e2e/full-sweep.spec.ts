@@ -1,7 +1,22 @@
-import { type Page, expect, test } from '@playwright/test';
+import { type Locator, type Page, expect, test } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
 import { authedSession } from './_helpers/auth';
+
+/**
+ * 하이드레이션/렌더 완료를 기다린 뒤 가시성 판정 — 즉시형 `isVisible()` 의 no-wait
+ * 레이스(콜드 네비 시 요소가 아직 안 떠 '미검출' 오탐 → flaky)를 제거한다.
+ * 지정 시간 내 보이면 true, 끝내 안 보이면 false (요소가 정말 없을 때만 timeout 소요).
+ */
+async function visibleWithin(
+  locator: Locator,
+  timeout = 8000,
+): Promise<boolean> {
+  return locator
+    .waitFor({ state: 'visible', timeout })
+    .then(() => true)
+    .catch(() => false);
+}
 
 /**
  * 전수 스위프 (Full Sweep) — TC 문서 `docs/QA/TC-full-sweep.md` 자동화.
@@ -268,7 +283,7 @@ test.describe('전수 스위프 — 기능 인터랙션', () => {
       .getByRole('button', { name: /로그인|Login|Sign in/i })
       .first();
     const issues: string[] = [];
-    if (await submit.isVisible().catch(() => false)) {
+    if (await visibleWithin(submit)) {
       // 로그인은 빈 값 제출 시 zod 검증으로 에러 노출(disabled 게이팅 아님).
       // 하이드레이션 전 클릭은 무반응 → toPass 로 에러가 뜰 때까지 클릭 재시도(결정적).
       const errorLoc = page
@@ -313,7 +328,7 @@ test.describe('전수 스위프 — 기능 인터랙션', () => {
     // 위저드: step1 "랜덤 테마" 선택 → step4(개수) 직행 → 개수 radio 선택 → "시작하기"
     const randomOpt = page.getByRole('radio', { name: /랜덤 테마/ }).first();
     const startBtn = page.getByRole('button', { name: '시작하기' }).first();
-    if (await randomOpt.isVisible().catch(() => false)) {
+    if (await visibleWithin(randomOpt)) {
       // 하이드레이션 전 클릭은 step 전환 안 됨 → 시작하기(step4 마커) 노출까지 클릭 재시도.
       try {
         await expect(async () => {
@@ -329,14 +344,14 @@ test.describe('전수 스위프 — 기능 인터랙션', () => {
 
     // step4 개수 radio 선택 (랜덤 흐름은 count 미선택 상태로 진입)
     const countOpt = page.getByRole('radio').first();
-    if (await countOpt.isVisible().catch(() => false)) {
+    if (await visibleWithin(countOpt)) {
       await countOpt.click().catch(() => {});
     } else {
       issues.push('step4 개수 옵션 미검출');
     }
 
     // 시작하기 — 개수 선택 후 활성화 대기 → /play 이동을 waitForURL 로 명시 대기.
-    if (await startBtn.isVisible().catch(() => false)) {
+    if (await visibleWithin(startBtn)) {
       await expect(startBtn)
         .toBeEnabled({ timeout: 8000 })
         .catch(() => issues.push('"시작하기" 버튼 비활성(개수 선택 후에도)'));
@@ -452,7 +467,7 @@ test.describe('전수 스위프 — 미실행 TC 보강', () => {
     for (const [name, urlRe] of checks) {
       await page.goto('/login', { waitUntil: 'networkidle' });
       const link = page.getByRole('link', { name }).first();
-      if (!(await link.isVisible().catch(() => false))) {
+      if (!(await visibleWithin(link))) {
         issues.push(`링크 미검출: ${name}`);
         continue;
       }
@@ -474,7 +489,7 @@ test.describe('전수 스위프 — 미실행 TC 보강', () => {
     const submit = page
       .getByRole('button', { name: /^가입하기$|회원가입|Sign up/i })
       .last();
-    if (await submit.isVisible().catch(() => false)) {
+    if (await visibleWithin(submit)) {
       // 회원가입은 빈 값이면 submit 이 disabled(allFilled/isValid 게이팅) — 그 자체가
       // 유효성 방어. 하이드레이션 후 disabled 로 확정될 때까지 대기(결정적).
       await expect(submit)
@@ -495,44 +510,53 @@ test.describe('전수 스위프 — 미실행 TC 보강', () => {
     const pageErrors = trackErrors(page);
     const issues: string[] = [];
     // 위저드 (랜덤 테마 → 최소 개수) → play
-    await page.goto('/tournament', { waitUntil: 'networkidle' });
+    // 각 스텝 click 에 bounded timeout — 하이드레이션 지연으로 요소가 액셔너블하지
+    // 않아도 최대 8s 후 넘어가 전체 test timeout(120s) 행을 방지(기존 flaky 원인).
+    await page.goto('/tournament', { waitUntil: 'domcontentloaded' });
     await page
       .getByRole('radio', { name: /랜덤 테마/ })
       .first()
-      .click()
+      .click({ timeout: 8000 })
       .catch(() => {});
     await page.waitForTimeout(400);
     await page
       .getByRole('radio')
       .first()
-      .click()
+      .click({ timeout: 8000 })
       .catch(() => {}); // 최소 개수
     await page.waitForTimeout(300);
     await page
       .getByRole('button', { name: '시작하기' })
       .first()
-      .click()
+      .click({ timeout: 8000 })
       .catch(() => {});
     await page.waitForTimeout(1000);
 
     // play — 매치업 "선택" 버튼 또는 긍정 진행 버튼만 클릭(뒤로가기 클릭 금지 →
     // 빈 히스토리에서 about:blank 로 튕기는 것 방지). result 까지 반복.
     let reached = false;
-    for (let i = 0; i < 60; i++) {
+    // 월-클럭 데드라인 — 플레이가 진행 안 되는 환경(하이드레이션/셀렉터 불일치)에서도
+    // test timeout(120s) 에 걸리지 않고 루프가 확정적으로 종료되게(미도달은 soft warn).
+    const deadline = Date.now() + 85_000;
+    for (let i = 0; i < 60 && Date.now() < deadline; i++) {
       if (/\/tournament\/result/.test(page.url())) {
         reached = true;
         break;
       }
+      // 폴링 루프 — 매치 전환/축하화면에선 버튼 부재가 정상이므로 즉시형 isVisible
+      // (대기형 visibleWithin 은 부재 시 8s 씩 지연돼 루프가 timeout — 여기선 금지).
+      // click 은 bounded timeout — 보이지만 액셔너블하지 않은(애니메이션/오버레이)
+      // 버튼에서 unbounded click 이 test timeout 까지 행 걸리던 것 차단(기존 flaky 주범).
       const pick = page.getByRole('button', { name: /선택/ }).first();
       if (await pick.isVisible().catch(() => false)) {
-        await pick.click().catch(() => {});
+        await pick.click({ timeout: 3000 }).catch(() => {});
       } else {
         // pre-bracket 단계(개수 확인/지도 다음 등) — 긍정 진행 버튼만.
         const primary = page
           .getByRole('button', { name: /확인|다음|계속|시작|플레이|진행/i })
           .first();
         if (await primary.isVisible().catch(() => false))
-          await primary.click().catch(() => {});
+          await primary.click({ timeout: 3000 }).catch(() => {});
       }
       await page.waitForTimeout(400);
     }
@@ -570,6 +594,7 @@ test.describe('전수 스위프 — 미실행 TC 보강', () => {
         reached = true;
         break;
       }
+      // 폴링 루프 — 즉시형 isVisible (대기형은 종료 조건에서 8s 지연 → timeout).
       const opt = page.getByRole('radio').first();
       if (await opt.isVisible().catch(() => false)) {
         await opt.click().catch(() => {});
@@ -620,7 +645,7 @@ test.describe('전수 스위프 — 미실행 TC 보강', () => {
         hasText: /충주|제천|단양|청주|보은|옥천|영동|진천|괴산|음성|증평/,
       })
       .first();
-    if (await row.isVisible().catch(() => false)) {
+    if (await visibleWithin(row)) {
       await row.click().catch(() => {});
       await page.waitForTimeout(700);
       // 랭킹 항목은 시군 상세(/region) 또는 목적지 상세(/destination) 로 이동 — 둘 다 정상.
@@ -653,7 +678,7 @@ test.describe('전수 스위프 — 미실행 TC 보강', () => {
     const issues: string[] = [];
     await page.goto('/settings', { waitUntil: 'networkidle' });
     const sw = page.getByRole('switch').first();
-    if (await sw.isVisible().catch(() => false)) {
+    if (await visibleWithin(sw)) {
       const before = await sw.getAttribute('aria-checked');
       // 하이드레이션 전 클릭은 상태 불변 → aria-checked 가 바뀔 때까지 클릭 재시도(결정적).
       // 무반응 클릭은 no-op 이라 실제 토글은 1회만 반영.
