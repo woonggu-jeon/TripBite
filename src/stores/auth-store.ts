@@ -87,6 +87,19 @@ function writeAuthMarker(authed: boolean): void {
     : `${AUTH_MARKER_COOKIE}=; path=/; max-age=0; samesite=lax${secure}`;
 }
 
+/**
+ * FE 인증 마커(`tripbite.authed=1`) 존재 여부. **확정 비로그인 판정용** —
+ * 마커가 없으면 로그인한 적/상태가 아니므로 AuthBootstrap 이 `/me` 프로브를 건너뛴다
+ * (익명 사용자의 불필요한 401/403 요청 제거). 마커가 있으면 실제 세션 유효성은 여전히
+ * `/me`(또는 API 403)로 확정 — 마커는 신호일 뿐 인증 소스가 아니다.
+ */
+export function hasAuthMarker(): boolean {
+  if (typeof document === 'undefined') return false;
+  return document.cookie
+    .split('; ')
+    .some((c) => c === `${AUTH_MARKER_COOKIE}=1`);
+}
+
 function toPersistedUser(user: UserDto | undefined): PersistedUser | undefined {
   if (!user) return undefined;
   return { nickname: user.nickname };

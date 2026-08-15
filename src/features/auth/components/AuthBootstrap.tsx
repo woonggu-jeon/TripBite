@@ -5,17 +5,21 @@ import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import { authApi } from '@/features/auth/api/auth';
 import { authKeys } from '@/features/auth/hooks/use-auth';
-import { useAuthStore } from '@/stores/auth-store';
+import { hasAuthMarker, useAuthStore } from '@/stores/auth-store';
 
 /**
  * AuthBootstrap — 세션 프로브(/me) only. 렌더 X, 부수효과만.
  *
- * 책임 (2026-08-10 재활성):
- *   앱 로드당 1회 GET /me 로 실제 세션을 확정한다.
+ * 책임 (2026-08-10 재활성, 2026-08-14 마커 게이트):
+ *   앱 로드당 최대 1회 GET /me 로 실제 세션을 확정한다.
  *     · 200 → setAuth(user)   → isAuthenticated=true,  sessionResolved=true
  *     · 403 → clearAuth()      → isAuthenticated=false, sessionResolved=true
  *   유저 스코프 폴링(useAuthedQueryEnabled)은 sessionResolved 확정 후에만 발사되므로,
  *   로드타임에 authed 요청은 이 /me 하나뿐 — stale 낙관 인증으로 인한 배지 403 소멸.
+ *
+ *   **마커 게이트**: 인증 마커(`tripbite.authed`)가 없으면 = 확정 비로그인이므로 /me
+ *   프로브를 아예 건너뛴다(clearAuth 만). 한 번도 로그인 안 한 익명 사용자가 매 로드마다
+ *   /me 403 을 쏘던 불필요 요청 제거. 마커 있을 때만 실제 세션 유효성을 /me 로 확정.
  *
  * 인증 / Onboarding **redirect 는 middleware(SSR) 책임** — 여기선 절대 네비게이션 안 함
  * (2026-06-12 에 redirect 로직 때문에 mount 를 껐던 회귀를 재발 방지: /me 동기화만 남김).
@@ -41,6 +45,20 @@ export function AuthBootstrap() {
 
   useEffect(() => {
     const skipSetAuth = SETAUTH_SKIP_PATHS.includes(pathname);
+
+    // 가입 완료 화면: 자동 로그인 방지 — 프로브 없이 세션만 확정(pendingSignupUser 보존).
+    if (skipSetAuth) {
+      useAuthStore.setState({ sessionResolved: true });
+      return;
+    }
+
+    // 마커 없음 = 확정 비로그인 → /me 프로브 skip (익명 사용자의 불필요한 403 제거).
+    // 로그아웃 상태 확정만 하고 네트워크 요청 안 함. 마커는 setAuth/clearAuth 와 lockstep.
+    if (!hasAuthMarker()) {
+      clearAuth();
+      return;
+    }
+
     let cancelled = false;
 
     queryClient
@@ -50,11 +68,6 @@ export function AuthBootstrap() {
       })
       .then((user) => {
         if (cancelled) return;
-        // 가입 완료 화면에선 자동 로그인 방지 — 세션만 확정하고 setAuth 는 보류.
-        if (skipSetAuth) {
-          useAuthStore.setState({ sessionResolved: true });
-          return;
-        }
         setAuth(user);
       })
       .catch(() => {
