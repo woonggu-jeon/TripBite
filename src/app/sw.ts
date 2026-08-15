@@ -15,7 +15,8 @@ import {
  * 캐시 전략:
  *   - 외부 도메인 (TourAPI 이미지) + /icons.svg → 커스텀 명시
  *   - Next 내부 (RSC/navigation/_next/static/기타 이미지) → defaultCache 위임
- *   - Pretendard 는 self-host (next/font/local) — defaultCache 가 _next/static 으로 cover
+ *   - Pretendard 는 self-host dynamic-subset (public/fonts/pretendard/*.woff2) —
+ *     defaultCache 의 static-font/style-assets 규칙이 확장자(.woff2/.css)로 cover(경로 무관)
  *
  * 업데이트 흐름:
  *   skipWaiting:false — 새 SW는 대기. PwaUpdateBanner가 SKIP_WAITING 메시지 →
@@ -42,9 +43,9 @@ const serwist = new Serwist({
   clientsClaim: true,
   navigationPreload: true,
   runtimeCaching: [
-    // jsdelivr Pretendard matcher 제거 (2026-06-18) — Pretendard self-host
-    // (next/font/local) 이후 브라우저가 jsdelivr 에 가지 않음. defaultCache 가
-    // /_next/static 의 폰트 파일을 cover.
+    // jsdelivr Pretendard matcher 제거 (2026-06-18) — Pretendard self-host 이후
+    // 외부 도메인 미접속. dynamic-subset woff2(public/fonts/pretendard)는 defaultCache
+    // 의 static-font-assets 규칙(.woff2 확장자)이 cover — 커스텀 matcher 불필요.
     {
       // SVG sprite — CacheFirst 1년
       matcher: /\/icons\.svg$/i,

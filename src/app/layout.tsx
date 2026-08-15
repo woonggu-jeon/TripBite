@@ -2,33 +2,25 @@ import { Analytics } from '@vercel/analytics/next';
 import type { Metadata, Viewport } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages, getTranslations } from 'next-intl/server';
-import localFont from 'next/font/local';
 import { getApiOrigin } from '@/lib/api-origin';
 import { JsonLd, webSiteOrganization } from '@/lib/json-ld';
 import './globals.scss';
 import { Providers } from './providers';
 
 /**
- * Pretendard 한글 웹폰트 — self-host (next/font/local).
+ * Pretendard 한글 웹폰트 — self-host **dynamic-subset**(unicode-range 분할).
  *
- * 이전: jsdelivr CDN dynamic-subset (CSS render-blocking + 외부 의존).
- * 이후: variable woff2 단일 파일 self-host. next/font 가 build 시 inline
- * @font-face + 자동 preload + zero CLS 보장.
+ * 변경 (2026-08-15): 단일 variable woff2(~2MB)를 매 첫방문 통째로 받던 것 →
+ * `pretendard` 패키지의 dynamic-subset(92 woff2, `public/fonts/pretendard/`)로 전환.
+ * `<link>` 로 로드하는 `pretendard-dynamic-subset.css` 가 unicode-range 별 @font-face
+ * 를 정의 → 브라우저가 **페이지에 실제 쓰인 range 의 subset 만** 지연 다운로드
+ * (한글 페이지 ~수십~수백KB, range 별 캐시). CLS 는 `_fonts.scss` 의 메트릭 오버라이드
+ * fallback('Pretendard-fallback')이 swap 동안 흡수.
  *
- * 한국어 사용자 첫 진입 1회 다운로드 (~2MB) 후 영구 캐시 → 다음 진입 0 비용.
- * `--font-sans` CSS 변수로 globals.scss 의 font-family fallback chain 연결.
+ * `--font-sans`(tokens/_typography.scss) 스택 선두가 'Pretendard Variable'(= subset
+ * CSS 의 family) → 'Pretendard-fallback' → 시스템. next/font 미사용(다중 파일
+ * unicode-range 미지원).
  */
-const pretendard = localFont({
-  src: '../fonts/PretendardVariable.woff2',
-  display: 'swap',
-  // preload:false — 가변 woff2 가 ~2MB 라 최우선 preload 시 LCP 이미지·하이드레이션
-  // JS 와 대역폭을 다툰다(첫 방문 체감 저하). swap + next/font 의 size-adjust fallback
-  // 이 FOUT/CLS 를 흡수하므로, 폰트는 CSS 참조 시점에 비-preload 우선순위로 받는다.
-  // (근본 최적화는 한글 상용 서브셋으로 파일 축소 — 별도 과제, BACKLOG.)
-  preload: false,
-  variable: '--font-sans-loaded',
-  weight: '45 920',
-});
 
 /**
  * 다국어 메타데이터 — generateMetadata 에서 getTranslations 사용
@@ -220,13 +212,20 @@ export default async function RootLayout({
   const apiUrl = apiOrigin || undefined;
 
   return (
-    <html lang={locale} className={pretendard.variable}>
+    <html lang={locale}>
       <head>
+        {/* Pretendard dynamic-subset — self-host CSS (unicode-range 별 @font-face).
+            same-origin 이라 CSP font-src/style-src 'self' 로 허용. subset woff2 는
+            브라우저가 페이지에 쓰인 range 만 지연 로드. */}
+        <link
+          rel="stylesheet"
+          href="/fonts/pretendard/pretendard-dynamic-subset.css"
+        />
         {/*
           Resource hints — 첫 페인트 직후 외부 도메인 연결을 미리 시작.
           DNS 조회 + TLS handshake 비용을 critical path 에서 제거.
 
-          Pretendard 는 self-host (next/font/local) 라 preconnect 불필요.
+          Pretendard 는 self-host dynamic-subset (public/fonts) 라 preconnect 불필요.
           jsdelivr 의존 제거 (2026-06-14) — 외부 도메인 1 감소.
         */}
         <link rel="preconnect" href="https://tong.visitkorea.or.kr" />

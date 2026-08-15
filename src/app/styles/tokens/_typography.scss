@@ -67,11 +67,11 @@
   --font-weight-bold: 700;
   --font-weight-extrabold: 800;
 
-  /* Font stack — next/font/local 의 var(--font-sans-loaded) 우선 + 메트릭 fallback + 시스템.
-     next/font 가 build 시 hash 명 부여 ('--font-sans-loaded' → 실제 className 의 font-family). */
+  /* Font stack — dynamic-subset 의 'Pretendard Variable'(public/fonts CSS) 우선 +
+     메트릭 fallback('Pretendard-fallback', _fonts.scss) + 시스템. subset 로드 전엔
+     fallback 이 CLS 없이 렌더, 로드되면 'Pretendard Variable' 로 swap. */
   --font-sans:
-    var(--font-sans-loaded), 'Pretendard Variable', Pretendard,
-    'Pretendard-fallback', -apple-system, BlinkMacSystemFont,
-    'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', Roboto, 'Helvetica Neue',
-    Arial, sans-serif;
+    'Pretendard Variable', Pretendard, 'Pretendard-fallback', -apple-system,
+    BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
