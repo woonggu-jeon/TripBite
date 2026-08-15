@@ -1,7 +1,15 @@
+import {
+  HydrationBoundary,
+  QueryClient,
+  dehydrate,
+} from '@tanstack/react-query';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { PageBackground } from '@/components/layout/PageBackground';
 import { SubHeader } from '@/components/layout/SubHeader';
+import { rankingApi } from '@/features/ranking/api/ranking';
+import { rankingKeys } from '@/features/ranking/hooks/use-ranking';
+import { CACHE } from '@/lib/cache';
 import { RankingPageContent } from './_components/RankingPageContent';
 
 /**
@@ -24,11 +32,36 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function RankingPage() {
   const t = await getTranslations('ranking');
+
+  // RSC 프리페치 — 공개 데이터(랭킹)를 서버에서 미리 받아 dehydrate → 클라가
+  // 하이드레이션 시 캐시에서 즉시 사용(별도 fetch 왕복 제거). 실패해도 shell 은
+  // 렌더되고 클라 useRanking 이 재시도(graceful). key/staleTime 은 훅과 정합.
+  //
+  // mock 모드 skip — MSW 는 브라우저 전용이라 서버 프리페치가 우회(실/부재 BE 로
+  // mismatch). 이 경우 프리페치 없이 클라 MSW 가 처리(기존 동작).
+  const qc = new QueryClient();
+  if (process.env.NEXT_PUBLIC_USE_MSW !== 'true') {
+    await Promise.all([
+      qc.prefetchQuery({
+        queryKey: rankingKeys.list({ type: 'weekly-winners', limit: 5 }),
+        queryFn: () => rankingApi.list({ type: 'weekly-winners', limit: 5 }),
+        staleTime: CACHE.normal.staleTime,
+      }),
+      qc.prefetchQuery({
+        queryKey: rankingKeys.list({ type: 'by-region' }),
+        queryFn: () => rankingApi.list({ type: 'by-region' }),
+        staleTime: CACHE.normal.staleTime,
+      }),
+    ]).catch(() => {});
+  }
+
   return (
     <>
       <PageBackground />
       <SubHeader title={t('title')} />
-      <RankingPageContent />
+      <HydrationBoundary state={dehydrate(qc)}>
+        <RankingPageContent />
+      </HydrationBoundary>
     </>
   );
 }
