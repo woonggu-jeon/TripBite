@@ -232,26 +232,37 @@ describe('useRanking + alias hooks', () => {
   });
 });
 
-describe('useTravelTypeQuiz — public (auth 가드 없음)', () => {
-  beforeEach(() => {
+describe('useTravelTypeQuiz — auth 게이트 (실 Spring: /travel-types/quiz 익명 403)', () => {
+  const mockQuiz = {
+    success: true,
+    message: null,
+    // 신규 Spring BE: ApiResponse<QuizDto>, id 는 number.
+    data: {
+      questions: [{ id: 1, text: 'Q1', options: [{ id: 1, text: 'A' }] }],
+    },
+  };
+
+  it('비인증 시 fetch 0 (fetchStatus idle) — 익명 403 방지', () => {
     useAuthStore.getState().clearAuth();
+    let called = 0;
+    server.use(
+      http.get(`${apiUrl}/travel-types/quiz`, () => {
+        called++;
+        return HttpResponse.json(mockQuiz);
+      }),
+    );
+    const { result } = renderHookWithProviders(() => useTravelTypeQuiz());
+    expect(result.current.fetchStatus).toBe('idle');
+    expect(called).toBe(0);
   });
 
-  it('비인증이라도 fetch — quiz 응답 반환 (신규 BE: id number → 도메인 string)', async () => {
-    // 신규 Spring BE: ApiResponse<QuizDto>, id 는 number.
-    const mockQuiz = {
-      success: true,
-      message: null,
-      data: {
-        questions: [
-          {
-            id: 1,
-            text: 'Q1',
-            options: [{ id: 1, text: 'A' }],
-          },
-        ],
-      },
-    };
+  it('인증 시 fetch — 응답 반환 (id number → 도메인 string 정규화)', async () => {
+    useAuthStore.getState().setAuth({
+      id: 'u-1',
+      username: 'tester',
+      nickname: '여행자',
+      email: 't@e.st',
+    });
     server.use(
       http.get(`${apiUrl}/travel-types/quiz`, () =>
         HttpResponse.json(mockQuiz),
@@ -260,7 +271,6 @@ describe('useTravelTypeQuiz — public (auth 가드 없음)', () => {
     const { result } = renderHookWithProviders(() => useTravelTypeQuiz());
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data?.questions.length).toBe(1);
-    // 어댑터가 number id 를 string 으로 정규화.
     expect(result.current.data?.questions[0]?.id).toBe('1');
   });
 });

@@ -43,11 +43,19 @@ export function useRecommendedDestinations(
   return useRanking({ type: 'recommended', limit, category });
 }
 
-/** 여행 유형 테스트 — 질문은 거의 불변 */
+/**
+ * 여행 유형 테스트 문항 — 질문은 거의 불변.
+ *
+ * 인증 게이트: 실 Spring 의 `GET /travel-types/quiz`(및 submit)가 인증 필수(익명 403)라
+ * 퀴즈는 로그인 기능이다. 익명엔 발사 안 함(불필요 403 방지) — 화면은 로그인 안내.
+ * (퀴즈를 공개로 하려면 BE 가 /travel-types/quiz·/submit 을 whitelist 해야 함.)
+ */
 export function useTravelTypeQuiz() {
+  const enabled = useAuthedQueryEnabled();
   return useQuery({
     queryKey: rankingKeys.travelTypeQuiz(),
     queryFn: rankingApi.getTravelTypeQuiz,
+    enabled,
     ...CACHE.static, // 1d stale + 7d gc
   });
 }

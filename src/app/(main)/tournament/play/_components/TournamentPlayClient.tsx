@@ -1,31 +1,32 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { CenterIllustration } from '@/features/tournament/components/CenterIllustration';
-import { FallingPetals } from '@/features/tournament/components/FallingPetals';
-import { ChungbukMap } from '@/features/tournament/components/ChungbukMap';
-import { CountSelector } from '@/features/tournament/components/CountSelector';
+import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { EmptyState } from '@/components/feedback/EmptyState';
+import { SubHeader } from '@/components/layout/SubHeader';
+import { Button, ButtonGrid } from '@/components/ui';
+import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import {
   Bracket,
   type BracketHandle,
 } from '@/features/tournament/components/Bracket';
-import type { DestinationDto } from '@/types/api-domain';
-import type {
-  BracketResult,
-  TournamentCount,
-} from '@/features/tournament/types';
-import { useTournamentStore } from '@/features/tournament/store/tournament-store';
+import { CenterIllustration } from '@/features/tournament/components/CenterIllustration';
+import { ChungbukMap } from '@/features/tournament/components/ChungbukMap';
+import { CountSelector } from '@/features/tournament/components/CountSelector';
+import { FallingPetals } from '@/features/tournament/components/FallingPetals';
 import {
   useRecordTournament,
   useTournamentCandidates,
 } from '@/features/tournament/hooks/use-tournament';
-import { Button, ButtonGrid } from '@/components/ui';
-import { EmptyState } from '@/components/feedback/EmptyState';
-import { SubHeader } from '@/components/layout/SubHeader';
-import { CHUNGBUK_REGIONS } from '@/constants/regions';
+import { useTournamentStore } from '@/features/tournament/store/tournament-store';
+import type {
+  BracketResult,
+  TournamentCount,
+} from '@/features/tournament/types';
 import { toast } from '@/lib/toast';
+import { useAuthStore } from '@/stores/auth-store';
+import type { DestinationDto } from '@/types/api-domain';
 import styles from './TournamentPlayClient.module.scss';
 
 type Phase = 'intro' | 'map' | 'tournamentSize' | 'bracket' | 'celebration';
@@ -108,6 +109,10 @@ export function TournamentPlayClient() {
   const setTournamentSize = useTournamentStore((s) => s.setTournamentSize);
   const setBracketResult = useTournamentStore((s) => s.setBracketResult);
   const record_ = useRecordTournament();
+  // 결과 기록은 인증 필수 엔드포인트(POST /mypage/tournament-history, 익명 403).
+  // 비로그인은 저장할 마이페이지 히스토리가 없으므로 호출 자체를 생략(불필요 403·
+  // "저장 실패" 토스트 방지) — 결과 화면은 store 로 정상 표시.
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   const [phase, setPhase] = useState<Phase>('intro');
   const [pendingSize, setPendingSize] = useState<TournamentCount | null>(null);
@@ -174,20 +179,22 @@ export function TournamentPlayClient() {
     const delay = reduced ? 400 : CELEBRATION_MS;
     const id = window.setTimeout(async () => {
       setBracketResult(pendingResult);
-      // POST /tournaments — record id 받아 deep-link 가능하게 URL 에 박음.
-      // 실패 시 id 없이 그냥 store-only result 페이지 이동.
+      // POST /mypage/tournament-history — record id 받아 deep-link 가능하게 URL 에 박음.
+      // 인증 사용자만 호출(익명은 저장 대상 없음 → 생략, 결과는 store-only).
       let recordId: string | undefined;
-      try {
-        const record = await record_.mutateAsync({
-          winnerId: pendingResult.winner.id,
-          runnerUpId: pendingResult.runnerUp?.id ?? null,
-          matchesPlayed: pendingResult.matchesPlayed,
-          tournamentSize: config?.tournamentSize ?? matchupSize,
-        });
-        recordId = record.id;
-      } catch {
-        // store 만으로 result 진입 — UX 끊김 방지. 단, 사용자에게 저장 실패는 알림.
-        toast.error(t('recordFailedToast'));
+      if (isAuthenticated) {
+        try {
+          const record = await record_.mutateAsync({
+            winnerId: pendingResult.winner.id,
+            runnerUpId: pendingResult.runnerUp?.id ?? null,
+            matchesPlayed: pendingResult.matchesPlayed,
+            tournamentSize: config?.tournamentSize ?? matchupSize,
+          });
+          recordId = record.id;
+        } catch {
+          // 로그인했는데 저장 실패 → 사용자에게 알림. store 만으로 result 진입.
+          toast.error(t('recordFailedToast'));
+        }
       }
       router.replace(
         recordId

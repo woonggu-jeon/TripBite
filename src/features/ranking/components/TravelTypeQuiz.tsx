@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { haptic } from '@/lib/haptic';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { Button, RadioGroup, RadioOption } from '@/components/ui';
@@ -13,6 +12,8 @@ import {
 } from '@/features/ranking/hooks/use-ranking';
 import type { TravelTypeAnswer } from '@/features/ranking/types';
 import { shuffleQuizOptions } from '@/features/ranking/utils/shuffle-options';
+import { haptic } from '@/lib/haptic';
+import { useAuthStore } from '@/stores/auth-store';
 import type { QuizOptionDto } from '@/types/api-domain';
 import styles from './TravelTypeQuiz.module.scss';
 
@@ -37,7 +38,11 @@ import styles from './TravelTypeQuiz.module.scss';
  */
 export function TravelTypeQuiz() {
   const t = useTranslations('travelType');
+  const tAuth = useTranslations('auth.requireAuth');
   const router = useRouter();
+  // 퀴즈는 인증 필수(BE: /travel-types/quiz·submit 익명 403) — 익명엔 로그인 안내.
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const sessionResolved = useAuthStore((s) => s.sessionResolved);
   const { data: quiz, isLoading, isError, refetch } = useTravelTypeQuiz();
   const submit = useSubmitTravelType();
 
@@ -52,6 +57,40 @@ export function TravelTypeQuiz() {
     if (!quiz?.questions) return;
     setShuffledOptions(shuffleQuizOptions(quiz.questions));
   }, [quiz]);
+
+  // 세션 확정 전 — 스켈레톤(로그인 여부 미확정 시 로그인안내 깜빡임 방지).
+  if (!sessionResolved) {
+    return (
+      <div className={styles.fallback} role="status" aria-label={t('loading')}>
+        <Skeleton width="100%" height={180} radius="lg" />
+        <Skeleton width="100%" height={56} radius="md" />
+        <Skeleton width="100%" height={56} radius="md" />
+      </div>
+    );
+  }
+  // 익명 — 퀴즈는 인증 필수 기능이라 로그인 안내(불필요 403 없이).
+  if (!isAuthenticated) {
+    return (
+      <EmptyState
+        icon={
+          <span aria-hidden style={{ fontSize: 28 }}>
+            🧭
+          </span>
+        }
+        title={tAuth('title')}
+        description={tAuth('description')}
+        action={
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => router.push('/login?redirect=/quiz')}
+          >
+            {tAuth('confirmLabel')}
+          </Button>
+        }
+      />
+    );
+  }
 
   if (isLoading) {
     return (

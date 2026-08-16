@@ -87,17 +87,22 @@ function report(
   const duration_ms = Math.round(duration);
   const m = (method ?? 'GET').toUpperCase();
 
+  // 미인증(401/403)은 에러가 아니라 정상 인증 신호(로그인 필요/세션만료) —
+  // error 로 찍으면 콘솔이 "빨간 에러"로 오인된다. warn 으로 강등.
+  const isAuthStatus = status === 401 || status === 403;
   // dev: 색상 레벨로 소요시간 노출. prod/test: logger silent → 미출력.
-  const level = isError ? 'error' : slow ? 'warn' : 'info';
+  const level =
+    isError && !isAuthStatus ? 'error' : slow || isAuthStatus ? 'warn' : 'info';
   log[level](
     { method: m, status, pathname, duration_ms, slow },
     `${m} ${pathname} → ${status} ${duration_ms}ms${slow ? ' (slow)' : ''}`,
   );
 
-  // 운영 분석 채널 — slow/error 만 (dev 는 제외).
+  // 운영 분석 채널 — slow/error 만 (dev 는 제외). 401/403 은 실 에러 아님 → 제외.
   if (process.env.NODE_ENV !== 'development') {
     if (slow) track('api.slow', { pathname, status, duration_ms });
-    if (isError) track('api.error', { pathname, status, duration_ms });
+    if (isError && !isAuthStatus)
+      track('api.error', { pathname, status, duration_ms });
   }
 }
 
