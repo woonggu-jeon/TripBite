@@ -58,6 +58,28 @@
 **실 BE 버그: 0건** (이전 signup/compose 500 → BE 수정 확인됨).
 **미검증 1건(코드결함 아님):** 타인→나 수신편지 like/save happy-path — BE 매칭이 랜덤/지연이라 통제 계정에 배달 안 됨. getById 200·본인편지 403 까지는 확인.
 
+> ⚠️ 위 audit 는 **인증 세션 기준**. 아래 엔드포인트는 **익명 요청 시 403**(인증 필수) — 실측 확인(2026-08-16).
+
+### 3-A. 인증 필수 엔드포인트 & 익명 처리 (실측)
+
+익명(로그인 안 함)으로 호출 시 403 나는 것 vs 공개(200):
+
+| 익명 200 (공개)                                                                                                                                                                | 익명 403 (인증 필수)                                                                                                                                                   |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /destinations/random`·`/destinations`·`/destinations/{id}` · `GET /tournaments/rankings/weekly`·`/regions` · `GET /regions/ongoing-festivals` · auth(login/signup/logout) | `GET /travel-types/quiz` · `POST /travel-types/submit` · `POST /mypage/tournament-history` · `GET /me` · `/mypage/*` · `/letters/*` · `/notifications/*` · `/settings` |
+
+**FE 가 이전에 잘못 가정했던 3건 (2026-08-16 수정 — 익명 403 유발)**:
+
+| 엔드포인트                        | 잘못된 가정                 | 실제          | FE 처리                                                                                                        |
+| --------------------------------- | --------------------------- | ------------- | -------------------------------------------------------------------------------------------------------------- |
+| `GET /travel-types/quiz`          | 공개 퀴즈(ungated)          | **인증 필수** | 퀴즈를 **로그인 기능**으로 게이트(`useAuthedQueryEnabled`) — 익명엔 로그인 안내(`TravelTypeQuiz`), 요청 미발사 |
+| `POST /travel-types/submit`       | 공개                        | **인증 필수** | 위 퀴즈 게이트로 함께 커버(로그인 후에만 제출)                                                                 |
+| `POST /mypage/tournament-history` | 선택 인증(게스트 익명 기록) | **인증 필수** | `recordResult` 를 `isAuthenticated` 게이트 — 익명은 호출 생략(결과는 store-only), 인증만 저장                  |
+
+> **BE 요청**: 퀴즈를 공개(비로그인 마케팅/공유)로 의도한다면 `GET /travel-types/quiz` + `POST /travel-types/submit` 를 **whitelist(비인증 허용)** 필요. 그 시 FE 는 위 게이트를 해제하면 익명도 응시 가능. (현재는 인증 필수라 로그인 기능으로 처리.) 토너먼트 게스트 기록(랭킹 집계 반영)을 원하면 `POST /mypage/tournament-history` 도 optional-auth 로.
+>
+> 관측: interceptor 는 401/403 을 **정상 인증 신호**로 취급(전역 토스트 skip, 로그 warn). timing interceptor 도 401/403 은 error→warn 강등(콘솔 빨간 에러 오인 방지).
+
 ---
 
 ## 4. Spring 미지원 엔드포인트 — 대체가능성 분석
@@ -230,25 +252,26 @@ consents: {
 
 > 코드 내 `BE-TODO(§5 …)` 주석과 1:1 대응 (전수: `grep -rn "BE-TODO" src`). ✅ 정상 · 🕗 준비중(UI 유지, BE 추가 시 켜짐) · ⚙️ 전환/degrade(실 Spring 로 재구성).
 
-| 화면 (route)                       | 사용 Spring API                                                                           | 상태                                                           |
-| ---------------------------------- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| 로그인 `/login`                    | POST /auth/login · GET /me                                                                | ✅                                                             |
-| 회원가입 `/signup`                 | POST /auth/signup                                                                         | ✅ · 중복확인 🕗(P2-6, 409 로 대체 동작)                       |
-| 아이디찾기 `/find-id`              | —                                                                                         | 🕗 P1-1                                                        |
-| 비번찾기/재설정 `/forgot`·`/reset` | —                                                                                         | 🕗 P1-2                                                        |
-| 홈 `/`                             | GET /destinations/random · /regions/ongoing-festivals                                     | ✅                                                             |
-| 홈 상단 배너/카테고리픽            | GET /destinations/random (recommended 전환)                                               | ✅ ⚙️(P2-1, 실데이터 표시)                                     |
-| 랭킹 `/ranking`                    | GET /tournaments/rankings/weekly·regions · /travel-types/quiz·submit                      | ✅ · 카테고리/계절 랭킹 ⚙️(P2-1, 빈배열)                       |
-| 토너먼트 `/tournament`·`/play`     | GET /destinations/random                                                                  | ✅                                                             |
-| 토너먼트 결과 `/tournament/result` | POST /mypage/tournament-history · GET /destinations/{id}                                  | ✅ · 딥링크복원 🕗(P2-2, store 전용)                           |
-| 여행지 상세 `/destination/{id}`    | GET /destinations/{id}                                                                    | ✅ · phone/website/좌표 🕗(P2-5) · 길찾기 ⚙️(이름검색)         |
-| 시군 `/region`·`/region/{code}`    | GET /destinations(필터) · /regions/ongoing-festivals                                      | ✅ · summary ⚙️(P2-4, 정적) · contents ⚙️(destinations 재구성) |
-| 편지 `/letter`·compose·sent·{id}   | GET/POST /letters\* · like/save · GET /letters/{id}                                       | ✅ · 위치 ⚙️(클라 centroid 매핑)                               |
-| 마이 `/mypage`                     | GET /me · /mypage/stamps · /mypage/tournaments · /mypage/tournament-history               | ✅ · 아바타 🕗(P1-5)                                           |
-| 도장책 `/mypage/stamps`            | GET /mypage/stamps                                                                        | ✅                                                             |
-| 여행유형 결과 `/quiz/result`       | POST /travel-types/submit · GET /me                                                       | ✅ · 추천 여행지 ⚙️(P2-3, category-random degrade)             |
-| 알림 `/notifications`              | GET /notifications · unread-count · POST {id}/read · read-all                             | ✅                                                             |
-| 설정 `/settings`                   | GET /settings · PATCH /settings/notifications · vapid·subscribe·subscriptions·unsubscribe | ✅ · 비번변경 🕗(P1-3) · 탈퇴 🕗(P1-4)                         |
+| 화면 (route)                       | 사용 Spring API                                                                           | 상태                                                              |
+| ---------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| 로그인 `/login`                    | POST /auth/login · GET /me                                                                | ✅                                                                |
+| 회원가입 `/signup`                 | POST /auth/signup                                                                         | ✅ · 중복확인 🕗(P2-6, 409 로 대체 동작)                          |
+| 아이디찾기 `/find-id`              | —                                                                                         | 🕗 P1-1                                                           |
+| 비번찾기/재설정 `/forgot`·`/reset` | —                                                                                         | 🕗 P1-2                                                           |
+| 홈 `/`                             | GET /destinations/random · /regions/ongoing-festivals                                     | ✅                                                                |
+| 홈 상단 배너/카테고리픽            | GET /destinations/random (recommended 전환)                                               | ✅ ⚙️(P2-1, 실데이터 표시)                                        |
+| 랭킹 `/ranking`                    | GET /tournaments/rankings/weekly·regions                                                  | ✅ (RSC 프리페치) · 카테고리/계절 랭킹 ⚙️(P2-1, 빈배열)           |
+| 퀴즈 `/quiz`                       | GET /travel-types/quiz · POST /travel-types/submit                                        | 🔒 **로그인 필요**(BE 인증필수·익명 403) — 익명 로그인 안내(§3-A) |
+| 토너먼트 `/tournament`·`/play`     | GET /destinations/random                                                                  | ✅                                                                |
+| 토너먼트 결과 `/tournament/result` | POST /mypage/tournament-history · GET /destinations/{id}                                  | ✅ · 기록 저장 🔒 인증만(익명 생략, §3-A) · 딥링크복원 🕗(P2-2)   |
+| 여행지 상세 `/destination/{id}`    | GET /destinations/{id}                                                                    | ✅ · phone/website/좌표 🕗(P2-5) · 길찾기 ⚙️(이름검색)            |
+| 시군 `/region`·`/region/{code}`    | GET /destinations(필터) · /regions/ongoing-festivals                                      | ✅ · summary ⚙️(P2-4, 정적) · contents ⚙️(destinations 재구성)    |
+| 편지 `/letter`·compose·sent·{id}   | GET/POST /letters\* · like/save · GET /letters/{id}                                       | ✅ · 위치 ⚙️(클라 centroid 매핑)                                  |
+| 마이 `/mypage`                     | GET /me · /mypage/stamps · /mypage/tournaments · /mypage/tournament-history               | ✅ · 아바타 🕗(P1-5)                                              |
+| 도장책 `/mypage/stamps`            | GET /mypage/stamps                                                                        | ✅                                                                |
+| 여행유형 결과 `/quiz/result`       | POST /travel-types/submit · GET /me                                                       | ✅ · 추천 여행지 ⚙️(P2-3, category-random degrade)                |
+| 알림 `/notifications`              | GET /notifications · unread-count · POST {id}/read · read-all                             | ✅                                                                |
+| 설정 `/settings`                   | GET /settings · PATCH /settings/notifications · vapid·subscribe·subscriptions·unsubscribe | ✅ · 비번변경 🕗(P1-3) · 탈퇴 🕗(P1-4)                            |
 
 **🕗 준비중 6종**(P1-1~5, P2-2/2-3) = 사용자에게 "준비중" 노출, BE 엔드포인트 추가 시 즉시 활성. **⚙️ 전환/degrade** = 실 Spring 로 재구성돼 동작(품질만 BE 있으면 향상). 나머지 ✅ = 완전 정상.
 
