@@ -122,20 +122,19 @@ src/
 
 ## 문서
 
-| 문서                                                | 내용                                                                        |
-| --------------------------------------------------- | --------------------------------------------------------------------------- |
-| [ARCHITECTURE.md](docs/ARCHITECTURE.md)             | 스택 / 디렉토리 / 데이터 흐름 / 상태 / 인증 / PWA / i18n / 진입점 reference |
-| [FEATURES.md](docs/FEATURES.md)                     | BE 인계 명세 (Auth §A + Notifications §B) — 정책 / 시나리오 / 발송 매핑     |
-| [ENVIRONMENT.md](docs/ENVIRONMENT.md)               | 모든 env 변수 일람 + 환경별 매트릭스 + Vercel/GitHub 등록 + 트러블슈팅      |
-| [DEPLOY.md](docs/DEPLOY.md)                         | main → production 승인 배포 + Vercel deploymentEnabled                      |
-| [STYLES.md](docs/STYLES.md)                         | 디자인 토큰 + Primitive (Card/Button/TextField/MediaThumb/RadioGroup/...)   |
-| [TESTING.md](docs/TESTING.md)                       | Vitest 250 cases / Playwright 6 플랫폼 / axe / 시각 회귀                    |
-| [BACKLOG.md](docs/BACKLOG.md)                       | 후속 작업 백로그                                                            |
-| [I18N_EDGE_CONFIG.md](docs/I18N_EDGE_CONFIG.md)     | i18n 외부 스토리지 마이그 계획 (운영 안정 후)                               |
-| [MOCK_IN_PRODUCTION.md](docs/MOCK_IN_PRODUCTION.md) | 운영 mock 시나리오 (데모/QA)                                                |
-| [PWA_VERIFICATION.md](docs/PWA_VERIFICATION.md)     | iOS PWA 실기기 매뉴얼 검증 체크리스트 (A~F 영역)                            |
-| [STORYBOOK.md](docs/STORYBOOK.md)                   | Storybook 카탈로그 운영 가이드 (실행 / 추가 / CI)                           |
-| [FIGMA_INTEGRATION.md](docs/FIGMA_INTEGRATION.md)   | Figma MCP → 코드 워크플로우 (토큰 매니페스트 / MCP 셋업 / 운영 룰)          |
+| 문서                                              | 내용                                                                        |
+| ------------------------------------------------- | --------------------------------------------------------------------------- |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md)           | 스택 / 디렉토리 / 데이터 흐름 / 상태 / 인증 / PWA / i18n / 진입점 reference |
+| [FEATURES.md](docs/FEATURES.md)                   | BE 인계 명세 (Auth §A + Notifications §B) — 정책 / 시나리오 / 발송 매핑     |
+| [ENVIRONMENT.md](docs/ENVIRONMENT.md)             | 모든 env 변수 일람 + 환경별 매트릭스 + Vercel/GitHub 등록 + 트러블슈팅      |
+| [DEPLOY.md](docs/DEPLOY.md)                       | main → production 승인 배포 + Vercel deploymentEnabled                      |
+| [STYLES.md](docs/STYLES.md)                       | 디자인 토큰 + Primitive (Card/Button/TextField/MediaThumb/RadioGroup/...)   |
+| [TESTING.md](docs/TESTING.md)                     | Vitest 250 cases / Playwright 6 플랫폼 / axe / 시각 회귀                    |
+| [BACKLOG.md](docs/BACKLOG.md)                     | 후속 작업 백로그                                                            |
+| [I18N_EDGE_CONFIG.md](docs/I18N_EDGE_CONFIG.md)   | i18n 외부 스토리지 마이그 계획 (운영 안정 후)                               |
+| [PWA_VERIFICATION.md](docs/PWA_VERIFICATION.md)   | iOS PWA 실기기 매뉴얼 검증 체크리스트 (A~F 영역)                            |
+| [STORYBOOK.md](docs/STORYBOOK.md)                 | Storybook 카탈로그 운영 가이드 (실행 / 추가 / CI)                           |
+| [FIGMA_INTEGRATION.md](docs/FIGMA_INTEGRATION.md) | Figma MCP → 코드 워크플로우 (토큰 매니페스트 / MCP 셋업 / 운영 룰)          |
 
 API 명세 SoT: **Spring Swagger** (`https://trip-bite.o-r.kr/v3/api-docs`) — orval 이 빌드 전 자동 fetch. 연동 현황/미지원은 [BE_SPRING_MIGRATION.md](docs/BE_SPRING_MIGRATION.md).
 

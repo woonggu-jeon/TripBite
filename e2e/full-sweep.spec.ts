@@ -19,7 +19,7 @@ async function visibleWithin(
 }
 
 /**
- * 전수 스위프 (Full Sweep) — TC 문서 `docs/QA/TC-full-sweep.md` 자동화.
+ * 전수 스위프 (Full Sweep) — 라우트/인터랙션 자동 점검 스펙.
  *
  * 각 라우트/인터랙션에 대해:
  *   - 진입 + HTTP status
