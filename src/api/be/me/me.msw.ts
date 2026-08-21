@@ -17,19 +17,68 @@ import type {
 } from 'msw';
 
 import type {
+  ApiResponseAvatarResponseDto,
+  ApiResponseUnit,
   ApiResponseUserResponseDto,
+  AvatarResponseDto,
   UserResponseDto
 } from '../schemas';
 
 
-export const getGetMeResponseUserResponseDtoMock = (overrideResponse: Partial<UserResponseDto> = {}): UserResponseDto => ({...{id: faker.helpers.arrayElement([faker.number.int(), undefined]), username: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), name: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), nickname: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), email: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), phone: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), birthDate: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 10), undefined]), travelType: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.helpers.arrayElement(['adventurer','explorer','relaxer','foodie'] as const), null]), undefined]), createdAt: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', undefined])}, ...overrideResponse});
+export const getChangePasswordResponseMock = (overrideResponse: Partial<Extract<ApiResponseUnit, object>> = {}): ApiResponseUnit => ({success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), message: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), ...overrideResponse})
+
+export const getUploadAvatarResponseAvatarResponseDtoMock = (overrideResponse: Partial<AvatarResponseDto> = {}): AvatarResponseDto => ({...{avatarUrl: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined])}, ...overrideResponse});
+
+export const getUploadAvatarResponseMock = (overrideResponse: Partial<Extract<ApiResponseAvatarResponseDto, object>> = {}): ApiResponseAvatarResponseDto => ({success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), message: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), data: faker.helpers.arrayElement([faker.helpers.arrayElement([{...getUploadAvatarResponseAvatarResponseDtoMock()},null,]), undefined]), ...overrideResponse})
+
+export const getDeleteAvatarResponseAvatarResponseDtoMock = (overrideResponse: Partial<AvatarResponseDto> = {}): AvatarResponseDto => ({...{avatarUrl: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined])}, ...overrideResponse});
+
+export const getDeleteAvatarResponseMock = (overrideResponse: Partial<Extract<ApiResponseAvatarResponseDto, object>> = {}): ApiResponseAvatarResponseDto => ({success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), message: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), data: faker.helpers.arrayElement([faker.helpers.arrayElement([{...getDeleteAvatarResponseAvatarResponseDtoMock()},null,]), undefined]), ...overrideResponse})
+
+export const getGetMeResponseUserResponseDtoMock = (overrideResponse: Partial<UserResponseDto> = {}): UserResponseDto => ({...{id: faker.helpers.arrayElement([faker.number.int(), undefined]), username: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), name: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), nickname: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), email: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), phone: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), birthDate: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 10), undefined]), travelType: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.helpers.arrayElement(['adventurer','explorer','relaxer','foodie'] as const), null]), undefined]), avatarUrl: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), createdAt: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', undefined])}, ...overrideResponse});
 
 export const getGetMeResponseMock = (overrideResponse: Partial<Extract<ApiResponseUserResponseDto, object>> = {}): ApiResponseUserResponseDto => ({success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), message: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), data: faker.helpers.arrayElement([faker.helpers.arrayElement([{...getGetMeResponseUserResponseDtoMock()},null,]), undefined]), ...overrideResponse})
 
-export const getUpdateMeResponseUserResponseDtoMock = (overrideResponse: Partial<UserResponseDto> = {}): UserResponseDto => ({...{id: faker.helpers.arrayElement([faker.number.int(), undefined]), username: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), name: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), nickname: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), email: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), phone: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), birthDate: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 10), undefined]), travelType: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.helpers.arrayElement(['adventurer','explorer','relaxer','foodie'] as const), null]), undefined]), createdAt: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', undefined])}, ...overrideResponse});
+export const getUpdateMeResponseUserResponseDtoMock = (overrideResponse: Partial<UserResponseDto> = {}): UserResponseDto => ({...{id: faker.helpers.arrayElement([faker.number.int(), undefined]), username: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), name: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), nickname: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), email: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), phone: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), birthDate: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 10), undefined]), travelType: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.helpers.arrayElement(['adventurer','explorer','relaxer','foodie'] as const), null]), undefined]), avatarUrl: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), createdAt: faker.helpers.arrayElement([faker.date.past().toISOString().slice(0, 19) + 'Z', undefined])}, ...overrideResponse});
 
 export const getUpdateMeResponseMock = (overrideResponse: Partial<Extract<ApiResponseUserResponseDto, object>> = {}): ApiResponseUserResponseDto => ({success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), message: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), data: faker.helpers.arrayElement([faker.helpers.arrayElement([{...getUpdateMeResponseUserResponseDtoMock()},null,]), undefined]), ...overrideResponse})
 
+
+export const getChangePasswordMockHandler = (overrideResponse?: ApiResponseUnit | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<ApiResponseUnit> | ApiResponseUnit), options?: RequestHandlerOptions) => {
+  return http.post('*/me/change-password', async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+
+
+    return HttpResponse.json(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getChangePasswordResponseMock(),
+      { status: 200
+      })
+  }, options)
+}
+
+export const getUploadAvatarMockHandler = (overrideResponse?: ApiResponseAvatarResponseDto | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<ApiResponseAvatarResponseDto> | ApiResponseAvatarResponseDto), options?: RequestHandlerOptions) => {
+  return http.post('*/me/avatar', async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+
+
+    return HttpResponse.json(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getUploadAvatarResponseMock(),
+      { status: 200
+      })
+  }, options)
+}
+
+export const getDeleteAvatarMockHandler = (overrideResponse?: ApiResponseAvatarResponseDto | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<ApiResponseAvatarResponseDto> | ApiResponseAvatarResponseDto), options?: RequestHandlerOptions) => {
+  return http.delete('*/me/avatar', async (info: Parameters<Parameters<typeof http.delete>[1]>[0]) => {
+
+
+    return HttpResponse.json(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getDeleteAvatarResponseMock(),
+      { status: 200
+      })
+  }, options)
+}
 
 export const getGetMeMockHandler = (overrideResponse?: ApiResponseUserResponseDto | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<ApiResponseUserResponseDto> | ApiResponseUserResponseDto), options?: RequestHandlerOptions) => {
   return http.get('*/me', async (info: Parameters<Parameters<typeof http.get>[1]>[0]) => {
@@ -38,6 +87,16 @@ export const getGetMeMockHandler = (overrideResponse?: ApiResponseUserResponseDt
     return HttpResponse.json(overrideResponse !== undefined
     ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
     : getGetMeResponseMock(),
+      { status: 200
+      })
+  }, options)
+}
+
+export const getDeleteMeMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
+  return http.delete('*/me', async (info: Parameters<Parameters<typeof http.delete>[1]>[0]) => {
+  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
+
+    return new HttpResponse(null,
       { status: 200
       })
   }, options)
@@ -55,6 +114,10 @@ export const getUpdateMeMockHandler = (overrideResponse?: ApiResponseUserRespons
   }, options)
 }
 export const getMeMock = () => [
+  getChangePasswordMockHandler(),
+  getUploadAvatarMockHandler(),
+  getDeleteAvatarMockHandler(),
   getGetMeMockHandler(),
+  getDeleteMeMockHandler(),
   getUpdateMeMockHandler()
 ]

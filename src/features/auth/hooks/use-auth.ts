@@ -10,10 +10,13 @@ import { useRouter } from 'next/navigation';
 // 신규 Spring BE SignupRequestDto (username/password/name/birthDate/email/phone/nickname).
 import type { SignupRequestDto as SignupInput } from '@/api/be/schemas';
 import { authApi } from '@/features/auth/api/auth';
+import { createLogger } from '@/lib/logger';
 import { clearAllCaches } from '@/lib/sw-cache';
 import { isAxiosError } from '@/services/interceptors/auth';
 import { useAuthStore } from '@/stores/auth-store';
 import type { LoginDto, UserDto } from '@/types/api-domain';
+
+const log = createLogger('auth');
 
 export const authKeys = {
   all: ['auth'] as const,
@@ -101,10 +104,69 @@ export function useSignup() {
         username: variables.username ?? '',
         nickname: variables.nickname ?? '',
         email: variables.email ?? '',
+        avatarUrl: null,
       });
       router.replace('/signup/complete');
       router.refresh();
     },
+  });
+}
+
+/**
+ * 아이디 찾기 — 이메일로 가입 아이디 조회.
+ * data: string(username) | null(매칭 없음). 폼이 결과/미발견 분기.
+ */
+export function useFindId() {
+  return useMutation({
+    mutationFn: (email: string) => authApi.findId(email),
+  });
+}
+
+/**
+ * 비밀번호 찾기 — 아이디+이메일로 재설정 토큰 메일 발송 요청.
+ * (계정 존재 여부 노출 방지 위해 BE 는 항상 성공 응답.)
+ */
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: (input: { username: string; email: string }) =>
+      authApi.forgotPassword(input),
+  });
+}
+
+/**
+ * 비밀번호 재설정 — 메일 토큰 + 새 비밀번호(≥10자).
+ * 성공 시 기존 세션 무효화(명시 logout) + client 상태 정리 → /login?reset=success.
+ */
+export function useResetPassword() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const clearAuth = useAuthStore((s) => s.clearAuth);
+  return useMutation({
+    mutationFn: (input: { token: string; password: string }) =>
+      authApi.resetPassword(input),
+    onSuccess: async () => {
+      // BE 가 reset 시 세션을 자동 invalidate 안 할 가능성 대비 — 명시 logout 으로
+      // SID cookie 정리(HttpOnly 라 JS 직접 제거 불가, BE logout 이 Max-Age=0).
+      try {
+        await authApi.logout();
+      } catch (err) {
+        log.warn({ err }, 'reset-password 후 logout 실패 — 진행');
+      }
+      clearAuth();
+      queryClient.clear();
+      router.replace('/login?reset=success');
+      router.refresh();
+    },
+  });
+}
+
+/**
+ * 비밀번호 변경 (로그인 상태) — 현재 비번 검증 + 새 비번(≥10자).
+ */
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: (input: { currentPassword: string; newPassword: string }) =>
+      authApi.changePassword(input),
   });
 }
 
@@ -125,6 +187,29 @@ export function useLogout() {
       // hard nav — useLogin 과 일관. soft router.replace 는 RSC payload / client
       // router cache 잔재 위험 (이전 로그인 상태의 query 결과 / layout). 홈은 public
       // 이라 middleware 통과. 보호 경로 직접 진입 시도 시 middleware 가 /login 처리.
+      window.location.assign('/');
+    },
+  });
+}
+
+/**
+ * 회원 탈퇴 — DELETE /me. BE 가 세션 무효 + 소프트 삭제.
+ * onSettled 흐름은 useLogout 와 동일(clearAuth + queryClient.clear + sw cache + 홈).
+ * 차이: 성공 시에만 cleanup — 실패면 client 상태 유지(재시도 가능).
+ */
+export function useDeleteAccount() {
+  const queryClient = useQueryClient();
+  const clearAuth = useAuthStore((s) => s.clearAuth);
+
+  return useMutation({
+    mutationFn: () => authApi.deleteAccount(),
+    onSettled: async (_data, error) => {
+      if (!error) {
+        clearAuth();
+        queryClient.clear();
+        await clearAllCaches();
+      }
+      // hard nav — useLogin / useLogout 과 일관 (RSC cache 잔재 회피).
       window.location.assign('/');
     },
   });

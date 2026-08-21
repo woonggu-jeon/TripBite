@@ -12,11 +12,8 @@ import styles from './AuthHero.module.scss';
  * `emptyItme`(EmptyState) 와 원 크기는 같지만 글자 크기·간격이 달라 별 컴포넌트다
  * (authItme = 24/14 + gap 10·12, emptyItme = 16·14/12 + gap 16·20).
  *
- * 사용처: 아이디 찾기 · 비밀번호 찾기.
- *
- * [보존/preserved] 현재 아이디/비번찾기 페이지가 ComingSoon(BE_SPRING_MIGRATION §5
- * P1-1/P1-2, Spring 미지원)이라 렌더 경로가 없어 미사용. BE 엔드포인트 추가로 폼
- * 복원 시 재사용하는 설계 완료 UI — dead-code sweep 에서 제외(의도적 보존).
+ * 사용처: 아이디 찾기(FindIdForm) · 비밀번호 찾기(ForgotPasswordForm).
+ * BE 계정찾기 엔드포인트 추가(2026-08)로 두 폼 활성화 — 실사용 중.
  */
 export function AuthHero({
   icon,

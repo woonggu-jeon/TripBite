@@ -25,11 +25,302 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  ApiResponseAvatarResponseDto,
+  ApiResponseUnit,
   ApiResponseUserResponseDto,
-  UpdateMeRequestDto
+  ChangePasswordRequestDto,
+  UpdateMeRequestDto,
+  UploadAvatarBody
 } from '../schemas';
 
 import { orvalMutator } from '../../../services/api/orval-mutator';
+
+
+
+
+/**
+ * currentPassword가 일치해야 newPassword로 바뀐다(400 CURRENT_PASSWORD_MISMATCH). PATCH /me와 달리 현재 비밀번호 확인을 거치는 전용 경로.
+ * @summary 비밀번호 변경
+ */
+export const changePassword = (
+    changePasswordRequestDto: ChangePasswordRequestDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalMutator<ApiResponseUnit>(
+      {url: `/me/change-password`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: changePasswordRequestDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getChangePasswordQueryKey = (changePasswordRequestDto?: ChangePasswordRequestDto,) => {
+    return [
+    'POST', `/me/change-password`, changePasswordRequestDto
+    ] as const;
+    }
+
+
+export const getChangePasswordQueryOptions = <TData = Awaited<ReturnType<typeof changePassword>>, TError = unknown>(changePasswordRequestDto: ChangePasswordRequestDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof changePassword>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getChangePasswordQueryKey(changePasswordRequestDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof changePassword>>> = ({ signal }) => changePassword(changePasswordRequestDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof changePassword>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ChangePasswordQueryResult = NonNullable<Awaited<ReturnType<typeof changePassword>>>
+export type ChangePasswordQueryError = unknown
+
+
+export function useChangePassword<TData = Awaited<ReturnType<typeof changePassword>>, TError = unknown>(
+ changePasswordRequestDto: ChangePasswordRequestDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof changePassword>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof changePassword>>,
+          TError,
+          Awaited<ReturnType<typeof changePassword>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChangePassword<TData = Awaited<ReturnType<typeof changePassword>>, TError = unknown>(
+ changePasswordRequestDto: ChangePasswordRequestDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof changePassword>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof changePassword>>,
+          TError,
+          Awaited<ReturnType<typeof changePassword>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChangePassword<TData = Awaited<ReturnType<typeof changePassword>>, TError = unknown>(
+ changePasswordRequestDto: ChangePasswordRequestDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof changePassword>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 비밀번호 변경
+ */
+
+export function useChangePassword<TData = Awaited<ReturnType<typeof changePassword>>, TError = unknown>(
+ changePasswordRequestDto: ChangePasswordRequestDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof changePassword>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getChangePasswordQueryOptions(changePasswordRequestDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+/**
+ * image/* 타입, 최대 10MB. 이미 업로드된 이미지가 있으면 덮어쓴다. 실패 시 422 AVATAR_TYPE_UNSUPPORTED(이미지 아닌 형식) 또는 AVATAR_TOO_LARGE(10MB 초과).
+ * @summary 프로필 이미지 업로드
+ */
+export const uploadAvatar = (
+    uploadAvatarBody?: UploadAvatarBody,
+ signal?: AbortSignal
+) => {
+
+      const formData = new FormData();
+if(uploadAvatarBody?.file !== undefined) {
+ formData.append(`file`, uploadAvatarBody.file);
+ }
+
+      return orvalMutator<ApiResponseAvatarResponseDto>(
+      {url: `/me/avatar`, method: 'POST',
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData, signal
+    },
+      );
+    }
+
+
+
+
+export const getUploadAvatarQueryKey = (uploadAvatarBody?: UploadAvatarBody,) => {
+    return [
+    'POST', `/me/avatar`, uploadAvatarBody
+    ] as const;
+    }
+
+
+export const getUploadAvatarQueryOptions = <TData = Awaited<ReturnType<typeof uploadAvatar>>, TError = unknown>(uploadAvatarBody?: UploadAvatarBody, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof uploadAvatar>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getUploadAvatarQueryKey(uploadAvatarBody);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof uploadAvatar>>> = ({ signal }) => uploadAvatar(uploadAvatarBody, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof uploadAvatar>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type UploadAvatarQueryResult = NonNullable<Awaited<ReturnType<typeof uploadAvatar>>>
+export type UploadAvatarQueryError = unknown
+
+
+export function useUploadAvatar<TData = Awaited<ReturnType<typeof uploadAvatar>>, TError = unknown>(
+ uploadAvatarBody: undefined |  UploadAvatarBody, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof uploadAvatar>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof uploadAvatar>>,
+          TError,
+          Awaited<ReturnType<typeof uploadAvatar>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUploadAvatar<TData = Awaited<ReturnType<typeof uploadAvatar>>, TError = unknown>(
+ uploadAvatarBody?: UploadAvatarBody, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof uploadAvatar>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof uploadAvatar>>,
+          TError,
+          Awaited<ReturnType<typeof uploadAvatar>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useUploadAvatar<TData = Awaited<ReturnType<typeof uploadAvatar>>, TError = unknown>(
+ uploadAvatarBody?: UploadAvatarBody, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof uploadAvatar>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 프로필 이미지 업로드
+ */
+
+export function useUploadAvatar<TData = Awaited<ReturnType<typeof uploadAvatar>>, TError = unknown>(
+ uploadAvatarBody?: UploadAvatarBody, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof uploadAvatar>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getUploadAvatarQueryOptions(uploadAvatarBody,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+/**
+ * 업로드된 이미지가 없어도 멱등하게 avatarUrl:null로 응답한다.
+ * @summary 프로필 이미지 삭제
+ */
+export const deleteAvatar = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalMutator<ApiResponseAvatarResponseDto>(
+      {url: `/me/avatar`, method: 'DELETE', signal
+    },
+      );
+    }
+
+
+
+
+export const getDeleteAvatarQueryKey = () => {
+    return [
+    'DELETE', `/me/avatar`
+    ] as const;
+    }
+
+
+export const getDeleteAvatarQueryOptions = <TData = Awaited<ReturnType<typeof deleteAvatar>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deleteAvatar>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDeleteAvatarQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof deleteAvatar>>> = ({ signal }) => deleteAvatar(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof deleteAvatar>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DeleteAvatarQueryResult = NonNullable<Awaited<ReturnType<typeof deleteAvatar>>>
+export type DeleteAvatarQueryError = unknown
+
+
+export function useDeleteAvatar<TData = Awaited<ReturnType<typeof deleteAvatar>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof deleteAvatar>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof deleteAvatar>>,
+          TError,
+          Awaited<ReturnType<typeof deleteAvatar>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDeleteAvatar<TData = Awaited<ReturnType<typeof deleteAvatar>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deleteAvatar>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof deleteAvatar>>,
+          TError,
+          Awaited<ReturnType<typeof deleteAvatar>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDeleteAvatar<TData = Awaited<ReturnType<typeof deleteAvatar>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deleteAvatar>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 프로필 이미지 삭제
+ */
+
+export function useDeleteAvatar<TData = Awaited<ReturnType<typeof deleteAvatar>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deleteAvatar>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDeleteAvatarQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
 
 
 
@@ -189,6 +480,99 @@ export function useGetMe<TData = Awaited<ReturnType<typeof getMe>>, TError = unk
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getGetMeQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+/**
+ * 소프트 삭제(deletedAt 기록) 후 현재 세션을 즉시 무효화한다. 탈퇴한 계정으로는 이후 로그인도 실패한다(INVALID_CREDENTIALS와 동일하게 응답).
+ * @summary 회원 탈퇴
+ */
+export const deleteMe = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalMutator<void>(
+      {url: `/me`, method: 'DELETE', signal
+    },
+      );
+    }
+
+
+
+
+export const getDeleteMeQueryKey = () => {
+    return [
+    'DELETE', `/me`
+    ] as const;
+    }
+
+
+export const getDeleteMeQueryOptions = <TData = Awaited<ReturnType<typeof deleteMe>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deleteMe>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDeleteMeQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof deleteMe>>> = ({ signal }) => deleteMe(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof deleteMe>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DeleteMeQueryResult = NonNullable<Awaited<ReturnType<typeof deleteMe>>>
+export type DeleteMeQueryError = unknown
+
+
+export function useDeleteMe<TData = Awaited<ReturnType<typeof deleteMe>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof deleteMe>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof deleteMe>>,
+          TError,
+          Awaited<ReturnType<typeof deleteMe>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDeleteMe<TData = Awaited<ReturnType<typeof deleteMe>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deleteMe>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof deleteMe>>,
+          TError,
+          Awaited<ReturnType<typeof deleteMe>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDeleteMe<TData = Awaited<ReturnType<typeof deleteMe>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deleteMe>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 회원 탈퇴
+ */
+
+export function useDeleteMe<TData = Awaited<ReturnType<typeof deleteMe>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deleteMe>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDeleteMeQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

@@ -17,19 +17,29 @@ import type {
 } from 'msw';
 
 import type {
+  ApiResponseFindIdResponseDto,
   ApiResponseLoginResponseDto,
   ApiResponseUnit,
+  FindIdResponseDto,
   LoginResponseDto
 } from '../schemas';
 
 
 export const getSignupResponseMock = (overrideResponse: Partial<Extract<ApiResponseUnit, object>> = {}): ApiResponseUnit => ({success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), message: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), ...overrideResponse})
 
+export const getResetPasswordResponseMock = (overrideResponse: Partial<Extract<ApiResponseUnit, object>> = {}): ApiResponseUnit => ({success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), message: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), ...overrideResponse})
+
 export const getLogoutResponseMock = (overrideResponse: Partial<Extract<ApiResponseUnit, object>> = {}): ApiResponseUnit => ({success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), message: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), ...overrideResponse})
 
 export const getLoginResponseLoginResponseDtoMock = (overrideResponse: Partial<LoginResponseDto> = {}): LoginResponseDto => ({...{userId: faker.helpers.arrayElement([faker.number.int(), undefined])}, ...overrideResponse});
 
 export const getLoginResponseMock = (overrideResponse: Partial<Extract<ApiResponseLoginResponseDto, object>> = {}): ApiResponseLoginResponseDto => ({success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), message: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), data: faker.helpers.arrayElement([faker.helpers.arrayElement([{...getLoginResponseLoginResponseDtoMock()},null,]), undefined]), ...overrideResponse})
+
+export const getForgotPasswordResponseMock = (overrideResponse: Partial<Extract<ApiResponseUnit, object>> = {}): ApiResponseUnit => ({success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), message: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), ...overrideResponse})
+
+export const getFindIdResponseFindIdResponseDtoMock = (overrideResponse: Partial<FindIdResponseDto> = {}): FindIdResponseDto => ({...{username: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined])}, ...overrideResponse});
+
+export const getFindIdResponseMock = (overrideResponse: Partial<Extract<ApiResponseFindIdResponseDto, object>> = {}): ApiResponseFindIdResponseDto => ({success: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), message: faker.helpers.arrayElement([faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), null]), undefined]), data: faker.helpers.arrayElement([faker.helpers.arrayElement([{...getFindIdResponseFindIdResponseDtoMock()},null,]), undefined]), ...overrideResponse})
 
 
 export const getSignupMockHandler = (overrideResponse?: ApiResponseUnit | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<ApiResponseUnit> | ApiResponseUnit), options?: RequestHandlerOptions) => {
@@ -39,6 +49,18 @@ export const getSignupMockHandler = (overrideResponse?: ApiResponseUnit | ((info
     return HttpResponse.json(overrideResponse !== undefined
     ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
     : getSignupResponseMock(),
+      { status: 200
+      })
+  }, options)
+}
+
+export const getResetPasswordMockHandler = (overrideResponse?: ApiResponseUnit | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<ApiResponseUnit> | ApiResponseUnit), options?: RequestHandlerOptions) => {
+  return http.post('*/auth/reset-password', async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+
+
+    return HttpResponse.json(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getResetPasswordResponseMock(),
       { status: 200
       })
   }, options)
@@ -67,8 +89,35 @@ export const getLoginMockHandler = (overrideResponse?: ApiResponseLoginResponseD
       })
   }, options)
 }
+
+export const getForgotPasswordMockHandler = (overrideResponse?: ApiResponseUnit | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<ApiResponseUnit> | ApiResponseUnit), options?: RequestHandlerOptions) => {
+  return http.post('*/auth/forgot-password', async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+
+
+    return HttpResponse.json(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getForgotPasswordResponseMock(),
+      { status: 200
+      })
+  }, options)
+}
+
+export const getFindIdMockHandler = (overrideResponse?: ApiResponseFindIdResponseDto | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<ApiResponseFindIdResponseDto> | ApiResponseFindIdResponseDto), options?: RequestHandlerOptions) => {
+  return http.post('*/auth/find-id', async (info: Parameters<Parameters<typeof http.post>[1]>[0]) => {
+
+
+    return HttpResponse.json(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getFindIdResponseMock(),
+      { status: 200
+      })
+  }, options)
+}
 export const getAuthMock = () => [
   getSignupMockHandler(),
+  getResetPasswordMockHandler(),
   getLogoutMockHandler(),
-  getLoginMockHandler()
+  getLoginMockHandler(),
+  getForgotPasswordMockHandler(),
+  getFindIdMockHandler()
 ]

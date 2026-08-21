@@ -32,7 +32,9 @@ export function buildCsp(nonce: string): string {
     // jsdelivr 제거 (2026-06-18) — Pretendard self-host 이후 브라우저 사용 0.
     // OG route 의 jsdelivr fetch 는 서버측 (edge runtime) 이라 CSP 무관.
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob: https://tong.visitkorea.or.kr",
+    // apiUrl: 프로필 아바타(/me/avatar) avatarUrl 이 API 오리진과 동일 가정(2026-08).
+    // 별도 CDN 으로 옮기면 host 를 여기 + next.config remotePatterns 에 반영.
+    `img-src 'self' data: blob: https://tong.visitkorea.or.kr ${apiUrl}`.trim(),
     "font-src 'self' data:",
     // connect-src: 백엔드 + Vercel Speed Insights / Analytics.
     `connect-src 'self' ${apiUrl} https://vitals.vercel-insights.com`.trim(),

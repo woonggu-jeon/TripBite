@@ -16,5 +16,7 @@ export interface UserResponseDto {
   birthDate?: string;
   /** @nullable */
   travelType?: UserResponseDtoTravelType;
+  /** @nullable */
+  avatarUrl?: string | null;
   createdAt?: string;
 }

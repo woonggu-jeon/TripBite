@@ -306,6 +306,7 @@ describe('enabled: isAuthenticated 가드', () => {
       username: 'tester',
       nickname: '여행자',
       email: 't@e.st',
+      avatarUrl: null,
     });
     let called = 0;
     server.use(
@@ -327,6 +328,7 @@ describe('useLettersInfinite — kind 별 분기', () => {
       username: 'tester',
       nickname: '여행자',
       email: 't@e.st',
+      avatarUrl: null,
     });
   });
 

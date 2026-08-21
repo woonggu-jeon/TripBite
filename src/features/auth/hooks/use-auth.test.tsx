@@ -29,6 +29,7 @@ const mockUser = {
   username: 'tester',
   nickname: '여행자',
   email: 't@e.st',
+  avatarUrl: null,
 } as const;
 
 /** location.assign 만 spy — happy-dom URL parser 보존. */

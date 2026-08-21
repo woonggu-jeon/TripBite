@@ -66,3 +66,30 @@ export function useStamps() {
     ...CACHE.user,
   });
 }
+
+/**
+ * 프로필 이미지 업로드 — POST /me/avatar (multipart).
+ * onSuccess 시 /me + /mypage summary invalidate → 서버 avatarUrl 이 정식 source.
+ */
+export function useUpdateAvatar() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (file: File) => mypageApi.updateAvatar(file),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: authKeys.me() });
+      qc.invalidateQueries({ queryKey: mypageKeys.summary() });
+    },
+  });
+}
+
+/** 프로필 이미지 삭제 — DELETE /me/avatar → 기본 아바타로 복귀. */
+export function useRemoveAvatar() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => mypageApi.removeAvatar(),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: authKeys.me() });
+      qc.invalidateQueries({ queryKey: mypageKeys.summary() });
+    },
+  });
+}

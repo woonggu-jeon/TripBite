@@ -46,16 +46,14 @@ export function useRecommendedDestinations(
 /**
  * 여행 유형 테스트 문항 — 질문은 거의 불변.
  *
- * 인증 게이트: 실 Spring 의 `GET /travel-types/quiz`(및 submit)가 인증 필수(익명 403)라
- * 퀴즈는 로그인 기능이다. 익명엔 발사 안 함(불필요 403 방지) — 화면은 로그인 안내.
- * (퀴즈를 공개로 하려면 BE 가 /travel-types/quiz·/submit 을 whitelist 해야 함.)
+ * 공개 엔드포인트: BE 가 `GET /travel-types/quiz`·`POST /travel-types/submit` 을
+ * whitelist(2026-08, 실측 익명 200) → 퀴즈는 로그인 없이 응시 가능. 게이트 제거.
+ * (내 유형 조회/적용 `GET·PATCH /me` 만 인증 필요 — useMyTravelType/useSetMyTravelType.)
  */
 export function useTravelTypeQuiz() {
-  const enabled = useAuthedQueryEnabled();
   return useQuery({
     queryKey: rankingKeys.travelTypeQuiz(),
     queryFn: rankingApi.getTravelTypeQuiz,
-    enabled,
     ...CACHE.static, // 1d stale + 7d gc
   });
 }

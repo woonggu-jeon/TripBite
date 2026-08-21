@@ -20,9 +20,13 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  ApiResponseFindIdResponseDto,
   ApiResponseLoginResponseDto,
   ApiResponseUnit,
+  FindIdRequestDto,
+  ForgotPasswordRequestDto,
   LoginRequestDto,
+  ResetPasswordRequestDto,
   SignupRequestDto
 } from '../schemas';
 
@@ -115,6 +119,101 @@ export function useSignup<TData = Awaited<ReturnType<typeof signup>>, TError = u
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getSignupQueryOptions(signupRequestDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+/**
+ * forgot-password로 발급된 토큰(30분 유효, 1회용)을 검증하고 새 비밀번호로 바꾼다. 실패 시 400 RESET_TOKEN_INVALID(없거나 이미 사용된 토큰) 또는 RESET_TOKEN_EXPIRED.
+ * @summary 비밀번호 재설정
+ */
+export const resetPassword = (
+    resetPasswordRequestDto: ResetPasswordRequestDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalMutator<ApiResponseUnit>(
+      {url: `/auth/reset-password`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: resetPasswordRequestDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getResetPasswordQueryKey = (resetPasswordRequestDto?: ResetPasswordRequestDto,) => {
+    return [
+    'POST', `/auth/reset-password`, resetPasswordRequestDto
+    ] as const;
+    }
+
+
+export const getResetPasswordQueryOptions = <TData = Awaited<ReturnType<typeof resetPassword>>, TError = unknown>(resetPasswordRequestDto: ResetPasswordRequestDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof resetPassword>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getResetPasswordQueryKey(resetPasswordRequestDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof resetPassword>>> = ({ signal }) => resetPassword(resetPasswordRequestDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof resetPassword>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ResetPasswordQueryResult = NonNullable<Awaited<ReturnType<typeof resetPassword>>>
+export type ResetPasswordQueryError = unknown
+
+
+export function useResetPassword<TData = Awaited<ReturnType<typeof resetPassword>>, TError = unknown>(
+ resetPasswordRequestDto: ResetPasswordRequestDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof resetPassword>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof resetPassword>>,
+          TError,
+          Awaited<ReturnType<typeof resetPassword>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useResetPassword<TData = Awaited<ReturnType<typeof resetPassword>>, TError = unknown>(
+ resetPasswordRequestDto: ResetPasswordRequestDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof resetPassword>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof resetPassword>>,
+          TError,
+          Awaited<ReturnType<typeof resetPassword>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useResetPassword<TData = Awaited<ReturnType<typeof resetPassword>>, TError = unknown>(
+ resetPasswordRequestDto: ResetPasswordRequestDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof resetPassword>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 비밀번호 재설정
+ */
+
+export function useResetPassword<TData = Awaited<ReturnType<typeof resetPassword>>, TError = unknown>(
+ resetPasswordRequestDto: ResetPasswordRequestDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof resetPassword>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getResetPasswordQueryOptions(resetPasswordRequestDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -303,6 +402,196 @@ export function useLogin<TData = Awaited<ReturnType<typeof login>>, TError = unk
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getLoginQueryOptions(loginRequestDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+/**
+ * username과 email이 모두 일치하는 계정에만 재설정 링크를 발송한다. 일치 여부와 무관하게 항상 200 + success:true로 응답한다(계정 존재 유추 방지).
+ * @summary 비밀번호 재설정 메일 발송
+ */
+export const forgotPassword = (
+    forgotPasswordRequestDto: ForgotPasswordRequestDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalMutator<ApiResponseUnit>(
+      {url: `/auth/forgot-password`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: forgotPasswordRequestDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getForgotPasswordQueryKey = (forgotPasswordRequestDto?: ForgotPasswordRequestDto,) => {
+    return [
+    'POST', `/auth/forgot-password`, forgotPasswordRequestDto
+    ] as const;
+    }
+
+
+export const getForgotPasswordQueryOptions = <TData = Awaited<ReturnType<typeof forgotPassword>>, TError = unknown>(forgotPasswordRequestDto: ForgotPasswordRequestDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof forgotPassword>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getForgotPasswordQueryKey(forgotPasswordRequestDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof forgotPassword>>> = ({ signal }) => forgotPassword(forgotPasswordRequestDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof forgotPassword>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ForgotPasswordQueryResult = NonNullable<Awaited<ReturnType<typeof forgotPassword>>>
+export type ForgotPasswordQueryError = unknown
+
+
+export function useForgotPassword<TData = Awaited<ReturnType<typeof forgotPassword>>, TError = unknown>(
+ forgotPasswordRequestDto: ForgotPasswordRequestDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof forgotPassword>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof forgotPassword>>,
+          TError,
+          Awaited<ReturnType<typeof forgotPassword>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useForgotPassword<TData = Awaited<ReturnType<typeof forgotPassword>>, TError = unknown>(
+ forgotPasswordRequestDto: ForgotPasswordRequestDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof forgotPassword>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof forgotPassword>>,
+          TError,
+          Awaited<ReturnType<typeof forgotPassword>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useForgotPassword<TData = Awaited<ReturnType<typeof forgotPassword>>, TError = unknown>(
+ forgotPasswordRequestDto: ForgotPasswordRequestDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof forgotPassword>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 비밀번호 재설정 메일 발송
+ */
+
+export function useForgotPassword<TData = Awaited<ReturnType<typeof forgotPassword>>, TError = unknown>(
+ forgotPasswordRequestDto: ForgotPasswordRequestDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof forgotPassword>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getForgotPasswordQueryOptions(forgotPasswordRequestDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+/**
+ * email로 가입된 계정을 조회해 마스킹된 username(예: tes***01)을 반환한다. 가입 내역이 없어도 항상 200 + username:null로 응답한다(이메일 가입 여부 유추 방지).
+ * @summary 아이디 찾기
+ */
+export const findId = (
+    findIdRequestDto: FindIdRequestDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalMutator<ApiResponseFindIdResponseDto>(
+      {url: `/auth/find-id`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: findIdRequestDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getFindIdQueryKey = (findIdRequestDto?: FindIdRequestDto,) => {
+    return [
+    'POST', `/auth/find-id`, findIdRequestDto
+    ] as const;
+    }
+
+
+export const getFindIdQueryOptions = <TData = Awaited<ReturnType<typeof findId>>, TError = unknown>(findIdRequestDto: FindIdRequestDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findId>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getFindIdQueryKey(findIdRequestDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof findId>>> = ({ signal }) => findId(findIdRequestDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof findId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type FindIdQueryResult = NonNullable<Awaited<ReturnType<typeof findId>>>
+export type FindIdQueryError = unknown
+
+
+export function useFindId<TData = Awaited<ReturnType<typeof findId>>, TError = unknown>(
+ findIdRequestDto: FindIdRequestDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof findId>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findId>>,
+          TError,
+          Awaited<ReturnType<typeof findId>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFindId<TData = Awaited<ReturnType<typeof findId>>, TError = unknown>(
+ findIdRequestDto: FindIdRequestDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findId>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findId>>,
+          TError,
+          Awaited<ReturnType<typeof findId>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFindId<TData = Awaited<ReturnType<typeof findId>>, TError = unknown>(
+ findIdRequestDto: FindIdRequestDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findId>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 아이디 찾기
+ */
+
+export function useFindId<TData = Awaited<ReturnType<typeof findId>>, TError = unknown>(
+ findIdRequestDto: FindIdRequestDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findId>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getFindIdQueryOptions(findIdRequestDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

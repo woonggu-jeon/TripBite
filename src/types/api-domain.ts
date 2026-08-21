@@ -144,14 +144,15 @@ export interface ComposeLetterDto {
 }
 
 // Spring UserResponseDto 파생 뷰 — FE 소비 필드만.
-// homeRegion·isOnboarded·travelType(brief) 는 화면 미소비라 삭제(BE 무관).
-// BE-TODO(§5 P1-5): avatarUrl 은 Spring UserResponseDto 미제공이라 삭제 — BE 가
-//   avatarUrl 추가 + /me/avatar 엔드포인트 제공 시 아바타 기능 복원.
+// name·phone·birthDate·travelType(brief)·createdAt 는 화면 미소비라 미매핑(BE 무관).
+// avatarUrl: Spring UserResponseDto 가 제공(2026-08) — /me/avatar 업로드/삭제와 연동.
+//   미설정 시 null → 컴포넌트는 기본 아바타 fallback.
 export interface UserDto {
   id: string;
   username: string;
   nickname: string;
   email: string;
+  avatarUrl: string | null;
 }
 
 export interface ProfileDto {

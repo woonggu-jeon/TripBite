@@ -1,22 +1,22 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { ComingSoon } from '@/components/feedback/ComingSoon';
 import { Dialog } from '@/components/ui';
+import { ChangePasswordForm } from '@/features/auth/components/ChangePasswordForm';
 
 /**
  * 비밀번호 변경 dialog — 설정 페이지의 모달.
  *
- * BE-TODO(§5 P1-3): 비밀번호 변경 — Spring 미지원(POST /me/change-password 없음,
- * PATCH /me{password} 는 currentPassword 검증 불가) → 준비중 안내.
- * 엔드포인트 추가 시 ComingSoon → ChangePasswordForm + useChangePassword 복원.
+ * 본문은 `ChangePasswordForm` 재사용 (현재 비번 + 새 비번 + 확인 + 검증 + mutation).
+ * Dialog primitive 가 backdrop / ESC / focus trap / a11y 담당.
+ * 폼 onDone 시 자동 close.
  */
 export function ChangePasswordDialog({ onClose }: { onClose: () => void }) {
   const t = useTranslations('settings.account.changePasswordDialog');
 
   return (
     <Dialog open onClose={onClose} title={t('title')} showCloseButton>
-      <ComingSoon title={t('title')} />
+      <ChangePasswordForm onDone={onClose} />
     </Dialog>
   );
 }
