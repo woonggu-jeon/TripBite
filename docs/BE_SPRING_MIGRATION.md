@@ -1,7 +1,11 @@
 # TripBite — Spring BE 연동 현황 · API 검증 · BE 요청 (통합 문서)
 
 > **단일 소스**. NestJS→Spring 마이그레이션 최종 상태 + 실 BE API 전수 검증 결과 + BE 추가 요청을 하나로 통합.
-> 최종 검증: **2026-08-10** (실 BE `https://trip-bite.o-r.kr`, 테스트 계정 `test / 1234`). Spring 39 ops 전수 호출 커버리지 확보 + BE 추가 요청(§5) 갱신.
+> 최종 검증: **2026-08-21** (실 BE `https://trip-bite.o-r.kr`). Spring **46 ops**(2026-08 계정/프로필 7 ops 추가) 커버리지.
+>
+> **2026-08-21 업데이트 — P1 계정/프로필 5기능 BE 추가 완료 → FE 전면 배선 + 실 BE 스모크 통과.**
+> find-id·forgot-password·reset-password·change-password·회원탈퇴(`DELETE /me`)·프로필이미지(`POST/DELETE /me/avatar`)가
+> 모두 준비중 해제되어 실동작(상세 §1). **남은 요청은 hard-block 0건** — §5-A(BE 필요 개선)·§5-B(FE 우회 동작 중)뿐.
 
 ---
 
@@ -64,19 +68,19 @@
 
 익명(로그인 안 함)으로 호출 시 403 나는 것 vs 공개(200):
 
-| 익명 200 (공개)                                                                                                                                                                | 익명 403 (인증 필수)                                                                                                                                                   |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `GET /destinations/random`·`/destinations`·`/destinations/{id}` · `GET /tournaments/rankings/weekly`·`/regions` · `GET /regions/ongoing-festivals` · auth(login/signup/logout) | `GET /travel-types/quiz` · `POST /travel-types/submit` · `POST /mypage/tournament-history` · `GET /me` · `/mypage/*` · `/letters/*` · `/notifications/*` · `/settings` |
+| 익명 200 (공개)                                                                                                                                                                                                                                                                                                        | 익명 403 (인증 필수)                                                                                                                            |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /destinations/random`·`/destinations`·`/destinations/{id}` · `GET /tournaments/rankings/weekly`·`/regions` · `GET /regions/ongoing-festivals` · `GET /travel-types/quiz` · `POST /travel-types/submit` · `GET /notifications/vapid-public-key` · auth(login/signup/logout/find-id/forgot-password/reset-password) | `POST /mypage/tournament-history` · `GET /me` · `/mypage/*` · `/letters/*` · `/notifications/*` · `/settings` · `/me/*`(change-password/avatar) |
 
-**FE 가 이전에 잘못 가정했던 3건 (2026-08-16 수정 — 익명 403 유발)**:
+**퀴즈 공개 전환 — ✅ 해결 (2026-08-21 실측)**: BE 가 `GET /travel-types/quiz` + `POST /travel-types/submit` 을 **whitelist**(익명 200/400 확인) → FE 게이트 제거:
 
-| 엔드포인트                        | 잘못된 가정                 | 실제          | FE 처리                                                                                                        |
-| --------------------------------- | --------------------------- | ------------- | -------------------------------------------------------------------------------------------------------------- |
-| `GET /travel-types/quiz`          | 공개 퀴즈(ungated)          | **인증 필수** | 퀴즈를 **로그인 기능**으로 게이트(`useAuthedQueryEnabled`) — 익명엔 로그인 안내(`TravelTypeQuiz`), 요청 미발사 |
-| `POST /travel-types/submit`       | 공개                        | **인증 필수** | 위 퀴즈 게이트로 함께 커버(로그인 후에만 제출)                                                                 |
-| `POST /mypage/tournament-history` | 선택 인증(게스트 익명 기록) | **인증 필수** | `recordResult` 를 `isAuthenticated` 게이트 — 익명은 호출 생략(결과는 store-only), 인증만 저장                  |
+| 엔드포인트                        | 이전(임시)             | 현재(2026-08) | FE 처리                                                                                           |
+| --------------------------------- | ---------------------- | ------------- | ------------------------------------------------------------------------------------------------- |
+| `GET /travel-types/quiz`          | 인증 필수(임시 게이트) | **공개**      | `useTravelTypeQuiz` 게이트 제거 — 익명 응시 가능(`TravelTypeQuiz` 로그인 안내 삭제)               |
+| `POST /travel-types/submit`       | 인증 필수              | **공개**      | 익명 제출 → 결과 캐시(`setQueryData`)로 `/quiz/result` 표시. "내 유형으로 적용"(PATCH /me)만 인증 |
+| `POST /mypage/tournament-history` | 선택 인증(게스트 기록) | **인증 필수** | (변경 없음) `recordResult` 를 `isAuthenticated` 게이트 — 익명은 store-only, 인증만 저장           |
 
-> **BE 요청**: 퀴즈를 공개(비로그인 마케팅/공유)로 의도한다면 `GET /travel-types/quiz` + `POST /travel-types/submit` 를 **whitelist(비인증 허용)** 필요. 그 시 FE 는 위 게이트를 해제하면 익명도 응시 가능. (현재는 인증 필수라 로그인 기능으로 처리.) 토너먼트 게스트 기록(랭킹 집계 반영)을 원하면 `POST /mypage/tournament-history` 도 optional-auth 로.
+> 남은 optional-auth 후보: 토너먼트 게스트 기록(`POST /mypage/tournament-history`)을 랭킹 집계에 반영하려면 optional-auth 로 전환 요청(현재는 인증 필수 유지).
 >
 > 관측: interceptor 는 401/403 을 **정상 인증 신호**로 취급(전역 토스트 skip, 로그 warn). timing interceptor 도 401/403 은 error→warn 강등(콘솔 빨간 에러 오인 방지).
 
@@ -112,17 +116,17 @@ FE 는 아래를 `api.*` 직접 호출(현재 MSW mock). 그런데 **상당수�
 | `GET /regions/{code}/summary`            | `RegionHero` 정적 렌더(시군명 i18n + 설명 문구). popularity/heroImage 제거(Spring 미제공).                                                                                            |
 | `GET /rankings` (추천/카테고리/계절)     | **추천(recommended)은 `GET /destinations/random` 으로 전환** — 메인 상단 배너/카테고리픽 실데이터 표시. 카테고리/계절/hidden-gems 만 빈배열 degrade. weekly/by-region 은 Spring 지원. |
 
-### 4-C. 🕗 준비중 처리 (Spring 엔드포인트 추가 시 되살림)
+### 4-C. 준비중 처리 (Spring 엔드포인트 추가 시 되살림)
 
 Spring 이 진짜로 없는 기능은 UI 진입점(라우트·버튼)은 남기고 **준비중 안내**(`ComingSoon` / toast)로 표현. 죽은 어댑터/훅/폼/mock 은 제거.
 
-| 메서드·경로                                             | 용도                  | UI 처리                                      |
-| ------------------------------------------------------- | --------------------- | -------------------------------------------- |
-| `POST /auth/find-id`·`forgot-password`·`reset-password` | 아이디찾기·비번재설정 | 각 페이지 `ComingSoon`(라우트 유지)          |
-| `POST /me/change-password`                              | 비밀번호 변경         | 설정 다이얼로그 `ComingSoon`                 |
-| `DELETE /me`                                            | 회원 탈퇴             | 설정 탈퇴 → 준비중 toast (로그아웃은 지원)   |
-| `POST /me/avatar`·`DELETE /me/avatar`                   | 프로필 이미지         | 카메라 버튼 → 준비중 toast (이니셜 fallback) |
-| `GET /tournaments/{id}`                                 | 결과 딥링크 cold 복원 | 결과는 store 전용, cold 진입 noWinner 안내   |
+**✅ 2026-08-21 해제 완료** — 아래 계정/프로필 6종은 BE 추가되어 준비중 → 실동작 배선 완료(§5 P1):
+`POST /auth/find-id`·`forgot-password`·`reset-password`, `POST /me/change-password`,
+`DELETE /me`(회원탈퇴), `POST /me/avatar`·`DELETE /me/avatar`(프로필 이미지).
+
+| 메서드·경로             | 용도                  | UI 처리                                                  |
+| ----------------------- | --------------------- | -------------------------------------------------------- |
+| `GET /tournaments/{id}` | 결과 딥링크 cold 복원 | 결과는 store 전용, cold 진입 noWinner 안내 (🔷 §5-A A-2) |
 
 **요약 — FE 전면 Spring 정합 완료:** `api-domain.ts` 를 **Spring 스키마 파생 뷰**로 재작성(지어낸 필드/타입 제거: DestinationDetailDto coords·phone 등, UserDto homeRegion·isOnboarded·avatarUrl, TravelTypeDto recommended·compatibility, SavedTournamentDto luckyColor, TournamentHistoryItemDto winnerRegion·theme 등). Spring 미지원은 **전환**(4-A/4-B) 또는 **준비중**(4-C). 프로덕션 `api.*` mock 호출 0(잔여는 Idempotency-Key·mock 문자열 id fallback·USE_MSW 게이팅만). 죽은 mock 핸들러/어댑터/훅/폼/DTO 일괄 제거.
 
@@ -130,85 +134,73 @@ Spring 이 진짜로 없는 기능은 UI 진입점(라우트·버튼)은 남기�
 
 ---
 
-## 5. BE 추가 요청 — 구현 명세 (2026-08-10 최신)
+## 5. BE 추가 요청 — 남은 항목만 (2026-08-21 갱신)
 
-> **모든 항목 FE 준비 완료.** 엔드포인트가 추가되면 아래 "FE 활성화" 지점의 준비중/degrade 를 실동작으로 바꾸기만 하면 됨(대부분 어댑터 1곳 + UI 1곳). 응답은 기존 `ApiResponse<T> = { success, message, data }` 엔벨로프, 미인증 403 규약 준수.
+> **완료·테스트된 항목은 제외**(계정/프로필 P1 = §1). 여기엔 **아직 Spring 에 없는 것만**.
+> **⚠️ 앱을 못 쓰게 하는 hard-block 은 0건** — 아래는 전부 "있으면 완성도↑"다.
+> 구분: **5-A** = FE 로 만들 수 없어 BE 있어야 되는 개선 · **5-B** = FE 우회로 이미 동작(BE 는 품질).
+> 응답은 기존 `ApiResponse<T> = { success, message, data }` 엔벨로프, 미인증 403 규약 준수.
 
-### 우선순위 요약
-
-| P      | 항목                                                       | FE 현재 상태                  |
-| ------ | ---------------------------------------------------------- | ----------------------------- |
-| **P1** | 아이디찾기·비번찾기/재설정·비번변경·회원탈퇴·프로필 이미지 | 준비중(ComingSoon/toast) 노출 |
-| **P2** | 추천 랭킹·결과 딥링크·유형별 추천 여행지·시군 큐레이션     | degrade(빈배열/store/정적)    |
-| **P3** | 회원가입 동의(consents) + 정책 본문                        | ConsentBlock 구현·배포 차단   |
-| (opt)  | 중복확인·목록 address 등                                   | 409/미노출로 이미 정상 동작   |
-
----
-
-### P1 — 계정 필수 기능 (FE 준비중 노출 중, 사용자 눈에 보임)
-
-**P1-1. 아이디 찾기 — `POST /auth/find-id`**
-
-- req: `{ email: string }`
-- res: `ApiResponse<{ username: string }>` — 마스킹(`tes***01`). 이메일 미가입도 보안상 200+빈 문자열 허용.
-- FE 활성화: `app/(auth)/find-id/page.tsx` — `ComingSoon` → 폼 복원 + `useFindId` 재도입.
-
-**P1-2. 비밀번호 재설정 — `POST /auth/forgot-password` + `POST /auth/reset-password`**
-
-- forgot req: `{ username, email }` → 재설정 메일 발송, res `ApiResponse<Unit>`(204 성격).
-- reset req: `{ token, password }` → 토큰 검증 + 비번 변경, res `ApiResponse<Unit>`. 실패 `400 RESET_TOKEN_INVALID|EXPIRED`.
-- FE 활성화: `forgot-password`/`reset-password` 페이지 ComingSoon → 폼 복원. reset 성공 시 세션 무효화 + `/login?reset=success`.
-
-**P1-3. 비밀번호 변경 — `POST /me/change-password`**
-
-- req: `{ currentPassword, newPassword }` (⚠ `PATCH /me{password}` 는 currentPassword 검증 불가라 별도 필요).
-- res: `ApiResponse<Unit>`. 실패 `400 CURRENT_PASSWORD_MISMATCH` / `AUTH_PASSWORD_WEAK`.
-- FE 활성화: `settings/ChangePasswordDialog` ComingSoon → 폼 복원.
-
-**P1-4. 회원 탈퇴 — `DELETE /me`**
-
-- res: 204 (소프트 삭제 + 세션 무효). FE 는 성공 시 clearAuth + 캐시/SW 캐시 정리 + 홈 이동.
-- FE 활성화: `settings/AccountActionsSection` 준비중 toast → `useDeleteAccount` 재도입.
-
-**P1-5. 프로필 이미지 — `POST /me/avatar` + `DELETE /me/avatar`**
-
-- POST: multipart `file`(image/\*, ≤10MB) → `ApiResponse<{ avatarUrl }>`(201). 실패 `422 AVATAR_TYPE_UNSUPPORTED|AVATAR_TOO_LARGE`.
-- DELETE: `ApiResponse<{ avatarUrl: null }>`.
-- 또한 `UserResponseDto` 에 **`avatarUrl` 필드 추가**(현재 미제공 → FE 이니셜 fallback).
-- FE 활성화: `mypage/ProfileCard` 카메라 버튼 준비중 toast → 업로드 흐름 복원, `UserDto.avatarUrl` 재도입.
+| 구분                    | 항목                                                                | 현재/판정                                      |
+| ----------------------- | ------------------------------------------------------------------- | ---------------------------------------------- |
+| **5-A 🔷 BE 필요 개선** | 아이디/이메일 중복확인 · 결과 딥링크 · 상세 필드확장 · 아바타 캐시  | 없어도 앱 동작, FE 우회는 불가                 |
+| **5-B ⚙️ 대체 중**      | ★★★ 추천(→random) · ★★ 시군콘텐츠(→3배요청) · 연관여행지(→같은시군) | 실데이터 동작 중, 실 API 는 품질↑              |
+| **제거**                | 카테고리/계절 랭킹 · 시군 큐레이션                                  | UI 미노출 / `/region` 스코프 제외 → 요청 안 함 |
+| **P3 배포차단**         | 회원가입 동의(consents) + 정책 본문                                 | ConsentBlock 구현·법무 대기                    |
 
 ---
 
-### P2 — 부가/큐레이션 (없어도 FE degrade 동작, 있으면 품질↑)
+> 계정/프로필 P1 5기능(find-id·forgot·reset·change-password·회원탈퇴·아바타)은 **BE 추가 + FE 배선 + 실 BE 스모크 완료(2026-08-21)** → §1 로 이동, 본 요청 목록에서 제외.
 
-**P2-1. 추천/카테고리/계절 랭킹 — `GET /rankings?type=&limit=`**
+### 5-A. 🔷 BE 있어야 되는 개선 (FE 우회 불가 — 단, 없어도 앱은 동작)
 
-- `type ∈ {recommended, by-category, seasonal, hidden-gems}` → `ApiResponse<RankedDestination[]>`(rank·destination·score).
-- 현재: **recommended 는 `GET /destinations/random` 으로 전환**(메인 배너·카테고리픽 실데이터). 나머지(by-category/seasonal/hidden-gems)는 real-BE 빈배열 degrade. 전용 추천 랭킹(가중치 알고리즘) 엔드포인트가 생기면 recommended 도 그쪽으로 교체 가능.
+FE 가 데이터를 생성할 수 없는 것들. **필수는 아니고**(현재도 대체 흐름으로 앱은 정상), BE 가 주면 기능이 완성된다.
 
-**P2-2. 토너먼트 결과 딥링크 복원 — `GET /tournaments/{id}`**
+**A-1. 아이디/이메일 중복확인 — `GET /auth/check-username?username=` · `GET /auth/check-email?email=`**
 
-- res: `ApiResponse<{ id, winner:DestinationDto, runnerUp, matchesPlayed, tournamentSize, completedAt }>`.
-- 현재: 결과는 store 전용, cold 진입(공유 링크/새로고침)은 안내 화면. 추가 시 딥링크 복원.
-- (참고: 기록은 이미 `POST /mypage/tournament-history` 로 저장됨 — 그 id 로 복원 가능하게.)
+- res `ApiResponse<{ available: boolean }>`.
+- 현재: 가입 제출 시 **409 로 중복 차단 = 기능 자체는 정상**. 다만 입력 중 **인라인 실시간 확인은 불가**(`SignupForm` 중복확인 버튼 준비중). → UX 개선.
 
-**P2-3. 유형별 추천 여행지** — ⚙️ 전환(degrade, 준비중 아님)
+**A-2. 토너먼트 결과 딥링크 — `GET /tournaments/{id}`**
 
-- (이상적) `POST /travel-types/submit` / `GET /me` 유형 결과에 추천 destination N개 포함, 또는 `GET /travel-types/{code}/recommendations`.
-- 현재: ⚙️ 유형→카테고리 매핑(`TRAVEL_TYPE_CATEGORY`)으로 `GET /destinations/random` 을 써서 결과 화면의 "이런 여행지가 어울려요" 섹션을 **실데이터로** 채운다(`TravelTypeResult` + `useRecommendedDestinations`). 응답이 비면 섹션 자체를 접음 → 사용자에겐 준비중이 아니라 정상 동작. 정식 유형별 추천 API 도입 시 데이터 소스만 교체.
+- res `ApiResponse<{ id, winner:DestinationDto, runnerUp, matchesPlayed, tournamentSize, completedAt }>`.
+- 현재: 결과는 세션 내 정상 표시. **공유 링크/새로고침 cold 진입만 복원 불가**(store 비어있음). → 공유 기능 보강. (기록은 `POST /mypage/tournament-history` 로 저장됨 — 그 id 로 복원 가능하게.)
 
-**P2-4. 시군 큐레이션 — `GET /regions/{code}/summary`**
+**A-3. 여행지 상세 필드 확장 — `DestinationDetailDto` 에 `phone`·`website`·`openingHours`·`restDate`·`parking`·`coords(lat/lng)` 추가**
 
-- res: `ApiResponse<{ description, heroImage?, popularity? }>`.
-- 현재: `RegionHero` 정적 문구. 추가 시 큐레이션 설명/대표 이미지.
+- 현재 Spring DTO = id·name·category·region·imageUrl·images·address·type·admissionFee·description·tags·eventStart·eventEnd (상세 페이지 정상 동작, 해당 행만 숨김).
+- TourAPI 원본엔 존재. 좌표 제공 시 길찾기를 **좌표 기반 정밀 경로**로 승격(현재 이름검색). FE: `WinnerDetailPanel` 행 + `DestinationActions` 좌표 분기 복원(주석에 방법 명시).
 
-**P2-5. 여행지 상세 정보 보강 — `DestinationDetailDto` 필드 확장 (TourAPI 有)**
+**A-4. 아바타 캐시 무효화 + 작은 이미지 처리** (Spring 구현 특성발 품질 이슈)
 
-- 현재 Spring `DestinationDetailDto` = id·name·category·region·imageUrl·images·address·type·admissionFee·description·tags·eventStart·eventEnd.
-- 이전 mock 에는 있었으나 Spring 미제공이라 **화면에서 빠진 항목**: `phone`·`website`·`openingHours`·`restDate`·`parking`·`coords(lat/lng)`. TourAPI 원본엔 존재 → BE 가 노출하면 상세 패널 행 복원 + 좌표 제공 시 **길찾기를 좌표 기반(`map.kakao/link/to`) 정밀 경로로 승격** 가능(현재는 이름 검색).
-- FE 활성화: `DestinationDetailDto` 에 필드 추가 → `WinnerDetailPanel` 행 + `DestinationActions` 좌표 분기 복원(주석에 되돌리는 법 명시됨).
+- avatarUrl `{userId}.jpg` **고정** → 재업로드해도 URL 불변, 캐시 stale. **FE `?v={/me dataUpdatedAt}` 우회 적용 중**(당장은 동작). BE 가 **버전 URL(`?v=hash|epoch`)** 또는 `/uploads/avatars/*` `Cache-Control: no-cache` 제공 시 FE 우회 제거.
+- 작은/비정상 이미지 업로드 시 `500`(정상 크기 PNG 는 201) → `422`(형식/크기)로 정규화 요청.
 
-**P2-6. (optional) 중복확인 `GET /auth/check-username`·`check-email`** — 현재 가입 시 409 로 처리(인라인 사전확인만 부재). / 목록 `DestinationDto.address` 노출.
+### 5-B. ⚙️ 대체 중 — FE 우회로 동작, 실 엔드포인트는 품질 개선(권장 ★)
+
+FE 가 기존 Spring API 로 재구성해 **정상 동작 중**. 아래 ★ 항목은 우회 한계가 뚜렷해 실 엔드포인트를 권장.
+
+**B-1. 추천 여행지 — `GET /destinations/recommendations` · ★★★ 강력 권장**
+
+- 우회: `GET /destinations/random`(+category).
+- **한계(치명적)**: 화면엔 "추천"이라 뜨지만 실제는 **무작위**다. ① 진입마다 결과가 바뀜(비결정적) → 추천으로 신뢰 못 함, ② 개인화·가중치·인기도 반영 0, ③ `random` 은 토너먼트 풀 겸용이라 `size<4` 면 409.
+- **노출 범위**: 홈 상단 배너 · 카테고리픽 · 유형결과 "이런 여행지가 어울려요" — **앱 첫 화면 핵심**.
+- 실 API 이점: 안정적·랭킹/인기 기반 추천. (유형별 추천 목록도 `type` 파라미터로 함께 해결.)
+
+**B-2. 시군 콘텐츠 목록 — `GET /regions/{code}/contents` · ★★ 권장**
+
+- 우회: `GET /destinations`(region·category 필터)를 **카테고리 3개 병렬 호출 후 클라 병합**.
+- **한계**: ① 요청 **3배**, ② 페이지네이션 근사치("어느 카테고리든 꽉 차면 더 있음"), ③ 서버 큐레이션 정렬 없음.
+- 실 API 이점: 단일 요청 + 정확한 커서 + 서버 큐레이션.
+
+**B-3. 연관 여행지 — `GET /destinations/{id}/related` · ☆ 낮음**
+
+- 우회: 상세의 `region`+`category` 로 **같은 시군 동일 카테고리 6개** 재구성(`tournament.ts` getRelatedDestinations). 사용자에겐 자연스러운 "주변 비슷한 곳".
+- 실 API 이점: 진짜 유사도/추천 기반 연관. 현 우회로도 충분해 우선순위 낮음.
+
+> **완전 대체 → 요청 안 함**(품질 손실 0): `GET·PATCH /travel-types/me` → `GET·PATCH /me`(travelType 코드) **완전 동등**(실측 PATCH `explorer`→GET 반영). 목록 `DestinationDto.address` 이미 Spring 제공.
+> **제거 → 요청 안 함**: 카테고리/계절 랭킹(`GET /rankings`) = 랭킹 페이지에 UI 미노출(구 mock 섹션 제거됨). 시군 큐레이션(`GET /regions/{code}/summary`) = `/region` 스코프 제외(기획).
+> **그 외**: `POST /mypage/tournament-history` 게스트 기록을 랭킹 집계 반영하려면 optional-auth 전환(현재 인증 필수).
 
 ---
 
@@ -242,38 +234,38 @@ consents: {
 
 ### (참고) 스키마 정합 요청 — 기존 응답 필드 보강
 
-- `UserResponseDto.avatarUrl` (P1-5 연동).
+- ~~`UserResponseDto.avatarUrl`~~ ✅ 추가됨(2026-08, P1-5 연동 완료).
 - `TournamentSummaryDto` 에 `winnerId`(정수) 추가 시 히스토리에서 우승지 상세 딥링크 가능(현재 winnerName 만).
-- `DestinationDetailDto` 확장(P2-5) — phone·website·openingHours·restDate·parking·coords.
+- `DestinationDetailDto` 확장(§5-A A-3) — phone·website·openingHours·restDate·parking·coords.
 
-> **"기존 mock 에만 있던 컬럼" 정리 결과:** luckyColor·compatibility·homeRegion·isOnboarded·winnerRegion 등은 화면에서 소비된 적 없어 안전 제거. 상세 phone/website/좌표·region 인기도·유형별 추천·아바타는 mock 전용이라 실 BE 기준 손실 없음 — 필요 시 위 P1/P2 로 복원. 깨진 참조 0(tsc + 전수 grep 확인).
+> **"기존 mock 에만 있던 컬럼" 정리 결과:** luckyColor·compatibility·homeRegion·isOnboarded·winnerRegion 등은 화면에서 소비된 적 없어 안전 제거. 상세 phone/website/좌표·region 인기도는 mock 전용이라 실 BE 기준 손실 없음 — 필요 시 §5-A 로 복원. 깨진 참조 0(tsc + 전수 grep 확인).
 
 ### 화면 × API 매핑 전수 감사 (2026-08-10)
 
-> 코드 내 `BE-TODO(§5 …)` 주석과 1:1 대응 (전수: `grep -rn "BE-TODO" src`). ✅ 정상 · 🕗 준비중(UI 유지, BE 추가 시 켜짐) · ⚙️ 전환/degrade(실 Spring 로 재구성).
+> 코드 내 `BE-TODO(§5 …)` 주석과 1:1 대응 (전수: `grep -rn "BE-TODO" src`). ✅ 정상 · 🔷 BE 필요 개선(§5-A, FE 우회불가·없어도 앱 동작) · ⚙️ 대체됨(§5-B, 실 Spring 재구성) · 🗑️ 제거(요청 안 함).
 
-| 화면 (route)                       | 사용 Spring API                                                                           | 상태                                                              |
-| ---------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| 로그인 `/login`                    | POST /auth/login · GET /me                                                                | ✅                                                                |
-| 회원가입 `/signup`                 | POST /auth/signup                                                                         | ✅ · 중복확인 🕗(P2-6, 409 로 대체 동작)                          |
-| 아이디찾기 `/find-id`              | —                                                                                         | 🕗 P1-1                                                           |
-| 비번찾기/재설정 `/forgot`·`/reset` | —                                                                                         | 🕗 P1-2                                                           |
-| 홈 `/`                             | GET /destinations/random · /regions/ongoing-festivals                                     | ✅                                                                |
-| 홈 상단 배너/카테고리픽            | GET /destinations/random (recommended 전환)                                               | ✅ ⚙️(P2-1, 실데이터 표시)                                        |
-| 랭킹 `/ranking`                    | GET /tournaments/rankings/weekly·regions                                                  | ✅ (RSC 프리페치) · 카테고리/계절 랭킹 ⚙️(P2-1, 빈배열)           |
-| 퀴즈 `/quiz`                       | GET /travel-types/quiz · POST /travel-types/submit                                        | 🔒 **로그인 필요**(BE 인증필수·익명 403) — 익명 로그인 안내(§3-A) |
-| 토너먼트 `/tournament`·`/play`     | GET /destinations/random                                                                  | ✅                                                                |
-| 토너먼트 결과 `/tournament/result` | POST /mypage/tournament-history · GET /destinations/{id}                                  | ✅ · 기록 저장 🔒 인증만(익명 생략, §3-A) · 딥링크복원 🕗(P2-2)   |
-| 여행지 상세 `/destination/{id}`    | GET /destinations/{id}                                                                    | ✅ · phone/website/좌표 🕗(P2-5) · 길찾기 ⚙️(이름검색)            |
-| 시군 `/region`·`/region/{code}`    | GET /destinations(필터) · /regions/ongoing-festivals                                      | ✅ · summary ⚙️(P2-4, 정적) · contents ⚙️(destinations 재구성)    |
-| 편지 `/letter`·compose·sent·{id}   | GET/POST /letters\* · like/save · GET /letters/{id}                                       | ✅ · 위치 ⚙️(클라 centroid 매핑)                                  |
-| 마이 `/mypage`                     | GET /me · /mypage/stamps · /mypage/tournaments · /mypage/tournament-history               | ✅ · 아바타 🕗(P1-5)                                              |
-| 도장책 `/mypage/stamps`            | GET /mypage/stamps                                                                        | ✅                                                                |
-| 여행유형 결과 `/quiz/result`       | POST /travel-types/submit · GET /me                                                       | ✅ · 추천 여행지 ⚙️(P2-3, category-random degrade)                |
-| 알림 `/notifications`              | GET /notifications · unread-count · POST {id}/read · read-all                             | ✅                                                                |
-| 설정 `/settings`                   | GET /settings · PATCH /settings/notifications · vapid·subscribe·subscriptions·unsubscribe | ✅ · 비번변경 🕗(P1-3) · 탈퇴 🕗(P1-4)                            |
+| 화면 (route)                       | 사용 Spring API                                                                                                                   | 상태                                                                           |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| 로그인 `/login`                    | POST /auth/login · GET /me                                                                                                        | ✅                                                                             |
+| 회원가입 `/signup`                 | POST /auth/signup                                                                                                                 | ✅ · 중복확인 🔷(§5-A A-1, 현재 409 사후 안내)                                 |
+| 아이디찾기 `/find-id`              | POST /auth/find-id                                                                                                                | ✅ (P1-1)                                                                      |
+| 비번찾기/재설정 `/forgot`·`/reset` | POST /auth/forgot-password · reset-password                                                                                       | ✅ (P1-2)                                                                      |
+| 홈 `/`                             | GET /destinations/random · /regions/ongoing-festivals                                                                             | ✅                                                                             |
+| 홈 상단 배너/카테고리픽            | GET /destinations/random (recommended 전환)                                                                                       | ✅ ⚙️(§5-B, 실데이터 표시)                                                     |
+| 랭킹 `/ranking`                    | GET /tournaments/rankings/weekly·regions                                                                                          | ✅ (RSC 프리페치) · 카테고리/계절 랭킹 🗑️(제거 — UI 미노출)                    |
+| 퀴즈 `/quiz`                       | GET /travel-types/quiz · POST /travel-types/submit                                                                                | ✅ **공개**(BE whitelist 2026-08, 익명 응시) — 결과 "적용"만 인증              |
+| 토너먼트 `/tournament`·`/play`     | GET /destinations/random                                                                                                          | ✅                                                                             |
+| 토너먼트 결과 `/tournament/result` | POST /mypage/tournament-history · GET /destinations/{id}                                                                          | ✅ · 기록 저장 🔒 인증만(익명 생략, §3-A) · 딥링크복원 🔷(§5-A A-2)            |
+| 여행지 상세 `/destination/{id}`    | GET /destinations/{id}                                                                                                            | ✅ · phone/website/좌표 🔷(§5-A A-3) · 길찾기 ⚙️(이름검색) · 연관 ⚙️(§5-B B-3) |
+| 시군 `/region`·`/region/{code}`    | GET /destinations(필터) · /regions/ongoing-festivals                                                                              | ✅ · summary 🗑️(스코프 제외) · contents ⚙️(§5-B B-2)                           |
+| 편지 `/letter`·compose·sent·{id}   | GET/POST /letters\* · like/save · GET /letters/{id}                                                                               | ✅ · 위치 ⚙️(클라 centroid 매핑)                                               |
+| 마이 `/mypage`                     | GET /me · /mypage/stamps · /mypage/tournaments · /mypage/tournament-history · POST/DELETE /me/avatar                              | ✅ · 아바타 ✅(P1-5, 캐시버스트 후속)                                          |
+| 도장책 `/mypage/stamps`            | GET /mypage/stamps                                                                                                                | ✅                                                                             |
+| 여행유형 결과 `/quiz/result`       | POST /travel-types/submit · GET /me                                                                                               | ✅ · 추천 여행지 ⚙️(§5-B, category-random)                                     |
+| 알림 `/notifications`              | GET /notifications · unread-count · POST {id}/read · read-all                                                                     | ✅                                                                             |
+| 설정 `/settings`                   | GET /settings · PATCH /settings/notifications · vapid·subscribe·subscriptions·unsubscribe · POST /me/change-password · DELETE /me | ✅ · 비번변경 ✅(P1-3) · 탈퇴 ✅(P1-4)                                         |
 
-**🕗 준비중 6종**(P1-1~5, P2-2/2-3) = 사용자에게 "준비중" 노출, BE 엔드포인트 추가 시 즉시 활성. **⚙️ 전환/degrade** = 실 Spring 로 재구성돼 동작(품질만 BE 있으면 향상). 나머지 ✅ = 완전 정상.
+**✅ 계정/프로필 5기능 준비중 해제 완료**(2026-08-21, BE 추가+FE 배선+스모크). **hard-block 0건.** 🔷 **BE 필요 개선(FE 우회 불가, 없어도 앱 동작)** = §5-A(중복확인·결과딥링크·상세필드·아바타캐시). **⚙️ 대체됨(FE 우회 동작)** = §5-B(추천·시군콘텐츠·연관여행지). **🗑️ 제거** = 카테고리/계절 랭킹(UI 미노출)·시군 큐레이션(스코프 제외). 나머지 ✅ = 완전 정상.
 
 ---
 
