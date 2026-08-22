@@ -62,14 +62,24 @@ jobs:
         run: npm run size:ci
 
       # === 보안 점검 ===
-      - name: Dependency audit (high severity)
-        run: npm audit --audit-level=high
+      # 운영 번들에 실제 실리는 production deps 만 게이트(--omit=dev).
+      # dev/빌드 툴체인(Storybook·vite 등)의 transitive DoS 취약점은 사용자에게 노출되지
+      # 않고 일부는 upstream fix 부재라, 별도 트리아지 대상(릴리스 차단 아님).
+      - name: Dependency audit (prod, high severity)
+        run: npm audit --omit=dev --audit-level=high
         continue-on-error: false
+
+      # dev 취약점은 비차단으로 가시화만(정보용).
+      - name: Dependency audit (dev, 정보용)
+        run: npm audit --audit-level=high || true
+        continue-on-error: true
 
       - name: Dependency Review (PR only)
         if: github.event_name == 'pull_request'
         uses: actions/dependency-review-action@v5
         with:
           fail-on-severity: high
+          # 운영 번들에 실리는 runtime 스코프만 차단(dev/빌드 툴체인은 비차단) — npm audit 와 일관.
+          fail-on-scopes: runtime
           # 라이선스 화이트리스트 — 카피레프트는 별도 검토 필요
           allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, 0BSD, CC0-1.0
