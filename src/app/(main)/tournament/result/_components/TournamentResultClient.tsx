@@ -4,7 +4,6 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { Icon } from '@/components/icon';
 import { Button, ButtonGrid } from '@/components/ui';
-import { LuckyColor } from '@/features/tournament/components/LuckyColor';
 import { LuckyLadder } from '@/features/tournament/components/LuckyLadder';
 import { TournamentStats } from '@/features/tournament/components/TournamentStats';
 import { WinnerCard } from '@/features/tournament/components/WinnerCard';
@@ -22,10 +21,11 @@ import styles from './TournamentResultClient.module.scss';
  * 토너먼트 결과 클라이언트
  *
  * 구성:
- *   1) WinnerCard  — 우승 여행지(이름·시군·카테고리)
- *   2) LuckyColor  — winner.id seed 기반 deterministic 행운의 색
- *   3) LuckyLadder — 인연 만날 확률 사다리타기
- *   4) 액션        — 마이페이지 저장 / 다시 하기
+ *   1) WinnerCard        — 우승 여행지(이름·시군·카테고리)
+ *   2) WinnerDetailPanel — 상세(주소·설명 등)
+ *   3) TournamentStats   — 토너먼트 기록 chip 4 + 행운의 색 row(winner.id seed)
+ *   4) LuckyLadder       — 인연 만날 확률 사다리타기(자체 헤더 포함)
+ *   5) 액션              — 공유 / 다시 하기 / 마이페이지 저장
  *
  * 저장: useSaveTournament(useMutation) → POST /mypage/tournaments
  *   - 성공 시 버튼 라벨 "저장됐어요" 로 전환 + disabled
@@ -132,18 +132,9 @@ export function TournamentResultClient() {
         matchesPlayed={matchesPlayed}
         tournamentSize={tournamentSize}
       />
-      <LuckyColor seed={winner.id} />
 
-      <section className={styles.ladderSection} aria-label={t('meetChance')}>
-        <header className={styles.ladderHeader}>
-          <h3 className={styles.ladderTitle}>
-            <span aria-hidden>🎲</span>
-            {t('meetChance')}
-          </h3>
-          <p className={styles.ladderSubtitle}>{t('ladder.subtitle')}</p>
-        </header>
-        <LuckyLadder />
-      </section>
+      {/* LuckyLadder 는 자체 헤더(제목·부제)를 렌더 — 외부 헤더 중복 제거. */}
+      <LuckyLadder />
 
       <div className={styles.actions}>
         <ButtonGrid>
