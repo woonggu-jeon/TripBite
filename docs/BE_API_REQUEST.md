@@ -75,7 +75,7 @@ GET /tournaments/{id}
 ## 3-1. 위치 역지오코딩 (중간)
 
 ```
-POST /location/reverse  { latitude, longitude }
+POST /location/reverse  { latitude, longitude, accuracy? }   // accuracy(m)는 참고용, 무시 가능
 → 200 ApiResponse<{ label: string, regionCode: <충북 시군 enum> }>
    // label = 표시용 위치명(실제 행정구역/주소), regionCode = 편지 저장용 충북 시군
    //         (충북 밖 좌표면 최근접 시군)
