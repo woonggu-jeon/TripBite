@@ -74,8 +74,12 @@ jobs:
         run: npm audit --audit-level=high || true
         continue-on-error: true
 
+      # Dependency Graph(리포 Settings → Security) 활성화 시 동작. 미활성 리포에선
+      # 액션이 "not supported" 로 실패하므로 비차단(설정 켜면 자동으로 게이트 역할).
+      # 취약점 차단은 위 npm audit(prod) 가 담당.
       - name: Dependency Review (PR only)
         if: github.event_name == 'pull_request'
+        continue-on-error: true
         uses: actions/dependency-review-action@v5
         with:
           fail-on-severity: high
