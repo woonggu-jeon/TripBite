@@ -95,12 +95,13 @@ POST /location/reverse  { latitude, longitude }
 ## 5. 추천 여행지 (낮음)
 
 ```
-GET /destinations/recommendations?type={type}&limit={n}
+GET /destinations/recommendations?category={category}&limit={n}
 → 200 ApiResponse<Array<{ rank, destination, score }>>
+   // category(attraction|festival|experience) 는 선택 필터
 ```
 
-- 현재: 추천 영역(홈 배너, 카테고리 추천, 여행유형 결과의 추천 목록)을 `GET /destinations/random`으로 채우고 있습니다.
-- 한계: 무작위라 진입할 때마다 결과가 바뀌고, 인기도·가중치가 반영되지 않습니다. 정렬 기준이 있는 추천 엔드포인트가 있으면 사용자 경험이 개선됩니다. (여행유형별 추천도 `type` 파라미터로 함께 처리 가능하면 좋겠습니다.)
+- 현재: 추천 영역(홈 배너, 카테고리 추천, 여행유형 결과의 추천 목록)을 `GET /destinations/random`(+category)으로 채우고 있습니다. 여행유형 추천은 유형→카테고리 매핑으로 처리합니다.
+- 한계: 무작위라 진입할 때마다 결과가 바뀌고, 인기도·가중치가 반영되지 않습니다. 정렬 기준이 있는 추천 엔드포인트가 있으면 사용자 경험이 개선됩니다. (개인화/유형 기반 정렬은 추가 여지 — 우선은 category 필터만으로 충분합니다.)
 
 ## 6. 시군 콘텐츠 목록 (낮음)
 
