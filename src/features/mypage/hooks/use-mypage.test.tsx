@@ -10,7 +10,9 @@ import { renderHookWithProviders } from '@/test-utils';
 import {
   mypageKeys,
   useMypage,
+  useRemoveAvatar,
   useStamps,
+  useUpdateAvatar,
   useUpdateNickname,
 } from './use-mypage';
 
@@ -21,7 +23,7 @@ const mockUser = {
   username: 'tester',
   nickname: '여행자',
   email: 't@e.st',
-  isOnboarded: true,
+  avatarUrl: null,
 } as const;
 
 describe('useMypage / useStamps — enabled: isAuthenticated 가드', () => {
@@ -81,5 +83,51 @@ describe('useUpdateNickname', () => {
       queryKey: mypageKeys.summary(),
     });
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: authKeys.me() });
+  });
+});
+
+describe('useUpdateAvatar / useRemoveAvatar — /me/avatar 뮤테이션', () => {
+  beforeEach(() => {
+    useAuthStore.getState().setAuth(mockUser);
+  });
+
+  it('useUpdateAvatar — 업로드 성공', async () => {
+    server.use(
+      http.post(`${apiUrl}/me/avatar`, () =>
+        HttpResponse.json(
+          {
+            success: true,
+            message: null,
+            data: { avatarUrl: 'https://cdn/avatars/1.jpg' },
+          },
+          { status: 201 },
+        ),
+      ),
+    );
+    const { result } = renderHookWithProviders(() => useUpdateAvatar());
+    const file = new File([new Uint8Array([1, 2])], 'a.png', {
+      type: 'image/png',
+    });
+    await act(async () => {
+      await result.current.mutateAsync(file);
+    });
+    expect(result.current.isSuccess).toBe(true);
+  });
+
+  it('useRemoveAvatar — 삭제 성공', async () => {
+    server.use(
+      http.delete(`${apiUrl}/me/avatar`, () =>
+        HttpResponse.json({
+          success: true,
+          message: null,
+          data: { avatarUrl: null },
+        }),
+      ),
+    );
+    const { result } = renderHookWithProviders(() => useRemoveAvatar());
+    await act(async () => {
+      await result.current.mutateAsync();
+    });
+    expect(result.current.isSuccess).toBe(true);
   });
 });

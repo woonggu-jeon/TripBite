@@ -19,7 +19,17 @@ vi.mock('@/lib/sw-cache', () => ({
   clearAllCaches: vi.fn(async () => {}),
 }));
 
-const { useLogin, useSignup, useLogout, useMe } = await import('./use-auth');
+const {
+  useLogin,
+  useSignup,
+  useLogout,
+  useMe,
+  useFindId,
+  useForgotPassword,
+  useResetPassword,
+  useChangePassword,
+  useDeleteAccount,
+} = await import('./use-auth');
 
 const apiUrl = mockSeeds.apiUrl;
 
@@ -281,5 +291,93 @@ describe('useMe', () => {
       timeout: 3000,
     });
     expect(fetchCount).toBe(2); // 초기 + retry 1
+  });
+});
+
+describe('useFindId / useForgotPassword / useChangePassword — 단순 뮤테이션', () => {
+  it('useFindId — email 제출 → username 반환', async () => {
+    server.use(
+      http.post(`${apiUrl}/auth/find-id`, () =>
+        HttpResponse.json({
+          success: true,
+          message: null,
+          data: { username: 'tes***01' },
+        }),
+      ),
+    );
+    const { result } = renderHookWithProviders(() => useFindId());
+    result.current.mutate('a@e.st');
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toBe('tes***01');
+  });
+
+  it('useForgotPassword — { username, email } 제출 성공', async () => {
+    server.use(
+      http.post(`${apiUrl}/auth/forgot-password`, () =>
+        HttpResponse.json({ success: true, message: null, data: null }),
+      ),
+    );
+    const { result } = renderHookWithProviders(() => useForgotPassword());
+    result.current.mutate({ username: 'tester', email: 'a@e.st' });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+  });
+
+  it('useChangePassword — current/new 제출 성공', async () => {
+    server.use(
+      http.post(`${apiUrl}/me/change-password`, () =>
+        HttpResponse.json({ success: true, message: null, data: null }),
+      ),
+    );
+    const { result } = renderHookWithProviders(() => useChangePassword());
+    result.current.mutate({
+      currentPassword: 'old1234567',
+      newPassword: 'new1234567',
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+  });
+});
+
+describe('useResetPassword — 성공 시 세션 정리 + /login 이동', () => {
+  it('reset 성공 → logout 시도 후 /login?reset=success 로 replace', async () => {
+    server.use(
+      http.post(`${apiUrl}/auth/reset-password`, () =>
+        HttpResponse.json({ success: true, message: null, data: null }),
+      ),
+      http.post(`${apiUrl}/auth/logout`, () =>
+        HttpResponse.json({ success: true, message: null, data: null }),
+      ),
+    );
+    useAuthStore.getState().setAuth(mockUser);
+    const { result } = renderHookWithProviders(() => useResetPassword());
+    result.current.mutate({ token: 'tok', password: 'Abcd123456' });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    await waitFor(() =>
+      expect(router.replace).toHaveBeenCalledWith('/login?reset=success'),
+    );
+    expect(useAuthStore.getState().isAuthenticated).toBe(false);
+  });
+});
+
+describe('useDeleteAccount — 탈퇴 후 정리 + 홈 이동', () => {
+  let assignCtl: ReturnType<typeof spyLocationAssign>;
+  beforeEach(() => {
+    assignCtl = spyLocationAssign();
+  });
+  afterEach(() => {
+    assignCtl.restore();
+  });
+
+  it('DELETE /me 성공 → clearAuth + window.location.assign("/")', async () => {
+    server.use(
+      http.delete(
+        `${apiUrl}/me`,
+        () => new HttpResponse(null, { status: 204 }),
+      ),
+    );
+    useAuthStore.getState().setAuth(mockUser);
+    const { result } = renderHookWithProviders(() => useDeleteAccount());
+    result.current.mutate();
+    await waitFor(() => expect(assignCtl.spy).toHaveBeenCalledWith('/'));
+    expect(useAuthStore.getState().isAuthenticated).toBe(false);
   });
 });
