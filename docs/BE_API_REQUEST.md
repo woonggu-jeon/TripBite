@@ -19,6 +19,7 @@
 | 1   | 높음     | 아이디/이메일 중복확인  | `GET /auth/check-username` · `GET /auth/check-email` |
 | 2   | 높음     | 토너먼트 결과 조회      | `GET /tournaments/{id}`                              |
 | 3   | 높음     | 여행지 상세 필드 보강   | `DestinationDetailDto` 필드 추가                     |
+| 3-1 | 중간     | 위치 역지오코딩         | `POST /location/reverse`                             |
 | 4   | 중간     | 아바타 캐시/업로드 검증 | avatarUrl 캐시 정책 · 업로드 에러 코드               |
 | 5   | 낮음     | 추천 여행지             | `GET /destinations/recommendations`                  |
 | 6   | 낮음     | 시군 콘텐츠 목록        | `GET /regions/{code}/contents`                       |
@@ -68,6 +69,17 @@ GET /tournaments/{id}
 | `lat`, `lng`   | number \| null | 좌표 기반 길찾기 정확도↑ |
 
 - 좌표가 있으면 길찾기를 좌표 기반으로 안내할 수 있습니다(현재는 장소명 검색으로 연결).
+
+## 3-1. 위치 역지오코딩 (중간)
+
+```
+POST /location/reverse  { latitude, longitude }
+→ 200 ApiResponse<{ label: string, regionCode: <충북 시군 enum> }>
+```
+
+- 배경: 편지 작성 시 사용자의 현재 위치를 표시/첨부합니다. 브라우저에서 GPS 좌표는 확보되지만, 좌표를 **행정구역 라벨 + regionCode**로 바꾸는 역지오코딩이 필요합니다.
+- 현재: 서버 역지오코딩이 없어 **클라이언트에서 충북 11개 시군 centroid 최근접으로 근사**하고 있습니다. 실제 도로명 주소가 아니고, 충북 밖 좌표는 가장 가까운 시군으로 귀속됩니다.
+- 요청: 좌표를 실제 위치 라벨로 변환해 주시면 원래 의도(현재 위치 표시)대로 복원됩니다. FE는 이 엔드포인트가 생기면 자동으로 사용하고, 없으면 위 근사 방식으로 폴백하도록 되어 있습니다.
 
 ## 4. 아바타 캐시 / 업로드 검증 (중간)
 
