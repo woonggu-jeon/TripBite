@@ -77,6 +77,8 @@ GET /tournaments/{id}
 ```
 POST /location/reverse  { latitude, longitude }
 → 200 ApiResponse<{ label: string, regionCode: <충북 시군 enum> }>
+   // label = 표시용 위치명(실제 행정구역/주소), regionCode = 편지 저장용 충북 시군
+   //         (충북 밖 좌표면 최근접 시군)
 ```
 
 - 배경: 편지 작성 시 사용자의 현재 위치를 표시/첨부합니다. 브라우저에서 GPS 좌표는 확보되지만, 좌표를 **행정구역 라벨 + regionCode**로 바꾸는 역지오코딩이 필요합니다.
@@ -103,12 +105,13 @@ GET /destinations/recommendations?type={type}&limit={n}
 ## 6. 시군 콘텐츠 목록 (낮음)
 
 ```
-GET /regions/{code}/contents?category={category}&cursor={n}&limit={n}
-→ 200 ApiResponse<{ items: DestinationDto[], nextCursor: number | null }>
+GET /regions/{code}/contents?category={category}&pageNo={n}&numOfRows={n}
+→ 200 ApiResponse<{ items: DestinationDto[], totalCount, pageNo, numOfRows }>
+   // 기존 GET /destinations(DestinationPageDto)와 동일한 page 방식으로 맞춰 주시면 됩니다.
 ```
 
 - 현재: `GET /destinations`(지역·카테고리 필터)를 카테고리별로 나눠 여러 번 호출해 합치고 있습니다.
-- 한계: 요청 수가 늘고 페이지네이션이 정확하지 않습니다. 단일 엔드포인트로 커서 페이지네이션을 지원해 주시면 좋겠습니다.
+- 한계: 요청 수가 늘고(카테고리 3회 병렬) 페이지네이션이 정확하지 않습니다. 단일 엔드포인트로 지원해 주시면 좋겠습니다.
 
 ## 7. 연관 여행지 (낮음)
 
