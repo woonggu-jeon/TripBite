@@ -189,6 +189,11 @@ export function TournamentPlayClient() {
             runnerUpId: pendingResult.runnerUp?.id ?? null,
             matchesPlayed: pendingResult.matchesPlayed,
             tournamentSize: config?.tournamentSize ?? matchupSize,
+            // BE RecordTournamentRequestDto.winnerName 필수 — winner 정보 전달.
+            // region/category 는 랭킹 집계(시군/카테고리별)용.
+            winnerName: pendingResult.winner.name,
+            region: pendingResult.winner.region,
+            category: pendingResult.winner.category,
           });
           recordId = record.id;
         } catch {
