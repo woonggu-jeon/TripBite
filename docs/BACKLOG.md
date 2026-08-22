@@ -13,6 +13,18 @@
 
 ---
 
+## 잔여 — CI E2E 트리아지 (2026-08-22, PR 비차단 처리됨)
+
+E2E 워크플로가 잘못된 playwright 프로젝트명(desktop-chrome)으로 여태 실행되지 않다가,
+프로젝트명 수정 후 처음 실제 실행되며 잠복 실패 노출(238 passed / 18 failed). PR 은
+`continue-on-error` 로 비차단 처리했고, 아래를 후속 정리 후 비차단 해제한다.
+
+- **visual.spec.ts (~62건) — Linux baseline 부재 [L]**: baseline 이 `*-darwin.png`/`*-win32.png`
+  만 커밋됨. CI 는 ubuntu(linux) → `*-linux.png` 없음. Playwright docker 이미지
+  (`mcr.microsoft.com/playwright`) 로 `--update-snapshots` 실행해 Linux baseline 생성·커밋 필요.
+- **mock-auth.spec.ts / mobile-360.spec.ts (~8건) — 기능 스펙 [M]**: 도장책 "N/11" 라벨,
+  mock 인증 흐름 등. 개별 디버깅(mock 데이터/타이밍 or 실제 회귀 여부 확인).
+
 ## 최근 완료
 
 이미 dev 에 머지된 항목 이력은 `git log` 참조 (commit message 가 1차 source of truth).
