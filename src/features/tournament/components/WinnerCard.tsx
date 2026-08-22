@@ -2,25 +2,21 @@
 
 import { useTranslations } from 'next-intl';
 import { memo } from 'react';
-import type { DestinationDto } from '@/types/api-domain';
-import { MediaThumb } from '@/components/ui';
+import { HeroCard } from '@/components/ui';
 import { categoryEmoji } from '@/constants/emoji-map';
 import { CHUNGBUK_REGIONS } from '@/constants/regions';
-import styles from './WinnerCard.module.scss';
+import type { DestinationDto } from '@/types/api-domain';
 
 /**
- * 토너먼트 우승 hero — Figma "TRN · 토너먼트 결과" hero (320×176) 정합.
+ * 토너먼트 우승 hero — Figma "TRN · 토너먼트 결과" hero (320×176).
  *
- * 구성:
- *   - hero 320×176 radius 12 — image (full bleed) + 90deg dark gradient overlay
- *   - bottom-left 텍스트 250×63 column gap 4:
- *     · eyebrow Caption B_10 white "🏆 우승"
- *     · title B_20 white {destination.name}
- *     · location row Caption R_12 white "{region} · {category}"
- *
- * 폴백:
- *   - imageUrl 없으면 MediaThumb 가 emoji fallback (gradient overlay 위에서도
- *     읽힘 보장 위해 emoji는 어두운 배경 위 large emoji).
+ * 공용 `HeroCard` 프리미티브 재사용(풀블리드 사진 + scrim + 흰 텍스트 오버레이).
+ * 이전엔 자체 마크업/스타일을 뒀는데 SCSS 가 구 원형썸네일 디자인으로 stale 되어
+ * hero 가 깨졌음 → HeroCard 로 통일(홈/랭킹 hero 와 동일 렌더 보장).
+ *   - eyebrow  : "우승 여행지"
+ *   - title    : destination.name
+ *   - meta     : "{region} · {category}"
+ *   - align    : bottom (우승 텍스트 하단 정렬)
  */
 function WinnerCardInner({ destination }: { destination: DestinationDto }) {
   const t = useTranslations('tournament');
@@ -31,29 +27,19 @@ function WinnerCardInner({ destination }: { destination: DestinationDto }) {
   const eyebrow = tResult('winnerEyebrow');
 
   return (
-    <section
-      className={styles.hero}
-      aria-label={`${eyebrow} ${destination.name}`}
-    >
-      <MediaThumb
-        src={destination.imageUrl}
-        emoji={categoryEmoji(destination.category)}
-        sizes="320px"
-        className={styles.image}
-        emojiClassName={styles.emoji}
-      />
-      <div className={styles.gradient} aria-hidden />
-      <div className={styles.text}>
-        <span className={styles.eyebrow}>{eyebrow}</span>
-        <h2 className={styles.title}>{destination.name}</h2>
-        <p className={styles.location}>
-          {regionLabel} · {categoryLabel}
-        </p>
-      </div>
-    </section>
+    <HeroCard
+      imageUrl={destination.imageUrl}
+      emoji={categoryEmoji(destination.category)}
+      eyebrow={eyebrow}
+      title={destination.name}
+      titleAs="h2"
+      meta={`${regionLabel} · ${categoryLabel}`}
+      align="bottom"
+      sizes="(max-width: 720px) 100vw, 720px"
+      ariaLabel={`${eyebrow} ${destination.name}`}
+    />
   );
 }
 
 // React.memo — TournamentResultClient store/query 변경 시 불필요한 재렌더 회피.
-// destination prop 이 stable DTO 이면 skip (자율 검토 2026-06-25).
 export const WinnerCard = memo(WinnerCardInner);
