@@ -14,19 +14,21 @@
 
 ## 요약
 
-| #   | 우선순위 | 항목                    | 엔드포인트(제안)                                     |
-| --- | -------- | ----------------------- | ---------------------------------------------------- |
-| 1   | 높음     | 아이디/이메일 중복확인  | `GET /auth/check-username` · `GET /auth/check-email` |
-| 2   | 높음     | 토너먼트 결과 조회      | `GET /tournaments/{id}`                              |
-| 3   | 높음     | 여행지 상세 필드 보강   | `DestinationDetailDto` 필드 추가                     |
-| 3-1 | 중간     | 위치 역지오코딩         | `POST /location/reverse`                             |
-| 4   | 중간     | 아바타 캐시/업로드 검증 | avatarUrl 캐시 정책 · 업로드 에러 코드               |
-| 5   | 낮음     | 추천 여행지             | `GET /destinations/recommendations`                  |
-| 6   | 낮음     | 시군 콘텐츠 목록        | `GET /regions/{code}/contents`                       |
-| 7   | 낮음     | 연관 여행지             | `GET /destinations/{id}/related`                     |
-| 8   | 별도     | 회원가입 동의(consents) | `SignupRequestDto.consents`                          |
+| #   | 우선순위 | 항목                     | 엔드포인트(제안)                                     |
+| --- | -------- | ------------------------ | ---------------------------------------------------- |
+| 1   | 높음     | 아이디/이메일 중복확인   | `GET /auth/check-username` · `GET /auth/check-email` |
+| 2   | 높음     | 토너먼트 결과 조회       | `GET /tournaments/{id}`                              |
+| 3   | 높음     | 여행지 상세 필드 보강    | `DestinationDetailDto` 필드 추가                     |
+| 3-1 | 중간     | 위치 역지오코딩          | `POST /location/reverse`                             |
+| 4   | 중간     | 아바타 캐시/업로드 검증  | avatarUrl 캐시 정책 · 업로드 에러 코드               |
+| 4-1 | 중간     | 주간 랭킹 썸네일(스키마) | `WeeklyDestinationWinDto.imageUrl` 추가              |
+| 5   | 낮음     | 추천 여행지              | `GET /destinations/recommendations`                  |
+| 6   | 낮음     | 시군 콘텐츠 목록         | `GET /regions/{code}/contents`                       |
+| 7   | 낮음     | 연관 여행지              | `GET /destinations/{id}/related`                     |
+| 8   | 별도     | 회원가입 동의(consents)  | `SignupRequestDto.consents`                          |
 
 > 참고: 위 항목이 없어도 앱은 정상 동작합니다(대체 흐름 적용). 우선순위는 사용자 경험 개선 정도 기준입니다.
+> 필드 추가(스키마) 요청은 아래 "스키마 보강" 섹션에 상세: 주간 랭킹 `imageUrl`(중간) · `TournamentSummaryDto.winnerId`(낮음).
 
 ---
 
@@ -46,12 +48,12 @@ GET /auth/check-email?email={email}
 ```
 GET /tournaments/{id}
 → 200 ApiResponse<{
-    id, winner, runnerUp, matchesPlayed, tournamentSize, completedAt
+    id, winnerId, winnerName, region, category, tournamentSize, completedAt
   }>
 ```
 
 - 현재: 결과가 클라이언트 상태에만 있어, 공유 링크로 접속하거나 새로고침하면 결과를 다시 보여줄 수 없습니다.
-- 요청: 저장된 토너먼트를 id로 조회하는 엔드포인트를 부탁드립니다. (기록은 이미 `POST /mypage/tournament-history`로 저장되고 있어, 그 id로 조회 가능하면 좋겠습니다.)
+- 요청: 저장된 토너먼트를 id로 조회하는 엔드포인트를 부탁드립니다. 기록은 이미 `POST /mypage/tournament-history`로 저장되고 있어, **그때 저장되는 필드(winnerId·winnerName·region·category·tournamentSize)**를 그대로 반환해 주시면 됩니다. (winnerId 로 우승 여행지 상세 연결 가능. runnerUp·경기수는 현재 저장하지 않으므로 응답에 없어도 됩니다.)
 
 ## 3. 여행지 상세 필드 보강 (높음)
 
@@ -119,15 +121,13 @@ GET /destinations/{id}/related
 
 ## 8. 회원가입 동의(consents) (별도 — 정책/법무 연계)
 
-`SignupRequestDto`에 동의 정보 추가 요청드립니다.
+`SignupRequestDto`에 동의 정보 배열(`consents`) 추가 요청드립니다. 각 항목 필드:
 
-```ts
-consents: {
-  type: 'age14' | 'terms' | 'privacy' | 'location' | 'marketing';
-  agreed: boolean;
-  version: string;
-}
-[];
+```
+consents: [ { type, agreed, version }, ... ]
+  - type    : age14 | terms | privacy | location | marketing
+  - agreed  : boolean
+  - version : string   (동의한 약관 버전)
 ```
 
 | type                    | 필수 | 미동의 시                                  |
@@ -140,7 +140,7 @@ consents: {
 
 ## 스키마 보강
 
-- **주간 랭킹 썸네일 (중간)** — `WeeklyDestinationWinDto`에 `imageUrl`(가능하면 `region`도) 추가 요청드립니다. 현재 `destinationId·destinationName·winCount`만 내려와서, **랭킹 Top5 카드가 실제 이미지 없이 기본(emoji)으로 표시**됩니다. 이미지가 있으면 랭킹 화면이 시안대로 채워집니다.
+- **주간 랭킹 썸네일 (중간)** — `WeeklyDestinationWinDto`에 `imageUrl`(가능하면 `region`도) 추가 요청드립니다. 현재 `destinationId·destinationName·winCount`만 내려와서, **랭킹 상위 목록이 실제 이미지 없이 기본(emoji)으로 표시**됩니다. 이미지가 있으면 랭킹 화면이 시안대로 채워집니다.
 - `TournamentSummaryDto`에 `winnerId`(정수)가 있으면 히스토리에서 우승 여행지 상세로 연결할 수 있습니다(현재는 이름만 제공). (낮음)
 
 ---
