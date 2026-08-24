@@ -94,7 +94,7 @@ function PageViewTracker() {
  *       - MSW 번들(~80KB) + seeds 가 운영 청크에 포함 → 번들 사이즈 증가
  *       - public/mockServiceWorker.js 가 root scope 에 등록 — Serwist 의 /sw.js 와
  *         별도 파일이라 충돌은 없지만, 두 sw 가 같은 fetch 를 처리하지 않도록
- *         MSW 핸들러 prefix(`/api/backend`)와 Serwist precache 영역을 분리해야 함
+ *         MSW 핸들러 prefix(`/api/be`)와 Serwist precache 영역을 분리해야 함
  *       - 사용자가 실제 API 와 헷갈리지 않도록 운영 활성화 시 화면에 mock 배너 노출 권장
  *
  * 초기 상태:

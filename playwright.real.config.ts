@@ -8,7 +8,7 @@ import { defineConfig, devices } from '@playwright/test';
  *
  * 동작:
  *   - webServer 가 build + start 를 포트 3000 에 기동 (USE_MSW=false).
- *   - API 는 same-origin 프록시(`/api/backend/*` → next rewrite → 실 Spring).
+ *   - API 는 same-origin 프록시(`/api/be/*` → next rewrite → 실 Spring).
  *     따라서 브라우저는 localhost:3000 과만 통신 → JSESSIONID/marker 쿠키 정상.
  *   - 로그인은 실제 test 계정으로 UI 로그인(실 세션 발급 흐름까지 검증).
  *

@@ -148,26 +148,29 @@ const nextConfig = {
   },
 
   /**
-   * Same-origin proxy — `/api/backend/*` → BE.
+   * Same-origin proxy — `/api/be/*` → BE.
    *
    * **운영 / dev 모두 활성**:
    *   - 운영: Chrome 시크릿 모드 + 향후 3rd-party cookie phase-out 대응.
-   *     `vercel.app` ↔ `duckdns.org` 가 cross-site → cookie 차단 → proxy 통해
-   *     same-site (vercel.app) 로 통합. axios baseURL=/api/backend.
+   *     `vercel.app` ↔ `trip-bite.o-r.kr` 가 cross-site → cookie 차단 → proxy 통해
+   *     same-site (vercel.app) 로 통합. axios baseURL=/api/be.
    *   - dev MSW: service worker 가 same-origin scope 만 intercept — proxy 패턴 필수.
    *
    * 경로 매핑:
-   *   - axios interceptor 가 generated 의 `/v1/...` 를 `/...` 로 제거 (`client.ts:46`)
    *   - rewrite destination 은 path 만 전달 (`${target}/:path*`)
-   *   - 운영 env `NEXT_PUBLIC_API_URL` 말미에 `/v1` 포함 가정
-   *     (예: `https://tripbite.duckdns.org/v1`) → final URL 이 BE `/v1/` 매핑.
+   *   - Spring server url 은 버전 prefix 없음 → `/api/be/auth/login` → `${target}/auth/login`.
+   *     (구 NestJS `/v1` prefix 처리는 제거됨)
+   *
+   * ⚠️ afterFiles(기본) — Next 자체 `/api/*` Route Handler(health·csp-report·
+   *    client-error·og)가 먼저 매칭되므로, 프록시는 `/api/be/*` 로 네임스페이스를 분리해
+   *    충돌을 원천 차단한다.
    */
   async rewrites() {
     const target = process.env.NEXT_PUBLIC_API_URL;
     if (!target) return [];
     return [
       {
-        source: '/api/backend/:path*',
+        source: '/api/be/:path*',
         destination: `${target}/:path*`,
       },
     ];

@@ -15,7 +15,7 @@ import { safeInternalPath } from '@/lib/safe-redirect';
  *
  * 인증 redirect (2026-06-12 이전): cross-origin 운영에서 BE cookie 가 FE 도메인
  * cookie jar 에 들어오지 않아 SSR check 무용 → 클라 AuthGuard 책임. 그러나
- * same-origin proxy (`/api/backend/*`) 도입 이후 BE 의 Set-Cookie 가 FE 도메인
+ * same-origin proxy (`/api/be/*`) 도입 이후 BE 의 Set-Cookie 가 FE 도메인
  * (vercel.app) 에 저장되므로 middleware 에서 SID 가시. SSR 단계 redirect 로 이전 →
  * 클라 hydration race 제거 + FOUC 0.
  *

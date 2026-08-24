@@ -40,10 +40,10 @@ import {
 } from './seeds/travel-types';
 
 /**
- * URL 매칭 base — axios baseURL 단일화 (`/api/backend`, services/api/client.ts).
+ * URL 매칭 base — axios baseURL 단일화 (`/api/be`, services/api/client.ts).
  * MSW handler 도 same-origin path 로 매칭.
  */
-const apiUrl = '/api/backend';
+const apiUrl = '/api/be';
 
 export const mockSeeds = {
   regions: regionContentSeeds,
