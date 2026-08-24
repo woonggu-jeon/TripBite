@@ -1,100 +1,99 @@
-// Figma "TST · 유형테스트 질문" (2026-06-23) — SubHeader 아래
-// progress (padding 12 20 0 height 40) + 질문 영역 (padding 32 20 0 gap 20).
 .wrap {
-  display: flex;
-  flex-direction: column;
-  padding: 12px 20px 0;
+  display: grid;
+  gap: 1.25rem;
+  padding-top: 0.25rem;
 }
 
-// Figma progress — height 40 (segments 8 + meta 12 + gap 8 + padding 12).
+// 토너먼트 Bracket progress 와 동일한 segment 점선 패턴.
+// 각 segment 는 button — 답변한 문항(또는 현재 이전)으로 점프 가능.
+// Figma `progress` — V gap 8, padding 12/20/0/20.
 .progressSection {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 32px;
+  display: grid;
+  gap: var(--space-2);
 }
 
-// Figma segments — row gap 4 height 8 (320×8 — 5 seg × 60.8 + 4 × 4 gap).
+// Figma `segments` — H gap 4, 세그먼트 8px 고정 (진행 여부로 높이가 바뀌지 않음)
 .progressTrack {
   display: flex;
-  align-items: stretch;
-  gap: 4px;
+  align-items: center;
+  gap: var(--space-1);
   height: 8px;
 }
 
-// Figma seg — flex 1 height 8 단일 radius 999 (이전 4/6/8 size 차이 단순화).
-// done = primary, current = primary, pending = #E0E0E0 (Contents/Button/disabled).
 .seg {
   flex: 1;
-  min-width: 0;
+  min-width: 6px;
   height: 8px;
   border: 0;
   padding: 0;
   border-radius: var(--radius-full);
-  background: var(--color-border);
+  background: var(--color-surface-elevated); // Figma #F1F1F1
   cursor: default;
   transition: background-color var(--motion-base) ease;
 }
 
+// 지난 문항 / 현재 문항 모두 시안은 같은 초록 채움
 .segDone,
 .segCurrent {
+  height: 8px;
   background: var(--color-primary);
 }
 
 .segClickable {
   cursor: pointer;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background: var(--color-primary-strong);
+    }
+  }
   &:focus-visible {
     outline: var(--focus-outline);
     outline-offset: var(--focus-outline-offset);
   }
 }
 
-// Figma Caption M_10 muted — 10 Medium 120% tracking-tight muted (#393939).
-.progressMeta {
-  font-size: 0.625rem; /* 10 */
+// Caption/M_10 #393939 — 좌측 정렬 한 줄 (구: 카운터와 양끝 정렬)
+.progressHint {
+  font-size: var(--font-eyebrow);
   font-weight: var(--font-weight-medium);
-  line-height: var(--line-tight); /* 120% */
-  letter-spacing: var(--tracking-tight);
+  line-height: var(--line-tight);
   color: var(--color-muted);
-  margin: 0;
-  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-tight);
 }
 
-// Figma Title B_20_130% — 20 Bold 130% tracking-tight fg, padding 0 (Frame 20
-// padding 32 20 0 + gap 20 으로 외곽 spacing 제공).
+// Figma 질문 — Title/B_20_130%, 좌측 정렬 (구: extrabold + 중앙 정렬)
 .question {
-  font-size: var(--font-h2); /* 20 */
+  font-size: var(--font-h2);
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
-  line-height: var(--line-tight); /* 130% */
+  line-height: var(--line-snug);
   word-break: keep-all;
-  margin: 0 0 20px;
-}
-
-// Figma options — column gap 12.
-.options {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-// Figma opt — 320×60 padding 0 18 border 1px radius 12. Body R_16 Regular muted.
-.option {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  min-height: 60px;
-  padding: 0 18px;
   text-align: left;
-  font-size: var(--font-body); /* 16 */
-  font-weight: var(--font-weight-regular);
+  padding: 0;
+}
+
+.options {
+  display: grid;
+  gap: 0.625rem;
+}
+
+.option {
+  display: block;
+  width: 100%;
+  // Figma `typeTestItem` 320x60, 좌우 padding 18 → 4px 그리드로 20
+  min-height: 60px;
+  padding: var(--space-3) var(--space-5);
+  text-align: left;
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-normal);
   letter-spacing: var(--tracking-tight);
-  line-height: var(--line-snug-relaxed); /* 140% */
   color: var(--color-muted);
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition:
     border-color var(--motion-base) ease,
@@ -102,14 +101,10 @@
     transform var(--motion-fast) ease;
   word-break: keep-all;
 
-  // hover 색 = active 와 동일 (사용자 명시 2026-06-24) — primary border +
-  // primary-soft bg + primary text. hover preview = "선택하면 이 모양"
-  // 시각적 단서.
   @media (hover: hover) and (pointer: fine) {
     &:hover:not(:disabled) {
-      border-color: var(--color-primary);
-      background: var(--color-primary-soft);
-      color: var(--color-primary);
+      border-color: var(--color-primary-border);
+      background: var(--color-surface-soft);
     }
   }
   &:active:not(:disabled) {
@@ -125,11 +120,12 @@
   }
 }
 
+// 선택 상태 — 시안 `TST · 유형테스트 질문 (클릭시)` 의 초록 강조
 .optionActive {
   border-color: var(--color-primary);
   background: var(--color-primary-soft);
-  color: var(--color-primary);
-  font-weight: var(--font-weight-medium);
+  color: var(--color-fg);
+  font-weight: var(--font-weight-bold);
 }
 
 .submitError {
@@ -165,59 +161,55 @@
   }
 }
 
-// Figma "TST · 유형테스트 완료" (2026-06-23) — done-center 360×664 center
-// column gap 20 (circle + Frame 1 — Frame 1 gap 12).
+// Submit/finishing 화면 — 토너먼트 celebration 과 같은 톤
 .finishing {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  padding: 0 20px;
-  min-height: 60dvh;
+  position: relative;
+  display: grid;
+  gap: 0.5rem;
+  place-items: center;
+  padding: 4rem 1rem;
+  min-height: 50dvh;
   text-align: center;
+  overflow: hidden;
   animation: finishingIn 0.45s var(--ease-out) both;
 }
 
-// Figma circle 96 — secondary01 (#EAF6EF) bg + Check 46 primary 4.6px stroke.
-// primary-soft 토큰 활용 (dark mode 자동 정합).
-.finishingCircle {
-  display: grid;
-  place-items: center;
-  width: 96px;
-  height: 96px;
-  background: var(--color-primary-soft);
-  border-radius: var(--radius-full);
-  color: var(--color-primary);
-  animation: finishingPop 0.5s var(--ease-spring) both;
+.finishingGlow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    var(--color-primary-ring-soft),
+    transparent 70%
+  );
+  pointer-events: none;
+  animation: finishingGlow 1.4s var(--ease-out) both;
 }
 
-// Figma Frame 1 — column gap 12 (title + hint).
-.finishingText {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
+.finishingEmoji {
+  font-size: var(--emoji-2xl);
+  line-height: 1;
+  filter: var(--drop-shadow-icon-strong);
+  animation: finishingPop 0.7s var(--ease-spring) both;
+  z-index: 1;
 }
 
-// Figma Title B_24_130% — 24 Bold 130% tracking-tight fg center.
 .finishingTitle {
-  font-size: var(--font-h1); /* 24 */
-  font-weight: var(--font-weight-bold);
-  letter-spacing: var(--tracking-tight);
-  line-height: var(--line-tight); /* 130% */
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-extrabold);
   color: var(--color-fg);
-  margin: 0;
+  letter-spacing: var(--tracking-tight);
+  animation: finishingRise 0.6s var(--motion-base) var(--ease-out) both;
+  opacity: 0;
+  z-index: 1;
 }
 
-// Figma R_14_140% — 14 Regular 140% tracking-tight fg center.
 .finishingHint {
-  font-size: var(--text-sm); /* 14 */
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed); /* 140% */
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-fg);
-  margin: 0;
+  font-size: var(--font-label);
+  color: var(--color-muted);
+  animation: finishingRise 0.6s 0.35s var(--ease-out) both;
+  opacity: 0;
+  z-index: 1;
 }
 
 @keyframes finishingIn {
@@ -229,17 +221,43 @@
   }
 }
 
-@keyframes finishingPop {
+@keyframes finishingGlow {
   0% {
     opacity: 0;
     transform: scale(0.6);
   }
   60% {
+    opacity: 1;
     transform: scale(1.1);
   }
   100% {
-    opacity: 1;
+    opacity: var(--opacity-muted);
     transform: scale(1);
+  }
+}
+
+@keyframes finishingPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(20px);
+  }
+  60% {
+    transform: scale(1.15) translateY(-4px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes finishingRise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -252,7 +270,10 @@
     transform: none;
   }
   .finishing,
-  .finishingCircle {
+  .finishingGlow,
+  .finishingEmoji,
+  .finishingTitle,
+  .finishingHint {
     animation: none;
     opacity: 1;
   }

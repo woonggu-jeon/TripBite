@@ -1,13 +1,13 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import {
-  nicknameSchema,
-  type NicknameFormValues,
-} from '@/features/onboarding/schemas/nickname';
+import { useForm } from 'react-hook-form';
 import { Button, TextField } from '@/components/ui';
+import {
+  type NicknameFormValues,
+  nicknameSchema,
+} from '@/features/onboarding/schemas/nickname';
 import styles from './OnboardingStep.module.scss';
 
 /**

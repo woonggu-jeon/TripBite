@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Icon } from '@/components/icon/Icon';
-import type { DestinationDetailDto } from '@/api/generated/schemas';
+import { useEffect, useRef, useState } from 'react';
+import { Icon } from '@/components/icon';
+import type { DestinationDetailDto } from '@/types/api-domain';
 import styles from './WinnerDetailPanel.module.scss';
 
 /**
@@ -19,6 +19,7 @@ function ExpandableSummary({ text }: { text: string }) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    // 화면 paint 후 scrollHeight 가 정확. expanded 토글 시 측정 안 함 (오버플로우 판정은 clamp 상태 기준).
     if (!expanded) setOverflowing(el.scrollHeight > el.clientHeight + 1);
   }, [text, expanded]);
 
@@ -26,7 +27,7 @@ function ExpandableSummary({ text }: { text: string }) {
     <div className={styles.summaryWrap}>
       <p
         ref={ref}
-        className={`${styles.summary} ${expanded ? '' : styles.clamped}`}
+        className={`${styles.summary} ${expanded ? styles.expanded : styles.clamped}`}
       >
         {text}
       </p>
@@ -47,23 +48,29 @@ function ExpandableSummary({ text }: { text: string }) {
 interface Props {
   detail: DestinationDetailDto | undefined;
   isLoading: boolean;
+  /**
+   * Figma 껍데기 변형 — `card` 는 토너먼트 결과(흰 면 + 보더 + padding),
+   * `plain` 은 장소상세(본문에 그대로 붙는 형태).
+   */
+  variant?: 'card' | 'plain';
 }
 
 /**
- * 토너먼트 우승 info-card — Figma "TRN · 토너먼트 결과" info-card (320×285) 정합.
+ * 우승 여행지 상세 패널 — API 응답의 optional 필드를 있는 것만 렌더.
  *
- * 구성 (위→아래):
- *   - title B_16 "장소 정보"
- *   - 3 field row (gap 12): pin/calendar/clock 추첨 후보 = 주소/휴무일/운영시간
- *     · 각 row: flabel 86 (icon 18 primary + label Caption R_12 muted) + value R_12 fg
- *   - divider 1px gray
- *   - overview column gap 8: text Body R_14 muted line 80h + "더보기" SemiBold 14 primary
- *
- * 데이터 정책:
- *   - 모든 필드 optional. 표시할 정보가 아무것도 없으면 패널 미노출.
- *   - 로딩 중엔 skeleton.
+ * 설계 원칙:
+ *   - 모든 필드 optional → 백엔드가 점진적으로 채우거나, 특정 destination 에 정보가
+ *     없어도 패널 자체는 깨지지 않음
+ *   - 데이터 없으면 해당 row 자체 미노출 (빈 공간/대시 X)
+ *   - 표시할 정보가 아무것도 없으면 패널 전체 미노출
+ *   - 로딩 중엔 skeleton — 우승 카드만 먼저 보이고 상세는 비동기로 채워짐
+ *     ("렌더 속도 최우선" 정책: 상세 fetch 가 늦어도 winner/stats 는 즉시 표시)
  */
-export function WinnerDetailPanel({ detail, isLoading }: Props) {
+export function WinnerDetailPanel({
+  detail,
+  isLoading,
+  variant = 'card',
+}: Props) {
   const t = useTranslations('tournament.result.detail');
 
   if (isLoading) {
@@ -78,47 +85,58 @@ export function WinnerDetailPanel({ detail, isLoading }: Props) {
 
   if (!detail) return null;
 
-  // Figma 정합: pin / calendar / clock 3 row 만. (phone/website/parking 등은 미노출)
   const rows: Array<{
     key: string;
     icon: React.ReactNode;
     label: string;
     value: string;
   }> = [];
+  // BE-TODO(§5 P2-5): Spring DestinationDetailDto 가 실제 제공하는 필드만 렌더.
+  //   mock 에만 있던 phone/website/openingHours/restDate/parking 은 제거 — BE 가
+  //   DestinationDetailDto 에 추가하면 해당 행 복원 가능.
+  //   address · admissionFee · 행사기간(eventStart~eventEnd).
   if (detail.address)
     rows.push({
       key: 'address',
-      icon: <Icon name="location" size={18} />,
+      icon: <Icon name="location-18" size={18} />,
       label: t('address'),
       value: detail.address,
     });
-  if (detail.restDate)
+  if (detail.admissionFee)
     rows.push({
-      key: 'restDate',
-      icon: <Icon name="calendar" size={18} />,
-      label: t('restDate'),
-      value: detail.restDate,
+      key: 'admissionFee',
+      icon: <Icon name="ticket" size={18} />,
+      label: t('admissionFee'),
+      value: detail.admissionFee,
     });
-  if (detail.openingHours)
+  if (detail.eventStart)
     rows.push({
-      key: 'hours',
-      icon: <Icon name="clock" size={18} />,
-      label: t('openingHours'),
-      value: detail.openingHours,
+      key: 'eventPeriod',
+      icon: <Icon name="calendar-18" size={18} />,
+      label: t('eventPeriod'),
+      value: detail.eventEnd
+        ? `${detail.eventStart} ~ ${detail.eventEnd}`
+        : detail.eventStart,
     });
 
+  // BE 가 summary 폐기 + description 통합 (API_CONTRACT 2026-06-11) — overview 전체 또는 한글 폴백.
   const lead = detail.description;
   const hasLead = !!lead;
   const hasRows = rows.length > 0;
 
   if (!hasLead && !hasRows) return null;
 
+  // Figma `info-card` 는 필드 목록 → divider → overview 순서다
+  // (POI · 장소상세 / TRN · 토너먼트 결과 둘 다 동일). 구현은 반대였다.
   return (
-    <section className={styles.panel} aria-label={t('panelLabel')}>
-      <h3 className={styles.title}>{t('panelLabel')}</h3>
-
+    <section
+      className={`${styles.panel} ${variant === 'plain' ? styles.plain : styles.card}`}
+      aria-label={t('panelLabel')}
+    >
       {hasRows && (
-        <dl className={styles.rows}>
+        <dl
+          className={`${styles.rows} ${hasLead ? styles.rowsDivided : ''}`.trim()}
+        >
           {rows.map((r) => (
             <div key={r.key} className={styles.row}>
               <dt className={styles.rowLabel}>
@@ -130,8 +148,6 @@ export function WinnerDetailPanel({ detail, isLoading }: Props) {
           ))}
         </dl>
       )}
-
-      {hasRows && hasLead && <div className={styles.divider} aria-hidden />}
 
       {hasLead && <ExpandableSummary text={lead} />}
     </section>

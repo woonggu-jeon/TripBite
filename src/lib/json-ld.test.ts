@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { serializeJsonLd } from './json-ld';
 
 describe('serializeJsonLd — XSS escape', () => {

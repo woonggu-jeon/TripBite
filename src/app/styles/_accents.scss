@@ -24,6 +24,15 @@
   --accent-festival-grad-start: #ffcf5b;
   --accent-festival-grad-end: #ffe9b3;
 
+  /* 시즌 surface — Figma Contents/Season/* (면색 전용 파스텔).
+     위 --accent-* 는 텍스트로 쓸 수 있게 어둡게 조정한 톤이고, 이쪽은 카드 배경 전용.
+     역할이 달라 치환하지 않고 병존시킴 (docs/design/HANDOFF.md 결정 3).
+     ⚠ 텍스트 색으로 쓰지 말 것. 이 면 위 텍스트는 var(--color-fg). */
+  --accent-spring-surface: #ffebeb;
+  --accent-summer-surface: #e0ff89;
+  --accent-autumn-surface: #ffcd99;
+  --accent-winter-surface: #e8f1fd;
+
   /* 축제 카테고리 색 — 시즌과 별개 의미 차원.
      red / amber 가 흰 배경 대비 약함 — 텍스트 노출 시 darker 변종 사용 권장. */
   --accent-red: #c1272d; /* #ef4444 3.27:1 → 5.2:1 */

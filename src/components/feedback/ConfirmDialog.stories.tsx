@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { ConfirmDialog } from './ConfirmDialog';
 import { Button } from '@/components/ui';
 import { useConfirm } from '@/hooks/use-confirm';
 import { toast } from '@/lib/toast';
+import { ConfirmDialog } from './ConfirmDialog';
 import { Toaster } from './Toaster';
 
 const meta = {

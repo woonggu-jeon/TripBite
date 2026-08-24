@@ -10,9 +10,9 @@
 
    정밀 미세조정 도구: https://seek-oss.github.io/capsize/ — 운영 LCP 측정 후 ±1% 단위 보정 가능.
 
-   self-host 미채택 사유:
-     단일 PretendardVariable.woff2 는 전체 한글 ~1.3MB 로
-     dynamic-subset(~80KB) 보다 무거워 렌더링 속도에 역행. */
+   이 fallback 은 dynamic-subset('Pretendard Variable', public/fonts/pretendard)
+   swap 동안 시스템 폰트를 Pretendard 메트릭으로 렌더 → CLS 완화. (2026-08-15:
+   단일 2MB self-host → dynamic-subset 전환 완료.) */
 @font-face {
   font-family: 'Pretendard-fallback';
   src:

@@ -1,57 +1,39 @@
-import { describe, it, expect } from 'vitest';
 import { waitFor } from '@testing-library/react';
-import { http, HttpResponse } from 'msw';
-import { server } from '@/mocks/server';
+import { HttpResponse, http } from 'msw';
+import { describe, expect, it } from 'vitest';
 import { mockSeeds } from '@/mocks/handlers';
+import { server } from '@/mocks/server';
 import { renderHookWithProviders } from '@/test-utils';
-import {
-  useOngoingFestivals,
-  useRegionContents,
-  useRegionSummary,
-} from './use-region';
+import { useOngoingFestivals, useRegionContents } from './use-region';
 
 const apiUrl = mockSeeds.apiUrl;
 
-describe('useRegionSummary', () => {
-  it('성공 시 summary 응답 반환', async () => {
-    const summary = {
-      code: 'cheongju',
-      ko: '청주시',
-      en: 'Cheongju',
-      description: '충북의 중심',
-      heroImage: 'https://cdn.example.com/cheongju.jpg',
-    };
-    server.use(
-      http.get(`${apiUrl}/regions/cheongju/summary`, () =>
-        HttpResponse.json(summary),
-      ),
-    );
-
-    const { result } = renderHookWithProviders(() =>
-      useRegionSummary('cheongju'),
-    );
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(result.current.data).toEqual(summary);
-  });
-});
-
 describe('useRegionContents — useInfiniteList wrapping', () => {
-  it('첫 페이지 fetch — items 플랫튼 + http→https 정규화', async () => {
+  // 4-A 전환: regions/:code/contents 미지원 → GET /destinations(시군 필터) 재구성.
+  it('첫 페이지 fetch — destinations 매핑 + http→https 정규화', async () => {
     server.use(
-      http.get(`${apiUrl}/regions/cheongju/contents`, ({ request }) => {
+      http.get(`${apiUrl}/destinations`, ({ request }) => {
         const url = new URL(request.url);
-        expect(url.searchParams.get('type')).toBe('attraction');
-        expect(url.searchParams.get('limit')).toBe('10');
+        expect(url.searchParams.get('category')).toBe('attraction');
+        expect(url.searchParams.get('region')).toBe('cheongju');
+        expect(url.searchParams.get('numOfRows')).toBe('10');
         return HttpResponse.json({
-          items: [
-            {
-              id: 'c-1',
-              title: '명승지',
-              imageUrl: 'http://tong.visitkorea.or.kr/p.jpg',
-              category: 'attraction',
-            },
-          ],
-          nextCursor: null,
+          success: true,
+          message: null,
+          data: {
+            items: [
+              {
+                id: 1,
+                name: '명승지',
+                imageUrl: 'http://tong.visitkorea.or.kr/p.jpg',
+                category: 'attraction',
+                region: 'cheongju',
+              },
+            ],
+            totalCount: 1,
+            pageNo: 1,
+            numOfRows: 10,
+          },
         });
       }),
     );
@@ -61,32 +43,34 @@ describe('useRegionContents — useInfiniteList wrapping', () => {
     );
     await waitFor(() => expect(result.current.items.length).toBe(1));
     expect(result.current.hasNext).toBe(false);
-    // BE 안전망: http → https 정규화 검증
+    // name→title 매핑 + http → https 정규화 검증
     expect(result.current.items[0]).toMatchObject({
-      id: 'c-1',
+      id: '1',
+      title: '명승지',
       imageUrl: 'https://tong.visitkorea.or.kr/p.jpg',
     });
   });
 });
 
 describe('useOngoingFestivals', () => {
-  it('region 인자 없이 호출 시 전체 축제 fetch', async () => {
+  it('전체 축제 fetch (신규 Spring BE: ApiResponse 엔벨로프)', async () => {
     server.use(
-      http.get(`${apiUrl}/regions/ongoing-festivals`, ({ request }) => {
-        const url = new URL(request.url);
-        // region 미지정 시 query param 없음
-        expect(url.searchParams.has('region')).toBe(false);
-        return HttpResponse.json({
-          type: 'ongoing',
-          items: [
-            {
-              id: 'f-1',
-              title: '진행 중 축제',
-              imageUrl: 'https://cdn.example.com/f.jpg',
-            },
-          ],
-        });
-      }),
+      http.get(`${apiUrl}/regions/ongoing-festivals`, () =>
+        HttpResponse.json({
+          success: true,
+          message: null,
+          data: {
+            type: 'ongoing',
+            items: [
+              {
+                id: 1,
+                name: '진행 중 축제',
+                imageUrl: 'https://cdn.example.com/f.jpg',
+              },
+            ],
+          },
+        }),
+      ),
     );
 
     const { result } = renderHookWithProviders(() => useOngoingFestivals());
@@ -95,12 +79,17 @@ describe('useOngoingFestivals', () => {
     expect(result.current.data?.items.length).toBe(1);
   });
 
-  it('region 지정 시 query string 포함', async () => {
+  it('region 인자 전달돼도 새 BE 는 region query 미전송 (전체 반환)', async () => {
     server.use(
       http.get(`${apiUrl}/regions/ongoing-festivals`, ({ request }) => {
         const url = new URL(request.url);
-        expect(url.searchParams.get('region')).toBe('danyang');
-        return HttpResponse.json({ type: 'upcoming', items: [] });
+        // 신규 BE 엔드포인트는 region 파라미터를 받지 않음.
+        expect(url.searchParams.has('region')).toBe(false);
+        return HttpResponse.json({
+          success: true,
+          message: null,
+          data: { type: 'upcoming', items: [] },
+        });
       }),
     );
 

@@ -1,11 +1,11 @@
 'use client';
 
+import { Check } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
-import { Check } from 'lucide-react';
-import { locales, localeLabels, type Locale } from '@/i18n/config';
 import { setLocale as setLocaleAction } from '@/i18n/actions';
+import { type Locale, localeLabels, locales } from '@/i18n/config';
 import styles from './LanguageSwitcher.module.scss';
 
 /**

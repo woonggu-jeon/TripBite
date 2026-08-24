@@ -1,9 +1,9 @@
+import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { getTranslations } from 'next-intl/server';
-import type { Metadata } from 'next';
-import { OnboardingFlow } from './_components/OnboardingFlow';
 import { AuthLayout } from '@/components/layout/AuthLayout';
+import { OnboardingFlow } from './_components/OnboardingFlow';
 
 /**
  * 온보딩 페이지 (/onboarding)

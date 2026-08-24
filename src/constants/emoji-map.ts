@@ -5,7 +5,7 @@
  *   import { categoryEmoji, seasonEmoji } from '@/constants/emoji-map';
  *   const e = categoryEmoji('festival');
  */
-import type { DestinationCategory, Season } from '@/api/generated/schemas';
+import type { DestinationCategory, Season } from '@/types/api-domain';
 
 const CATEGORY_EMOJI: Partial<Record<DestinationCategory, string>> = {
   festival: '🎪',

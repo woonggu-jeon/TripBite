@@ -1,4 +1,4 @@
-import type { LetterDto } from '@/api/generated/schemas';
+import type { LetterDto } from '@/types/api-domain';
 
 /**
  * 편지함 시드 — 30개 (페이지네이션 테스트용)

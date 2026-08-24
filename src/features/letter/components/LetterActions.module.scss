@@ -1,98 +1,26 @@
-// Figma "받은 편지 상세 · buttons" (2026-06-24) — Frame 26 column gap 10.
-.buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
+// Figma `받은 편지 상세 > buttons` — 156x52 두 개(gap 8) + 320x52 라인(gap 10→12).
+.actions {
+  display: grid;
+  gap: var(--space-3);
 }
 
-// Figma Frame 25 — row gap 8 320×52.
 .row {
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
 }
 
-// Figma button (secondary outline gray) — 156×52 white + 1px #C6C6C6 + radius
-// 12 + M_16 muted center. saved 활성 시 색 강조.
-.btnGray {
-  flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 52px;
-  padding: 16px 20px;
-  background: var(--color-bg);
-  border: 1px solid var(--color-stroke);
-  border-radius: 12px;
-  font-size: var(--font-body); /* 16 */
-  font-weight: var(--font-weight-medium);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-muted);
-  cursor: pointer;
-  transition:
-    background var(--motion-base) ease,
-    border-color var(--motion-base) ease,
-    color var(--motion-base) ease,
-    transform var(--motion-fast) ease;
-
-  &:active {
-    transform: scale(0.99);
-  }
-  &:focus-visible {
-    outline: var(--focus-outline);
-    outline-offset: var(--focus-outline-offset);
-  }
-}
-
-.btnSavedActive {
+// 시안 3번째 버튼 — 흰 면 + 1px 초록 보더 + 초록 라벨(16 Medium).
+// secondary(회색 보더) 위에 색만 덮는다.
+.lineButton {
   border-color: var(--color-primary);
-  color: var(--color-primary);
-  background: var(--color-primary-soft);
-}
-
-// Figma button (primary fill) — 156×52 primary + radius 12 + M_16 white.
-// liked 활성 시 그대로 (이미 primary fill).
-.btnPrimary {
-  flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 52px;
-  padding: 16px 20px;
-  background: var(--color-primary);
-  border: 1px solid var(--color-primary);
-  border-radius: 12px;
-  font-size: var(--font-body);
+  color: var(--color-primary-text-bold);
   font-weight: var(--font-weight-medium);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-primary-fg);
-  cursor: pointer;
-  transition: transform var(--motion-fast) ease;
 
-  &:active {
-    transform: scale(0.99);
-  }
-  &:focus-visible {
-    outline: var(--focus-outline);
-    outline-offset: var(--focus-outline-offset);
-  }
-}
-
-// liked 활성 — outline 강조 (현재 primary fill 그대로, opacity 조정).
-.btnLikedActive {
-  opacity: 1;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .btnGray,
-  .btnPrimary {
-    transition: none;
-    &:active {
-      transform: none;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      background: var(--color-primary-soft);
+      border-color: var(--color-primary);
     }
   }
 }

@@ -1,59 +1,74 @@
-// Figma "MY_01 마이페이지" pf row (2026-06-23) — flat horizontal row,
-// padding 20, gap 12, bg white, border-bottom #E0E0E0.
-.row {
-  display: flex;
+// Figma `pf` 실측 — 360x96, HORIZONTAL gap 12, padding 20, 흰 배경 +
+// 하단 1px #E0E0E0. 카드가 아니라 헤더 바로 아래 붙는 풀블리드 블록이다.
+// (구: 중앙 정렬 100px 아바타 + highlighted 카드)
+.card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: 12px;
-  padding: 20px;
-  background: var(--color-bg);
-  border-bottom: 1px solid var(--color-border);
+  gap: var(--space-3);
+  padding: var(--space-5) var(--content-pad);
+  margin-inline: calc(var(--content-pad) * -1);
+  background: var(--color-surface);
+  border-bottom: var(--border-thin) solid var(--color-border);
+  text-align: left;
 }
 
-// avatar 56x56 + cam-badge 22x22 (right -2 bottom -2). Card primitive 미사용.
+// Figma `pmid` — 닉네임 + 배지, V gap 4
+.body {
+  display: grid;
+  gap: var(--space-1);
+  justify-items: start;
+  min-width: 0;
+}
+
+// avatar + remove(X) 둘 다 absolute 정렬할 wrapper. Figma `av` 56x56.
 .avatarWrap {
   position: relative;
   width: 56px;
   height: 56px;
-  flex-shrink: 0;
 }
-
-// Figma cam-badge — 22x22 absolute right -2 bottom -2, primary bg + 2px white
-// border + radius 11 + Camera icon 12 white. 사용자 발견: X (제거) icon 회귀
-// → Camera icon 정합 (2026-06-23). 클릭 시 BottomSheet 트리거.
-.cameraBtn {
+// X 버튼 — avatar 있을 때만 우상단. avatar 클릭 (변경) 과 분리.
+.avatarRemoveBtn {
   position: absolute;
-  right: -2px;
-  bottom: -2px;
-  z-index: 1;
-  width: 22px;
-  height: 22px;
+  top: -6px;
+  right: -6px;
+  z-index: 2;
+  width: 20px;
+  height: 20px;
   display: grid;
   place-items: center;
   padding: 0;
-  background: var(--color-primary);
-  border: 2px solid var(--color-bg);
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-border);
   border-radius: var(--radius-full);
-  color: var(--color-bg);
+  color: var(--color-fg);
   cursor: pointer;
+  box-shadow: var(--shadow-sm);
   transition:
     transform var(--motion-fast) ease,
-    opacity var(--motion-base) ease;
+    border-color var(--motion-base) ease;
 
   @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      opacity: var(--opacity-hover-dim);
+    &:hover:not(:disabled) {
+      border-color: var(--color-danger, var(--color-primary));
+      color: var(--color-danger, var(--color-primary));
     }
   }
-  &:active {
+  &:active:not(:disabled) {
     transform: scale(0.92);
   }
   &:focus-visible {
     outline: var(--focus-outline);
     outline-offset: var(--focus-outline-offset);
   }
+  &:disabled {
+    opacity: var(--opacity-disabled);
+    cursor: not-allowed;
+  }
 }
 
-// avatar 영역 전체 클릭 가능 — 카메라 변경 동작.
+// avatar 영역 전체를 button 으로 — 카메라 아이콘 없이 avatar 자체가 클릭 타깃.
+// 별도 absolute 띄우는 요소가 없어 primitive 와 spec 충돌이 발생할 구조 자체 없음.
 .avatarBtn {
   position: relative;
   width: 56px;
@@ -82,9 +97,9 @@
   }
 }
 
-// Figma av — 56x56 circle bg primary-soft (#EAF6EF), user icon 27x27 primary.
+// Figma `av` — 56x56, 연초록 면, 보더/그림자 없음
 .avatar {
-  position: relative;
+  position: relative; // next/image fill 자식의 absolute 기준
   width: 56px;
   height: 56px;
   border-radius: var(--radius-full);
@@ -95,18 +110,37 @@
   transition: filter var(--motion-base) ease;
 }
 
+// Figma `cam-badge` 22x22 — 초록 원 + 2px 흰 링, 아바타 우하단
+.camBadge {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-on-strong);
+  box-shadow: 0 0 0 2px var(--color-surface);
+  --icon-stroke: 1; // Figma cameraIcon 은 1px stroke
+}
+
 .avatarImg {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
+// Figma 는 아바타 미설정 시 연초록 면 + 초록 사람 아이콘 (profileIcon, stroke 1.7)
 .avatarFallback {
+  --icon-stroke: 1.7;
   display: grid;
   place-items: center;
   width: 100%;
   height: 100%;
-  color: var(--color-primary);
+  color: var(--color-primary-text-bold);
 }
 
 .fileInput {
@@ -120,24 +154,14 @@
   border: 0;
 }
 
-// pmid — column, gap 4, flex-grow 1 (남은 공간 차지).
-.pmid {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-  flex-grow: 1;
-  min-width: 0;
-}
-
-// "여행한입러" 닉네임 — Inter ExtraBold 18 line 130% ls -0.54px.
+// Title/B_18_140% — 18px Bold
 .nickname {
-  font-size: 1.125rem; /* 18 */
-  font-weight: var(--font-weight-extrabold);
-  line-height: 1.3em;
-  letter-spacing: -0.03em;
+  font-size: var(--font-h3);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-normal);
   color: var(--color-fg);
-  margin: 0;
+  letter-spacing: var(--tracking-tight);
+  min-height: 1.4em;
 }
 
 .nicknameSkeleton {
@@ -148,78 +172,28 @@
   border-radius: var(--radius-sm);
 }
 
-// badge — 109x25 padding 5/11 gap 4 bg #EBF9EF radius 999 (pill).
-// "새내기 여행자" Inter Bold 12 line 15px primary.
-.badge {
+// Figma `badge` — 연초록 pill (radius 999), padding 4/12, gap 4
+.travelType {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 5px 11px;
+  gap: var(--space-1);
+  padding: 4px var(--space-3);
   background: var(--color-primary-soft);
   border-radius: var(--radius-full);
 }
 
-.badgeIcon {
-  width: 13px;
-  height: 13px;
-  color: var(--color-primary);
+// Figma `detailIcon` 12x12 compass
+.travelTypeIcon {
   flex-shrink: 0;
+  color: var(--color-primary-text-bold);
 }
 
-.badgeLabel {
-  font-size: 0.75rem; /* 12 */
+// Caption/B_10 — 10px Bold
+.travelTypeTitle {
+  font-size: var(--font-eyebrow);
   font-weight: var(--font-weight-bold);
-  // Figma "MY · pf" badge label — Inter Bold 12 line 15px (= 1.25 at 12px).
-  // 이전 line 1 (= 12px) 회귀 정정 (2026-06-23).
-  line-height: 1.25;
-  color: var(--color-primary);
-  margin: 0;
-}
-
-// Figma "MY · 프로필 사진 변경" opt row (2026-06-23) — 64h padding 12/20
-// gap 12, opt-ic 40 circle primary-soft + label SB_14 fg.
-.sheetOption {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  width: 100%;
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-  transition: background var(--motion-base) ease;
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover:not(:disabled) {
-      background: var(--color-hover);
-    }
-  }
-  &:disabled {
-    opacity: var(--opacity-disabled);
-    cursor: not-allowed;
-  }
-  &:focus-visible {
-    outline: var(--focus-outline);
-    outline-offset: calc(-1 * var(--focus-outline-offset));
-  }
-}
-
-.sheetOptionIcon {
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-full);
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
-  flex-shrink: 0;
-}
-
-.sheetOptionLabel {
-  // Figma label — SemiBold 14 line 140% -0.02em fg.
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-snug-relaxed);
+  line-height: var(--line-tight);
+  color: var(--color-primary-text-bold);
   letter-spacing: var(--tracking-tight);
-  color: var(--color-fg);
+  margin: 0;
 }

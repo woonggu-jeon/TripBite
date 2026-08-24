@@ -33,13 +33,15 @@ export const ROUTES = {
 } as const;
 
 /**
- * 하단 네비게이션 5탭 — Figma "nav" 정합 (2026-06-23). 5탭 평등 (72×62
- * stroke + Caption M_10/B_10). 이전 emphasized (raised circle) — 자체
- * 디자인이었으나 Figma 정합 결정으로 제거.
+ * 하단 네비게이션 5탭
+ *
+ * Figma nav 는 5탭이 모두 동일한 평면 탭 (72x60, 아이콘 24, gap 4).
+ * 이전에 토너먼트에 있던 `emphasized: true` (가운데 돌출 버튼) 는 시안에 없어 제거됨.
  */
 export const BOTTOM_NAV_ROUTES = [
   { path: ROUTES.HOME, labelKey: 'home', icon: 'home' },
-  { path: ROUTES.RANKING, labelKey: 'ranking', icon: 'trending-up' },
+  // Figma navIcon `name=rank` 는 불꽃(flame) — 상승 화살표가 아니다
+  { path: ROUTES.RANKING, labelKey: 'ranking', icon: 'flame' },
   { path: ROUTES.TOURNAMENT, labelKey: 'tournament', icon: 'trophy' },
   { path: ROUTES.LETTER, labelKey: 'letter', icon: 'mail' },
   { path: ROUTES.MYPAGE, labelKey: 'mypage', icon: 'user' },

@@ -1,312 +1,299 @@
-// Figma "편지 발송완료" (2026-06-24) — wb padding 20 + bottom button absolute.
+// Figma `편지 발송완료` — wb padding 20, 상단 블록 ↔ 카드 gap 40
 .wrap {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  min-height: calc(100dvh - var(--header-h));
-}
-
-.wb {
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-  padding: 20px;
-  padding-bottom: calc(20px + 52px + 20px);
-}
-
-// Figma Frame 7 — hero column center gap 20 height 155.
-.hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-
-// Figma circle 72×72 #EAF6EF + Send icon 36 primary stroke 4.6.
-.circle {
   display: grid;
-  place-items: center;
-  width: 72px;
-  height: 72px;
-  background: var(--color-primary-soft);
-  border-radius: var(--radius-full);
-  color: var(--color-primary);
-}
-
-// Figma Frame 1 — column align center gap 12.
-.headings {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-// Figma Title/B_24_130% fg.
-.title {
-  font-size: 1.5rem; /* 24 */
-  font-weight: var(--font-weight-bold);
-  line-height: 1.3;
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-fg);
-  margin: 0;
-  text-align: center;
-}
-
-// Figma Body/R_14_140% muted center.
-.sub {
-  font-size: var(--text-sm); /* 14 */
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-muted);
-  margin: 0;
-  text-align: center;
-  white-space: pre-line;
-}
-
-// Figma Frame 79 — sent card 320×292 bg #F8F8F8 + 1px gray border + radius
-// 12 + padding 20 16 + column gap 10 (Figma 정합 2026-06-24).
-.card {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 20px 16px;
-  background: var(--color-gray-10); /* #F8F8F8 */
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-}
-
-// Figma top — row gap 14 width 288 height 60. pw 104 + meta 170.
-.top {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 14px;
-}
-
-// Figma pw — 104×60 relative (sq + pm absolute).
-.pw {
-  position: relative;
-  width: 104px;
-  height: 60px;
-  flex-shrink: 0;
-}
-
-// Figma sq — 60×60 white + 1px gray border + radius 10 absolute left 0 top 0.
-.sq {
-  position: absolute;
-  left: 0;
-  top: 0;
-  display: grid;
-  place-items: center;
-  width: 60px;
-  height: 60px;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.sqImage {
-  object-fit: cover;
-}
-
-// avatar 없을 때 User icon fallback.
-.sqIcon {
-  color: var(--color-muted);
-}
-
-// Figma pm — 58×58 absolute left 42 top -24. 도장 효과:
-// border 2px #E1493C radius 999 opacity 0.7 rotate -14deg + 안 텍스트 error.
-// Figma pm — 58×58 circle + 2px error border rotate -14deg, 안 "발송완료 \n
-// 여행한입" 멀티라인 (사용자 명시 2026-06-24 — css 텍스트 도장 처리). 다국어
-// 지원 + 다크모드 + 색 변경 자유 (이미지 자산 X).
-.pm {
-  position: absolute;
-  left: 42px;
-  top: -24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 2px;
-  width: 58px;
-  height: 58px;
-  border: 2px solid var(--color-danger);
-  border-radius: var(--radius-full);
-  opacity: 0.7; /* Figma 명시 정합 (사용자 명시 2026-06-24) */
-  transform: rotate(-14deg);
-  text-align: center;
-}
-
-// "발송완료" — 메인 텍스트 (조금 강조).
-.pmMain {
-  font-size: 0.6875rem; /* 11 — 4 글자 58 안 fit */
-  font-weight: var(--font-weight-bold);
-  line-height: 1.1;
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-danger);
-}
-
-// "여행한입" — 서브 텍스트.
-.pmSub {
-  font-size: 0.5625rem; /* 9 — 작은 sub line */
-  font-weight: var(--font-weight-regular);
-  line-height: 1.1;
-  letter-spacing: -0.01em;
-  color: var(--color-danger);
-}
-
-// Figma meta — column gap 4 width 170 align right.
-.meta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-  flex: 1;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-10);
   min-width: 0;
-}
 
-// Figma Caption B_10 disabled right.
-.metaLabel {
-  font-size: 0.625rem; /* 10 */
-  font-weight: var(--font-weight-bold);
-  line-height: 1.2;
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-text-disabled);
-}
-
-// Figma Body B_16 fg right.
-.metaName {
-  font-size: var(--font-body); /* 16 */
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-fg);
-}
-
-// Figma Caption R_12 muted right.
-.metaLoc {
-  font-size: var(--font-caption); /* 12 */
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: -0.01em;
-  color: var(--color-muted);
-}
-
-// Figma ms — row padding 20 (4변) 288×120. Frame 71 cells 248 width = 288 -
-// 40 (좌우 padding 20+20). 직전 padding-y 20 만 → 좌우 padding 누락 정정.
-.ms {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
-
-// Figma Frame 71 — 외곽 가로 line. padding 12 0 + border-y 1 error. 안쪽에
-// Frame 70 (cells) 가 또 border-y 1 error → 이중 border + 12 gap 우표 천공
-// 효과 (사용자 명시 2026-06-24 정정).
-.cellsOuter {
-  width: 100%;
-  padding: 12px 0;
-  border-top: 1px solid var(--color-danger);
-  border-bottom: 1px solid var(--color-danger);
-}
-
-// Figma Frame 70 — 5 cells row + border-y 1 error. PinLikeInput 동일 패턴 —
-// cell flex 1 균등 분포 (직전 width 49.6 명시 → 왼쪽 정렬 회귀, 사용자 명시
-// 2026-06-24 통일).
-.cells {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: 100%;
-  border-top: 1px solid var(--color-danger);
-  border-bottom: 1px solid var(--color-danger);
-}
-
-// Figma cell — 56h white border-right 1 error + 첫 cell border-left. flex 1
-// 균등 분포 + font 직접 적용 (cellChar wrapper 제거).
-.cell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  height: 56px;
-  background: var(--color-bg);
-  border-right: 1px solid var(--color-danger);
-  font-size: 1.5rem; /* Title/B_24_130% — 24 */
-  font-weight: var(--font-weight-bold);
-  line-height: 1.3;
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-fg);
-
-  &:first-child {
-    border-left: 1px solid var(--color-danger);
+  > * {
+    min-width: 0;
   }
 }
 
-// Figma div — 288 1px gray (separator).
-.div {
-  width: 100%;
-  height: 1px;
-  background: var(--color-border);
+.empty {
+  display: grid;
+  gap: 0.75rem;
+  place-items: center;
+  padding: 3rem 1rem;
+  color: var(--color-muted);
+  text-align: center;
 }
 
-// Figma Frame 80 — column gap 4 (.card gap 10 으로 자연 spacing — padding-top
-// 12 직전 제거).
-.footer {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+// 1) 상단 알림
+.notice {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.875rem 1rem;
+  background: color-mix(in srgb, var(--color-success) 8%, var(--color-bg));
+  border: 1px solid
+    color-mix(in srgb, var(--color-success) 35%, var(--color-border));
+  border-radius: var(--radius-lg);
 }
 
-// Figma fr — row space-between width 288 height 20.
-.footerRow {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+.noticeIcon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--color-success);
+  color: var(--color-on-strong);
+}
+
+.noticeTitle {
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-fg);
+}
+
+.noticeBody {
+  font-size: var(--font-label);
+  color: var(--color-muted);
+  margin-top: 2px;
+}
+
+// 2) 편지 카드
+.letter {
+  display: grid;
+  gap: 0;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-letter-cream) 22%, var(--color-bg)),
+    color-mix(in srgb, var(--color-letter-cream) 8%, var(--color-bg))
+  );
+  border: 1.5px solid
+    color-mix(in srgb, var(--color-letter-accent) 24%, var(--color-border));
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card-strong);
+}
+
+.label {
+  font-size: var(--font-eyebrow);
+  font-weight: var(--font-weight-bold);
+  color: color-mix(in srgb, var(--color-letter-accent) 70%, var(--color-muted));
+  letter-spacing: var(--tracking-emphasis);
+  text-transform: uppercase;
+}
+
+// From
+.from {
+  display: grid;
+  gap: 0.375rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px dashed
+    color-mix(in srgb, var(--color-letter-accent) 30%, transparent);
+}
+
+.fromRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.75rem;
   align-items: center;
 }
 
-// Figma title B_10 disabled.
-.footerStar {
-  font-size: 0.625rem;
-  color: var(--color-text-disabled);
+.author {
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-fg);
 }
 
-// Figma title B_14 fg.
-.footerLabel {
-  font-size: var(--text-sm); /* 14 */
+.fromLocation {
+  font-size: var(--font-label);
+  color: var(--color-muted);
+  margin-top: 0.125rem;
+}
+
+.stamp {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 72px;
+  border: 2px dashed
+    color-mix(in srgb, var(--color-letter-accent) 50%, var(--color-border));
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-letter-accent) 18%, var(--color-bg)),
+    color-mix(in srgb, var(--color-letter-accent) 6%, var(--color-bg))
+  );
+  position: relative;
+  rotate: -3deg;
+  transform-origin: center;
+}
+
+.stampEmoji {
+  font-size: var(--font-h1);
+  line-height: 1;
+}
+
+.stampTag {
+  position: absolute;
+  bottom: 4px;
+  font-size: var(--font-letter-stamp-tag);
+  font-weight: var(--font-weight-extrabold);
+  color: color-mix(in srgb, var(--color-letter-accent) 80%, var(--color-fg));
+  letter-spacing: var(--tracking-emphasis);
+}
+
+// Message — PIN 5칸 박스 + 좌측 하단 날짜
+.message {
+  display: grid;
+  gap: 0.875rem;
+  padding: 1.5rem 1.25rem 1rem;
+  border-bottom: 1px dashed
+    color-mix(in srgb, var(--color-letter-accent) 30%, transparent);
+}
+
+.pinBoxes {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  max-width: 320px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.pinCell {
+  display: grid;
+  place-items: center;
+  aspect-ratio: var(--aspect-pin-cell);
+  background: var(--color-letter-paper);
+  border: 2px solid
+    color-mix(in srgb, var(--color-letter-accent) 28%, var(--color-border));
+  border-radius: var(--radius-md);
+  font-size: var(--font-h1);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-fg);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.pinFilled {
+  border-color: color-mix(
+    in srgb,
+    var(--color-letter-accent) 55%,
+    var(--color-border)
+  );
+}
+
+.pinChar {
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.date {
+  font-size: var(--font-caption);
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-wide);
+  text-align: left;
+}
+
+// To — 2줄 + 전송완료 배지
+.to {
+  display: grid;
+  gap: 0.375rem;
+  padding: 1rem 1.25rem;
+}
+
+.toRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.toLines {
+  display: grid;
+  gap: 0.125rem;
+}
+
+.toLine1 {
+  font-size: var(--font-body-sm);
   font-weight: var(--font-weight-bold);
-  line-height: var(--line-snug-relaxed);
+  color: var(--color-fg);
+  letter-spacing: var(--tracking-tight);
+}
+
+.toLine2 {
+  font-size: var(--font-label);
+  color: var(--color-muted);
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  background: var(--color-success);
+  color: var(--color-on-strong);
+  border-radius: var(--radius-full);
+  font-size: var(--font-caption);
+  font-weight: var(--font-weight-bold);
+  white-space: nowrap;
+}
+
+/* .primary / .secondary / .actions 는 ButtonGrid primitive 로 마이그레이션 — 제거 */
+
+// ── Figma `편지 발송완료` 상단 (emptyItme) — 84 원 + 아이콘 + 제목/보조
+.sentHead {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-5);
+  text-align: center;
+}
+
+.sentCircle {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-soft);
+  color: var(--color-primary-text-bold);
+}
+
+.sentText {
+  display: grid;
+  gap: 3px;
+  justify-items: center;
+}
+
+// Basic Body/B_14_140%
+.sentTitle {
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-normal);
   letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
 }
 
-// Figma Caption R_12 disabled right.
-.footerNote {
-  font-size: var(--font-caption); /* 12 */
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: -0.01em;
-  color: var(--color-text-disabled);
-  text-align: right;
-  font-variant-numeric: tabular-nums;
+// Caption/R_12
+.sentBody {
+  font-size: var(--font-caption);
+  line-height: var(--line-normal);
+  letter-spacing: var(--tracking-snug);
+  color: var(--color-muted);
+  word-break: keep-all;
 }
 
-// Figma button — absolute bottom 20, 320×52 outline primary.
+// 하단 버튼 — 시안은 라인 버튼 하나(홈으로). "또 쓰기" 는 기능상 유지.
 .actions {
-  position: absolute;
-  left: 20px;
-  right: 20px;
-  bottom: 20px;
+  display: grid;
+  gap: var(--space-2);
 }
 
-.skeletonHero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  padding: 20px;
+.lineButton {
+  border-color: var(--color-primary);
+  color: var(--color-primary-text-bold);
+  font-weight: var(--font-weight-medium);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      background: var(--color-primary-soft);
+      border-color: var(--color-primary);
+    }
+  }
 }

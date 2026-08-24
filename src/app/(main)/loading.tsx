@@ -28,7 +28,7 @@ export default function MainLoading() {
     >
       {/* HomeHero — width 100% + aspect-ratio 320/176. desktop 폭 grow 시 비율
           유지 (HomeHero.module.scss aspect-ratio 와 동일, 2026-06-24). */}
-      <Skeleton width="100%" radius="md" style={{ aspectRatio: '320 / 176' }} />
+      <Skeleton width="100%" radius="md" aspectRatio="320 / 176" />
 
       {/* HomeRecBlock — sec-title (28) + horizontal 152×168 ×3 carousel. */}
       <section style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>

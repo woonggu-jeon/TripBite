@@ -1,10 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { act, waitFor } from '@testing-library/react';
 import { QueryClient } from '@tanstack/react-query';
-import { renderHookWithProviders } from '@/test-utils';
-import { http, HttpResponse } from 'msw';
-import { server } from '@/mocks/server';
+import { act, waitFor } from '@testing-library/react';
+import { HttpResponse, http } from 'msw';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { mockSeeds } from '@/mocks/handlers';
+import { server } from '@/mocks/server';
+import { useAuthStore } from '@/stores/auth-store';
+import { renderHookWithProviders } from '@/test-utils';
+import type { LetterDto } from '@/types/api-domain';
 import {
   letterKeys,
   useDeleteLetter,
@@ -14,8 +16,6 @@ import {
   useToggleLikeLetter,
   useToggleSaveLetter,
 } from './use-letters';
-import { useAuthStore } from '@/stores/auth-store';
-import type { LetterDto } from '@/api/generated/schemas';
 
 // handlers.ts 와 같은 base — test 환경에선 baseURL undefined 라 path-only 매칭.
 const apiUrl = mockSeeds.apiUrl;
@@ -175,7 +175,11 @@ describe('useSendLetter', () => {
   it('성공 시 sent list invalidateQueries 호출', async () => {
     server.use(
       http.post(`${apiUrl}/letters`, () =>
-        HttpResponse.json(makeLetter({ id: 'l-new' })),
+        HttpResponse.json({
+          success: true,
+          message: null,
+          data: makeLetter({ id: 'l-new' }),
+        }),
       ),
     );
     const qc = new QueryClient({
@@ -203,7 +207,11 @@ describe('useSendLetter', () => {
     server.use(
       http.post(`${apiUrl}/letters`, ({ request }) => {
         capturedKey = request.headers.get('Idempotency-Key');
-        return HttpResponse.json(makeLetter({ id: 'l-idem' }));
+        return HttpResponse.json({
+          success: true,
+          message: null,
+          data: makeLetter({ id: 'l-idem' }),
+        });
       }),
     );
     const { result } = renderHookWithProviders(() => useSendLetter());
@@ -264,7 +272,11 @@ describe('enabled: isAuthenticated 가드', () => {
     server.use(
       http.get(`${apiUrl}/letters/received`, () => {
         called++;
-        return HttpResponse.json({ items: [], nextCursor: null });
+        return HttpResponse.json({
+          success: true,
+          message: null,
+          data: { items: [], nextCursor: null },
+        });
       }),
     );
     const { result } = renderHookWithProviders(() =>
@@ -294,10 +306,7 @@ describe('enabled: isAuthenticated 가드', () => {
       username: 'tester',
       nickname: '여행자',
       email: 't@e.st',
-      isOnboarded: true,
-      homeRegion: 'cheongju',
       avatarUrl: null,
-      travelType: null,
     });
     let called = 0;
     server.use(
@@ -319,10 +328,7 @@ describe('useLettersInfinite — kind 별 분기', () => {
       username: 'tester',
       nickname: '여행자',
       email: 't@e.st',
-      isOnboarded: true,
-      homeRegion: 'cheongju',
       avatarUrl: null,
-      travelType: null,
     });
   });
 
@@ -330,8 +336,9 @@ describe('useLettersInfinite — kind 별 분기', () => {
     server.use(
       http.get(`${apiUrl}/letters/sent`, () =>
         HttpResponse.json({
-          items: [makeLetter()],
-          nextCursor: null,
+          success: true,
+          message: null,
+          data: { items: [makeLetter()], nextCursor: null },
         }),
       ),
     );
@@ -347,8 +354,9 @@ describe('useLettersInfinite — kind 별 분기', () => {
     server.use(
       http.get(`${apiUrl}/letters/saved`, () =>
         HttpResponse.json({
-          items: [makeLetter(), makeLetter()],
-          nextCursor: null,
+          success: true,
+          message: null,
+          data: { items: [makeLetter(), makeLetter()], nextCursor: null },
         }),
       ),
     );
@@ -364,8 +372,9 @@ describe('useLettersInfinite — kind 별 분기', () => {
     server.use(
       http.get(`${apiUrl}/letters/received`, () =>
         HttpResponse.json({
-          items: [makeLetter()],
-          nextCursor: 5, // 다음 페이지 있음
+          success: true,
+          message: null,
+          data: { items: [makeLetter()], nextCursor: 5 }, // 다음 페이지 있음
         }),
       ),
     );

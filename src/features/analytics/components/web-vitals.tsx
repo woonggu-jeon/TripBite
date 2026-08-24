@@ -1,6 +1,9 @@
 'use client';
 
 import { useReportWebVitals } from 'next/web-vitals';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('vitals');
 
 /**
  * Web Vitals — dev 디버그 전용 (콘솔 로깅)
@@ -48,9 +51,13 @@ export function WebVitalsTracker() {
           : 'poor';
 
     if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console -- dev 디버그 전용 vitals 로깅
-      console.log(
-        `[vitals] ${metric.name}: ${metric.value.toFixed(metric.name === 'CLS' ? 3 : 0)} (${rating})`,
+      log.debug(
+        {
+          name: metric.name,
+          value: Number(metric.value.toFixed(metric.name === 'CLS' ? 3 : 0)),
+          rating,
+        },
+        'web vital',
       );
     }
 

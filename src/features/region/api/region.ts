@@ -1,14 +1,11 @@
-import {
-  regionControllerContentsV1,
-  regionControllerOngoingFestivalsV1,
-  regionControllerSummaryV1,
-} from '@/api/generated/regions/regions';
+// 신규 Spring BE 지원: ongoing-festivals. (summary 는 미지원 → RegionHero 가 정적 렌더)
+// contents 는 4-A 전환: destinations list(시군 필터)로 재구성.
+import { getList2 } from '@/api/be/destination/destination';
+import { getOngoingFestivals } from '@/api/be/region/region';
+import type { GetList2Category, GetList2Region } from '@/api/be/schemas';
 import type { RegionCode } from '@/constants/regions';
-import { normalizeImageField, secureImageUrl } from '@/lib/secure-image-url';
-import type {
-  DestinationCategory,
-  RegionContentDto,
-} from '@/api/generated/schemas';
+import { normalizeImageField } from '@/lib/secure-image-url';
+import type { DestinationCategory, RegionContentDto } from '@/types/api-domain';
 
 /**
  * 시군 contents 필터 — 응답 enum (`DestinationCategory`) 과 분리.
@@ -33,22 +30,14 @@ export type RegionContentFilter = DestinationCategory | 'all';
  * BE 는 TourAPI 프록시 (서버에서 API 키 보관, 응답 정규화, 캐시).
  *
  * 엔드포인트:
- *   GET /regions/:code/summary
- *   GET /regions/:code/contents?type=&cursor=&limit=10
+ *   GET /regions/:code/contents?type=&cursor=&limit=10  (4-A: destinations 로 재구성)
  *   GET /regions/ongoing-festivals?region=
  *     → { type: ongoing|upcoming|popular, items[] } — BE 가 3단계 폴백 후 결정.
+ * (summary 는 Spring 미지원 → RegionHero 가 정적 콘텐츠로 렌더, 어댑터 없음.)
  */
 export const regionApi = {
-  // heroImage 는 TourAPI 원본 http URL 일 수 있음 → next.config remotePatterns
-  // (https 만 허용) 통과 위해 https 정규화 (BE 안전망). secure-image-url 의
-  // HTTPS_FORCE_HOSTS 에 tong.visitkorea.or.kr 등록돼 자동 처리.
-  getSummary: async (code: RegionCode) => {
-    const res = await regionControllerSummaryV1(code);
-    return res.heroImage
-      ? { ...res, heroImage: secureImageUrl(res.heroImage) }
-      : res;
-  },
-
+  // 4-A 전환: regions/:code/contents 미지원 → GET /destinations?region=&category= 재구성.
+  // 'all' 은 3 카테고리를 같은 pageNo 로 병렬 조회 후 병합 (BE 통합 응답 근사).
   listContents: async (
     code: RegionCode,
     params: {
@@ -56,27 +45,61 @@ export const regionApi = {
       cursor?: string | number | null;
       limit?: number;
     },
-  ) => {
-    const res = await regionControllerContentsV1(code, {
-      // 'all' 은 BE 에 type 미전달 (전체 반환 분기). BE 가 OpenAPI query enum 에
-      // 'all' 추가하면 그때 params.type 으로 명시 전달 가능.
-      type: params.type === 'all' ? undefined : params.type,
-      cursor: params.cursor != null ? String(params.cursor) : undefined,
-      limit: params.limit != null ? String(params.limit) : undefined,
-    });
+  ): Promise<{ items: RegionContentDto[]; nextCursor: number | null }> => {
+    const region = code as GetList2Region;
+    const numOfRows = params.limit ?? 10;
+    const pageNo = params.cursor != null ? Number(params.cursor) : 1;
+    const categories: DestinationCategory[] =
+      params.type === 'all'
+        ? ['attraction', 'festival', 'experience']
+        : [params.type];
+
+    const pages = await Promise.all(
+      categories.map((category) =>
+        getList2({
+          category: category as GetList2Category,
+          region,
+          pageNo,
+          numOfRows,
+        }),
+      ),
+    );
+
+    const items: RegionContentDto[] = pages.flatMap((res, i) =>
+      (res.data?.items ?? []).map(
+        (d) =>
+          ({
+            type: (d.category ?? categories[i]) as DestinationCategory,
+            region: (d.region ?? code) as RegionCode,
+            id: String(d.id),
+            title: d.name ?? '',
+            imageUrl: d.imageUrl ?? undefined,
+          }) as RegionContentDto,
+      ),
+    );
+
+    // 다음 페이지 존재 — 어느 한 카테고리라도 페이지가 꽉 찼으면 더 있음.
+    const hasMore = pages.some(
+      (res) => (res.data?.items?.length ?? 0) >= numOfRows,
+    );
+
     // TourAPI 원본 http URL → https 정규화 (BE 안전망)
     return {
-      ...res,
-      items: res.items.map(normalizeImageField) as RegionContentDto[],
+      items: items.map(normalizeImageField) as RegionContentDto[],
+      nextCursor: hasMore ? pageNo + 1 : null,
     };
   },
 
-  ongoingFestivals: async (region?: RegionCode) => {
-    const res = await regionControllerOngoingFestivalsV1({ region });
+  // 신규 Spring BE: GET /regions/ongoing-festivals — region 필터 없음(충북 전체).
+  // 응답은 ApiResponse<OngoingFestivalsDto> 엔벨로프 → .data unwrap.
+  // region 인자는 호환 위해 유지하나 새 BE 는 무시 (전체 반환 후 client 미필터).
+  ongoingFestivals: async (_region?: RegionCode) => {
+    const res = await getOngoingFestivals();
+    const data = res.data;
     // imageUrl 의 http → https 정규화 (BE 안전망). type / daysToStart 등은 그대로.
     return {
-      type: res.type,
-      items: res.items.map((item) => normalizeImageField(item)),
+      type: data?.type,
+      items: (data?.items ?? []).map((item) => normalizeImageField(item)),
     };
   },
 };

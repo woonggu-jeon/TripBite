@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { authedSession } from './_helpers/auth';
 
 /**
@@ -49,8 +49,8 @@ test.describe('이미지 카드 공유 — desktop fallback', () => {
       .grantPermissions(['clipboard-read', 'clipboard-write']);
 
     // 토너먼트 결과 페이지에 도달하려면 store 에 winner 가 있어야 함.
-    // ?id deep-link 로 mock /tournaments/:id 호출 — handlers 에 tournamentRecords Map
-    // 에 미리 record 가 있어야 함. 가장 단순: 직접 store 에 prime.
+    // Spring 은 결과 딥링크 복원(GET /tournaments/{id}) 미지원 → 결과는 store 전용.
+    // 가장 단순: 직접 store 에 prime.
     await page.goto('/');
     await page.evaluate(() => {
       const winner = {

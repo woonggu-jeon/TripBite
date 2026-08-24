@@ -1,243 +1,106 @@
 'use client';
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { Trophy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Icon } from '@/components/icon/Icon';
-import { SkeletonList } from '@/components/feedback/SkeletonList';
+import { useRouter } from 'next/navigation';
+import { EmptyState } from '@/components/feedback/EmptyState';
 import { Skeleton } from '@/components/feedback/Skeleton';
-import { Button } from '@/components/ui';
-import { WeekLabel } from '@/components/ui/WeekLabel';
-import { useWeeklyTopDestinations } from '@/features/ranking/hooks/use-ranking';
+import { SkeletonList } from '@/components/feedback/SkeletonList';
+import { Button, PageSection } from '@/components/ui';
 import { RegionWinsChart } from '@/features/ranking/components/RegionWinsChart';
-import { isRegionCode } from '@/constants/regions';
-import { secureImageUrl } from '@/lib/secure-image-url';
-import { haptic } from '@/lib/haptic';
+import { Top5Card } from '@/features/ranking/components/Top5Card';
+import { useWeeklyTopDestinations } from '@/features/ranking/hooks/use-ranking';
+import { currentWeekLabel } from '@/lib/week-label';
 import styles from './RankingPageContent.module.scss';
 
 /**
- * 랭킹 페이지 — Figma "RNK · 랭킹" (2026-06-23) 정합.
+ * 랭킹 페이지
  *
- * Layout:
- *   - WeekLabel inline ("M월 N주차 · ...")
- *   - rv-card 1 "이번 주 인기 여행지":
- *     · title B_16 fg + padding-bottom 16
- *     · hero (rank 1): 288×152 image + dark overlay + B_20 title 좌하단 +
- *       row (시군 + 우승 횟수) white.
- *     · top5-row × 4 (rank 2-5): num 16 SB_16 disabled + circle 48
- *       thumbnail + name B_14 + region Caption R_12 muted.
- *   - rv-card 2 "시군별 우승 횟수":
- *     · title B_16 fg + padding-bottom 16
- *     · RegionWinsChart (11 gun-row).
+ *   1) 이번주 우승 Top 5 — Top5Card 리스트
+ *   2) 시군별 우승 횟수 — 가로 bar 차트 (클릭 시 /region/[code])
  *
- * 빈 상태 — Figma "RNK · 랭킹 (빈 상태)" 정합 (이전 commit 유지).
+ * Figma `RNK · 랭킹` / `RNK · 랭킹 (빈 상태)` 실측:
+ *   - 화면 배경 #F6F6F6 + 흰 rv-card 2장 (page.tsx 의 PageBackground)
+ *   - 상단은 좌우 양끝이 아니라 **한 줄** — Caption/R_12 #393939
+ *     "5월 4주차 · 매주 월요일 업데이트"
+ *   - 집계가 없을 때는 뒷말이 바뀐다 → "· 이번 주 집계가 시작됐어요"
+ *   - 빈 카드는 84 원형 아이콘 + 제목 + 설명 + primary CTA (emptyItme)
  */
 export function RankingPageContent() {
   const t = useTranslations('ranking');
   const tSection = useTranslations('ranking.sections');
-  const tRegion = useTranslations('region.names');
   const router = useRouter();
   const { data, isLoading, isError, refetch } = useWeeklyTopDestinations(5);
-  const isEmpty = !isLoading && !isError && data && data.length === 0;
-
-  if (isEmpty) {
-    return (
-      <div className={styles.wrap}>
-        <WeekLabel variant="inline" hint={t('emptyTallyHint')} />
-
-        <div className={styles.emptyCard}>
-          <div className={styles.emptyHead}>
-            <span className={styles.emptyHeadTitle}>
-              {t('emptyPopular.title')}
-            </span>
-          </div>
-          <div className={styles.emptyCircle} aria-hidden>
-            <Icon name="trophy-large" size={40} />
-          </div>
-          <div className={styles.emptyText}>
-            <p className={styles.emptyTextTitle}>{t('emptyPopular.heading')}</p>
-            <p className={styles.emptyTextHint}>{t('emptyPopular.hint')}</p>
-          </div>
-          <Button
-            variant="primary"
-            size="lg"
-            fullWidth
-            onClick={() => {
-              haptic.tap();
-              router.push('/tournament');
-            }}
-          >
-            {t('emptyPopular.cta')}
-          </Button>
-        </div>
-
-        <div className={styles.emptyCardSmall}>
-          <div className={styles.emptyHead}>
-            <span className={styles.emptyHeadTitle}>
-              {t('emptyRecent.title')}
-            </span>
-          </div>
-          <div className={styles.emptyText}>
-            <p className={styles.emptyTextTitleDisabled}>
-              {t('emptyRecent.heading')}
-            </p>
-            <p className={styles.emptyTextHintDisabled}>
-              {t('emptyRecent.hint')}
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const top1 = data?.[0];
-  const top2to5 = data?.slice(1, 5) ?? [];
+  const weekLabel = currentWeekLabel();
+  const isEmpty = !!data && data.length === 0;
 
   return (
     <div className={styles.wrap}>
-      <WeekLabel variant="inline" hint={t('updateNoteShort')} />
+      {/* Figma `Title` — 주차와 뒷말을 " · " 로 이은 한 줄 */}
+      <p className={styles.meta}>
+        {t('weekLabel', { month: weekLabel.month, week: weekLabel.week })} ·{' '}
+        {isEmpty ? t('emptyTallyHint') : t('updateNote')}
+      </p>
 
-      {/* rv-card 1 — 이번 주 인기 여행지 */}
-      <section
-        className={styles.rvCard}
-        aria-label={tSection('weeklyWinners', { limit: 5 })}
+      {/* 1) Top 5 — Figma `rv-card`: 제목 + 1위 hero + 2~5위 행을 카드 하나로 */}
+      <PageSection
+        title={tSection('weeklyWinners', { limit: 5 })}
+        variant="card"
       >
-        <h2 className={styles.rvTitle}>
-          {tSection('weeklyWinners', { limit: 5 })}
-        </h2>
-
         {isLoading && (
-          <div className={styles.rvLoading}>
-            <Skeleton
-              width="100%"
-              radius="md"
-              style={{ aspectRatio: '288 / 152' }}
-            />
+          <div className={styles.list}>
+            {/* 1위는 사진 배경 hero (18/11), 2~5위는 row — 로딩도 같은 형태로 */}
+            <Skeleton width="100%" aspectRatio="18 / 11" radius="md" />
             <SkeletonList count={4} height={64} radius="md" />
           </div>
         )}
-
         {isError && (
           <div className={styles.error}>
             <p>{tSection('error')}</p>
-            <Button variant="secondary" size="sm" onClick={() => refetch()}>
+            <button
+              type="button"
+              className={styles.retry}
+              onClick={() => refetch()}
+            >
               {tSection('retry')}
-            </Button>
+            </button>
           </div>
         )}
-
-        {top1 && (
-          <>
-            <Top1Hero item={top1} tRegion={tRegion} />
-            <ul className={styles.top5List}>
-              {top2to5.map((item) => (
-                <li key={item.destination.id ?? `rank-${item.rank}`}>
-                  <Top5Row item={item} tRegion={tRegion} />
-                </li>
-              ))}
-            </ul>
-          </>
+        {data && data.length > 0 && (
+          <div className={styles.list}>
+            {data.map((item) => (
+              // rank 포함 — 같은 여행지가 복수 순위에 나올 수 있어(집계 데이터) key 유일성 보장.
+              <Top5Card
+                key={`${item.destination.id ?? 'd'}-${item.rank}`}
+                item={item}
+              />
+            ))}
+          </div>
         )}
-      </section>
+        {isEmpty && (
+          <EmptyState
+            icon={<Trophy size={28} aria-hidden />}
+            title={tSection('empty')}
+            description={t('emptyPopular.hint')}
+            action={
+              <Button
+                variant="primary"
+                fullWidth
+                onClick={() => router.push('/tournament')}
+              >
+                {t('emptyPopular.cta')}
+              </Button>
+            }
+          />
+        )}
+      </PageSection>
 
-      {/* rv-card 2 — 시군별 우승 횟수 */}
-      <section className={styles.rvCard} aria-label={tSection('byRegionChart')}>
-        <h2 className={styles.rvTitle}>{tSection('byRegionChart')}</h2>
+      {/* 2) 시군별 우승 횟수 — 같은 `rv-card` 묶음, 행마다 하단 구분선.
+          Figma 는 이 카드에 보조설명을 두지 않는다 (행 자체가 버튼이고
+          aria-label 로 "상세 보기" 를 이미 읽어준다). */}
+      <PageSection title={tSection('byRegionChart')} variant="card">
         <RegionWinsChart />
-      </section>
+      </PageSection>
     </div>
-  );
-}
-
-function Top1Hero({
-  item,
-  tRegion,
-}: {
-  item: import('@/features/ranking/types').RankedDestination;
-  tRegion: ReturnType<typeof useTranslations<'region.names'>>;
-}) {
-  const t = useTranslations('ranking');
-  const safeImg = secureImageUrl(item.destination.imageUrl);
-  const code = item.destination.region;
-  const regionName = isRegionCode(code)
-    ? tRegion(code as Parameters<typeof tRegion>[0])
-    : code;
-
-  return (
-    <Link
-      href={{ pathname: `/destination/${item.destination.id}` }}
-      prefetch={false}
-      className={styles.hero}
-      aria-label={`1위 ${item.destination.name}`}
-      onClick={() => haptic.tap()}
-    >
-      <div className={styles.heroImg} aria-hidden>
-        {safeImg && (
-          <Image
-            src={safeImg}
-            alt=""
-            fill
-            sizes="(max-width: 480px) 100vw, 360px"
-            className={styles.heroImage}
-            priority
-          />
-        )}
-      </div>
-      <div className={styles.heroOverlay} aria-hidden />
-      <div className={styles.heroText}>
-        <h3 className={styles.heroTitle}>{item.destination.name}</h3>
-        {/* "단양군 · 32회 우승" 단일 라인 (사용자 명시 2026-06-24, Top5Row 와 정합). */}
-        <p className={styles.heroMeta}>
-          {t('top5RegionWins', { region: regionName, wins: item.score })}
-        </p>
-      </div>
-    </Link>
-  );
-}
-
-function Top5Row({
-  item,
-  tRegion,
-}: {
-  item: import('@/features/ranking/types').RankedDestination;
-  tRegion: ReturnType<typeof useTranslations<'region.names'>>;
-}) {
-  const t = useTranslations('ranking');
-  const safeImg = secureImageUrl(item.destination.imageUrl);
-  const code = item.destination.region;
-  const regionName = isRegionCode(code)
-    ? tRegion(code as Parameters<typeof tRegion>[0])
-    : code;
-
-  return (
-    <Link
-      href={{ pathname: `/destination/${item.destination.id}` }}
-      prefetch={false}
-      className={styles.top5Row}
-      aria-label={`${item.rank}위 ${item.destination.name}`}
-      onClick={() => haptic.tap()}
-    >
-      <span className={styles.top5Num}>{item.rank}</span>
-      <span className={styles.top5Thumb} aria-hidden>
-        {safeImg && (
-          <Image
-            src={safeImg}
-            alt=""
-            fill
-            sizes="48px"
-            className={styles.top5ThumbImage}
-          />
-        )}
-      </span>
-      <div className={styles.top5Text}>
-        <p className={styles.top5Name}>{item.destination.name}</p>
-        {/* "단양군 · 32회 우승" 형식 (사용자 명시 2026-06-24) — full region + score.
-            RankedDestination.score 는 weekly-winners 의 우승 횟수. */}
-        <p className={styles.top5Region}>
-          {t('top5RegionWins', { region: regionName, wins: item.score })}
-        </p>
-      </div>
-    </Link>
   );
 }

@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import type { DestinationDto } from '@/api/generated/schemas';
+import { beforeEach, describe, expect, it } from 'vitest';
+import type { DestinationDto } from '@/types/api-domain';
 import type { TournamentConfig } from '@/features/tournament/types';
 import { useTournamentStore } from './tournament-store';
 

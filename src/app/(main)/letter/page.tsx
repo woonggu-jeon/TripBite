@@ -1,5 +1,6 @@
-import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
+import { PageBackground } from '@/components/layout/PageBackground';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { LetterIndex } from './_components/LetterIndex';
 
@@ -18,6 +19,7 @@ export default async function LetterPage() {
   const t = await getTranslations('letter');
   return (
     <>
+      <PageBackground />
       <SubHeader title={t('title')} />
       <LetterIndex />
     </>

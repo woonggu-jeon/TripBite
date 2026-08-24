@@ -49,7 +49,7 @@ export default function RankingLoading() {
         <Skeleton
           width="100%"
           radius="md"
-          style={{ aspectRatio: '288 / 152' }}
+          aspectRatio="288 / 152"
         />
         {/* 4 top5-row × 64 */}
         <SkeletonList count={4} height={64} radius="md" />

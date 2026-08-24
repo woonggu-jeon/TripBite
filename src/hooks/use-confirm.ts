@@ -1,6 +1,6 @@
 'use client';
 
-import { useUIStore, type ConfirmRequest } from '@/stores/ui-store';
+import { type ConfirmRequest, useUIStore } from '@/stores/ui-store';
 
 /**
  * useConfirm — Promise 기반 확인 다이얼로그

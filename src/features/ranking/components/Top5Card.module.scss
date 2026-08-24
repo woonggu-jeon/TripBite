@@ -1,0 +1,103 @@
+// Figma `top5-row` 실측 — 288x64, HORIZONTAL gap 12, padding 8/0.
+// 카드가 아니다: 배경·보더·radius 없이 rv-card 안에 나란히 놓이는 행이다.
+//   등수      Basic Body/SB_16_140%  #B4B4B4 → AA 미달이라 --color-muted
+//   원형 썸네일 48x48  #E0E0E0
+//   이름      Basic Body/B_14_140%   #151515
+//   보조      Caption/R_12           #393939   (이름과 gap 4)
+// Figma `visualCard` — rv-card(320, padding 16) 안이라 288x176 = 18/11.
+// HeroCard 기본 20/11(홈의 320x176)로 두면 같은 자리에서 18px 낮게 나온다.
+.hero {
+  aspect-ratio: 18 / 11;
+}
+
+.row {
+  display: grid;
+  // 등수 / 썸네일 / 텍스트 — Figma 는 우측에 별도 점수 칼럼이 없다
+  // (점수는 보조 줄에 "시군 · N회" 로 합쳐진다). num 칸은 시안대로 16.
+  grid-template-columns: 16px 48px 1fr;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-2) 0;
+  color: var(--color-fg);
+  text-decoration: none;
+  min-width: 0;
+  transition: opacity var(--motion-fast) ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      opacity: 0.75;
+    }
+  }
+  &:active {
+    opacity: 0.6;
+  }
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+    border-radius: var(--radius-sm);
+  }
+}
+
+// Figma 등수는 원형 배지가 아니라 회색 숫자 하나다 (16px SemiBold).
+// 시안색 #B4B4B4 는 2.07:1 로 AA 미달 → --color-muted(6.00:1).
+.rank {
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-tight);
+  text-align: center;
+}
+
+// Figma `circle` 48x48 — 여행지 썸네일 자리 (시안은 회색 플레이스홀더)
+.thumb {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  background: var(--color-surface-elevated);
+}
+
+.thumbEmoji {
+  font-size: var(--emoji-sm);
+  line-height: 1;
+}
+
+.body {
+  display: grid;
+  gap: var(--space-1); // Figma gap 4
+  min-width: 0;
+}
+
+// Basic Body/B_14_140%
+.name {
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-normal);
+  color: var(--color-fg);
+  letter-spacing: var(--tracking-tight);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Caption/R_12 — Figma 는 "괴산군 · 28회" 를 한 줄로 합쳐 놓는다.
+.meta {
+  font-size: var(--font-caption);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-normal);
+  color: var(--color-muted);
+  letter-spacing: var(--tracking-snug);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row {
+    transition: none;
+  }
+}

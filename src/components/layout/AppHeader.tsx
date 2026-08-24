@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Icon } from '@/components/icon';
-import { BrandLogo } from '@/components/ui/BrandLogo';
+import { LogoMark } from '@/components/brand/LogoMark';
 import { ROUTES } from '@/constants/routes';
 import { useNotificationBadge } from '@/features/notification/hooks/use-notification-inbox';
 import { MockModeBanner } from '@/features/pwa/components/MockModeBanner';
@@ -26,6 +26,7 @@ const MSW_ENABLED = process.env.NEXT_PUBLIC_USE_MSW === 'true';
  */
 export function AppHeader() {
   const t = useTranslations('header');
+  const tBrand = useTranslations('brand');
   const { data: unreadCount } = useNotificationBadge();
   const hasUnread = (unreadCount ?? 0) > 0;
 
@@ -39,7 +40,7 @@ export function AppHeader() {
             aria-label={t('notification')}
             className={styles.iconButton}
           >
-            <Icon name="noti" size="lg" />
+            <Icon name="bell" size="lg" />
             {hasUnread && <span className={styles.dot} aria-hidden />}
           </Link>
           {MSW_ENABLED && (
@@ -51,15 +52,19 @@ export function AppHeader() {
           )}
         </div>
 
-        {/* 2) 로고 — Figma "trip-bite-logo" (Frame 6 row gap 4) — Group 1 SVG
-            + Title B_18 "여행 한입" fg. */}
-        <Link href={ROUTES.HOME} className={styles.logo} aria-label={t('home')}>
-          <BrandLogo width={28} />
-          <span className={styles.logoText}>{t('logo')}</span>
+        {/* 2) 로고 — Figma HOME 헤더는 마크 + "여행한입" 이다.
+               구현은 header.logo("Travel") 텍스트만 있어 스플래시/로그인의
+               브랜드 표기와 어긋나 있었다. */}
+        <Link
+          href={ROUTES.HOME}
+          className={styles.logo}
+          aria-label={tBrand('name')}
+        >
+          <LogoMark size={24} className={styles.logoMark} />
+          {tBrand('name')}
         </Link>
 
-        {/* 3) 설정 — Figma 우측은 IC-Header (search icon 표현) 이지만 사이트에
-            검색 페이지 없음 — settings link 유지 (실 기능 정합 우선). */}
+        {/* 3) 설정 */}
         <div className={`${styles.slot} ${styles.slotEnd}`}>
           <Link
             href={ROUTES.SETTINGS}

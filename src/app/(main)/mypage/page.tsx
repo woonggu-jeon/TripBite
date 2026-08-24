@@ -1,9 +1,10 @@
-import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { Icon } from '@/components/icon/Icon';
-import { ROUTES } from '@/constants/routes';
+import { PageBackground } from '@/components/layout/PageBackground';
 import { SubHeader } from '@/components/layout/SubHeader';
+import { ROUTES } from '@/constants/routes';
 import { MyPageClient } from './_components/MyPageClient';
 
 /**
@@ -52,6 +53,7 @@ export default async function MyPage() {
           다른 BottomNav 진입점 (ranking/tournament/letter) 와 동일 SubHeader
           정합. settings 진입은 rightSlot icon link (기존 AppHeader 우상단
           settings 대체). */}
+      <PageBackground />
       <SubHeader
         title={t('title')}
         rightSlot={

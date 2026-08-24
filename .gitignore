@@ -16,6 +16,7 @@ coverage/
 playwright-report/
 test-results/
 /blob-report/
+e2e/__sweep__/
 
 # load test 산출물 (artillery)
 loadtest/report.json
@@ -82,3 +83,8 @@ API_CONTRACT.md
 # (memory [[be-request-response-no-commit]]). archive 시 docs/ 로 이동.
 BE_REQUEST_*.md
 BE_RESPONSE_*.md
+
+# Playwright 시각 스냅샷 — CI(win32) baseline 만 커밋. 로컬 mac(darwin) 재생성분은 제외.
+e2e/**/*-darwin.png
+# 로컬 실 BE 연동 진단 스크래치 (일회성)
+e2e/__sweep__/

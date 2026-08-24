@@ -1,8 +1,8 @@
 'use server';
 
-import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
-import { LOCALE_COOKIE, isLocale, type Locale } from './config';
+import { cookies } from 'next/headers';
+import { LOCALE_COOKIE, type Locale, isLocale } from './config';
 
 /**
  * 로케일 변경 Server Action

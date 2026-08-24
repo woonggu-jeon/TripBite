@@ -26,7 +26,7 @@
 .caption {
   margin: 0;
   font-size: var(--font-caption);
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-normal);
   color: var(--color-muted);
   line-height: 1.4;
 }
@@ -67,7 +67,7 @@
     background: var(--color-primary-tint);
   }
   &[data-state='revealed'] {
-    color: var(--color-primary);
+    color: var(--color-primary-text-bold);
     background: var(--color-primary-tint);
   }
 }
@@ -75,7 +75,7 @@
 .hintArrow {
   display: inline-block;
   font-weight: var(--font-weight-extrabold);
-  color: var(--color-primary);
+  color: var(--color-primary-text-bold);
   animation: bounce 1.4s ease-in-out infinite;
 }
 
@@ -234,7 +234,7 @@
   display: inline-flex;
   align-items: baseline;
   gap: 2px;
-  color: var(--color-primary);
+  color: var(--color-primary-text-bold);
   line-height: 1;
   // count-up 중 숫자 폭 흔들림 방지
   min-width: 4ch;

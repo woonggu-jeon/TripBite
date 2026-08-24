@@ -1,6 +1,6 @@
-import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'node:path';
+import { defineConfig } from 'vitest/config';
 
 /**
  * Vitest 설정
@@ -43,14 +43,13 @@ export default defineConfig({
       // 명시 list 가 정직 — 어디까지 검증됐는지 명확.)
       include: [
         // lib (순수 함수 / 유틸)
+        // ※ csp / secure-image-url / validation / shuffle-options 은 jest(순수 로직)로 이관 —
+        //    jest.config.mjs 의 collectCoverageFrom 이 담당. 여기(vitest include)선 제외.
         'src/lib/async.ts',
         'src/lib/json-ld.tsx',
         'src/lib/client-error-reporter.ts',
         'src/lib/clipboard.ts',
-        'src/lib/csp.ts',
-        'src/lib/secure-image-url.ts',
         'src/lib/sentry-scrub.ts',
-        'src/lib/validation.ts',
         // hooks
         'src/hooks/use-format.ts',
         'src/hooks/use-responsive-slides-per-view.ts',
@@ -75,7 +74,6 @@ export default defineConfig({
         'src/features/notification/hooks/use-notification-inbox.ts',
         'src/features/notification/hooks/use-push-notification.ts',
         'src/features/ranking/hooks/use-ranking.ts',
-        'src/features/ranking/utils/shuffle-options.ts',
         'src/features/region/hooks/use-region.ts',
         'src/features/settings/hooks/use-notification-settings.ts',
         'src/features/location/components/LocationPermissionPrompt.tsx',
@@ -87,13 +85,15 @@ export default defineConfig({
         'src/app/(main)/region/[code]/_components/RegionDetailTabs.tsx',
       ],
       // Threshold — 현실 baseline 의 5% 아래로 설정 (회귀 가드 + 일시적 측정 오차).
-      // 2026-06-14 baseline (use-auth + use-letters test 추가 후):
-      //   Stmts 87.1% / Branches 74.1% / Funcs 84.6% / Lines 88.5%.
+      // 2026-07 baseline: 순수 로직 유틸(csp/secure-image-url/validation/shuffle-options)을
+      // jest 로 이관하면서 vitest include 축소 → aggregate branch 가 낮아짐(그 유틸들의 높은
+      // branch 커버리지는 이제 jest 가 담당). 이관 후 측정치:
+      //   Stmts 82.0% / Branches 62.0% / Funcs 85.2% / Lines 83.6%.
       thresholds: {
-        statements: 82,
-        branches: 69,
+        statements: 77,
+        branches: 57,
         functions: 79,
-        lines: 83,
+        lines: 78,
       },
     },
     environment: 'happy-dom',
@@ -103,9 +103,13 @@ export default defineConfig({
     setupFiles: ['./vitest.setup.ts'],
     exclude: [
       'e2e/**',
+      // 실 BE Playwright 스모크 — vitest 가 아니라 playwright.real.config 담당.
+      'e2e-real/**',
       'node_modules/**',
       '.next/**',
       '**/*.stories.@(js|jsx|ts|tsx)',
+      // jest 병행 — `*.jest.test.*` 는 jest 담당(중복 실행 방지)
+      '**/*.jest.test.@(ts|tsx)',
     ],
     css: false,
   },

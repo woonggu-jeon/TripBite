@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
+import { PageBackground } from '@/components/layout/PageBackground';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { TournamentResultClient } from './_components/TournamentResultClient';
 
@@ -24,6 +25,7 @@ export default async function TournamentResultPage() {
   const t = await getTranslations('tournament');
   return (
     <>
+      <PageBackground />
       <SubHeader title={t('resultTitle')} />
       <TournamentResultClient />
     </>

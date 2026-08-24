@@ -1,15 +1,15 @@
 'use client';
 
-import Link from 'next/link';
-import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { Icon } from '@/components/icon/Icon';
+import Image from 'next/image';
+import Link from 'next/link';
+import type { DestinationDto } from '@/types/api-domain';
 import { Skeleton } from '@/components/feedback/Skeleton';
+import { Icon } from '@/components/icon/Icon';
+import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { Carousel } from '@/features/carousel';
 import { useRecommendedDestinations } from '@/features/ranking/hooks/use-ranking';
-import { CHUNGBUK_REGIONS } from '@/constants/regions';
 import { secureImageUrl } from '@/lib/secure-image-url';
-import type { DestinationDto } from '@/api/generated/schemas';
 import styles from './HomeHero.module.scss';
 
 /**

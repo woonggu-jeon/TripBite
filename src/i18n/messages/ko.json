@@ -34,7 +34,11 @@
     "previous": "이전",
     "skip": "건너뛰기",
     "start": "시작하기",
-    "complete": "완료"
+    "complete": "완료",
+    "comingSoon": {
+      "title": "준비 중인 기능이에요",
+      "description": "곧 사용할 수 있도록 준비하고 있어요."
+    }
   },
   "pwa": {
     "update": {
@@ -62,7 +66,7 @@
     "mypage": "마이"
   },
   "header": {
-    "logo": "여행 한입",
+    "logo": "Travel",
     "home": "홈",
     "notification": "알림",
     "settings": "설정"
@@ -104,7 +108,7 @@
       "email": "이메일",
       "submit": "아이디 찾기",
       "submitting": "조회 중...",
-      "resultTitle": "아이디를 찾았어요",
+      "resultTitle": "조회 결과",
       "resultEmailHint": "{maskedEmail} 로 가입된 계정이에요.",
       "resultCardLabel": "내 아이디",
       "resultLoginCta": "로그인하기",
@@ -113,7 +117,12 @@
       "toLogin": "로그인으로 돌아가기",
       "errors": {
         "emailInvalid": "올바른 이메일 형식이 아니에요."
-      }
+      },
+      "foundTitle": "아이디를 찾았어요",
+      "foundDescription": "{email} 로 가입된 계정이에요.",
+      "myIdLabel": "내 아이디",
+      "toLoginCta": "로그인하기",
+      "toForgotPassword": "비밀번호 찾기"
     },
     "changePassword": {
       "currentPassword": "현재 비밀번호",
@@ -151,6 +160,10 @@
       "checkDone": "확인 완료",
       "nickname": "닉네임",
       "nicknamePlaceholder": "한글/영문/숫자 2~10자",
+      "name": "이름",
+      "namePlaceholder": "실명을 입력하세요",
+      "birthDate": "생년월일",
+      "birthDatePlaceholder": "YYYY-MM-DD",
       "password": "비밀번호",
       "passwordPlaceholder": "영문+숫자+특수문자 10자 이상",
       "passwordConfirm": "비밀번호 확인",
@@ -173,13 +186,17 @@
         "nicknameTooShort": "닉네임은 2자 이상이어야 해요.",
         "nicknameTooLong": "닉네임은 10자 이하여야 해요.",
         "nicknameInvalid": "닉네임은 한글/영문/숫자만 가능해요.",
+        "nameInvalid": "이름은 한글/영문 2~20자여야 해요.",
+        "birthDateInvalid": "올바른 생년월일(YYYY-MM-DD)을 입력해주세요.",
         "passwordMin": "비밀번호는 10자 이상이어야 해요.",
         "passwordMax": "비밀번호가 너무 깁니다.",
         "passwordWeak": "영문, 숫자, 특수문자를 모두 포함해야 해요.",
         "passwordInvalid": "허용되지 않는 문자가 포함되어 있어요.",
         "passwordMismatch": "비밀번호가 일치하지 않아요.",
         "emailInvalid": "올바른 이메일 형식이 아니에요."
-      }
+      },
+      "haveAccount": "이미 계정이 있으신가요?",
+      "loginLink": "로그인"
     },
     "forgotPassword": {
       "title": "비밀번호 찾기",
@@ -273,18 +290,21 @@
       "quick": {
         "tournament": "토너먼트",
         "letter": "편지 쓰기",
-        "quiz": "유형 테스트",
+        "quiz": "나는 어떤 여행자일까?",
         "tournamentBySeason": {
-          "spring": "이번 봄 토너먼트 시작하기 🌸",
-          "summer": "이번 여름 토너먼트 시작하기 ☀",
-          "autumn": "이번 가을 토너먼트 시작하기 🍂",
-          "winter": "이번 겨울 토너먼트 시작하기 ❄"
+          "spring": "봄 토너먼트 시작하기",
+          "summer": "여름 토너먼트 시작하기",
+          "autumn": "가을 토너먼트 시작하기",
+          "winter": "겨울 토너먼트 시작하기"
         },
         "tournamentSubtitle": "16강부터 시작 · 약 2분 소요",
         "tournamentCta": "시작",
         "quizTitle": "나는 어떤 여행자일까?",
         "quizSubtitle": "5가지 질문으로 내 여행 유형 찾기",
-        "quizCta": "시작"
+        "quizCta": "시작",
+        "tournamentHint": "16강부터 시작 · 약 2분 소요",
+        "quizHint": "5가지 질문으로 내 여행 유형 찾기",
+        "cta": "시작"
       }
     },
     "hero": {
@@ -304,6 +324,41 @@
         "experience": "체험"
       },
       "emptyForChip": "해당 카테고리의 추천이 없어요"
+    },
+    "recommendation": {
+      "label": "오늘의 추천",
+      "cta": "자세히 보기"
+    },
+    "festivals": {
+      "label": "지금 열리는 축제"
+    },
+    "festival": {
+      "ongoing": "지금 열리는 축제",
+      "upcoming": "곧 충북에서 열리는 축제",
+      "popular": "이번 주 인기 여행지",
+      "dday": {
+        "label": "D-{n}",
+        "aria": "{n}일 후 시작"
+      }
+    },
+    "latestLetterWidget": {
+      "badge": "새 편지 도착",
+      "justNow": "방금 전",
+      "minutesAgo": "{n}분 전",
+      "hoursAgo": "{n}시간 전",
+      "daysAgo": "{n}일 전"
+    },
+    "picks": {
+      "title": "이런 여행 어때요?",
+      "hint": "카테고리별 추천 여행지",
+      "categoryAria": "카테고리 선택",
+      "empty": "추천 여행지를 준비하고 있어요",
+      "categories": {
+        "all": "전체",
+        "attraction": "관광지",
+        "festival": "축제",
+        "experience": "체험관광"
+      }
     }
   },
   "weather": {
@@ -386,8 +441,11 @@
       "error": "차트를 불러오지 못했어요",
       "retry": "다시 시도",
       "empty": "데이터가 없어요",
-      "rowAriaLabel": "{region} {wins}회 우승, 상세 보기"
-    }
+      "rowAriaLabel": "{region} {wins}회 우승, 상세 보기",
+      "winsLabel": "우승 횟수"
+    },
+    "weekLabel": "{month}월 {week}주차",
+    "updateNote": "매주 월요일 업데이트"
   },
   "tournament": {
     "title": "토너먼트",
@@ -402,26 +460,26 @@
       "start": "시작하기",
       "steps": {
         "themeKind": {
-          "title": "어떤 테마로 여행지를 골라볼까요?",
-          "hint": "테마에 맞춰 충북 여행지를 추천해 드려요.",
-          "season": "계절 테마",
+          "title": "어떤 테마로 떠나볼까요?",
+          "hint": "직접 계절을 고르거나 랜덤으로 시작하세요",
+          "season": "계절 선택",
           "seasonDesc": "봄·여름·가을·겨울 중 직접",
           "random": "랜덤 테마",
-          "randomDesc": "계절과 유형을 랜덤으로 골라드려요"
+          "randomDesc": "계절과 유형을 랜덤으로"
         },
         "season": {
-          "title": "어떤 계절로 떠나볼까요?",
-          "hint": "선택한 계절의 분위기로 여행지를 골라요."
+          "title": "어느 계절이 좋을까요?",
+          "hint": "분위기에 맞는 계절을 골라주세요"
         },
         "category": {
-          "title": "{season} 여행지를 찾아볼까요?",
-          "hint": "여행 유형을 선택해주세요.",
+          "title": "어떤 유형이 끌리세요?",
+          "hint": "여러 개 선택할 수 있어요",
           "ariaLabel": "여행 유형 선택",
           "seasonScopeNonFestival": "선택한 계절({season})은 축제 카테고리에만 적용돼요. 다른 카테고리는 계절과 무관하게 추천됩니다."
         },
         "count": {
-          "title": "여행지의 갯수를 선택해주세요",
-          "hint": "고를 여행지가 많을수록 토너먼트가 길어져요.",
+          "title": "여행지 갯수",
+          "hint": "지도에 떨어질 여행지 수를 선택해주세요",
           "ariaLabel": "여행지 개수 선택"
         }
       },
@@ -436,13 +494,20 @@
           "6": "넉넉히",
           "8": "꼼꼼히"
         }
-      }
+      },
+      "selectToContinue": "선택하면 다음으로 진행해요"
     },
     "season": {
       "spring": "봄",
       "summer": "여름",
       "autumn": "가을",
-      "winter": "겨울"
+      "winter": "겨울",
+      "desc": {
+        "spring": "벚꽃이 흩날리는 계절",
+        "summer": "푸른 바다와 태양의 계절",
+        "autumn": "단풍으로 물드는 계절",
+        "winter": "눈과 온천의 계절"
+      }
     },
     "seasonMonths": {
       "spring": "벚꽃이 흩날리는 계절",
@@ -453,7 +518,12 @@
     "category": {
       "festival": "축제",
       "attraction": "관광지",
-      "experience": "체험관광"
+      "experience": "체험관광",
+      "desc": {
+        "festival": "지역 축제와 행사 위주",
+        "attraction": "명소·자연·전망 위주",
+        "experience": "직접 즐기는 체험 프로그램"
+      }
     },
     "categoryDesc": {
       "festival": "지역 축제와 행사 위주",
@@ -478,18 +548,18 @@
         "back": "설정 다시"
       },
       "tournamentSize": {
-        "title": "몇 강의 토너먼트를 진행할까요?",
-        "hint": "강이 클수록 더 많이 비교하며 신중하게 고를 수 있어요.",
+        "title": "토너먼트 수",
+        "hint": "선택한 수만큼 토너먼트가 생성돼요",
         "count": {
           "4": "4강",
           "8": "8강",
           "16": "16강",
           "32": "32강",
           "sub": {
-            "4": "빠르게 결정!",
-            "8": "적당한 재미",
-            "16": "신중하게",
-            "32": "완전 랜덤 탐험"
+            "4": "간단히",
+            "8": "기본 추천",
+            "16": "깊게",
+            "32": "끝까지"
           }
         }
       },
@@ -505,11 +575,17 @@
         "remainMatches": "남은 매치 {remain}",
         "progressLabel": "토너먼트 진행도",
         "pickPrompt": "더 가고 싶은 곳을 골라주세요",
-        "autoWin": "선택한 한 곳이 바로 우승이에요"
+        "autoWin": "선택한 한 곳이 바로 우승이에요",
+        "remaining": "남은 매치 {n}",
+        "prompt": "더 가고 싶은 곳을 골라주세요"
       },
       "celebration": {
         "title": "🎊 우승!"
-      }
+      },
+      "next": "다음",
+      "mapSummary": "여행지 {destinations}곳이 선정됐어요",
+      "noConfig": "토너먼트 설정이 없어요",
+      "mapSummaryHint": "{season} 테마로 충북 곳곳에서 고른 여행지예요.\n이제 대결을 시작할까요?"
     },
     "result": {
       "loading": "결과를 불러오는 중이에요",
@@ -522,7 +598,7 @@
       "noWinner": "토너먼트 결과가 없어요",
       "goSetup": "토너먼트 시작하기",
       "color": {
-        "label": "이 곳의 행운의 색",
+        "label": "오늘의 행운색",
         "red": "빨강",
         "orange": "주황",
         "yellow": "노랑",
@@ -535,21 +611,18 @@
       "stats": {
         "title": "토너먼트 기록",
         "label": "우승 정보",
-        "bracketSize": "대진",
-        "matches": "매치",
+        "bracketSize": "토너먼트",
+        "matches": "총 매치",
         "matchesValue": "{n}매치",
         "region": "시군",
-        "category": "유형",
+        "category": "카테고리",
         "runnerUp": "결승 상대"
       },
       "detail": {
-        "panelLabel": "여행 정보",
+        "panelLabel": "여행지 상세",
         "address": "주소",
-        "openingHours": "운영시간",
-        "restDate": "휴무일",
-        "parking": "주차",
-        "phone": "전화",
-        "website": "웹사이트"
+        "admissionFee": "입장료",
+        "eventPeriod": "행사기간"
       },
       "ladder": {
         "title": "여행에서 인연을 만날 확률",
@@ -559,8 +632,18 @@
         "hintRevealed": "도착했어요!",
         "resultLabel": "이번 여행에서 인연을 만날 확률",
         "svgLabel": "사다리타기",
-        "lineLabel": "{n}번 라인"
-      }
+        "lineLabel": "{n}번 라인",
+        "retry": "다시 시도"
+      },
+      "luckyColor": "행운의 색",
+      "meetChance": "여행에서 인연을 만날 확률",
+      "saveToMypage": "마이페이지에 저장",
+      "saving": "저장 중...",
+      "saveFailed": "저장에 실패했어요",
+      "retry": "다시 하기",
+      "share": "결과 공유하기",
+      "savedToast": "저장되었어요",
+      "shareText": "TripBite 에서 {name} 가(이) 우승했어요!"
     }
   },
   "letter": {
@@ -579,19 +662,44 @@
       "subtitle": "단 다섯 글자, 누군가에게 닿습니다"
     },
     "received": "도착한 편지",
-    "sent": "내가 보낸 편지",
+    "sent": {
+      "title": "보낸 편지",
+      "noticeTitle": "전송 완료",
+      "noticeBody": "익명의 한 명에게 곧 도착할 거예요",
+      "letterAria": "보낸 편지 카드",
+      "from": "From",
+      "to": "To",
+      "toRecipient": "익명의 여행자 님에게",
+      "toDelivery": "전달 예정",
+      "stampMain": "발송완료",
+      "stampSub": "여행한입",
+      "fromAnonymous": "익명의 여행자",
+      "dateLabel": "발송",
+      "sentBadge": "전송됨",
+      "goHome": "홈으로 가기",
+      "again": "또 쓰기",
+      "home": "홈으로",
+      "empty": "방금 보낸 편지가 없어요",
+      "goCompose": "편지 쓰러 가기",
+      "loadError": "편지를 불러오지 못했어요",
+      "retry": "다시 시도",
+      "toArrival": "랜덤 시간에 도착해요",
+      "sentSuffix": "발송"
+    },
     "liked": "좋아요한 편지",
     "saved": "저장한 편지",
     "tabs": {
-      "section": "편지함",
+      "section": "도착한 편지",
       "received": "받은 편지",
       "sent": "보낸 편지",
-      "saved": "저장한 편지"
+      "saved": "저장됨",
+      "liked": "하트"
     },
     "empty": {
-      "received": "받은 편지가 없어요",
-      "sent": "보낸 편지가 없어요",
-      "saved": "저장한 편지가 없어요"
+      "received": "아직 도착한 편지가 없어요",
+      "sent": "아직 보낸 편지가 없어요",
+      "saved": "아직 저장한 편지가 없어요",
+      "liked": "아직 하트를 누른 편지가 없어요"
     },
     "listError": "편지를 불러오지 못했어요",
     "listRetry": "다시 시도",
@@ -623,9 +731,9 @@
       }
     },
     "detail": {
-      "title": "받은 편지",
+      "title": "도착한 편지",
       "arrivedTitle": "편지가 도착했어요",
-      "arrivedBody": "누군가 당신에게 다섯 글자를 보냈어요",
+      "arrivedBody": "어디에서 왔을까요? 5글자에 담긴 마음을 확인해보세요",
       "letterAria": "받은 편지 카드",
       "from": "From",
       "to": "To",
@@ -651,32 +759,12 @@
       "deletedToast": "편지가 삭제됐어요",
       "deleteFailedToast": "편지를 삭제하지 못했어요",
       "retry": "다시 시도",
-      "backToList": "편지함으로"
+      "backToList": "편지함으로",
+      "postmarkArrived": "도착"
     },
     "author": {
-      "anonymous": "익명의 여행자"
-    },
-    "sent": {
-      "title": "편지 보내기",
-      "noticeTitle": "편지가 전송됐어요!",
-      "noticeBody": "랜덤한 시간에 누군가에게 도착해요",
-      "letterAria": "보낸 편지 카드",
-      "from": "From",
-      "to": "To",
-      "toRecipient": "랜덤 수신자에게",
-      "toDelivery": "전달 예정",
-      "stampMain": "발송완료",
-      "stampSub": "여행한입",
-      "fromAnonymous": "익명의 여행자",
-      "dateLabel": "발송",
-      "sentBadge": "전송됨",
-      "goHome": "홈으로 가기",
-      "again": "또 편지 쓰기",
-      "home": "홈으로",
-      "empty": "방금 보낸 편지가 없어요",
-      "goCompose": "편지 쓰러 가기",
-      "loadError": "편지를 불러오지 못했어요",
-      "retry": "다시 시도"
+      "anonymous": "익명의 여행자",
+      "mine": "내가 작성한 편지"
     }
   },
   "quiz": {
@@ -719,7 +807,7 @@
       "applyRequireAuth": "유형 저장은 로그인 후 사용할 수 있어요. 지금 로그인할까요?",
       "appliedSuccess": "프로필에 저장됐어요",
       "appliedFailed": "저장에 실패했어요",
-      "share": "이미지 카드 공유",
+      "share": "결과 공유하기",
       "retake": "다시 테스트",
       "compatibility": {
         "title": "여행 궁합",
@@ -731,17 +819,19 @@
       "ctaEyebrow": "여행 유형 테스트",
       "ctaTitle": "5문항으로 내 여행 스타일 찾기",
       "myTypeEyebrow": "나의 여행 유형"
-    }
+    },
+    "progress": "{current}/{total}"
   },
   "mypage": {
     "title": "마이페이지",
     "sections": {
       "profile": "프로필",
-      "stampMap": "충북 도장책",
+      "stampMap": "충북 도장깨기",
       "stampMapViewAll": "전체보기",
-      "savedTournaments": "저장한 우승지",
+      "savedTournaments": "저장한 우승 여행지",
       "savedTournamentsViewAll": "전체보기",
-      "tournamentHistory": "최근 토너먼트"
+      "tournamentHistory": "토너먼트 기록",
+      "goToSettings": "설정으로 이동"
     },
     "profile": {
       "label": "프로필",
@@ -763,7 +853,8 @@
       "sheetOptionGallery": "갤러리에서 선택",
       "sheetOptionRemove": "사진 제거",
       "travelType": {
-        "label": "여행 유형"
+        "label": "여행 유형",
+        "rookie": "새내기 여행자"
       }
     },
     "savedTournaments": {
@@ -772,15 +863,16 @@
       "startTournament": "토너먼트 시작",
       "error": "저장 목록을 불러오지 못했어요",
       "retry": "다시 시도",
-      "allTitle": "저장한 우승지",
-      "totalCount": "최신순으로 20개까지 저장됩니다",
+      "allTitle": "저장한 우승 여행지",
+      "totalCount": "총 {count}개",
       "unsaveAria": "저장 해제",
-      "removeConfirmTitle": "저장한 우승지 삭제",
-      "removeConfirmBody": "저장 목록에서 삭제할까요?",
+      "removeConfirmTitle": "저장한 우승지를 삭제할까요?",
+      "removeConfirmBody": "마이페이지 저장 목록에서 사라져요. 토너먼트 기록은 그대로 남아요.",
       "removeConfirmYes": "삭제",
       "removeConfirmNo": "취소",
       "removeSuccess": "저장 목록에서 삭제됐어요",
-      "removeFailed": "삭제에 실패했어요"
+      "removeFailed": "삭제에 실패했어요",
+      "viewAll": "전체보기"
     },
     "tournamentHistory": {
       "empty": "아직 진행한 토너먼트가 없어요",
@@ -798,8 +890,8 @@
     "stampBook": {
       "pageTitle": "충북 도장책",
       "bannerLabel": "충북 마스터까지 {remaining}개",
-      "bannerHint": "11개 달성 시 마스터 카드 공유",
-      "remainingTitle": "충북 마스터까지 {remaining}개 남았어요",
+      "bannerHint": "{total}개 달성 시 마스터 카드 공유",
+      "remainingTitle": "충북 마스터까지 {remaining}개 남음",
       "masterAchieved": "충북 마스터 달성!",
       "progress": "{visited} / {total}",
       "progCaption": "{total}개 시군을 모두 모으면 충북 마스터 카드를 받아요",
@@ -810,7 +902,9 @@
       "error": "도장 정보를 불러오지 못했어요",
       "retry": "다시 시도",
       "bannerErrorTitle": "충북 도장책",
-      "bannerErrorHint": "지도 보러 가기"
+      "bannerErrorHint": "지도 보러 가기",
+      "shareMaster": "마스터 카드 공유",
+      "masterHint": "11개 시군을 모두 모으면 충북 마스터 카드를 받아요"
     }
   },
   "settings": {
@@ -842,7 +936,6 @@
       "locationDenied": "거부됨 — 기기 설정에서 변경",
       "locationPrompt": "아직 요청하지 않음",
       "locationUnsupported": "지원되지 않음",
-      "blockedUsers": "차단한 사용자 관리",
       "nicknameDialog": {
         "title": "닉네임 변경",
         "label": "닉네임",
@@ -871,7 +964,15 @@
       "withdrawConfirmTitle": "정말 탈퇴할까요?",
       "withdrawConfirmDescription": "탈퇴하면 프로필 / 저장한 우승지 / 도장책 / 보낸 편지가 모두 영구 삭제돼요. 이 작업은 되돌릴 수 없어요.",
       "withdrawConfirmLabel": "탈퇴하기",
-      "withdrawFailed": "탈퇴에 실패했어요. 잠시 후 다시 시도해주세요."
+      "withdrawFailed": "탈퇴에 실패했어요. 잠시 후 다시 시도해주세요.",
+      "section": "계정 관리"
+    },
+    "devices": {
+      "section": "알림 기기",
+      "empty": "구독된 알림 기기가 없어요.",
+      "remove": "해제",
+      "unknownDevice": "알 수 없는 기기",
+      "registeredAt": "{date} 등록"
     }
   },
   "destination": {
@@ -894,15 +995,15 @@
     "actions": {
       "groupAria": "여행지 액션",
       "directions": "길찾기",
-      "share": "공유하기"
+      "share": "링크 공유"
     },
     "related": {
-      "label": "이런 여행지가 어울려요"
+      "label": "이 시군의 다른 여행지"
     }
   },
   "notification": {
     "title": "알림",
-    "empty": "새로운 알림이 없어요",
+    "empty": "도착한 알림이 없어요",
     "error": "알림을 불러오지 못했어요",
     "retry": "다시 시도",
     "markAllRead": "모두 읽음",
@@ -922,10 +1023,31 @@
     "network": "네트워크 오류가 발생했어요.",
     "requestFailed": "요청을 처리하지 못했어요.",
     "tryAgainLater": "잠시 후 다시 시도해주세요.",
+    "boundary": {
+      "title": "문제가 발생했어요",
+      "description": "잠시 후 다시 시도해주세요.\n문제가 계속되면 도움이 필요해요.",
+      "retry": "다시 시도",
+      "home": "홈으로"
+    },
     "notFound": {
-      "title": "404",
-      "message": "요청하신 페이지를 찾을 수 없습니다.",
+      "title": "페이지를 찾을 수 없어요",
+      "description": "요청하신 페이지가 사라졌거나\n잘못된 주소예요.",
       "goHome": "홈으로"
+    },
+    "byCode": {
+      "AUTH": "로그인이 필요해요.",
+      "FORBIDDEN": "접근 권한이 없어요.",
+      "CSRF": "요청이 안전하게 전달되지 않았어요. 새로고침 후 다시 시도해주세요.",
+      "NOT_FOUND": "요청한 정보를 찾을 수 없어요.",
+      "CONFLICT": "이미 처리된 요청이에요.",
+      "VALIDATION": "입력값을 확인해주세요.",
+      "RATE_LIMIT": "잠시 후 다시 시도해주세요.",
+      "SERVER": "서버에서 일시적인 문제가 발생했어요.",
+      "BAD_GATEWAY": "서버에서 일시적인 문제가 발생했어요.",
+      "UNAVAILABLE": "서비스를 잠시 사용할 수 없어요.",
+      "BAD_REQUEST": "요청을 처리하지 못했어요.",
+      "NETWORK": "네트워크 연결을 확인해주세요.",
+      "UNKNOWN": "알 수 없는 오류가 발생했어요."
     }
   },
   "consent": {
@@ -967,5 +1089,9 @@
     "prev": "이전",
     "next": "다음",
     "slide": "슬라이드 {n}/{total}"
+  },
+  "brand": {
+    "name": "여행한입",
+    "tagline": "한 입에 떠나는 충북 여행"
   }
 }

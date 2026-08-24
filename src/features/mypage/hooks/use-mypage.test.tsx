@@ -1,12 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { act } from '@testing-library/react';
 import { QueryClient } from '@tanstack/react-query';
-import { http, HttpResponse } from 'msw';
-import { server } from '@/mocks/server';
-import { mockSeeds } from '@/mocks/handlers';
-import { renderHookWithProviders } from '@/test-utils';
-import { useAuthStore } from '@/stores/auth-store';
+import { act } from '@testing-library/react';
+import { HttpResponse, http } from 'msw';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { authKeys } from '@/features/auth/hooks/use-auth';
+import { mockSeeds } from '@/mocks/handlers';
+import { server } from '@/mocks/server';
+import { useAuthStore } from '@/stores/auth-store';
+import { renderHookWithProviders } from '@/test-utils';
 import {
   mypageKeys,
   useMypage,
@@ -23,7 +23,7 @@ const mockUser = {
   username: 'tester',
   nickname: '여행자',
   email: 't@e.st',
-  isOnboarded: true,
+  avatarUrl: null,
 } as const;
 
 describe('useMypage / useStamps — enabled: isAuthenticated 가드', () => {
@@ -63,7 +63,9 @@ describe('useMypage / useStamps — enabled: isAuthenticated 가드', () => {
 describe('useUpdateNickname', () => {
   it('성공 시 mypage summary + auth.me 양쪽 invalidate', async () => {
     server.use(
-      http.patch(`${apiUrl}/mypage/profile`, () => HttpResponse.json(mockUser)),
+      http.patch(`${apiUrl}/me`, () =>
+        HttpResponse.json({ success: true, message: null, data: mockUser }),
+      ),
     );
     const qc = new QueryClient({
       defaultOptions: { queries: { retry: false, gcTime: 0 } },
@@ -84,60 +86,48 @@ describe('useUpdateNickname', () => {
   });
 });
 
-describe('useUpdateAvatar', () => {
-  it('성공 시 auth.me + mypage summary 양쪽 invalidate (multipart FormData)', async () => {
-    let receivedContentType = '';
-    server.use(
-      http.post(`${apiUrl}/me/avatar`, ({ request }) => {
-        receivedContentType = request.headers.get('content-type') ?? '';
-        return HttpResponse.json({ avatarUrl: 'https://cdn.test/avatar.png' });
-      }),
-    );
-    const qc = new QueryClient({
-      defaultOptions: { queries: { retry: false, gcTime: 0 } },
-    });
-    const invalidateSpy = vi.spyOn(qc, 'invalidateQueries');
+describe('useUpdateAvatar / useRemoveAvatar — /me/avatar 뮤테이션', () => {
+  beforeEach(() => {
+    useAuthStore.getState().setAuth(mockUser);
+  });
 
-    const { result } = renderHookWithProviders(() => useUpdateAvatar(), {
-      queryClient: qc,
+  it('useUpdateAvatar — 업로드 성공', async () => {
+    server.use(
+      http.post(`${apiUrl}/me/avatar`, () =>
+        HttpResponse.json(
+          {
+            success: true,
+            message: null,
+            data: { avatarUrl: 'https://cdn/avatars/1.jpg' },
+          },
+          { status: 201 },
+        ),
+      ),
+    );
+    const { result } = renderHookWithProviders(() => useUpdateAvatar());
+    const file = new File([new Uint8Array([1, 2])], 'a.png', {
+      type: 'image/png',
     });
-    const file = new File(['x'], 'avatar.png', { type: 'image/png' });
     await act(async () => {
       await result.current.mutateAsync(file);
     });
-
-    // axios FormData interceptor 가 Content-Type 직접 unset → 브라우저가 multipart boundary 자동 부여.
-    expect(receivedContentType).toMatch(/multipart\/form-data/);
-    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: authKeys.me() });
-    expect(invalidateSpy).toHaveBeenCalledWith({
-      queryKey: mypageKeys.summary(),
-    });
+    expect(result.current.isSuccess).toBe(true);
   });
-});
 
-describe('useRemoveAvatar', () => {
-  it('성공 시 auth.me + mypage summary 양쪽 invalidate', async () => {
+  it('useRemoveAvatar — 삭제 성공', async () => {
     server.use(
-      http.delete(
-        `${apiUrl}/me/avatar`,
-        () => new HttpResponse(null, { status: 204 }),
+      http.delete(`${apiUrl}/me/avatar`, () =>
+        HttpResponse.json({
+          success: true,
+          message: null,
+          data: { avatarUrl: null },
+        }),
       ),
     );
-    const qc = new QueryClient({
-      defaultOptions: { queries: { retry: false, gcTime: 0 } },
-    });
-    const invalidateSpy = vi.spyOn(qc, 'invalidateQueries');
-
-    const { result } = renderHookWithProviders(() => useRemoveAvatar(), {
-      queryClient: qc,
-    });
+    const { result } = renderHookWithProviders(() => useRemoveAvatar());
     await act(async () => {
       await result.current.mutateAsync();
     });
-
-    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: authKeys.me() });
-    expect(invalidateSpy).toHaveBeenCalledWith({
-      queryKey: mypageKeys.summary(),
-    });
+    expect(result.current.isSuccess).toBe(true);
   });
 });

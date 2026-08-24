@@ -1,0 +1,152 @@
+import { HttpResponse, http } from 'msw';
+import { describe, expect, it } from 'vitest';
+import type { TournamentConfig } from '@/features/tournament/types';
+import { mockSeeds } from '@/mocks/handlers';
+import { server } from '@/mocks/server';
+import { tournamentApi } from './tournament';
+
+/**
+ * 어댑터 매핑 단위 테스트 — 신규 Spring BE(ApiResponse 엔벨로프) → 도메인 shape 매핑 검증.
+ * 실 BE 실측 응답 shape 기준으로 mock 을 구성해 필드 단위로 pin.
+ */
+const apiUrl = mockSeeds.apiUrl;
+const ok = (data: unknown) => ({ success: true, message: null, data });
+
+describe('tournamentApi.getDestinationDetail — 신규 BE(정수 id) 매핑', () => {
+  it('Spring 필드명 그대로(images/type/admissionFee/tags) + id number → string 매핑', async () => {
+    server.use(
+      http.get(`${apiUrl}/destinations/2987654`, () =>
+        HttpResponse.json(
+          ok({
+            id: 2987654,
+            name: '건지마을',
+            category: 'experience',
+            region: 'chungju',
+            imageUrl: 'https://cdn.test/main.jpg',
+            images: ['https://cdn.test/p1.jpg', 'https://cdn.test/p2.jpg'],
+            address: '충북 충주',
+            type: '체험',
+            admissionFee: '무료',
+            description: '설명',
+            tags: ['#a'],
+            eventStart: null,
+            eventEnd: null,
+          }),
+        ),
+      ),
+    );
+
+    const d = await tournamentApi.getDestinationDetail('2987654');
+    expect(d.id).toBe('2987654');
+    expect(d.name).toBe('건지마을');
+    // Spring 필드명(images) 그대로 — 개명(photos) 없음.
+    expect(d.images).toEqual([
+      'https://cdn.test/p1.jpg',
+      'https://cdn.test/p2.jpg',
+    ]);
+    expect(d.type).toBe('체험');
+    expect(d.admissionFee).toBe('무료');
+    expect(d.tags).toEqual(['#a']);
+    expect(d.description).toBe('설명');
+  });
+});
+
+describe('tournamentApi.fetchCandidates — 신규 BE random 매핑', () => {
+  it('data 배열 → DestinationDto[] (id number → string)', async () => {
+    server.use(
+      http.get(`${apiUrl}/destinations/random`, ({ request }) => {
+        const url = new URL(request.url);
+        // 단일 category/region + size 전달 확인.
+        expect(url.searchParams.get('season')).toBe('spring');
+        expect(url.searchParams.get('category')).toBe('festival');
+        expect(url.searchParams.get('region')).toBe('danyang');
+        expect(url.searchParams.get('size')).toBe('8');
+        return HttpResponse.json(
+          ok([
+            {
+              id: 111,
+              name: '축제A',
+              category: 'festival',
+              region: 'danyang',
+              imageUrl: null,
+            },
+          ]),
+        );
+      }),
+    );
+
+    const config = {
+      theme: { kind: 'season', value: 'spring' },
+      categories: ['festival'],
+      selectedRegions: ['danyang'],
+      tournamentSize: 8,
+    } as unknown as TournamentConfig;
+
+    const c = await tournamentApi.fetchCandidates(config);
+    expect(c).toHaveLength(1);
+    expect(c[0]?.id).toBe('111');
+    expect(c[0]?.name).toBe('축제A');
+    expect(c[0]?.region).toBe('danyang');
+  });
+});
+
+describe('tournamentApi.listSaved — 신규 BE 저장목록 매핑', () => {
+  it('엔벨로프 → SavedTournamentDto[] (id string, Spring 필드만)', async () => {
+    server.use(
+      http.get(`${apiUrl}/mypage/tournaments`, () =>
+        HttpResponse.json(
+          ok([
+            {
+              id: 1,
+              destination: {
+                id: 2987654,
+                name: '건지마을',
+                category: 'experience',
+                region: 'chungju',
+                address: '충북 충주',
+                imageUrl: 'https://cdn.test/d.jpg',
+              },
+              savedAt: '2026-07-23T00:00:00Z',
+            },
+          ]),
+        ),
+      ),
+    );
+
+    const s = await tournamentApi.listSaved();
+    expect(s).toHaveLength(1);
+    expect(s[0]?.id).toBe('1');
+    expect(s[0]?.destination.id).toBe('2987654');
+    expect(s[0]?.savedAt).toBe('2026-07-23T00:00:00Z');
+    expect(s[0]?.destination.name).toBe('건지마을');
+  });
+});
+
+describe('tournamentApi.listHistory — 신규 BE 기록 매핑', () => {
+  it('flat TournamentSummaryDto[] → {items,nextCursor} (Spring 필드명 tournamentSize)', async () => {
+    server.use(
+      http.get(`${apiUrl}/mypage/tournament-history`, () =>
+        HttpResponse.json(
+          ok([
+            {
+              id: 5,
+              winnerName: '우승지',
+              tournamentSize: 16,
+              category: 'attraction',
+              completedAt: '2026-07-23T00:00:00Z',
+            },
+          ]),
+        ),
+      ),
+    );
+
+    const h = await tournamentApi.listHistory();
+    expect(h.nextCursor).toBeNull();
+    expect(h.items).toHaveLength(1);
+    expect(h.items[0]?.id).toBe('5');
+    expect(h.items[0]?.winnerName).toBe('우승지');
+    // Spring 필드명(tournamentSize) 그대로.
+    expect(h.items[0]?.tournamentSize).toBe(16);
+    expect(h.items[0]?.category).toBe('attraction');
+  });
+});

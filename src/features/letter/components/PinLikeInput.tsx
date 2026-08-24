@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, useCallback, useRef, type ChangeEvent } from 'react';
+import { type ChangeEvent, forwardRef, useCallback, useRef } from 'react';
 import styles from './PinLikeInput.module.scss';
 
 /**

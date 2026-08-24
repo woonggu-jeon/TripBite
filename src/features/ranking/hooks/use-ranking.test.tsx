@@ -1,12 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { act } from '@testing-library/react';
 import { QueryClient } from '@tanstack/react-query';
-import { http, HttpResponse } from 'msw';
-import { server } from '@/mocks/server';
-import { mockSeeds } from '@/mocks/handlers';
-import { renderHookWithProviders } from '@/test-utils';
-import { useAuthStore } from '@/stores/auth-store';
+import { act } from '@testing-library/react';
 import { waitFor } from '@testing-library/react';
+import { HttpResponse, http } from 'msw';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { mockSeeds } from '@/mocks/handlers';
+import { server } from '@/mocks/server';
+import { useAuthStore } from '@/stores/auth-store';
+import { renderHookWithProviders } from '@/test-utils';
 import {
   rankingKeys,
   useMyTravelType,
@@ -24,9 +24,8 @@ const mockTravelType = {
   code: 'explorer',
   title: '탐험형 여행자',
   description: '탐험형',
-  keywords: ['#탐험'],
   emoji: '🏛️',
-  recommended: [],
+  tags: ['#탐험'],
 } as const;
 
 describe('useMyTravelType — enabled: isAuthenticated 가드', () => {
@@ -35,11 +34,16 @@ describe('useMyTravelType — enabled: isAuthenticated 가드', () => {
   });
 
   it('비인증 시 fetch 0', () => {
+    // 4-A 전환: 내 유형은 GET /me.travelType(code) 로 재구성.
     let called = 0;
     server.use(
-      http.get(`${apiUrl}/travel-types/me`, () => {
+      http.get(`${apiUrl}/me`, () => {
         called++;
-        return HttpResponse.json(mockTravelType);
+        return HttpResponse.json({
+          success: true,
+          message: null,
+          data: { travelType: mockTravelType.code },
+        });
       }),
     );
     const { result } = renderHookWithProviders(() => useMyTravelType());
@@ -50,9 +54,20 @@ describe('useMyTravelType — enabled: isAuthenticated 가드', () => {
 
 describe('useSubmitTravelType', () => {
   it('성공 시 travelType cache 에 직접 setQueryData', async () => {
+    // 신규 Spring BE: thin TravelTypeResultDto(tags) 엔벨로프 → 어댑터가 도메인 TravelTypeDto 로 매핑.
     server.use(
       http.post(`${apiUrl}/travel-types/submit`, () =>
-        HttpResponse.json(mockTravelType),
+        HttpResponse.json({
+          success: true,
+          message: null,
+          data: {
+            code: mockTravelType.code,
+            title: mockTravelType.title,
+            emoji: mockTravelType.emoji,
+            description: mockTravelType.description,
+            tags: mockTravelType.tags,
+          },
+        }),
       ),
     );
     const qc = new QueryClient({
@@ -64,8 +79,8 @@ describe('useSubmitTravelType', () => {
     });
     await act(async () => {
       await result.current.mutateAsync([
-        { questionId: 'q1', optionId: 'q1-a' },
-        { questionId: 'q2', optionId: 'q2-b' },
+        { questionId: '1', optionId: '1' },
+        { questionId: '2', optionId: '6' },
       ]);
     });
 
@@ -76,11 +91,14 @@ describe('useSubmitTravelType', () => {
 
 describe('useSetMyTravelType', () => {
   it('성공 시 travelType + mypage summary 양쪽 invalidate (setQueryData 안 함)', async () => {
-    // BE spec: PATCH 응답은 ack only (recommended: []) — setQueryData 대신
-    // invalidate → 다음 GET 이 recommended 포함 응답 반환.
+    // 4-A 전환: PATCH /me { travelType } 로 저장 → invalidate 로 다음 GET 재조회.
     server.use(
-      http.patch(`${apiUrl}/travel-types/me`, () =>
-        HttpResponse.json({ ...mockTravelType, recommended: [] }),
+      http.patch(`${apiUrl}/me`, () =>
+        HttpResponse.json({
+          success: true,
+          message: null,
+          data: { travelType: 'explorer' },
+        }),
       ),
     );
     const qc = new QueryClient({
@@ -111,6 +129,12 @@ describe('useSetMyTravelType', () => {
 });
 
 describe('useRanking + alias hooks', () => {
+  // 추천/미지원 랭킹 타입(recommended 등)은 real-BE 모드(USE_MSW≠true)에서 dead
+  // endpoint 를 skip(빈배열)한다. 이 블록은 mock 경로(구 generated /rankings) 어댑터
+  // 매핑을 검증하므로 mock 모드로 고정.
+  beforeEach(() => vi.stubEnv('NEXT_PUBLIC_USE_MSW', 'true'));
+  afterEach(() => vi.unstubAllEnvs());
+
   const mockRankItems = [
     {
       rank: 1,
@@ -124,68 +148,124 @@ describe('useRanking + alias hooks', () => {
     },
   ];
 
-  it('useRanking — params 전달 + 응답 반환', async () => {
+  it('useRanking — params 전달 + 응답 반환 (mock /rankings 경로)', async () => {
+    // recommended 는 destinations/random 으로 전환되므로, /rankings 경로 검증은
+    // 다른 타입(by-category)으로 확인.
     server.use(
       http.get(`${apiUrl}/rankings`, ({ request }) => {
         const url = new URL(request.url);
-        expect(url.searchParams.get('type')).toBe('recommended');
+        expect(url.searchParams.get('type')).toBe('by-category');
         expect(url.searchParams.get('limit')).toBe('5');
         return HttpResponse.json(mockRankItems);
       }),
     );
     const { result } = renderHookWithProviders(() =>
-      useRanking({ type: 'recommended', limit: 5 }),
+      useRanking({ type: 'by-category', limit: 5 }),
     );
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data).toEqual(mockRankItems);
   });
 
-  it('useWeeklyTopDestinations — type=weekly-winners 로 호출', async () => {
-    let receivedType: string | null = null;
+  it('useWeeklyTopDestinations — 신규 BE /tournaments/rankings/weekly (size 전달)', async () => {
+    let receivedSize: string | null = null;
     server.use(
-      http.get(`${apiUrl}/rankings`, ({ request }) => {
-        receivedType = new URL(request.url).searchParams.get('type');
-        return HttpResponse.json([]);
+      http.get(`${apiUrl}/tournaments/rankings/weekly`, ({ request }) => {
+        receivedSize = new URL(request.url).searchParams.get('size');
+        return HttpResponse.json({
+          success: true,
+          message: null,
+          data: {
+            items: [{ destinationId: 7, destinationName: 'W', winCount: 12 }],
+          },
+        });
       }),
     );
     const { result } = renderHookWithProviders(() =>
       useWeeklyTopDestinations(3),
     );
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(receivedType).toBe('weekly-winners');
+    expect(receivedSize).toBe('3');
+    // 어댑터가 {destinationId,destinationName,winCount} → RankedDestination 매핑.
+    expect(result.current.data?.[0]).toEqual({
+      rank: 1,
+      destination: { id: '7', name: 'W' },
+      score: 12,
+    });
   });
 
-  it('useRecommendedDestinations — type=recommended 로 호출', async () => {
-    let receivedType: string | null = null;
+  it('useRecommendedDestinations — destinations/random 전환 + RankedDestination 매핑', async () => {
+    let receivedSize: string | null = null;
     server.use(
-      http.get(`${apiUrl}/rankings`, ({ request }) => {
-        receivedType = new URL(request.url).searchParams.get('type');
-        return HttpResponse.json([]);
+      http.get(`${apiUrl}/destinations/random`, ({ request }) => {
+        receivedSize = new URL(request.url).searchParams.get('size');
+        return HttpResponse.json({
+          success: true,
+          message: null,
+          data: [
+            {
+              id: 42,
+              name: '랜덤여행지',
+              category: 'attraction',
+              region: 'cheongju',
+              imageUrl: null,
+            },
+          ],
+        });
       }),
     );
     const { result } = renderHookWithProviders(() =>
-      useRecommendedDestinations(),
+      useRecommendedDestinations(5),
     );
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(receivedType).toBe('recommended');
+    expect(receivedSize).toBe('5');
+    expect(result.current.data?.[0]).toEqual({
+      rank: 1,
+      destination: {
+        id: '42',
+        name: '랜덤여행지',
+        category: 'attraction',
+        region: 'cheongju',
+        imageUrl: undefined,
+      },
+      score: 0,
+    });
   });
 });
 
-describe('useTravelTypeQuiz — public (auth 가드 없음)', () => {
-  beforeEach(() => {
+describe('useTravelTypeQuiz — 공개 엔드포인트 (BE whitelist 2026-08, 익명 200)', () => {
+  const mockQuiz = {
+    success: true,
+    message: null,
+    // 신규 Spring BE: ApiResponse<QuizDto>, id 는 number.
+    data: {
+      questions: [{ id: 1, text: 'Q1', options: [{ id: 1, text: 'A' }] }],
+    },
+  };
+
+  it('비인증에도 fetch — 응답 반환 (id number → 도메인 string 정규화)', async () => {
     useAuthStore.getState().clearAuth();
+    let called = 0;
+    server.use(
+      http.get(`${apiUrl}/travel-types/quiz`, () => {
+        called++;
+        return HttpResponse.json(mockQuiz);
+      }),
+    );
+    const { result } = renderHookWithProviders(() => useTravelTypeQuiz());
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(called).toBe(1);
+    expect(result.current.data?.questions.length).toBe(1);
+    expect(result.current.data?.questions[0]?.id).toBe('1');
   });
 
-  it('비인증이라도 fetch — quiz 응답 반환', async () => {
-    const mockQuiz = {
-      questions: [
-        {
-          id: 'q1',
-          text: 'Q1',
-          options: [{ id: 'q1-a', text: 'A' }],
-        },
-      ],
-    };
+  it('인증 시에도 동일 동작', async () => {
+    useAuthStore.getState().setAuth({
+      id: 'u-1',
+      username: 'tester',
+      nickname: '여행자',
+      email: 't@e.st',
+      avatarUrl: null,
+    });
     server.use(
       http.get(`${apiUrl}/travel-types/quiz`, () =>
         HttpResponse.json(mockQuiz),
@@ -193,6 +273,6 @@ describe('useTravelTypeQuiz — public (auth 가드 없음)', () => {
     );
     const { result } = renderHookWithProviders(() => useTravelTypeQuiz());
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(result.current.data?.questions.length).toBe(1);
+    expect(result.current.data?.questions[0]?.id).toBe('1');
   });
 });

@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { type Page, expect, test } from '@playwright/test';
 
 /**
  * 회원가입 → onboarding → 홈 e2e flow.
@@ -33,29 +33,28 @@ test.describe('회원가입 → onboarding 흐름', () => {
     await context.setGeolocation({ latitude: 36.6424, longitude: 127.489 });
   });
 
-  test('signup → MSW 응답 → onboarding 자동 진입', async ({ page }) => {
-    await page.goto('/signup');
+  test('signup → MSW 응답 → /signup/complete 진입', async ({ page }) => {
+    await page.goto('/signup', { waitUntil: 'networkidle' });
     await expect(page).toHaveURL(/\/signup/);
+    await page.waitForTimeout(800); // 클라 폼 hydration 대기
 
-    // 4 필드 입력 — username/password/nickname/email
-    await page.getByLabel(/아이디/).fill('newuser01');
-    await page.getByLabel(/이메일/).fill('new@user.com');
-    await page.getByLabel(/^닉네임/).fill('새내기');
-    await page.getByLabel(/^비밀번호 \(/).fill('NewUser1234!');
-    await page.getByLabel(/비밀번호 확인/).fill('NewUser1234!');
+    // 안정적 #id 셀렉터 사용 (i18n 라벨 텍스트 의존 회피).
+    // Spring SignupRequestDto 필수: username·name·birthDate·nickname·password·email.
+    await page.locator('#username').fill('newuser01');
+    await page.locator('#name').fill('홍길동');
+    await page.locator('#birthDate').fill('1998-05-20');
+    await page.locator('#nickname').fill('새내기');
+    await page.locator('#password').fill('NewUser1234!');
+    await page.locator('#passwordConfirm').fill('NewUser1234!');
+    await page.locator('#email').fill('new@user.com');
 
-    // 중복확인 버튼 — username/email. available 응답 (MSW: tester01/t@e.com 외 available)
-    const checkButtons = page.getByRole('button', { name: /중복확인/ });
-    const count = await checkButtons.count();
-    for (let i = 0; i < count; i++) {
-      await checkButtons.nth(i).click();
-      // verified 상태 또는 hint 변화 — networkidle 대기로 충분
-      await page.waitForLoadState('networkidle').catch(() => {});
-    }
+    // 중복확인 버튼은 준비중(toast) — 가입 게이팅 아님. 클릭 안 해도 제출 가능.
 
-    // 가입 제출 — MSW signup → { user } → setAuth → router.replace('/onboarding')
-    await page.getByRole('button', { name: /^가입하기$|^회원가입$/ }).click();
-    await expect(page).toHaveURL(/\/onboarding/, { timeout: 5000 });
+    // 가입 제출 — 신규 흐름: signup(ApiResponseUnit) → pendingUser → /signup/complete.
+    const submit = page.getByRole('button', { name: /^가입하기$|^회원가입$/ });
+    await expect(submit).toBeEnabled({ timeout: 5000 });
+    await submit.click();
+    await expect(page).toHaveURL(/\/signup\/complete/, { timeout: 5000 });
   });
 
   test('onboarding ConceptStep → LocationStep → 홈 진입', async ({ page }) => {

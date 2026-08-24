@@ -76,7 +76,12 @@ const nextConfig = {
     includePaths: ['./src/styles'],
   },
   images: {
-    remotePatterns: [{ protocol: 'https', hostname: 'tong.visitkorea.or.kr' }],
+    remotePatterns: [
+      { protocol: 'https', hostname: 'tong.visitkorea.or.kr' },
+      // 프로필 아바타 — BE(/me/avatar) 가 반환하는 avatarUrl 호스트.
+      // 현재 API 오리진과 동일 가정(2026-08). 별도 CDN 으로 옮기면 여기 host 교체.
+      { protocol: 'https', hostname: 'trip-bite.o-r.kr' },
+    ],
     formats: ['image/avif', 'image/webp'],
     // variant 수 절감 + 우리 sizes prop 의 실 width cover.
     // sizes prop 사용처 widths: 40/64/72/80/96/100/120/160/200/720

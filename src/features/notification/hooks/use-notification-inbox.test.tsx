@@ -1,11 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { act } from '@testing-library/react';
 import { QueryClient } from '@tanstack/react-query';
-import { http, HttpResponse } from 'msw';
-import { server } from '@/mocks/server';
+import { act } from '@testing-library/react';
+import { HttpResponse, http } from 'msw';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { mockSeeds } from '@/mocks/handlers';
-import { renderHookWithProviders } from '@/test-utils';
+import { server } from '@/mocks/server';
 import { useAuthStore } from '@/stores/auth-store';
+import { renderHookWithProviders } from '@/test-utils';
 import {
   notificationKeys,
   useMarkAllNotificationsRead,

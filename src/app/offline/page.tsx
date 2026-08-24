@@ -1,6 +1,6 @@
-import { getTranslations } from 'next-intl/server';
-import type { Metadata } from 'next';
 import { WifiOff } from 'lucide-react';
+import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 
 /**
  * PWA 오프라인 fallback (/offline)

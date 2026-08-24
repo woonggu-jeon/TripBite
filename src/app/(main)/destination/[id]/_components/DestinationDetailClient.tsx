@@ -1,46 +1,32 @@
 'use client';
 
-import { useState } from 'react';
+import { AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Icon } from '@/components/icon/Icon';
-import { SubHeader } from '@/components/layout/SubHeader';
-import { Skeleton } from '@/components/feedback/Skeleton';
 import { EmptyState } from '@/components/feedback/EmptyState';
+import { Skeleton } from '@/components/feedback/Skeleton';
+import { Icon } from '@/components/icon';
+import { SubHeader } from '@/components/layout/SubHeader';
 import { Button } from '@/components/ui';
-import { CHUNGBUK_REGIONS } from '@/constants/regions';
+import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetailPanel';
 import { useDestinationDetail } from '@/features/tournament/hooks/use-tournament';
-import type { DestinationDetailDto } from '@/api/generated/schemas';
-import { DestinationPhotos } from './DestinationPhotos';
 import { DestinationActions } from './DestinationActions';
-import { RelatedDestinations } from './RelatedDestinations';
 import styles from './DestinationDetailClient.module.scss';
+import { DestinationPhotos } from './DestinationPhotos';
+import { RelatedDestinations } from './RelatedDestinations';
 
 /**
- * 여행지 상세 client — Figma "POI · 장소상세" (2026-06-23) 정합.
+ * 여행지 상세 client — `useDestinationDetail` 로 fetch 후 풍부한 메타 표시.
  *
- * Layout:
- *   1) SubHeader (페이지 h1)
- *   2) DestinationPhotos hero (360×234 carousel + dots overlay)
- *   3) info-sec (padding 20 20 24 gap 20 white bg):
- *      · title-area row — Frame 28 (name B_20 + region SemiBold 14 muted) +
- *        type-chip pill (compass + Caption R_12 primary).
- *      · info-card column gap 12 — 5 field row (pin/clock/calendar/parking/
- *        globe, icon 18 primary + flabel R_12 muted + value R_12 fg).
- *      · divider 1px gray.
- *      · overview column gap 8 — text R_14 muted + "more" SemiBold 14 primary
- *        토글 (긴 description 3-4 줄 clamp + 펼치기).
- *   4) near-sec (padding 20) — RelatedDestinations (3 horizontal scroll).
- *   5) action-bar (padding 12 20 row gap 8) — outline primary + fill primary.
+ * Layout (위 → 아래):
+ *   1) SubHeader        — 뒤로가기 + detail.name (fetch 후 채움)
+ *   2) Hero             — 카테고리 이모지 + 시군 + 카테고리 라벨
+ *   3) Name             — 큰 제목
+ *   4) WinnerDetailPanel — summary/description + 주소/시간/휴무/주차/연락처/웹사이트
  *
- * WinnerDetailPanel 사용 중단 — 자체 info-card / overview markup (panel 은
- * TournamentResult 와 공유 — 변경 시 영향 큼). 같은 detail data, 시각만
- * Figma 정확 정합.
+ * isLoading / isError / 데이터 없음 모두 STYLES.md 표준 (Skeleton / EmptyState).
  */
-const OVERVIEW_LINE_CLAMP = 4;
-
 export function DestinationDetailClient({ id }: { id: string }) {
   const t = useTranslations('destination');
-  const tInfo = useTranslations('destination.info');
   const tCategory = useTranslations('tournament.category');
   const {
     data: detail,
@@ -48,6 +34,12 @@ export function DestinationDetailClient({ id }: { id: string }) {
     isError,
     refetch,
   } = useDestinationDetail(id);
+  // (related 는 RelatedDestinations 가 detail 성공 후 자체 fetch — detail 실패 시엔
+  //  불필요 요청/토스트를 안 내도록 여기서 미리 발사하지 않는다. 병렬화가 필요하면
+  //  RSC prefetch 로 진행 — BE_SPRING_MIGRATION 후속 과제.)
+
+  // detail 없을 때도 안정적인 header 유지 (CLS 0).
+  // 공유 버튼은 본문 DestinationActions 로 이동 — SubHeader rightSlot 제거.
   const title = detail?.name ?? '';
 
   if (isError) {
@@ -56,7 +48,7 @@ export function DestinationDetailClient({ id }: { id: string }) {
         <SubHeader title={t('title')} />
         <div className={styles.wrap}>
           <EmptyState
-            icon={<Icon name="alert-circle" size={28} />}
+            icon={<AlertCircle size={28} aria-hidden />}
             title={t('errorTitle')}
             description={t('errorDescription')}
             action={
@@ -71,224 +63,64 @@ export function DestinationDetailClient({ id }: { id: string }) {
   }
 
   if (isLoading || !detail) {
-    // Figma layout 대응 skeleton — hero 234 + info-sec (title-area + info-card
-    // 5 field + divider + overview) + near-sec 3 card. CLS 0.
     return (
       <>
         <SubHeader title={t('title')} />
         <div className={styles.wrap}>
-          <Skeleton width="100%" height={234} radius="sm" />
+          {/* 새 레이아웃과 같은 자리잡이 — 풀블리드 hero → 제목 → 정보 카드 */}
+          <div className={styles.heroSkeleton} aria-hidden />
           <div className={styles.infoSec}>
-            <div className={styles.titleArea}>
-              <div className={styles.titleStack}>
-                <Skeleton width="60%" height={26} radius="sm" />
-                <Skeleton width="40%" height={20} radius="sm" />
-              </div>
-              <Skeleton width={72} height={25} radius="full" />
-            </div>
-            <div className={styles.infoCard}>
-              {[0, 1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} width="100%" height={18} radius="sm" />
-              ))}
-            </div>
-            <div className={styles.divider} aria-hidden />
-            <Skeleton width="100%" height={80} radius="sm" />
-          </div>
-          <div className={styles.nearSec}>
-            <Skeleton width="40%" height={22} radius="sm" />
-            <div className={styles.skeletonRelatedRow} aria-hidden>
-              <Skeleton width={152} height={168} radius="md" />
-              <Skeleton width={152} height={168} radius="md" />
-              <Skeleton width={152} height={168} radius="md" />
-            </div>
+            <Skeleton width="60%" height={26} radius="md" />
+            <Skeleton width="100%" height={140} radius="md" />
           </div>
         </div>
       </>
     );
   }
 
-  const regionName =
-    CHUNGBUK_REGIONS.find((r) => r.code === detail.region)?.ko ?? detail.region;
-  const categoryLabel = tCategory(
-    detail.category as Parameters<typeof tCategory>[0],
-  );
-
   return (
     <>
       <SubHeader title={title} />
       <article className={styles.wrap} aria-labelledby="destination-name">
-        {/* Figma hero — 360×234 carousel + dots overlay. */}
+        {/* 1) hero — Figma 360x234 풀블리드 사진 + 그라디언트. photos 있으면 캐러셀 */}
         <DestinationPhotos
-          photos={detail.photos}
+          photos={detail.images}
           imageUrl={detail.imageUrl}
           alt={detail.name}
         />
 
-        {/* Figma info-sec — padding 20 20 24 gap 20 white. */}
+        {/* 2) info-sec — Figma V gap 20 / padding 하단 24 */}
         <section className={styles.infoSec}>
-          {/* Figma title-area — row space-between. */}
+          {/* title-area — 이름(20 Bold) + 카테고리 배지. 시안의 영문명은
+              DTO 에 대응 필드가 없어 생략 (없는 데이터를 만들지 않는다). */}
           <div className={styles.titleArea}>
-            <div className={styles.titleStack}>
-              <h2 id="destination-name" className={styles.name}>
-                {detail.name}
-              </h2>
-              <p className={styles.region}>{regionName}</p>
-            </div>
-            <span className={styles.typeChip}>
-              <Icon name="compass" size={13} />
-              <span>{categoryLabel}</span>
+            <h2 id="destination-name" className={styles.name}>
+              {detail.name}
+            </h2>
+            <span className={styles.badge}>
+              <Icon name="compass" size={12} />
+              {tCategory(detail.category as Parameters<typeof tCategory>[0])}
             </span>
           </div>
 
-          {/* Figma info-card — column gap 12. 5 field row (label width 86,
-              value Caption R_12 fg). 빈 field 는 미노출 (정보 없는 row 회피). */}
-          <InfoCard detail={detail} t={tInfo} />
-
-          {/* Figma divider 1px gray. */}
-          <div className={styles.divider} aria-hidden />
-
-          {/* Figma overview — text R_14 muted + "more" SemiBold 14 primary. */}
-          {detail.description && (
-            <Overview text={detail.description} t={tInfo} />
-          )}
+          {/* info-card — 주소/운영시간/휴무일/주차/전화/웹사이트 + 구분선 + 설명(더보기) */}
+          <WinnerDetailPanel
+            detail={detail}
+            isLoading={false}
+            variant="plain"
+          />
         </section>
 
-        {/* Figma near-sec — padding 20 white bg. */}
-        <section className={styles.nearSec}>
-          <RelatedDestinations id={id} />
-        </section>
+        {/* 3) 이 시군의 다른 여행지 */}
+        <RelatedDestinations id={id} />
 
-        {/* Figma action-bar — outline primary + fill primary 2 button. */}
+        {/* 4) action-bar — 길찾기(이름 검색) + 링크 공유(라인) */}
         <DestinationActions
           id={id}
           name={detail.name}
-          coords={detail.coords}
           shareText={detail.description}
         />
       </article>
     </>
-  );
-}
-
-function InfoCard({
-  detail,
-  t,
-}: {
-  detail: DestinationDetailDto;
-  t: ReturnType<typeof useTranslations<'destination.info'>>;
-}) {
-  // Figma 5 field — value 가 있는 row 만 노출 (빈 row 미노출).
-  const fields: Array<{
-    key: string;
-    icon: React.ReactNode;
-    label: string;
-    value: string;
-    isLink?: boolean;
-  }> = [];
-  if (detail.address) {
-    fields.push({
-      key: 'address',
-      icon: <Icon name="location" size={18} />,
-      label: t('address'),
-      value: detail.address,
-    });
-  }
-  if (detail.openingHours) {
-    fields.push({
-      key: 'openingHours',
-      icon: <Icon name="clock" size={18} />,
-      label: t('openingHours'),
-      value: detail.openingHours,
-    });
-  }
-  if (detail.restDate) {
-    fields.push({
-      key: 'restDate',
-      icon: <Icon name="calendar" size={18} />,
-      label: t('restDate'),
-      value: detail.restDate,
-    });
-  }
-  if (detail.parking) {
-    fields.push({
-      key: 'parking',
-      icon: <Icon name="parking" size={18} />,
-      label: t('parking'),
-      value: detail.parking,
-    });
-  }
-  if (detail.website) {
-    fields.push({
-      key: 'website',
-      icon: <Icon name="globe" size={18} />,
-      label: t('website'),
-      value: detail.website,
-      isLink: true,
-    });
-  }
-  if (fields.length === 0) return null;
-
-  return (
-    <dl className={styles.infoCard}>
-      {fields.map((f) => (
-        <div key={f.key} className={styles.field}>
-          <dt className={styles.flabel}>
-            <span className={styles.fieldIcon} aria-hidden>
-              {f.icon}
-            </span>
-            <span className={styles.flabelText}>{f.label}</span>
-          </dt>
-          <dd
-            className={`${styles.fvalue} ${f.isLink ? styles.fvalueLink : ''}`}
-          >
-            {f.isLink ? (
-              <a
-                href={f.value}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.linkText}
-              >
-                {f.value}
-              </a>
-            ) : (
-              f.value
-            )}
-          </dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
-
-function Overview({
-  text,
-  t,
-}: {
-  text: string;
-  t: ReturnType<typeof useTranslations<'destination.info'>>;
-}) {
-  const [expanded, setExpanded] = useState(false);
-  // 줄바꿈 또는 \n 자체가 4줄 초과시에만 토글 의미 — 단순 length 기준 fallback.
-  const isLong =
-    text.length > 140 || text.split(/\n|\r/).length > OVERVIEW_LINE_CLAMP;
-  return (
-    <div className={styles.overview}>
-      <p
-        className={`${styles.overviewText} ${
-          expanded ? styles.overviewTextExpanded : ''
-        }`}
-      >
-        {text}
-      </p>
-      {isLong && (
-        <button
-          type="button"
-          className={styles.overviewMore}
-          onClick={() => setExpanded((v) => !v)}
-        >
-          {expanded ? t('less') : t('more')}
-        </button>
-      )}
-    </div>
   );
 }

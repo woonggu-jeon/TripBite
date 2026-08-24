@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useEffect, useRef, useState } from 'react';
 import { Button, Dialog, TextField } from '@/components/ui';
 import {
   useMypage,
@@ -68,7 +68,7 @@ export function NicknameEditDialog({ onClose }: { onClose: () => void }) {
       actions={
         <>
           <Button
-            variant="outline"
+            variant="secondary"
             onClick={onClose}
             disabled={update.isPending}
           >

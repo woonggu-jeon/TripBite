@@ -1,0 +1,143 @@
+// Figma `hero` 실측 — 320x176 (= aspect-ratio 20/11), radius 12, clipsContent.
+.hero {
+  position: relative;
+  display: flex;
+  width: 100%;
+  aspect-ratio: 20 / 11;
+  padding: var(--space-4);
+  border-radius: var(--radius-md); // 12px
+  overflow: hidden;
+  isolation: isolate;
+  color: var(--color-on-strong); // Figma hero 텍스트 3단 모두 #FFFFFF
+  text-decoration: none;
+  // button 으로 렌더될 때(토너먼트 매치 선택) 기본 스타일 제거
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--motion-base) ease;
+
+  &:active {
+    transform: scale(0.99);
+  }
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+  }
+}
+
+// 텍스트 세로 정렬 — Figma 홈 hero 는 중앙(y=44, (176-89)/2), 랭킹은 하단.
+.center {
+  align-items: center;
+}
+.bottom {
+  align-items: flex-end;
+}
+
+// 배경 사진 — ABSOLUTE 레이어. 이미지 없으면 MediaThumb 가 emoji span 렌더.
+.media {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--color-media-placeholder);
+  z-index: 0;
+}
+
+// 사진이 없을 때만 보이는 emoji. 중앙에 두면 좌측 흰 텍스트와 겹치므로
+// scrim 이 투명해지는 우측(72%+ 구간)으로 밀어 둔다.
+// justify-self 는 grid item 에만 걸려 next/image(fill, position:absolute) 에는
+// 영향 없음 — .media 에 padding 을 주면 이미지까지 밀리므로 여기서 처리.
+.emoji {
+  justify-self: end;
+  margin-right: var(--space-5);
+  font-size: var(--emoji-xl);
+  line-height: 1;
+  filter: var(--drop-shadow-md);
+}
+
+// Figma `hero-overlay` — gradientTransform 항등행렬 = 좌→우 축.
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    rgb(0 0 0 / 72%) 0%,
+    rgb(0 0 0 / 40%) 40%,
+    rgb(0 0 0 / 0%) 72%,
+    rgb(0 0 0 / 0%) 100%
+  );
+}
+
+.text {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1); // Figma gap 4
+  // Figma hero-text 는 250/320 = 78% 인데 scrim 은 72% 에서 이미 알파 0 이다.
+  // 시안 사진이 우측에서 중간톤이라 안 드러난 문제 — 임의 사진에서는 흰 글씨가
+  // 흰 하늘 위에 놓인다. 알파가 아직 남는 구간(≈0.15 이상)으로 폭을 좁힘.
+  // Figma 제목도 2줄로 접히므로(112px) 실제 렌더 인상은 동일.
+  max-width: 62%;
+  min-width: 0;
+  // 스크림만으로는 우측 구간을 못 지키므로 흰 글씨에 검정 윤곽을 얹어
+  // 순백 배경에서도 글자 형태가 남게 한다 (Figma 대응 없음, legibility 보강).
+  text-shadow:
+    0 1px 2px rgb(0 0 0 / 80%),
+    0 2px 8px rgb(0 0 0 / 50%);
+}
+
+// Caption/B_10 — 10px Bold, lh 120%, ls -2%
+.eyebrow {
+  font-size: var(--font-eyebrow);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-tight);
+  letter-spacing: var(--tracking-tight);
+}
+
+// Title/B_20_130% — 20px Bold, lh 130%, ls -2%
+.title {
+  font-size: var(--font-h2);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-snug);
+  letter-spacing: var(--tracking-tight);
+  word-break: keep-all;
+}
+
+// Caption/R_12 — 12px Regular, lh 140%, ls -1%
+.meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1); // Figma `f` 프레임 gap 4
+  font-size: var(--font-caption);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-normal);
+  letter-spacing: var(--tracking-snug);
+  min-width: 0;
+}
+
+// Figma `pin` 12x12
+.metaIcon {
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero {
+    transition: none;
+    &:active {
+      transform: none;
+    }
+  }
+}

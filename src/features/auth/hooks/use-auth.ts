@@ -1,25 +1,22 @@
 'use client';
 
 import {
+  type UseQueryOptions,
   useMutation,
   useQuery,
   useQueryClient,
-  type UseQueryOptions,
 } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+// 신규 Spring BE SignupRequestDto (username/password/name/birthDate/email/phone/nickname).
+import type { SignupRequestDto as SignupInput } from '@/api/be/schemas';
 import { authApi } from '@/features/auth/api/auth';
-import { useAuthStore } from '@/stores/auth-store';
-import type {
-  LoginDto,
-  SignupDto,
-  ForgotPasswordDto,
-  ResetPasswordDto,
-  ChangePasswordDto,
-  FindIdDto,
-  UserDto,
-} from '@/api/generated/schemas';
-import { isAxiosError } from '@/services/interceptors/auth';
+import { createLogger } from '@/lib/logger';
 import { clearAllCaches } from '@/lib/sw-cache';
+import { isAxiosError } from '@/services/interceptors/auth';
+import { useAuthStore } from '@/stores/auth-store';
+import type { LoginDto, UserDto } from '@/types/api-domain';
+
+const log = createLogger('auth');
 
 export const authKeys = {
   all: ['auth'] as const,
@@ -50,10 +47,9 @@ export function useMe(
     initialDataUpdatedAt: 0,
     staleTime: 5 * 60 * 1000,
     retry: (failureCount, error) => {
-      // 401은 미인증 상태로 간주 (재시도 X)
-      if (isAxiosError(error) && error.response?.status === 401) {
-        return false;
-      }
+      // 미인증은 재시도 무의미 — 구 NestJS 401, 새 Spring 403 둘 다.
+      const s = isAxiosError(error) ? error.response?.status : undefined;
+      if (s === 401 || s === 403) return false;
       return failureCount < 1;
     },
     ...options,
@@ -98,40 +94,63 @@ export function useSignup() {
   const setPendingSignupUser = useAuthStore((s) => s.setPendingSignupUser);
 
   return useMutation({
-    mutationFn: (data: SignupDto) => authApi.signup(data),
-    onSuccess: (response) => {
-      // BE 는 atomic 처리 (Set-Cookie: SID + { user: UserDto }) — SID 는 이미
-      // browser cookie jar 에 박힘. 그러나 FE 의 setAuth / queryClient cache
-      // hydrate 는 시작하기 클릭 시점으로 분리 (가입 ≠ 로그인 흐름 명시,
-      // 사용자 요청 2026-06-19). user 는 pendingSignupUser 에 임시 보존.
-      setPendingSignupUser(response.user);
+    mutationFn: (data: SignupInput) => authApi.signup(data),
+    // 신규 Spring BE signup 응답은 ApiResponseUnit (user 없음). 세션은 BE 가 발급
+    // (mock 은 setMockSignedIn) — pendingSignupUser 는 폼 입력값으로 구성(완료 화면의
+    // 닉네임 표시용). 시작하기 클릭 후 useMe 가 /me 로 실제 프로필 hydrate.
+    onSuccess: (_response, variables) => {
+      setPendingSignupUser({
+        id: '',
+        username: variables.username ?? '',
+        nickname: variables.nickname ?? '',
+        email: variables.email ?? '',
+        avatarUrl: null,
+      });
       router.replace('/signup/complete');
       router.refresh();
     },
   });
 }
 
-export function useForgotPassword() {
+/**
+ * 아이디 찾기 — 이메일로 가입 아이디 조회.
+ * data: string(username) | null(매칭 없음). 폼이 결과/미발견 분기.
+ */
+export function useFindId() {
   return useMutation({
-    mutationFn: (data: ForgotPasswordDto) => authApi.forgotPassword(data),
+    mutationFn: (email: string) => authApi.findId(email),
   });
 }
 
+/**
+ * 비밀번호 찾기 — 아이디+이메일로 재설정 토큰 메일 발송 요청.
+ * (계정 존재 여부 노출 방지 위해 BE 는 항상 성공 응답.)
+ */
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: (input: { username: string; email: string }) =>
+      authApi.forgotPassword(input),
+  });
+}
+
+/**
+ * 비밀번호 재설정 — 메일 토큰 + 새 비밀번호(≥10자).
+ * 성공 시 기존 세션 무효화(명시 logout) + client 상태 정리 → /login?reset=success.
+ */
 export function useResetPassword() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const clearAuth = useAuthStore((s) => s.clearAuth);
   return useMutation({
-    mutationFn: (data: ResetPasswordDto) => authApi.resetPassword(data),
+    mutationFn: (input: { token: string; password: string }) =>
+      authApi.resetPassword(input),
     onSuccess: async () => {
-      // 비번 변경 후 기존 세션 즉시 무효화.
-      // BE 가 reset 시 세션을 자동 invalidate 안 할 가능성 대비 — 명시 logout 호출로
-      // SID cookie 정리. HttpOnly 라 JS 로 직접 제거 불가 — BE 의 logout endpoint 가
-      // Set-Cookie 만료(Max-Age=0)로 정리. 정리 후 새 비번으로 /login 진입 가능.
+      // BE 가 reset 시 세션을 자동 invalidate 안 할 가능성 대비 — 명시 logout 으로
+      // SID cookie 정리(HttpOnly 라 JS 직접 제거 불가, BE logout 이 Max-Age=0).
       try {
         await authApi.logout();
-      } catch {
-        // logout 실패 (이미 세션 없거나 401) — 무시. 다음 navigate 진행.
+      } catch (err) {
+        log.warn({ err }, 'reset-password 후 logout 실패 — 진행');
       }
       clearAuth();
       queryClient.clear();
@@ -141,15 +160,13 @@ export function useResetPassword() {
   });
 }
 
+/**
+ * 비밀번호 변경 (로그인 상태) — 현재 비번 검증 + 새 비번(≥10자).
+ */
 export function useChangePassword() {
   return useMutation({
-    mutationFn: (data: ChangePasswordDto) => authApi.changePassword(data),
-  });
-}
-
-export function useFindId() {
-  return useMutation({
-    mutationFn: (data: FindIdDto) => authApi.findId(data),
+    mutationFn: (input: { currentPassword: string; newPassword: string }) =>
+      authApi.changePassword(input),
   });
 }
 
@@ -176,9 +193,9 @@ export function useLogout() {
 }
 
 /**
- * 회원 탈퇴 — DELETE /me. BE 가 소프트 삭제 + 세션 무효 후 204 응답.
- * onSuccess 흐름은 useLogout 와 동일 — clearAuth + queryClient.clear + sw cache clear + 홈.
- * 차이점: 실패 시에도 onSettled 로 cleanup (탈퇴 의도 표시 — 사용자가 다시 들어가면 안 됨).
+ * 회원 탈퇴 — DELETE /me. BE 가 세션 무효 + 소프트 삭제.
+ * onSettled 흐름은 useLogout 와 동일(clearAuth + queryClient.clear + sw cache + 홈).
+ * 차이: 성공 시에만 cleanup — 실패면 client 상태 유지(재시도 가능).
  */
 export function useDeleteAccount() {
   const queryClient = useQueryClient();
@@ -187,8 +204,6 @@ export function useDeleteAccount() {
   return useMutation({
     mutationFn: () => authApi.deleteAccount(),
     onSettled: async (_data, error) => {
-      // 실패해도 client cleanup — 사용자가 탈퇴 confirm 까지 했으므로 의도 명확.
-      // (BE 가 이미 처리했지만 네트워크 timeout 같은 경우 client 상태는 cleanup.)
       if (!error) {
         clearAuth();
         queryClient.clear();

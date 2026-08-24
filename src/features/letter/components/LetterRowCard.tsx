@@ -1,32 +1,35 @@
 'use client';
 
-import { memo, useEffect, useState } from 'react';
-import Link from 'next/link';
-import { Icon } from '@/components/icon/Icon';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { Icon } from '@/components/icon';
+import { useToggleSaveLetter } from '@/features/letter/hooks/use-letters';
 import { useDebouncedCallback } from '@/hooks/use-debounced-callback';
 import { haptic } from '@/lib/haptic';
 import { relativeTimeToken } from '@/lib/relative-time';
-import { useToggleSaveLetter } from '@/features/letter/hooks/use-letters';
-import type { LetterDto } from '@/api/generated/schemas';
+import type { LetterDto } from '@/types/api-domain';
 import styles from './LetterRowCard.module.scss';
-
-/**
- * 편지 목록 row — Figma "편지 메인 · card" (2026-06-24 재정합).
- *
- * 구조:
- *   - 좌측 avatar 48×48 (sender 프로필 — BE author.avatarUrl 미제공 시 User
- *     icon fallback). 클릭 동작은 row 전체 Link 위임.
- *   - m (column gap 7):
- *     · title B_18 fg (5글자 본문)
- *     · r2 (row gap 8): pill 지역명 (Caption B_10 primary) + sub 닉네임 (Caption
- *       R_12 muted) + time (Caption R_12 disabled) + NEW badge (받은 편지 + unread).
- *   - 우측 bookmark icon button — saved 토글. row Link click 충돌 회피 위해
- *     preventDefault + stopPropagation.
- */
 
 const TOGGLE_DEBOUNCE_MS = 400;
 
+/**
+ * 편지 목록의 row — Figma `letterItem` (320x82).
+ *
+ *   ┌──────┬───────────────────────────────────┬──────┐
+ *   │stamp │ 다섯글자          ●(안읽음)        │ 북마크│
+ *   │48 r8 │ [지역] 닉네임 · 방금               │  20  │
+ *   └──────┴───────────────────────────────────┴──────┘
+ *
+ * 흰 카드(radius 12, 1px #E0E0E0), padding 16, H gap 12.
+ *   stamp : 48x48 radius 8 연초록 + 24px profileIcon
+ *   m     : V gap 7 — 본문 18 Bold + 안읽음 4px 빨간 점 / 메타 줄
+ *   메타   : 지역 pill(연초록 999) + 닉네임 12 + "· 상대시각" 12 #B4B4B4
+ *   우측   : bookmarkIcon 20 (off #B4B4B4 / on 초록 채움)
+ *
+ * 구 구현은 왼쪽에 hue 그라데이션 블록 + 본문을 넣고 우측에 하트 + 시간을
+ * 세로로 쌓았다. 시안에는 그라데이션도, 하트도 없다 (저장=북마크).
+ */
 function useRelativeTimeLabel(iso: string): string {
   const t = useTranslations('letter.relativeTime');
   const tok = relativeTimeToken(iso);
@@ -46,26 +49,24 @@ function useRelativeTimeLabel(iso: string): string {
   }
 }
 
-/**
- * React.memo 적용 — InfiniteList (LetterListPanel) 안 다수 인스턴스. 부모
- * re-render 시 letter prop 동일하면 재렌더 skip → 자율 검토 2026-06-25.
- */
-function LetterRowCardInner({ letter }: { letter: LetterDto }) {
+export function LetterRowCard({ letter }: { letter: LetterDto }) {
   const t = useTranslations('letter');
-  const time = useRelativeTimeLabel(letter.arrivedAt ?? letter.createdAt);
-  const isUnread = !letter.isMine && letter.read === false;
-  const toggleSave = useToggleSaveLetter();
+  // arrivedAt 이 null (아직 도착 전, sent 목록) 이면 createdAt 으로 fallback.
+  const iso = letter.arrivedAt ?? letter.createdAt;
+  const time = useRelativeTimeLabel(iso);
+  const toggle = useToggleSaveLetter();
 
+  // 즉각 UI 피드백 + 디바운스 commit. 짝수 번 클릭으로 원상복귀 시 호출 skip.
   const [savedLocal, setSavedLocal] = useState(letter.saved);
   useEffect(() => setSavedLocal(letter.saved), [letter.saved]);
 
-  const commitSave = useDebouncedCallback((targetSaved: boolean) => {
-    if (targetSaved === letter.saved) return;
-    toggleSave.mutate(letter.id);
+  const commitSave = useDebouncedCallback((target: boolean) => {
+    if (target === letter.saved) return;
+    toggle.mutate(letter.id);
   }, TOGGLE_DEBOUNCE_MS);
 
-  const onBookmark = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const onSave = (e: React.MouseEvent) => {
+    e.preventDefault(); // Link 진입 차단
     e.stopPropagation();
     haptic.tap();
     setSavedLocal((v) => {
@@ -75,56 +76,63 @@ function LetterRowCardInner({ letter }: { letter: LetterDto }) {
     });
   };
 
-  // 본인이 보낸 편지 (보낸 편지 탭) → /letter/sent?id 로 라우팅 (LetterSentClient
-  // 재사용 — 보낸 편지 상세 view). 다른 사람이 보낸 편지 (받은/저장 탭) →
-  // /letter/[id] (LetterDetailClient — 받은 편지 상세 view). 라우팅으로 view
-  // 자연 분리 (사용자 명시 2026-06-25).
-  const href = letter.isMine
-    ? { pathname: '/letter/sent', query: { id: letter.id } }
-    : { pathname: `/letter/${letter.id}` };
+  const unread = !letter.isMine && letter.read === false;
+
+  // Figma `보낸 편지` 의 letterItem 은 작성자 자리에 닉네임이 아니라
+  // "내가 작성한 편지" 를 쓴다 (내 편지 목록에서 내 닉네임이 반복되는 건 무의미).
+  const authorLabel = letter.isMine
+    ? t('author.mine')
+    : letter.author.nickname || t('author.anonymous');
+
+  // pill 은 시군만 — BE label 이 "충북 진천군"/"청주시" 로 섞여 와서 접두어를
+  // 떼어 "진천군"/"청주시" 로 통일한다 (시안 `rp` 은 시군 한 덩어리).
+  const regionLabel = letter.author.location
+    ?.replace(/^충청북도\s*/, '')
+    .replace(/^충북\s*/, '');
 
   return (
     <Link
-      href={href}
+      href={{ pathname: `/letter/${letter.id}` }}
       prefetch={false}
-      className={styles.card}
-      aria-label={`${letter.body} · ${letter.author.nickname}`}
+      className={`${styles.card} ${letter.isMine ? styles.cardMine : ''}`}
+      aria-label={`${letter.body} ${authorLabel}`}
     >
-      {/* 좌측 avatar — BE author.avatarUrl 미제공 → User icon fallback.
-          unread (받은 편지 + 미열람) 시 우상단 4×4 red dot notification badge
-          (사용자 명시 2026-06-24 — pill 형태 NEW 아니라 dot). */}
-      <span className={styles.avatarWrap} aria-hidden>
-        <span className={styles.avatar}>
-          <Icon name="user" size={24} />
-        </span>
-        {isUnread && <span className={styles.unread} />}
+      {/* Figma `stamp` — 48x48 radius 8 연초록 + profileIcon 24 */}
+      <span className={styles.stamp} aria-hidden>
+        <Icon name="user" size={24} className={styles.stampIcon} />
       </span>
-      <div className={styles.m}>
-        <h3 className={styles.title}>{letter.body}</h3>
-        <div className={styles.r2}>
-          {letter.author.location && (
-            <span className={styles.pill}>{letter.author.location}</span>
+
+      <span className={styles.mid}>
+        <span className={styles.titleRow}>
+          <span className={styles.body}>{letter.body}</span>
+          {unread && (
+            <span className={styles.unread} aria-label={t('new')} role="img" />
           )}
-          <span className={styles.sub}>
-            {letter.author.nickname || t('author.anonymous')}
-          </span>
-          <span className={styles.time}>
-            <time dateTime={letter.arrivedAt ?? letter.createdAt}>{time}</time>
-          </span>
-        </div>
-      </div>
-      {/* 우측 bookmark toggle — saved 시 fill. row click 충돌 회피. */}
-      <button
-        type="button"
-        className={`${styles.bookmark} ${savedLocal ? styles.bookmarkActive : ''}`}
-        onClick={onBookmark}
-        aria-label={savedLocal ? t('detail.saved') : t('detail.save')}
-        aria-pressed={savedLocal}
-      >
-        <Icon name={savedLocal ? 'bookmark-on' : 'bookmark-off'} size={22} />
-      </button>
+        </span>
+        <span className={styles.metaRow}>
+          {regionLabel && <span className={styles.region}>{regionLabel}</span>}
+          <span className={styles.author}>{authorLabel}</span>
+          <time className={styles.time} dateTime={iso}>
+            · {time}
+          </time>
+        </span>
+      </span>
+
+      {/* 저장(북마크) 은 받은 편지 전용 — 내가 보낸 편지는 BE 가 막는다
+          (POST /letters/{id}/save → 403 LETTER_ACCESS_DENIED). 실패만 하는
+          버튼을 두지 않는다. 시안에는 세 탭 모두 아이콘이 있지만 사용자
+          결정(2026-08-11)으로 보낸 편지에서는 제거. */}
+      {!letter.isMine && (
+        <button
+          type="button"
+          className={styles.save}
+          onClick={onSave}
+          aria-label={t('detail.save')}
+          aria-pressed={savedLocal}
+        >
+          <Icon name={savedLocal ? 'bookmark-on' : 'bookmark'} size={20} />
+        </button>
+      )}
     </Link>
   );
 }
-
-export const LetterRowCard = memo(LetterRowCardInner);

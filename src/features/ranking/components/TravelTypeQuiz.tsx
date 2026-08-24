@@ -1,10 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Check } from 'lucide-react';
-import { haptic } from '@/lib/haptic';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { Button, RadioGroup, RadioOption } from '@/components/ui';
@@ -14,7 +12,8 @@ import {
 } from '@/features/ranking/hooks/use-ranking';
 import type { TravelTypeAnswer } from '@/features/ranking/types';
 import { shuffleQuizOptions } from '@/features/ranking/utils/shuffle-options';
-import type { QuizOptionDto } from '@/api/generated/schemas';
+import { haptic } from '@/lib/haptic';
+import type { QuizOptionDto } from '@/types/api-domain';
 import styles from './TravelTypeQuiz.module.scss';
 
 /**
@@ -39,6 +38,7 @@ import styles from './TravelTypeQuiz.module.scss';
 export function TravelTypeQuiz() {
   const t = useTranslations('travelType');
   const router = useRouter();
+  // 퀴즈는 공개(BE whitelist, 2026-08) — 로그인 없이 응시. 결과 "적용"만 인증 필요.
   const { data: quiz, isLoading, isError, refetch } = useTravelTypeQuiz();
   const submit = useSubmitTravelType();
 
@@ -82,18 +82,16 @@ export function TravelTypeQuiz() {
     );
   }
 
-  // Figma "TST · 유형테스트 완료" (2026-06-23) — done-center 96 circle
-  // secondary01 + Check 46 primary + B_24 title + R_14 hint.
+  // submit 진행 중 — 결과 만드는 중 (응답 즉시 router.replace 라 단일 phase)
   if (submit.isPending) {
     return (
       <div className={styles.finishing} role="status" aria-live="polite">
-        <div className={styles.finishingCircle} aria-hidden>
-          <Check size={46} strokeWidth={4.6} />
+        <div className={styles.finishingGlow} aria-hidden />
+        <div className={styles.finishingEmoji} aria-hidden>
+          ✨
         </div>
-        <div className={styles.finishingText}>
-          <p className={styles.finishingTitle}>{t('finishing.done')}</p>
-          <p className={styles.finishingHint}>{t('finishing.moving')}</p>
-        </div>
+        <p className={styles.finishingTitle}>{t('finishing.making')}</p>
+        <p className={styles.finishingHint}>{t('finishing.moving')}</p>
       </div>
     );
   }
@@ -171,7 +169,11 @@ export function TravelTypeQuiz() {
             );
           })}
         </div>
-        <p className={styles.progressMeta}>{t('progressHint')}</p>
+        {/* Figma `progress` 는 세그먼트 아래 안내문 한 줄만 있다 —
+            "1/5" 카운터와 ⓘ 아이콘은 시안에 없어 제거.
+            진행 상황은 세그먼트가 시각적으로, progressbar role 이
+            스크린리더에 전달한다. */}
+        <p className={styles.progressHint}>{t('progressHint')}</p>
       </div>
 
       <h2 className={styles.question}>{current.text}</h2>

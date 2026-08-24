@@ -26,7 +26,9 @@ export function PolicySection({
   return (
     <section className={styles.section}>
       <h2 className={styles.heading}>{heading}</h2>
-      <p className={styles.body}>{children}</p>
+      {/* div 래퍼 — children 이 텍스트뿐 아니라 <ul> 등 블록 요소일 수 있어
+          <p> 로 감싸면 `<p><ul>` 무효 중첩 → hydration 에러 (privacy 페이지). */}
+      <div className={styles.body}>{children}</div>
     </section>
   );
 }

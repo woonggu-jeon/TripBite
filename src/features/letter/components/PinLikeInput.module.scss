@@ -1,69 +1,65 @@
-// Figma "편지 쓰기 · Frame 79 > ms > Frame 71 > Frame 70" (2026-06-24 정합 v2) —
-// stamp 천공 효과는 **이중 border + 12px gap** 으로 표현:
-//
-//   .wrap (Frame 71): padding 12 0 + border-y 1 error  ← 외곽 가로 line
-//     └ 12px (padding)
-//     └ .cells (Frame 70): border-y 1 error             ← 내부 가로 line
-//        └ cell × 5 (border-right 1 error, 첫 cell border-left)
-//     └ 12px (padding)
-//
-// 결과 시각: 위 1px line — 12 gap — 1px line — 56 cells — 1px line — 12 gap — 1px line.
 .wrap {
   position: relative;
-  width: 100%;
-  padding: 12px 0;
-  border-top: 1px solid var(--color-danger);
-  border-bottom: 1px solid var(--color-danger);
   cursor: text;
   user-select: none;
 }
 
+// Figma `letterBox > Frame 70` — 셀 56 이 gap 0 으로 붙어 한 덩어리처럼 보인다.
+// 보더는 편지지와 같은 빨강(#E1493C) — 상세·발송완료의 letterBox 와 같은 규격.
 .cells {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: 100%;
-  border-top: 1px solid var(--color-danger);
-  border-bottom: 1px solid var(--color-danger);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
   pointer-events: none;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: var(--border-thin) solid var(--color-danger);
 }
 
+// Figma `cell` 56x56 정사각, 흰 면. 오른쪽 구분선만 (마지막 칸 제외).
+// 글자는 Title/B_24_130%.
 .cell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  height: 56px;
-  background: var(--color-bg);
-  border-right: 1px solid var(--color-danger);
-  font-size: 1.5rem; /* Figma Title/B_24_130% — 24 */
+  display: grid;
+  place-items: center;
+  aspect-ratio: 56 / 56;
+  border: 0;
+  border-right: var(--border-thin) solid var(--color-danger);
+  border-radius: 0;
+  background: var(--color-surface);
+  font-size: var(--font-h2); // Title/B_24
   font-weight: var(--font-weight-bold);
-  line-height: 1.3;
-  letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
 
-  // 첫 cell — 좌측 border 추가 (외곽 닫힘).
-  &:first-child {
-    border-left: 1px solid var(--color-danger);
+  &:last-child {
+    border-right: 0;
   }
+  transition:
+    border-color var(--motion-base) ease,
+    background var(--motion-base) ease,
+    transform var(--motion-fast) ease;
 }
 
 .cell.active {
-  // 입력 caret 표시 — 위치 표시용 thin line (red dashed cell 안에서 작게).
-  position: relative;
+  background: var(--color-primary-soft);
+  // 깜빡이는 caret
   &::after {
     content: '';
-    position: absolute;
-    bottom: 12px;
-    width: 16px;
-    height: 2px;
-    background: var(--color-fg);
+    width: 2px;
+    height: 1.75rem;
+    background: var(--color-primary);
     border-radius: 1px;
+    grid-area: 1 / 1;
     animation: caret 1s steps(2, start) infinite;
   }
+
+  // 마지막 칸이 채워졌을 때 active(filled)면 caret 숨김
   &.filled::after {
     display: none;
   }
+}
+
+.cell.filled {
+  background: var(--color-surface);
 }
 
 .char {
@@ -71,7 +67,7 @@
   line-height: 1;
 }
 
-// 실제 input — 시각적으로 보이지 않게 (focus 는 가능).
+// 실제 입력 input — 시각적으로 보이지 않게 (focus는 가능)
 .input {
   position: absolute;
   inset: 0;
@@ -84,12 +80,14 @@
   caret-color: transparent;
   outline: none;
   text-align: center;
-  font-size: 1.5rem;
+  font-size: var(--font-h1);
   letter-spacing: var(--tracking-pin-fill);
 
   &:focus {
     outline: none;
   }
+
+  // iOS 입력 시 텍스트가 살짝 보이는 경우 차단
   -webkit-text-fill-color: transparent;
 }
 
@@ -100,6 +98,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .cell {
+    transition: none;
+  }
   .cell.active::after {
     animation: none;
   }

@@ -1,6 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { useShareCard } from './use-share-card';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { shareWithImage } from '@/lib/share';
+import { toast } from '@/lib/toast';
 import { renderHookWithProviders } from '@/test-utils';
+import { useShareCard } from './use-share-card';
 
 vi.mock('@/lib/share', () => ({
   shareWithImage: vi.fn(),
@@ -15,9 +17,6 @@ vi.mock('@/lib/toast', () => ({
     dismiss: vi.fn(),
   },
 }));
-
-import { shareWithImage } from '@/lib/share';
-import { toast } from '@/lib/toast';
 
 describe('useShareCard', () => {
   beforeEach(() => {

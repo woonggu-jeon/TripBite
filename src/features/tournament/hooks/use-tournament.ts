@@ -1,18 +1,19 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAuthedQueryEnabled } from '@/features/auth/hooks/use-authed-query';
 import { tournamentApi } from '@/features/tournament/api/tournament';
-import { CACHE } from '@/lib/cache';
-import { useAuthStore } from '@/stores/auth-store';
-import type {
-  DestinationCategory,
-  SavedTournamentDto,
-} from '@/api/generated/schemas';
 import type {
   TournamentConfig,
   TournamentCount,
   TournamentTheme,
 } from '@/features/tournament/types';
+import { CACHE } from '@/lib/cache';
+import { newIdempotencyKey } from '@/lib/idempotency';
+import type {
+  DestinationCategory,
+  SavedTournamentDto,
+} from '@/types/api-domain';
 
 /**
  * Candidates query key — BE 호출에 실제 영향 주는 param 만 포함.
@@ -31,7 +32,6 @@ export const tournamentKeys = {
     [...tournamentKeys.all, 'candidates', config] as const,
   saved: () => [...tournamentKeys.all, 'saved'] as const,
   history: () => [...tournamentKeys.all, 'history'] as const,
-  record: (id: string) => [...tournamentKeys.all, 'record', id] as const,
   destinationDetail: (id: string) =>
     [...tournamentKeys.all, 'destination', id] as const,
   destinationRelated: (id: string) =>
@@ -85,11 +85,11 @@ export function useTournamentCandidates(config: TournamentConfig | null) {
 }
 
 export function useSavedTournaments() {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const enabled = useAuthedQueryEnabled();
   return useQuery({
     queryKey: tournamentKeys.saved(),
     queryFn: tournamentApi.listSaved,
-    enabled: isAuthenticated,
+    enabled,
     ...CACHE.user, // 본인 저장 목록
   });
 }
@@ -113,33 +113,13 @@ export function useSavedTournaments() {
 export function useRecordTournament() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: Parameters<typeof tournamentApi.recordResult>[0]) => {
-      const idempotencyKey =
-        typeof crypto !== 'undefined' && 'randomUUID' in crypto
-          ? crypto.randomUUID()
-          : undefined;
-      return tournamentApi.recordResult(input, idempotencyKey);
-    },
-    onSuccess: (record) => {
-      qc.setQueryData(tournamentKeys.record(record.id), record);
+    mutationFn: (input: Parameters<typeof tournamentApi.recordResult>[0]) =>
+      tournamentApi.recordResult(input, newIdempotencyKey()),
+    onSuccess: () => {
+      // Spring 은 결과 딥링크 복원(GET /tournaments/{id}) 미지원 → record cache 없음.
+      // 히스토리만 무효화(다음 진입 시 최신 기록 반영). 결과 화면은 store 사용.
       qc.invalidateQueries({ queryKey: tournamentKeys.history() });
     },
-  });
-}
-
-/**
- * Deep-link 진입 시 record 조회 — `/tournament/result?id=...`.
- * id 없으면 disabled.
- */
-export function useTournamentRecord(id: string | null | undefined) {
-  return useQuery({
-    queryKey: id ? tournamentKeys.record(id) : ['tournament', 'record', 'idle'],
-    queryFn: () => {
-      if (!id) throw new Error('record id missing');
-      return tournamentApi.getRecord(id);
-    },
-    enabled: !!id,
-    ...CACHE.slow,
   });
 }
 
@@ -199,6 +179,9 @@ export function useDestinationDetail(id: string | undefined) {
       return tournamentApi.getDestinationDetail(id);
     },
     enabled: !!id,
+    // 상세는 자체 인라인 에러 UI(EmptyState + 재시도)를 렌더 → 전역 에러 토스트는
+    // 중복이라 skip. (id 가 실 BE 에 없어 404 나도 화면 안내로 충분.)
+    meta: { skipGlobalErrorToast: true },
     ...CACHE.slow,
   });
 }
@@ -217,6 +200,9 @@ export function useRelatedDestinations(id: string | undefined) {
       return tournamentApi.getRelatedDestinations(id);
     },
     enabled: !!id,
+    // 관련 목록은 실패 시 섹션을 조용히 접음(isError→null) → 전역 토스트 skip.
+    // (이게 없으면 상세는 멀쩡한데 "정보를 찾을 수 없어요" 토스트만 뜨는 오인 UX.)
+    meta: { skipGlobalErrorToast: true },
     ...CACHE.slow,
   });
 }
@@ -229,11 +215,11 @@ export function useRelatedDestinations(id: string | undefined) {
  * 현재 mock 은 단일 페이지 반환 (cursor 미지원) — BE 도입 시 InfiniteList 로 확장.
  */
 export function useTournamentHistory() {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const enabled = useAuthedQueryEnabled();
   return useQuery({
     queryKey: tournamentKeys.history(),
     queryFn: tournamentApi.listHistory,
-    enabled: isAuthenticated,
+    enabled,
     ...CACHE.user,
   });
 }

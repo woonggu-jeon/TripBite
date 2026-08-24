@@ -3,27 +3,21 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Sparkles } from 'lucide-react';
-import { Icon } from '@/components/icon/Icon';
+import { Icon } from '@/components/icon';
 import { ROUTES } from '@/constants/routes';
 import { getCurrentSeason } from '@/features/tournament/utils/season';
-import type { Season } from '@/api/generated/schemas';
+import type { Season } from '@/types/api-domain';
 import styles from './HomeDashboard.module.scss';
 
 /**
- * 홈 빠른시작 — Figma "HOME · 홈 · quick-actions" (2026-06-23) 정합.
- *
- * 2 banner row (320×74 / 320×79 column gap 9):
- *   - banner 1: bg primary-soft + circle 44 primary + Trophy 22 white + title
- *     B_14 fg + subtitle R_12 muted + pill 58×44 primary "시작" SemiBold 14 white.
- *   - banner 2: bg amber-soft (#FCEFD9) + circle 44 amber (#F79D26) +
- *     Sparkles 22 white + 유사 layout + pill amber "테스트".
+ * 홈 빠른시작 2 배너 — 현재 계절 결정 + 동적 라벨 / 토너먼트 query.
  *
  * Client island 로 분리한 이유: getCurrentSeason() 의 시간대 의존성 격리.
- * SSR/CSR mismatch 회피.
+ * SSR 의 server time 과 client time 이 다르면 hydration mismatch. mount 후
+ * useEffect 안에서 결정 — 잠깐 fallback 'spring' 노출은 시각상 거의 인지 불가.
  */
 export function HomeQuickActions() {
-  const t = useTranslations('home.widgets.quick');
+  const t = useTranslations('home.widgets');
   const [season, setSeason] = useState<Season>('spring');
 
   useEffect(() => {
@@ -31,45 +25,69 @@ export function HomeQuickActions() {
   }, []);
 
   return (
-    <section className={styles.quickActions}>
-      <Link
+    <section data-widget="quick-actions" className={styles.quickActions}>
+      <QuickActionLink
         href={{
           pathname: ROUTES.TOURNAMENT,
           query: { theme: 'season', season },
         }}
-        className={`${styles.qaBanner} ${styles.qaBannerPrimary}`}
-        aria-label={t(`tournamentBySeason.${season}`)}
-      >
-        <span className={`${styles.qaCircle} ${styles.qaCirclePrimary}`}>
-          <Icon name="award" size={22} />
-        </span>
-        <span className={styles.qaText}>
-          <span className={styles.qaTitle}>
-            {t(`tournamentBySeason.${season}`)}
-          </span>
-          <span className={styles.qaSubtitle}>{t('tournamentSubtitle')}</span>
-        </span>
-        <span className={`${styles.qaBtn} ${styles.qaBtnPrimary}`}>
-          {t('tournamentCta')}
-        </span>
-      </Link>
-
-      <Link
+        icon={<Icon name="trophy-detail" size={20} />}
+        label={t(`quick.tournamentBySeason.${season}`)}
+        hint={t('quick.tournamentHint')}
+        cta={t('quick.cta')}
+        tone="primary"
+      />
+      <QuickActionLink
         href={ROUTES.QUIZ}
-        className={`${styles.qaBanner} ${styles.qaBannerAmber}`}
-        aria-label={t('quizTitle')}
-      >
-        <span className={`${styles.qaCircle} ${styles.qaCircleAmber}`}>
-          <Sparkles size={22} aria-hidden />
-        </span>
-        <span className={styles.qaText}>
-          <span className={styles.qaTitle}>{t('quizTitle')}</span>
-          <span className={styles.qaSubtitle}>{t('quizSubtitle')}</span>
-        </span>
-        <span className={`${styles.qaBtn} ${styles.qaBtnAmber}`}>
-          {t('quizCta')}
-        </span>
-      </Link>
+        // 시안 유형테스트 아이콘은 sparkles 가 아니라 나침반이다
+        icon={<Icon name="compass" size={20} />}
+        label={t('quick.quiz')}
+        hint={t('quick.quizHint')}
+        cta={t('quick.cta')}
+        tone="amber"
+      />
     </section>
+  );
+}
+
+/**
+ * Figma `qa-banner` — 320x85, H gap 12, padding 12/20, radius 12.
+ *
+ *   원형 40 (채운 브랜드색 + 흰 아이콘)
+ *   + 제목 Basic Body/B_14_140% (2줄까지) → 보조 Caption/R_12
+ *   + 우측 "시작" 버튼 80x36
+ *
+ * tone: 토너먼트 = 초록(#EAF6EF 면 / #00B334), 유형테스트 = 주황(#FCEFD9 / #F79D26).
+ */
+function QuickActionLink({
+  href,
+  icon,
+  label,
+  hint,
+  cta,
+  tone,
+}: {
+  href: React.ComponentProps<typeof Link>['href'];
+  icon: React.ReactNode;
+  label: string;
+  hint: string;
+  cta: string;
+  tone: 'primary' | 'amber';
+}) {
+  return (
+    <Link href={href} className={`${styles.quickAction} ${styles[tone]}`}>
+      <span className={styles.quickActionIcon} aria-hidden>
+        {icon}
+      </span>
+      {/* Figma `Frame 38` — 제목 + 보조, V gap 4 */}
+      <span className={styles.quickActionBody}>
+        <span className={styles.quickActionLabel}>{label}</span>
+        <span className={styles.quickActionHint}>{hint}</span>
+      </span>
+      {/* 시안의 `button` 인스턴스 — Link 안이라 실제 button 요소는 아니다 */}
+      <span className={styles.quickActionCta} aria-hidden>
+        {cta}
+      </span>
+    </Link>
   );
 }

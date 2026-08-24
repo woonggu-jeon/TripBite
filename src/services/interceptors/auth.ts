@@ -1,5 +1,6 @@
 import type { AxiosError, AxiosInstance } from 'axios';
 import axios from 'axios';
+import { safeInternalPath } from '@/lib/safe-redirect';
 
 /**
  * 세션 만료 toast 중복 표시 방지 — module-level flag.
@@ -84,7 +85,7 @@ function isOnProtectedPath(): boolean {
  */
 function isAuthEndpoint(requestUrl: string | undefined): boolean {
   if (!requestUrl) return false;
-  return /\/v1\/auth\/(login|signup|check-username|check-email|find-id|forgot-password|reset-password)\b/.test(
+  return /\/(v1\/)?auth\/(login|signup|check-username|check-email|find-id|forgot-password|reset-password)\b/.test(
     requestUrl,
   );
 }
@@ -93,16 +94,22 @@ export function attachAuthInterceptor(instance: AxiosInstance) {
   instance.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
-      // 401 만 처리 대상. 그 외는 그대로 throw.
-      if (!error.response || error.response.status !== 401) {
+      // 미인증/세션만료 판정 — BE 별 상태코드 상이 (2026-08 Spring 전환):
+      //   · 구 NestJS : 401 + code=AUTH_REQUIRED
+      //   · 새 Spring : 403 (Spring Security 미인증 — body/code 없음)
+      // 그 외는 그대로 throw:
+      //   · 401 INVALID_CREDENTIALS 등 → 로그인 폼이 인라인 처리
+      //   · 403 + 도메인 code (business forbidden) → 호출처가 처리 (오작동 로그아웃 방지)
+      const status = error.response?.status;
+      if (!error.response || (status !== 401 && status !== 403)) {
         return Promise.reject(error);
       }
-
-      // BE code 기반 분기 (2026-06-22) — AUTH_REQUIRED 만 자동 로그아웃 분기.
-      // AUTH_INVALID_CREDENTIALS / 기타 401 은 호출처가 처리 (인라인 에러 등).
       const data = error.response.data as { code?: string } | undefined;
       const code = data?.code;
-      if (code !== 'AUTH_REQUIRED') {
+      const isSessionExpiry =
+        (status === 401 && code === 'AUTH_REQUIRED') ||
+        (status === 403 && !code);
+      if (!isSessionExpiry) {
         return Promise.reject(error);
       }
 
@@ -115,20 +122,30 @@ export function attachAuthInterceptor(instance: AxiosInstance) {
       const isMock = process.env.NEXT_PUBLIC_USE_MSW === 'true';
       const onAuthPage = isAlreadyOnAuthPage();
 
-      // public 경로에서 401 자동 로그아웃 처리 — 탈퇴/세션만료 사용자의 stale
-      // store 동기화. BE 가 응답에 Set-Cookie SID 만료 헤더 자동 포함하므로
-      // FE 는 cookie 청소 불필요.
+      // stale store 동기화 (탈퇴/세션만료) — clearAuth 는 네비게이션 없음이라 항상 안전.
+      // 토스트 조건 (2026-08-10):
+      //   · wasAuthenticated — 비로그인 공개 페이지(403)엔 안 뜸.
+      //   · sessionResolved — **이 로드에서 세션을 실제 확정한 뒤** 만료된 경우만.
+      //     AuthBootstrap /me 프로브가 stale 낙관 인증(persist)을 확정하기 전(=false)의
+      //     403 은 "로드타임 재조정"이라 무음 처리 → 재방문 시 홈에서 뜨던 스퓨리어스
+      //     '세션 만료' 토스트 제거. (clearAuth 가 sessionResolved 를 true 로 올리므로
+      //     반드시 clearAuth **이전에** 스냅샷을 읽는다.)
       if (!isMock && !onAuthPage && typeof window !== 'undefined') {
         const { useAuthStore } = await import('@/stores/auth-store');
-        const wasAuthenticated = useAuthStore.getState().isAuthenticated;
+        const { isAuthenticated: wasAuthenticated, sessionResolved } =
+          useAuthStore.getState();
         useAuthStore.getState().clearAuth();
 
-        if (wasAuthenticated && !sessionExpiredToastShown) {
+        if (wasAuthenticated && sessionResolved && !sessionExpiredToastShown) {
           sessionExpiredToastShown = true;
           window.dispatchEvent(new CustomEvent('auth:session-expired'));
         }
       }
 
+      // 보호경로 hard redirect → /login (401·403 공통).
+      // 루프 안전: 위 clearAuth 가 인증 마커(tripbite.authed)를 제거하므로, /login 진입 시
+      // middleware 의 hasSession(=마커 존재) 이 false → /login→보호경로 bounce 없음.
+      // (마커 도입 전엔 새 Spring 이 JSESSIONID 를 안 지워 루프가 났었음 — 이제 해소.)
       if (
         !isMock &&
         !onAuthPage &&
@@ -136,8 +153,7 @@ export function attachAuthInterceptor(instance: AxiosInstance) {
         typeof window !== 'undefined'
       ) {
         const path = window.location.pathname + window.location.search;
-        const safe =
-          path && path.startsWith('/') && !path.startsWith('//') ? path : '/';
+        const safe = safeInternalPath(path);
         window.location.href = `/login?redirect=${encodeURIComponent(safe)}`;
       }
       return Promise.reject(error);

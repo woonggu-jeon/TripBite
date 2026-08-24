@@ -1,0 +1,206 @@
+// Figma `Frame 79` — 받은 편지 상세 / 편지 발송완료 공통 카드.
+// Figma `Frame 79` — #F6F6F6 면 + 1px #E0E0E0, radius 12, padding 20/16, V gap 20.
+// 구 구현은 베이지 편지지 + 점선 구획이었다.
+.card {
+  display: grid;
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-4);
+  background: var(--color-surface-soft);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-md);
+  min-width: 0;
+}
+
+// Figma `top` — 사진+도장 묶음 + 보낸이, H gap 14 (4px 그리드로 12)
+.top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+// Figma `pw` 104x60 — 60 사진 위에 원형 도장이 겹친다
+.postmarkWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 104px;
+  height: 60px;
+}
+
+// Figma `sq` 60x60 radius 10 — 프로필 사진.
+// 사진이 없으면 마이페이지 기본 프로필과 같은 연초록 면 + 초록 사람 아이콘.
+.photo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  background: var(--color-primary-soft);
+  border: var(--border-thin) solid var(--color-border);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.photoImg {
+  object-fit: cover;
+}
+
+.photoFallback {
+  --icon-stroke: 1.7;
+  color: var(--color-primary-text-bold);
+}
+
+// Figma `pm` 70x70 — 2px #E1493C 원형 도장. 시안색이 레포 danger 와 미세하게
+// 다르지만(#E1493C vs #dc2626) 도장은 비텍스트라 레포 토큰을 쓴다.
+.postmark {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%) rotate(-8deg);
+  display: grid;
+  place-items: center;
+  gap: 0;
+  width: 62px;
+  height: 62px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-danger);
+  color: var(--color-danger);
+  background: color-mix(in srgb, var(--color-bg) 70%, transparent);
+  text-align: center;
+}
+
+.postmarkLabel {
+  font-size: var(--font-eyebrow);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-tight);
+}
+
+.postmarkName {
+  font-size: var(--font-caption);
+  line-height: var(--line-tight);
+  max-width: 54px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Figma `meta` — V gap 4
+.meta {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+// Caption/B_10 #B4B4B4 — From / To 라벨
+.metaLabel {
+  font-size: var(--font-eyebrow);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg-weak);
+  text-transform: uppercase;
+}
+
+// Basic Body/B_16_140%
+.metaValue {
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-normal);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Figma `Frame 71` — 셀 묶음 위/아래로 빨간 rule, 상하 padding 12.
+.letterBox {
+  padding: var(--space-3) 0;
+  border-top: var(--border-thin) solid var(--color-danger);
+  border-bottom: var(--border-thin) solid var(--color-danger);
+}
+
+// Figma `Frame 70` — 5칸 균등, 칸마다 흰 면 + 빨간 보더. 칸 58x56.
+.cells {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  border: var(--border-thin) solid var(--color-danger);
+  overflow: hidden;
+}
+
+.cell {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 58 / 56;
+  background: var(--color-bg);
+  border-right: var(--border-thin) solid var(--color-danger);
+  font-size: var(--font-h2); // Title/B_24
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  color: var(--color-fg);
+
+  &:last-child {
+    border-right: 0;
+  }
+}
+
+// 보낸 편지 — 시안은 텍스트가 오른쪽 정렬이다 (사진 반대편)
+.alignRight .meta,
+.alignRight .footerText {
+  justify-items: end;
+  text-align: right;
+}
+
+.alignRight .top {
+  justify-content: space-between;
+}
+
+.alignRight .toRow {
+  justify-content: flex-end;
+}
+
+// Figma `Frame 84` — 구분선 + To 블록, V gap 12
+.footer {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.divider {
+  height: 1px;
+  background: var(--color-border);
+}
+
+.footerText {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.toRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+// Basic Body/B_14_140%
+.toName {
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-normal);
+  color: var(--color-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Caption/R_12 #B4B4B4 — 하단 날짜 줄
+.dateText {
+  font-size: var(--font-caption);
+  line-height: var(--line-normal);
+  letter-spacing: var(--tracking-snug);
+  color: var(--color-fg-weak);
+  font-variant-numeric: tabular-nums;
+}

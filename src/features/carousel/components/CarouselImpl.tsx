@@ -1,10 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useState, type ReactNode } from 'react';
-import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
-import { useTranslations } from 'next-intl';
+import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import type { CarouselOptions } from '@/features/carousel/types';
 import styles from './Carousel.module.scss';
 
@@ -104,6 +104,10 @@ export default function CarouselImpl<T>({
   const rootStyle = {
     '--carousel-gap': `${gap}px`,
     '--carousel-per-view': String(slidesPerView),
+    // 고정 폭 모드 — 지정 시 .slide 가 per-view 계산 대신 이 값을 쓴다.
+    ...(options?.slideWidth
+      ? { '--carousel-slide-width': `${options.slideWidth}px` }
+      : null),
   } as React.CSSProperties;
 
   return (

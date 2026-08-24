@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import type { ReactNode } from 'react';
+import { describe, expect, it } from 'vitest';
 import { useFormat } from './use-format';
 
 function wrapper({ children }: { children: ReactNode }) {

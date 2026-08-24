@@ -16,31 +16,28 @@
  *   axios baseURL 을 same-origin proxy 로 두거나, Next rewrites 로 우회 필요.
  *   테스트 (vitest/node) 에선 origin 제약 없이 모두 가로챔.
  */
-
-import { http, HttpResponse } from 'msw';
-import { regionContentSeeds } from './seeds/regions';
-import { letterSeeds } from './seeds/letters';
-import {
-  savedTournamentSeeds,
-  tournamentHistorySeeds,
-} from './seeds/tournament';
-import { destinationSeeds } from './seeds/destinations';
-import { notificationSeeds } from './seeds/notifications';
-import {
-  travelTypeCompatibilitySeed,
-  travelTypeMetaSeed,
-  travelTypeMockScoreMap,
-  travelTypeQuizSeed,
-  travelTypeRecommendCategoriesSeed,
-  type TravelTypeMockCode,
-} from './seeds/travel-types';
+import { HttpResponse, http } from 'msw';
+import { travelTypeFromCode } from '@/constants/travel-types';
 import type { TravelTypeAnswer } from '@/features/ranking/types';
 import type {
   AppNotificationDto,
   DestinationDto,
   TravelTypeDto,
-} from '@/api/generated/schemas';
-import { isRegionCode } from '@/constants/regions';
+} from '@/types/api-domain';
+import { destinationSeeds } from './seeds/destinations';
+import { letterSeeds } from './seeds/letters';
+import { notificationSeeds } from './seeds/notifications';
+import { regionContentSeeds } from './seeds/regions';
+import {
+  savedTournamentSeeds,
+  tournamentHistorySeeds,
+} from './seeds/tournament';
+import {
+  type TravelTypeMockCode,
+  travelTypeMetaSeed,
+  travelTypeMockScoreMap,
+  travelTypeQuizSeed,
+} from './seeds/travel-types';
 
 /**
  * URL 매칭 base — axios baseURL 단일화 (`/api/backend`, services/api/client.ts).
@@ -68,29 +65,17 @@ function mockFestivalDate(idHash: number, offsetDays: number): string {
   return base.toISOString().slice(0, 10);
 }
 
+// Spring UserResponseDto shape (avatarUrl/homeRegion/isOnboarded 미제공 — Vertical 4).
 const mockUser = {
   id: '1',
   username: 'tester01',
+  name: '홍길동',
   nickname: '테스터',
   email: 't@e.com',
-  homeRegion: 'cheongju',
-  avatarUrl: null as string | null,
-  travelType: null as {
-    code: string;
-    title: string;
-    emoji: string;
-  } | null,
+  phone: '010-1234-5678',
+  birthDate: '1995-03-01',
+  createdAt: '2026-01-01T00:00:00Z',
 } as const;
-
-/**
- * 온보딩 완료 상태 — 신규 가입 흐름 재현용 mutable 상태.
- *   - 초기 false → /me 가 isOnboarded:false 반환 (UI 표시용)
- *   - complete-onboarding 호출 시 true → 이후 /me 가 true 반환
- *
- * 디바이스 onboarding (middleware) 은 `tripbite.visited` cookie 기반 — 본 상태와 별개.
- * dev 서버(서비스워커) 재시작 시 false 로 리셋.
- */
-let onboardedState = false;
 
 /**
  * 로그인 상태 — mock 환경에서 양 상태 토글.
@@ -122,26 +107,10 @@ function setMockSignedIn(v: boolean): void {
 }
 
 /**
- * 토너먼트 기록 인메모리 store — `POST /tournaments` 가 채우고
- * `GET /tournaments/:id` 가 읽음. SW 재기동 시 휘발 (mock 한정).
+ * 여행 유형 테스트 — 사용자의 저장된 유형 코드(mutable). submit/PATCH me 시 갱신.
+ * Spring: GET /me.travelType 는 코드 문자열. dev 서버 재시작 시 null 로 리셋.
  */
-const tournamentRecords = new Map<
-  string,
-  {
-    id: string;
-    winner: (typeof destinationSeeds)[number];
-    runnerUp: (typeof destinationSeeds)[number] | null;
-    matchesPlayed: number;
-    tournamentSize: number;
-    completedAt: string;
-  }
->();
-
-/**
- * 여행 유형 테스트 — 사용자의 저장된 결과(mutable). submit 시 갱신.
- * dev 서버 재시작 시 null 로 리셋.
- */
-let myTravelType: TravelTypeDto | null = null;
+let myTravelTypeCode: TravelTypeMockCode | null = null;
 
 /**
  * 알림 인박스 (mutable) — seed 복사. push 시뮬레이션 / markRead 가 mutate.
@@ -168,24 +137,9 @@ const notificationItems: AppNotificationDto[] = notificationSeeds.map((n) => ({
   createdAt: n.createdAt,
 }));
 
-/** 셔플 후 N 개 — Fisher–Yates 부분 */
-function pickRandom<T>(arr: readonly T[], n: number): T[] {
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const ai = a[i];
-    const aj = a[j];
-    if (ai !== undefined && aj !== undefined) {
-      a[i] = aj;
-      a[j] = ai;
-    }
-  }
-  return a.slice(0, Math.min(n, a.length));
-}
-
 /**
  * mock 측 점수 계산 — answers 의 optionId 마다 매핑된 유형에 +1, 최고점 유형 반환.
- * 동점 시 첫 등장 유형 우선 (Map 순서).
+ * 동점 시 첫 등장 유형 우선 (Map 순서). 반환은 Spring TravelTypeResultDto 파생 shape.
  */
 function resolveTravelType(answers: TravelTypeAnswer[]): TravelTypeDto {
   const score: Record<TravelTypeMockCode, number> = {
@@ -206,16 +160,7 @@ function resolveTravelType(answers: TravelTypeAnswer[]): TravelTypeDto {
       best = k;
     }
   });
-  const meta = travelTypeMetaSeed[best];
-  const cats = travelTypeRecommendCategoriesSeed[best];
-  const pool = destinationSeeds.filter((d) =>
-    cats.includes(d.category as (typeof cats)[number]),
-  );
-  return {
-    ...meta,
-    recommended: pickRandom(pool, 3),
-    compatibility: travelTypeCompatibilitySeed[best],
-  };
+  return travelTypeMetaSeed[best];
 }
 
 // 11 시군 라벨 — rankings/by-region 응답에서 사용.
@@ -270,99 +215,38 @@ export const handlers = [
       );
     }
     setMockSignedIn(true);
-    return HttpResponse.json({ success: true });
+    // 신규 Spring BE: ApiResponse<LoginResponseDto> — userId 만. (프로필은 GET /me)
+    return HttpResponse.json({
+      success: true,
+      message: null,
+      data: { userId: Number(mockUser.id) || 1 },
+    });
   }),
-  // signup — BE 가 SID cookie + SignupResponseDto { user } atomic 발급.
-  // mock 도 정합: setMockSignedIn(true) + mockUser 반환. 빈 응답은 use-auth.ts
-  // 가 setAuth 실패해 store 미초기화 → 회귀.
+  // 신규 Spring BE: signup 은 세션 발급 + ApiResponseUnit(user 없음).
+  // FE(useSignup)는 폼 입력값으로 pendingUser 구성. mock 도 세션만 established.
   http.post(`${apiUrl}/auth/signup`, () => {
     setMockSignedIn(true);
-    return HttpResponse.json({ user: mockUser }, { status: 201 });
+    return HttpResponse.json(
+      { success: true, message: null, data: {} },
+      { status: 201 },
+    );
   }),
-  // 회원가입 중복확인 — username/email 길이 등 검증 후 available 응답.
-  // 'tester01' / 't@e.com' 만 taken 으로 시뮬 (mockUser 정합), 나머지 available.
-  http.get(`${apiUrl}/auth/check-username`, ({ request }) => {
-    const username = new URL(request.url).searchParams.get('username') ?? '';
-    return HttpResponse.json({ available: username !== 'tester01' });
-  }),
-  http.get(`${apiUrl}/auth/check-email`, ({ request }) => {
-    const email = new URL(request.url).searchParams.get('email') ?? '';
-    return HttpResponse.json({ available: email !== 't@e.com' });
-  }),
-  http.post(
-    `${apiUrl}/auth/forgot-password`,
-    () => new HttpResponse(null, { status: 204 }),
-  ),
-  http.post(
-    `${apiUrl}/auth/reset-password`,
-    () => new HttpResponse(null, { status: 204 }),
-  ),
-  // 아이디 찾기 — 마스킹된 아이디 반환 (메일 발송 X)
-  http.post(`${apiUrl}/auth/find-id`, () =>
-    HttpResponse.json({ username: 'tes***01' }),
-  ),
-  // 비밀번호 변경 (로그인 상태)
-  http.post(`${apiUrl}/me/change-password`, () =>
-    getMockSignedIn()
-      ? new HttpResponse(null, { status: 204 })
-      : unauthorized(),
-  ),
   http.post(`${apiUrl}/auth/logout`, () => {
     setMockSignedIn(false);
     return new HttpResponse(null, { status: 204 });
   }),
   // POST /auth/refresh 는 sessionID 모델로 전환되며 폐기 (BE Swagger §Auth).
+  // 신규 Spring BE: ApiResponse<UserResponseDto> 엔벨로프.
   http.get(`${apiUrl}/me`, () =>
     getMockSignedIn()
-      ? HttpResponse.json({ ...mockUser, isOnboarded: onboardedState })
+      ? HttpResponse.json({
+          success: true,
+          message: null,
+          // Spring UserResponseDto: travelType 은 코드 문자열(null 가능).
+          data: { ...mockUser, travelType: myTravelTypeCode },
+        })
       : unauthorized(),
   ),
-  // 회원탈퇴 — 204. 세션 무효 + 소프트 삭제 가정.
-  http.delete(`${apiUrl}/me`, () => {
-    if (!getMockSignedIn()) return unauthorized();
-    setMockSignedIn(false);
-    onboardedState = false;
-    return new HttpResponse(null, { status: 204 });
-  }),
-
-  // ===== Onboarding =====
-  http.post(`${apiUrl}/me/complete-onboarding`, async ({ request }) => {
-    const body = (await request.json()) as { nickname?: string };
-    onboardedState = true;
-    return HttpResponse.json({
-      ...mockUser,
-      nickname: body.nickname ?? mockUser.nickname,
-      isOnboarded: true,
-    });
-  }),
-
-  // ===== Location =====
-  // POST /location/reverse — 좌표 → 한글 행정구역 라벨. BE 가 Kakao reverse wrap.
-  // mock 은 좌표 hash 기반으로 11 시군 중 하나 분산 매핑 (전국 좌표도 동일 한도).
-  http.post(`${apiUrl}/location/reverse`, async ({ request }) => {
-    const coords = (await request.json()) as {
-      latitude: number;
-      longitude: number;
-    };
-    const seed =
-      Math.abs(
-        Math.round(coords.latitude * 10000) +
-          Math.round(coords.longitude * 10000),
-      ) >>> 0;
-    const region = MOCK_REGIONS[seed % MOCK_REGIONS.length] ?? MOCK_REGIONS[0]!;
-    // BE spec: { latitude, longitude, label, sido, sigungu, regionCode } —
-    // 전국 시군구 경계 데이터 기반 역지오코딩 응답.
-    const parts = region.label.split(' ');
-    return HttpResponse.json({
-      latitude: coords.latitude,
-      longitude: coords.longitude,
-      label: region.label,
-      sido: '충청북도',
-      sigungu: parts[1] ?? '',
-      regionCode: region.regionCode,
-    });
-  }),
-
   // ===== Letters ===== (모두 로그인 필요)
   // POST 응답으로 LetterDto 객체 반환 — /letter/sent?id= deep-link 가능하게.
   http.post(`${apiUrl}/letters`, async ({ request }) => {
@@ -396,26 +280,33 @@ export const handlers = [
     };
     // /letters/:id GET 이 deep-link 진입 시 이 letter 를 찾도록 letterSeeds 에 prepend.
     letterSeeds.unshift(letter);
-    return new HttpResponse(JSON.stringify(letter), {
-      status: 201,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    // 신규 Spring BE: ApiResponse<LetterDto> 엔벨로프.
+    return HttpResponse.json(
+      { success: true, message: null, data: letter },
+      { status: 201 },
+    );
   }),
-  // 편지 목록 — 모두 cursor 기반 페이지네이션 통일
+  // 편지 목록 — 신규 Spring BE: cursor/size + ApiResponse<LetterPageDto> 엔벨로프.
   ...['received', 'sent', 'liked', 'saved'].map((kind) =>
     http.get(`${apiUrl}/letters/${kind}`, ({ request }) => {
       if (!getMockSignedIn()) return unauthorized();
       const url = new URL(request.url);
       const cursor = Number(url.searchParams.get('cursor') ?? 0);
-      const limit = Number(url.searchParams.get('limit') ?? 10);
+      const size = Number(
+        url.searchParams.get('size') ?? url.searchParams.get('limit') ?? 10,
+      );
       let pool = letterSeeds;
       if (kind === 'sent') pool = letterSeeds.filter((l) => l.isMine);
       else if (kind === 'received') pool = letterSeeds.filter((l) => !l.isMine);
       else if (kind === 'liked') pool = letterSeeds.filter((l) => l.liked);
       else if (kind === 'saved') pool = letterSeeds.filter((l) => l.saved);
-      const slice = pool.slice(cursor, cursor + limit);
-      const nextCursor = cursor + limit < pool.length ? cursor + limit : null;
-      return HttpResponse.json({ items: slice, nextCursor });
+      const slice = pool.slice(cursor, cursor + size);
+      const nextCursor = cursor + size < pool.length ? cursor + size : null;
+      return HttpResponse.json({
+        success: true,
+        message: null,
+        data: { items: slice, nextCursor },
+      });
     }),
   ),
   http.get(`${apiUrl}/letters/:id`, ({ params }) => {
@@ -462,41 +353,72 @@ export const handlers = [
     return HttpResponse.json({ items: slice, nextCursor });
   }),
 
-  // 시군 summary — 헤더 이미지 / 설명 / 인기도. RegionHero 등에서 사용.
-  // mock 은 description 만 deterministic — 실 BE 는 TourAPI 또는 CMS.
-  http.get(`${apiUrl}/regions/:code/summary`, ({ params }) => {
-    const code = params.code as string;
-    if (!isRegionCode(code)) return new HttpResponse(null, { status: 404 });
-    return HttpResponse.json({
-      code,
-      heroImage: undefined,
-      description: `${code} 시군의 명소와 축제, 체험 정보를 한눈에.`,
-      popularity: 50,
-    });
-  }),
-
   // 진행 중 축제 / 다가오는 축제 / 인기 여행지 — 홈 FestivalCarousel.
   // 실 BE 는 3단계 폴백 후 single response. mock 은 항상 'upcoming' 분기를 반환해
   // D-day 뱃지 UI 도 같이 검증 가능.
-  http.get(`${apiUrl}/regions/ongoing-festivals`, ({ request }) => {
-    const url = new URL(request.url);
-    const region = url.searchParams.get('region');
+  // 신규 Spring BE: region 필터 없음 + ApiResponse<OngoingFestivalsDto> 엔벨로프.
+  http.get(`${apiUrl}/regions/ongoing-festivals`, () => {
     const items = destinationSeeds
       .filter((d) => d.category === 'festival')
-      .filter((d) => !region || d.region === region)
       .slice(0, 8)
       .map((d, i) => ({
-        id: d.id,
+        id: Number(d.id) || i + 1,
         name: d.name,
         imageUrl: null,
         regionLabel: d.region,
         // 7, 14, 21 ... 일 후 시작 — D-day 뱃지 다양성 검증.
         daysToStart: 7 + i * 7,
+        eventStartDate: null,
+        eventEndDate: null,
       }));
-    return HttpResponse.json({ type: 'upcoming', items });
+    return HttpResponse.json({
+      success: true,
+      message: null,
+      data: { type: 'upcoming', items },
+    });
   }),
 
-  // ===== Rankings =====
+  // ===== Rankings (신규 Spring BE) =====
+  // 주간 top destination — ApiResponse<WeeklyTopDestinationsDto>.
+  // items 는 {destinationId,destinationName,winCount} (image/region 미제공 — 새 BE 계약).
+  http.get(`${apiUrl}/tournaments/rankings/weekly`, ({ request }) => {
+    const size = Number(new URL(request.url).searchParams.get('size') ?? 5);
+    const seenRegion = new Set<string>();
+    const deduped: typeof destinationSeeds = [];
+    for (const d of destinationSeeds) {
+      if (seenRegion.has(d.region)) continue;
+      seenRegion.add(d.region);
+      deduped.push(d);
+      if (deduped.length >= Math.min(size, 11)) break;
+    }
+    const items = deduped.map((d, i) => ({
+      destinationId: Number(d.id) || i + 1,
+      destinationName: d.name,
+      winCount: 28 - i * 3,
+    }));
+    return HttpResponse.json({
+      success: true,
+      message: null,
+      data: {
+        year: 2026,
+        month: 7,
+        weekOfMonth: 3,
+        weekStart: '2026-07-20',
+        weekEnd: '2026-07-26',
+        items,
+      },
+    });
+  }),
+  // 시군별 우승 횟수 — ApiResponse<RegionWinCountDto[]>.
+  http.get(`${apiUrl}/tournaments/rankings/regions`, () => {
+    const data = MOCK_REGIONS.map((r, i) => ({
+      region: r.regionCode,
+      winCount: 48 - i * 3 + ((i * 7) % 5),
+    })).sort((a, b) => b.winCount - a.winCount);
+    return HttpResponse.json({ success: true, message: null, data });
+  }),
+
+  // ===== Rankings (구 generated mock — recommended/by-category/seasonal 등) =====
   http.get(`${apiUrl}/rankings`, ({ request }) => {
     const url = new URL(request.url);
     const type = url.searchParams.get('type');
@@ -538,13 +460,31 @@ export const handlers = [
       return HttpResponse.json(ranks);
     }
 
-    // 추천 destination — 시즌/카테고리 균형 분포 (mock 은 destinationSeeds shuffle).
+    // 추천 destination — 카테고리 균형 분포.
+    // 구현이 seeds 앞에서 slice 만 했어서 한 시군의 축제만 잔뜩 나왔고, 홈의
+    // 카테고리 칩 필터에 관광지/체험 항목이 비었다. 카테고리별로 라운드로빈.
     if (type === 'recommended') {
-      const items = destinationSeeds.slice(0, Math.min(limit, 10)).map((d) => ({
-        rank: 0,
-        destination: d,
-        score: 0,
-      }));
+      const byCategory = new Map<string, typeof destinationSeeds>();
+      for (const d of destinationSeeds) {
+        const list = byCategory.get(d.category) ?? [];
+        list.push(d);
+        byCategory.set(d.category, list);
+      }
+      const buckets = [...byCategory.values()];
+      const picked: typeof destinationSeeds = [];
+      const cap = Math.min(limit, 24);
+      for (let i = 0; picked.length < cap; i++) {
+        let added = false;
+        for (const b of buckets) {
+          const next = b[i];
+          if (next && picked.length < cap) {
+            picked.push(next);
+            added = true;
+          }
+        }
+        if (!added) break;
+      }
+      const items = picked.map((d) => ({ rank: 0, destination: d, score: 0 }));
       return HttpResponse.json(items);
     }
 
@@ -567,83 +507,40 @@ export const handlers = [
     getMockSignedIn()
       ? HttpResponse.json({
           profile: { nickname: mockUser.nickname, isDefault: false },
-          travelType: myTravelType,
+          travelType: myTravelTypeCode
+            ? travelTypeFromCode(myTravelTypeCode)
+            : null,
         })
       : unauthorized(),
   ),
-  // 닉네임 변경 (PATCH /mypage/profile)
-  http.patch(`${apiUrl}/mypage/profile`, async ({ request }) => {
+  // 신규 Spring BE: 프로필 수정 PATCH /me — ApiResponse<UserResponseDto>.
+  // travelType(코드) 갱신도 여기서 (4-A: travel-types/me PATCH 대체).
+  http.patch(`${apiUrl}/me`, async ({ request }) => {
     if (!getMockSignedIn()) return unauthorized();
     const body = (await request.json().catch(() => ({}))) as {
       nickname?: string;
+      travelType?: TravelTypeMockCode;
     };
+    if (body.travelType) myTravelTypeCode = body.travelType;
     return HttpResponse.json({
-      nickname: body.nickname ?? mockUser.nickname,
-      isDefault: false,
+      success: true,
+      message: null,
+      data: {
+        ...mockUser,
+        nickname: body.nickname ?? mockUser.nickname,
+        travelType: myTravelTypeCode,
+      },
     });
   }),
-  // 프로필 아바타 업로드 (POST /me/avatar) — multipart form-data 'file'.
-  //
-  // BE spec (Swagger §Me, POST /me/avatar):
-  //   - 응답 201 { avatarUrl }
-  //   - 422 AVATAR_TYPE_UNSUPPORTED (image/* 외)
-  //   - 422 AVATAR_TOO_LARGE (>10MB)
-  //   - 400 VALIDATION (file 누락 / 파싱 실패)
-  //   - 503 STORAGE_NOT_CONFIGURED (R2 미설정 — mock 은 미시뮬)
-  //
-  // mock 은 placeholder URL 반환 — FE 의 localPreview (object URL) 가 화면 표시
-  // 담당이므로 실 파일 데이터는 echo 안 함. BE 합류 후엔 응답 URL 이 정식 source.
-  http.post(`${apiUrl}/me/avatar`, async ({ request }) => {
-    if (!getMockSignedIn()) return unauthorized();
-    try {
-      const form = await request.formData();
-      const file = form.get('file');
-      if (!(file instanceof File)) {
-        return HttpResponse.json(
-          { code: 'VALIDATION', message: 'file 필수' },
-          { status: 400 },
-        );
-      }
-      const ALLOWED = ['image/jpeg', 'image/png', 'image/webp'];
-      if (!ALLOWED.includes(file.type)) {
-        return HttpResponse.json(
-          {
-            code: 'AVATAR_TYPE_UNSUPPORTED',
-            message: 'JPG/PNG/WebP 만 업로드할 수 있어요.',
-          },
-          { status: 422 },
-        );
-      }
-      if (file.size > 10 * 1024 * 1024) {
-        return HttpResponse.json(
-          {
-            code: 'AVATAR_TOO_LARGE',
-            message: '파일이 너무 큽니다 (최대 10MB).',
-          },
-          { status: 422 },
-        );
-      }
-      return HttpResponse.json(
-        { avatarUrl: `https://mock.tripbite/avatar/${Date.now()}.png` },
-        { status: 201 },
-      );
-    } catch {
-      return HttpResponse.json(
-        { code: 'VALIDATION', message: 'multipart 파싱 실패' },
-        { status: 400 },
-      );
-    }
-  }),
-  // 프로필 아바타 제거 (DELETE /me/avatar) — 200 { avatarUrl: null }.
-  // BE: R2 객체 삭제 + User.avatarUrl = null.
-  http.delete(`${apiUrl}/me/avatar`, () => {
-    if (!getMockSignedIn()) return unauthorized();
-    return HttpResponse.json({ avatarUrl: null });
-  }),
   // 저장된 토너먼트 우승지 — 목록. summary 의 savedTournaments 와 같은 시드.
+  // 신규 Spring BE: ApiResponse<SavedTournamentDto[]> 엔벨로프.
   http.get(`${apiUrl}/mypage/tournaments`, () =>
     getMockSignedIn()
-      ? HttpResponse.json(savedTournamentSeeds)
+      ? HttpResponse.json({
+          success: true,
+          message: null,
+          data: savedTournamentSeeds,
+        })
       : unauthorized(),
   ),
 
@@ -658,14 +555,19 @@ export const handlers = [
   }),
 
   // ===== Settings ===== (모두 로그인 필요)
+  // 신규 Spring BE: ApiResponse<SettingsDto> 엔벨로프.
   http.get(`${apiUrl}/settings`, () =>
     getMockSignedIn()
       ? HttpResponse.json({
-          notifications: {
-            pushEnabled: false,
-            inAppEnabled: true,
-            letterReceived: true,
-            letterLiked: true,
+          success: true,
+          message: null,
+          data: {
+            notifications: {
+              pushEnabled: false,
+              inAppEnabled: true,
+              letterReceived: true,
+              letterLiked: true,
+            },
           },
         })
       : unauthorized(),
@@ -677,75 +579,72 @@ export const handlers = [
       boolean
     >;
     return HttpResponse.json({
-      notifications: {
-        pushEnabled: patch.pushEnabled ?? false,
-        inAppEnabled: patch.inAppEnabled ?? true,
-        letterReceived: patch.letterReceived ?? true,
-        letterLiked: patch.letterLiked ?? true,
+      success: true,
+      message: null,
+      data: {
+        notifications: {
+          pushEnabled: patch.pushEnabled ?? false,
+          inAppEnabled: patch.inAppEnabled ?? true,
+          letterReceived: patch.letterReceived ?? true,
+          letterLiked: patch.letterLiked ?? true,
+        },
       },
     });
   }),
 
   // ===== Stamps (도장깨기) =====
+  // 신규 Spring BE: ApiResponse<StampsDto> 엔벨로프.
   http.get(`${apiUrl}/mypage/stamps`, () => {
     if (!getMockSignedIn()) return unauthorized();
     const visited = Array.from(
       new Set(tournamentHistorySeeds.map((t) => t.winnerRegion)),
     );
-    return HttpResponse.json({ visited, total: 11 });
+    return HttpResponse.json({
+      success: true,
+      message: null,
+      data: { visited, total: 11 },
+    });
   }),
 
   // ===== Tournament =====
   // 페이지네이션 — 편지/시군콘텐츠와 동일 컨벤션: cursor=offset(기본 0),
   // limit=페이지 크기(기본 20, 최대 60). 마지막 페이지면 nextCursor=null.
-  http.get(`${apiUrl}/mypage/tournament-history`, ({ request }) => {
+  // 신규 Spring BE: ApiResponse<TournamentSummaryDto[]> (flat, cursor 없음).
+  http.get(`${apiUrl}/mypage/tournament-history`, () => {
     if (!getMockSignedIn()) return unauthorized();
-    const url = new URL(request.url);
-    const cursor = Math.max(0, Number(url.searchParams.get('cursor')) || 0);
-    const limit = Math.min(
-      60,
-      Math.max(1, Number(url.searchParams.get('limit')) || 20),
-    );
-    const slice = tournamentHistorySeeds.slice(cursor, cursor + limit);
-    const next = cursor + slice.length;
-    const nextCursor = next < tournamentHistorySeeds.length ? next : null;
-    return HttpResponse.json({ items: slice, nextCursor });
+    const data = tournamentHistorySeeds.map((t, i) => ({
+      id: Number(String(t.id).replace(/\D/g, '')) || i + 1,
+      winnerName: t.winnerName,
+      tournamentSize: t.count,
+      category: t.category,
+      completedAt: t.completedAt,
+    }));
+    return HttpResponse.json({ success: true, message: null, data });
   }),
 
-  // 토너먼트 기록 — Play 종료 시 fire-and-forget. record id 반환.
-  // 선택 인증 (BE Swagger §Tournament): 쿠키 있으면 계정 귀속, 없으면 게스트
-  // 익명 기록 (랭킹 집계엔 반영). 401 없음 — getMockSignedIn() 가드 없음 (의도).
-  // 인메모리 (`tournamentRecords`) 에 저장 → GET /tournaments/:id 로 deep-link 복원.
-  http.post(`${apiUrl}/tournaments`, async ({ request }) => {
+  // 신규 Spring BE: 토너먼트 결과 기록 — POST /mypage/tournament-history.
+  // body: { winnerId?, winnerName, region?, category?, tournamentSize? }.
+  // 응답 thin ApiResponse<TournamentSummaryDto>. (결과 딥링크 복원은 Spring 미지원 —
+  // 결과 화면은 store 전용이라 record 저장 불필요.)
+  http.post(`${apiUrl}/mypage/tournament-history`, async ({ request }) => {
     const body = (await request.json()) as {
-      winnerId: string;
-      runnerUpId: string | null;
-      matchesPlayed: number;
-      tournamentSize: number;
+      winnerId?: number;
+      winnerName?: string;
+      region?: string;
+      category?: string;
+      tournamentSize?: number;
     };
-    const winner = destinationSeeds.find((d) => d.id === body.winnerId);
-    if (!winner) return new HttpResponse(null, { status: 404 });
-    const runnerUp = body.runnerUpId
-      ? (destinationSeeds.find((d) => d.id === body.runnerUpId) ?? null)
-      : null;
-    const record = {
-      id: `tr-${Date.now()}`,
-      winner,
-      runnerUp,
-      matchesPlayed: body.matchesPlayed,
-      tournamentSize: body.tournamentSize,
-      completedAt: new Date().toISOString(),
-    };
-    tournamentRecords.set(record.id, record);
-    return HttpResponse.json(record);
-  }),
-
-  // Deep-link 진입 시 record 조회.
-  http.get(`${apiUrl}/tournaments/:id`, ({ params }) => {
-    const id = String(params.id);
-    const record = tournamentRecords.get(id);
-    if (!record) return new HttpResponse(null, { status: 404 });
-    return HttpResponse.json(record);
+    return HttpResponse.json({
+      success: true,
+      message: null,
+      data: {
+        id: Date.now(),
+        winnerName: body.winnerName,
+        tournamentSize: body.tournamentSize,
+        category: body.category,
+        completedAt: new Date().toISOString(),
+      },
+    });
   }),
 
   // 우승 여행지를 마이페이지에 저장 (인증 필요)
@@ -757,7 +656,6 @@ export const handlers = [
     return HttpResponse.json({
       id: `saved-${body.destinationId}`,
       destination: dest,
-      luckyColor: '#7AC7E8',
       savedAt: new Date().toISOString(),
     });
   }),
@@ -766,22 +664,6 @@ export const handlers = [
   //   - tournamentSize: 매치업 사이즈 (M ≤ N) — 현재 mock 은 무시, 백엔드 연동 후 활용
   //   - pool : 클라이언트에 노출할 풀 사이즈 (없으면 count와 같음)
   //
-  // 메인 "이런 여행 어때요" 추천 그룹 — Figma rec-block 전용.
-  // BE: GET /destinations/recommendations (2026-06-24 신설).
-  // 응답: { festival: [], attraction: [], experience: [] } 3 그룹.
-  // 각 그룹당 최대 8개 (mock 운영 — destinationSeeds 카테고리별 deterministic
-  // slice).
-  // ⚠ /destinations/:id 보다 먼저 등록 (segment 매칭 회피).
-  http.get(`${apiUrl}/destinations/recommendations`, () => {
-    const byCategory = (cat: 'festival' | 'attraction' | 'experience') =>
-      destinationSeeds.filter((d) => d.category === cat).slice(0, 8);
-    return HttpResponse.json({
-      festival: byCategory('festival'),
-      attraction: byCategory('attraction'),
-      experience: byCategory('experience'),
-    });
-  }),
-
   // 관련 여행지 — 같은 region 의 다른 destination 6개. seed 기반 deterministic.
   // ⚠ /destinations/:id 보다 먼저 등록 — :id 가 'related' segment 도 매칭하므로
   //   path 명시 (`/destinations/:id/related`) 가 더 길어 우선되지만 안전을 위해 앞에.
@@ -828,17 +710,22 @@ export const handlers = [
   // 합의: count / pool / region(단일) param 폐기. 시군은 응답 destination.region 에서 추출.
   http.get(`${apiUrl}/destinations/random`, ({ request }) => {
     const url = new URL(request.url);
-    const categoriesParam = url.searchParams.get('categories') ?? '';
-    const regionsParam = url.searchParams.get('regions') ?? '';
+    // 신규 Spring BE: 단일 category/region/season + size. (구 categories/regions/tournamentSize 도 하위호환)
+    const category =
+      url.searchParams.get('category') ?? url.searchParams.get('categories');
+    const region =
+      url.searchParams.get('region') ?? url.searchParams.get('regions');
 
     const VALID_SIZES = [4, 8, 16, 32];
-    const rawSize = Number(url.searchParams.get('tournamentSize') ?? 8);
+    const rawSize = Number(
+      url.searchParams.get('size') ??
+        url.searchParams.get('tournamentSize') ??
+        8,
+    );
     const tournamentSize = VALID_SIZES.includes(rawSize) ? rawSize : 8;
 
-    const categories = categoriesParam
-      ? categoriesParam.split(',').filter(Boolean)
-      : [];
-    const regions = regionsParam ? regionsParam.split(',').filter(Boolean) : [];
+    const categories = category ? category.split(',').filter(Boolean) : [];
+    const regions = region ? region.split(',').filter(Boolean) : [];
 
     let pool = destinationSeeds;
     if (categories.length > 0) {
@@ -878,7 +765,7 @@ export const handlers = [
         if (picked.length >= tournamentSize) break;
       }
     }
-    return HttpResponse.json(picked);
+    return HttpResponse.json({ success: true, message: null, data: picked });
   }),
 
   // 여행지 상세 — id 기반 deterministic mock 메타 합성.
@@ -911,11 +798,11 @@ export const handlers = [
     for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0;
     const u = (n: number) => (Math.abs(h + n) % 1000) / 1000; // 0~1
 
-    // mock photos — deterministic SVG data URL 3장 (id 기반 hue 변동).
+    // mock images — deterministic SVG data URL 3장 (id 기반 hue 변동).
     // CSP `img-src: 'self' data: blob:` 에 data: 허용되어 있음.
     // 실 BE 는 CDN URL.
     const baseHue = Math.floor(u(70) * 360);
-    const photos = [0, 1, 2].map((i) => {
+    const images = [0, 1, 2].map((i) => {
       const hue = (baseHue + i * 60) % 360;
       const svg =
         `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice">` +
@@ -930,42 +817,28 @@ export const handlers = [
       return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
     });
 
-    const restDatePool = [
-      '매주 월요일',
-      '매주 화요일',
-      '설/추석 당일',
-      '첫째·셋째 월요일',
+    const admissionPool = [
+      '무료',
+      '성인 5,000원',
+      '성인 3,000원 / 청소년 2,000원',
     ];
-    const parkingPool = ['가능', '불가', '유료', '소형 가능'];
-    // BE 실제 응답 spec (Swagger §Destinations, GET /destinations/:id):
-    //   summary (필수, ≤120자) / photos[] / address? / coords? / phone? / website? /
-    //   openingHours? / restDate? / parking? — TourAPI 원본 명칭 그대로.
-    //   admissionFee / tags / rating / bestSeasons 는 BE 미제공 — 응답에서 제거.
+    // Spring DestinationDetailDto shape (GET /destinations/{id}):
+    //   id·name·category·region·imageUrl·images[]·address?·type?·admissionFee?·
+    //   description?·tags[]·eventStart?·eventEnd? (coords/phone/website/openingHours/
+    //   restDate/parking 는 Spring 미제공 — mock 에서도 제외).
     const detail = {
       ...seed,
       description: `${seed.name} — ${seed.region} 대표 ${seed.category}`,
-      photos,
+      images,
       address: `충북 ${seed.region.replace(/[a-z]+/i, '')} ${seed.name} 일대`,
-      phone:
+      type: seed.category,
+      admissionFee:
         u(10) > 0.3
-          ? `043-${200 + Math.floor(u(11) * 800)}-${1000 + Math.floor(u(12) * 8999)}`
+          ? (admissionPool[Math.floor(u(11) * admissionPool.length)] ??
+            undefined)
           : undefined,
-      website: u(20) > 0.5 ? `https://example.com/${id}` : undefined,
-      openingHours: u(30) > 0.3 ? '매일 09:00 - 18:00' : undefined,
-      restDate:
-        u(31) > 0.4
-          ? (restDatePool[Math.floor(u(32) * restDatePool.length)] ?? undefined)
-          : undefined,
-      parking:
-        u(45) > 0.3
-          ? (parkingPool[Math.floor(u(46) * parkingPool.length)] ?? undefined)
-          : undefined,
-      coords: {
-        lat: 36.5 + u(60) * 1.2,
-        lng: 127.4 + u(61) * 0.9,
-      },
-      // festival 일정 — BE spec (BE_REQUEST_FESTIVAL_DATES.md) 동일.
-      // category === 'festival' 일 때만 deterministic mock 일자.
+      tags: [`#${seed.region}`, `#${seed.category}`],
+      // festival 일정 — category === 'festival' 일 때만 deterministic mock 일자.
       ...(seed.category === 'festival' && {
         eventStart: mockFestivalDate(h, 0),
         eventEnd: mockFestivalDate(h, 30 + Math.floor(u(70) * 60)),
@@ -977,27 +850,35 @@ export const handlers = [
   // ===== Notifications ===== (모두 로그인 필요)
   // cursor 기반 페이지네이션 — 편지/시군콘텐츠와 동일 컨벤션.
   // unreadCount 는 매 페이지 응답에 포함 (전체 통합 수). badge 는 별도 unread-count endpoint.
+  // 신규 Spring BE: ApiResponse<UnreadCountDto> 엔벨로프.
   http.get(`${apiUrl}/notifications/unread-count`, () => {
     if (!getMockSignedIn()) return unauthorized();
     return HttpResponse.json({
-      unreadCount: notificationItems.filter((n) => !n.read).length,
+      success: true,
+      message: null,
+      data: { unreadCount: notificationItems.filter((n) => !n.read).length },
     });
   }),
+  // 신규 Spring BE: ApiResponse<NotificationListDto> 엔벨로프. 페이지 크기 param 은 `size`.
   http.get(`${apiUrl}/notifications`, ({ request }) => {
     if (!getMockSignedIn()) return unauthorized();
     const url = new URL(request.url);
     const cursor = Math.max(0, Number(url.searchParams.get('cursor')) || 0);
-    const limit = Math.min(
+    const size = Math.min(
       60,
-      Math.max(1, Number(url.searchParams.get('limit')) || 20),
+      Math.max(1, Number(url.searchParams.get('size')) || 20),
     );
-    const slice = notificationItems.slice(cursor, cursor + limit);
+    const slice = notificationItems.slice(cursor, cursor + size);
     const next = cursor + slice.length;
     const nextCursor = next < notificationItems.length ? next : null;
     return HttpResponse.json({
-      items: slice,
-      unreadCount: notificationItems.filter((n) => !n.read).length,
-      nextCursor,
+      success: true,
+      message: null,
+      data: {
+        items: slice,
+        unreadCount: notificationItems.filter((n) => !n.read).length,
+        nextCursor,
+      },
     });
   }),
   http.post(`${apiUrl}/notifications/:id/read`, ({ params }) => {
@@ -1024,6 +905,41 @@ export const handlers = [
     await request.json().catch(() => null);
     return new HttpResponse(null, { status: 204 });
   }),
+  // VAPID 공개키 — 구독 생성용. 실 서버는 서버 보유 keypair 의 공개키 반환.
+  http.get(`${apiUrl}/notifications/vapid-public-key`, () =>
+    HttpResponse.json({
+      success: true,
+      message: null,
+      data: { publicKey: 'BMockVapidPublicKey_e2e_only_000000000000' },
+    }),
+  ),
+  // 등록된 구독 기기 목록.
+  http.get(`${apiUrl}/notifications/subscriptions`, () =>
+    getMockSignedIn()
+      ? HttpResponse.json({
+          success: true,
+          message: null,
+          data: [
+            {
+              id: 1,
+              userAgent: 'Chrome · macOS',
+              createdAt: '2026-07-20T09:00:00Z',
+            },
+            {
+              id: 2,
+              userAgent: 'Safari · iPhone',
+              createdAt: '2026-07-28T12:30:00Z',
+            },
+          ],
+        })
+      : unauthorized(),
+  ),
+  // 특정 기기 구독 해제.
+  http.delete(`${apiUrl}/notifications/subscriptions/:id`, () =>
+    getMockSignedIn()
+      ? new HttpResponse(null, { status: 204 })
+      : unauthorized(),
+  ),
   // mock 전용 — 새 편지 도착 시뮬레이션.
   // 클라이언트 dev tool 이 호출 → 알림함에 항목 prepend.
   // (Service Worker 의 push 이벤트는 별도 postMessage(MOCK_PUSH) 로 trigger.)
@@ -1055,45 +971,30 @@ export const handlers = [
 
   // ===== Travel type test =====
   // 옵션은 단순 id+text만 반환 — 클라이언트는 점수 매핑 미인식
+  // 신규 Spring BE: ApiResponse<QuizDto> 엔벨로프 (id: number).
   http.get(`${apiUrl}/travel-types/quiz`, () =>
-    HttpResponse.json(travelTypeQuizSeed),
+    HttpResponse.json({
+      success: true,
+      message: null,
+      data: travelTypeQuizSeed,
+    }),
   ),
+  // 신규 Spring BE: 응답은 TravelTypeResultDto(code/title/emoji/description/tags) 엔벨로프.
+  // 내 유형 코드 저장 → GET /me.travelType 이 반환(4-A: travel-types/me 대체).
   http.post(`${apiUrl}/travel-types/submit`, async ({ request }) => {
     const body = (await request.json()) as { answers: TravelTypeAnswer[] };
     const result = resolveTravelType(body.answers ?? []);
-    myTravelType = result;
-    return HttpResponse.json(result);
-  }),
-  // 적용된 본인 유형 — 비로그인 시 null (getMockSignedIn() 무관, 비로그인은 적용 불가).
-  http.get(`${apiUrl}/travel-types/me`, () =>
-    getMockSignedIn() ? HttpResponse.json(myTravelType) : unauthorized(),
-  ),
-
-  // 명시 적용 — quiz 결과 페이지의 "내 유형으로 적용" 버튼. 로그인 필요.
-  // BE spec: 응답은 TravelTypeDto (recommended: []) — apply 는 저장만, recommended 는 GET /me 가 별도 빌드.
-  // FE hook 이 setQueryData 대신 invalidate 호출 → GET 재요청으로 recommended 복원.
-  http.patch(`${apiUrl}/travel-types/me`, async ({ request }) => {
-    if (!getMockSignedIn()) return unauthorized();
-    const { code } = (await request.json()) as { code: string };
-    const meta = (travelTypeMetaSeed as Record<string, TravelTypeDto>)[code];
-    if (!meta) return new HttpResponse(null, { status: 404 });
-    // 저장된 상태는 recommended 까지 — GET /me 가 같은 데이터 반환.
-    const cats =
-      (travelTypeRecommendCategoriesSeed as Record<string, readonly string[]>)[
-        code
-      ] ?? [];
-    const pool = destinationSeeds.filter((d) =>
-      cats.includes(d.category as (typeof cats)[number]),
-    );
-    // meta 가 위에서 검증됐으므로 code 는 TravelTypeMockCode 4개 중 하나.
-    const compatibility =
-      travelTypeCompatibilitySeed[code as TravelTypeMockCode];
-    myTravelType = {
-      ...meta,
-      recommended: pickRandom(pool, 3),
-      compatibility,
-    };
-    // 다만 PATCH 응답 자체는 BE spec 대로 recommended:[] (저장 ack).
-    return HttpResponse.json({ ...meta, recommended: [], compatibility });
+    myTravelTypeCode = result.code as TravelTypeMockCode;
+    return HttpResponse.json({
+      success: true,
+      message: null,
+      data: {
+        code: result.code,
+        title: result.title,
+        emoji: result.emoji,
+        description: result.description,
+        tags: result.tags,
+      },
+    });
   }),
 ];

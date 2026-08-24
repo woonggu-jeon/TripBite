@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { Toaster } from './Toaster';
 import { Button } from '@/components/ui';
 import { toast } from '@/lib/toast';
+import { Toaster } from './Toaster';
 
 const meta = {
   title: 'Feedback/Toast',

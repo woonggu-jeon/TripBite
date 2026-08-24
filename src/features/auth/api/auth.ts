@@ -1,41 +1,89 @@
+// 신규 Spring BE 지원: login / logout / signup / me(getMe) + 계정찾기 3종(2026-08).
 import {
-  authControllerCheckEmailV1,
-  authControllerCheckUsernameV1,
-  authControllerFindIdV1,
-  authControllerForgotPasswordV1,
-  authControllerLoginV1,
-  authControllerLogoutV1,
-  authControllerResetPasswordV1,
-  authControllerSignupV1,
-} from '@/api/generated/auth/auth';
+  findId as beFindId,
+  forgotPassword as beForgotPassword,
+  login as beLogin,
+  logout as beLogout,
+  resetPassword as beResetPassword,
+  signup as beSignup,
+} from '@/api/be/auth/auth';
 import {
-  meControllerChangePasswordV1,
-  meControllerGetMeV1,
-  meControllerWithdrawV1,
-} from '@/api/generated/me/me';
+  changePassword as beChangePassword,
+  deleteMe as beDeleteMe,
+  getMe as beGetMe,
+} from '@/api/be/me/me';
+import type { UserResponseDto } from '@/api/be/schemas';
+import type { UserDto } from '@/types/api-domain';
 
 /**
- * 인증 API — orval 가 BE swagger 로부터 자동 생성한 client functions wrap.
+ * Spring UserResponseDto → 도메인 UserDto 파생 뷰 (FE 소비 필드만).
+ * name/phone/birthDate/travelType/createdAt 는 화면 미소비라 미매핑.
+ * avatarUrl 은 BE 제공(2026-08) — 미설정 시 null.
+ */
+function mapUser(u: UserResponseDto): UserDto {
+  return {
+    id: String(u.id ?? ''),
+    username: u.username ?? '',
+    nickname: u.nickname ?? '',
+    email: u.email ?? '',
+    avatarUrl: u.avatarUrl ?? null,
+  };
+}
+
+/**
+ * 인증 API — Spring BE(be/) client wrap.
  *
- * 인증 방식: sessionID 단일 쿠키 `SID` (HttpOnly; SameSite; Secure 운영).
+ * 인증 방식: 세션 쿠키 (Spring JSESSIONID; 운영 Secure/SameSite).
  *   - BE 가 Set-Cookie 로 발급, FE 는 withCredentials=true 로 자동 전송.
- *   - 만료/Revocation 은 BE 가 DB Session 행 변경으로 즉시 반영.
  *
- * 마이그 패턴 (얕은): hook 의 mutationFn 만 generated 함수 호출로 교체.
- * onSuccess (router redirect / cache clear) 등 FE 특화 흐름은 hook 안에 유지.
+ * 신규 BE: login(→{userId}) / logout / me(→UserResponseDto). login 은 userId 만 반환 →
+ * 프로필은 useLogin.onSuccess 가 /me 재조회로 hydrate.
+ *
+ * 계정찾기(2026-08, 전부 공개 엔드포인트):
+ *   - findId: 이메일로 가입 아이디 조회 (없으면 username=null).
+ *   - forgotPassword: 아이디+이메일로 재설정 토큰 발급(메일 발송).
+ *   - resetPassword: 토큰+새 비밀번호로 재설정 (password ≥ 10자).
  */
 export const authApi = {
-  login: authControllerLoginV1,
-  signup: authControllerSignupV1,
-  // 가입 폼 중복확인 — 버튼 클릭 시 호출. nickname 은 unique 정책 없어 endpoint 없음.
-  checkUsername: (username: string) =>
-    authControllerCheckUsernameV1({ username }),
-  checkEmail: (email: string) => authControllerCheckEmailV1({ email }),
-  forgotPassword: authControllerForgotPasswordV1,
-  resetPassword: authControllerResetPasswordV1,
-  changePassword: meControllerChangePasswordV1,
-  findId: authControllerFindIdV1,
-  logout: authControllerLogoutV1,
-  deleteAccount: meControllerWithdrawV1,
-  me: meControllerGetMeV1,
+  // LoginDto ≡ LoginRequestDto (username/password 동일).
+  login: beLogin,
+  // 신규 Spring BE: SignupRequestDto(username/password/name/birthDate/email/phone/nickname).
+  // 응답은 ApiResponseUnit(user 없음) → useSignup 이 폼 입력값으로 pendingUser 구성.
+  signup: beSignup,
+  logout: beLogout,
+  // 신규 BE: GET /me → ApiResponse<UserResponseDto> → 도메인 UserDto 매핑.
+  me: async (signal?: AbortSignal): Promise<UserDto> => {
+    const res = await beGetMe(signal);
+    return mapUser(res.data ?? {});
+  },
+  // POST /auth/find-id → ApiResponse<{ username: string | null }>. 매칭 없으면 null.
+  findId: async (email: string): Promise<string | null> => {
+    const res = await beFindId({ email });
+    return res.data?.username ?? null;
+  },
+  // POST /auth/forgot-password → ApiResponseUnit. 재설정 토큰 메일 발송(항상 성공 처리).
+  forgotPassword: async (input: {
+    username: string;
+    email: string;
+  }): Promise<void> => {
+    await beForgotPassword(input);
+  },
+  // POST /auth/reset-password → ApiResponseUnit. token + 새 비밀번호(≥10자).
+  resetPassword: async (input: {
+    token: string;
+    password: string;
+  }): Promise<void> => {
+    await beResetPassword(input);
+  },
+  // POST /me/change-password → ApiResponseUnit. 현재 비번 검증 + 새 비번(≥10자).
+  changePassword: async (input: {
+    currentPassword: string;
+    newPassword: string;
+  }): Promise<void> => {
+    await beChangePassword(input);
+  },
+  // DELETE /me → 회원 탈퇴. BE 가 세션 무효 + 소프트 삭제.
+  deleteAccount: async (): Promise<void> => {
+    await beDeleteMe();
+  },
 };

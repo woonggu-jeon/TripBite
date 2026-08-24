@@ -1,115 +1,32 @@
-// Figma "TRN · 여행지 수" (2026-06-22) — 2×2 grid count card.
-// 각 카드 154×92, padding 20, column center justify.
-//   ┌──────────────┐
-//   │  24 개 (B_24 + B_14, 같은 row)             │
-//   │  Caption R_12 muted                        │
-//   └──────────────┘
-// active: 숫자/단위 primary color + bg secondary01 + 1px primary border.
+// Figma `grid` — 2열, 행/열 gap 12. 카드 규격은 SelectCard 담당.
 .grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-3); /* 12 */
-}
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
 
-.card {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; /* Figma — t5-text 가 stretch 로 가로 채움 */
-  justify-content: center;
-  gap: var(--space-3); /* 12 — Figma card gap */
-  min-height: 92px;
-  padding: var(--space-5); /* 20 */
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  color: var(--color-fg);
-  cursor: pointer;
-  transition:
-    border-color var(--motion-base) ease,
-    background var(--motion-base) ease,
-    transform var(--motion-fast) ease;
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover:not(:disabled) {
-      border-color: var(--color-primary);
-    }
-  }
-  &:active:not(:disabled) {
-    transform: scale(0.97);
-  }
-  &:focus-visible {
-    outline: var(--focus-outline);
-    outline-offset: var(--focus-outline-offset);
-  }
-  &:disabled,
-  &[aria-disabled='true'] {
-    opacity: var(--opacity-disabled);
-    cursor: not-allowed;
-  }
-
-  &.active {
-    border-color: var(--color-primary);
-    background: var(--color-primary-soft);
+  > * {
+    min-width: 0;
   }
 }
 
-// Figma t5-text wrapper — 카드 안에서 align-self stretch (가로 114 = card
-// 154 - padding 40), column center align, gap 4 (titleRow ↔ sub).
-.t5Text {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-1); /* 4 */
-  align-self: stretch;
-}
-
-// Figma Frame 42 — number + unit row, gap 0, align center.
-.titleRow {
-  display: flex;
+// Figma `Frame 42` — 숫자 + 단위 가로 조합, baseline 정렬
+.amount {
+  display: inline-flex;
   align-items: baseline;
-  gap: 0;
-}
-
-.number {
-  /* Figma B_24_130% */
-  font-size: var(--text-2xl); /* 24 */
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-tight);
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-fg);
+  gap: 2px;
+  justify-content: center;
   font-variant-numeric: tabular-nums;
 }
 
-.unit {
-  /* Figma B_14_140% */
-  font-size: var(--text-sm); /* 14 */
+// Title/B_24
+.num {
+  font-size: var(--font-h2);
   font-weight: var(--font-weight-bold);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-fg);
+  line-height: var(--line-snug);
 }
 
-.sub {
-  /* Figma Caption R_12 */
-  font-size: var(--font-caption); /* 12 */
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: var(--tracking-snug);
-  color: var(--color-muted);
-}
-
-// active 시 숫자/단위 primary (#00B334), sub 는 Figma spec 상 active 카드
-// 안에서도 muted #393939 유지 (primary tint 안 줌).
-.card.active .number,
-.card.active .unit {
-  color: var(--color-primary);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .card {
-    transition: none;
-    &:active:not(:disabled) {
-      transform: none;
-    }
-  }
+// Basic Body/B_14_140%
+.unit {
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-bold);
 }

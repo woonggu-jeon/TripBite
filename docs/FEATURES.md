@@ -1,9 +1,12 @@
 # 기능 명세 — 인증 / 알림 / 푸시
 
-BE 인계용 정책·시나리오·보안 명세 (Swagger 가 cover 못 하는 영역). endpoint shape 은 **BE Swagger** (`{API}/docs`) 가 SoT — 본 문서는 정책 / 흐름 / 발송 매핑 / 보안 체크리스트.
+BE 인계용 정책·시나리오·보안 명세 (Swagger 가 cover 못 하는 영역). endpoint shape 은 **Spring Swagger** 가 SoT — 본 문서는 정책 / 흐름 / 발송 매핑 / 보안 체크리스트.
 
-> 로컬 Swagger: <http://localhost:3000/docs> · OpenAPI JSON: <http://localhost:3000/docs-json>
-> orval 이 빌드 전 자동 생성 → `src/api/generated/`.
+> ⚠️ **기능 지원 현황(무엇이 실 BE 연동 / 무엇이 준비중)의 SoT 는 [`BE_SPRING_MIGRATION.md`](./BE_SPRING_MIGRATION.md).**
+> 아래 명세 중 일부(탈퇴·아바타·아이디/비번찾기·비번변경 등)는 Spring 미지원으로 현재 준비중 — §5 참조.
+>
+> Swagger UI: <https://trip-bite.o-r.kr/swagger-ui/index.html> · OpenAPI JSON: <https://trip-bite.o-r.kr/v3/api-docs>
+> orval 이 빌드 전 자동 생성 → `src/api/be/` (구 `src/api/generated/` 는 동결).
 
 ---
 

@@ -1,10 +1,11 @@
+import { createRef } from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { screen } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from '@/test-utils';
-import type { DestinationDto } from '@/api/generated/schemas';
+import type { DestinationDto } from '@/types/api-domain';
 import type { BracketResult } from '@/features/tournament/types';
-import { Bracket } from './Bracket';
+import { Bracket, type BracketHandle } from './Bracket';
 
 function makeDest(id: number, name?: string): DestinationDto {
   return {
@@ -118,5 +119,40 @@ describe('Bracket', () => {
       <Bracket destinations={[]} onComplete={vi.fn()} />,
     );
     expect(container.firstChild).toBeNull();
+  });
+
+  it('undo — 직전에 고른 매치로 되돌아가고 그 선택이 취소된다', async () => {
+    // 4명 → 1라운드 2매치. 첫 매치를 고른 뒤 undo 하면 첫 매치로 복귀.
+    const dests = [1, 2, 3, 4].map((i) => makeDest(i, `d${i}`));
+    const onComplete = vi.fn<(r: BracketResult) => void>();
+    const ref = createRef<BracketHandle>();
+
+    renderWithProviders(
+      <Bracket ref={ref} destinations={dests} onComplete={onComplete} />,
+    );
+
+    const first = screen.getAllByRole('button', { name: /선택$/ });
+    const firstNames = first.map((b) => b.getAttribute('aria-label'));
+    await userEvent.click(first[0]!);
+
+    // 2번째 매치로 넘어감 — 대전 카드가 바뀐다
+    const second = screen.getAllByRole('button', { name: /선택$/ });
+    expect(second.map((b) => b.getAttribute('aria-label'))).not.toEqual(
+      firstNames,
+    );
+
+    // undo → 첫 매치 카드가 다시 보이고, 되돌릴 게 있었으니 true.
+    // ref 호출은 React 이벤트 밖이라 act 로 감싸 상태 갱신을 flush 한다.
+    let undone: boolean | undefined;
+    await act(async () => {
+      undone = ref.current?.undo();
+    });
+    expect(undone).toBe(true);
+
+    const back = screen.getAllByRole('button', { name: /선택$/ });
+    expect(back.map((b) => b.getAttribute('aria-label'))).toEqual(firstNames);
+
+    // 첫 매치에서 다시 undo — 되돌릴 게 없어 false
+    expect(ref.current?.undo()).toBe(false);
   });
 });

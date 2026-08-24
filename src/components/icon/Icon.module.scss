@@ -3,9 +3,17 @@
   vertical-align: middle;
   fill: none;
   stroke: currentColor;
-  stroke-width: 2;
+  /* Figma 는 아이콘 계열별로 stroke 가 다르다 — nav 1.7 / header 2 / detail 1.5.
+     기본 2 를 두고 사용처가 --icon-stroke 로 덮는다. */
+  stroke-width: var(--icon-stroke, 2);
   stroke-linecap: round;
   stroke-linejoin: round;
   /* GPU 합성 힌트 — 메뉴 활성 색상 변경 시 부드러움 */
   will-change: auto;
+}
+
+/* 시안이 채움으로 그린 아이콘 (headerIcon setting·noti) — stroke 기본값을 끈다. */
+.icon[data-filled='true'] {
+  fill: currentColor;
+  stroke: none;
 }

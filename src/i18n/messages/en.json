@@ -34,7 +34,11 @@
     "previous": "Previous",
     "skip": "Skip",
     "start": "Start",
-    "complete": "Done"
+    "complete": "Done",
+    "comingSoon": {
+      "title": "Coming soon",
+      "description": "We're getting this feature ready."
+    }
   },
   "pwa": {
     "update": {
@@ -62,7 +66,7 @@
     "mypage": "Me"
   },
   "header": {
-    "logo": "TripBite",
+    "logo": "Travel",
     "home": "Home",
     "notification": "Notifications",
     "settings": "Settings"
@@ -99,12 +103,12 @@
     },
     "findId": {
       "title": "Find username",
-      "heroTitle": "Forgot your username?",
-      "heroDescription": "Enter the email you used to sign up\nand we'll find your username.",
+      "heroTitle": "Forgot your ID?",
+      "heroDescription": "Enter the email you signed up with\nand we will find your ID.",
       "email": "Email",
       "submit": "Find username",
       "submitting": "Searching...",
-      "resultTitle": "Username found",
+      "resultTitle": "Result",
       "resultEmailHint": "Account registered with {maskedEmail}.",
       "resultCardLabel": "Your username",
       "resultLoginCta": "Go to login",
@@ -113,7 +117,12 @@
       "toLogin": "Back to sign in",
       "errors": {
         "emailInvalid": "Please enter a valid email."
-      }
+      },
+      "foundTitle": "We found your ID",
+      "foundDescription": "An account is registered with {email}.",
+      "myIdLabel": "Your ID",
+      "toLoginCta": "Go to login",
+      "toForgotPassword": "Find password"
     },
     "changePassword": {
       "currentPassword": "Current password",
@@ -151,6 +160,10 @@
       "checkDone": "Verified",
       "nickname": "Nickname",
       "nicknamePlaceholder": "Korean/letters/digits 2-10",
+      "name": "Name",
+      "namePlaceholder": "Enter your legal name",
+      "birthDate": "Date of birth",
+      "birthDatePlaceholder": "YYYY-MM-DD",
       "password": "Password",
       "passwordPlaceholder": "Letters + digits + symbol, 10+",
       "passwordConfirm": "Confirm password",
@@ -173,13 +186,17 @@
         "nicknameTooShort": "Nickname must be at least 2 characters.",
         "nicknameTooLong": "Nickname must be 10 characters or fewer.",
         "nicknameInvalid": "Nickname can contain Korean, letters, and digits only.",
+        "nameInvalid": "Name must be 2-20 Korean/Latin letters.",
+        "birthDateInvalid": "Please enter a valid date of birth (YYYY-MM-DD).",
         "passwordMin": "Password must be at least 10 characters.",
         "passwordMax": "Password is too long.",
         "passwordWeak": "Must include letters, digits, and a symbol.",
         "passwordInvalid": "Contains disallowed characters.",
         "passwordMismatch": "Passwords do not match.",
         "emailInvalid": "Please enter a valid email."
-      }
+      },
+      "haveAccount": "Already have an account?",
+      "loginLink": "Log in"
     },
     "forgotPassword": {
       "title": "Forgot password",
@@ -273,18 +290,21 @@
       "quick": {
         "tournament": "Bracket",
         "letter": "Write letter",
-        "quiz": "Type test",
+        "quiz": "What kind of traveler am I?",
         "tournamentBySeason": {
-          "spring": "Start spring bracket 🌸",
-          "summer": "Start summer bracket ☀",
-          "autumn": "Start autumn bracket 🍂",
-          "winter": "Start winter bracket ❄"
+          "spring": "Start the spring bracket",
+          "summer": "Start the summer bracket",
+          "autumn": "Start the autumn bracket",
+          "winter": "Start the winter bracket"
         },
         "tournamentSubtitle": "Round of 16 · ~2 min",
         "tournamentCta": "Start",
         "quizTitle": "What kind of traveler are you?",
         "quizSubtitle": "Find your travel style in 5 questions",
-        "quizCta": "Start"
+        "quizCta": "Start",
+        "tournamentHint": "Starts at the round of 16 · about 2 min",
+        "quizHint": "Find your travel type in 5 questions",
+        "cta": "Start"
       }
     },
     "hero": {
@@ -304,6 +324,41 @@
         "experience": "Experience"
       },
       "emptyForChip": "No recommendations for this category"
+    },
+    "recommendation": {
+      "label": "Today's pick",
+      "cta": "See more"
+    },
+    "festivals": {
+      "label": "Festivals happening now"
+    },
+    "festival": {
+      "ongoing": "Festivals happening now",
+      "upcoming": "Upcoming festivals in Chungbuk",
+      "popular": "Popular destinations this week",
+      "dday": {
+        "label": "D-{n}",
+        "aria": "Starts in {n} days"
+      }
+    },
+    "latestLetterWidget": {
+      "badge": "New letter",
+      "justNow": "Just now",
+      "minutesAgo": "{n}m ago",
+      "hoursAgo": "{n}h ago",
+      "daysAgo": "{n}d ago"
+    },
+    "picks": {
+      "title": "How about these trips?",
+      "hint": "Recommendations by category",
+      "categoryAria": "Choose a category",
+      "empty": "Preparing recommendations",
+      "categories": {
+        "all": "All",
+        "attraction": "Attractions",
+        "festival": "Festivals",
+        "experience": "Experiences"
+      }
     }
   },
   "weather": {
@@ -386,8 +441,11 @@
       "error": "Couldn't load chart",
       "retry": "Try again",
       "empty": "No data",
-      "rowAriaLabel": "{region}, {wins} wins, view details"
-    }
+      "rowAriaLabel": "{region}, {wins} wins, view details",
+      "winsLabel": "Wins"
+    },
+    "weekLabel": "Week {week} of {month}",
+    "updateNote": "Updated every Monday"
   },
   "tournament": {
     "title": "Bracket",
@@ -402,26 +460,26 @@
       "start": "Start",
       "steps": {
         "themeKind": {
-          "title": "Pick a theme to choose a destination",
-          "hint": "We'll suggest Chungbuk destinations matching the theme.",
-          "season": "Seasonal theme",
+          "title": "What's the theme?",
+          "hint": "Pick a season yourself or roll the dice",
+          "season": "Pick a season",
           "seasonDesc": "Choose Spring · Summer · Autumn · Winter",
           "random": "Random theme",
-          "randomDesc": "We'll pick the season and type for you"
+          "randomDesc": "Season and type chosen for you"
         },
         "season": {
-          "title": "Which season would you like?",
-          "hint": "Pick a destination by the season's mood."
+          "title": "Which season?",
+          "hint": "Choose the season that fits the mood"
         },
         "category": {
-          "title": "Looking for {season} destinations?",
-          "hint": "Pick a destination type.",
+          "title": "What type interests you?",
+          "hint": "You can pick more than one",
           "ariaLabel": "Destination type",
           "seasonScopeNonFestival": "Season ({season}) applies to Festival only. Other categories are recommended regardless of season."
         },
         "count": {
-          "title": "Pick a destination count",
-          "hint": "More destinations means a longer tournament.",
+          "title": "Destination count",
+          "hint": "Pick how many petals fall on the map",
           "ariaLabel": "Destination count"
         }
       },
@@ -436,13 +494,20 @@
           "6": "Generous",
           "8": "Thorough"
         }
-      }
+      },
+      "selectToContinue": "Pick one to continue"
     },
     "season": {
       "spring": "Spring",
       "summer": "Summer",
       "autumn": "Autumn",
-      "winter": "Winter"
+      "winter": "Winter",
+      "desc": {
+        "spring": "Cherry blossoms in the air",
+        "summer": "Blue water and bright sun",
+        "autumn": "Hills turning red and gold",
+        "winter": "Snow and hot springs"
+      }
     },
     "seasonMonths": {
       "spring": "Cherry blossoms in the breeze",
@@ -453,7 +518,12 @@
     "category": {
       "festival": "Festival",
       "attraction": "Attraction",
-      "experience": "Experience"
+      "experience": "Experience",
+      "desc": {
+        "festival": "Local festivals and events",
+        "attraction": "Landmarks, nature, views",
+        "experience": "Hands-on programs"
+      }
     },
     "categoryDesc": {
       "festival": "Local festivals and seasonal events",
@@ -467,7 +537,7 @@
       "retry": "Try again",
       "introHint": "The Chungbuk map will appear shortly",
       "start": "Next",
-      "reshuffle": "Retry",
+      "reshuffle": "Reshuffle",
       "mapReady": {
         "title": "{count} destinations selected",
         "desc": "Picked across Chungbuk for the {season} theme.\nReady to start the match?"
@@ -478,18 +548,18 @@
         "back": "Adjust setup"
       },
       "tournamentSize": {
-        "title": "How many rounds?",
-        "hint": "More rounds means more comparisons and a more thoughtful pick.",
+        "title": "Bracket size",
+        "hint": "A bracket of this size will be generated",
         "count": {
           "4": "Round of 4",
           "8": "Round of 8",
           "16": "Round of 16",
           "32": "Round of 32",
           "sub": {
-            "4": "Quick pick!",
-            "8": "Fun balance",
-            "16": "Thoughtful",
-            "32": "Deep dive"
+            "4": "Quick",
+            "8": "Recommended",
+            "16": "Deep",
+            "32": "All in"
           }
         }
       },
@@ -505,11 +575,17 @@
         "remainMatches": "{remain} matches left",
         "progressLabel": "Bracket progress",
         "pickPrompt": "Pick the one you want more",
-        "autoWin": "Your single pick wins automatically"
+        "autoWin": "Your single pick wins automatically",
+        "remaining": "{n} matches left",
+        "prompt": "Which one would you rather visit?"
       },
       "celebration": {
         "title": "🎊 Winner!"
-      }
+      },
+      "next": "Next",
+      "mapSummary": "{destinations} destinations selected",
+      "noConfig": "No tournament settings yet",
+      "mapSummaryHint": "Places picked across Chungbuk for the {season} theme.\nReady to start?"
     },
     "result": {
       "loading": "Loading your result…",
@@ -522,7 +598,7 @@
       "noWinner": "No tournament result yet",
       "goSetup": "Start a bracket",
       "color": {
-        "label": "Lucky color of this place",
+        "label": "Today's lucky color",
         "red": "Red",
         "orange": "Orange",
         "yellow": "Yellow",
@@ -535,21 +611,18 @@
       "stats": {
         "title": "Bracket recap",
         "label": "Winner stats",
-        "bracketSize": "Round",
+        "bracketSize": "Bracket",
         "matches": "Matches",
         "matchesValue": "{n} matches",
         "region": "Region",
-        "category": "Type",
+        "category": "Category",
         "runnerUp": "Runner-up"
       },
       "detail": {
-        "panelLabel": "Trip info",
+        "panelLabel": "Destination detail",
         "address": "Address",
-        "openingHours": "Hours",
-        "restDate": "Closed",
-        "parking": "Parking",
-        "phone": "Phone",
-        "website": "Website"
+        "admissionFee": "Admission",
+        "eventPeriod": "Event period"
       },
       "ladder": {
         "title": "Chance of a fated encounter on this trip",
@@ -559,8 +632,18 @@
         "hintRevealed": "Arrived!",
         "resultLabel": "Chance of a fated encounter on this trip",
         "svgLabel": "Ladder game",
-        "lineLabel": "Line {n}"
-      }
+        "lineLabel": "Line {n}",
+        "retry": "Roll again"
+      },
+      "luckyColor": "Lucky color",
+      "meetChance": "Chance of a fated encounter",
+      "saveToMypage": "Save to My Page",
+      "saving": "Saving…",
+      "saveFailed": "Save failed",
+      "retry": "Try again",
+      "share": "Share result",
+      "savedToast": "Saved",
+      "shareText": "{name} won my TripBite bracket!"
     }
   },
   "letter": {
@@ -579,19 +662,44 @@
       "subtitle": "Just five letters, reaching someone"
     },
     "received": "Received",
-    "sent": "Sent",
+    "sent": {
+      "title": "Sent letter",
+      "noticeTitle": "Sent!",
+      "noticeBody": "It will reach an anonymous traveler soon",
+      "letterAria": "Sent letter card",
+      "from": "From",
+      "to": "To",
+      "toRecipient": "To an anonymous traveler",
+      "toDelivery": "On the way",
+      "stampMain": "SENT",
+      "stampSub": "TripBite",
+      "fromAnonymous": "Anonymous traveler",
+      "dateLabel": "Sent",
+      "sentBadge": "Sent",
+      "goHome": "Back to home",
+      "again": "Write again",
+      "home": "Home",
+      "empty": "No letter just sent",
+      "goCompose": "Write a letter",
+      "loadError": "Couldn't load the letter",
+      "retry": "Try again",
+      "toArrival": "Arrives at a random time",
+      "sentSuffix": "sent"
+    },
     "liked": "Liked",
     "saved": "Saved",
     "tabs": {
       "section": "Letters",
       "received": "Received",
       "sent": "Sent",
-      "saved": "Saved letters"
+      "saved": "Saved",
+      "liked": "Hearts"
     },
     "empty": {
-      "received": "No received letters",
-      "sent": "No sent letters",
-      "saved": "No saved letters"
+      "received": "No letters yet",
+      "sent": "No letters sent yet",
+      "saved": "No saved letters yet",
+      "liked": "No hearts yet"
     },
     "listError": "Couldn't load letters",
     "listRetry": "Try again",
@@ -623,9 +731,9 @@
       }
     },
     "detail": {
-      "title": "Received letter",
+      "title": "Arrived letter",
       "arrivedTitle": "A letter arrived",
-      "arrivedBody": "Someone sent you a five-letter message",
+      "arrivedBody": "Where is it from? Read the message of 5 letters",
       "letterAria": "Received letter card",
       "from": "From",
       "to": "To",
@@ -651,32 +759,12 @@
       "deletedToast": "Letter deleted",
       "deleteFailedToast": "Couldn't delete the letter",
       "retry": "Try again",
-      "backToList": "Back to inbox"
+      "backToList": "Back to inbox",
+      "postmarkArrived": "Arrived"
     },
     "author": {
-      "anonymous": "Anonymous traveler"
-    },
-    "sent": {
-      "title": "Write a letter",
-      "noticeTitle": "Your letter is on its way!",
-      "noticeBody": "It will arrive at a random time",
-      "letterAria": "Sent letter card",
-      "from": "From",
-      "to": "To",
-      "toRecipient": "To a random recipient",
-      "toDelivery": "On the way",
-      "stampMain": "SENT",
-      "stampSub": "TripBite",
-      "fromAnonymous": "Anonymous traveler",
-      "dateLabel": "Sent",
-      "sentBadge": "Sent",
-      "goHome": "Back to home",
-      "again": "Write again",
-      "home": "Home",
-      "empty": "No letter just sent",
-      "goCompose": "Write a letter",
-      "loadError": "Couldn't load the letter",
-      "retry": "Try again"
+      "anonymous": "Anonymous traveler",
+      "mine": "Letter I wrote"
     }
   },
   "quiz": {
@@ -719,7 +807,7 @@
       "applyRequireAuth": "Sign in to save your travel type. Go to login now?",
       "appliedSuccess": "Saved to your profile",
       "appliedFailed": "Could not save",
-      "share": "Share image card",
+      "share": "Share result",
       "retake": "Retake",
       "compatibility": {
         "title": "Travel match",
@@ -731,17 +819,19 @@
       "ctaEyebrow": "Travel type test",
       "ctaTitle": "Find your travel style in 5 questions",
       "myTypeEyebrow": "My travel type"
-    }
+    },
+    "progress": "{current}/{total}"
   },
   "mypage": {
     "title": "My Page",
     "sections": {
       "profile": "Profile",
-      "stampMap": "Chungbuk stamp book",
+      "stampMap": "Chungbuk stamps",
       "stampMapViewAll": "View all",
       "savedTournaments": "Saved winners",
       "savedTournamentsViewAll": "View all",
-      "tournamentHistory": "Recent tournaments"
+      "tournamentHistory": "Bracket history",
+      "goToSettings": "Go to settings"
     },
     "profile": {
       "label": "Profile",
@@ -763,7 +853,8 @@
       "sheetOptionGallery": "Choose from gallery",
       "sheetOptionRemove": "Remove photo",
       "travelType": {
-        "label": "Travel type"
+        "label": "Travel type",
+        "rookie": "New traveler"
       }
     },
     "savedTournaments": {
@@ -773,14 +864,15 @@
       "error": "Failed to load saved list",
       "retry": "Retry",
       "allTitle": "Saved winners",
-      "totalCount": "Up to 20 saved (newest first)",
+      "totalCount": "Total {count}",
       "unsaveAria": "Unsave",
-      "removeConfirmTitle": "Remove saved winner",
-      "removeConfirmBody": "Remove from saved list?",
+      "removeConfirmTitle": "Remove this saved winner?",
+      "removeConfirmBody": "It will disappear from your saved list. Tournament history is kept.",
       "removeConfirmYes": "Remove",
       "removeConfirmNo": "Cancel",
       "removeSuccess": "Removed from saved list",
-      "removeFailed": "Failed to remove"
+      "removeFailed": "Failed to remove",
+      "viewAll": "View all"
     },
     "tournamentHistory": {
       "empty": "No tournaments yet",
@@ -798,19 +890,21 @@
     "stampBook": {
       "pageTitle": "Chungbuk stamp book",
       "bannerLabel": "{remaining} more to Chungbuk Master",
-      "bannerHint": "Share master card when all 11 collected",
+      "bannerHint": "Collect all {total} to share the Master card",
       "remainingTitle": "{remaining} more to Chungbuk Master",
       "progCaption": "Collect all {total} stamps to earn the Master Card",
       "progCaptionMaster": "Tap to share your Chungbuk Master Card",
       "shareMasterAria": "Share Chungbuk Master Card",
       "legendVisited": "Stamped",
-      "legendUnvisited": "Not yet",
+      "legendUnvisited": "Not visited",
       "masterAchieved": "Chungbuk Master unlocked!",
       "progress": "{visited} / {total}",
       "error": "Failed to load stamps",
       "retry": "Retry",
       "bannerErrorTitle": "Chungbuk stamp book",
-      "bannerErrorHint": "View the map"
+      "bannerErrorHint": "View the map",
+      "shareMaster": "Share master card",
+      "masterHint": "Collect all 11 regions to earn the Chungbuk Master card"
     }
   },
   "settings": {
@@ -842,7 +936,6 @@
       "locationDenied": "Denied — change in device settings",
       "locationPrompt": "Not requested yet",
       "locationUnsupported": "Not supported",
-      "blockedUsers": "Manage blocked users",
       "nicknameDialog": {
         "title": "Change nickname",
         "label": "Nickname",
@@ -871,7 +964,15 @@
       "withdrawConfirmTitle": "Delete your account?",
       "withdrawConfirmDescription": "This permanently removes your profile, saved winners, stamps, and sent letters. This cannot be undone.",
       "withdrawConfirmLabel": "Delete account",
-      "withdrawFailed": "Couldn't delete account. Please try again."
+      "withdrawFailed": "Couldn't delete account. Please try again.",
+      "section": "Account management"
+    },
+    "devices": {
+      "section": "Notification devices",
+      "empty": "No subscribed devices.",
+      "remove": "Remove",
+      "unknownDevice": "Unknown device",
+      "registeredAt": "Registered {date}"
     }
   },
   "destination": {
@@ -894,15 +995,15 @@
     "actions": {
       "groupAria": "Destination actions",
       "directions": "Directions",
-      "share": "Share"
+      "share": "Share link"
     },
     "related": {
-      "label": "Destinations that match"
+      "label": "More in this district"
     }
   },
   "notification": {
     "title": "Notifications",
-    "empty": "No notifications yet",
+    "empty": "No notifications have arrived yet",
     "error": "Couldn't load notifications",
     "retry": "Retry",
     "markAllRead": "Mark all read",
@@ -922,10 +1023,31 @@
     "network": "A network error occurred.",
     "requestFailed": "Couldn't process your request.",
     "tryAgainLater": "Please try again later.",
+    "boundary": {
+      "title": "Something went wrong",
+      "description": "Please try again in a moment.\nIf the problem persists, we're here to help.",
+      "retry": "Try again",
+      "home": "Home"
+    },
     "notFound": {
-      "title": "404",
-      "message": "The page you requested could not be found.",
-      "goHome": "Go home"
+      "title": "Page not found",
+      "description": "The page you're looking for is gone\nor the address is incorrect.",
+      "goHome": "Home"
+    },
+    "byCode": {
+      "AUTH": "Please sign in.",
+      "FORBIDDEN": "You don't have access.",
+      "CSRF": "The request wasn't sent securely. Please refresh and try again.",
+      "NOT_FOUND": "We couldn't find what you requested.",
+      "CONFLICT": "This request was already processed.",
+      "VALIDATION": "Please check your input.",
+      "RATE_LIMIT": "Please try again in a moment.",
+      "SERVER": "A temporary server problem occurred.",
+      "BAD_GATEWAY": "A temporary server problem occurred.",
+      "UNAVAILABLE": "The service is temporarily unavailable.",
+      "BAD_REQUEST": "We couldn't process your request.",
+      "NETWORK": "Please check your network connection.",
+      "UNKNOWN": "An unknown error occurred."
     }
   },
   "consent": {
@@ -967,5 +1089,9 @@
     "prev": "Previous",
     "next": "Next",
     "slide": "Slide {n}/{total}"
+  },
+  "brand": {
+    "name": "TripBite",
+    "tagline": "Chungbuk trips, one bite at a time"
   }
 }

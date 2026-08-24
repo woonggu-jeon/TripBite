@@ -1,0 +1,81 @@
+// Figma `circle-stack` — 바깥 원 134 (계절 파스텔, 인라인 style) +
+// 안쪽 원 100 (흰색) + 64px seasonIcon.
+.bubble {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 134px;
+  height: 134px;
+  padding: 0;
+  border-radius: var(--radius-full);
+  border: none;
+  cursor: pointer;
+  z-index: 2;
+  animation: float 4.5s ease-in-out infinite;
+  transition: transform var(--motion-base) ease;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      transform: scale(1.04);
+    }
+  }
+  &:active:not(:disabled) {
+    transform: scale(0.96);
+  }
+  &:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: 4px;
+  }
+  &:disabled {
+    cursor: default;
+  }
+}
+
+// Figma 안쪽 원 — 100px 흰색
+.inner {
+  display: grid;
+  place-items: center;
+  width: 100px;
+  height: 100px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg);
+}
+
+/* 부드러운 부유 */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* 탭 직후 펄스 */
+.tapped {
+  animation: pulse 0.8s var(--ease-out);
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 var(--color-primary-ring);
+  }
+  100% {
+    box-shadow: 0 0 0 60px transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bubble {
+    animation: none;
+    transition: none;
+  }
+  .bubble:hover:not(:disabled),
+  .bubble:active:not(:disabled) {
+    transform: none;
+  }
+  .tapped {
+    animation: none;
+  }
+}

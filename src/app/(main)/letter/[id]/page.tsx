@@ -1,25 +1,10 @@
-import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
-import { SubHeader } from '@/components/layout/SubHeader';
 import { LetterDetailClient } from './_components/LetterDetailClient';
-
-/**
- * 편지 상세 noindex — robots.ts disallow (`/letter/`) 와 이중 가드.
- * 받은 편지 본문 (5글자 + 개인 location label) 검색 노출 방지.
- * 2026-06-19 Round 17 audit.
- */
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations('letter.detail');
-  return {
-    title: t('title'),
-    robots: { index: false, follow: false },
-  };
-}
 
 /**
  * 편지 상세 페이지 (/letter/[id])
  *
- * 도착한 편지 카드 클릭 시 진입.
+ * 받은 편지 / 보낸 편지 카드 클릭 시 진입. `letter.isMine` 으로 화면이 갈리므로
+ * (제목·카드 배치·액션이 모두 다르다) 헤더까지 클라이언트가 렌더한다.
  *
  * 표시:
  *   - 원고지 일러스트 위에 5글자 본문 노출
@@ -45,11 +30,5 @@ type Props = {
 
 export default async function LetterDetailPage({ params }: Props) {
   const { id } = await params;
-  const t = await getTranslations('letter.detail');
-  return (
-    <>
-      <SubHeader title={t('title')} />
-      <LetterDetailClient letterId={id} />
-    </>
-  );
+  return <LetterDetailClient letterId={id} />;
 }

@@ -1,9 +1,9 @@
 'use client';
 
 import {
-  useInfiniteQuery,
-  type QueryKey,
   type InfiniteData,
+  type QueryKey,
+  useInfiniteQuery,
 } from '@tanstack/react-query';
 import { CACHE, type CacheProfile } from '@/lib/cache';
 

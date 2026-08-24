@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { letterSchema } from './letter';
+import { describe, expect, it } from 'vitest';
 import { graphemeLength } from '@/lib/validation';
+import { letterSchema } from './letter';
 
 describe('letterSchema', () => {
   it('1~5자 통과', () => {

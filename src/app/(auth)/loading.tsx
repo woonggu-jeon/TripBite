@@ -1,34 +1,12 @@
-import { Skeleton } from '@/components/feedback/Skeleton';
+import { SplashScreen } from '@/features/auth/components/SplashScreen';
 
 /**
- * (auth) 그룹 공용 cold start fallback — `/login`, `/signup`, `/find-id`,
+ * (auth) 그룹 cold start fallback — `/login`, `/signup`, `/find-id`,
  * `/forgot-password`, `/reset-password`, `/onboarding` 진입 시.
  *
- * AuthLayout 의 center 정렬 shell 을 흉내 — title + 2~3 input + 큰 버튼 형태.
+ * 시안의 SPLASH 를 그대로 쓴다 — 로그인 직전에 보이는 화면이 시안 흐름과
+ * 일치한다. (구: 제목 + input 2개 + 버튼 형태의 스켈레톤)
  */
 export default function AuthLoading() {
-  return (
-    <div
-      style={{
-        minHeight: '100dvh',
-        display: 'grid',
-        placeItems: 'center',
-        padding: 'var(--space-4)',
-      }}
-    >
-      <div
-        style={{
-          width: '100%',
-          maxWidth: 360,
-          display: 'grid',
-          gap: 'var(--space-3)',
-        }}
-      >
-        <Skeleton width="60%" height={32} radius="md" />
-        <Skeleton width="100%" height={56} radius="md" />
-        <Skeleton width="100%" height={56} radius="md" />
-        <Skeleton width="100%" height={48} radius="md" />
-      </div>
-    </div>
-  );
+  return <SplashScreen />;
 }

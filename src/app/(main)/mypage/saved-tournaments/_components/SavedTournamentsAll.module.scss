@@ -1,25 +1,26 @@
-// Figma "MY · 저장한 우승지" body (2026-06-23) — padding 20 gap 12.
+// Figma `MY · 저장한 우승지` — 안내 한 줄 + 2열 그리드(gap 12).
+// 좌우 여백은 (main) layout 의 .contentInner(--content-pad) 담당.
+// 구 구현은 여기서 padding 16 을 한 번 더 줘 실제 36 이었다.
 .wrap {
   display: grid;
-  gap: 12px;
-  padding: 20px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3); // Figma body gap 12
+  min-width: 0;
 }
 
-// Figma Frame 17 (320×17) — summary 우측 정렬 Caption R_12 muted.
+// Caption/R_12 #393939 (구 14px)
 .summary {
-  font-size: var(--font-caption);
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: -0.01em;
-  color: var(--color-muted);
   margin: 0;
-  text-align: right;
+  font-size: var(--font-caption);
+  line-height: var(--line-normal);
+  color: var(--color-muted);
+  letter-spacing: var(--tracking-snug);
 }
 
-// 2열 그리드 — 모바일 360px 까지 안정. 좁아지면 폭은 자동 축소.
+// Figma `grid` — 2열, 행/열 gap 12
 .grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-3);
   padding: 0;
   margin: 0;
@@ -29,66 +30,4 @@
 .cell {
   display: grid;
   min-width: 0;
-}
-
-// Figma "MY · 저장한 우승지 (빈 상태)" ec frame (2026-06-23) — 360×600
-// padding 0 20 center column. Frame 7 320×259 column gap 20.
-.emptyWrap {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0 20px;
-  min-height: 600px;
-}
-
-.emptyFrame {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  width: 100%;
-  max-width: 320px;
-}
-
-// circle 84 primary-soft + Heart 38 primary outline (Figma 빈 상태 — 저장된
-// 항목 없음 표현, outline 으로 유지).
-.emptyCircle {
-  display: grid;
-  place-items: center;
-  width: 84px;
-  height: 84px;
-  background: var(--color-primary-soft);
-  border-radius: var(--radius-full);
-  color: var(--color-primary);
-}
-
-// Frame 1 column gap 12 (title + description).
-.emptyText {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-// Figma title B_24_130% — 24 Bold line 130% -0.02em fg center.
-.emptyTitle {
-  font-size: var(--font-h1); /* 24 */
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-tight); /* 130% */
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-fg);
-  margin: 0;
-  text-align: center;
-}
-
-// Figma description R_14_140% center muted (125w × 40h — 2 줄).
-.emptyDesc {
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed);
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-muted);
-  margin: 0;
-  text-align: center;
-  white-space: pre-line;
 }

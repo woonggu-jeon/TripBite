@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useTranslations } from 'next-intl';
 import { CHUNGBUK_REGIONS, type RegionCode } from '@/constants/regions';
 import { haptic } from '@/lib/haptic';
-import type { DestinationDto } from '@/api/generated/schemas';
+import { Illustration } from '@/components/brand/Illustration';
+import { seasonIllustration } from '@/constants/illustration-map';
+import type { DestinationDto } from '@/types/api-domain';
 import type { TournamentTheme } from '@/features/tournament/types';
-import { SeasonIcon } from '@/components/ui/SeasonIcon';
 import styles from './ChungbukMap.module.scss';
 
 /**
@@ -43,9 +43,15 @@ const POINTS: Record<RegionCode, { x: number; y: number }> = {
   yeongdong: norm(325, 790),
 };
 
-// theme.value (Season) → SeasonIcon PNG. 마커 wrapper (button/span) 의 .drop
-// transform/animation 은 그대로 — PNG 자식이 함께 scale/translate (사용자
-// 명시 2026-06-25 — emoji 전체 이미지 교체).
+/**
+ * 지도 마커 그림 — Figma `여행지 준비 완료` 는 36px `seasonIcon` 을 쓴다.
+ * 구 구현은 OS 이모지(🌸 💧 🍂 ❄️) 여서 계절 카드·로딩 화면의 아이콘과
+ * 달랐다 (특히 여름이 시안의 태양이 아니라 빗방울).
+ */
+function seasonMarker(theme: TournamentTheme) {
+  const art = seasonIllustration(theme.value);
+  return art ? <Illustration name={art} size={36} /> : null;
+}
 
 interface Placed {
   id: string;
@@ -105,7 +111,6 @@ export function ChungbukMap({
   onReady,
   onRegionClick,
 }: ChungbukMapProps) {
-  const tCommon = useTranslations('common');
   // ⚠ useState initializer 로 두면 destinations prop 이 refetch 등으로 바뀌어도
   // mount 시점 값만 유지돼 시각이 그대로 — 다시하기 버튼이 무동작처럼 보임.
   // useMemo 로 destinations 변경 시 즉시 재계산.
@@ -124,121 +129,35 @@ export function ChungbukMap({
   );
   const [svg, setSvg] = useState<string | null>(null);
   const svgWrapRef = useRef<HTMLDivElement>(null);
+  const marker = seasonMarker(theme);
   const selectable = !!selected && !!onToggle;
 
-  // Figma "TRN · 여행지 준비 완료 (T-5)" 정합 (사용자 명시 2026-06-25):
-  // destinations 의 region 코드 → 한글 시군명 set. SVG path/text 의 첫 단어
-  // (예: "청주시", "괴산군") 가 이 set 에 있으면 `region-active` 클래스 부여
-  // → primary-tint fill + primary stroke (선택된 시군 강조). 미선택은 white +
-  // gray border (기본 톤).
-  const activeKoSet = useMemo(() => {
-    const set = new Set<string>();
-    destinations.forEach((d) => {
-      const r = CHUNGBUK_REGIONS.find((rg) => rg.code === d.region);
-      if (r) set.add(r.ko);
-    });
-    return set;
-  }, [destinations]);
-  // useEffect deps 안정화 — Set instance 가 매번 새로 → string key 로 비교.
-  const activeKoKey = useMemo(
-    () => [...activeKoSet].sort().join('|'),
-    [activeKoSet],
-  );
-
   // SVG fetch + 내장 <style> 제거 (외부 CSS variable 로 컨트롤)
-  const [fetchError, setFetchError] = useState(false);
-
   useEffect(() => {
     let cancelled = false;
-    setFetchError(false);
     fetch(SVG_URL)
-      .then((r) => {
-        if (!r.ok) throw new Error(`status ${r.status}`);
-        return r.text();
-      })
+      .then((r) => r.text())
       .then((text) => {
         if (cancelled) return;
         const stripped = text.replace(/<style[\s\S]*?<\/style>/g, '');
         setSvg(stripped);
       })
       .catch(() => {
-        if (!cancelled) setFetchError(true);
+        // network 오류 — fallback 없음 (지도 없이 drop 만 표시되도록)
       });
     return () => {
       cancelled = true;
     };
   }, []);
 
-  // SVG path.region 에는 id 가 없음 (`class="region" d="..."` 만). text.label
-  // 도 textContent 만. mount 후 path 의 bbox center 와 가장 가까운 label
-  // (시군명) 을 매칭 → 모든 path/label 에 `data-region` 한글명 attribute 부여.
-  // 청주시 4 path (상당/서원/청원/흥덕) 도 청주 label 이 가장 가깝다는
-  // 지리적 인접성으로 모두 청주시 매핑됨 (사용자 명시 2026-06-25 — 색칠 회귀
-  // fix). 이후 click / region-active 모두 data-region 기반.
-  useEffect(() => {
-    if (!svgWrapRef.current || !svg) return;
-    const root = svgWrapRef.current;
-    const paths = Array.from(
-      root.querySelectorAll<SVGPathElement>('path.region'),
-    );
-    const labels = Array.from(
-      root.querySelectorAll<SVGTextElement>('text.label'),
-    );
-    const labelInfo = labels
-      .map((el) => ({
-        x: parseFloat(el.getAttribute('x') ?? '0'),
-        y: parseFloat(el.getAttribute('y') ?? '0'),
-        text: (el.textContent ?? '').trim(),
-        el,
-      }))
-      .filter((l) => l.text);
-    if (labelInfo.length === 0 || paths.length === 0) return;
-
-    labelInfo.forEach((l) => l.el.setAttribute('data-region', l.text));
-    paths.forEach((p) => {
-      const bbox = p.getBBox();
-      const cx = bbox.x + bbox.width / 2;
-      const cy = bbox.y + bbox.height / 2;
-      let nearestText = '';
-      let minDist = Infinity;
-      labelInfo.forEach((l) => {
-        const d = Math.hypot(cx - l.x, cy - l.y);
-        if (d < minDist) {
-          minDist = d;
-          nearestText = l.text;
-        }
-      });
-      if (nearestText) p.setAttribute('data-region', nearestText);
-    });
-
-    // 청주시는 4 path (상당/서원/청원/흥덕). 1단계 자동 매핑 결과가 '청주시'
-    // 인 path 들 중 거리 가까운 4개만 강제 매핑 (사용자 명시 2026-06-25 — 청주
-    // 부자연 fix + hijack 위험 차단). 1단계에서 진천/증평/보은 매핑된 path 는
-    // filter out → 인접 시군 path hijack 안 함.
-    const cheongjuLabel = labelInfo.find((l) => l.text === '청주시');
-    if (cheongjuLabel) {
-      const cl = cheongjuLabel;
-      const ranked = paths
-        .filter((p) => p.getAttribute('data-region') === '청주시')
-        .map((p) => {
-          const bbox = p.getBBox();
-          return {
-            path: p,
-            dist: Math.hypot(
-              bbox.x + bbox.width / 2 - cl.x,
-              bbox.y + bbox.height / 2 - cl.y,
-            ),
-          };
-        })
-        .sort((a, b) => a.dist - b.dist);
-      ranked
-        .slice(0, 4)
-        .forEach((r) => r.path.setAttribute('data-region', '청주시'));
-    }
-  }, [svg]);
-
-  // path.region 에 click 만 (hover 제거 — 사용자 명시 2026-06-25). data-region
-  // 시군명 (예: "청주시") 을 onRegionClick 에 전달.
+  // path.region 에 click + 시군 그룹 hover 동기화
+  //
+  // 충북 SVG 는 청주시가 4 개 path("청주시 상당구/서원구/청원구/흥덕구") 로 쪼개져 있어
+  // 개별 path :hover 만 쓰면 하나의 시군이 4 조각으로 hover 됨.
+  // path id 의 첫 단어(예: '청주시', '괴산군')를 그룹 키로 묶어 mouseenter/leave 시
+  // 같은 그룹의 모든 path 에 .is-region-hovered 클래스를 토글 → 하나로 hover 보임.
+  //
+  // click 도 시군 단위로 통합 — onRegionClick 에는 그룹 키(예: '청주시') 전달.
   useEffect(() => {
     if (!svgWrapRef.current || !svg) return;
     const root = svgWrapRef.current;
@@ -247,65 +166,61 @@ export function ChungbukMap({
     );
     if (paths.length === 0) return;
 
+    const groupKey = (p: SVGPathElement) => p.id.split(/\s+/)[0] ?? p.id;
+    const groupMap = new Map<string, SVGPathElement[]>();
+    paths.forEach((p) => {
+      const key = groupKey(p);
+      const arr = groupMap.get(key) ?? [];
+      arr.push(p);
+      groupMap.set(key, arr);
+    });
+
+    // Figma `cbmap` — 뽑힌 시군은 연초록 면 + 초록 테두리, 라벨도 초록.
+    // (markers 의 계절 아이콘과 함께 두 겹으로 표시)
+    const pickedKo = new Set<string>(
+      destinations
+        .map<
+          string | undefined
+        >((d) => CHUNGBUK_REGIONS.find((r) => r.code === d.region)?.ko)
+        .filter((ko): ko is string => typeof ko === 'string'),
+    );
+    paths.forEach((p) => {
+      if (pickedKo.has(groupKey(p))) p.setAttribute('data-picked', 'true');
+      else p.removeAttribute('data-picked');
+    });
+    root.querySelectorAll<SVGTextElement>('text.label').forEach((label) => {
+      const ko = (label.textContent ?? '').trim().split(/\s+/)[0] ?? '';
+      if (pickedKo.has(ko)) label.setAttribute('data-picked', 'true');
+      else label.removeAttribute('data-picked');
+    });
+
     const cleanups: Array<() => void> = [];
     paths.forEach((p) => {
-      const region = p.getAttribute('data-region');
+      const key = groupKey(p);
+      const siblings = groupMap.get(key) ?? [p];
+      const enter = () =>
+        siblings.forEach((s) => s.classList.add('is-region-hovered'));
+      const leave = () =>
+        siblings.forEach((s) => s.classList.remove('is-region-hovered'));
       const click = () => {
-        if (!onRegionClick || !region) return;
+        if (!onRegionClick) return;
         haptic.tap();
-        onRegionClick(region);
+        onRegionClick(key);
       };
+      p.addEventListener('mouseenter', enter);
+      p.addEventListener('mouseleave', leave);
       p.addEventListener('click', click);
       p.style.cursor = onRegionClick ? 'pointer' : 'default';
-      if (onRegionClick && region) {
-        // Keyboard 접근 (자율 검토 2026-06-25). SVG path 에 tabIndex/role/
-        // aria-label + Enter/Space handler.
-        p.setAttribute('tabindex', '0');
-        p.setAttribute('role', 'button');
-        p.setAttribute('aria-label', region);
-        const onKey = (e: KeyboardEvent) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            haptic.tap();
-            onRegionClick(region);
-          }
-        };
-        p.addEventListener('keydown', onKey);
-        cleanups.push(() => {
-          p.removeEventListener('click', click);
-          p.removeEventListener('keydown', onKey);
-        });
-      } else {
-        cleanups.push(() => p.removeEventListener('click', click));
-      }
+      cleanups.push(() => {
+        p.removeEventListener('mouseenter', enter);
+        p.removeEventListener('mouseleave', leave);
+        p.removeEventListener('click', click);
+      });
     });
     return () => {
       cleanups.forEach((fn) => fn());
     };
-  }, [svg, onRegionClick]);
-
-  // Figma 정합 — destinations 가 위치한 시군 path / text 에 `region-active`
-  // 클래스 부여 (data-region 기준). 청주 4 path 모두 청주시 매핑이라 함께 색칠.
-  useEffect(() => {
-    if (!svgWrapRef.current || !svg) return;
-    const root = svgWrapRef.current;
-    const paths = root.querySelectorAll<SVGPathElement>('path.region');
-    const labels = root.querySelectorAll<SVGTextElement>('text.label');
-    paths.forEach((p) => {
-      const region = p.getAttribute('data-region') ?? '';
-      p.classList.toggle('region-active', activeKoSet.has(region));
-    });
-    labels.forEach((tEl) => {
-      const region = tEl.getAttribute('data-region') ?? '';
-      tEl.classList.toggle('region-active', activeKoSet.has(region));
-    });
-    return () => {
-      paths.forEach((p) => p.classList.remove('region-active'));
-      labels.forEach((tEl) => tEl.classList.remove('region-active'));
-    };
-    // activeKoKey 로 set 변화 감지 (Set instance 매번 새로 → 직접 dep 비효율).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [svg, activeKoKey]);
+  }, [svg, onRegionClick, destinations]);
 
   useEffect(() => {
     if (!onReady) return;
@@ -318,29 +233,14 @@ export function ChungbukMap({
 
   return (
     <div className={styles.wrap}>
-      {fetchError ? (
-        // SVG fetch 실패 fallback — 빈 화면 silent fail 대신 사용자 안내.
-        <div className={styles.svgWrap} role="alert" aria-live="polite">
-          <p
-            style={{
-              padding: 24,
-              textAlign: 'center',
-              color: 'var(--color-muted)',
-            }}
-          >
-            {tCommon('mapFetchError')}
-          </p>
-        </div>
-      ) : (
-        <div
-          ref={svgWrapRef}
-          className={styles.svgWrap}
-          // SVG 는 우리 정적 파일(public/images/chungbuk-final-map.svg) 이라 신뢰 가능.
-          // 내장 <style> 만 제거하고 path/text 가 외부 CSS 로 cascade 되도록.
-          dangerouslySetInnerHTML={{ __html: svg ?? '' }}
-          aria-label={tCommon('mapAriaLabel')}
-        />
-      )}
+      <div
+        ref={svgWrapRef}
+        className={styles.svgWrap}
+        // SVG 는 우리 정적 파일(public/images/chungbuk-final-map.svg) 이라 신뢰 가능.
+        // 내장 <style> 만 제거하고 path/text 가 외부 CSS 로 cascade 되도록.
+        dangerouslySetInnerHTML={{ __html: svg ?? '' }}
+        aria-label="충청북도 지도"
+      />
 
       <div key={placedNonce} className={styles.overlay}>
         {placed.map((p) => {
@@ -378,7 +278,7 @@ export function ChungbukMap({
                 aria-label={p.name}
                 title={p.name}
               >
-                <SeasonIcon season={theme.value} size={36} />
+                {marker}
               </button>
             );
           }
@@ -394,7 +294,7 @@ export function ChungbukMap({
               }}
               aria-label={p.name}
             >
-              <SeasonIcon season={theme.value} size={36} />
+              {marker}
             </span>
           );
         })}

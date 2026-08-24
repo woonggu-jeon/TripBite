@@ -1,8 +1,8 @@
 import axios, { type AxiosInstance } from 'axios';
-import { attachAuthInterceptor } from '@/services/interceptors/auth';
-import { attachTimingInterceptor } from '@/services/interceptors/timing';
-import { attachErrorNormalizeInterceptor } from '@/services/interceptors/error-normalize';
 import { assertRequiredEnv } from '@/lib/env';
+import { attachAuthInterceptor } from '@/services/interceptors/auth';
+import { attachErrorNormalizeInterceptor } from '@/services/interceptors/error-normalize';
+import { attachTimingInterceptor } from '@/services/interceptors/timing';
 
 // 클라이언트 부팅 시 필수 env 검증 (미설정 시 콘솔 경고)
 assertRequiredEnv();
@@ -17,8 +17,16 @@ assertRequiredEnv();
  *   - Chrome 시크릿 / 3rd-party cookie 차단 무관 (vercel.app same-site)
  *   - CORS preflight 불필요
  *   - 향후 Chrome 의 3rd-party cookie phase-out 면역
+ *
+ * **서버(RSC) 분기 (2026-08-15)**: 브라우저는 same-origin 프록시(`/api/backend`)를
+ * 쓰지만, RSC 프리페치는 rewrite 가 없어 절대 BE URL 이 필요하다. `window` 부재 시
+ * `NEXT_PUBLIC_API_URL`(Spring origin) 직접 호출. `api` 는 여태 클라 전용이라 이 분기는
+ * additive — 클라 동작 불변. (공개 데이터 프리페치용이라 쿠키 불필요.)
  */
-const baseURL = '/api/backend';
+const baseURL =
+  typeof window === 'undefined'
+    ? (process.env.NEXT_PUBLIC_API_URL ?? '/api/backend')
+    : '/api/backend';
 
 export const api: AxiosInstance = axios.create({
   baseURL,

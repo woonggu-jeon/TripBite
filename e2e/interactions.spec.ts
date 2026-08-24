@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { authedSession } from './_helpers/auth';
 
 /**
@@ -58,18 +58,20 @@ test.describe('카테고리 정책 — 토너먼트에 local 미노출', () => {
   });
 
   test('CategoryFilter 에 지역(local) 카드 없음', async ({ page }) => {
-    // setup step 3 진입을 위해 query prefill 사용
-    await page.goto('/tournament?theme=season&season=spring');
+    // setup step 3(CategoryFilter) 진입 — query prefill.
+    await page.goto('/tournament?theme=season&season=spring', {
+      waitUntil: 'networkidle',
+    });
 
-    // step 3 의 CategoryFilter 가 visible 인지 확인 후 옵션 검사
-    const localOption = page.getByRole('radio', { name: /지역(?!\s*명소)/ });
-    // "지역" radio 카드 미노출 (있으면 fail)
-    await expect(localOption).toHaveCount(0);
-
-    // 다른 3 카테고리는 있어야 함
+    // ⚠ 먼저 category step 이 실제 렌더될 때까지 대기(하이드레이션+쿼리 동기화).
     await expect(page.getByRole('radio', { name: /축제/ })).toBeVisible();
     await expect(page.getByRole('radio', { name: /관광지/ })).toBeVisible();
     await expect(page.getByRole('radio', { name: /체험/ })).toBeVisible();
+
+    // category 는 정확히 3개(축제/관광지/체험)뿐 — '지역(local)' 카테고리 없음.
+    // (radio 접근명이 설명 텍스트를 포함해 /지역/ 매칭은 불안정 → 개수로 단정.)
+    const categoryRadios = page.getByRole('radiogroup').getByRole('radio');
+    await expect(categoryRadios).toHaveCount(3);
   });
 });
 

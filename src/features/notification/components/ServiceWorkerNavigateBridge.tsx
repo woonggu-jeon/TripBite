@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { safeInternalPath } from '@/lib/safe-redirect';
 
 /**
  * Service Worker → 클라이언트 NAVIGATE 메시지 브리지.
@@ -25,12 +26,11 @@ export function ServiceWorkerNavigateBridge() {
       if (!data || data.type !== 'NAVIGATE') return;
       const link = data.link;
       if (typeof link !== 'string' || link.length === 0) return;
-      // open-redirect / javascript: 스킴 차단 — internal path 만 허용.
-      // BE push payload 의 link 도 동일 정책 (다층 방어, login/onboarding 의
-      // safeRedirectParam 과 동일 규칙).
-      if (!link.startsWith('/') || link.startsWith('//')) return;
+      // open-redirect / javascript: 스킴 차단 — internal path 만 허용 (백슬래시/탭
+      // 우회까지 막는 safeInternalPath, login/onboarding 과 동일 규칙). 외부/무효면 '/'.
+      const safe = safeInternalPath(link);
       // typedRoutes 의 정적 분석 외 (서버/SW 가 임의로 보낸 path) — cast.
-      router.push(link as Parameters<typeof router.push>[0]);
+      router.push(safe as Parameters<typeof router.push>[0]);
     };
     navigator.serviceWorker.addEventListener('message', handler);
     return () => {

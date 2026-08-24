@@ -1,7 +1,11 @@
-import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import { SubHeader } from '@/components/layout/SubHeader';
 import { QuizFlow } from './_components/QuizFlow';
+
+// RSC 프리페치 미적용 — 퀴즈는 실 Spring 대상 서버 프리페치가 간헐적으로 하이드레이션
+// 되지 않아(클라 재요청) 이득이 불안정 → 클라 useTravelTypeQuiz(CACHE.static, 1d)로
+// 단순 유지. ranking/region 처럼 안정적으로 하이드레이션되는 페이지만 프리페치 적용.
 
 /**
  * 여행 유형 테스트 페이지 (/quiz)

@@ -1,62 +1,149 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Bracket } from '@/features/tournament/components/Bracket';
-import { SeasonLoadingPanel } from '@/features/tournament/components/SeasonLoadingPanel';
-import type { DestinationDto } from '@/api/generated/schemas';
-import type { BracketResult } from '@/features/tournament/types';
-import { useTournamentStore } from '@/features/tournament/store/tournament-store';
+import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { EmptyState } from '@/components/feedback/EmptyState';
+import { SubHeader } from '@/components/layout/SubHeader';
+import { Button, ButtonGrid } from '@/components/ui';
+import { CHUNGBUK_REGIONS } from '@/constants/regions';
+import {
+  Bracket,
+  type BracketHandle,
+} from '@/features/tournament/components/Bracket';
+import { CenterIllustration } from '@/features/tournament/components/CenterIllustration';
+import { ChungbukMap } from '@/features/tournament/components/ChungbukMap';
+import { CountSelector } from '@/features/tournament/components/CountSelector';
+import { FallingPetals } from '@/features/tournament/components/FallingPetals';
 import {
   useRecordTournament,
   useTournamentCandidates,
 } from '@/features/tournament/hooks/use-tournament';
-import { Button } from '@/components/ui';
-import { EmptyState } from '@/components/feedback/EmptyState';
+import { useTournamentStore } from '@/features/tournament/store/tournament-store';
+import type {
+  BracketResult,
+  TournamentCount,
+} from '@/features/tournament/types';
 import { toast } from '@/lib/toast';
+import { useAuthStore } from '@/stores/auth-store';
+import type { DestinationDto } from '@/types/api-domain';
 import styles from './TournamentPlayClient.module.scss';
 
-type Phase = 'bracket' | 'celebration';
+type Phase = 'intro' | 'map' | 'tournamentSize' | 'bracket' | 'celebration';
 
+const INTRO_MS = 2500;
 const CELEBRATION_MS = 1800;
 
 /**
- * 토너먼트 매치 진행 — Bracket + Celebration (2026-06-24 refactor).
+ * 충북 11 시군에서 N 개 random pick. Fisher–Yates.
+ * config.region (단일 시군 한정) 있으면 그것만 반환.
+ * count > 11 이면 11개 전체 반환.
+ */
+function pickRandomRegions(config: {
+  count: number;
+  region?: string;
+}): string[] {
+  if (config.region) return [config.region];
+  const codes = CHUNGBUK_REGIONS.map((r) => r.code).slice();
+  for (let i = codes.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const ci = codes[i];
+    const cj = codes[j];
+    if (ci !== undefined && cj !== undefined) {
+      codes[i] = cj;
+      codes[j] = ci;
+    }
+  }
+  return codes.slice(0, Math.min(config.count, codes.length));
+}
+
+/**
+ * 토너먼트 진행 클라이언트
  *
- * setup phase 들 (intro/map/tournamentSize) 은 `/tournament` (TournamentSetup)
- * 으로 이동. `/tournament/play` 진입 시점에는:
- *   - config.theme / categories / count
- *   - config.selectedRegions (map step 에서 set)
- *   - config.tournamentSize (size step 에서 set)
- * 모두 store 에 있음 — 진입 가드 X 면 즉시 bracket fetch + render.
+ *   1) intro          : 중앙 일러스트 + 계절 파티클 (자동 2.5초 → map)
+ *   2) map            : 충북 지도 + N 시군 random pick → store.setSelectedRegions
+ *                       → ChungbukMap 에 시군 표식 → "다음" → tournamentSize
+ *   3) tournamentSize : 4/8/16/32 선택 → store.setTournamentSize
+ *                       → fetch 트리거 (regions + tournamentSize 모두 충족) → bracket
+ *   4) bracket        : BE 응답 destinations 로 1:1 매치업
  *
- * 진입 가드:
- *   - selectedRegions 없거나 tournamentSize null → /tournament 로 replace.
+ * fetch 시점: tournamentSize 결정 후 (selectedRegions + tournamentSize 모두 set).
+ * BE 가 시군을 query 로 받으므로, FE 가 먼저 N 시군 결정해야 함.
  *
- * Phase:
- *   1) bracket      : useTournamentCandidates(config) → fetched → Bracket
- *                     매치 진행 (사용자 선택 → 다음 매치)
- *   2) celebration  : 우승자 1.8s 강조 → record mutation → /result 자동 이동
+ * 설정 없이 직접 진입 시 자동 redirect 대신 안내 + 설정 화면 진입 버튼.
  *
- * BE 연동:
- *   - record mutation 은 fire-and-forget (실패해도 store 만으로 result 진입).
- *   - id 반환 시 ?id= 로 deep-link, 실패 시 store-only.
+ * 사용자 요구:
+ *   - 토너먼트 데이터(여행유형 + 여행지 + 토너먼트 수)는 API 호출 파라미터로 전달
+ *   - tournamentSize 는 Play 의 별도 phase 에서 결정 (Setup 에서는 결정 X)
+ *   - 지도 꽃잎은 자동(선택 X 필수)
  *
- * 정책 [[rendering-speed-first]]: bracket 진행 중 추가 fetch 금지.
+ * ─────────────────────────────────────────────────────────────
+ * [FUTURE: BE(NestJS) 연동 시 처리 포인트]
+ *
+ * 현재 토너먼트는 100% 클라이언트 상태:
+ *   - config 만 useTournamentCandidates(config) 로 후보 N개 fetch
+ *   - 매치 결과(setBracketResult), 우승자(setWinner) 모두 store-only
+ *   - reload 하면 모든 진행 상태가 사라짐
+ *
+ * BE 연동 시:
+ *   1) Play 진입 → `POST /tournaments` (config 전송) → tournamentId 반환
+ *      → tournamentId 를 URL `?tid=` 또는 store 에 보관
+ *   2) 각 match 종료마다 `PATCH /tournaments/:tid/matches`
+ *      또는 마지막에 한 번 `PATCH /tournaments/:tid/complete { bracketResult }`
+ *      (네트워크 비용/UX 트레이드오프 — 후자 추천)
+ *   3) celebration 단계 후 `router.replace('/tournament/result?tid={id}')`
+ *      → 결과 페이지가 deep-link 진입을 지원하게 됨 (위 결과 페이지 메모 참조)
+ *
+ * 정책 [[rendering-speed-first]]: bracket 진행 중에는 추가 fetch 금지 —
+ *   서버 동기화는 fire-and-forget 으로, UI 는 store 기준으로 즉시 진행.
+ *   (네트워크 실패 시 토너먼트 완주 자체를 막지 않음. retry queue 권장.)
+ * ─────────────────────────────────────────────────────────────
  */
 export function TournamentPlayClient() {
   const router = useRouter();
   const t = useTranslations('tournament.play');
+  const tSeason = useTranslations('tournament.season');
+  const tTournament = useTranslations('tournament');
   const config = useTournamentStore((s) => s.config);
+  const setSelectedRegions = useTournamentStore((s) => s.setSelectedRegions);
+  const setTournamentSize = useTournamentStore((s) => s.setTournamentSize);
   const setBracketResult = useTournamentStore((s) => s.setBracketResult);
   const record_ = useRecordTournament();
+  // 결과 기록은 인증 필수 엔드포인트(POST /mypage/tournament-history, 익명 403).
+  // 비로그인은 저장할 마이페이지 히스토리가 없으므로 호출 자체를 생략(불필요 403·
+  // "저장 실패" 토스트 방지) — 결과 화면은 store 로 정상 표시.
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
-  const [phase, setPhase] = useState<Phase>('bracket');
+  const [phase, setPhase] = useState<Phase>('intro');
+  const [pendingSize, setPendingSize] = useState<TournamentCount | null>(null);
   const [pendingResult, setPendingResult] = useState<BracketResult | null>(
     null,
   );
   const pendingWinner = pendingResult?.winner ?? null;
+  const bracketRef = useRef<BracketHandle>(null);
+
+  /**
+   * 헤더 뒤로가기 — 페이지를 떠나는 대신 한 단계씩 되돌린다.
+   *
+   *   매치 진행 중 → 직전에 고른 매치로 (선택 취소)
+   *   첫 매치      → 토너먼트 규모 선택으로
+   *   규모 선택    → 지도로
+   *   그 외        → 브라우저 뒤로 (설정 화면)
+   *
+   * intro 는 2.5초 후 자동으로 map 이 되므로 되돌릴 대상이 아니다.
+   */
+  const handleBack = () => {
+    if (phase === 'bracket') {
+      if (bracketRef.current?.undo()) return;
+      setPhase('tournamentSize');
+      return;
+    }
+    if (phase === 'tournamentSize') {
+      setPhase('map');
+      return;
+    }
+    router.back();
+  };
 
   const {
     data: pool,
@@ -65,20 +152,25 @@ export function TournamentPlayClient() {
     refetch,
   } = useTournamentCandidates(config);
 
-  // 진입 가드 — setup 미완성 (config 또는 tournamentSize 또는 selectedRegions 없음)
-  // 시 setup 으로 replace. user 가 직접 URL 진입 / store reset 후 진입 케이스.
+  // intro 자동 진행 → map phase.
   useEffect(() => {
-    if (
-      !config ||
-      !config.tournamentSize ||
-      !config.selectedRegions ||
-      config.selectedRegions.length === 0
-    ) {
-      router.replace('/tournament');
-    }
-  }, [config, router]);
+    if (!config || phase !== 'intro') return;
+    const id = window.setTimeout(() => setPhase('map'), INTRO_MS);
+    return () => window.clearTimeout(id);
+  }, [config, phase]);
 
-  // celebration → result 자동 이동 + record mutation (fire-and-forget)
+  // map phase 진입 시 N 시군 random pick (충북 11 시군 중).
+  //   - config.region (단일 시군 한정) 이 있으면 그것만 사용
+  //   - 이미 selectedRegions 있으면 그대로 (reshuffle 이 별도 트리거)
+  useEffect(() => {
+    if (!config || phase !== 'map') return;
+    if (config.selectedRegions && config.selectedRegions.length > 0) return;
+    setSelectedRegions(pickRandomRegions(config));
+  }, [config, phase, setSelectedRegions]);
+
+  // celebration → result 자동 이동.
+  // - bracket 종료 → record mutation (fire-and-forget) → record.id 받아 ?id= 로 전달.
+  //   실패해도 store 만으로 result 페이지 동작 가능 — silent fail.
   useEffect(() => {
     if (phase !== 'celebration' || !pendingResult) return;
     const reduced =
@@ -87,17 +179,27 @@ export function TournamentPlayClient() {
     const delay = reduced ? 400 : CELEBRATION_MS;
     const id = window.setTimeout(async () => {
       setBracketResult(pendingResult);
+      // POST /mypage/tournament-history — record id 받아 deep-link 가능하게 URL 에 박음.
+      // 인증 사용자만 호출(익명은 저장 대상 없음 → 생략, 결과는 store-only).
       let recordId: string | undefined;
-      try {
-        const record = await record_.mutateAsync({
-          winnerId: pendingResult.winner.id,
-          runnerUpId: pendingResult.runnerUp?.id ?? null,
-          matchesPlayed: pendingResult.matchesPlayed,
-          tournamentSize: config?.tournamentSize ?? 0,
-        });
-        recordId = record.id;
-      } catch {
-        toast.error(t('recordFailedToast'));
+      if (isAuthenticated) {
+        try {
+          const record = await record_.mutateAsync({
+            winnerId: pendingResult.winner.id,
+            runnerUpId: pendingResult.runnerUp?.id ?? null,
+            matchesPlayed: pendingResult.matchesPlayed,
+            tournamentSize: config?.tournamentSize ?? matchupSize,
+            // BE RecordTournamentRequestDto.winnerName 필수 — winner 정보 전달.
+            // region/category 는 랭킹 집계(시군/카테고리별)용.
+            winnerName: pendingResult.winner.name,
+            region: pendingResult.winner.region,
+            category: pendingResult.winner.category,
+          });
+          recordId = record.id;
+        } catch {
+          // 로그인했는데 저장 실패 → 사용자에게 알림. store 만으로 result 진입.
+          toast.error(t('recordFailedToast'));
+        }
       }
       router.replace(
         recordId
@@ -109,8 +211,31 @@ export function TournamentPlayClient() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, pendingResult, setBracketResult, router]);
 
-  // 매치업 destinations 구성 (시군 unique 우선 + id 중복 차단).
-  const matchupSize = config?.tournamentSize ?? 0;
+  // map phase 시각화 — selectedRegions 기반 placeholder DestinationDto[].
+  //   - fetch 가 tournamentSize 결정 후라 이 시점엔 실 destinations 없음
+  //   - 지도에 시군 위치 표식만 보이면 충분 (이름/카테고리는 config 에서 차용)
+  const N = config?.count ?? 0;
+  const mapPlaceholders = useMemo<DestinationDto[]>(() => {
+    if (!config?.selectedRegions?.length) return [];
+    const cat = config.categories[0] ?? 'attraction';
+    return config.selectedRegions.map((code) => {
+      const region = CHUNGBUK_REGIONS.find((r) => r.code === code);
+      // selectedRegions 는 충북 11 시군 코드만 — find 실패해도 첫번째 (cheongju) fallback.
+      const safeCode = region?.code ?? 'cheongju';
+      return {
+        id: `placeholder-${safeCode}`,
+        name: region?.ko ?? safeCode,
+        category: cat,
+        region: safeCode,
+      };
+    });
+  }, [config?.selectedRegions, config?.categories]);
+
+  // bracket 진입 시 매치업 destinations 구성.
+  // 1단계: 시군 unique 우선 — 같은 시군의 다른 destination 두 개가 매치업에 나오는 걸 피함
+  // 2단계: tournamentSize > 시군 unique 갯수면, 같은 시군의 남은 destination 으로 채움
+  // id 중복은 절대 허용 X — Bracket 이 같은 카드 두 번 그리는 사고 차단.
+  const matchupSize = config?.tournamentSize ?? pendingSize ?? 0;
   const matchupDestinations = useMemo<DestinationDto[]>(() => {
     if (!pool || matchupSize <= 0) return [];
     const seenRegions = new Set<string>();
@@ -132,91 +257,213 @@ export function TournamentPlayClient() {
     return picked;
   }, [pool, matchupSize]);
 
-  // 진입 가드 redirect 직전의 빈 화면 — config 검증 대기.
-  if (
-    !config ||
-    !config.tournamentSize ||
-    !config.selectedRegions ||
-    config.selectedRegions.length === 0
-  ) {
-    return <div className={styles.wrap} aria-busy="true" />;
+  if (!config) {
+    return (
+      <>
+        <SubHeader title={tTournament('title')} onBack={() => router.back()} />
+        <div className={styles.empty}>
+          <p>{t('noConfig')}</p>
+          <Button
+            variant="primary"
+            onClick={() => router.replace('/tournament')}
+          >
+            {t('goSetup')}
+          </Button>
+        </div>
+      </>
+    );
   }
 
+  const theme = config.theme;
+
+  // map "다음" — N 시군 확정 후 tournamentSize phase 로.
+  const handleMapNext = () => {
+    setPhase('tournamentSize');
+  };
+
+  // map "다시하기" — N 시군 random 재추첨 (fetch 와 무관, store 갱신).
+  const handleReshuffle = () => {
+    if (!config) return;
+    setSelectedRegions(pickRandomRegions(config));
+  };
+
+  // tournamentSize 결정 → store.setTournamentSize → useTournamentCandidates 가
+  // enabled (regions + size 둘 다 set) → fetch 1회 → bracket.
+  const handleConfirmSize = () => {
+    if (!pendingSize) return;
+    setTournamentSize(pendingSize);
+    setPhase('bracket');
+  };
+
   const handleBracketComplete = (result: BracketResult) => {
+    // 즉시 result 이동 X — celebration phase 에서 1.8s 우승자 강조 후 자동 이동.
     setPendingResult(result);
     setPhase('celebration');
   };
 
+  // 여행지 수(N)와 토너먼트 수(M)는 독립. 매치업 destinations 은 풀에서 random M개.
+  const canStartBracket = pendingSize !== null;
+
   return (
-    <div className={styles.wrap}>
-      {phase === 'bracket' && (
-        <div className={styles.bracket}>
-          {isLoading && (
-            <SeasonLoadingPanel
-              season={config.theme.value}
-              title={t('loading')}
+    <>
+      {/* 헤더를 클라이언트에서 렌더하는 이유 — 뒤로가기가 페이지 이탈이 아니라
+          "직전 선택 취소"로 동작해야 해서 phase 상태에 접근해야 한다. */}
+      <SubHeader title={tTournament('title')} onBack={handleBack} />
+      <div className={styles.wrap}>
+        {/* 계절 파티클은 intro 에서만 — 여행지가 선정된 map 단계에서는 마커까지
+          같이 떨어져 어수선하다. 시안의 준비 완료 화면에도 파티클이 없다. */}
+        {theme.kind === 'season' && phase === 'intro' && (
+          <FallingPetals season={theme.value} active />
+        )}
+
+        {phase === 'intro' && (
+          <div className={styles.center}>
+            <CenterIllustration theme={theme} onTap={() => {}} disabled />
+            {/* Figma `TRN · 로딩` — 20/Bold 제목 + 9px 점 3개 */}
+            <p className={styles.introTitle}>{t('introHint')}</p>
+            <span className={styles.dots} aria-hidden>
+              <span className={styles.dot} />
+              <span className={styles.dot} />
+              <span className={styles.dot} />
+            </span>
+          </div>
+        )}
+
+        {phase === 'map' && (
+          <div className={styles.map}>
+            {mapPlaceholders.length > 0 && (
+              <>
+                {/* Figma `map-card` — 지도를 흰 카드(padding 12) 안에 넣는다.
+                  자동 표시 — 사용자 선택 X. 시군 위치만 시각화 */}
+                <div className={styles.mapCard}>
+                  <ChungbukMap destinations={mapPlaceholders} theme={theme} />
+                </div>
+                <div className={styles.mapText}>
+                  <p className={styles.counter}>
+                    {t('mapSummary', { destinations: N })}
+                  </p>
+                  <p className={styles.mapDesc}>
+                    {t('mapSummaryHint', { season: tSeason(theme.value) })}
+                  </p>
+                </div>
+                <div className={styles.mapFooter}>
+                  <ButtonGrid>
+                    <Button
+                      variant="secondary"
+                      size="lg"
+                      fullWidth
+                      onClick={handleReshuffle}
+                    >
+                      {t('reshuffle')}
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="lg"
+                      fullWidth
+                      onClick={handleMapNext}
+                    >
+                      {t('next')}
+                    </Button>
+                  </ButtonGrid>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {phase === 'tournamentSize' && (
+          <div className={styles.sizePhase}>
+            {/* Figma `Frame 41` — 제목(20 Bold) + 보조(12), V gap 8 */}
+            <div className={styles.sizeHeading}>
+              <h2 className={styles.sizeTitle}>{t('tournamentSize.title')}</h2>
+              <p className={styles.sizeHint}>{t('tournamentSize.hint')}</p>
+            </div>
+            <CountSelector
+              value={pendingSize}
+              onChange={setPendingSize}
+              mode="tournament"
             />
-          )}
-          {isError && (
-            <div className={styles.errorBox}>
-              <p>{t('error')}</p>
-              <Button variant="secondary" size="sm" onClick={() => refetch()}>
-                {t('retry')}
+            {/* Figma 는 시작 버튼을 화면 하단에 붙인다 */}
+            <div className={styles.sizeAction}>
+              <Button
+                variant="primary"
+                size="lg"
+                fullWidth
+                disabled={!canStartBracket}
+                onClick={handleConfirmSize}
+              >
+                {t('startBracket')}
               </Button>
             </div>
-          )}
-          {!isLoading &&
-            !isError &&
-            pool &&
-            matchupDestinations.length === 0 && (
-              <EmptyState
-                icon={
-                  <span aria-hidden style={{ fontSize: 32 }}>
-                    🗺️
-                  </span>
-                }
-                title={t('emptyPool.title')}
-                description={t('emptyPool.hint')}
-                action={
-                  <Button
-                    variant="primary"
-                    size="md"
-                    onClick={() => router.replace('/tournament')}
-                  >
-                    {t('emptyPool.back')}
-                  </Button>
-                }
+          </div>
+        )}
+
+        {phase === 'bracket' && (
+          <div className={styles.bracket}>
+            {isLoading && <p className={styles.hint}>{t('loading')}</p>}
+            {isError && (
+              <div className={styles.errorBox}>
+                <p>{t('error')}</p>
+                <Button variant="secondary" size="sm" onClick={() => refetch()}>
+                  {t('retry')}
+                </Button>
+              </div>
+            )}
+            {/* 빈 풀 — BE 응답 0건 또는 매치업 못 만드는 조합 (예: 시군+카테고리 교집합 없음) */}
+            {!isLoading &&
+              !isError &&
+              pool &&
+              matchupDestinations.length === 0 && (
+                <EmptyState
+                  icon={
+                    <span aria-hidden style={{ fontSize: 32 }}>
+                      🗺️
+                    </span>
+                  }
+                  title={t('emptyPool.title')}
+                  description={t('emptyPool.hint')}
+                  action={
+                    <Button
+                      variant="primary"
+                      size="md"
+                      onClick={() => router.replace('/tournament')}
+                    >
+                      {t('emptyPool.back')}
+                    </Button>
+                  }
+                />
+              )}
+            {matchupDestinations.length > 0 && (
+              <Bracket
+                ref={bracketRef}
+                destinations={matchupDestinations}
+                onComplete={handleBracketComplete}
               />
             )}
-          {matchupDestinations.length > 0 && (
-            <Bracket
-              destinations={matchupDestinations}
-              onComplete={handleBracketComplete}
-            />
-          )}
-        </div>
-      )}
-
-      {phase === 'celebration' && pendingWinner && (
-        <div className={styles.celebration} role="status" aria-live="polite">
-          <div className={styles.celebGlow} aria-hidden />
-          <div className={styles.celebTrophy} aria-hidden>
-            🏆
           </div>
-          <p className={styles.celebTitle}>{t('celebration.title')}</p>
-          <p className={styles.celebName}>{pendingWinner.name}</p>
-          <p className={styles.celebRegion}>{pendingWinner.region}</p>
-          <span className={styles.celebSparkle1} aria-hidden>
-            ✦
-          </span>
-          <span className={styles.celebSparkle2} aria-hidden>
-            ✦
-          </span>
-          <span className={styles.celebSparkle3} aria-hidden>
-            ✧
-          </span>
-        </div>
-      )}
-    </div>
+        )}
+
+        {phase === 'celebration' && pendingWinner && (
+          <div className={styles.celebration} role="status" aria-live="polite">
+            <div className={styles.celebGlow} aria-hidden />
+            <div className={styles.celebTrophy} aria-hidden>
+              🏆
+            </div>
+            <p className={styles.celebTitle}>{t('celebration.title')}</p>
+            <p className={styles.celebName}>{pendingWinner.name}</p>
+            <p className={styles.celebRegion}>{pendingWinner.region}</p>
+            <span className={styles.celebSparkle1} aria-hidden>
+              ✦
+            </span>
+            <span className={styles.celebSparkle2} aria-hidden>
+              ✦
+            </span>
+            <span className={styles.celebSparkle3} aria-hidden>
+              ✧
+            </span>
+          </div>
+        )}
+      </div>
+    </>
   );
 }

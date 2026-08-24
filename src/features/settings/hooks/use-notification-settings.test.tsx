@@ -1,11 +1,11 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { act } from '@testing-library/react';
 import { QueryClient } from '@tanstack/react-query';
-import { http, HttpResponse } from 'msw';
-import { server } from '@/mocks/server';
+import { act } from '@testing-library/react';
+import { HttpResponse, http } from 'msw';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { mockSeeds } from '@/mocks/handlers';
-import { renderHookWithProviders } from '@/test-utils';
+import { server } from '@/mocks/server';
 import { useAuthStore } from '@/stores/auth-store';
+import { renderHookWithProviders } from '@/test-utils';
 import {
   settingsKeys,
   useUpdateNotificationSettings,
@@ -14,13 +14,15 @@ import {
 
 const apiUrl = mockSeeds.apiUrl;
 
-const mockSettings = {
-  notifications: {
-    pushEnabled: false,
-    letterArrivedEnabled: true,
-    festivalEnabled: true,
-    securityEnabled: true,
-  },
+// 신규 Spring BE 는 ApiResponse<T> 엔벨로프 + NotificationSettingsDto
+// (pushEnabled / inAppEnabled / letterReceived / letterLiked).
+const ok = (data: unknown) => ({ success: true, message: null, data });
+
+const notifications = {
+  pushEnabled: false,
+  inAppEnabled: true,
+  letterReceived: true,
+  letterLiked: true,
 } as const;
 
 describe('useUserSettings — enabled: isAuthenticated 가드', () => {
@@ -33,7 +35,7 @@ describe('useUserSettings — enabled: isAuthenticated 가드', () => {
     server.use(
       http.get(`${apiUrl}/settings`, () => {
         called++;
-        return HttpResponse.json(mockSettings);
+        return HttpResponse.json(ok({ notifications }));
       }),
     );
     const { result } = renderHookWithProviders(() => useUserSettings());
@@ -44,13 +46,10 @@ describe('useUserSettings — enabled: isAuthenticated 가드', () => {
 
 describe('useUpdateNotificationSettings', () => {
   it('성공 시 응답으로 settings.user cache 직접 setQueryData (invalidate 안 함)', async () => {
-    const updated = {
-      ...mockSettings,
-      notifications: { ...mockSettings.notifications, pushEnabled: true },
-    };
+    const updated = { notifications: { ...notifications, pushEnabled: true } };
     server.use(
       http.patch(`${apiUrl}/settings/notifications`, () =>
-        HttpResponse.json(updated),
+        HttpResponse.json(ok(updated)),
       ),
     );
     const qc = new QueryClient({
@@ -65,6 +64,7 @@ describe('useUpdateNotificationSettings', () => {
       await result.current.mutateAsync({ pushEnabled: true });
     });
 
+    // 어댑터가 엔벨로프 .data 언랩 후 { notifications } 로 정규화 → 그 shape 로 캐시.
     const cached = qc.getQueryData(settingsKeys.user());
     expect(cached).toEqual(updated);
   });

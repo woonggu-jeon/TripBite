@@ -1,11 +1,11 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAuthedQueryEnabled } from '@/features/auth/hooks/use-authed-query';
 import {
-  settingsApi,
   type NotificationSettings,
+  settingsApi,
 } from '@/features/settings/api/settings';
-import { useAuthStore } from '@/stores/auth-store';
 
 export const settingsKeys = {
   all: ['settings'] as const,
@@ -13,11 +13,11 @@ export const settingsKeys = {
 };
 
 export function useUserSettings() {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const enabled = useAuthedQueryEnabled();
   return useQuery({
     queryKey: settingsKeys.user(),
-    queryFn: settingsApi.get,
-    enabled: isAuthenticated,
+    queryFn: ({ signal }) => settingsApi.get(signal),
+    enabled,
     staleTime: 5 * 60 * 1000,
   });
 }

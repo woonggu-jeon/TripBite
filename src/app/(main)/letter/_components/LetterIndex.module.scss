@@ -1,91 +1,82 @@
-// Figma "편지 메인" body — bg #F8F8F8 + mb (banner) padding 20 + seg + ml.
-// contentInner padding 좌우 무시 — viewport edge 까지 bleed (banner padding 20
-// 자체 처리).
 .wrap {
-  display: flex;
-  flex-direction: column;
-  background: var(--color-gray-10); /* #F8F8F8 */
-  margin-left: calc(-1 * var(--content-pad));
-  margin-right: calc(-1 * var(--content-pad));
-  margin-bottom: calc(-1 * var(--content-pad));
-  :global(:root[data-theme='dark']) & {
-    background: var(--color-bg);
+  display: grid;
+  gap: var(--space-6);
+
+  // 풀블리드 탭이 트랙 폭을 늘리지 못하게
+  > * {
+    min-width: 0;
   }
 }
 
-// Figma mb — padding 20 (banner wrap).
-.mb {
-  padding: 20px;
-}
-
-// Figma seg — 360×44 white bg row, 3 탭 균등 분할. tab 별 border-bottom 1px
-// (활성: primary / 비활성: gray).
-.seg {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  background: var(--color-bg);
+// Figma `wideTabMenu` — 360x44 풀블리드, 3탭 균등(120 each).
+// 활성   : 하단 2px 초록 + 초록 14 Bold
+// 비활성 : 하단 1px #E0E0E0 + #393939 14 Regular
+// 컨텐츠 여백(--content-pad)을 음수 마진으로 상쇄해 화면 끝까지 늘린다.
+// 면색은 흰색 — 화면 배경이 #F6F6F6(soft) 이라 탭 바만 흰 띠로 남는다.
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  padding: 0;
+  background: var(--color-surface);
+  border-radius: 0;
+  margin-inline: calc(var(--content-pad) * -1);
+  margin-bottom: var(--space-5);
 }
 
 .tab {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  flex: 1;
+  // Figma `t` 는 stroke 포함 44 (Figma stroke 는 레이아웃 높이에 안 더해진다).
+  // min-height 로 두면 활성 탭의 2px 밑줄이 더해져 46 이 됐다.
   height: 44px;
-  padding: 12px 0;
-  background: transparent;
+  padding: var(--space-3) 0;
   border: 0;
-  border-bottom: 1px solid var(--color-border);
-  font-size: var(--text-sm); /* 14 */
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-snug-relaxed); /* 140% */
-  letter-spacing: var(--tracking-tight);
+  border-bottom: var(--border-thin) solid var(--color-border);
+  border-radius: 0;
+  background: none;
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-normal);
   color: var(--color-muted);
-  cursor: pointer;
+  letter-spacing: var(--tracking-tight);
   transition: color var(--motion-base) ease;
 
   &:focus-visible {
     outline: var(--focus-outline);
-    outline-offset: calc(-1 * var(--focus-outline-offset));
+    outline-offset: calc(var(--focus-outline-offset) * -1);
+  }
+
+  &.active {
+    // 밑줄은 브랜드 초록 그대로 (텍스트가 아니라 면이라 대비 규칙 무관)
+    border-bottom: 2px solid var(--color-primary);
+    color: var(--color-primary-text-bold);
+    font-weight: var(--font-weight-bold);
+    background: none;
+    box-shadow: none;
   }
 }
 
-// Figma "편지 빈 상태 · seg · t (활성)" — 텍스트 primary + border-bottom
-// primary. 메인 spec 은 fg 였으나 빈 상태 spec 의 primary 가 시각 강조 자연
-// (사용자 명시 2026-06-24).
-.tabActive {
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
-  border-bottom: 1px solid var(--color-primary);
+// 탭 panel 영역 — skeleton ↔ data 전환 시 CLS 0.
+// Figma letterItem 은 82px + gap 12 → 3 row + sentinel ≈ 300.
+//
+// display: block — 자식 InfiniteList 가 자체 grid 를 가지므로 wrapper 는 block.
+.list {
+  position: relative;
+  min-height: 300px;
 }
 
-// Figma ml — padding 20 gap 12 column (mail list).
-.ml {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 20px;
-}
-
-// 비활성 panel 만 숨김.
+// 비활성 panel 만 숨김. [hidden] specificity 가 .panel 보다 높아 안전.
 .panel[hidden] {
   display: none;
 }
 
-// Figma ec — empty state 영역 (받은/보낸/좋아요 0 건). bg #FAFBFA, column
-// center padding 0 0 60. EmptyState hero variant 가 시각 처리 (circle 84
-// primary-soft + send icon 38 primary stroke + title B_16 fg).
-.ec {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 0 0 60px;
-  background: #fafbfa;
-  min-height: 360px;
-  :global(:root[data-theme='dark']) & {
-    background: var(--color-surface-soft);
+@media (max-width: 380px) {
+  .list {
+    min-height: 280px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab {
+    transition: none;
   }
 }

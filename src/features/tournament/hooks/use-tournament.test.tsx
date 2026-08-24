@@ -1,11 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { act, waitFor } from '@testing-library/react';
 import { QueryClient } from '@tanstack/react-query';
-import { http, HttpResponse } from 'msw';
-import { server } from '@/mocks/server';
+import { act, waitFor } from '@testing-library/react';
+import { HttpResponse, http } from 'msw';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { mockSeeds } from '@/mocks/handlers';
-import { renderHookWithProviders } from '@/test-utils';
+import { server } from '@/mocks/server';
 import { useAuthStore } from '@/stores/auth-store';
+import { renderHookWithProviders } from '@/test-utils';
+import type { SavedTournamentDto } from '@/types/api-domain';
 import {
   tournamentKeys,
   useRecordTournament,
@@ -14,7 +15,6 @@ import {
   useTournamentHistory,
   useUnsaveTournament,
 } from './use-tournament';
-import type { SavedTournamentDto } from '@/api/generated/schemas';
 
 const apiUrl = mockSeeds.apiUrl;
 
@@ -28,7 +28,6 @@ function makeSaved(id: string): SavedTournamentDto {
       category: 'attraction',
     },
     savedAt: '2026-06-14T00:00:00Z',
-    luckyColor: '#FBBF24',
   };
 }
 
@@ -161,15 +160,21 @@ describe('useUnsaveTournament — optimistic remove + rollback', () => {
 });
 
 describe('useRecordTournament', () => {
-  it('성공 시 record cache set + history invalidate', async () => {
-    const recordId = 'rec-1';
+  it('성공 시 history invalidate (결과 딥링크 Spring 미지원 — record cache 없음)', async () => {
+    const recordId = 4242;
+    // 신규 Spring BE: POST /mypage/tournament-history → ApiResponse<TournamentSummaryDto>.
     server.use(
-      http.post(`${apiUrl}/tournaments`, () =>
+      http.post(`${apiUrl}/mypage/tournament-history`, () =>
         HttpResponse.json({
-          id: recordId,
-          winner: { id: 'd-1', name: '우승지', region: 'cheongju' },
-          runnerUp: null,
-          matchesPlayed: 3,
+          success: true,
+          message: null,
+          data: {
+            id: recordId,
+            winnerName: '우승지',
+            tournamentSize: 8,
+            category: 'attraction',
+            completedAt: '2026-06-19T00:00:00Z',
+          },
         }),
       ),
     );
@@ -187,12 +192,11 @@ describe('useRecordTournament', () => {
         runnerUpId: null,
         matchesPlayed: 3,
         tournamentSize: 8,
+        winnerName: '우승지',
       });
     });
 
-    // record cache 에 직접 set (refetch 없이 deep-link 진입 즉시 사용)
-    const cached = qc.getQueryData(tournamentKeys.record(recordId));
-    expect(cached).toBeDefined();
+    // 결과 딥링크 복원은 Spring 미지원 → record cache 미설정, 히스토리만 무효화.
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: tournamentKeys.history(),
     });
@@ -201,15 +205,18 @@ describe('useRecordTournament', () => {
   it('Idempotency-Key 헤더 전송 (BE dedup — 랭킹 이중 카운트 방지)', async () => {
     let capturedKey: string | null = null;
     server.use(
-      http.post(`${apiUrl}/tournaments`, ({ request }) => {
+      http.post(`${apiUrl}/mypage/tournament-history`, ({ request }) => {
         capturedKey = request.headers.get('Idempotency-Key');
         return HttpResponse.json({
-          id: 'rec-idem',
-          winner: { id: 'd-1', name: '우승지', region: 'cheongju' },
-          runnerUp: null,
-          matchesPlayed: 3,
-          tournamentSize: 8,
-          completedAt: '2026-06-19T00:00:00Z',
+          success: true,
+          message: null,
+          data: {
+            id: 5151,
+            winnerName: '우승지',
+            tournamentSize: 8,
+            category: 'attraction',
+            completedAt: '2026-06-19T00:00:00Z',
+          },
         });
       }),
     );
@@ -221,6 +228,7 @@ describe('useRecordTournament', () => {
         runnerUpId: null,
         matchesPlayed: 3,
         tournamentSize: 8,
+        winnerName: '우승지',
       });
     });
 

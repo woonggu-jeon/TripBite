@@ -1,109 +1,86 @@
-// Frame 47 — column gap 12.
+// Figma "TRN · 토너먼트 결과" Frame 47 정합 — 컴포넌트 클래스명과 1:1.
+// (이전 stale .grid/.cell 잔재로 스타일 미적용 → value/label 붙던 버그 수정)
+
 .wrap {
   display: grid;
-  gap: 12px;
+  gap: 0.75rem; // column gap 12
 }
 
-// title B_16 fg
 .title {
-  margin: 0;
-  font-size: var(--font-body);
+  font-size: var(--font-body); // B_16
   font-weight: var(--font-weight-bold);
   color: var(--color-fg);
-  line-height: 22px;
-  letter-spacing: var(--tracking-snug);
+  letter-spacing: var(--tracking-tight);
 }
 
-// chips row gap 8 — 4 rchip 74×59 (column align center padding 12 4) +
-// secondary01 bg + primary border + radius 12.
+// chips row gap 8 — 4 chip 균등 폭(모바일 360 대응 flex:1).
 .chips {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  display: flex;
+  gap: 0.5rem;
 }
 
 .chip {
-  // Figma rchip 74×59 padding 12 4 secondary01 + 1px primary border radius 12.
-  // 직전엔 --color-primary-border (옅은 톤) + radius-md (8) 사용 → primary 직접
-  // + radius-lg (12) 으로 정합 (사용자 피드백 2026-06-24).
-  display: grid;
-  gap: 3px;
-  place-items: center;
-  min-height: 59px;
-  padding: 12px 4px;
-  background: var(--color-primary-soft);
-  border: 1px solid var(--color-primary);
-  border-radius: var(--radius-lg);
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px; // Figma sp 3
+  padding: 0.75rem 0.25rem; // 12 / 4
+  background: var(--color-primary-soft); // secondary01
+  border: 1.5px solid var(--color-primary-border); // primary border
+  border-radius: var(--radius-md); // 12
   text-align: center;
 }
 
-// 숫자/주요 값 B_14 primary
 .chipValue {
-  font-size: var(--font-body-sm);
+  font-size: var(--font-body-sm); // B_14
   font-weight: var(--font-weight-bold);
   color: var(--color-primary);
-  line-height: 1.1;
-  letter-spacing: var(--tracking-snug);
+  letter-spacing: var(--tracking-tight);
   word-break: keep-all;
 }
 
-// 라벨 Caption M_10 muted
 .chipLabel {
-  font-size: 10px;
+  font-size: var(--font-caption); // Caption (앱 최소 12px)
   font-weight: var(--font-weight-medium);
   color: var(--color-muted);
-  letter-spacing: var(--tracking-snug);
-  line-height: 1.2;
 }
 
-// lucky row — padding 14 16 + secondary01 + primary border + radius 12.
-// 왼쪽 라벨 B_14 fg + 오른쪽 색이름 + circle 20.
+// lucky row padding 14 16 — 라벨(좌) + 색이름·swatch(우).
 .luckyRow {
-  // Figma lucky 320×48 padding 14 16 secondary01 + 1px primary border radius
-  // 12. chip 과 동일 톤 정합.
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px;
+  padding: 0.875rem 1rem; // 14 / 16
   background: var(--color-primary-soft);
-  border: 1px solid var(--color-primary);
-  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--color-primary-border);
+  border-radius: var(--radius-md);
 }
 
 .luckyLabel {
-  font-size: var(--font-body-sm);
+  font-size: var(--font-body-sm); // B_14 fg
   font-weight: var(--font-weight-bold);
   color: var(--color-fg);
-  letter-spacing: var(--tracking-snug);
 }
 
 .luckyValue {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem; // row gap 8
 }
 
 .luckyName {
   font-size: var(--font-body-sm);
   font-weight: var(--font-weight-bold);
   color: var(--color-fg);
-  letter-spacing: var(--tracking-snug);
 }
 
 .luckySwatch {
-  display: inline-block;
   width: 20px;
   height: 20px;
-  border-radius: 999px;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
-}
-
-// 모바일 360 이하 — chip 폰트/라벨 한 단계 축소.
-@media (max-width: 380px) {
-  .chip {
-    padding: 10px 2px;
-  }
-  .chipValue {
-    font-size: 13px;
-  }
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid color-mix(in srgb, var(--color-fg) 10%, transparent);
 }

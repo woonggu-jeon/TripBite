@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
-import { Skeleton } from './Skeleton';
-import { EmptyState } from './EmptyState';
 import { Button } from '@/components/ui';
+import { EmptyState } from './EmptyState';
+import { Skeleton } from './Skeleton';
 
 /**
  * 표준 비동기 섹션 분기 wrapper.
@@ -49,6 +49,8 @@ interface AsyncSectionProps<T> {
   emptyAction?: ReactNode;
   /** loading 시 노출할 skeleton — 미지정 시 default 200px 박스 */
   skeleton?: ReactNode;
+  /** empty 상태 표시 형태 — 마이페이지 섹션은 카드형(`card`). */
+  emptyVariant?: 'default' | 'card';
   /** data 가 비었는지 판정 — Array 면 length 0, summary 면 항목 0 등 */
   isEmpty?: (data: T) => boolean;
   /** data 가 있을 때 호출되는 render prop */
@@ -64,6 +66,7 @@ export function AsyncSection<T>({
   emptyDescription,
   emptyAction,
   skeleton,
+  emptyVariant = 'default',
   isEmpty,
   children,
 }: AsyncSectionProps<T>) {
@@ -94,6 +97,7 @@ export function AsyncSection<T>({
         title={emptyTitle}
         description={emptyDescription}
         action={emptyAction}
+        variant={emptyVariant}
       />
     );
   }

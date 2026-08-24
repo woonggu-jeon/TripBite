@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { Icon } from '@/components/icon/Icon';
-import { EmptyState } from './EmptyState';
 import { Button } from '@/components/ui';
+import { EmptyState } from './EmptyState';
 
 const meta = {
   title: 'Feedback/EmptyState',

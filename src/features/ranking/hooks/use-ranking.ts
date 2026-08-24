@@ -1,13 +1,13 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { rankingApi } from '@/features/ranking/api/ranking';
-import { CACHE } from '@/lib/cache';
-import { useAuthStore } from '@/stores/auth-store';
+import { useAuthedQueryEnabled } from '@/features/auth/hooks/use-authed-query';
 import { mypageKeys } from '@/features/mypage/hooks/use-mypage';
+import { rankingApi } from '@/features/ranking/api/ranking';
 import type { RankingType, TravelTypeAnswer } from '@/features/ranking/types';
-import type { DestinationCategory } from '@/api/generated/schemas';
-import type { TravelTypeCode } from '@/api/generated/schemas';
+import { CACHE } from '@/lib/cache';
+import type { DestinationCategory } from '@/types/api-domain';
+import type { TravelTypeCode } from '@/types/api-domain';
 
 export const rankingKeys = {
   all: ['ranking'] as const,
@@ -36,11 +36,20 @@ export function useWeeklyTopDestinations(limit = 5) {
   return useRanking({ type: 'weekly-winners', limit });
 }
 
-export function useRecommendedDestinations(limit = 5) {
-  return useRanking({ type: 'recommended', limit });
+export function useRecommendedDestinations(
+  limit = 5,
+  category?: DestinationCategory,
+) {
+  return useRanking({ type: 'recommended', limit, category });
 }
 
-/** 여행 유형 테스트 — 질문은 거의 불변 */
+/**
+ * 여행 유형 테스트 문항 — 질문은 거의 불변.
+ *
+ * 공개 엔드포인트: BE 가 `GET /travel-types/quiz`·`POST /travel-types/submit` 을
+ * whitelist(2026-08, 실측 익명 200) → 퀴즈는 로그인 없이 응시 가능. 게이트 제거.
+ * (내 유형 조회/적용 `GET·PATCH /me` 만 인증 필요 — useMyTravelType/useSetMyTravelType.)
+ */
 export function useTravelTypeQuiz() {
   return useQuery({
     queryKey: rankingKeys.travelTypeQuiz(),
@@ -50,11 +59,11 @@ export function useTravelTypeQuiz() {
 }
 
 export function useMyTravelType() {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const enabled = useAuthedQueryEnabled();
   return useQuery({
     queryKey: rankingKeys.travelType(),
     queryFn: rankingApi.getMyTravelType,
-    enabled: isAuthenticated,
+    enabled,
     ...CACHE.user, // 본인 결과
   });
 }

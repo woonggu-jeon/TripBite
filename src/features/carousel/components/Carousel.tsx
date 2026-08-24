@@ -1,8 +1,8 @@
 'use client';
 
 import { type ReactNode } from 'react';
-import { clientOnly } from '@/lib/dynamic';
 import type { CarouselOptions } from '@/features/carousel/types';
+import { clientOnly } from '@/lib/dynamic';
 
 export type CarouselProps<T> = {
   slides: T[];

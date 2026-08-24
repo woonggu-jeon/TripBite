@@ -1,5 +1,5 @@
-import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { type Page, expect, test } from '@playwright/test';
 import { authedSession } from './_helpers/auth';
 
 /**
@@ -23,6 +23,8 @@ const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'];
 async function audit(page: Page, url: string) {
   await page.goto(url);
   await page.waitForLoadState('networkidle').catch(() => {});
+  // 폰트 로드 완료 대기 — 폰트 swap 중 color-contrast 오검출(간헐 실패) 방지.
+  await page.evaluate(() => document.fonts?.ready).catch(() => {});
   // animation 안정화 — banner slide-down 등이 끝나야 axe 가 정확한 색 계산
   await page.waitForTimeout(800);
   return new AxeBuilder({ page })

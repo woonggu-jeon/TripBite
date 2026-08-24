@@ -1,6 +1,6 @@
-import 'server-only';
 import { cookies } from 'next/headers';
-import { LOCALE_COOKIE, defaultLocale, isLocale, type Locale } from './config';
+import 'server-only';
+import { LOCALE_COOKIE, type Locale, defaultLocale, isLocale } from './config';
 
 /**
  * 서버 측 로케일 읽기

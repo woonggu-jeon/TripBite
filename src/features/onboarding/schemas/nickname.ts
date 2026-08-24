@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { graphemeLength, textGuards, NICKNAME_ALLOWED } from '@/lib/validation';
+import { NICKNAME_ALLOWED, graphemeLength, textGuards } from '@/lib/validation';
 
 /**
  * 닉네임 Zod 스키마 — 보안 강화 패턴

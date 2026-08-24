@@ -1,9 +1,16 @@
-import { notFound } from 'next/navigation';
-import { getTranslations } from 'next-intl/server';
+import {
+  HydrationBoundary,
+  QueryClient,
+  dehydrate,
+} from '@tanstack/react-query';
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
+import { notFound } from 'next/navigation';
 import { SubHeader } from '@/components/layout/SubHeader';
-import { isRegionCode, type RegionCode } from '@/constants/regions';
+import { type RegionCode, isRegionCode } from '@/constants/regions';
 import { RegionHero } from '@/features/region';
+import { regionApi } from '@/features/region/api/region';
+import { CACHE } from '@/lib/cache';
 import { JsonLd, breadcrumbList } from '@/lib/json-ld';
 import { RegionDetailTabs } from './_components/RegionDetailTabs';
 import styles from './page.module.scss';
@@ -72,6 +79,30 @@ export default async function RegionDetailPage({ params }: Props) {
   const tRegion = await getTranslations('region');
   const name = tNames(validCode as Parameters<typeof tNames>[0]);
 
+  // RSC 프리페치 — 초기 탭('all')의 시군 콘텐츠 첫 페이지를 서버에서 미리 받아
+  // dehydrate → RegionDetailTabs 의 useRegionContents(code,'all') 가 하이드레이션
+  // 시 재요청 없이 사용. mock 모드 skip(MSW 브라우저 전용). 실패해도 클라 재시도.
+  const qc = new QueryClient();
+  if (process.env.NEXT_PUBLIC_USE_MSW !== 'true') {
+    await qc
+      .prefetchInfiniteQuery({
+        // use-region 의 regionKeys.contents(code,'all') 와 정합. rankingKeys 와 동일
+        // 사유로 'use client' 훅 export 대신 동일 shape 인라인(불일치 시 클라 재요청·무해).
+        queryKey: ['region', 'contents', validCode, 'all'] as const,
+        queryFn: ({ pageParam }) =>
+          regionApi.listContents(validCode, {
+            type: 'all',
+            cursor: pageParam as string | number | null,
+            limit: 10,
+          }),
+        initialPageParam: null as string | number | null,
+        getNextPageParam: (last: { nextCursor?: string | number | null }) =>
+          last.nextCursor ?? undefined,
+        staleTime: CACHE.slow.staleTime,
+      })
+      .catch(() => {});
+  }
+
   return (
     <>
       <JsonLd
@@ -89,7 +120,9 @@ export default async function RegionDetailPage({ params }: Props) {
           padding 4 = 20 (Figma), gap 16 = banner ↔ tabs 사이 spacing 정합. */}
       <div className={styles.body}>
         <RegionHero code={validCode} />
-        <RegionDetailTabs code={validCode} />
+        <HydrationBoundary state={dehydrate(qc)}>
+          <RegionDetailTabs code={validCode} />
+        </HydrationBoundary>
       </div>
     </>
   );

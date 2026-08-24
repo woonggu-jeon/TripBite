@@ -57,6 +57,6 @@ test.describe('푸시 prompt + 알림 클릭 → letter detail', () => {
       await mockBtn.click({ trial: true });
     }
     // 노출 여부와 무관 — UI 가 깨지지 않고 home 페이지 유지
-    expect(page.url()).toContain('localhost:3901');
+    expect(page.url()).toContain('localhost:3000');
   });
 });

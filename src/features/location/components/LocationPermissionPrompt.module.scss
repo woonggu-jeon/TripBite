@@ -1,44 +1,46 @@
-// Figma "위치 권한 동의" 정합 (2026-06-19) — 116px hero icon + ExtraBold 24 title
-// + 1.65em line description + column button stack.
 .prompt {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-6) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   text-align: center;
 }
 
-// Figma "circle/location" (3378:266) — 96x96 (2026-06-23 토큰 페이지 정합).
 .icon {
-  width: 96px;
-  height: 96px;
-  margin-bottom: var(--space-2);
+  color: var(--color-primary-text-bold);
 }
 
-// Figma title — ExtraBold 24, letter-spacing -0.04em.
 .title {
-  font-size: 1.5rem; // 24px
-  font-weight: var(--font-weight-extrabold);
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-fg);
-  margin: 0;
+  font-size: var(--font-h3);
+  font-weight: var(--font-weight-bold);
 }
 
-// Figma description — Regular 15, line-height 1.65em, center, 줄바꿈 keep.
 .description {
-  font-size: 0.9375rem; // 15px
-  line-height: 1.65;
+  font-size: var(--text-sm);
   color: var(--color-muted);
-  white-space: pre-line;
-  margin: 0;
-  max-width: 32ch;
+  max-width: 28ch;
 }
 
-// Figma button stack — column, gap 11, full-width. primary 위 / skip 아래.
 .actions {
-  display: grid;
-  width: 100%;
-  gap: 11px;
-  margin-top: var(--space-4);
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.skip {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+}
+
+.accept {
+  padding: var(--space-2) var(--space-5);
+  background: var(--color-primary-strong);
+  color: var(--color-primary-fg);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
 }

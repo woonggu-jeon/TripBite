@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { waitFor } from '@testing-library/react';
-import { http, HttpResponse } from 'msw';
-import { server } from '@/mocks/server';
+import { HttpResponse, http } from 'msw';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mockSeeds } from '@/mocks/handlers';
-import { renderWithProviders, createRouterMock } from '@/test-utils';
+import { server } from '@/mocks/server';
 import { useAuthStore } from '@/stores/auth-store';
+import { createRouterMock, renderWithProviders } from '@/test-utils';
 
 const router = createRouterMock();
 const pathnameMock = vi.fn<() => string>(() => '/');

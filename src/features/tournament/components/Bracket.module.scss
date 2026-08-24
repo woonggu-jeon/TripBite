@@ -1,119 +1,129 @@
-/* ─────────────────────────────────────────────────────────────
- * Bracket (Figma TRN 매치 8강)
- *   - content padding 20 gap 20 (TournamentPlayClient.bracket 이 담당)
- *   - Frame 43 column gap 4: top row(label B_14 + count R_14) + segments
- *   - 5 segments 60.8×8 radius 999 — active primary, 나머지 #E0E0E0
- *   - title B_20 fg "어디로 떠나볼까요?"
- *   - match-area column gap 12 isolation
- *     - hero × 2 stacked
- *     - vs absolute center 36 circle white border 1.5 gray + B_14 primary
- * ─────────────────────────────────────────────────────────────
- */
+// Figma `TRN · 매치 8강` 실측 — content V gap 20.
 .wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+  min-width: 0;
+
+  > * {
+    min-width: 0;
+  }
 }
 
-/* Frame 43: 라운드 메타 + segments */
-.progressFrame {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+// Figma `Frame 43` — 상단 줄 + 세그먼트, V gap 4
+.head {
+  display: grid;
+  gap: var(--space-1);
 }
 
-.progressTop {
+// Figma `top` — 좌: 라운드·매치, 우: 남은 매치
+.top {
   display: flex;
-  flex-direction: row;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
+  gap: var(--space-2);
 }
 
-.progressLabel {
-  font-size: 14px;
-  font-weight: var(--font-weight-bold);
+// Basic Body/M_14_140% #151515 (구 중앙 정렬 + muted)
+.roundLabel {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-normal);
   color: var(--color-fg);
-  line-height: var(--line-snug);
+  letter-spacing: var(--tracking-tight);
+}
+
+.round {
+  font-weight: var(--font-weight-medium);
+  color: inherit;
+  font-size: inherit;
+}
+
+.dot {
+  opacity: 0.5;
 }
 
 .matchCount {
-  font-size: 14px;
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-medium);
+}
+
+// Basic Body/R_14_140% #393939
+.remaining {
+  flex-shrink: 0;
+  font-size: var(--font-body-sm);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-normal);
   color: var(--color-muted);
-  line-height: var(--line-snug);
-  letter-spacing: var(--tracking-tabular, normal);
   font-variant-numeric: tabular-nums;
 }
 
-/* 5 segments — flex 1 로 너비 균등, 8px 높이, radius full */
-.segments {
+// Figma `segments` — 높이 8, gap 4, radius 999. 진행분 #00B334 / 잔여 #E0E0E0.
+// (구 구현은 4~6px 에 그림자·확대 애니메이션까지 있었다)
+.progressBar {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   height: 8px;
 }
 
-.seg {
+.progressSeg {
   flex: 1;
+  min-width: 4px;
   height: 8px;
-  border-radius: 999px;
-  // Figma #E0E0E0 disabled = `--color-border` 정합. dark 분기 자동 (토큰).
+  border-radius: var(--radius-full);
   background: var(--color-border);
-  transition:
-    background-color 0.3s ease,
-    box-shadow 0.3s ease;
+  transition: background-color var(--motion-base) ease;
 }
 
-.segDone {
+.progressSegDone {
   background: var(--color-primary);
-  box-shadow: 0 0 0 1px var(--color-primary-ring-soft);
 }
 
-/* 라운드 안내 문구 — B_20 fg, 사용자에게 어디로 떠날지 묻기 */
-.roundTitle {
-  font-size: 20px;
+// Title/B_20_130%
+.prompt {
+  font-size: var(--font-h2);
   font-weight: var(--font-weight-bold);
   line-height: var(--line-snug);
+  letter-spacing: var(--tracking-tight);
   color: var(--color-fg);
-  margin: 0;
   word-break: keep-all;
 }
 
-/* match-area column gap 12 + VS overlay (isolation 으로 hero shadow 와 stacking 분리). */
-.matchArea {
+// Figma `match-area` — 카드 2장 세로 V gap 12. VS 는 그 위에 겹친다.
+.matchup {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+  min-width: 0;
 }
 
+// Figma `vs` — 36px 흰 원, 1.5px #E0E0E0, "VS" 14 Bold 초록.
+// 두 카드 경계 중앙에 겹쳐 놓는다.
 .vs {
   position: absolute;
-  left: 50%;
   top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
+  z-index: 2;
+  display: grid;
+  place-items: center;
   width: 36px;
   height: 36px;
-  border-radius: 999px;
-  // Figma white circle on dark — light/dark 토큰 직접 사용.
+  border-radius: var(--radius-full);
   background: var(--color-bg);
-  border: 1.5px solid var(--color-stroke);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
+  border: 1.5px solid var(--color-border);
+  color: var(--color-primary-text-bold);
+  font-size: var(--font-body-sm);
   font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
-  letter-spacing: var(--tracking-uppercase);
+  line-height: 1;
+  letter-spacing: var(--tracking-tight);
   pointer-events: none;
-  z-index: 3;
-  box-shadow: var(--shadow-sm);
 }
 
-/* autoWin 메시지 (단일 매치 종료 시) */
 .doneMsg {
   text-align: center;
   font-size: var(--font-body-sm);
@@ -122,7 +132,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .seg {
+  .progressSeg {
     transition: none;
   }
 }

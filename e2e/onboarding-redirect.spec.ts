@@ -21,7 +21,7 @@ async function setVisitedCookie(page: Page) {
     {
       name: 'tripbite.visited',
       value: '1',
-      url: page.url() || 'http://localhost:3901',
+      url: page.url() || 'http://localhost:3000',
       sameSite: 'Lax',
     },
   ]);

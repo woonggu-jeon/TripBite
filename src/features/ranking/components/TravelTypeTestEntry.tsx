@@ -1,9 +1,9 @@
 'use client';
 
-import Link from 'next/link';
-import { useTranslations } from 'next-intl';
 import { ArrowRight } from 'lucide-react';
-import { cardClasses, TravelTypeIcon } from '@/components/ui';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { cardClasses } from '@/components/ui';
 import { useMyTravelType } from '@/features/ranking/hooks/use-ranking';
 import styles from './TravelTypeTestEntry.module.scss';
 
@@ -14,6 +14,9 @@ import styles from './TravelTypeTestEntry.module.scss';
  *   - 결과 있음 → 내 유형 emoji + title + "다시 결과 보기"
  *
  * 랭킹 페이지/홈 위젯 등 어디서든 import 가능. 데이터는 useMyTravelType (서버 단일 소스).
+ *
+ * [보존/preserved] 현재 랭킹/홈에서 미마운트(여행유형 진입 위젯 노출 보류 상태)라
+ * 미사용. 위젯 재노출 시 재사용하는 설계 완료 UI — dead-code sweep 에서 제외(의도적 보존).
  */
 export function TravelTypeTestEntry() {
   const t = useTranslations('travelType.entry');
@@ -28,7 +31,7 @@ export function TravelTypeTestEntry() {
     return (
       <Link href="/quiz/result" className={cardCls}>
         <span className={styles.emoji} aria-hidden>
-          <TravelTypeIcon code={data.code} size={36} />
+          {data.emoji}
         </span>
         <div className={styles.text}>
           <p className={styles.eyebrow}>{t('myTypeEyebrow')}</p>

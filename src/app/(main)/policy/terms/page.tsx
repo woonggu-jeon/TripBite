@@ -1,11 +1,11 @@
-import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
-import { SubHeader } from '@/components/layout/SubHeader';
+import { getTranslations } from 'next-intl/server';
 import {
   PolicyArticle,
-  PolicySection,
   PolicyFooter,
+  PolicySection,
 } from '@/components/layout/PolicyArticle';
+import { SubHeader } from '@/components/layout/SubHeader';
 
 /**
  * 이용약관 (/policy/terms)

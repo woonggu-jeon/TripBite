@@ -1,12 +1,12 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
-import { usePermissionState } from './use-permission-state';
 import type {
   Coordinates,
   GeolocationError,
   PermissionState,
 } from '@/features/location/types';
+import { usePermissionState } from './use-permission-state';
 
 type Options = {
   /** GPS 등 고정밀 모드 — 배터리 소모 큼 */

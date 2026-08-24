@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { api } from '@/services/api/client';
-import { triggerMockPush } from '@/features/notification/utils/subscription';
+import { useState } from 'react';
 import { notificationKeys } from '@/features/notification/hooks/use-notification-inbox';
+import { triggerMockPush } from '@/features/notification/utils/subscription';
+import { api } from '@/services/api/client';
 import styles from './MockPushTrigger.module.scss';
 
 /**

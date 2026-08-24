@@ -1,0 +1,59 @@
+name: E2E (real BE)
+
+# 실 Spring BE 대상 스모크 — mock e2e 가 못 잡는 프로덕션 화면(빈값/다크/세션)을 검증.
+# ⚠️ PR 게이트가 아니다: 실 BE·네트워크 의존이라 수동(workflow_dispatch) + nightly(schedule) 로만.
+#    빌드는 USE_MSW=false + NEXT_PUBLIC_API_URL=실 Spring 으로 기동(playwright.real.config.ts).
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 매일 UTC 18:00 = KST 03:00
+    - cron: '0 18 * * *'
+
+concurrency:
+  group: e2e-real
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  e2e-real:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-v2
+
+      - name: Install Playwright browser (chromium)
+        run: npx playwright install --with-deps chromium
+
+      # 실 BE 스모크 — 공개 12 + 상세 + 배너 + 다크 3 + 인증 8 라우트.
+      # 계정/오리진은 secret/var 로 override 가능(미설정 시 spec 기본값 test/1234, 실 Spring).
+      - name: Run real-BE smoke
+        run: npm run test:e2e:real
+        env:
+          BE_ORIGIN: ${{ vars.BE_ORIGIN || 'https://trip-bite.o-r.kr' }}
+          BE_TEST_USER: ${{ secrets.BE_TEST_USER }}
+          BE_TEST_PASS: ${{ secrets.BE_TEST_PASS }}
+
+      - name: Upload failure artifacts (traces/screenshots)
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-real-results
+          path: test-results/
+          retention-days: 7

@@ -1,98 +1,70 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useShallow } from 'zustand/react/shallow';
-import { useTournamentStore } from '@/features/tournament/store/tournament-store';
-import {
-  TOURNAMENT_SIZE_OPTIONS,
-  type TournamentCount,
-} from '@/features/tournament/types';
+import { useRouter } from 'next/navigation';
+import { Icon } from '@/components/icon';
+import { Button, ButtonGrid } from '@/components/ui';
+import { LuckyLadder } from '@/features/tournament/components/LuckyLadder';
+import { TournamentStats } from '@/features/tournament/components/TournamentStats';
+import { WinnerCard } from '@/features/tournament/components/WinnerCard';
+import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetailPanel';
 import {
   useDestinationDetail,
   useSaveTournament,
-  useTournamentRecord,
 } from '@/features/tournament/hooks/use-tournament';
-import { Button } from '@/components/ui';
-import { WinnerCard } from '@/features/tournament/components/WinnerCard';
-import { WinnerDetailPanel } from '@/features/tournament/components/WinnerDetailPanel';
-import { TournamentStats } from '@/features/tournament/components/TournamentStats';
-import { LuckyLadder } from '@/features/tournament/components/LuckyLadder';
-import { SeasonLoadingPanel } from '@/features/tournament/components/SeasonLoadingPanel';
-import { useShareCard } from '@/hooks/use-share-card';
+import { useTournamentStore } from '@/features/tournament/store/tournament-store';
 import { useRequireAuth } from '@/hooks/use-require-auth';
+import { useShareCard } from '@/hooks/use-share-card';
 import styles from './TournamentResultClient.module.scss';
 
 /**
- * 토너먼트 결과 — Figma "TRN · 토너먼트 결과" 정합 (2026-06-24).
+ * 토너먼트 결과 클라이언트
  *
- * 구성 (column gap 20):
- *   1) WinnerCard         — hero 320×176 (image + 90deg dark gradient + bottom-left text)
- *   2) WinnerDetailPanel  — info-card 320×285 (3 field row + divider + overview)
- *   3) TournamentStats    — Frame 47 (title + 4 rchip + lucky color row 흡수)
- *   4) LuckyLadder        — ladder card 320×432 (title + caption + ladder svg 280×337)
- *   5) actions            — primary 320×52 "결과 공유하기" + outline pair (다시하기 / 마이페이지에 저장)
+ * 구성:
+ *   1) WinnerCard        — 우승 여행지(이름·시군·카테고리)
+ *   2) WinnerDetailPanel — 상세(주소·설명 등)
+ *   3) TournamentStats   — 토너먼트 기록 chip 4 + 행운의 색 row(winner.id seed)
+ *   4) LuckyLadder       — 인연 만날 확률 사다리타기(자체 헤더 포함)
+ *   5) 액션              — 공유 / 다시 하기 / 마이페이지 저장
+ *
+ * 저장: useSaveTournament(useMutation) → POST /mypage/tournaments
+ *   - 성공 시 버튼 라벨 "저장됐어요" 로 전환 + disabled
+ *   - 실패 시 다시 시도 가능
+ *
+ * 설정/우승자 없이 진입 시: redirect 대신 안내(백엔드 미연결 정책).
+ *
+ * ─────────────────────────────────────────────────────────────
+ * [결과 딥링크 미지원 — 상세는 아래 BE-TODO(§5 P2-2)]
+ *
+ * winner/runnerUp/matchesPlayed/tournamentSize 는 전부 store-only(같은 SPA
+ * 세션의 setup → play → result 흐름 안에서만 보존). Spring 은 `GET /tournaments/{id}`
+ * 가 없어 cold 진입(새로고침/공유 링크)은 아래 `if (!winner) → noWinner` 로 degrade.
+ *
+ * 정식 딥링크 API 도입 시 처리 포인트:
+ *   - `?id=` 로 record fetch(기록은 이미 `POST /mypage/tournament-history` 로 저장됨).
+ *   - `if (!winner)` 를 isError vs notFound 로 분기(현재는 두 경우가 합쳐져 있음).
+ *   - 저장 onSuccess → `/mypage/tournaments/{id}` replace + mypage tournaments invalidate.
+ * 정책 [[rendering-speed-first]]: 진입 시 skeleton-first, prefetch 안 함.
+ * ─────────────────────────────────────────────────────────────
  */
 export function TournamentResultClient() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const recordId = searchParams.get('id');
   const t = useTranslations('tournament.result');
 
-  const recordQuery = useTournamentRecord(recordId);
-
-  // 5개 분산 selector → 단일 selector + 객체 통합 (자율 검토 2026-06-25). 단
-  // 객체 selector 는 매번 new instance → React getSnapshot 무한 loop. zustand
-  // 5의 `useShallow` 로 shallow compare → 같은 키 동일 값이면 같은 reference
-  // 유지 (사용자 보고 2026-06-25 — getSnapshot cache 회귀 fix).
-  const {
-    storeWinner,
-    storeRunnerUp,
-    storeMatchesPlayed,
-    storeTournamentSize,
-    storeSeason,
-  } = useTournamentStore(
-    useShallow((s) => ({
-      storeWinner: s.winner,
-      storeRunnerUp: s.runnerUp,
-      storeMatchesPlayed: s.matchesPlayed,
-      storeTournamentSize: s.config?.tournamentSize,
-      storeSeason: s.config?.theme.value,
-    })),
-  );
+  // BE-TODO(§5 P2-2): 결과 딥링크 복원 — Spring 미지원(GET /tournaments/{id} 없음) →
+  //   결과는 store 전용. cold 진입(새로고침/공유 링크)은 아래 noWinner 로 degrade.
+  //   엔드포인트 추가 시 ?id= 로 record fetch(useTournamentRecord) 복원.
+  const winner = useTournamentStore((s) => s.winner);
+  const runnerUp = useTournamentStore((s) => s.runnerUp);
+  const matchesPlayed = useTournamentStore((s) => s.matchesPlayed);
+  const tournamentSize = useTournamentStore((s) => s.config?.tournamentSize);
   const reset = useTournamentStore((s) => s.reset);
-
-  const record = recordQuery.data;
-  const winner = record?.winner ?? storeWinner;
-  const runnerUp = record?.runnerUp ?? storeRunnerUp;
-  const matchesPlayed = record?.matchesPlayed ?? storeMatchesPlayed;
-  // BE record.tournamentSize 는 number, store 는 TournamentCount union.
-  // TOURNAMENT_SIZE_OPTIONS 로 type guard — `as` cast 우회 회피 (자율 검토
-  // 2026-06-25).
-  const recSize = record?.tournamentSize;
-  const tournamentSize: TournamentCount | undefined =
-    recSize != null &&
-    (TOURNAMENT_SIZE_OPTIONS as readonly number[]).includes(recSize)
-      ? (recSize as TournamentCount)
-      : storeTournamentSize;
 
   const save = useSaveTournament();
   const requireAuth = useRequireAuth();
   const shareCard = useShareCard();
+  // 우승자 풍부 정보 — winner.id 기준 별도 fetch.
   const detailQuery = useDestinationDetail(winner?.id);
-
-  // deep-link 진입 (?id=) + record fetch 중 + store winner 없을 때 fallback.
-  // 큰 5-stack skeleton (hero/info/stats/ladder/actions) → SeasonLoadingPanel
-  // 로 통일 (사용자 명시 2026-06-25 — 깜빡임 회귀). store season 없으면
-  // autumn fallback (deep-link 만 진입 시 config 정보 없음).
-  if (recordId && recordQuery.isLoading && !storeWinner) {
-    return (
-      <SeasonLoadingPanel
-        season={storeSeason ?? 'autumn'}
-        title={t('loading')}
-      />
-    );
-  }
 
   if (!winner) {
     return (
@@ -117,21 +89,35 @@ export function TournamentResultClient() {
     router.replace('/tournament');
   };
 
+  /**
+   * 결과 카드 이미지 공유 — `/api/og/tournament` 가 query → 이미지 PNG 생성.
+   * deep-link 불필요 — 받는 쪽은 이미지 파일만 받음.
+   * 결과 데이터는 URL query 로 인코딩 (winner name / region / category / matches).
+   *
+   * payload 는 file 단독 — title/text 동반 시 일부 share target (예: 카카오톡) 이
+   * 텍스트만 클립보드로 분리 처리하고 file 첨부 흐름이 끊긴다. file 만 보내야
+   * OS 가 채팅 채널 선택 → 이미지 첨부의 정상 분기로 진행.
+   */
   const handleShare = () => {
     const params = new URLSearchParams({
       winner: winner.name,
       region: winner.region,
       category: winner.category,
       ...(matchesPlayed > 0 ? { matches: String(matchesPlayed) } : {}),
-      ...(detailQuery.data?.description
-        ? { desc: detailQuery.data.description }
-        : {}),
     });
     return shareCard({
       imageUrl: `/api/og/tournament?${params.toString()}`,
       filename: `tripbite-tournament-${winner.id}.png`,
     });
   };
+
+  const saveLabel = save.isPending
+    ? t('saving')
+    : save.isSuccess
+      ? t('saved')
+      : save.isError
+        ? t('saveFailed')
+        : t('saveToMypage');
 
   return (
     <div className={styles.wrap}>
@@ -146,28 +132,33 @@ export function TournamentResultClient() {
         matchesPlayed={matchesPlayed}
         tournamentSize={tournamentSize}
       />
+
+      {/* LuckyLadder 는 자체 헤더(제목·부제)를 렌더 — 외부 헤더 중복 제거. */}
       <LuckyLadder />
 
-      {/* Figma Frame 48 — column gap 8: primary 320×52 (공유) + outline pair
-          (다시하기, 마이페이지에 저장). 사용자 명시 순서 (2026-06-24). */}
       <div className={styles.actions}>
-        <Button variant="primary" size="lg" fullWidth onClick={handleShare}>
-          {t('shareShort')}
-        </Button>
-        <div className={styles.actionPair}>
-          <Button variant="outline" fullWidth onClick={handleRetry}>
-            {t('retryTournament')}
-          </Button>
+        <ButtonGrid>
           <Button
-            variant="outlinePrimary"
+            variant="secondary"
             fullWidth
-            onClick={handleSave}
-            disabled={save.isSuccess}
-            loading={save.isPending}
+            onClick={handleShare}
+            leadingIcon={<Icon name="share-18" size={16} />}
           >
-            {save.isSuccess ? t('saved') : t('saveShort')}
+            {t('share')}
           </Button>
-        </div>
+          <Button variant="ghost" fullWidth onClick={handleRetry}>
+            {t('retry')}
+          </Button>
+        </ButtonGrid>
+        <Button
+          variant="primary"
+          fullWidth
+          onClick={handleSave}
+          disabled={save.isSuccess}
+          loading={save.isPending}
+        >
+          {saveLabel}
+        </Button>
       </div>
     </div>
   );

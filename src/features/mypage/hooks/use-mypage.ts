@@ -1,14 +1,11 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { authKeys } from '@/features/auth/hooks/use-auth';
+import { useAuthedQueryEnabled } from '@/features/auth/hooks/use-authed-query';
 import { mypageApi } from '@/features/mypage/api/mypage';
 import { CACHE } from '@/lib/cache';
-import { useAuthStore } from '@/stores/auth-store';
-import { authKeys } from '@/features/auth/hooks/use-auth';
-import type {
-  MypageSummaryDto,
-  UpdateProfileDto,
-} from '@/api/generated/schemas';
+import type { MypageSummaryDto, UpdateProfileDto } from '@/types/api-domain';
 
 export const mypageKeys = {
   all: ['mypage'] as const,
@@ -17,11 +14,11 @@ export const mypageKeys = {
 };
 
 export function useMypage() {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const enabled = useAuthedQueryEnabled();
   return useQuery({
     queryKey: mypageKeys.summary(),
     queryFn: ({ signal }) => mypageApi.getSummary(signal),
-    enabled: isAuthenticated,
+    enabled,
     ...CACHE.user,
   });
 }
@@ -61,18 +58,18 @@ export function useUpdateNickname() {
 }
 
 export function useStamps() {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const enabled = useAuthedQueryEnabled();
   return useQuery({
     queryKey: mypageKeys.stamps(),
     queryFn: ({ signal }) => mypageApi.getStamps(signal),
-    enabled: isAuthenticated,
+    enabled,
     ...CACHE.user,
   });
 }
 
 /**
- * 프로필 아바타 업로드 — multipart, onSuccess 시 /me + /mypage 캐시 갱신.
- * BE 응답의 avatarUrl 이 즉시 ProfileCard 에 반영되도록 invalidate.
+ * 프로필 이미지 업로드 — POST /me/avatar (multipart).
+ * onSuccess 시 /me + /mypage summary invalidate → 서버 avatarUrl 이 정식 source.
  */
 export function useUpdateAvatar() {
   const qc = useQueryClient();
@@ -85,9 +82,7 @@ export function useUpdateAvatar() {
   });
 }
 
-/**
- * 프로필 아바타 제거 — DELETE /me/avatar. onSuccess 시 /me + /mypage 캐시 갱신.
- */
+/** 프로필 이미지 삭제 — DELETE /me/avatar → 기본 아바타로 복귀. */
 export function useRemoveAvatar() {
   const qc = useQueryClient();
   return useMutation({

@@ -1,18 +1,20 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useSearchParams } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { LogoMark } from '@/components/brand/LogoMark';
+import { Button, TextField } from '@/components/ui';
 import { useLogin } from '@/features/auth/hooks/use-auth';
 import {
-  loginSchema,
   type LoginFormValues,
+  loginSchema,
 } from '@/features/auth/schemas/login';
+import { safeInternalPath } from '@/lib/safe-redirect';
 import { isAxiosError } from '@/services/interceptors/auth';
-import { Button, PasswordField, TextField } from '@/components/ui';
 import styles from './AuthForm.module.scss';
 
 /**
@@ -21,16 +23,24 @@ import styles from './AuthForm.module.scss';
  * 정적 UI 텍스트는 모두 useTranslations 로 처리.
  * Zod 메시지는 i18n 키만 반환 → 컴포넌트에서 t() 로 변환.
  */
+type LoginField = {
+  name: 'username' | 'password';
+  type: 'text' | 'password';
+  autoComplete: 'username' | 'current-password';
+};
+
+const FIELDS: readonly LoginField[] = [
+  { name: 'username', type: 'text', autoComplete: 'username' },
+  { name: 'password', type: 'password', autoComplete: 'current-password' },
+] as const;
 
 export function LoginForm() {
   const t = useTranslations('auth.login');
+  const tBrand = useTranslations('brand');
   const searchParams = useSearchParams();
-  // safe redirect — 외부 URL 주입 (open redirect) 차단. 같은 origin 경로만 허용.
-  const rawRedirect = searchParams.get('redirect');
-  const redirect =
-    rawRedirect && rawRedirect.startsWith('/') && !rawRedirect.startsWith('//')
-      ? rawRedirect
-      : '/';
+  // safe redirect — 외부 URL 주입 (open redirect) 차단. 같은 origin 경로만 허용
+  // (백슬래시/탭 우회까지 막는 WHATWG origin 비교).
+  const redirect = safeInternalPath(searchParams.get('redirect'));
 
   const {
     register,
@@ -76,52 +86,36 @@ export function LoginForm() {
   });
 
   return (
-    <form onSubmit={onSubmit} className={styles.form} noValidate>
-      {/* Figma LOGIN · A — 상단 logo 블록 (#3355:184). column gap 8 +
-          padding-bottom 40. 안의 trip-bite-logo INSTANCE 는 column stack
-          (gap 4) — icon 위 / "여행한입" 텍스트 아래. tagline 별도 row.
-          page h1 = "여행한입" 으로 의미 변환 (Figma 디자인 그대로). 페이지
-          타이틀 "로그인" 은 generateMetadata 가 처리. */}
-      <div className={styles.loginLogo}>
-        <div className={styles.loginLogoStack}>
-          {/* SVG 는 vector — next/image optimization 불필요 + hydration
-              지연 회피 (운영에서 첫 진입 시 logo 안 보이던 회귀 fix). */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/auth/trip-bite-logo.svg"
-            alt=""
-            width={40}
-            height={37}
-            className={styles.loginLogoIcon}
-          />
-          <h1 className={styles.loginLogoText}>{t('logoTitle')}</h1>
-        </div>
-        <p className={styles.loginTagline}>{t('tagline')}</p>
+    <form onSubmit={onSubmit} className={styles.loginForm} noValidate>
+      {/* Figma `logo` — 마크 40 + 브랜드명(20 Bold) + 태그라인(14), 아래 여백 40.
+          시안에는 "로그인" 제목이 없다 — h1 은 스크린리더용으로만 남긴다. */}
+      <h1 className={styles.srOnlyTitle}>{t('title')}</h1>
+      <div className={styles.brand}>
+        <LogoMark size={40} />
+        <p className={styles.brandName}>{tBrand('name')}</p>
+        <p className={styles.brandTagline}>{tBrand('tagline')}</p>
       </div>
 
-      <TextField
-        id="username"
-        type="text"
-        autoComplete="username"
-        label={t('username')}
-        errorMessage={
-          errors.username
-            ? t(errors.username.message as Parameters<typeof t>[0])
-            : undefined
-        }
-        {...register('username')}
-      />
-      <PasswordField
-        id="password"
-        autoComplete="current-password"
-        label={t('password')}
-        errorMessage={
-          errors.password
-            ? t(errors.password.message as Parameters<typeof t>[0])
-            : undefined
-        }
-        {...register('password')}
-      />
+      {/* Figma `fields` — 필드 사이 gap 16, 버튼과의 간격 24 */}
+      <div className={styles.fields}>
+        {FIELDS.map((f) => (
+          <TextField
+            key={f.name}
+            id={f.name}
+            type={f.type}
+            autoComplete={f.autoComplete}
+            label={t(f.name)}
+            // 비밀번호 필드에만 눈 토글 (Figma `eyeIcon`)
+            passwordToggle={f.type === 'password'}
+            errorMessage={
+              errors[f.name]
+                ? t(errors[f.name]?.message as Parameters<typeof t>[0])
+                : undefined
+            }
+            {...register(f.name)}
+          />
+        ))}
+      </div>
 
       {errors.root && (
         <div role="alert" className={styles.error}>
@@ -145,21 +139,21 @@ export function LoginForm() {
         {isSubmitting ? t('submitting') : t('submit')}
       </Button>
 
-      {/* Figma LOGIN · A — 3 link 가운데 정렬 + ellipsis dot 구분.
-          기존 좌측 회원가입 / 우측 분리 layout 폐기. */}
-      <div className={styles.footLinks}>
-        <Link href="/signup" className={styles.footLink}>
+      {/* Figma `links` — 가운데 정렬, 2px 점으로 구분한 12px 링크 3개.
+          시안은 세 링크 모두 같은 톤(#151515)이다. */}
+      <nav className={styles.links} aria-label={t('title')}>
+        <Link href="/signup" className={styles.link}>
           {t('toSignup')}
         </Link>
-        <span aria-hidden className={styles.footDot} />
-        <Link href="/find-id" className={styles.footLink}>
+        <span className={styles.linkDot} aria-hidden />
+        <Link href="/find-id" className={styles.link}>
           {t('toFindId')}
         </Link>
-        <span aria-hidden className={styles.footDot} />
-        <Link href="/forgot-password" className={styles.footLink}>
+        <span className={styles.linkDot} aria-hidden />
+        <Link href="/forgot-password" className={styles.link}>
           {t('toForgot')}
         </Link>
-      </div>
+      </nav>
     </form>
   );
 }

@@ -1,7 +1,7 @@
-import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
-import { LoginForm } from '@/features/auth/components/LoginForm';
+import { getTranslations } from 'next-intl/server';
 import { AuthLayout } from '@/components/layout/AuthLayout';
+import { LoginForm } from '@/features/auth/components/LoginForm';
 
 /**
  * 로그인 페이지 (/login)

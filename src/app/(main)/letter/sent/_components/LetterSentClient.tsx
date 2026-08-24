@@ -1,40 +1,56 @@
 'use client';
 
-import Image from 'next/image';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Icon } from '@/components/icon/Icon';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Skeleton } from '@/components/feedback/Skeleton';
+import { Icon } from '@/components/icon';
+import { Button, ButtonGrid } from '@/components/ui';
+import { LetterPaper } from '@/features/letter/components/LetterPaper';
 import { useLetter } from '@/features/letter/hooks/use-letters';
 import { useLetterStore } from '@/features/letter/store/letter-store';
-import { useMe } from '@/features/auth/hooks/use-auth';
-import { Button } from '@/components/ui';
-import { Skeleton } from '@/components/feedback/Skeleton';
-import { EmptyState } from '@/components/feedback/EmptyState';
-import { secureImageUrl } from '@/lib/secure-image-url';
+import { formatDotDate } from '@/lib/format-date';
+import { useAuthStore } from '@/stores/auth-store';
 import styles from './LetterSentClient.module.scss';
 
 /**
- * /letter/sent — Figma "편지 발송완료" (2026-06-24 재정합).
+ * [FUTURE: BE(NestJS) 연동 시 처리 포인트]
  *
- * 의미 변경 (사용자 명시):
- *   - **top meta = To (수신자)** — 랜덤 수신자에게 / 전달 예정.
- *   - **bottom footer = From (발신자 = 본인)** — 익명/닉네임 · 지역, yyyy.MM.dd 발송.
- *   - sq (좌상단 우표) — 내 프로필 이미지 (avatarUrl) 또는 User icon fallback.
- *   - pm (도장) — "발송완료\n여행한입" 멀티라인.
- *   - button — "홈으로 가기" → /.
+ * 현재 lastSent 는 letter-store 의 in-memory state. reload 시 사라지면
+ * `/letter/sent` 직접 진입은 `noLastSent` 안내로 떨어짐.
  *
- * 익명 발송 (isAnonymous true) 시: from 표시 = "익명의 여행자 · {지역}".
- * 일반 발송 시: from 표시 = "{내 닉네임} · {지역}".
+ * BE 연동 시:
+ *   - 보낼 때 `POST /letters` 응답으로 `letterId / recipientNickname /
+ *     deliveredAt / receivedAt` 받아옴 → store 에 넣지 말고 `?id=` 로 전달.
+ *   - `useLetter(id)` 로 결과 페이지에서 다시 fetch (reload/공유 대비).
+ *   - 닉네임 해시 / formatKoreanDate / etaText 는 서버 응답값으로 대체.
+ *   - store 의 lastSent 자체를 제거하고 mutation onSuccess → router.replace 패턴.
+ *
+ * 정책 [[rendering-speed-first]]: sent 페이지 진입 시 추가 prefetch 없이,
+ *   isLoading → Skeleton 으로 letter card 자리만 잡아두고 fetch 완료 시 채움.
  */
 
-function formatKoreanDate(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}.${m}.${day}`;
-}
+/**
+ * /letter/sent — 보낸 편지 결과 화면
+ *
+ *   ┌──────────────────────────────────────┐
+ *   │  ✉️ 전송이 완료됐어요                │  상단 알림
+ *   ├──────────────────────────────────────┤
+ *   │  ┌──────────────────────────┐        │
+ *   │  │ From                  ┌──┐│        │  익명 닉네임 + 지역 + 우표
+ *   │  │ 익명의 여행자          │우표││       │
+ *   │  │ 충북 청주시           └──┘│       │
+ *   │  ├──────────────────────────┤        │
+ *   │  │   고 마 워 요              │        │  메시지 + 보낸 날짜
+ *   │  │   2026.05.29 14:35       │        │
+ *   │  ├──────────────────────────┤        │
+ *   │  │ To                       │        │
+ *   │  │ 익명의 여행자 님에게      │        │  익명 수신자 + 추상 도착
+ *   │  │ 랜덤 시간에 도착해요 ✓전송│        │
+ *   │  └──────────────────────────┘        │
+ *   ├──────────────────────────────────────┤
+ *   │ [또 쓰기]   [홈으로]                 │
+ *   └──────────────────────────────────────┘
+ */
 
 export function LetterSentClient() {
   const router = useRouter();
@@ -43,195 +59,135 @@ export function LetterSentClient() {
   const t = useTranslations('letter.sent');
   const tAuthor = useTranslations('letter.author');
   const lastSent = useLetterStore((s) => s.lastSent);
-  const { data: me } = useMe();
+  // 시안 도장에는 보낸 사람(=나) 의 닉네임이 찍힌다.
+  const myNickname = useAuthStore((s) => s.user?.nickname);
 
+  // ?id= deep-link 우선 — 새로고침 / 공유 진입 대응. 없으면 store fallback.
   const letterQuery = useLetter(letterId ?? '');
   const enabled = !!letterId;
   const serverLetter = enabled ? letterQuery.data : undefined;
 
-  // BE 가 author.nickname 을 "익명의 여행자" 또는 본인 닉네임으로 반환 (2026-06-24
-  // 사용자 명시) — FE 는 그대로 노출. 익명/일반 분기 로직 불필요.
+  /**
+   * 통합 source — server 우선, store fallback.
+   *
+   * `senderName` 은 익명 발송 여부에 따라 갈린다:
+   *   server 응답이 있으면 → author.nickname (서버가 익명 처리까지 끝낸 값)
+   *   없으면              → lastSent.isAnonymous ? "익명의 여행자" : 내 닉네임
+   * 익명을 선택하지 않았는데 "익명의 여행자" 로 찍히던 버그를 고친 부분이다.
+   */
   const view: {
     body: string;
     sentAt: string;
-    nickname: string;
     location: string;
+    senderName: string;
   } | null = serverLetter
     ? {
         body: serverLetter.body,
         sentAt: serverLetter.createdAt,
-        nickname: serverLetter.author.nickname,
-        location: serverLetter.author.location ?? '',
+        // `||` — mapLetter 가 위치 없음을 '' 로 coerce 하므로 ?? 면 fallback 이
+        // 죽어 "닉네임 · " 댕글링 구분자가 남는다. 빈 문자열도 '익명 위치' 로.
+        location: serverLetter.author.location || '익명 위치',
+        senderName: serverLetter.author.nickname || tAuthor('anonymous'),
       }
     : lastSent
       ? {
           body: lastSent.body,
           sentAt: lastSent.sentAt,
-          nickname: lastSent.isAnonymous
+          location: lastSent.location?.label || '익명 위치',
+          senderName: lastSent.isAnonymous
             ? tAuthor('anonymous')
-            : (me?.nickname ?? tAuthor('anonymous')),
-          location: lastSent.location?.label ?? '',
+            : (myNickname ?? tAuthor('anonymous')),
         }
       : null;
 
   if (enabled && letterQuery.isLoading && !lastSent) {
     return (
       <div className={styles.wrap}>
-        <div className={styles.wb}>
-          <div className={styles.skeletonHero}>
-            <Skeleton width={72} height={72} radius="full" />
-            <Skeleton width="60%" height={31} radius="sm" />
-            <Skeleton width="80%" height={20} radius="sm" />
-          </div>
-          <Skeleton width="100%" height={292} radius="lg" />
-        </div>
+        <Skeleton width="100%" height={64} radius="lg" />
+        <Skeleton width="100%" height={320} radius="lg" />
+        <Skeleton width="100%" height={56} radius="md" />
       </div>
     );
   }
 
   if (enabled && letterQuery.isError && !lastSent) {
     return (
-      <div className={styles.wrap}>
-        <EmptyState
-          variant="hero"
-          icon={<Icon name="send" size={36} />}
-          title={t('loadError')}
-          action={
-            <Button
-              variant="primary"
-              size="md"
-              onClick={() => letterQuery.refetch()}
-            >
-              {t('retry')}
-            </Button>
-          }
-        />
+      <div className={styles.empty}>
+        <p>{t('loadError')}</p>
+        <ButtonGrid gap="md">
+          <Button variant="secondary" onClick={() => letterQuery.refetch()}>
+            {t('retry')}
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => router.replace('/letter/compose')}
+          >
+            {t('goCompose')}
+          </Button>
+        </ButtonGrid>
       </div>
     );
   }
 
   if (!view) {
     return (
-      <div className={styles.wrap}>
-        <EmptyState
-          variant="hero"
-          icon={<Icon name="send" size={36} />}
-          title={t('empty')}
-          action={
-            <Button
-              variant="primary"
-              size="md"
-              onClick={() => router.replace('/letter/compose')}
-            >
-              {t('goCompose')}
-            </Button>
-          }
-        />
+      <div className={styles.empty}>
+        <p>{t('empty')}</p>
+        <Button
+          variant="primary"
+          onClick={() => router.replace('/letter/compose')}
+        >
+          {t('goCompose')}
+        </Button>
       </div>
     );
   }
 
+  // 수신자/도착시간은 BE 가 결정 (작성 후 15~60분 랜덤 매칭). 보낸 화면에선
+  // 사용자에게 수신자 정보 노출 X (익명 보장), 도착 시간도 추상 표현.
+  const senderLocation = view.location;
+
+  // 시안 발송완료에는 "또 쓰기" 버튼이 없다 — 하단은 홈으로 가기 하나뿐.
   const handleHome = () => router.replace('/');
-  const date = formatKoreanDate(view.sentAt);
-  // From line: "{nickname} · {location}" (BE 가 익명 발송 시 nickname 을
-  // "익명의 여행자" 로 반환).
-  const fromLine = view.location
-    ? `${view.nickname} · ${view.location}`
-    : view.nickname;
-  const avatarSrc = secureImageUrl(me?.avatarUrl);
 
   return (
     <div className={styles.wrap}>
-      <div className={styles.wb}>
-        {/* Figma Frame 7 hero. */}
-        <div className={styles.hero}>
-          <span className={styles.circle} aria-hidden>
-            <Icon name="send" size={36} />
-          </span>
-          <div className={styles.headings}>
-            <h1 className={styles.title}>{t('noticeTitle')}</h1>
-            <p className={styles.sub}>{t('noticeBody')}</p>
-          </div>
-        </div>
+      {/* Figma `편지 발송완료` — 84 원 + 36 letter 아이콘 + 제목/보조 (중앙) */}
+      <header className={styles.sentHead} role="status">
+        <span className={styles.sentCircle} aria-hidden>
+          <Icon name="check-36" size={36} />
+        </span>
+        <span className={styles.sentText}>
+          <span className={styles.sentTitle}>{t('noticeTitle')}</span>
+          <span className={styles.sentBody}>{t('noticeBody')}</span>
+        </span>
+      </header>
 
-        {/* Figma Frame 79 — sent letter card. */}
-        <article className={styles.card} aria-label={t('letterAria')}>
-          {/* top: sq (내 프로필) + 도장 + meta (To = 수신자). */}
-          <div className={styles.top}>
-            <div className={styles.pw} aria-hidden>
-              <span className={styles.sq}>
-                {avatarSrc ? (
-                  <Image
-                    src={avatarSrc}
-                    alt=""
-                    fill
-                    sizes="60px"
-                    className={styles.sqImage}
-                  />
-                ) : (
-                  <Icon name="user" size={28} className={styles.sqIcon} />
-                )}
-              </span>
-              {/* Figma pm — "발송완료\n여행한입" 멀티라인 도장. */}
-              <span className={styles.pm}>
-                <span className={styles.pmMain}>{t('stampMain')}</span>
-                <span className={styles.pmSub}>{t('stampSub')}</span>
-              </span>
-            </div>
-            <div className={styles.meta}>
-              <span className={styles.metaLabel}>{t('to')}</span>
-              <span className={styles.metaName}>{t('toRecipient')}</span>
-              <span className={styles.metaLoc}>{t('toDelivery')}</span>
-            </div>
-          </div>
+      {/* 시안 `편지 발송완료` — 사진 옆이 To(우측 정렬), 하단이 From.
+          도장 아래는 보낸이 닉네임이 아니라 서비스명 고정 (stampSub). */}
+      <LetterPaper
+        ariaLabel={t('letterAria')}
+        postmarkLabel={t('sentBadge')}
+        postmarkName={t('stampSub')}
+        topLabel={t('to')}
+        topName={t('toRecipient')}
+        body={view.body}
+        bottomLabel={t('from')}
+        bottomName={`${view.senderName} · ${senderLocation}`}
+        dateText={`${formatDotDate(view.sentAt, { time: true })} ${t('sentSuffix')}`}
+        align="right"
+      />
 
-          {/* Figma ms (padding 20) > Frame 71 (padding 12 0 + border-y error)
-              > Frame 70 (border-y error + 5 cells) — 이중 border + 12 gap.
-              직전 단일 border 만 → Figma 우표 천공 효과 정합 (사용자 명시
-              2026-06-24). */}
-          <div className={styles.ms}>
-            <div className={styles.cellsOuter}>
-              <div className={styles.cells}>
-                {Array.from({ length: 5 }).map((_, i) => {
-                  const ch = Array.from(view.body)[i] ?? '';
-                  return (
-                    <div key={i} className={styles.cell}>
-                      {ch}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.div} aria-hidden />
-
-          {/* Figma Frame 80 — From (발신자 = 본인) + 발송 날짜. */}
-          <div className={styles.footer}>
-            <div className={styles.footerRow}>
-              <span className={styles.footerStar}>{t('from')}</span>
-              <span className={styles.footerLabel}>{fromLine}</span>
-            </div>
-            <span className={styles.footerNote}>
-              {date} {t('dateLabel')}
-            </span>
-          </div>
-        </article>
-      </div>
-
-      {/* Figma button absolute bottom 20 — 320×52 outline primary M_16:
-          white bg + 1px primary border + primary color + radius 12.
-          variant=outlinePrimary (primary border) + size=lg (52h, radius 12). */}
-      <div className={styles.actions}>
-        <Button
-          variant="outlinePrimary"
-          size="lg"
-          fullWidth
-          onClick={handleHome}
-        >
-          {t('goHome')}
-        </Button>
-      </div>
+      {/* 시안은 하단에 라인 버튼 하나 (홈으로 가기) */}
+      <Button
+        variant="secondary"
+        size="lg"
+        fullWidth
+        className={styles.lineButton}
+        onClick={handleHome}
+      >
+        {t('home')}
+      </Button>
     </div>
   );
 }

@@ -4,9 +4,10 @@ import { defineConfig } from 'orval';
  * Orval — OpenAPI → TypeScript client + react-query hooks + zod schemas + MSW handlers 자동 생성.
  *
  * BE 합류 워크플로:
- *   1) BE 팀이 Spring Boot Swagger 로 OpenAPI 3.x spec 노출 (예: http://api.tripbite.kr/v3/api-docs)
+ *   1) BE 팀이 Spring Boot Swagger 로 OpenAPI 3.x spec 노출
+ *      (운영: https://trip-bite.o-r.kr/v3/api-docs — springdoc, server url `/v1` prefix 없음)
  *   2) `input.target` 을 그 URL 또는 다운받은 yaml/json 경로로 교체
- *   3) `npm run api:gen` — src/api/generated/ 에 client + hooks + schemas + msw 자동 생성
+ *   3) `npm run generate:api` — src/api/generated/ 에 client + hooks + schemas + msw 자동 생성
  *   4) 기존 수동 작업 단계적 제거:
  *      · src/features/{feature}/api/*.ts — 생성된 api 함수 호출로 점진 교체
  *      · src/features/{feature}/schemas/*.ts — generated zod 로 교체 (본 turn 의 10개 임시 스키마)
@@ -14,8 +15,8 @@ import { defineConfig } from 'orval';
  *
  * 자동 실행:
  *   - `predev` / `prebuild` 훅이 `generate:api` 자동 호출 — 개발/배포 모두 BE Swagger SoT.
- *   - Vercel 빌드 시 `OPENAPI_URL` env 가 BE 운영 swagger URL 가리켜야 (예:
- *     https://api.tripbite.kr/docs-json). 미설정 시 localhost 기본값 → 빌드 fail.
+ *   - Vercel 빌드 시 `OPENAPI_URL` env 가 BE 운영 swagger URL 가리켜야
+ *     (운영: https://trip-bite.o-r.kr/v3/api-docs). 미설정 시 아래 기본값 사용.
  *   - BE down 시 빌드 fail — 운영 사이트도 BE 의존이라 동시 다운이 자연.
  *
  * Output 구조 (예정):
@@ -28,15 +29,20 @@ import { defineConfig } from 'orval';
 export default defineConfig({
   tripbite: {
     input: {
-      // BE NestJS Swagger — http://localhost:3000/docs-json 의 OpenAPI JSON.
+      // BE Spring Boot Swagger (springdoc) — https://trip-bite.o-r.kr/v3/api-docs 의 OpenAPI JSON.
       // 운영 swap: env 로 분기 가능 — process.env.OPENAPI_URL ?? 기본값.
       // 오프라인 fallback: api/openapi.yaml 캐시 사용 (BE 다운 시 generator 가 fail 하지 않도록).
-      target: process.env.OPENAPI_URL ?? 'http://localhost:3000/docs-json',
+      target: process.env.OPENAPI_URL ?? 'https://trip-bite.o-r.kr/v3/api-docs',
     },
     output: {
       mode: 'tags-split',
-      target: './src/api/generated/client.ts',
-      schemas: './src/api/generated/schemas',
+      // 신규 Spring BE 클라이언트는 src/api/be/ 로 생성 (live orval output).
+      // 구 src/api/generated/ 는 동결 — BE 미지원 기능(letter/notification/onboarding/
+      // settings/location)이 mock 으로 계속 동작하도록 old shape 를 보존.
+      // 겹치는 7개 feature(auth/me/mypage/tournament/region/destination/travel-type)만
+      // src/api/be/ 로 점진 rewiring.
+      target: './src/api/be/client.ts',
+      schemas: './src/api/be/schemas',
       client: 'react-query',
       httpClient: 'axios',
       override: {

@@ -1,39 +1,41 @@
 'use client';
 
 import {
-  QueryClient,
-  QueryCache,
-  QueryClientProvider,
   type DefaultOptions,
+  MutationCache,
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
 } from '@tanstack/react-query';
-import { toast } from '@/lib/toast';
-import { isAxiosError } from '@/services/interceptors/auth';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { useEffect, useRef, useState } from 'react';
-import { useTranslations } from 'next-intl';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
-// 2026-06-12 — AuthBootstrap mount 비활성. 인증 redirect 는 middleware (SSR) +
-// interceptor (401) 가 담당, 로그인 직후 store sync 는 useLogin.onSuccess 의
-// fetchQuery 가 처리. 다른 기기 user 변경 stale 만 trade-off (다음 navigation 까지).
-// 회귀 시 본 import 와 아래 <AuthBootstrap /> mount 주석 복원.
-// import { AuthBootstrap } from '@/features/auth/components/AuthBootstrap';
-import { ThemeApplier } from '@/features/theme/components/ThemeApplier';
-import { ServiceWorkerNavigateBridge } from '@/features/notification/components/ServiceWorkerNavigateBridge';
-import { SessionExpiredWatcher } from '@/features/auth/components/SessionExpiredWatcher';
-import { Toaster } from '@/components/feedback/Toaster';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import { useTranslations } from 'next-intl';
+import { useEffect, useRef, useState } from 'react';
 import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
-import {
-  PwaUpdateBanner,
-  OfflineBanner,
-  InstallPromptBanner,
-} from '@/features/pwa';
-import { usePageView } from '@/features/analytics/hooks/use-page-view';
+import { Toaster } from '@/components/feedback/Toaster';
 import { WebVitalsTracker } from '@/features/analytics/components/web-vitals';
+import { usePageView } from '@/features/analytics/hooks/use-page-view';
+// 2026-08-10 — AuthBootstrap 재활성: 로드당 1회 /me 세션 프로브(redirect 없음, 동기화만).
+// stale 낙관 인증으로 유저 스코프 폴링이 세션 확인 전에 발사돼 403 나던 문제 해소
+// (useAuthedQueryEnabled 게이트와 한 쌍). 2026-06-12 에 껐던 건 redirect 로직 때문이며
+// 현재 컴포넌트엔 네비게이션이 전혀 없다 — 인증 redirect 는 여전히 middleware(SSR) 담당.
+import { AuthBootstrap } from '@/features/auth/components/AuthBootstrap';
+import { SessionExpiredWatcher } from '@/features/auth/components/SessionExpiredWatcher';
+import { ServiceWorkerNavigateBridge } from '@/features/notification/components/ServiceWorkerNavigateBridge';
+import {
+  InstallPromptBanner,
+  OfflineBanner,
+  PwaUpdateBanner,
+} from '@/features/pwa';
+import { ThemeApplier } from '@/features/theme/components/ThemeApplier';
 import {
   installGlobalErrorReporters,
   reportClientError,
 } from '@/lib/client-error-reporter';
+import { createLogger } from '@/lib/logger';
+import { toast } from '@/lib/toast';
+import { isAxiosError } from '@/services/interceptors/auth';
 
 /**
  * react-query 정책:
@@ -101,15 +103,19 @@ function PageViewTracker() {
  */
 const MSW_ENABLED = process.env.NEXT_PUBLIC_USE_MSW === 'true';
 
-// 빌드 시점에 inline 된 env 상태를 클라이언트 콘솔에 한 줄로 노출 (트러블슈팅용).
+const log = createLogger('providers');
+
+// 빌드 시점에 inline 된 env 상태를 클라이언트에 한 줄로 노출 (트러블슈팅용).
 // Next.js 가 NEXT_PUBLIC_* 를 빌드 시 치환 → 런타임에 `process.env` 직접 접근 불가.
-// 콘솔에서 이 줄을 확인해 Vercel env 가 실제 빌드에 들어갔는지 즉시 판별.
+// 로그에서 이 줄을 확인해 Vercel env 가 실제 빌드에 들어갔는지 즉시 판별.
 if (typeof window !== 'undefined') {
-  // eslint-disable-next-line no-console
-  console.info(
-    `[boot] MSW_ENABLED=${MSW_ENABLED} ` +
-      `NEXT_PUBLIC_USE_MSW=${JSON.stringify(process.env.NEXT_PUBLIC_USE_MSW)} ` +
-      `NEXT_PUBLIC_API_URL=${JSON.stringify(process.env.NEXT_PUBLIC_API_URL)}`,
+  log.info(
+    {
+      mswEnabled: MSW_ENABLED,
+      useMsw: process.env.NEXT_PUBLIC_USE_MSW,
+      apiUrl: process.env.NEXT_PUBLIC_API_URL,
+    },
+    'boot',
   );
 }
 
@@ -128,16 +134,53 @@ export function Providers({ children }: { children: React.ReactNode }) {
         // 401은 axios interceptor 가 /login redirect 처리 중이라 skip.
         // mutation 에러는 각 폼에서 setError로 root 표시 → 자동 toast 중복 방지(여기 제외).
         queryCache: new QueryCache({
-          onError: (error) => {
-            if (isAxiosError(error) && error.response?.status === 401) return;
+          onError: (error, query) => {
+            // 미인증(구 401 / 새 Spring 403)은 interceptor 가 세션정리/redirect 처리 → 중복 토스트·오보고 skip.
+            if (
+              isAxiosError(error) &&
+              (error.response?.status === 401 || error.response?.status === 403)
+            )
+              return;
+            // 자체 인라인 에러 UI 를 가진 쿼리(meta.skipGlobalErrorToast)는 전역 토스트 skip
+            // — 화면 안내 + 토스트 이중 노출 방지(예: 여행지 상세 404 시 "정보를 찾을 수 없어요" 중복).
+            if (query.meta?.skipGlobalErrorToast) return;
             const t = tErrorsRef.current;
-            // attachErrorNormalizeInterceptor 가 error.normalized 부착 — cast 우회.
-            const message = isAxiosError(error)
-              ? (error.normalized?.message ?? t('requestFailed'))
-              : t('network');
+            // i18n 우선순위: 코드별 로케일 메시지(errors.byCode.<CODE>) → BE 가 보낸
+            // 구체 메시지(error.normalized.message) → 제네릭. error-normalize 는 훅
+            // 컨텍스트 밖(axios)이라 code 만 표준화하고, 로케일 변환은 여기(표시 계층)서.
+            // (구 BE 특정 code 는 byCode 키가 없어 BE 메시지로 폴백 — 구체성 보존.)
+            const code = isAxiosError(error)
+              ? error.normalized?.code
+              : undefined;
+            // 타입드 next-intl 은 리터럴 키만 받으므로 동적 키는 캐스팅(코드 컨벤션 동일).
+            const byCodeKey = code
+              ? (`byCode.${code}` as Parameters<typeof t>[0])
+              : undefined;
+            const message =
+              (byCodeKey && t.has(byCodeKey) ? t(byCodeKey) : undefined) ??
+              (isAxiosError(error) ? error.normalized?.message : undefined) ??
+              t(isAxiosError(error) ? 'requestFailed' : 'network');
             toast.error(message);
             // 운영 client-error endpoint 로 보고. dev 는 console 만.
             // 4xx (보통 검증 실패) 는 skip — server 측 정합 issue 가 아니라 사용자 입력.
+            const status = isAxiosError(error)
+              ? error.response?.status
+              : undefined;
+            if (status === undefined || status >= 500) {
+              reportClientError('react-query', error);
+            }
+          },
+        }),
+        // 글로벌 mutation 에러 → 관측 로깅만 (toast 는 각 폼이 담당 — 중복 방지).
+        // 5xx / 네트워크만 보고(4xx 는 사용자 입력 검증). 401 은 interceptor 처리.
+        mutationCache: new MutationCache({
+          onError: (error) => {
+            // 미인증(구 401 / 새 Spring 403)은 interceptor 가 세션정리/redirect 처리 → 중복 토스트·오보고 skip.
+            if (
+              isAxiosError(error) &&
+              (error.response?.status === 401 || error.response?.status === 403)
+            )
+              return;
             const status = isAxiosError(error)
               ? error.response?.status
               : undefined;
@@ -154,6 +197,52 @@ export function Providers({ children }: { children: React.ReactNode }) {
   // dev 는 console 로만, production 빌드에서만 endpoint POST. installed flag 로 idempotent.
   useEffect(() => {
     installGlobalErrorReporters();
+  }, []);
+
+  // dev 에서 남아 있는 serwist(/sw.js) 서비스워커 제거.
+  //
+  // next.config 는 개발 모드에서 serwist 를 끄지만, 예전에 프로덕션 빌드를
+  // 한 번이라도 띄웠던 브라우저에는 /sw.js 등록이 남는다. 그 SW 는 자기
+  // 캐시에서 응답하므로 dev 서버가 새 파일을 줘도 **옛 CSS / 옛 /icons.svg**
+  // 가 화면에 남는다 — 실제로 로그인 디자인이 안 바뀌고, 하단 네비가 세로로
+  // 쌓이고, 네비 아이콘이 예전 글리프로 보이는 증상이 이것 때문이었다.
+  // (개발자가 직접 unregister 하지 않아도 풀리도록 앱이 정리한다.)
+  //
+  // MSW 워커(/mockServiceWorker.js) 는 건드리지 않는다.
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'development') return;
+    if (typeof navigator === 'undefined' || !('serviceWorker' in navigator))
+      return;
+    void (async () => {
+      try {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        let removed = false;
+        for (const reg of regs) {
+          const url =
+            reg.active?.scriptURL ??
+            reg.waiting?.scriptURL ??
+            reg.installing?.scriptURL ??
+            '';
+          if (!url.endsWith('/sw.js')) continue;
+          await reg.unregister();
+          removed = true;
+        }
+        if (removed && typeof caches !== 'undefined') {
+          // serwist/workbox 가 만든 캐시만 삭제 (MSW 는 Cache Storage 미사용)
+          const keys = await caches.keys();
+          await Promise.all(
+            keys
+              .filter((k) => /serwist|workbox|precache|next/i.test(k))
+              .map((k) => caches.delete(k)),
+          );
+          console.warn(
+            '[sw] 남아 있던 serwist 워커와 캐시를 정리했습니다. 새로고침하면 최신 CSS/아이콘이 적용됩니다.',
+          );
+        }
+      } catch {
+        /* 정리 실패는 앱 동작에 영향 없음 */
+      }
+    })();
   }, []);
 
   useEffect(() => {
@@ -173,9 +262,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
         // 콘솔에만 경고하고 mswReady=true 로 진행 — 이후 API 호출은 실 백엔드로 감.
         // (실 백엔드 없으면 각 fetch 가 404 → 화면별 에러 UI 가 처리)
         if (typeof window !== 'undefined') {
-          console.warn(
-            '[mock] MSW worker 등록 실패 — 앱은 진행하되 API 호출이 실 백엔드로 갑니다.',
-            err,
+          log.warn(
+            { err },
+            'MSW worker 등록 실패 — 앱은 진행하되 API 호출이 실 백엔드로 갑니다',
           );
         }
       }
@@ -191,7 +280,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeApplier />
-      {/* <AuthBootstrap /> — 2026-06-12 비활성 (위 import 코멘트 참조) */}
+      <AuthBootstrap />
       <SessionExpiredWatcher />
       <ServiceWorkerNavigateBridge />
       <PageViewTracker />

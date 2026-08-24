@@ -1,11 +1,29 @@
 # TripBite 후속 작업 백로그
 
+> ⚠️ **이 문서는 NestJS 시절 이력/백로그다. 현재 SoT 는 [`BE_SPRING_MIGRATION.md`](./BE_SPRING_MIGRATION.md).**
+> 2026-08 Spring 전환으로 아래 일부 "✅ 완료" 항목은 **Spring 미지원 → 현재 준비중**으로 롤백됐다.
+> 대표: `DELETE /me`(회원탈퇴, §5 P1-4) · `POST/DELETE /me/avatar`(프로필 이미지, §5 P1-5) —
+> NestJS 에선 구현됐으나 Spring BE 엔드포인트 부재로 FE 는 ComingSoon/준비중 toast 로 degrade.
+> 즉 이 파일의 완료 표기는 "그 시점(NestJS)의 사실"이며, 현재 기능 상태는 마이그레이션 문서 §5 를 따른다.
+>
 > 코드베이스 전수조사 후 정리한 잔존 / 개선 항목. 분기점마다 갱신.
 > 마지막 갱신: 2026-06-24 (TRN 9 화면 Figma 정합 + skeleton 19 sweep + dead cleanup)
 >
 > 작업량 표기: **S** (≤30분) · **M** (1-3시간) · **L** (반나절+)
 
 ---
+
+## 잔여 — CI E2E 트리아지 (2026-08-22, PR 비차단 처리됨)
+
+E2E 워크플로가 잘못된 playwright 프로젝트명(desktop-chrome)으로 여태 실행되지 않다가,
+프로젝트명 수정 후 처음 실제 실행되며 잠복 실패 노출(238 passed / 18 failed). PR 은
+`continue-on-error` 로 비차단 처리했고, 아래를 후속 정리 후 비차단 해제한다.
+
+- **visual.spec.ts (~62건) — Linux baseline 부재 [L]**: baseline 이 `*-darwin.png`/`*-win32.png`
+  만 커밋됨. CI 는 ubuntu(linux) → `*-linux.png` 없음. Playwright docker 이미지
+  (`mcr.microsoft.com/playwright`) 로 `--update-snapshots` 실행해 Linux baseline 생성·커밋 필요.
+- **mock-auth.spec.ts / mobile-360.spec.ts (~8건) — 기능 스펙 [M]**: 도장책 "N/11" 라벨,
+  mock 인증 흐름 등. 개별 디버깅(mock 데이터/타이밍 or 실제 회귀 여부 확인).
 
 ## 최근 완료
 
@@ -116,7 +134,7 @@
   - **signup nickname/passwordConfirm 추가** (직전 BE 갱신 전 임시 2-step chain). RadioOption `allowReselect` opt-in — quiz progress 점프 후 같은 답 재선택 시 다음 단계 진행.
   - **TravelTypeQuiz 단일 phase 화** — submit pending → "결과 만드는 중" → onSuccess 즉시 router.replace. 인위적 1.2s finishing celebration 제거.
   - **i18n emailPlaceholder** — "비번찾기에 사용" 부연 제거.
-- **2026-06-17**: RN 포팅 / Cross-platform 전략 검토 — `docs/RN_MIGRATION_PLAN.md` 신설. 5 시나리오 비교 (그대로 / monorepo / Tamagui / Capacitor / RN Web 통합) + Tamagui 도입 깊이 3단계 + 의사결정 체크리스트.
+- **2026-06-17**: RN 포팅 / Cross-platform 전략 검토 (5 시나리오 비교: 그대로 / monorepo / Tamagui / Capacitor / RN Web 통합 + Tamagui 도입 깊이 3단계 + 의사결정 체크리스트). — 미추진으로 관련 문서(`RN_MIGRATION_PLAN.md`) 제거(2026-08-22).
 - **2026-06-17**: RegionHero heroImage 노출 + DestinationCard description/skeleton 보강:
   - **RegionHero heroImage 표시** — BE 가 RegionSummary 응답에 heroImage URL 보내고 있는데 컴포넌트가 사용 안 하던 미구현 상태였음. `MediaThumb` 로 heroImage / emoji 분기 (heroImage 있으면 next/image, 없으면 emoji fallback). regionApi.getSummary 가 http→https 정규화 추가 (HTTPS_FORCE_HOSTS=tong.visitkorea.or.kr).
   - **DestinationCard description 영역 항상 reserve** — 직전 `{description && <p>}` conditional 렌더라 prop 없는 카드가 한 줄 짧아져 grid 정렬 깨지던 문제. `description || nbsp` + `aria-hidden` 으로 영역 reserved + 시각상 빈 자리. region 4탭 grid 의 백필 안 된 항목과 채워진 항목 섞일 때도 정렬 유지.

@@ -11,6 +11,10 @@
  * - service worker 등록됨 (next-pwa가 자동 처리)
  * - 백엔드 /notifications/subscribe API
  */
+import { createLogger } from '@/lib/logger';
+import { safeInternalPath } from '@/lib/safe-redirect';
+
+const log = createLogger('push');
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
@@ -117,13 +121,11 @@ export async function triggerMockPush(payload: {
   icon?: string;
 }): Promise<void> {
   if (typeof Notification === 'undefined') {
-    console.warn('[mock-push] Notification API 미지원 환경');
+    log.warn('Notification API 미지원 환경');
     return;
   }
   if (Notification.permission !== 'granted') {
-    console.warn(
-      `[mock-push] 권한 미허용 — Notification.permission=${Notification.permission}`,
-    );
+    log.warn({ permission: Notification.permission }, '권한 미허용');
     return;
   }
   try {
@@ -135,20 +137,16 @@ export async function triggerMockPush(payload: {
     if (payload.link) {
       // open-redirect / javascript: 스킴 차단 — internal path 만 허용.
       // mock 도구라 입력 source 가 dev 콘솔이지만 실제 push 와 동일 가드 적용
-      // (defense in depth, login/onboarding 의 safeRedirectParam 과 동일 규칙).
-      const link = payload.link;
-      const safeLink =
-        link.startsWith('/') && !link.startsWith('//') ? link : '/';
+      // (defense in depth, login/onboarding 과 동일한 safeInternalPath 규칙).
+      const safeLink = safeInternalPath(payload.link);
       n.onclick = () => {
         window.focus();
         window.location.href = safeLink;
         n.close();
       };
     }
-    // dev/mock 흐름 가시화용 — eslint 의 no-console 은 warn/error 만 허용이라 disable.
-    // eslint-disable-next-line no-console
-    console.info('[mock-push] Notification dispatched:', payload.title);
+    log.info({ title: payload.title }, 'notification dispatched');
   } catch (err) {
-    console.error('[mock-push] Notification 생성 실패:', err);
+    log.error({ err }, 'notification 생성 실패');
   }
 }

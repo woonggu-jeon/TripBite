@@ -29,10 +29,12 @@
 }
 
 // Figma hero-img absolute fill — bg image + #A8B29C fallback (image 없을 때).
+// 하드코딩이었는데 같은 값의 --color-media-placeholder 토큰이 이미 있고
+// 다크에선 한 단계 어두운 값(#5C6455)을 갖는다 → 토큰 사용.
 .heroImg {
   position: absolute;
   inset: 0;
-  background: #a8b29c;
+  background: var(--color-media-placeholder);
   z-index: 0;
 }
 

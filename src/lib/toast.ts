@@ -1,6 +1,6 @@
 'use client';
 
-import { useUIStore, type ToastType } from '@/stores/ui-store';
+import { type ToastType, useUIStore } from '@/stores/ui-store';
 
 /**
  * 간단한 imperative toast API

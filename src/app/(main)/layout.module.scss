@@ -6,7 +6,7 @@
   left: 0;
   z-index: 1000;
   padding: 8px 16px;
-  background: var(--color-primary);
+  background: var(--color-primary-strong);
   color: var(--color-primary-fg);
   font-size: var(--font-body-sm);
   font-weight: var(--font-weight-bold);
@@ -47,28 +47,40 @@
 }
 
 .contentInner {
+  // 본문 열은 항상 화면 배경색 — 데스크톱에서 body 가 연초록(#EAF6EF) 여백을
+  // 그리므로, 본문이 그 색에 물들지 않게 여기서 명시한다.
+  // (기존 주석엔 "contentInner 에서 override" 라고 적혀 있었지만 실제 선언이
+  //  없어서 데스크톱 본문까지 연초록이었다)
+  background: var(--color-bg);
   max-width: var(--content-max);
   width: 100%;
   margin: 0 auto;
   padding: var(--content-pad);
-  // body bg = #EAF6EF (viewport 바깥) 위에 본문 영역만 white 카드. desktop
-  // 720+ 에서 contentInner 양 옆은 primary-soft tint, contentInner 안은
-  // white (light) / surface (dark).
-  background: var(--color-bg);
-  // 짧은 page (quiz 등) 가 viewport 채우지 못해 하단에 body bg (#EAF6EF) 가
-  // 노출되는 문제 해결 (사용자 피드백 2026-06-24) — contentInner 가 viewport
-  // bottom 까지 차지 (nav 는 fixed overlay 라 nav 만큼 빼면 그 아래 빈 영역에
-  // 다시 #EAF6EF 노출). nav 가 contentInner 위에 fixed overlay 되도록 100vh -
-  // header 만 빼서 nav 영역까지 contentInner bg 가 채움.
-  min-height: calc(100vh - var(--header-h));
   // padding-bottom = 여유(space-8) + nav 자체(--bottom-nav-h)
   //   + safe-area-inset-bottom (iPhone home indicator)
   //
   // 이 합계 누락분이 ranking 등 길이 긴 페이지의 마지막 row 가 fixed nav 에
-  // 가려지던 회귀 원인. (이전 +24px emphasized circle overlap 보정은
-  // Figma 평탄 5탭 정합 시 함께 제거 — BottomNav.module.scss 참조).
+  // 가려지던 회귀 원인.
+  // 구 emphasized circle 의 -22px overlap 보정(+24px)은 돌출 버튼 제거로 불필요해져 삭제.
   padding-bottom: calc(
     var(--space-8) + var(--bottom-nav-h) + env(safe-area-inset-bottom, 0px)
   );
   min-width: 0; // 자식 max-content 가 폭을 늘리지 못하게
+}
+
+// 화면 배경 — Figma 는 두 계열을 쓴다.
+//   #FFFFFF (기본)    : 폼·플로우 화면 (로그인/설정/알림/편지쓰기/홈 …)
+//   #F6F6F6 (= soft)  : 카드 목록 화면 (랭킹/편지함/시군상세/장소상세/도장책 …)
+// 후자는 흰 카드가 배경과 구분되어야 하므로 한 톤 낮춘 면을 깐다.
+//
+// custom property 는 아래로만 상속되므로 페이지가 스스로 조상(.contentInner)의
+// 배경을 바꿀 수 없다 → 페이지 루트에 data-page-bg="soft" 를 달고 :has() 로
+// 끌어올린다. (Chrome 105+/Safari 15.4+ — 대상 환경 충족)
+.contentInner:has([data-page-bg='soft']) {
+  background: var(--color-page-soft);
+  // 내용이 짧아도 면이 화면 끝까지 이어지게. 헤더(SubHeader)는 이 안에서
+  // sticky 라 .contentInner 가 viewport 최상단에서 시작한다 → 100svh 가
+  // 정확히 한 화면이고 여분 스크롤이 생기지 않는다.
+  // (min-height: 100% 는 부모 height 가 auto 라 해석되지 않았다)
+  min-height: 100svh;
 }

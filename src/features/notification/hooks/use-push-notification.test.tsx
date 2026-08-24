@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { act, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderHookWithProviders } from '@/test-utils';
 
 const subscriptionUtils = vi.hoisted(() => ({
@@ -12,11 +12,14 @@ const subscriptionUtils = vi.hoisted(() => ({
 
 vi.mock('@/features/notification/utils/subscription', () => subscriptionUtils);
 
+const notificationApiMock = vi.hoisted(() => ({
+  subscribe: vi.fn<() => Promise<void>>(),
+  unsubscribe: vi.fn<() => Promise<void>>(),
+  getVapidKey: vi.fn<() => Promise<string | null>>(),
+}));
+
 vi.mock('@/features/notification/api/notification', () => ({
-  notificationApi: {
-    subscribe: vi.fn<() => Promise<void>>(),
-    unsubscribe: vi.fn<() => Promise<void>>(),
-  },
+  notificationApi: notificationApiMock,
 }));
 
 const { usePushNotification } = await import('./use-push-notification');
@@ -27,6 +30,12 @@ describe('usePushNotification', () => {
     subscriptionUtils.requestNotificationPermission.mockReset();
     subscriptionUtils.getOrCreatePushSubscription.mockReset();
     subscriptionUtils.unsubscribePush.mockReset();
+    notificationApiMock.subscribe.mockReset();
+    notificationApiMock.unsubscribe.mockReset();
+    // 기본: BE VAPID 키 없음 → env fallback 경로 검증. 필요 테스트가 개별 override.
+    notificationApiMock.getVapidKey.mockReset();
+    notificationApiMock.getVapidKey.mockResolvedValue(null);
+    delete process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
     // service worker getRegistration default
     Object.defineProperty(navigator, 'serviceWorker', {
       configurable: true,
@@ -150,6 +159,41 @@ describe('usePushNotification', () => {
     });
     expect(subscriptionUtils.getOrCreatePushSubscription).toHaveBeenCalledWith(
       'test-key',
+    );
+  });
+
+  it('BE VAPID 키 우선 — getVapidKey() 응답으로 subscribe (env fallback 아님)', async () => {
+    // env 는 있어도 BE 키가 있으면 BE 키 사용.
+    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY = 'env-key';
+    notificationApiMock.getVapidKey.mockResolvedValue('be-key');
+    subscriptionUtils.isPushSupported.mockResolvedValue(true);
+    subscriptionUtils.requestNotificationPermission.mockResolvedValue(
+      'granted',
+    );
+    Object.defineProperty(navigator, 'serviceWorker', {
+      configurable: true,
+      value: {
+        getRegistration: vi.fn(() =>
+          Promise.resolve({ active: { state: 'activated' } } as unknown),
+        ),
+        ready: Promise.resolve({
+          pushManager: { getSubscription: vi.fn(() => Promise.resolve(null)) },
+        }),
+      },
+    });
+    subscriptionUtils.getOrCreatePushSubscription.mockResolvedValue({
+      endpoint: 'https://push.example/y',
+      toJSON: () => ({ endpoint: 'https://push.example/y', keys: {} }),
+    } as unknown as PushSubscription);
+
+    const { result } = renderHookWithProviders(() => usePushNotification());
+    await act(async () => {
+      await result.current.enable();
+    });
+
+    await waitFor(() => expect(result.current.status).toBe('enabled'));
+    expect(subscriptionUtils.getOrCreatePushSubscription).toHaveBeenCalledWith(
+      'be-key',
     );
   });
 });

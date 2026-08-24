@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { LogIn, LogOut } from 'lucide-react';
+import { useState } from 'react';
+import { authKeys, useMe } from '@/features/auth/hooks/use-auth';
 import { api } from '@/services/api/client';
 import { useAuthStore } from '@/stores/auth-store';
-import { authKeys, useMe } from '@/features/auth/hooks/use-auth';
 import styles from './MockAuthToggle.module.scss';
 
 /**

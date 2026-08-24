@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { buildCsp } from '@/lib/csp';
+import { safeInternalPath } from '@/lib/safe-redirect';
 
 /**
  * Middleware
@@ -52,13 +53,17 @@ function isAuthEntryPath(pathname: string): boolean {
 }
 
 function safeRedirectParam(raw: string | null): string {
-  // open-redirect 차단 — 같은 origin 의 path 만 허용. LoginForm 의 가드와 동기.
-  if (raw && raw.startsWith('/') && !raw.startsWith('//')) return raw;
-  return '/';
+  // open-redirect 차단 — 같은 origin 의 path 만 허용. 백슬래시/탭 우회까지 막는
+  // WHATWG origin 비교(safeInternalPath). LoginForm·OnboardingFlow 와 동일 규칙.
+  return safeInternalPath(raw);
 }
 
-// BE 가 발급하는 sessionID cookie 이름. env override 가능 (운영/스테이징 분리용).
-const SESSION_COOKIE = process.env.NEXT_PUBLIC_SESSION_COOKIE || 'SID';
+// 인증 마커 쿠키 (FE 관리, non-HttpOnly). env override 가능.
+// ⚠️ BE 세션 쿠키(JSESSIONID)를 직접 보지 않는다 — 새 Spring 은 익명 요청에도
+// JSESSIONID 를 항상 발급하므로 "쿠키 존재 = 로그인" 이 성립 안 함 (익명도 통과 +
+// 로그아웃 사용자가 /login 진입 불가). 대신 auth-store 가 setAuth/clearAuth 시
+// 관리하는 `tripbite.authed` 마커를 본다. 실제 인증 게이트는 API 403.
+const AUTH_COOKIE = process.env.NEXT_PUBLIC_AUTH_COOKIE || 'tripbite.authed';
 
 // onboarding skip — auth/policy/offline/onboarding 자체 (무한 redirect 회피).
 const SKIP_ONBOARDING_PATHS = [
@@ -94,7 +99,7 @@ export function middleware(request: NextRequest) {
   // mock 환경 skip 토글: MSW handler 가 Set-Cookie SID 발급 안 함 — 검사 시 무한 루프.
   // MockAuthToggle + 401 분기로 dev UX 보호 (interceptor 도 동일하게 skip).
   const isMockMode = process.env.NEXT_PUBLIC_USE_MSW === 'true';
-  const hasSession = request.cookies.has(SESSION_COOKIE);
+  const hasSession = request.cookies.has(AUTH_COOKIE);
 
   // ── 인증된 사용자의 /login·/signup 진입 차단 ──
   // 뒤로가기로 다시 form 보는 비정상 UX 회피. ?redirect= 안전 경로 우선, 없으면 /.
@@ -155,11 +160,32 @@ function cspHeaderName(): string {
 }
 
 export const config = {
+  /**
+   * public/ 정적 자산은 인증 미들웨어를 타지 않아야 한다.
+   * 타면 비로그인 상태에서 307 로 리다이렉트되어 이미지가 깨지고,
+   * 요청마다 미들웨어가 헛돈다.
+   *
+   * 확장자 기반(`.*\..*`) 으로 뭉뚱그리지 않고 **경로를 명시**한다 —
+   * 점이 들어간 보호 페이지 경로가 생기면 인증이 조용히 우회되기 때문.
+   * public/ 에 폴더를 추가하면 여기에도 추가해야 한다.
+   *
+   * 제외 대상:
+   *   api                  health·csp-report 는 공개. Server Action(페이지 route
+   *                        POST) 은 /api 가 아니라 그대로 미들웨어를 탄다.
+   *   _next/static|image   빌드 산출물
+   *   favicon.ico
+   *   icons                public/icons/ (PWA) + public/icons.svg (스프라이트)
+   *   illustrations        public/illustrations/ (Figma 일러스트 PNG)
+   *   images               public/images/ (지도 등)
+   *   manifest.json
+   *   sw.js|workbox-*      serwist 산출물
+   *   mockServiceWorker.js MSW 워커 (dev)
+   */
   matcher: [
     // /api 제외: health·csp-report는 공개. Server Action(페이지 route POST)은 /api 가 아니라 유지.
-    // public 정적 자산 제외 (2026-06-22 fix) — `/images/onboarding/walk-*.svg`
-    // 등이 visited cookie 없는 사용자에서 onboarding redirect 에 잡혀 307.
-    // 추가: images / splash / mockServiceWorker.js. icons 는 기존 유지.
-    '/((?!api|_next/static|_next/image|images|splash|favicon.ico|icons|manifest.json|sw.js|workbox-.*|mockServiceWorker.js).*)',
+    // public 정적 자산 제외 — merge: current(splash) + preview(illustrations) 합집합.
+    // images/splash/illustrations/icons 등이 visited cookie 없는 사용자에서 onboarding
+    // redirect(307)에 잡히지 않도록. public/ 폴더 추가 시 여기에도 추가.
+    '/((?!api|_next/static|_next/image|favicon.ico|icons|illustrations|images|splash|manifest.json|sw.js|workbox-.*|mockServiceWorker.js).*)',
   ],
 };

@@ -1,4 +1,7 @@
 import { z } from 'zod';
+import { createLogger } from '@/lib/logger';
+
+const log = createLogger('env');
 
 /**
  * 환경변수 type-safe 검증 + 단일 출처
@@ -33,9 +36,9 @@ const parsed = clientEnvSchema.safeParse({
 });
 
 if (!parsed.success && process.env.NODE_ENV !== 'test') {
-  console.error(
-    '[env] schema invalid — 기본값 fallback:',
-    parsed.error.flatten().fieldErrors,
+  log.error(
+    { fieldErrors: parsed.error.flatten().fieldErrors },
+    'env schema invalid — 기본값 fallback',
   );
 }
 
@@ -52,8 +55,8 @@ export function assertRequiredEnv(): void {
   if (env.NEXT_PUBLIC_USE_MSW === 'true') return;
 
   if (!env.NEXT_PUBLIC_API_URL) {
-    console.error(
-      '[env] NEXT_PUBLIC_API_URL 미설정 — 백엔드 API 호출이 모두 실패합니다. ' +
+    log.error(
+      'NEXT_PUBLIC_API_URL 미설정 — 백엔드 API 호출이 모두 실패합니다. ' +
         '.env.local 또는 Vercel 환경변수를 확인하세요.',
     );
   }

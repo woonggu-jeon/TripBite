@@ -28,6 +28,8 @@ jobs:
   lighthouse:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # 성능은 자문용 — 측정/리포트는 하되 PR/머지를 차단하지 않는다(비차단).
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v6
 

@@ -1,12 +1,16 @@
 'use client';
 
-import { useEffect } from 'react';
-import Link from 'next/link';
 import { useQueryClient } from '@tanstack/react-query';
-import { Button } from '@/components/ui';
-import { Icon } from '@/components/icon/Icon';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { useEffect } from 'react';
 import { EmptyState } from '@/components/feedback/EmptyState';
+import { Icon } from '@/components/icon/Icon';
+import { Button } from '@/components/ui';
+import { createLogger } from '@/lib/logger';
 import styles from './error.module.scss';
+
+const log = createLogger('app-error');
 
 /**
  * App Router root Error Boundary. EmptyState hero 패턴으로 디자인 통일
@@ -23,9 +27,12 @@ export default function GlobalError({
   reset: () => void;
 }) {
   const queryClient = useQueryClient();
+  // error.tsx 는 Providers(NextIntlClientProvider) 하위라 useTranslations 안전.
+  // (provider/layout 자체가 throw 하면 Next 가 global-error.tsx 로 승격 — 거긴 하드코딩.)
+  const t = useTranslations('errors.boundary');
 
   useEffect(() => {
-    console.error('[App Error]', error);
+    log.error({ err: error, digest: error.digest }, 'app error boundary');
   }, [error]);
 
   const handleReset = () => {
@@ -36,19 +43,17 @@ export default function GlobalError({
   return (
     <main className={styles.main}>
       <EmptyState
-        variant="hero"
+        variant="default"
         icon={<Icon name="alert-circle" size={36} />}
-        title="문제가 발생했어요"
-        description={
-          '잠시 후 다시 시도해주세요.\n문제가 계속되면 도움이 필요해요.'
-        }
+        title={t('title')}
+        description={t('description')}
         action={
           <div className={styles.actions}>
             <Button variant="primary" size="md" onClick={handleReset}>
-              다시 시도
+              {t('retry')}
             </Button>
             <Link href="/" className={styles.homeLink}>
-              홈으로
+              {t('home')}
             </Link>
           </div>
         }
