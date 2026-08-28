@@ -1,9 +1,10 @@
 # Figma ↔ 소스 컴포넌트 크로스체크
 
-**작성 2026-08-28** · Figma fileKey `Kjxpfmi9KqYGJTJEbj7ue6` (페이지 `컴포넌트` = `0:1`) · 브랜치 `dev` @ `a845748`
+**작성 2026-08-28** (조사 기준 `dev` @ `a845748`) · Figma fileKey `Kjxpfmi9KqYGJTJEbj7ue6` (페이지 `컴포넌트` = `0:1`)
+
+**갱신 2026-08-28** — 조사 이후 착수분 반영. 해소된 항목은 표에 커밋 해시를 달았다.
 
 목적: Figma 컴포넌트 세트와 소스 컴포넌트를 **이름 단위로 대조**해 누락·중복·표류를 드러낸다.
-이 문서는 **관측 결과만** 담는다. 수정은 별건으로 진행한다.
 
 ---
 
@@ -97,12 +98,12 @@ Figma 이름 → 소스. 근거는 소스 주석에 이미 박혀 있는 `Figma 
 
 ### 1-D. Figma 에만 있음 — 소스에 대응 전무 (4) 🔴
 
-| Figma                                                 | 상태                                                                                                                                                                                                                                                                                |
-| ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `checkbox` (on/off, line, 20px)                       | **공통 컴포넌트 없음.** raw `<input type="checkbox">` 3곳 — [LetterComposeForm](src/features/letter/components/LetterComposeForm.tsx), [AgeConfirmStep](src/features/onboarding/components/AgeConfirmStep.tsx), [ConsentBlock](src/features/onboarding/components/ConsentBlock.tsx) |
-| `tripTypeIcon` (36/52 × challenge/explore/rest/taste) | 소스 참조 0건. 여행유형 화면은 이모지(`emoji-c`)로 대체 중                                                                                                                                                                                                                          |
-| `themeIcon` (36 × season/dice)                        | 소스 참조 0건. [ThemeKindSelector](src/features/tournament/components/ThemeKindSelector.tsx) 는 자체 `big-card` 만                                                                                                                                                                  |
-| `bottomModalIcon` (camera/photo/profile)              | [ProfileCard](src/features/mypage/components/ProfileCard.tsx) 가 `cameraIcon`/`profileIcon` 을 별도 참조 — `photo` 미대응                                                                                                                                                           |
+| Figma                                                 | 상태                                                                                                                                                                                                                                   |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `checkbox` (on/off, line, 20px)                       | ✅ **해소** — [Checkbox.tsx](src/components/forms/Checkbox.tsx) 신설, raw input 3곳 전부 교체 (LetterComposeForm / AgeConfirmStep / ConsentBlock). 20×20 · radius 4 · off `#E0E0E0` 1px · on `#00B334` + 흰 체크(stroke 2.8) 실측 일치 |
+| `tripTypeIcon` (36/52 × challenge/explore/rest/taste) | 소스 참조 0건. 여행유형 화면은 이모지(`emoji-c`)로 대체 중                                                                                                                                                                             |
+| `themeIcon` (36 × season/dice)                        | 소스 참조 0건. [ThemeKindSelector](src/features/tournament/components/ThemeKindSelector.tsx) 는 자체 `big-card` 만                                                                                                                     |
+| `bottomModalIcon` (camera/photo/profile)              | [ProfileCard](src/features/mypage/components/ProfileCard.tsx) 가 `cameraIcon`/`profileIcon` 을 별도 참조 — `photo` 미대응                                                                                                              |
 
 ### 1-E. Figma 세트 2개 → 소스 1개
 
@@ -122,14 +123,14 @@ Figma 이름 → 소스. 근거는 소스 주석에 이미 박혀 있는 `Figma 
 
 Figma 변형 축: `size` 52/36 · `state` default/disabled · `style` solid/line · `color` **Green/Accent/Gray** · `type` Default/icon (12변형).
 
-| #   | 항목            | Figma                                             | 소스                                                                                                                                                                 | 판정                                              |
-| --- | --------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| 1   | **Accent 버튼** | `color=Accent` solid, 52px·36px 2변형 (`#F79D26`) | `ButtonVariant` 에 accent 없음                                                                                                                                       | 🔴 **미구현**                                     |
-| 2   | lg 폰트 굵기    | solid = `SB_16_140%` (SemiBold **600**)           | `.s-lg` 가 `font-weight: medium`(500) 강제 → `.v-primary` 는 weight 미지정이라 그대로 적용                                                                           | 🔴 `size="lg" variant="primary"` 가 시안보다 얇음 |
-| 3   | disabled 표현   | 전용 색 — bg `#E0E0E0` + text `#B4B4B4`           | `opacity: 0.45` 를 variant 색에 곱함                                                                                                                                 | ⚠️ 메커니즘 상이 (결과색 불일치)                  |
-| 4   | 사이즈 단계     | 52 / 36 두 단계                                   | `sm`=36, `md`=52, `lg`=52 (md·lg 동일)                                                                                                                               | ⚠️ lg 는 별칭. 의도된 매핑이나 API 혼동           |
-| 5   | 주석 정확성     | —                                                 | [button.tsx:13](src/components/ui/button.tsx:13) 주석 "sm(32)/md(44)/lg(52)" — 실제 36/52                                                                            | 🔴 주석 오류                                      |
-| 6   | 죽은 CSS        | —                                                 | `.v-outline`·`.v-outlinePrimary` 가 `ButtonVariant`(primary\|secondary\|ghost\|danger) 에 없어 **도달 불가**. `Button.module.scss` 를 import 하는 건 `button.tsx` 뿐 | 🔴 dead CSS 2블록 (2026-06-23/24 실측 잔재)       |
+| #   | 항목            | Figma                                             | 소스                                                                                                                                                                 | 판정                                                          |
+| --- | --------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| 1   | **Accent 버튼** | `color=Accent` solid, 52px·36px 2변형 (`#F79D26`) | `ButtonVariant` 에 accent 없음                                                                                                                                       | 🔴 **미구현**                                                 |
+| 2   | lg 폰트 굵기    | solid = `SB_16_140%` (SemiBold **600**)           | `.s-lg` 가 `font-weight: medium`(500) 강제 → `.v-primary` 는 weight 미지정이라 그대로 적용                                                                           | 🔴 미해소 — 브라우저 실측 확인(온보딩 "다음" 버튼 계산값 500) |
+| 3   | disabled 표현   | 전용 색 — bg `#E0E0E0` + text `#B4B4B4`           | `opacity: 0.45` 를 variant 색에 곱함                                                                                                                                 | ⚠️ 메커니즘 상이 (결과색 불일치)                              |
+| 4   | 사이즈 단계     | 52 / 36 두 단계                                   | `sm`=36, `md`=52, `lg`=52 (md·lg 동일)                                                                                                                               | ⚠️ lg 는 별칭. 의도된 매핑이나 API 혼동                       |
+| 5   | 주석 정확성     | —                                                 | [button.tsx:13](src/components/ui/button.tsx:13) 주석 "sm(32)/md(44)/lg(52)" — 실제 36/52                                                                            | ✅ 해소 (`7073efc`)                                           |
+| 6   | 죽은 CSS        | —                                                 | `.v-outline`·`.v-outlinePrimary` 가 `ButtonVariant`(primary\|secondary\|ghost\|danger) 에 없어 **도달 불가**. `Button.module.scss` 를 import 하는 건 `button.tsx` 뿐 | ✅ 해소 (`7073efc`) — 2블록 삭제                              |
 
 6번 부연: 해당 블록의 주석은 Figma "설정 cancel/logout"(outline)과 "결과 → 마이페이지에 저장"(outlinePrimary) 패턴을 구현했다고 적혀 있으나, 결과 화면은 현재 `variant="secondary"`+`variant="ghost"` 로 렌더된다([TournamentResultClient.tsx:141](<src/app/(main)/tournament/result/_components/TournamentResultClient.tsx:141>)). 즉 **시안 패턴이 화면에서 사라졌거나, 다른 variant 로 대체됨** — 어느 쪽인지 기획 확인 필요.
 
@@ -148,11 +149,49 @@ Figma 변형 축: `size` 52/36 · `state` default/disabled · `style` solid/line
 
 ### 2-D. 미실측 항목
 
-`header`(7 type) · `nav`(5탭) · `checkbox` · `wideTabMenu` · `notiCircle` · `circle` · `seasonIcon` · `tripTypeIcon` · `DestinationCard` · `trip-bite-logo` — **이름 매핑만 완료, 픽셀 실측 미완.**
+`header`(7 type) · `nav`(5탭) · `wideTabMenu` · `notiCircle` · `circle` · `seasonIcon` · `tripTypeIcon` · `DestinationCard` · `trip-bite-logo` — **이름 매핑만 완료, 픽셀 실측 미완.**
 
 ---
 
-## 3. 디자이너 요청 항목 (Figma 쪽 정리)
+## 3. 아이콘 스프라이트 — 별건 발견 (checkbox 작업 중)
+
+`checkbox` 구현을 위해 `npm run build:icons` 를 돌리자 **커밋된 `public/icons.svg` 가 스크립트보다 26심볼 뒤처져 있었다** (커밋 39 / 스크립트 생성 65).
+
+### 3-1. 빈 아이콘으로 렌더되던 6종 🔴
+
+`build-icons.mjs` 레지스트리에는 있는데 커밋된 스프라이트에는 심볼이 없어 `<use href="/icons.svg#...">` 가 아무것도 못 찾던 이름들:
+
+| 이름           | 참조 | 대표 위치                |
+| -------------- | ---- | ------------------------ |
+| `noti`         | 2곳  | NotificationsClient      |
+| `heart-fill`   | 2곳  | Button.stories 외        |
+| `location`     | 2곳  | Dialog.stories 외        |
+| `trophy-large` | 2곳  | TournamentHistorySection |
+| `award`        | 1곳  | EmptyState.stories       |
+| `ticket`       | 1곳  | WinnerDetailPanel        |
+
+재생성으로 해소. 안전성 확인:
+
+- `IconName` union(60종) ⊆ 새 스프라이트(65종) → **깨지는 참조 0**
+- 제거된 `map-pin`·`heart` 는 union·코드 참조 모두 0건
+- 다만 기존 심볼 **5개 body 가 변경**됨 (`compass`·`back`·`bookmark-on`·`camera`·`trending-up`) — 시안 정합 방향이나 **육안 확인 대상**
+
+### 3-2. `COLOR_PATTERN` 이 2색 아이콘을 망친다 ⚠️
+
+`build-icons.mjs` 의 `COLOR_PATTERN` 은 흰색·primary 를 일괄 `currentColor` 로 치환한다. 단색 글리프에는 맞지만 **2색 아이콘에는 파괴적**이다:
+
+```
+checkbox-on  → <rect fill="currentColor"/> + <path stroke="currentColor"/>   // 박스·체크 같은 색 = 체크 안 보임
+checkbox-off → <rect fill="currentColor" stroke="#E0E0E0"/>                  // 박스가 텍스트색으로 칠해짐 + border 다크 미대응
+```
+
+`#E0E0E0` 는 `COLOR_PATTERN` 에 아예 없어 하드코딩으로 남는다.
+
+→ 그래서 `Checkbox` 는 이 두 심볼을 쓰지 않는다. **박스는 CSS 토큰, 체크만 단색 글리프(`check-20`, Figma export 패스 그대로)** 로 그렸다. `checkbox-on`/`checkbox-off` 는 레지스트리에 남아 있으나 사용 금지 — 쓰려면 COLOR_PATTERN 을 아이콘별 opt-out 으로 바꿔야 한다.
+
+---
+
+## 4. 디자이너 요청 항목 (Figma 쪽 정리)
 
 1. **토큰 카탈로그 라벨 stale** — spring/winter/border 스와치 텍스트가 variable 실값과 다름 (§0-2)
 2. **오타** — `emptyItme`·`authItme` (→ `Item`), `letterBox` 의 prop `pagenation` (→ `pagination`), `themeIcon` 의 prop `neme` (→ `name`)
@@ -162,15 +201,17 @@ Figma 변형 축: `size` 52/36 · `state` default/disabled · `style` solid/line
 
 ---
 
-## 4. 우선순위 제안
+## 5. 우선순위 제안
 
-| 순위 | 항목                       | 근거                                           |
-| ---- | -------------------------- | ---------------------------------------------- |
-| 1    | `button` 2-A #2, #5, #6    | 코드 내부 모순 — 시안 확인 없이 즉시 수정 가능 |
-| 2    | `checkbox` 컴포넌트 신설   | raw input 3곳, 시안 컴포넌트 존재, a11y 이득   |
-| 3    | `circle` 공통화            | 6곳 중복이 계속 벌어짐                         |
-| 4    | `button` accent variant    | 시안에 있으나 미구현 — 사용처 기획 확인 후     |
-| 5    | §2-D 픽셀 실측             | header/nav 부터 (전 화면 공통)                 |
-| 6    | `tripTypeIcon`/`themeIcon` | 에셋 export 필요                               |
+| 순위 | 항목                       | 근거                                                 |
+| ---- | -------------------------- | ---------------------------------------------------- |
+| ✅   | `button` #5·#6, `checkbox` | 완료 (`7073efc`, Checkbox 신설)                      |
+| 1    | 스프라이트 5심볼 육안 확인 | §3-1 — 재생성으로 body 가 바뀐 아이콘                |
+| 2    | `circle` 공통화            | 6곳 중복이 계속 벌어짐                               |
+| 3    | `button` #2 lg 굵기        | 1줄이나 `size="lg"` 호출부 25곳+ → 화면 실측 필요    |
+| 4    | `button` accent variant    | 시안에 있으나 미구현 — 사용처 기획 확인 후           |
+| 5    | §2-D 픽셀 실측             | header/nav 부터 (전 화면 공통)                       |
+| 6    | `tripTypeIcon`/`themeIcon` | 에셋 export 필요                                     |
+| 7    | `COLOR_PATTERN` opt-out    | §3-2 — 2색 아이콘을 스프라이트로 못 넣는 구조적 제약 |
 
 §2-A #3(disabled 메커니즘), #4(lg 별칭), §2-B(chip 매핑)는 **기획·디자이너 판단 필요** — 임의 변경하지 않는다.
