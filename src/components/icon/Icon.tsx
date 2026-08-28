@@ -100,7 +100,9 @@ export type IconName =
   // HeaderIcon
   | 'settings-figma'
   | 'back'
-  // UI state
+  // UI state — `checkbox-on`/`checkbox-off` 는 2색 심볼이라 색을 CSS 토큰
+  // (`--color-primary`/`--color-bg`/`--color-border`/`--color-on-strong`)에서
+  // 직접 받는다. `color` 나 `--icon-stroke` 로는 바뀌지 않는다 (의도).
   | 'bookmark-on'
   | 'bookmark-off'
   | 'checkbox-on'

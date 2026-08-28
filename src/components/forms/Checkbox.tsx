@@ -14,10 +14,13 @@ import styles from './Checkbox.module.scss';
  *   - on  : bg primary(#00B334) + white 체크 (stroke 2.8, linecap round)
  *
  * 구현 노트 — 왜 sprite 의 `checkbox-on`/`checkbox-off` 를 쓰지 않는가:
- *   그 두 심볼은 박스와 체크가 **한 SVG 안 2색**인데, build-icons 의
- *   COLOR_PATTERN 이 흰색·primary 를 모두 `currentColor` 로 치환해 버려
- *   박스와 체크가 같은 색이 된다(= 체크 안 보임). 또 off 의 border 는
- *   `#E0E0E0` 하드코딩이라 다크 테마에 못 따라온다.
+ *   그 두 심볼은 이제 **정상**이다. build-icons 의 `colors` 맵이 색마다 CSS
+ *   토큰을 물려서 다크 테마까지 따라오고, 20px 실측 결과 아래 CSS 박스와
+ *   픽셀 단위로 동일하다 (docs/design/FIGMA_CROSSCHECK.md §3-2).
+ *   그래도 CSS 박스를 유지하는 이유는 두 가지뿐이다:
+ *     1) on/off 전환 트랜지션 — 심볼 교체(`<use href>`)는 보간이 안 된다.
+ *     2) 콜드 캐시 첫 페인트 — 외부 sprite 가 도착할 때까지 박스가 빈 칸으로
+ *        남는다. 동의 체크박스는 신규 사용자의 **첫 화면**이라 이게 크다.
  *   → 박스는 CSS 토큰으로, 체크만 단색 글리프(`check-20`)로 그린다.
  *
  * a11y: 네이티브 `<input type="checkbox">` 를 그대로 유지(투명 오버레이)해

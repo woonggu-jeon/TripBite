@@ -178,18 +178,45 @@ Figma 변형 축: `size` 52/36 · `state` default/disabled · `style` solid/line
 
 > ⚠️ 이 문서 최초 작성 시 "심볼 5개 body 가 바뀐다(육안 확인 필요)" 고 적었으나 **오류**였다. 스프라이트에 `back`·`bookmark-on`·`camera`·`compass` 4종의 **symbol id 가 중복** 생성돼 있었고(FIGMA_ICONS + ICONS 양쪽 등록), 비교 스크립트가 **마지막** occurrence 를 봤다. 브라우저는 **첫** occurrence 를 쓰므로 그 4종은 바뀌지 않는다. 중복 자체는 `cb70763` 에서 제거(FIGMA_ICONS 우선, 61종·중복 0·시각적 변화 0).
 
-### 3-2. `COLOR_PATTERN` 이 2색 아이콘을 망친다 ⚠️
+### 3-2. `COLOR_PATTERN` 이 2색 아이콘을 망친다 → 해소 (`colors` 맵)
 
-`build-icons.mjs` 의 `COLOR_PATTERN` 은 흰색·primary 를 일괄 `currentColor` 로 치환한다. 단색 글리프에는 맞지만 **2색 아이콘에는 파괴적**이다:
+**증상 (해소 전).** `build-icons.mjs` 의 `COLOR_PATTERN` 은 흰색·primary 를 일괄 `currentColor` 로 치환했다. 단색 글리프에는 맞지만 **2색 아이콘에는 파괴적**이었다:
 
 ```
 checkbox-on  → <rect fill="currentColor"/> + <path stroke="currentColor"/>   // 박스·체크 같은 색 = 체크 안 보임
 checkbox-off → <rect fill="currentColor" stroke="#E0E0E0"/>                  // 박스가 텍스트색으로 칠해짐 + border 다크 미대응
 ```
 
-`#E0E0E0` 는 `COLOR_PATTERN` 에 아예 없어 하드코딩으로 남는다.
+`#E0E0E0` 는 `COLOR_PATTERN` 에 아예 없어 하드코딩으로 남았다.
 
-→ 그래서 `Checkbox` 는 이 두 심볼을 쓰지 않는다. **박스는 CSS 토큰, 체크만 단색 글리프(`check-20`, Figma export 패스 그대로)** 로 그렸다. `checkbox-on`/`checkbox-off` 는 레지스트리에 남아 있으나 사용 금지 — 쓰려면 COLOR_PATTERN 을 아이콘별 opt-out 으로 바꿔야 한다.
+**해소.** `LOCAL_OVERRIDES` 값이 `{ src, colors, preserveColors }` 객체를 받는다.
+
+- `colors: { '<원본 색>': '<치환값>' }` — 색마다 다른 값. `var(--token)` 을 쓰면 CSS 토큰에 연결된다. 맵에 없는 색은 기존대로 `currentColor`.
+- `preserveColors: true` — 치환을 아예 끈다 (고정색 에셋).
+- 값이 문자열이면 기존 동작 그대로 (전부 `currentColor`) — 나머지 37개 아이콘 산출물 무변화.
+
+구현에서 걸린 함정 둘, 둘 다 **실측으로 잡았다**:
+
+1. **`var()` 를 프리젠테이션 속성에 못 넣는다.** WebKit 이 `fill="var(--x)"` 를 파싱하지 않는다 → 치환값이 `var(...)` 이면 속성을 지우고 inline `style` 로 내보낸다.
+2. **`.icon` 의 상속이 샌다.** 심볼 안 도형에 paint 속성이 없으면 `Icon.module.scss` 의 `fill:none / stroke:currentColor / stroke-width:var(--icon-stroke,2)` 가 그대로 들어온다. `checkbox-on` 의 박스에 **텍스트색 테두리**가 생기고, `checkbox-off` 의 1px 테두리가 **1.5px** 로 굵어졌다. → `colors` 를 쓴 아이콘은 "자기 색을 스스로 칠하는" 심볼로 취급해 없는 paint 를 원본 기본값(`none` / `stroke-width:1`)으로 못박는다.
+
+**실측** (headless Chrome, `--force-device-scale-factor=1`, 스프라이트 200px 확대 + 인접 토큰 스와치 픽셀 대조):
+
+| 샘플                      | light     | dark      | 기준 스와치 | 판정 |
+| ------------------------- | --------- | --------- | ----------- | ---- |
+| `checkbox-on` 박스 fill   | `#00b334` | `#00b334` | 동일        | ✅   |
+| `checkbox-on` 체크 stroke | `#ffffff` | `#ffffff` | —           | ✅   |
+| `checkbox-off` 내부 fill  | `#ffffff` | `#1a1a1a` | 동일        | ✅   |
+| `checkbox-off` 테두리     | `#e0e0e0` | `#393939` | 동일        | ✅   |
+
+20px 실사용 크기에서 `checkbox-off` 스프라이트와 현행 CSS 박스는 **테두리 픽셀까지 동일**(`#e0e0e0` 1px → `#ffffff`).
+
+**그런데 `Checkbox` 는 계속 CSS 박스를 쓴다.** 다크 대응·픽셀 정합은 동등해졌으니 남는 차이는 두 가지고, 둘 다 CSS 쪽이 낫다:
+
+1. **트랜지션** — 현행은 배경·테두리(`--motion-base`)와 체크 opacity(`--motion-fast`)를 보간한다. `<use href>` 심볼 교체는 보간이 없다.
+2. **콜드 캐시 첫 페인트** — 외부 스프라이트가 도착할 때까지 박스가 빈 칸이다. 동의 체크박스는 신규 사용자의 첫 화면(`/onboarding`)이라 이 차이가 크다.
+
+→ 두 심볼은 이제 **정상이고 사용 가능**하다(다른 호출부에서 쓸 수 있다). `Checkbox` 만 위 두 이유로 CSS 박스를 유지한다.
 
 ---
 
@@ -205,15 +232,15 @@ checkbox-off → <rect fill="currentColor" stroke="#E0E0E0"/>                  /
 
 ## 5. 우선순위 제안
 
-| 순위 | 항목                       | 근거                                                 |
-| ---- | -------------------------- | ---------------------------------------------------- |
-| ✅   | `button` #5·#6, `checkbox` | 완료 (`7073efc`, Checkbox 신설)                      |
-| 1    | 스프라이트 5심볼 육안 확인 | §3-1 — 재생성으로 body 가 바뀐 아이콘                |
-| 2    | `circle` 공통화            | 6곳 중복이 계속 벌어짐                               |
-| 3    | `button` #2 lg 굵기        | 1줄이나 `size="lg"` 호출부 25곳+ → 화면 실측 필요    |
-| 4    | `button` accent variant    | 시안에 있으나 미구현 — 사용처 기획 확인 후           |
-| 5    | §2-D 픽셀 실측             | header/nav 부터 (전 화면 공통)                       |
-| 6    | `tripTypeIcon`/`themeIcon` | 에셋 export 필요                                     |
-| 7    | `COLOR_PATTERN` opt-out    | §3-2 — 2색 아이콘을 스프라이트로 못 넣는 구조적 제약 |
+| 순위 | 항목                       | 근거                                                   |
+| ---- | -------------------------- | ------------------------------------------------------ |
+| ✅   | `button` #5·#6, `checkbox` | 완료 (`7073efc`, `d01b4f2`)                            |
+| ✅   | 스프라이트 중복 id 제거    | 완료 (`cb70763`) — §3-1. "5심볼 육안 확인" 은 오류였다 |
+| ✅   | `COLOR_PATTERN` opt-out    | 완료 — §3-2 (`colors` 맵 / `preserveColors`)           |
+| 1    | `circle` 공통화            | 6곳 중복이 계속 벌어짐                                 |
+| 2    | `button` #2 lg 굵기        | 1줄이나 `size="lg"` 호출부 25곳+ → 화면 실측 필요      |
+| 3    | `button` accent variant    | 시안에 있으나 미구현 — 사용처 기획 확인 후             |
+| 4    | §2-D 픽셀 실측             | header/nav 부터 (전 화면 공통)                         |
+| 5    | `tripTypeIcon`/`themeIcon` | 에셋 export 필요                                       |
 
 §2-A #3(disabled 메커니즘), #4(lg 별칭), §2-B(chip 매핑)는 **기획·디자이너 판단 필요** — 임의 변경하지 않는다.
