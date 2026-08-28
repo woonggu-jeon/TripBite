@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { Checkbox } from '@/components/forms/Checkbox';
 import { Icon } from '@/components/icon';
 import { Button } from '@/components/ui';
 import { useSendLetter } from '@/features/letter/hooks/use-letters';
@@ -186,14 +187,12 @@ export function LetterComposeForm() {
         control={control}
         render={({ field }) => (
           <label htmlFor="isAnonymous" className={styles.anonymous}>
-            <input
+            <Checkbox
               id="isAnonymous"
-              type="checkbox"
               checked={field.value}
-              onChange={(e) => field.onChange(e.target.checked)}
+              onChange={field.onChange}
               onBlur={field.onBlur}
               name={field.name}
-              className={styles.anonymousCheckbox}
             />
             {/* 시안 `an` 은 체크박스 + 라벨 한 줄뿐 — 보조 문구가 없다 */}
             <span className={styles.anonymousLabel}>{t('anonymous')}</span>

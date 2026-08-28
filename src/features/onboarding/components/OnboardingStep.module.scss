@@ -59,12 +59,6 @@
   color: var(--color-fg);
   cursor: pointer;
   user-select: none;
-
-  input[type='checkbox'] {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--color-primary);
-  }
 }
 
 .hint {

@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useState } from 'react';
+import { Checkbox } from '@/components/forms/Checkbox';
 import styles from './ConsentBlock.module.scss';
 
 /**
@@ -79,10 +80,9 @@ export function ConsentBlock({
   return (
     <div className={styles.wrap}>
       <label className={`${styles.row} ${styles.allRow}`}>
-        <input
-          type="checkbox"
+        <Checkbox
           checked={age14 && terms && privacy && location && marketing}
-          onChange={(e) => setAll(e.target.checked)}
+          onChange={setAll}
         />
         <span className={styles.label}>{t('all')}</span>
       </label>
@@ -153,11 +153,7 @@ function Row({
 }) {
   return (
     <label className={styles.row}>
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-      />
+      <Checkbox checked={checked} onChange={onChange} />
       <span className={styles.label}>
         <span className={required ? styles.required : styles.optional}>
           [{required ? '필수' : '선택'}]
