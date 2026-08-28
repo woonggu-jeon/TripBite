@@ -174,7 +174,9 @@ Figma 변형 축: `size` 52/36 · `state` default/disabled · `style` solid/line
 
 - `IconName` union(60종) ⊆ 새 스프라이트(65종) → **깨지는 참조 0**
 - 제거된 `map-pin`·`heart` 는 union·코드 참조 모두 0건
-- 다만 기존 심볼 **5개 body 가 변경**됨 (`compass`·`back`·`bookmark-on`·`camera`·`trending-up`) — 시안 정합 방향이나 **육안 확인 대상**
+- 실제로 렌더가 바뀌는 아이콘은 **`trending-up` 하나뿐**이고, 이 이름은 `Icon.stories` 에서만 쓴다(BottomNav 랭킹 탭은 `flame` — `constants/routes.ts:44`). → **사용자에게 보이는 아이콘 회귀 없음**
+
+> ⚠️ 이 문서 최초 작성 시 "심볼 5개 body 가 바뀐다(육안 확인 필요)" 고 적었으나 **오류**였다. 스프라이트에 `back`·`bookmark-on`·`camera`·`compass` 4종의 **symbol id 가 중복** 생성돼 있었고(FIGMA_ICONS + ICONS 양쪽 등록), 비교 스크립트가 **마지막** occurrence 를 봤다. 브라우저는 **첫** occurrence 를 쓰므로 그 4종은 바뀌지 않는다. 중복 자체는 `cb70763` 에서 제거(FIGMA_ICONS 우선, 61종·중복 0·시각적 변화 0).
 
 ### 3-2. `COLOR_PATTERN` 이 2색 아이콘을 망친다 ⚠️
 
