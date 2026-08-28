@@ -1,4 +1,4 @@
-import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
+import { type ButtonHTMLAttributes, type ReactNode, forwardRef } from 'react';
 import styles from './Button.module.scss';
 
 /**
@@ -10,8 +10,9 @@ import styles from './Button.module.scss';
  *   - ghost     : 배경/border 없음 — text-like
  *   - danger    : 위험 액션 (삭제 confirm 등)
  *
- * size:
- *   - sm (32) / md (44, default) / lg (52)  — 모바일 hit target 44px 보장
+ * size — Figma button 은 52px / 36px 두 단계뿐이다(변형 12개 실측):
+ *   - sm (36) / md (52, default) / lg (52 — md 의 별칭, 기존 호출부 호환)
+ *   52 는 hit target 44px 를 넘고, 36 은 좌우 패딩 20px 로 보완.
  *
  * fullWidth: 부모 너비 100%
  *
