@@ -344,7 +344,17 @@ function buildSprite() {
     );
   }
 
+  // FIGMA_ICONS 가 먼저 emit 되므로, 같은 key 가 ICONS 에도 있으면 sprite 에
+  // <symbol id> 가 중복 생성된다. 브라우저는 첫 occurrence 를 쓰므로 뒤쪽은
+  // 죽은 바이트 + 디버깅 함정이 된다 (back·bookmark-on·camera·compass 4종이
+  // 실제로 그랬다). FIGMA_ICONS 를 우선으로 두고 중복은 건너뛴다.
   for (const name of ICONS) {
+    if (name in FIGMA_ICONS) {
+      console.warn(
+        `[icons] skip duplicate: ${name} (FIGMA_ICONS 가 우선 — ICONS 목록에서 제거 권장)`,
+      );
+      continue;
+    }
     const override = LOCAL_OVERRIDES[name];
     const path = override
       ? resolve(ROOT, override)
