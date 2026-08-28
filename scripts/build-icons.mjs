@@ -243,6 +243,16 @@ const FIGMA_ICONS = {
     inner:
       '<path d="M7.5 18.75L14.25 25.5L28.5 10.5" />',
   },
+  // Checkbox on 상태의 체크 글리프 (Figma checkbox 3450:2289 export 그대로).
+  // check-36 과 별도 key 인 이유: check-36 은 꺾임점 하나짜리 단순 polyline
+  // 인데, 시안의 checkbox 체크는 꺾임을 곡선(C)으로 처리한 다른 패스다.
+  // stroke 2.8 / linecap round 는 export 값 그대로.
+  'check-20': {
+    viewBox: '0 0 20 20',
+    stroke: 2.8,
+    inner:
+      '<path d="M4.46115 10.3371L7.93037 13.4762C8.33989 13.8467 8.97227 13.8151 9.34282 13.4056L15.7599 6.3136" />',
+  },
   'camera': {
     viewBox: '0 0 12 12',
     filled: false,

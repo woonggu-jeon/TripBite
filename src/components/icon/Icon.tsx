@@ -57,6 +57,8 @@ export type IconName =
   | 'letter-36'
   // Figma `circleIcon check` — 편지 발송완료
   | 'check-36'
+  // Figma `checkbox` on 상태 체킬 — Checkbox primitive 전용
+  | 'check-20'
   // Navigation
   | 'chevron-left'
   | 'chevron-right'
@@ -144,6 +146,7 @@ const STROKE_WIDTHS: Partial<Record<IconName, number>> = {
   'letter-24': 1.7,
   'letter-36': 2.7,
   'check-36': 4.6,
+  'check-20': 2.8,
 };
 
 /**
