@@ -87,14 +87,14 @@ Figma 이름 → 소스. 근거는 소스 주석에 이미 박혀 있는 `Figma 
 
 공통 컴포넌트 없이 각 화면 SCSS 에 개별 구현돼 있다. **재사용 불가 + 화면별 표류 위험**이 실재.
 
-| Figma                                        | 현재 구현 위치                                                                                                                                                                                                                                                                                                                                                                                                                                                   | 문제                                                            |
-| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| `circle` (96/84/72 × 7종)                    | [EmptyState.module.scss](src/components/feedback/EmptyState.module.scss), [AuthHero](src/features/auth/components/AuthHero.module.scss), [LocationStep](src/features/onboarding/components/LocationStep.module.scss), [Top5Card](src/features/ranking/components/Top5Card.module.scss), [SelectCard](src/features/tournament/components/SelectCard.module.scss), [TournamentHistorySection](src/features/mypage/components/TournamentHistorySection.module.scss) | **6곳 중복**                                                    |
-| `notiCircle` (44px × letter/master × on/off) | [NotificationsClient](<src/app/(main)/notifications/_components/NotificationsClient.module.scss>) 인라인                                                                                                                                                                                                                                                                                                                                                         |                                                                 |
-| `notiIcon` (360×76 행 × 4변형)               | 동일 파일 인라인                                                                                                                                                                                                                                                                                                                                                                                                                                                 |                                                                 |
-| `wideTabMenu` (get/send/save)                | [LetterIndex.module.scss](<src/app/(main)/letter/_components/LetterIndex.module.scss>) 인라인                                                                                                                                                                                                                                                                                                                                                                    | [Tabs](src/components/ui/Tabs.tsx) 는 headless 라 스타일 미포함 |
-| `progCard` (on/off)                          | [StampsClient.module.scss](<src/app/(main)/mypage/stamps/_components/StampsClient.module.scss>) 인라인                                                                                                                                                                                                                                                                                                                                                           |                                                                 |
-| `typeTestItem` / `typeTextResultItem`        | [TravelTypeQuiz](src/features/ranking/components/TravelTypeQuiz.module.scss) / [TravelTypeResult](src/features/ranking/components/TravelTypeResult.module.scss) 인라인                                                                                                                                                                                                                                                                                           |                                                                 |
+| Figma                                        | 현재 구현 위치                                                                                                                                                                        | 문제                                                                                                                                    |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `circle` (96/84/72 × 7종)                    | ✅ **해소** — [Circle.tsx](src/components/ui/Circle.tsx) 신설, 4곳 교체 (EmptyState / AuthHero / SelectCard / TournamentHistorySection). 색·내용물 크기는 호출부에 남겨 **동작 보존** | 정정: 실제 중복은 **4곳**. Top5Card 는 회색 썸네일(surface-elevated + overflow), LocationStep 은 96px 에셋이라 같은 primitive 가 아니다 |
+| `notiCircle` (44px × letter/master × on/off) | [NotificationsClient](<src/app/(main)/notifications/_components/NotificationsClient.module.scss>) 인라인                                                                              |                                                                                                                                         |
+| `notiIcon` (360×76 행 × 4변형)               | 동일 파일 인라인                                                                                                                                                                      |                                                                                                                                         |
+| `wideTabMenu` (get/send/save)                | [LetterIndex.module.scss](<src/app/(main)/letter/_components/LetterIndex.module.scss>) 인라인                                                                                         | [Tabs](src/components/ui/Tabs.tsx) 는 headless 라 스타일 미포함                                                                         |
+| `progCard` (on/off)                          | [StampsClient.module.scss](<src/app/(main)/mypage/stamps/_components/StampsClient.module.scss>) 인라인                                                                                |                                                                                                                                         |
+| `typeTestItem` / `typeTextResultItem`        | [TravelTypeQuiz](src/features/ranking/components/TravelTypeQuiz.module.scss) / [TravelTypeResult](src/features/ranking/components/TravelTypeResult.module.scss) 인라인                |                                                                                                                                         |
 
 ### 1-D. Figma 에만 있음 — 소스에 대응 전무 (4) 🔴
 
@@ -232,15 +232,15 @@ checkbox-off → <rect fill="currentColor" stroke="#E0E0E0"/>                  /
 
 ## 5. 우선순위 제안
 
-| 순위 | 항목                       | 근거                                                   |
-| ---- | -------------------------- | ------------------------------------------------------ |
-| ✅   | `button` #5·#6, `checkbox` | 완료 (`7073efc`, `d01b4f2`)                            |
-| ✅   | 스프라이트 중복 id 제거    | 완료 (`cb70763`) — §3-1. "5심볼 육안 확인" 은 오류였다 |
-| ✅   | `COLOR_PATTERN` opt-out    | 완료 — §3-2 (`colors` 맵 / `preserveColors`)           |
-| 1    | `circle` 공통화            | 6곳 중복이 계속 벌어짐                                 |
-| 2    | `button` #2 lg 굵기        | 1줄이나 `size="lg"` 호출부 25곳+ → 화면 실측 필요      |
-| 3    | `button` accent variant    | 시안에 있으나 미구현 — 사용처 기획 확인 후             |
-| 4    | §2-D 픽셀 실측             | header/nav 부터 (전 화면 공통)                         |
-| 5    | `tripTypeIcon`/`themeIcon` | 에셋 export 필요                                       |
+| 순위 | 항목                       | 근거                                                     |
+| ---- | -------------------------- | -------------------------------------------------------- |
+| ✅   | `button` #5·#6, `checkbox` | 완료 (`7073efc`, `d01b4f2`)                              |
+| ✅   | 스프라이트 중복 id 제거    | 완료 (`cb70763`) — §3-1. "5심볼 육안 확인" 은 오류였다   |
+| ✅   | `COLOR_PATTERN` opt-out    | 완료 — §3-2 (`colors` 맵 / `preserveColors`)             |
+| ✅   | `circle` 공통화            | 완료 — `ui/Circle` primitive 로 4곳 교체 ("6곳" 은 오산) |
+| 1    | `button` #2 lg 굵기        | 1줄이나 `size="lg"` 호출부 25곳+ → 화면 실측 필요        |
+| 2    | `button` accent variant    | 시안에 있으나 미구현 — 사용처 기획 확인 후               |
+| 3    | §2-D 픽셀 실측             | header/nav 부터 (전 화면 공통)                           |
+| 4    | `tripTypeIcon`/`themeIcon` | 에셋 export 필요                                         |
 
 §2-A #3(disabled 메커니즘), #4(lg 별칭), §2-B(chip 매핑)는 **기획·디자이너 판단 필요** — 임의 변경하지 않는다.
