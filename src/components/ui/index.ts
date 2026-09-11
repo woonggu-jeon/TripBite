@@ -31,6 +31,7 @@ export {
   type RadioOptionProps,
 } from './RadioGroup';
 export { Dialog, type DialogProps } from './Dialog';
+export { Circle, type CircleProps } from './Circle';
 export {
   TabList,
   Tab,

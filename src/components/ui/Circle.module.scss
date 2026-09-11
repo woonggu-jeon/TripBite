@@ -1,0 +1,11 @@
+// Figma `circle` (node 3378:133) — 연초록 원 + 중앙 글리프.
+// 크기는 인라인 --circle-size (px) 로 받는다. 색·내용물 크기는 호출부 책임.
+.circle {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: var(--circle-size);
+  height: var(--circle-size);
+  border-radius: var(--radius-full);
+  background: var(--color-primary-soft);
+}

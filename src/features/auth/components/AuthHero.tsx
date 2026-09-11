@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Circle } from '@/components/ui';
 import styles from './AuthHero.module.scss';
 
 /**
@@ -28,9 +29,9 @@ export function AuthHero({
 }) {
   return (
     <div className={styles.hero}>
-      <span className={styles.circle} aria-hidden>
+      <Circle size={84} className={styles.circle} aria-hidden>
         {icon}
-      </span>
+      </Circle>
       <div className={styles.text}>
         <h1 className={styles.title}>{title}</h1>
         {description && <p className={styles.description}>{description}</p>}

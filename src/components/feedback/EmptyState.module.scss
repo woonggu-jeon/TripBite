@@ -20,16 +20,10 @@
   justify-items: center;
 }
 
-// Figma circle — 84px, 면 MainColor/secondary01, 글리프 MainColor/primary.
-// 글리프 대비는 2.53:1 로 비텍스트 3:1 미달이나, 제목·설명이 같은 의미를 전달하는
-// 장식 요소라 허용한다 (docs/design/DESIGN.md §7-1).
+// Figma circle — 84px. 모양·면은 ui/Circle primitive 가 담당하고, 여기서는
+// 글리프 색만 정한다: MainColor/primary. 대비는 2.53:1 로 비텍스트 3:1 미달이나,
+// 제목·설명이 같은 의미를 전달하는 장식 요소라 허용한다 (docs/design/DESIGN.md §7-1).
 .icon {
-  width: 84px;
-  height: 84px;
-  display: grid;
-  place-items: center;
-  border-radius: var(--radius-full);
-  background: var(--color-primary-soft);
   color: var(--color-primary);
 }
 

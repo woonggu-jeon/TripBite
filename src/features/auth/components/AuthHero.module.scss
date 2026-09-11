@@ -5,16 +5,10 @@
   gap: 10px;
 }
 
-// Figma `circle` 84x84 — 연초록 원 + 36px 아이콘.
-// 아이콘 색은 시안이 #00B334 지만 원(#EAF6EF) 위 2.52:1 로 비텍스트 3:1 미달 →
+// Figma `circle` 84x84 — 모양·면은 ui/Circle primitive. 여기서는 아이콘 색만.
+// 시안은 #00B334 지만 원(#EAF6EF) 위 2.52:1 로 비텍스트 3:1 미달 →
 // --color-primary-text-bold (4.59:1 계열) 사용.
 .circle {
-  display: grid;
-  place-items: center;
-  width: 84px;
-  height: 84px;
-  border-radius: var(--radius-full);
-  background: var(--color-primary-soft);
   color: var(--color-primary-text-bold);
 }
 

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Circle } from '@/components/ui/Circle';
 import styles from './EmptyState.module.scss';
 
 /**
@@ -56,7 +57,11 @@ export function EmptyState({
         .join(' ')}
     >
       {/* 카드형은 시안에 원형 아이콘이 없다 */}
-      {icon && !isCard && <div className={styles.icon}>{icon}</div>}
+      {icon && !isCard && (
+        <Circle as="div" size={84} className={styles.icon}>
+          {icon}
+        </Circle>
+      )}
       {/* Figma `f` — 제목+설명은 gap 3 의 한 블록이다. 따로 두면 wrap 의
           gap 16 이 그대로 적용돼 시안보다 훨씬 벌어진다. */}
       <div className={styles.text}>
