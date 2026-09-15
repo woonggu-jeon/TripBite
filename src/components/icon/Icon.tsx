@@ -57,6 +57,8 @@ export type IconName =
   | 'letter-36'
   // Figma `circleIcon check` — 편지 발송완료
   | 'check-36'
+  // Figma `checkbox` on 상태 체킬 — Checkbox primitive 전용
+  | 'check-20'
   // Navigation
   | 'chevron-left'
   | 'chevron-right'
@@ -98,7 +100,9 @@ export type IconName =
   // HeaderIcon
   | 'settings-figma'
   | 'back'
-  // UI state
+  // UI state — `checkbox-on`/`checkbox-off` 는 2색 심볼이라 색을 CSS 토큰
+  // (`--color-primary`/`--color-bg`/`--color-border`/`--color-on-strong`)에서
+  // 직접 받는다. `color` 나 `--icon-stroke` 로는 바뀌지 않는다 (의도).
   | 'bookmark-on'
   | 'bookmark-off'
   | 'checkbox-on'
@@ -144,6 +148,7 @@ const STROKE_WIDTHS: Partial<Record<IconName, number>> = {
   'letter-24': 1.7,
   'letter-36': 2.7,
   'check-36': 4.6,
+  'check-20': 2.8,
 };
 
 /**

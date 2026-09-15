@@ -58,15 +58,9 @@
   color: var(--color-primary-text-bold);
 }
 
-// Figma `circle` — row 54 / column 56. 계절은 mediaTone 으로 파스텔 지정.
+// Figma `circle` — row 54 / column 56 은 SelectCard.tsx 가 Circle size 로 넘긴다.
+// 모양·면은 ui/Circle primitive. 계절은 mediaTone 인라인으로 파스텔 지정.
 .circle {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: 54px;
-  height: 54px;
-  border-radius: var(--radius-full);
-  background: var(--color-primary-soft);
   overflow: hidden;
 
   img {
@@ -74,11 +68,6 @@
     height: 36px;
     object-fit: contain;
   }
-}
-
-.column .circle {
-  width: 56px;
-  height: 56px;
 }
 
 // 선택 시 원형은 흰색으로 뒤집힌다 (계절 카드는 인라인 style 이 이겨서 유지)

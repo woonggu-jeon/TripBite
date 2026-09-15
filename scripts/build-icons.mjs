@@ -243,6 +243,16 @@ const FIGMA_ICONS = {
     inner:
       '<path d="M7.5 18.75L14.25 25.5L28.5 10.5" />',
   },
+  // Checkbox on 상태의 체크 글리프 (Figma checkbox 3450:2289 export 그대로).
+  // check-36 과 별도 key 인 이유: check-36 은 꺾임점 하나짜리 단순 polyline
+  // 인데, 시안의 checkbox 체크는 꺾임을 곡선(C)으로 처리한 다른 패스다.
+  // stroke 2.8 / linecap round 는 export 값 그대로.
+  'check-20': {
+    viewBox: '0 0 20 20',
+    stroke: 2.8,
+    inner:
+      '<path d="M4.46115 10.3371L7.93037 13.4762C8.33989 13.8467 8.97227 13.8151 9.34282 13.4056L15.7599 6.3136" />',
+  },
   'camera': {
     viewBox: '0 0 12 12',
     filled: false,
@@ -258,6 +268,22 @@ const OUTPUT = resolve(ROOT, 'public/icons.svg');
  * BottomNav 5 탭 sprite key → Figma export SVG path. 같은 sprite key 의
  * lucide 기본 path 덮어쓰기 (Figma 디자인 정합). 색은 `currentColor` 로 일괄
  * 치환 — CSS color 로 active(primary) / off(disabled) 동적 변경.
+ *
+ * 값의 두 형태:
+ *   1) 문자열              — 경로만. hardcoded 색은 전부 `currentColor` (기본).
+ *   2) `{ src, ... }` 객체 — 색 처리를 아이콘별로 조정한다. **2색 아이콘**은
+ *      기본 동작이 파괴적이라(두 색이 같은 `currentColor` 가 되어 한쪽이 사라짐)
+ *      이 형태를 써야 한다.
+ *
+ *        colors         : { '<원본 색>': '<치환값>' } — 색마다 다른 값 지정.
+ *                         `var(--token)` 을 쓰면 CSS 토큰에 연결되어 다크 테마가
+ *                         따라온다. 맵에 없는 색은 기본대로 `currentColor`.
+ *        preserveColors : true 면 치환을 아예 끈다 (브랜드 로고 등 고정색).
+ *
+ *      `colors` 의 치환값이 `var(...)` 이면 프리젠테이션 속성(fill="…") 대신
+ *      inline `style` 로 내보낸다 — 프리젠테이션 속성 안의 var() 는 WebKit
+ *      지원이 불확실하다(로컬 실측은 Chrome 만). style 은 어느 엔진에서든
+ *      해석되므로 안전한 쪽을 고른 것. (`applyColorMap` 참조)
  */
 const LOCAL_OVERRIDES = {
   // Nav (BottomNav 5 탭). 색은 `currentColor` 일괄 치환 — CSS color 로 active
@@ -306,8 +332,25 @@ const LOCAL_OVERRIDES = {
   // sprite key 분리가 간단). color 는 currentColor 동적.
   'bookmark-on': 'public/icon-sources/ui/bookmark-on.svg',
   'bookmark-off': 'public/icon-sources/ui/bookmark-off.svg',
-  'checkbox-on': 'public/icon-sources/ui/checkbox-on.svg',
-  'checkbox-off': 'public/icon-sources/ui/checkbox-off.svg',
+  // checkbox 는 **2색** (박스 + 체크) 이라 일괄 currentColor 치환이 안 된다.
+  // 색마다 CSS 토큰을 지정 — 시안 실측값과 토큰이 1:1 로 같다:
+  //   #00B334 = --color-primary / white 체크 = --color-on-strong (#ffffff)
+  //   off 박스 white = --color-bg / border #E0E0E0 = --color-border
+  // (#E0E0E0 는 COLOR_PATTERN 에 없어서 예전엔 하드코딩으로 남아 다크 미대응)
+  'checkbox-on': {
+    src: 'public/icon-sources/ui/checkbox-on.svg',
+    colors: {
+      '#00B334': 'var(--color-primary)',
+      white: 'var(--color-on-strong)',
+    },
+  },
+  'checkbox-off': {
+    src: 'public/icon-sources/ui/checkbox-off.svg',
+    colors: {
+      white: 'var(--color-bg)',
+      '#E0E0E0': 'var(--color-border)',
+    },
+  },
   'eye-on': 'public/icon-sources/ui/eye-on.svg',
   'eye-off': 'public/icon-sources/ui/eye-off.svg',
 };
@@ -316,6 +359,115 @@ const LOCAL_OVERRIDES = {
 // stroke 와 fill 양쪽 모두 적용 (heart 는 fill 디자인).
 // `white` (named) 와 `#FFFFFF` 양쪽 매칭 — Figma export 패턴 호환.
 const COLOR_PATTERN = /#B4B4B4|#00B334|#151515|#393939|#E1493C|#FFFFFF|\bwhite\b/gi;
+
+// `colors` 맵이 다룰 수 있는 색 속성. Figma export 는 fill/stroke 만 쓰지만
+// 그라디언트 stop 도 같은 방식으로 매핑 가능하게 둔다.
+const COLOR_ATTRS = ['fill', 'stroke', 'stop-color'];
+
+/** LOCAL_OVERRIDES 값(문자열 | 객체) → `{ src, colors, preserveColors }` */
+function normalizeOverride(value) {
+  if (typeof value === 'string') {
+    return { src: value, colors: null, preserveColors: false };
+  }
+  return {
+    src: value.src,
+    colors: value.colors ?? null,
+    preserveColors: value.preserveColors === true,
+  };
+}
+
+// 자기 색을 스스로 칠하는 심볼에서 상속 차단 대상이 되는 도형 태그.
+const SHAPE_TAGS = new Set([
+  'path',
+  'rect',
+  'circle',
+  'ellipse',
+  'line',
+  'polyline',
+  'polygon',
+]);
+
+/**
+ * `colors` 맵에 따라 요소별 fill/stroke 를 치환한다.
+ *
+ * 치환값이 `var(...)` 이면 프리젠테이션 속성을 지우고 inline style 로 옮긴다.
+ * 프리젠테이션 속성 안의 var() 는 Chrome/Firefox 는 받지만 WebKit 지원이
+ * 불확실하다 — 모바일 PWA 니 확실한 style 쪽으로 보낸다 (실측은 Chrome 만).
+ *
+ * 맵에 없는 색은 손대지 않는다 (호출부가 이후 COLOR_PATTERN 을 적용).
+ *
+ * 추가로 **상속 차단**을 한다. `colors` 를 쓴 아이콘은 "자기 색을 스스로 칠하는"
+ * 심볼이므로, 원본에 없는 paint 속성을 원본 기본값으로 못박는다:
+ *
+ *   fill 없음        → `fill:none`         (`.icon` 의 fill:none 과 같지만 명시)
+ *   stroke 없음      → `stroke:none`       ← 없으면 `.icon` 의 stroke:currentColor
+ *                                            가 새서 박스에 텍스트색 테두리가 생긴다
+ *   stroke-width 없음 → `stroke-width:1`   ← 없으면 `--icon-stroke` 기본 2 가 적용돼
+ *                                            시안 1px 테두리가 1.5px 로 굵어진다
+ *
+ * (둘 다 실측으로 확인한 실제 증상이다 — 2026-08-28)
+ */
+function applyColorMap(inner, colors, name) {
+  const lookup = new Map(
+    Object.entries(colors).map(([from, to]) => [from.toLowerCase(), to]),
+  );
+  const used = new Set();
+
+  const out = inner.replace(
+    /<([a-zA-Z][\w-]*)([^>]*?)(\/?)>/g,
+    (_tag, tagName, attrs, selfClose) => {
+      let nextAttrs = attrs;
+      const styleDecls = [];
+      const styleAttr = attrs.match(/\sstyle="([^"]*)"/i)?.[1] ?? '';
+      const has = (prop) =>
+        new RegExp(`\\s${prop}="`, 'i').test(attrs) ||
+        new RegExp(`(^|;)\\s*${prop}\\s*:`, 'i').test(styleAttr);
+
+      for (const attr of COLOR_ATTRS) {
+        const re = new RegExp(`\\s${attr}="([^"]*)"`, 'i');
+        const match = nextAttrs.match(re);
+        if (!match) continue;
+        const mapped = lookup.get(match[1].trim().toLowerCase());
+        if (mapped === undefined) continue;
+        used.add(match[1].trim().toLowerCase());
+        if (mapped.startsWith('var(')) {
+          nextAttrs = nextAttrs.replace(re, '');
+          styleDecls.push(`${attr}:${mapped}`);
+        } else {
+          nextAttrs = nextAttrs.replace(re, ` ${attr}="${mapped}"`);
+        }
+      }
+
+      if (SHAPE_TAGS.has(tagName.toLowerCase())) {
+        if (!has('fill')) styleDecls.push('fill:none');
+        if (!has('stroke')) styleDecls.push('stroke:none');
+        else if (!has('stroke-width')) styleDecls.push('stroke-width:1');
+      }
+
+      if (styleDecls.length > 0) {
+        // 기존 style 과 병합 — 매핑값이 뒤에 와서 이긴다.
+        const styleRe = /\sstyle="([^"]*)"/i;
+        const existing = nextAttrs.match(styleRe);
+        const decls = existing
+          ? `${existing[1].replace(/;\s*$/, '')};${styleDecls.join(';')}`
+          : styleDecls.join(';');
+        nextAttrs = existing
+          ? nextAttrs.replace(styleRe, ` style="${decls}"`)
+          : `${nextAttrs} style="${decls}"`;
+      }
+
+      return `<${tagName}${nextAttrs}${selfClose}>`;
+    },
+  );
+
+  // 원본에 없는 색을 매핑해 두면 조용히 무효가 되므로 알린다 (에셋 교체 감지).
+  for (const from of lookup.keys()) {
+    if (!used.has(from)) {
+      console.warn(`[icons] ${name}: colors 의 "${from}" 이 원본에 없다`);
+    }
+  }
+  return out;
+}
 
 function extractInner(svgString) {
   // <svg ...>...</svg> 에서 내부 자식만 추출 (path/circle/line 등)
@@ -334,10 +486,22 @@ function buildSprite() {
     );
   }
 
+  // FIGMA_ICONS 가 먼저 emit 되므로, 같은 key 가 ICONS 에도 있으면 sprite 에
+  // <symbol id> 가 중복 생성된다. 브라우저는 첫 occurrence 를 쓰므로 뒤쪽은
+  // 죽은 바이트 + 디버깅 함정이 된다 (back·bookmark-on·camera·compass 4종이
+  // 실제로 그랬다). FIGMA_ICONS 를 우선으로 두고 중복은 건너뛴다.
   for (const name of ICONS) {
-    const override = LOCAL_OVERRIDES[name];
+    if (name in FIGMA_ICONS) {
+      console.warn(
+        `[icons] skip duplicate: ${name} (FIGMA_ICONS 가 우선 — ICONS 목록에서 제거 권장)`,
+      );
+      continue;
+    }
+    const rawOverride = LOCAL_OVERRIDES[name];
+    const override =
+      rawOverride === undefined ? null : normalizeOverride(rawOverride);
     const path = override
-      ? resolve(ROOT, override)
+      ? resolve(ROOT, override.src)
       : join(LUCIDE_DIR, `${name}.svg`);
     let raw;
     try {
@@ -347,8 +511,16 @@ function buildSprite() {
       process.exit(1);
     }
     const { viewBox, inner } = extractInner(raw);
-    // Local override 의 hardcoded 색을 currentColor 로 치환 (CSS 동적 색 가능).
-    const normalized = override ? inner.replace(COLOR_PATTERN, 'currentColor') : inner;
+    // Local override 의 hardcoded 색 처리:
+    //   preserveColors → 그대로 / colors 맵 → 색마다 지정값 (남은 색은 아래 기본)
+    //   기본           → 전부 currentColor (단색 글리프)
+    let normalized = inner;
+    if (override && !override.preserveColors) {
+      if (override.colors) {
+        normalized = applyColorMap(normalized, override.colors, name);
+      }
+      normalized = normalized.replace(COLOR_PATTERN, 'currentColor');
+    }
     symbols.push(`  <symbol id="${name}" viewBox="${viewBox}">${normalized}</symbol>`);
   }
 

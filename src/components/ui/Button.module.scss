@@ -102,37 +102,6 @@
   }
 }
 
-// Figma "설정" cancel/logout 패턴 (2026-06-23) — bg white + 1px stroke border
-// + muted color. .btn base 의 `border: 1.5px solid transparent` 를 완전
-// override 위해 shorthand 사용 (이전 border-width / border-color 분리 시
-// border-style 상속 의존 — 명확화).
-.v-outline {
-  background: var(--color-bg);
-  color: var(--color-muted);
-  border: 1px solid var(--color-stroke);
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover:not(:disabled) {
-      background: var(--color-hover);
-    }
-  }
-}
-
-// Figma "결과" 의 "마이페이지에 저장" 패턴 (2026-06-24) — bg white + 1px primary
-// border + primary text. outline 의 보조 강조 분기 (action 이 'primary' 만큼은
-// 아니나 단순 cancel 보다 강조 필요).
-.v-outlinePrimary {
-  background: var(--color-bg);
-  color: var(--color-primary);
-  border: 1px solid var(--color-primary);
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover:not(:disabled) {
-      background: var(--color-primary-soft);
-    }
-  }
-}
-
 .v-ghost {
   background: transparent;
   color: var(--color-fg);

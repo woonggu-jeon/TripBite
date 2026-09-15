@@ -5,6 +5,7 @@ import { EmptyState } from '@/components/feedback/EmptyState';
 import { SkeletonList } from '@/components/feedback/SkeletonList';
 import { Icon } from '@/components/icon';
 import { Button } from '@/components/ui';
+import { Circle } from '@/components/ui';
 import { useTournamentHistory } from '@/features/tournament/hooks/use-tournament';
 import styles from './TournamentHistorySection.module.scss';
 
@@ -90,12 +91,12 @@ export function TournamentHistorySection() {
           .join(' · ');
         return (
           <li key={it.id} className={styles.row}>
-            <span className={styles.emoji} aria-hidden>
+            <Circle size={40} className={styles.emoji} aria-hidden>
               {/* Figma `recent-row > circle > detailIcon(size=20px, name=trophy)`.
                   구 구현은 lucide Trophy 24 로 시안 아이콘이 아니었다.
                   Spring 은 시즌(theme) 미제공 → 트로피 고정. */}
               <Icon name="trophy-detail" size={20} />
-            </span>
+            </Circle>
             <div className={styles.body}>
               <p className={styles.title}>
                 {it.winnerName ?? t('unknownWinner')}

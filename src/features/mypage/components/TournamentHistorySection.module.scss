@@ -36,15 +36,9 @@
   }
 }
 
-// Figma `circle` 40x40 — 연초록 원 안에 20px 아이콘.
-// 레포는 계절 emoji 를 쓰므로 emoji 를 그 원 안에 담는다.
+// Figma `circle` 40x40 — 모양·면은 ui/Circle primitive. 여기서는 내용물
+// (20px 아이콘 / emoji) 타이포만.
 .emoji {
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-full);
-  background: var(--color-primary-soft);
   font-size: var(--font-body-sm);
   line-height: 1;
 }

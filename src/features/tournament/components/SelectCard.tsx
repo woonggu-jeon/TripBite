@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { RadioOption } from '@/components/ui';
+import { Circle } from '@/components/ui';
 import styles from './SelectCard.module.scss';
 
 export type SelectCardLayout = 'row' | 'column';
@@ -65,13 +66,14 @@ export function SelectCard({
         .join(' ')}
     >
       {media && (
-        <span
+        <Circle
+          size={layout === 'column' ? 56 : 54}
           className={styles.circle}
           style={mediaTone ? { background: mediaTone } : undefined}
           aria-hidden
         >
           {media}
-        </span>
+        </Circle>
       )}
       <span className={styles.text}>
         <span className={styles.title}>{title}</span>

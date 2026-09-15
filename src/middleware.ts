@@ -174,9 +174,14 @@ export const config = {
    *                        POST) 은 /api 가 아니라 그대로 미들웨어를 탄다.
    *   _next/static|image   빌드 산출물
    *   favicon.ico
+   *   fonts                public/fonts/pretendard/ (dynamic-subset css + woff2)
+   *                        — 빠지면 첫 방문(visited cookie 없음)에서 layout 의
+   *                        `<link>` stylesheet 가 /onboarding 으로 307 되어
+   *                        온보딩 화면이 fallback 폰트로 렌더된다 (2026-08-28 fix)
    *   icons                public/icons/ (PWA) + public/icons.svg (스프라이트)
    *   illustrations        public/illustrations/ (Figma 일러스트 PNG)
    *   images               public/images/ (지도 등)
+   *   splash               public/splash/ (iOS 스플래시)
    *   manifest.json
    *   sw.js|workbox-*      serwist 산출물
    *   mockServiceWorker.js MSW 워커 (dev)
@@ -186,6 +191,6 @@ export const config = {
     // public 정적 자산 제외 — merge: current(splash) + preview(illustrations) 합집합.
     // images/splash/illustrations/icons 등이 visited cookie 없는 사용자에서 onboarding
     // redirect(307)에 잡히지 않도록. public/ 폴더 추가 시 여기에도 추가.
-    '/((?!api|_next/static|_next/image|favicon.ico|icons|illustrations|images|splash|manifest.json|sw.js|workbox-.*|mockServiceWorker.js).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|fonts|icons|illustrations|images|splash|manifest.json|sw.js|workbox-.*|mockServiceWorker.js).*)',
   ],
 };

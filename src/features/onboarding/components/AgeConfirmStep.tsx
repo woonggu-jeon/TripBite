@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { Checkbox } from '@/components/forms/Checkbox';
 import { Button } from '@/components/ui';
 import styles from './OnboardingStep.module.scss';
 
@@ -34,11 +35,10 @@ export function AgeConfirmStep({
       <p className={styles.description}>{t('description')}</p>
 
       <label className={styles.consent}>
-        <input
-          type="checkbox"
+        <Checkbox
           checked={confirmed}
-          onChange={(e) => setConfirmed(e.target.checked)}
-          aria-describedby="age-confirm-hint"
+          onChange={setConfirmed}
+          ariaDescribedBy="age-confirm-hint"
         />
         <span>{t('confirmLabel')}</span>
       </label>
