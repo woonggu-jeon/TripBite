@@ -152,9 +152,11 @@ export function LocationStep({
       {/* body — copy + foot (progress + button). Walk 1/2/3 패턴 동일. */}
       <div className={styles.body}>
         <div className={styles.copy}>
-          <h2 className={styles.title}>
+          {/* a11y: 온보딩 스텝은 한 번에 하나만 렌더 → 화면 주제목이므로 h1
+              (page-has-heading-one, WCAG). 스타일은 .title 클래스라 시각 변화 없음. */}
+          <h1 className={styles.title}>
             {isDenied ? t('permission.denied') : t('permission.title')}
-          </h2>
+          </h1>
           <p className={styles.tagline}>
             {isDenied
               ? t('permission.openSettings')

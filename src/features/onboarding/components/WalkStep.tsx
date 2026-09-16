@@ -65,7 +65,9 @@ export function WalkStep({
       </div>
       <div className={styles.body}>
         <div className={styles.copy}>
-          <h2 className={styles.title}>{t('title')}</h2>
+          {/* a11y: 각 온보딩 스텝은 한 번에 하나만 렌더 → 화면의 주제목이므로
+              h1 (page-has-heading-one, WCAG). 스타일은 .title 클래스라 시각 변화 없음. */}
+          <h1 className={styles.title}>{t('title')}</h1>
           <p className={styles.tagline}>{t('tagline')}</p>
         </div>
         {/* Figma 정합 — dots progress 가 button 바로 위 (gap 32). */}
