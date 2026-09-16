@@ -1,0 +1,29 @@
+{
+  "routes": [
+    "/",
+    "/onboarding",
+    "/login",
+    "/signup",
+    "/signup/complete",
+    "/find-id",
+    "/forgot-password",
+    "/reset-password",
+    "/tournament",
+    "/tournament/play",
+    "/quiz",
+    "/ranking",
+    "/destination/1",
+    "/mypage",
+    "/mypage/stamps",
+    "/mypage/saved-tournaments",
+    "/settings",
+    "/notifications",
+    "/letter",
+    "/letter/compose",
+    "/letter/sent",
+    "/policy/terms",
+    "/policy/privacy",
+    "/policy/licenses",
+    "/offline"
+  ]
+}
