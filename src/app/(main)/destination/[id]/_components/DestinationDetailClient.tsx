@@ -109,6 +109,10 @@ export function DestinationDetailClient({ id }: { id: string }) {
             isLoading={false}
             variant="plain"
           />
+
+          {/* 데이터 출처 — 공모전 FAQ 지정 표기 "출처: ⓒ한국관광공사" (텍스트만,
+              공사 로고 사용 금지). 관광지 정보·사진이 TourAPI 응답이라 이 섹션에 붙인다. */}
+          <p className={styles.source}>{t('source')}</p>
         </section>
 
         {/* 3) 이 시군의 다른 여행지 */}

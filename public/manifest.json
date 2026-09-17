@@ -1,6 +1,6 @@
 {
-  "name": "TripBite — 충북 여행 토너먼트",
-  "short_name": "TripBite",
+  "name": "여행한입 — 충북 여행 토너먼트",
+  "short_name": "여행한입",
   "description": "충청북도 여행지 토너먼트 + 다섯글자 편지 PWA",
   "lang": "ko",
   "start_url": "/",

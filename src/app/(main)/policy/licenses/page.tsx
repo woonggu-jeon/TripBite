@@ -43,6 +43,15 @@ export default async function LicensesPage() {
           <li>Zod (MIT)</li>
           <li>...</li>
         </ul>
+
+        {/* 관광 데이터 출처 — 공모전 FAQ 지정 표기 (텍스트만, 공사 CI/BI 로고 사용 금지) */}
+        <h2 className={styles.subTitle}>데이터 출처</h2>
+        <p className={styles.source}>
+          여행지·축제·체험 정보와 사진은 한국관광공사 관광정보 OpenAPI(국문
+          관광정보 서비스)에서 제공받습니다.
+          <br />
+          출처: ⓒ한국관광공사
+        </p>
       </PolicyArticle>
     </>
   );

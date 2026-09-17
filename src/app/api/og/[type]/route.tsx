@@ -693,7 +693,7 @@ function renderDestination(
         }}
       >
         <span>📍 여행지</span>
-        <span style={{ color: '#a1a1aa' }}>TripBite</span>
+        <span style={{ color: '#a1a1aa' }}>여행한입</span>
       </div>
 
       <div
@@ -794,7 +794,7 @@ function renderRegion(
         }}
       >
         <span>🗺️ 시군 가이드</span>
-        <span style={{ color: '#a1a1aa' }}>TripBite</span>
+        <span style={{ color: '#a1a1aa' }}>여행한입</span>
       </div>
 
       <div

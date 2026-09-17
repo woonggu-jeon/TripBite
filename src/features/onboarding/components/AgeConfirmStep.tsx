@@ -31,7 +31,9 @@ export function AgeConfirmStep({
       <div className={styles.emoji} aria-hidden>
         🪪
       </div>
-      <h2 className={styles.title}>{t('title')}</h2>
+      {/* a11y: 온보딩 스텝은 한 번에 하나만 렌더 → 화면 주제목이므로 h1
+          (page-has-heading-one, WCAG). 스타일은 .title 클래스라 시각 변화 없음. */}
+      <h1 className={styles.title}>{t('title')}</h1>
       <p className={styles.description}>{t('description')}</p>
 
       <label className={styles.consent}>

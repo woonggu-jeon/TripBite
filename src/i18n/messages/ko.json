@@ -66,7 +66,7 @@
     "mypage": "마이"
   },
   "header": {
-    "logo": "Travel",
+    "logo": "여행한입",
     "home": "홈",
     "notification": "알림",
     "settings": "설정"
@@ -74,7 +74,7 @@
   "meta": {
     "description": "충북 여행지 토너먼트, 다섯글자 편지, 여행 유형 테스트. 위치 기반 맞춤 추천으로 다음 여행지를 찾아보세요.",
     "keywords": "충북 여행, 여행지 토너먼트, 다섯글자 편지, 여행 유형 테스트, 충청북도, TripBite",
-    "ogTitle": "TripBite — 충북 여행 토너먼트"
+    "ogTitle": "여행한입 — 충북 여행 토너먼트"
   },
   "auth": {
     "requireAuth": {
@@ -643,7 +643,7 @@
       "retry": "다시 하기",
       "share": "결과 공유하기",
       "savedToast": "저장되었어요",
-      "shareText": "TripBite 에서 {name} 가(이) 우승했어요!"
+      "shareText": "여행한입에서 {name} 가(이) 우승했어요!"
     }
   },
   "letter": {
@@ -977,6 +977,7 @@
   },
   "destination": {
     "title": "여행지",
+    "source": "출처: ⓒ한국관광공사",
     "bestSeasonsLabel": "추천 계절",
     "errorTitle": "여행지 정보를 불러오지 못했어요",
     "errorDescription": "잠시 후 다시 시도해주세요.",

@@ -63,3 +63,13 @@
   letter-spacing: var(--tracking-tight);
   white-space: nowrap;
 }
+
+// 데이터 출처 캡션 — Caption/R_12. --color-fg-weak(#8a8a8a) 는 12px 에서 3.5:1 로
+// AA 미달이라 --color-muted 사용 (CLAUDE.md 텍스트 대비 규칙).
+.source {
+  font-size: var(--font-caption);
+  line-height: 1.4;
+  color: var(--color-muted);
+  // .infoSec 의 grid gap 20 은 정보 카드 뒤 캡션엔 과해서 8 로 당김.
+  margin-top: calc(var(--space-3) * -1);
+}
