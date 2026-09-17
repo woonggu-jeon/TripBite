@@ -10,3 +10,17 @@
   display: grid;
   gap: var(--space-1);
 }
+
+.subTitle {
+  font-size: var(--font-body);
+  font-weight: var(--font-weight-bold);
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-2);
+  color: var(--color-fg);
+}
+
+.source {
+  font-size: var(--font-body-sm);
+  line-height: 1.5;
+  color: var(--color-fg);
+}

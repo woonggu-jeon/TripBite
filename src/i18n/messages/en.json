@@ -66,7 +66,7 @@
     "mypage": "Me"
   },
   "header": {
-    "logo": "Travel",
+    "logo": "TripBite",
     "home": "Home",
     "notification": "Notifications",
     "settings": "Settings"
@@ -977,6 +977,7 @@
   },
   "destination": {
     "title": "Destination",
+    "source": "Source: ⓒ Korea Tourism Organization",
     "bestSeasonsLabel": "Best seasons",
     "errorTitle": "Couldn't load destination",
     "errorDescription": "Please try again in a moment.",
