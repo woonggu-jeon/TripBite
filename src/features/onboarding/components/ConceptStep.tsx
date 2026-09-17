@@ -19,7 +19,9 @@ export function ConceptStep({ onNext }: { onNext?: () => void }) {
   return (
     <div className={styles.step}>
       <ConceptIllustration />
-      <h2 className={styles.title}>{t('concept.title')}</h2>
+      {/* a11y: 온보딩 스텝은 한 번에 하나만 렌더 → 화면 주제목이므로 h1
+          (page-has-heading-one, WCAG). 스타일은 .title 클래스라 시각 변화 없음. */}
+      <h1 className={styles.title}>{t('concept.title')}</h1>
       <p className={styles.description}>{t('concept.description')}</p>
       <div className={`${styles.actions} ${styles.actionsCenter}`}>
         <Button variant="primary" size="lg" fullWidth onClick={onNext}>
