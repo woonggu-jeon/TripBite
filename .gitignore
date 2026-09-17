@@ -88,3 +88,5 @@ BE_RESPONSE_*.md
 e2e/**/*-darwin.png
 # 로컬 실 BE 연동 진단 스크래치 (일회성)
 e2e/__sweep__/
+# @a11y-ai/cli 로컬 스캔 캐시·히스토리 (커밋 대상 아님)
+.a11y-ai/

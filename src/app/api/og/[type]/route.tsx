@@ -257,10 +257,12 @@ function renderTournament(
         paddingLeft: 60,
         paddingRight: 60,
         paddingBottom: 60,
-        // bg #EAF6EF (primary-soft) + radius 72 (24×3). 직전 primary fill
-        // 회귀 정정.
+        // bg #EAF6EF (primary-soft). 직전 primary fill 회귀 정정.
+        // ⚠ 루트 borderRadius 금지 — radius 를 주면 모서리가 투명(alpha=0)
+        // PNG 로 나가고, 카톡/X/슬랙이 투명 PNG 를 검정 배경에 합성/JPEG
+        // 재인코딩하면서 모서리(심하면 전체)가 검게 렌더됨. 공유/OG 이미지는
+        // 풀블리드 불투명으로 내보낸다(destination/region 과 동일).
         background: '#EAF6EF',
-        borderRadius: 72,
         fontFamily,
       }}
     >
@@ -449,12 +451,11 @@ function renderQuiz(
         gap: 24,
         // Figma padding 40/20/20/20 → ×3
         padding: '120px 60px 60px',
-        // Figma "TST · 공유 이미지 카드" — bg #EAF6EF (secondary01) + 1px #C6C6C6
-        // + radius 36 (12×3). 직전 peach gradient + 3px (검정 두꺼움) 정정
-        // (사용자 명시 2026-06-25). 1px 도 ×3 = 3 가능하나 사용자가 검정처럼
-        // 보인다고 명시 → border 자체 제거.
+        // Figma "TST · 공유 이미지 카드" — bg #EAF6EF (secondary01). 직전 peach
+        // gradient + 3px border(검정 두꺼움) 정정 (사용자 명시 2026-06-25).
+        // ⚠ 루트 borderRadius 금지 — 모서리 투명 PNG 가 카톡/X 에서 검게 합성됨
+        // (풀블리드 불투명 유지). border 도 제거된 상태.
         background: '#EAF6EF',
-        borderRadius: 36,
         fontFamily,
       }}
     >
@@ -892,11 +893,11 @@ function renderMaster(
         paddingLeft: 60,
         paddingRight: 60,
         paddingBottom: 60,
-        // Figma "MY · 마스터 카드" — bg #EAF6EF (secondary01) + radius 60 (20×3).
-        // 직전 gradient + 3px C6C6C6 border (검정처럼 보임) → 명시 정합 (사용자
-        // 명시 2026-06-25).
+        // Figma "MY · 마스터 카드" — bg #EAF6EF (secondary01). 직전 gradient +
+        // 3px C6C6C6 border (검정처럼 보임) → 명시 정합 (사용자 명시 2026-06-25).
+        // ⚠ 루트 borderRadius 금지 — 모서리 투명 PNG 가 카톡/X 에서 검게 합성됨
+        // (풀블리드 불투명 유지).
         background: '#EAF6EF',
-        borderRadius: 60,
         fontFamily,
       }}
     >

@@ -28,6 +28,8 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:real": "playwright test --config playwright.real.config.ts",
+    "a11y:scan": "a11y-ai scan --base-url http://localhost:3000",
+    "a11y:cert": "a11y-ai cert --base-url http://localhost:3000",
     "size": "next build && size-limit",
     "size:ci": "size-limit",
     "be:smoke": "node scripts/be-smoke.mjs",
@@ -68,6 +70,7 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@a11y-ai/cli": "^0.0.3",
     "@axe-core/playwright": "^4.11.3",
     "@chromatic-com/storybook": "^5.2.1",
     "@commitlint/cli": "^21.0.2",
