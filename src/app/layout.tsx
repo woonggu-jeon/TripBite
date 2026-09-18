@@ -63,13 +63,13 @@ export async function generateMetadata(): Promise<Metadata> {
       type: 'website',
       siteName: t('logo'),
       ...(siteUrl && { url: siteUrl }),
-      images: [{ url: '/icons/icon-512x512.png', width: 512, height: 512 }],
+      images: [{ url: '/images/og-default.png', width: 1200, height: 630 }],
     },
     twitter: {
       card: 'summary_large_image',
       title: ogTitle,
       description,
-      images: ['/icons/icon-512x512.png'],
+      images: ['/images/og-default.png'],
     },
     ...(BLOCK_INDEXING && {
       robots: {
